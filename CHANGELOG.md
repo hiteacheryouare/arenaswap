@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Game details start loading on hover — 2026-10-06
+
+Resting the pointer on a game card for 100ms (or tabbing to it) now starts the summary and standings requests the detail screen needs, so the chart, records and tabs are usually there by the time the click lands instead of arriving half a second later. Both go through a small in-popup cache that keeps a response for 15 seconds, because our sources' own `max-age` is five seconds at most and already counted down by the time the popup sees it; a summary only answers for the game status it was fetched under, so a hover just before tip-off can't hide the box score after it.
+
 ## Finished-game tests stop expiring — 2026-10-06
 
 Two core tests built their finished games on the fixtures' default date of October 5, then read the real clock, so the 24-hour final retention dropped those games once that date passed and the tests failed on every branch. They now stamp the game with the current time, like the rest of the finished-game tests, and two more post-game checks that were passing on a missing game now see one.

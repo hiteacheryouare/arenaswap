@@ -207,6 +207,18 @@ describe('mainView standby banner', () => {
 	});
 });
 
+// React builds pointerenter out of pointerover, so that is the event a resting pointer sends. Forced
+// because the stub card is empty and so has no height to be visible at.
+describe('mainView hover prefetch', () => {
+	it('starts the detail screen\'s request once the pointer rests on a card', () => {
+		cy.intercept({ url: /\/summary\?event=401000002/ }, { body: {} }).as('summary');
+		cy.intercept({ url: /\/standings\?level=3/ }, { body: {} }).as('standings');
+		cy.mount(<StatefulMainView games={[makeGame('401000002')]} />);
+		cy.get('[data-glide-key="401000002"]').trigger('pointerover', { force: true });
+		cy.wait(['@summary', '@standings']);
+	});
+});
+
 describe('mainView review prompt', () => {
 	it('shows review banner when review prompt is enabled', () => {
 		cy.mount(<MainView {...defaultProps} showReviewPrompt={true} />);

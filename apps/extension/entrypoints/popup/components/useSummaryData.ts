@@ -9,6 +9,7 @@ import type { StandingsGroup } from './standingsParse';
 import { emptyMatchup, parseMatchup, parseTickets } from './matchupParse';
 import type { Matchup, TicketLink } from './matchupParse';
 import { mockStandingsPayloads } from './mockStandings';
+import { fetchLeagueStandings, fetchSummary } from './summaryFetch';
 
 export interface SeriesCompetitor {
 	homeAway: string;
@@ -320,14 +321,12 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 
 		// Fetched once per game rather than per score change: the line only moves on the scale of
 		// possessions, and the switcher reads volatility from the background scorer, not from here.
-		const controller = new AbortController();
-		const url = `https://site.api.espn.com/apis/site/v2/sports/${config.espnPath}/summary?event=${encodeURIComponent(gameId)}`;
-		fetch(url, { headers: { Accept: 'application/json' }, signal: controller.signal })
-			.then(r => {
-				if (!r.ok) throw new Error(`HTTP ${r.status}`);
-				return r.json();
-			})
-			.then((data: Record<string, unknown>) => {
+		// Shared with the card's hover prefetch, which has usually started this already.
+		let cancelled = false;
+		fetchSummary(config.espnPath, gameId, status)
+			.then(raw => {
+				if (cancelled) return;
+				const data = raw as Record<string, unknown>;
 				const wp = data?.winprobability;
 				// ESPN returns [] during rain delays and brief interruptions even when earlier play
 				// produced data, which would clear the chart mid-game and desync it from the score.
@@ -361,30 +360,25 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 				}
 			})
 			.catch(err => {
-				if (err instanceof DOMException && err.name === 'AbortError') return;
-				logWarn(`Failed to load summary data for ${gameId}.`, err);
+				if (!cancelled) logWarn(`Failed to load summary data for ${gameId}.`, err);
 			});
 
 		// The whole league, alongside the summary rather than when the Standings tab is opened.
-		// It is 4-15KB gzipped and identical for every game in the league, so the browser serves
-		// the second one from cache — and the tab only exists if this answers, so waiting for a
-		// click would mean never offering it for the leagues whose summary carries no table at
-		// all (college hockey, college baseball and softball).
+		// It is 4-15KB gzipped and identical for every game in the league, so a second game in the
+		// same league opened soon after reuses the first one's request — and the tab only exists if
+		// this answers, so waiting for a click would mean never offering it for the leagues whose
+		// summary carries no table at all (college hockey, college baseball and softball).
 		if (usesFullLeagueStandings(league)) {
-			const standingsUrl = `https://site.api.espn.com/apis/v2/sports/${config.espnPath}/standings?level=3`;
-			fetch(standingsUrl, { headers: { Accept: 'application/json' }, signal: controller.signal })
-				.then(r => {
-					if (!r.ok) throw new Error(`HTTP ${r.status}`);
-					return r.json();
+			fetchLeagueStandings(config.espnPath)
+				.then(data => {
+					if (!cancelled) setStandings(parseLeagueStandings(data, gameRef.current.sportType));
 				})
-				.then((data: unknown) => setStandings(parseLeagueStandings(data, gameRef.current.sportType)))
 				.catch(err => {
-					if (err instanceof DOMException && err.name === 'AbortError') return;
-					logWarn(`Failed to load standings for ${league}.`, err);
+					if (!cancelled) logWarn(`Failed to load standings for ${league}.`, err);
 				});
 		}
 
-		return () => controller.abort();
+		return () => { cancelled = true; };
 	}, [gameId, league, status]);
 
 	return { winProbability, seriesInfo, records: resolvedRecords, monoLogos, boxScore, standings, gameDurationMins, matchup, tickets };
