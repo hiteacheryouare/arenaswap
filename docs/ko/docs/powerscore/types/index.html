@@ -475,9 +475,298 @@ const addToTemplate = "{browser}에 추가";
 </table></div>
 <h3 id="scoredsignal-scoredboost-and-reasonfragment">ScoredSignal, ScoredBoost, and ReasonFragment</h3>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> ScoredSignal</span><span style="color:#E1E4E8"> { </span><span style="color:#FFAB70">id</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">points</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">ceiling</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">disabled</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> boolean</span><span style="color:#E1E4E8"> }</span></span>
-<span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> ScoredBoost</span><span style="color:#E1E4E8">  { </span><span style="color:#FFAB70">id</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">points</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">meta</span><span style="color:#F97583">?:</span><span style="color:#B392F0"> Record</span><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">string</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">number</span><span style="color:#E1E4E8">&gt; }</span></span>
+<span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> ScoredBoost</span><span style="color:#E1E4E8">  { </span><span style="color:#FFAB70">id</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">points</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">meta</span><span style="color:#F97583">?:</span><span style="color:#B392F0"> Record</span><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">string</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">number</span><span style="color:#E1E4E8">&gt;; </span><span style="color:#FFAB70">details</span><span style="color:#F97583">?:</span><span style="color:#B392F0"> ReasonFragment</span><span style="color:#E1E4E8">[] }</span></span>
 <span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> ReasonFragment</span><span style="color:#E1E4E8"> { </span><span style="color:#FFAB70">key</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">params</span><span style="color:#F97583">?:</span><span style="color:#B392F0"> Record</span><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">string</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">string</span><span style="color:#F97583"> |</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">&gt; }</span></span></code></pre>
 <p><code>meta</code> on a boost carries what a UI might want to say, such as <code>{ inning: 8 }</code> on a no-hitter or <code>{ secondsLeft: 95, trailBy: 3 }</code> on a two-minute drill. A reason fragment looks like <code>{ key: 'outscoring', params: { team: 'BOS' } }</code>. Reason keys the built-in modes know render as English in <code>reason</code>. A key of your own renders as itself, so translate from <code>reasons</code>, not from the string.</p>
+<p><code>details</code> on a boost says what is happening in this game that the boost pays for, or doesn’t, as reason fragments for a UI to translate: <code>{ key: 'seriesClinch', params: { team: 'CHW' } }</code> on stakes, or a pulled goalie and a power play together on a hockey 6-on-4. It’s absent when there’s nothing to say, such as before a game starts or while play is stopped. There is no English renderer for these keys; the table below lists every one the built-in boosts send, with the sentence ArenaSwap shows for it.</p>
+<div class="prose-table" tabindex="0"><table>
+<thead>
+<tr>
+<th>Boost</th>
+<th>Key</th>
+<th>Params</th>
+<th>In English</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>basesEmpty</code></td>
+<td>—</td>
+<td>Bases empty, so there’s nobody to bring home.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>runnerFirst</code></td>
+<td>—</td>
+<td>A runner on first.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>runnerSecond</code></td>
+<td>—</td>
+<td>A runner on second, in scoring position.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>runnerThird</code></td>
+<td>—</td>
+<td>A runner on third, one base from home.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>runnersFirstSecond</code></td>
+<td>—</td>
+<td>Runners on first and second.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>runnersFirstThird</code></td>
+<td>—</td>
+<td>Runners on the corners.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>runnersSecondThird</code></td>
+<td>—</td>
+<td>Runners on second and third, both in scoring position.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>basesLoaded</code></td>
+<td>—</td>
+<td>Bases loaded. Nowhere to put anybody.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>inningOver</code></td>
+<td>—</td>
+<td>Three outs, so the bases are clear.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>outsideRedZone</code></td>
+<td>—</td>
+<td>Nobody’s in the red zone.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>redZone</code></td>
+<td><code>team</code></td>
+<td>{team} is in the red zone.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>redZoneThirdAndShort</code></td>
+<td><code>team</code></td>
+<td>{team} is in the red zone, facing third and short.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>redZoneFourthDown</code></td>
+<td><code>team</code></td>
+<td>{team} is in the red zone on fourth down. This snap matters.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>redZoneNotClose</code></td>
+<td><code>team</code></td>
+<td>{team} is in the red zone, but the score’s too lopsided for it to count.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>emptyNet</code></td>
+<td><code>team</code>, <code>margin</code>, <code>clock</code></td>
+<td>{team} pulled the goalie, down {margin} with {clock} left.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>powerPlayTied</code></td>
+<td>—</td>
+<td>A power play in a tie game.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>powerPlayClose</code></td>
+<td><code>margin</code></td>
+<td>A power play, and only {margin} in it.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>powerPlayTeamTied</code></td>
+<td><code>team</code></td>
+<td>{team} is on the power play in a tie game.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>powerPlayTeamTrailing</code></td>
+<td><code>team</code>, <code>margin</code></td>
+<td>{team} is on the power play, down {margin}.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>powerPlayTeamLeading</code></td>
+<td><code>team</code>, <code>margin</code></td>
+<td>{team} is on the power play, up {margin}.</td>
+</tr>
+<tr>
+<td><code>scoringOpportunity</code></td>
+<td><code>noScoringPosition</code></td>
+<td>—</td>
+<td>No runners or red zones in this sport, so this one sits out.</td>
+</tr>
+<tr>
+<td><code>goAheadRun</code></td>
+<td><code>goAheadRun</code></td>
+<td><code>team</code></td>
+<td>{team} has the go-ahead run on base.</td>
+</tr>
+<tr>
+<td><code>goAheadRun</code></td>
+<td><code>tyingRun</code></td>
+<td><code>team</code></td>
+<td>{team} has the tying run on base.</td>
+</tr>
+<tr>
+<td><code>goAheadRun</code></td>
+<td><code>winningRun</code></td>
+<td><code>team</code></td>
+<td>{team} has the winning run on base. One swing could end it.</td>
+</tr>
+<tr>
+<td><code>goAheadRun</code></td>
+<td><code>lastChance</code></td>
+<td>—</td>
+<td>It could be their last chance.</td>
+</tr>
+<tr>
+<td><code>twoMinuteDrill</code></td>
+<td><code>driveTied</code></td>
+<td><code>team</code>, <code>yards</code>, <code>clock</code></td>
+<td>Tie game. {team} has the ball {yards} yards out with {clock} left.</td>
+</tr>
+<tr>
+<td><code>twoMinuteDrill</code></td>
+<td><code>driveTrailing</code></td>
+<td><code>team</code>, <code>trailBy</code>, <code>yards</code>, <code>clock</code></td>
+<td>{team} is down {trailBy}, driving from {yards} yards out with {clock} left.</td>
+</tr>
+<tr>
+<td><code>redCard</code></td>
+<td><code>redCard</code></td>
+<td><code>team</code>, <code>players</code>, <code>minute</code></td>
+<td>{team} has been down to {players} since {minute}′.</td>
+</tr>
+<tr>
+<td><code>noHitter</code></td>
+<td><code>noHitter</code></td>
+<td><code>team</code>, <code>innings</code></td>
+<td>{team} still doesn’t have a hit through {innings} innings.</td>
+</tr>
+<tr>
+<td><code>noHitter</code></td>
+<td><code>doubleNoHitter</code></td>
+<td><code>innings</code></td>
+<td>Neither team has a hit through {innings} innings.</td>
+</tr>
+<tr>
+<td><code>upsetWatch</code></td>
+<td><code>underdogLeading</code></td>
+<td><code>team</code>, <code>chance</code>, <code>margin</code></td>
+<td>Our sources gave {team} a {chance}% chance before the game. They lead by {margin}.</td>
+</tr>
+<tr>
+<td><code>upsetWatch</code></td>
+<td><code>underdogLevel</code></td>
+<td><code>team</code>, <code>chance</code></td>
+<td>Our sources gave {team} a {chance}% chance before the game. It’s all square.</td>
+</tr>
+<tr>
+<td><code>upsetWatch</code></td>
+<td><code>underdogClose</code></td>
+<td><code>team</code>, <code>chance</code>, <code>margin</code></td>
+<td>Our sources gave {team} a {chance}% chance before the game. They trail by just {margin}.</td>
+</tr>
+<tr>
+<td><code>stakes</code></td>
+<td><code>seriesClinch</code></td>
+<td><code>team</code></td>
+<td>A win and {team} takes the series.</td>
+</tr>
+<tr>
+<td><code>stakes</code></td>
+<td><code>seriesDecider</code></td>
+<td><code>game</code></td>
+<td>Game {game}. Winner takes the series.</td>
+</tr>
+<tr>
+<td><code>stakes</code></td>
+<td><code>rankedMeeting</code></td>
+<td><code>rank</code>, <code>team</code>, <code>otherRank</code>, <code>other</code></td>
+<td>No. {rank} {team} vs. No. {otherRank} {other}.</td>
+</tr>
+<tr>
+<td><code>stakes</code></td>
+<td><code>raceTitle</code></td>
+<td><code>team</code></td>
+<td>{team} is in the title race.</td>
+</tr>
+<tr>
+<td><code>stakes</code></td>
+<td><code>raceRelegation</code></td>
+<td><code>team</code></td>
+<td>{team} is in a relegation fight.</td>
+</tr>
+<tr>
+<td><code>stakes</code></td>
+<td><code>raceTopQualification</code></td>
+<td><code>team</code></td>
+<td>{team} is chasing a top European spot.</td>
+</tr>
+<tr>
+<td><code>stakes</code></td>
+<td><code>raceLine</code></td>
+<td><code>team</code></td>
+<td>{team} is right on the edge of a playoff or qualifying spot.</td>
+</tr>
+<tr>
+<td><code>stakes</code></td>
+<td><code>raceClinch</code></td>
+<td><code>team</code></td>
+<td>{team} can clinch with a win.</td>
+</tr>
+<tr>
+<td><code>stakes</code></td>
+<td><code>raceElimination</code></td>
+<td><code>team</code></td>
+<td>A loss knocks {team} out of the race.</td>
+</tr>
+<tr>
+<td><code>stakes</code></td>
+<td><code>raceHunt</code></td>
+<td><code>team</code></td>
+<td>{team} is still in the playoff hunt.</td>
+</tr>
+<tr>
+<td><code>postseasonBoost</code></td>
+<td><code>postseasonRound</code></td>
+<td><code>round</code></td>
+<td>0 is the final, 1 a semifinal, 2 a quarterfinal, 3 an earlier round</td>
+</tr>
+<tr>
+<td><code>postseasonBoost</code></td>
+<td><code>regularSeason</code></td>
+<td>—</td>
+<td>Regular season, so nothing extra here.</td>
+</tr>
+<tr>
+<td><code>postseasonBoost</code></td>
+<td><code>postseasonBoostOff</code></td>
+<td>—</td>
+<td>Your postseason boost is set to 0 in Settings.</td>
+</tr>
+</tbody>
+</table></div>
 <h2 id="powerscoremode">PowerScoreMode</h2>
 <p>A mode is a list of signals plus the boosts that suit it. Build one with <a href="../api-reference/#definemode"><code>defineMode</code></a>, which checks it once, up front.</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> PowerScoreMode</span><span style="color:#E1E4E8"> {</span></span>
@@ -544,7 +833,7 @@ const addToTemplate = "{browser}에 추가";
 <span class="line"><span style="color:#E1E4E8">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> SignalOutput</span><span style="color:#E1E4E8"> { </span><span style="color:#FFAB70">points</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">reason</span><span style="color:#F97583">?:</span><span style="color:#B392F0"> ReasonFragment</span><span style="color:#E1E4E8"> }</span></span>
-<span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> BoostOutput</span><span style="color:#F97583"> extends</span><span style="color:#B392F0"> SignalOutput</span><span style="color:#E1E4E8"> { </span><span style="color:#FFAB70">meta</span><span style="color:#F97583">?:</span><span style="color:#B392F0"> Record</span><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">string</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">number</span><span style="color:#E1E4E8">&gt; }</span></span></code></pre>
+<span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> BoostOutput</span><span style="color:#F97583"> extends</span><span style="color:#B392F0"> SignalOutput</span><span style="color:#E1E4E8"> { </span><span style="color:#FFAB70">meta</span><span style="color:#F97583">?:</span><span style="color:#B392F0"> Record</span><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">string</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">number</span><span style="color:#E1E4E8">&gt;; </span><span style="color:#FFAB70">details</span><span style="color:#F97583">?:</span><span style="color:#B392F0"> ReasonFragment</span><span style="color:#E1E4E8">[] }</span></span></code></pre>
 <p>A signal’s <code>points</code> are clamped to its <code>ceiling</code>. A boost has no ceiling of its own, but its bucket may have a cap.</p>
 <h3 id="signalinput">SignalInput</h3>
 <p>What <code>compute</code> receives.</p>
