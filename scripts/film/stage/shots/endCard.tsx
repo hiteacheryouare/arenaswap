@@ -3,7 +3,7 @@ import { ringPath } from '../../../../packages/ui/src/components/wordmarkPose';
 import { barCentreRest, barJoint, barRest, barStrokeRest, dashCentreRest, dashFirstCapRest, dashLastCapRest, dashStrokeRest, restBox } from '../../../../packages/ui/src/components/wordmarkFrame';
 import { dotOrange } from '../components/overlay';
 import SportBall, { ballOrder, type BallKind } from '../components/sportBalls';
-import { ending, liveBadgeSelector, liveDotSelector } from '../cuts/shared';
+import { liveBadgeSelector, liveDotSelector } from '../cuts/shared';
 import { beats, easeIn, easeInOut, easeSignature, lerp, progress, spring } from '../timing';
 import { Desk, deskLayouts } from './desk';
 import type { ShotContext, ShotModule } from './shotTypes';
@@ -13,11 +13,15 @@ const dotRest = { cx: 1761.1208, cy: 368.38882, r: 27.6 };
 const barStart = barRest + barStrokeRest / 2;
 const barLength = barJoint - barStart;
 
-// Timed in beats back from the end of the cut, and squeezed evenly into a shorter ending, so the 15,
-// the 30 and the 60 all finish on the same moves.
-const paceOf = (ctx: ShotContext) => Math.min(1, (ctx.shot.to - ctx.shot.from) / beats(ending.beats));
-const fromEnd = (ctx: ShotContext, beatsBeforeEnd: number) => ctx.shot.to - beats(beatsBeforeEnd * paceOf(ctx));
-const between = (ctx: ShotContext, from: number, to: number) => progress(ctx.t, fromEnd(ctx, from), fromEnd(ctx, to));
+// The badge lifts off in the card's first beats, the balls change and the dot lands when the cut's
+// schedule says (on the soundtrack's beats), and the wordmark builds around the landing. Beats are
+// squeezed by the schedule's pace in the 15.
+const scheduleOf = (ctx: ShotContext) => ctx.shot.ending!;
+const lift = (ctx: ShotContext, from: number, to: number) => {
+	const { pace } = scheduleOf(ctx);
+	return progress(ctx.t, ctx.shot.from + beats(from * pace), ctx.shot.from + beats(to * pace));
+};
+const afterLanding = (ctx: ShotContext, beatsAfter: number) => scheduleOf(ctx).landsAt + beats(beatsAfter * scheduleOf(ctx).pace);
 
 // The dot, then each ball, then the dot again. Each change happens in three clean steps: the old
 // markings fade, the orange shape becomes the next one's, then the new markings come in as it settles.
@@ -62,7 +66,7 @@ interface Badge {
 // Kentucky's badge as it sat on the card before the card started to fall.
 const badges = new Map<number, Badge>();
 
-const fallOf = (ctx: ShotContext) => easeIn(between(ctx, 13.6, 12.4));
+const fallOf = (ctx: ShotContext) => easeIn(lift(ctx, 0.4, 1.6));
 
 const EndCard = ({ ctx }: { ctx: ShotContext }) => {
 	const { t, width, height } = ctx;
@@ -71,7 +75,7 @@ const EndCard = ({ ctx }: { ctx: ShotContext }) => {
 	const markHeight = restBox.height * scale;
 	const markLeft = (width - layout.markWidth) / 2;
 	const period = { x: markLeft + dotRest.cx * scale, y: layout.markY + dotRest.cy * scale, r: dotRest.r * scale };
-	const at = (beatsBeforeEnd: number) => fromEnd(ctx, beatsBeforeEnd);
+	const at = (beatsAfter: number) => afterLanding(ctx, beatsAfter);
 	const fall = fallOf(ctx);
 	const desk = deskLayouts[ctx.format];
 	const badge = badges.get(ctx.shot.from);
@@ -81,36 +85,37 @@ const EndCard = ({ ctx }: { ctx: ShotContext }) => {
 	const dotNatural = badgeDot * size;
 	const label = badge?.label ?? 'LIVE';
 	const groupWidth = dotNatural + badgeGap * size + textWidth(label, size);
-	const travel = easeInOut(between(ctx, 13.9, 12.9));
+	const travel = easeInOut(lift(ctx, 0.1, 1.1));
 	const startScale = badge ? badge.diameter / dotNatural : 1;
 	const badgeScale = lerp(startScale, 1, travel);
 	const groupX = lerp(badge ? badge.x - (dotNatural / 2) * startScale : width / 2, (width - groupWidth) / 2, travel);
 	const groupY = lerp(badge ? badge.y - (size / 2) * startScale : height / 2, (height - size) / 2, travel);
-	const turnOrange = easeInOut(between(ctx, 14, 13.6));
+	const turnOrange = easeInOut(lift(ctx, 0, 0.4));
 	// The word leaves first; only then does the dot take the middle of the frame.
-	const stepAside = easeInOut(between(ctx, 11.9, 11.6));
-	const takeCentre = easeInOut(between(ctx, 11.7, 11.2));
+	const stepAside = easeInOut(lift(ctx, 2.1, 2.4));
+	const takeCentre = easeInOut(lift(ctx, 2.3, 2.8));
 	const centre = { x: width / 2, y: height / 2 };
 	const groupDot = { x: groupX + (dotNatural / 2) * badgeScale, y: groupY + (size / 2) * badgeScale };
-	const changes = [...ending.balls, ending.plainAgain].map(beat => at(beat));
+	const schedule = scheduleOf(ctx);
+	const changes = [...schedule.balls, schedule.plainAgain];
 	const passed = changes.filter(change => t >= change).length;
-	const change = passed > 0 ? progress(t - changes[passed - 1]!, 0, changeSeconds * paceOf(ctx)) : 1;
+	const change = passed > 0 ? progress(t - changes[passed - 1]!, 0, changeSeconds * schedule.pace) : 1;
 	const markingsOut = easeInOut(progress(change, 0, 0.4));
 	const shapeSwap = easeInOut(progress(change, 0.3, 0.6));
 	const markingsIn = easeInOut(progress(change, 0.55, 1));
 	const arrive = easeSignature(progress(change, 0.3, 1));
-	const settle = easeInOut(between(ctx, 5, ending.lands));
+	const settle = easeInOut(progress(t, schedule.plainAgain, schedule.landsAt));
 	const ballRadius = lerp(dotNatural / 2, layout.ballRadius, easeSignature(takeCentre));
 
-	const arena = easeSignature(progress(t, at(4.7), at(3.9)));
-	const bar = easeInOut(progress(t, at(4.3), at(3.5)));
-	const head = spring(t - at(3.6), 0.35);
-	const swap = easeSignature(progress(t, at(4.1), at(3.3)));
-	const dashes = easeInOut(progress(t, at(3.8), at(3)));
-	const chevron = spring(t - at(3.1), 0.35);
-	const tagline = easeSignature(progress(t, at(3), at(2.3)));
-	const cta = easeSignature(progress(t, at(2.5), at(1.8)));
-	const finePrint = easeSignature(progress(t, at(2.1), at(1.4)));
+	const arena = easeSignature(progress(t, at(-0.7), at(0.1)));
+	const bar = easeInOut(progress(t, at(-0.3), at(0.5)));
+	const head = spring(t - at(0.4), 0.35);
+	const swap = easeSignature(progress(t, at(-0.1), at(0.7)));
+	const dashes = easeInOut(progress(t, at(0.2), at(1)));
+	const chevron = spring(t - at(0.9), 0.35);
+	const tagline = easeSignature(progress(t, at(1), at(1.7)));
+	const cta = easeSignature(progress(t, at(1.5), at(2.2)));
+	const finePrint = easeSignature(progress(t, at(1.9), at(2.6)));
 	const dashReveal = lerp(dashLastCapRest + dashStrokeRest, dashFirstCapRest - dashStrokeRest, dashes);
 
 	const dotX = settle > 0 ? lerp(centre.x, period.x, settle) : lerp(groupDot.x, centre.x, takeCentre);

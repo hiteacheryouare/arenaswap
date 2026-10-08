@@ -9,6 +9,11 @@ export const fps = 60;
 export const bar = (number: number) => (number - 1) * barSeconds;
 export const beats = (count: number) => count * beatSeconds;
 
+// The soundtrack plays at 96 BPM, so three of its beats fill one of our bars and every beat of ours
+// lands on one of its sixteenths. Anything the audience hears as a hit sits on its grid.
+export const musicBpm = 96;
+export const musicBeats = (count: number) => count * 60 / musicBpm;
+
 export const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 export const lerp = (from: number, to: number, amount: number) => from + (to - from) * amount;
 

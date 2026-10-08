@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The films play a real track — 2026-10-07
+
+The films are scored to Otis McDonald's "Put It On The Floor", sped up 1% to 96 BPM so three of its beats fill one of the cut's bars, and lined up so its last hit lands as the dot drops into the wordmark; the recording stays out of the repo in `scripts/film/music/`, and the synthesized pep band plays when it's missing. The sound effects are now a drumline (tenors for the dots, basses for a switch, stick clicks, cymbals), every ball change sits on one of the track's beats, and the five balls are redrawn as flat filled icons in the style of Bootstrap Icons.
+
 ## The 15 and the 30 sign off with the credits — 2026-10-07
 
 The 15 and the 30 now run on into three bars of credits after the film, the Lattice & Company rosette and then Ryan Mullin's wordmark, without the 60's disclaimers. The 30 also asks "Got a team?" on a second orange card that grows out of Kentucky's LIVE dot and shrinks back into it, as the 60 does.

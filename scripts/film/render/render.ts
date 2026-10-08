@@ -1,5 +1,6 @@
 // Shoots the films: drives the stage in headless Chrome one frame at a time on a virtual clock, pipes
-// every frame into ffmpeg, and lays the synthesized score under it.
+// every frame into ffmpeg, and lays the soundtrack under it (the synthesized score when the
+// recording in scripts/film/music/ is missing).
 //
 // Run: npm run film -- [options]   (builds first; `npm run film:render -- …` skips the build)
 //   --cut 15,30,60           which cuts (default: all three)
@@ -12,9 +13,10 @@
 //
 // Output: scripts/film/out/ (gitignored)
 import { spawn } from 'node:child_process';
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import renderScore from '../audio/score';
+import renderSoundtrackMix, { soundtrackPath } from '../audio/soundtrackMix';
 import { writeWav } from '../audio/wav';
 import cuts from '../stage/cuts';
 import type { Format } from '../stage/cuts/cutTypes';
@@ -40,6 +42,7 @@ const cacheDir = join(filmDir, '.cache', 'net');
 const extensionRoot = join(root, 'apps', 'extension', '.output', 'film', 'chrome-mv3');
 const stageRoot = join(filmDir, '.build', 'stage');
 const dataRoot = join(filmDir, 'data');
+const musicFile = soundtrackPath(filmDir);
 
 const cutIds = list('cut', ['15', '30', '60']) as (keyof typeof cuts)[];
 const formats = list('format', ['landscape', 'portrait']) as Format[];
@@ -141,7 +144,10 @@ const shoot = async (cutId: keyof typeof cuts, format: Format, origin: string, c
 		let video: ReturnType<typeof encoder> | null = null;
 		const audioFile = join(outDir, `.${name}.wav`);
 		if (!wanted) {
-			writeWav(audioFile, renderScore({ bpm: 128, bars: cut.bars, sections: cut.sections, cues: cut.cues, seed: 3 }), 24);
+			const audio = existsSync(musicFile)
+				? renderSoundtrackMix(cut, musicFile, ffmpegPath)
+				: renderScore({ bpm: 128, bars: cut.bars, sections: cut.sections, cues: cut.cues, seed: 3 });
+			writeWav(audioFile, audio, 24);
 			video = encoder(ffmpegPath, output, audioFile, join(outDir, `${name}.mp4`));
 		}
 
@@ -184,6 +190,7 @@ const main = async () => {
 	const server = await startFilmServer(extensionRoot, stageRoot, dataRoot);
 	const queue = cutIds.flatMap(cutId => formats.map(format => ({ cutId, format })));
 	console.log(`Rendering ${queue.length} film${queue.length === 1 ? '' : 's'} (${locale}) with ${chromePath}`);
+	if (!existsSync(musicFile)) console.log(`  No soundtrack at ${musicFile}, so the synthesized score plays instead.`);
 	try {
 		const workers = Array.from({ length: Math.min(jobs, queue.length) }, async () => {
 			for (let job = queue.shift(); job; job = queue.shift()) await shoot(job.cutId, job.format, server.origin, chromePath, ffmpegPath);

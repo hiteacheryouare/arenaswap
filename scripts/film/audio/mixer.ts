@@ -1,4 +1,4 @@
-import { chordAt, type Arrangement, type DrumHit, type DrumKind, type HarmonyChange, type ResolvedCue } from './arrangement';
+import type { Arrangement, DrumHit, DrumKind, ResolvedCue } from './arrangement';
 import { brassSections, finishSection, renderBrassNote, type BrassSection } from './brass';
 import { addMono, addStereo, createStereo, type Stereo } from './buffers';
 import renderPingPong from './delay';
@@ -9,7 +9,6 @@ import createRandom, { bipolar, hashSeed, type Random } from './random';
 import renderReverb from './reverb';
 import type { Cue } from './score';
 import { renderConfetti, renderDot, renderImpact, renderRiser, renderSwap, renderSwell, renderTick, renderWhoosh } from './sfx';
-import { midiToFrequency, type Chord } from './theory';
 
 export interface Stems {
 	drums: Stereo;
@@ -37,7 +36,7 @@ interface Routing {
 
 // Where the whole band sits under the film's effects. The gains below only balance the band
 // against itself; this keeps the effects at the level the sound-effect reels audition them at.
-const bandTrim = 0.42;
+const bandTrim = 0.19;
 
 const drumRouting: Record<DrumKind, Routing> = {
 	snare: { gain: 0.75, reverb: 0.12 },
@@ -75,15 +74,16 @@ const brassRouting: Record<BrassSection, Routing & { stem: 'brass' | 'lowBrass' 
 
 const bellRouting = { gain: 0.3, reverb: 0.3, delay: 0.08 };
 
+// Balanced against the soundtrack, so each hit stands a few decibels clear of the music it lands on.
 const cueRouting: Record<Cue['kind'], { gain: number; reverb: number; delay: number }> = {
-	dot: { gain: 1.2, reverb: 0.16, delay: 0.1 },
-	swap: { gain: 1, reverb: 0.05, delay: 0 },
-	whoosh: { gain: 0.45, reverb: 0.12, delay: 0 },
-	tick: { gain: 0.3, reverb: 0.02, delay: 0 },
-	confetti: { gain: 0.6, reverb: 0.28, delay: 0.08 },
-	impact: { gain: 0.85, reverb: 0.35, delay: 0 },
-	swell: { gain: 1.4, reverb: 0.18, delay: 0 },
-	riser: { gain: 0.8, reverb: 0.22, delay: 0.05 },
+	dot: { gain: 0.23, reverb: 0.12, delay: 0 },
+	swap: { gain: 0.12, reverb: 0.08, delay: 0 },
+	whoosh: { gain: 0.38, reverb: 0.1, delay: 0 },
+	tick: { gain: 1.2, reverb: 0.04, delay: 0 },
+	confetti: { gain: 0.32, reverb: 0.2, delay: 0 },
+	impact: { gain: 0.44, reverb: 0.25, delay: 0 },
+	swell: { gain: 0.8, reverb: 0.15, delay: 0 },
+	riser: { gain: 0.25, reverb: 0.15, delay: 0 },
 };
 
 const place = (sound: Sound, offset: number, bus: Stereo, sends: Sends, gain: number, pan: number, reverb: number, delay: number): void => {
@@ -120,28 +120,28 @@ const placeDrum = (hit: DrumHit, bus: Stereo, sends: Sends, sampleRate: number, 
 	}
 };
 
-const renderCueSound = (cue: ResolvedCue, chord: Chord, sampleRate: number, random: Random, barLength: number): Sound => {
+const renderCueSound = (cue: ResolvedCue, sampleRate: number, random: Random, beat: number): Sound => {
 	switch (cue.kind) {
-		case 'dot': return renderDot(midiToFrequency(chord.bell[cue.step % chord.bell.length]), sampleRate, random);
+		case 'dot': return renderDot(cue.step, sampleRate, random);
 		case 'swap': return renderSwap(sampleRate, random);
-		case 'whoosh': return renderWhoosh(cue.length ?? 0.5, cue.pan ?? 0, sampleRate, random);
+		case 'whoosh': return renderWhoosh(cue.length ?? beat, sampleRate, random);
 		case 'tick': return renderTick(sampleRate, random);
-		case 'confetti': return renderConfetti(chord, sampleRate, random);
+		case 'confetti': return renderConfetti(sampleRate, random);
 		case 'impact': return renderImpact(sampleRate, random);
-		case 'swell': return renderSwell(cue.length ?? 2, sampleRate, random);
-		case 'riser': return renderRiser(cue.length ?? barLength, sampleRate, random);
+		case 'swell': return renderSwell(cue.length ?? beat * 2, sampleRate, random);
+		case 'riser': return renderRiser(cue.length ?? beat * 4, beat, sampleRate, random);
 	}
 };
 
 const cueKinds = Object.keys(cueRouting);
 
 // Each cue's noise is seeded by its own time and kind, so editing one cue never re-rolls the others.
-export const renderCueLayer = (cues: ResolvedCue[], harmony: HarmonyChange[], target: Stereo, sends: Sends, sampleRate: number, seed: number, barLength: number): void => {
+export const renderCueLayer = (cues: ResolvedCue[], target: Stereo, sends: Sends, sampleRate: number, seed: number, beat: number): void => {
 	for (const cue of cues) {
 		const routing = cueRouting[cue.kind];
 		const random = createRandom(hashSeed(seed, 50, cueKinds.indexOf(cue.kind), Math.round(cue.at * 48000)));
-		const sound = renderCueSound(cue, chordAt(harmony, cue.at), sampleRate, random, barLength);
-		const pan = cue.kind === 'whoosh' ? 0 : cue.pan ?? 0;
+		const sound = renderCueSound(cue, sampleRate, random, beat);
+		const pan = cue.pan ?? 0;
 		place(sound, Math.round(cue.at * sampleRate), target, sends, routing.gain * (cue.gain ?? 1), pan, routing.reverb, routing.delay);
 	}
 };
@@ -191,7 +191,7 @@ const renderStems = (arrangement: Arrangement, sampleRate: number, seed: number)
 		place(voice, offsetOf(note.time), bells, sends, bellRouting.gain * bandTrim, note.pan, bellRouting.reverb, bellRouting.delay);
 	});
 
-	renderCueLayer(arrangement.cues, arrangement.harmony, sfx, sends, sampleRate, seed, arrangement.barLength);
+	renderCueLayer(arrangement.cues, sfx, sends, sampleRate, seed, arrangement.beat);
 
 	const returns = renderReturns(sends, arrangement.beat, sampleRate);
 	const cueHits = arrangement.cues.flatMap(cue => {

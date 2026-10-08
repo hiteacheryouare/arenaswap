@@ -1,6 +1,7 @@
 import type { Cue } from '../../audio/score';
-import { beats } from '../timing';
-import type { CardOrigin, PopupAction } from './cutTypes';
+import { finalHitLag } from '../../audio/soundtrack';
+import { musicBeats } from '../timing';
+import type { CardOrigin, Ending, PopupAction } from './cutTypes';
 
 // A wall-clock time on Saturday night, Eastern, as the ISO string the clocks take. Every moment the
 // films use falls between 7 PM and 9 PM.
@@ -42,14 +43,31 @@ export const cardUnder = (from: number) => from + cardTiming.swell + cardTiming.
 // The card's line arrives once the frame is orange and has faded before the orange starts to go.
 export const cardSuperWindow = (from: number, to: number) => ({ from: cardUnder(from), to: to - cardTiming.close + 0.1 });
 
-// The end card's moves, in beats before the end of a fourteen-beat ending; a shorter ending squeezes
-// them evenly. The cuts hang the ending's sound cues on the same beats.
-export const ending = { beats: 14, balls: [11.2, 10, 8.8, 7.6, 6.4], plainAgain: 5.2, lands: 4 };
+// The end card starts fourteen of our beats before the film's end (eight in the 15) and holds a beat
+// of the soundtrack past it. The balls change on the "and" of the soundtrack's beats, and the dot
+// lands on its last hit, which is on an "and" too: a ball a beat in the 30 and the 60, one every half
+// beat in the 15.
+export const endingBeats = 14;
+export const shortEndingBeats = 8;
+export const endCardHold = musicBeats(1);
 
-export const endingCues = (endAt: number, lengthBeats: number): Cue[] => {
-	const pace = Math.min(1, lengthBeats / ending.beats);
-	return [
-		...ending.balls.map((beat, index) => ({ at: endAt - beats(beat * pace), kind: 'dot' as const, step: index })),
-		{ at: endAt - beats(ending.lands * pace), kind: 'dot', step: 0, gain: 1.2 },
-	];
-};
+const before = (filmEnd: number, musicBeatsBefore: number) => filmEnd - musicBeats(musicBeatsBefore);
+
+export const endingFor = (filmEnd: number): Ending => ({
+	balls: [8.5, 7.5, 6.5, 5.5, 4.5].map(count => before(filmEnd, count)),
+	plainAgain: before(filmEnd, 3.5),
+	landsAt: before(filmEnd, 2.5) + finalHitLag,
+	pace: 1,
+});
+
+export const shortEndingFor = (filmEnd: number): Ending => ({
+	balls: [4.5, 4, 3.5, 3, 2.5].map(count => before(filmEnd, count)),
+	plainAgain: before(filmEnd, 2),
+	landsAt: before(filmEnd, 1.5) + finalHitLag,
+	pace: shortEndingBeats / endingBeats,
+});
+
+export const endingCues = (schedule: Ending): Cue[] => [
+	...schedule.balls.map((at, index) => ({ at, kind: 'dot' as const, step: index })),
+	{ at: schedule.landsAt, kind: 'impact' },
+];

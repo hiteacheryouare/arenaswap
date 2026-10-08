@@ -1,10 +1,14 @@
-import { bar, beats, barSeconds } from '../timing';
+import { bar, beats, barSeconds, musicBeats } from '../timing';
 import type { Cut } from './cutTypes';
-import { cardSuperWindow, cardUnder, endActions, endingCues, liveDotOrigin, sat } from './shared';
+import { cardSuperWindow, cardUnder, endActions, endCardHold, endingCues, liveDotOrigin, sat, shortEndingFor } from './shared';
 
 const b = bar;
 const flickTabs = [103, 104, 105, 101];
+// Ctrl+Tab on the soundtrack's eighth notes.
+const flickTimes = flickTabs.map((_, index) => b(2) + musicBeats(1 + index * 0.5));
 const endAt = b(9);
+const ending = shortEndingFor(endAt);
+const creditsAt = endAt + endCardHold;
 const toCal = b(5) + beats(2);
 const payoffAt = b(6) + beats(2);
 
@@ -29,9 +33,9 @@ const cut15: Cut = {
 		{ kind: 'card', from: b(4), to: toCal, origin: liveDotOrigin },
 		{ kind: 'swaps', from: cardUnder(b(4)), to: payoffAt },
 		{ kind: 'payoff', from: payoffAt, to: b(7) },
-		{ kind: 'endCard', from: b(7), to: endAt },
-		{ kind: 'credits', from: endAt, to: endAt + beats(7) },
-		{ kind: 'signature', from: endAt + beats(7), to: b(12) },
+		{ kind: 'endCard', from: b(7), to: creditsAt, ending },
+		{ kind: 'credits', from: creditsAt, to: creditsAt + beats(7) },
+		{ kind: 'signature', from: creditsAt + beats(7), to: b(12) },
 	],
 	supers: [
 		{ key: 'tooMany', from: 0.6, to: b(2), place: 'top' },
@@ -68,25 +72,27 @@ const cut15: Cut = {
 	],
 	tabs: [
 		{ at: b(2), tabId: 102, via: 'cut' },
-		...flickTabs.map((tabId, index) => ({ at: b(2) + beats(2 + index * 0.5), tabId, via: 'flick' as const })),
+		...flickTabs.map((tabId, index) => ({ at: flickTimes[index]!, tabId, via: 'flick' as const })),
 		{ at: toCal, tabId: 103, via: 'swap' },
 		{ at: payoffAt, tabId: 101, via: 'cut' },
 	],
 	managedFrom: b(3),
+	landsAt: ending.landsAt,
 	cues: [
-		{ at: 0.15, kind: 'dot', step: 0 },
-		{ at: 0.7, kind: 'whoosh', length: 0.5, gain: 0.5 },
-		{ at: b(2) - 0.2, kind: 'whoosh', length: 0.6 },
-		...flickTabs.map((_, index) => ({ at: b(2) + beats(2 + index * 0.5), kind: 'tick' as const, gain: 0.8 })),
-		{ at: b(3), kind: 'whoosh', length: 0.5, pan: 0.4 },
+		{ at: musicBeats(0.25), kind: 'dot', step: 0 },
+		{ at: musicBeats(1), kind: 'whoosh', length: musicBeats(1), gain: 0.5 },
+		{ at: b(2) - musicBeats(1), kind: 'whoosh', length: musicBeats(1) },
+		...flickTimes.map(at => ({ at, kind: 'tick' as const, gain: 0.8 })),
+		{ at: b(3) - musicBeats(1), kind: 'whoosh', length: musicBeats(1), pan: 0.4 },
 		{ at: b(4), kind: 'dot', step: 1 },
-		{ at: b(4) + 0.2, kind: 'whoosh', length: 0.5 },
-		{ at: toCal - 0.6, kind: 'whoosh', length: 0.4, gain: 0.6, pan: 0.3 },
+		{ at: b(4), kind: 'whoosh', length: musicBeats(1) },
+		{ at: b(4) + musicBeats(1), kind: 'impact', gain: 0.8 },
+		{ at: toCal - musicBeats(1), kind: 'whoosh', length: musicBeats(1), gain: 0.6, pan: 0.3 },
 		{ at: toCal, kind: 'swap' },
-		{ at: b(6) + beats(2.6), kind: 'swell', length: 1.2 },
-		{ at: b(6) + beats(2.9), kind: 'confetti', gain: 1.2 },
+		{ at: b(6) + musicBeats(1.5), kind: 'swell', length: musicBeats(0.75) },
+		{ at: b(6) + musicBeats(2.25), kind: 'confetti', gain: 1.2 },
 		{ at: b(7), kind: 'dot', step: 4 },
-		...endingCues(endAt, 8),
+		...endingCues(ending),
 	],
 };
 

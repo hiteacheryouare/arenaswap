@@ -5,11 +5,16 @@
 //   node scripts/film/audio/cli.cjs --plan plan.json --out film.wav [--bits 16] [--seed 7]
 //   node scripts/film/audio/cli.cjs --sfx dot --out temporary/adfilm/audioTests/sfx/dot.wav
 //   node scripts/film/audio/cli.cjs --demo 30 --drumline --out temporary/adfilm/audioTests/drumline30.wav
+//   node scripts/film/audio/cli.cjs --cut 30 --out temporary/adfilm/audioTests/soundtrack30.wav --report
 //
+// --cut renders a cut's soundtrack: the recording in scripts/film/music/ under the film's effects.
 // --report prints duration, loudness, true peak, DC, click and tail checks; --arc prints the loudness
 // of every half bar; --stems prints each stem's share of the raw mix; --drumline renders the drums alone.
 import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { parseArgs } from 'node:util';
+import { findFfmpeg } from '../render/tools';
+import cuts from '../stage/cuts';
 import analyzeAudio, { loudnessArc, transientWindows, type TimeWindow } from './analyze';
 import arrange, { demoPlans, type Arrangement } from './arrangement';
 import { sumStereo } from './buffers';
@@ -18,6 +23,7 @@ import masterMix from './master';
 import renderStems, { stemNames } from './mixer';
 import renderSfxReel, { reelKinds } from './reel';
 import renderScore, { type Cue, type RenderedAudio, type ScorePlan } from './score';
+import renderSoundtrackMix, { soundtrackPath } from './soundtrackMix';
 import { writeWav } from './wav';
 
 const { values } = parseArgs({
@@ -25,6 +31,7 @@ const { values } = parseArgs({
 		plan: { type: 'string' },
 		demo: { type: 'string' },
 		sfx: { type: 'string' },
+		cut: { type: 'string' },
 		out: { type: 'string' },
 		bits: { type: 'string', default: '24' },
 		seed: { type: 'string' },
@@ -36,7 +43,7 @@ const { values } = parseArgs({
 });
 
 const fail = (message: string): never => {
-	console.error(`${message}\nUsage: cli.cjs (--demo 15|30|60 | --plan file.json | --sfx ${reelKinds.join('|')}) --out file.wav [--bits 16|24] [--seed n] [--report] [--arc] [--stems] [--drumline]`);
+	console.error(`${message}\nUsage: cli.cjs (--demo 15|30|60 | --plan file.json | --cut 15|30|60 | --sfx ${reelKinds.join('|')}) --out file.wav [--bits 16|24] [--seed n] [--report] [--arc] [--stems] [--drumline]`);
 	process.exit(1);
 };
 
@@ -82,7 +89,13 @@ const out = values.out ?? fail('Missing --out.');
 const bits = values.bits === '16' ? 16 : 24;
 const started = performance.now();
 
-if (values.sfx) {
+if (values.cut) {
+	const cut = cuts[values.cut as keyof typeof cuts] ?? fail(`Unknown cut "${values.cut}".`);
+	const audio = renderSoundtrackMix(cut, soundtrackPath(join(__dirname, '..')), findFfmpeg());
+	writeWav(out, audio, bits);
+	console.log(`${out}: the ${values.cut}'s soundtrack, ${audio.left.length} samples, ${((performance.now() - started) / 1000).toFixed(2)} s`);
+	if (values.report) printReport(audio, []);
+} else if (values.sfx) {
 	const kind = values.sfx as Cue['kind'];
 	if (!reelKinds.includes(kind)) fail(`Unknown sound effect "${values.sfx}".`);
 	const audio = renderSfxReel(kind);

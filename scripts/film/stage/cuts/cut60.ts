@@ -1,9 +1,12 @@
-import { bar, beats, barSeconds } from '../timing';
+import { bar, beats, barSeconds, musicBeats } from '../timing';
 import type { Cut } from './cutTypes';
-import { cardSuperWindow, cardUnder, endActions, ending, endingCues, favoriteActions, kentuckyCard, liveDotOrigin, mainPopupActions, sat } from './shared';
+import { cardSuperWindow, cardUnder, endActions, endCardHold, endingBeats, endingCues, endingFor, favoriteActions, kentuckyCard, liveDotOrigin, mainPopupActions, sat } from './shared';
 
 const b = bar;
 const flickTabs = [103, 104, 105, 102, 103, 104, 105, 101];
+// Ctrl+Tab on the soundtrack's eighth notes.
+const flickAt = b(4) - musicBeats(1);
+const flickTimes = flickTabs.map((_, index) => flickAt + musicBeats(index * 0.5));
 
 // The first orange card ends on ArenaSwap's switch to Cal; the second opens out of the league grid.
 const toCal = b(9) + beats(3);
@@ -13,7 +16,9 @@ const starAt = b(27);
 // The Standby Stream switch: the rule at 7:14 PM, when every open tab was below 45.
 const standbyAt = b(19) + beats(3);
 const endAt = b(33);
-const endStart = endAt - beats(ending.beats);
+const endStart = endAt - beats(endingBeats);
+const ending = endingFor(endAt);
+const creditsAt = endAt + endCardHold;
 
 // 32 bars of film, then five of credits. The problem, the answer, then one benefit per scene, each
 // held long enough to read.
@@ -48,14 +53,14 @@ const cut60: Cut = {
 		{ kind: 'card', from: gotTeamAt, to: gotTeamEnd, origin: 'leagueDot' },
 		{ kind: 'favorite', from: cardUnder(gotTeamAt), to: b(28) + beats(2) },
 		{ kind: 'payoff', from: b(28) + beats(2), to: endStart },
-		{ kind: 'endCard', from: endStart, to: endAt },
-		{ kind: 'credits', from: endAt, to: b(34) + beats(3) },
-		{ kind: 'signature', from: b(34) + beats(3), to: b(35) + beats(3) },
-		{ kind: 'legal', from: b(35) + beats(3), to: b(38) },
+		{ kind: 'endCard', from: endStart, to: creditsAt, ending },
+		{ kind: 'credits', from: creditsAt, to: creditsAt + beats(7) },
+		{ kind: 'signature', from: creditsAt + beats(7), to: creditsAt + beats(11) },
+		{ kind: 'legal', from: creditsAt + beats(11), to: b(38) },
 	],
 	supers: [
 		{ key: 'tooMany', from: 0.8, to: b(3), place: 'top' },
-		{ key: 'flipping', from: b(3) + beats(3), to: b(5), place: 'top' },
+		{ key: 'flipping', from: flickAt - beats(1), to: b(5), place: 'top' },
 		{ key: 'watchesAll', from: b(5) + beats(1.5), to: b(7), place: 'top' },
 		{ key: 'setup', from: b(7) + beats(0.25), to: b(8), place: 'top' },
 		{ key: 'switches', ...cardSuperWindow(b(8), toCal), place: 'card', animate: 'words' },
@@ -92,7 +97,7 @@ const cut60: Cut = {
 				{ at: endAt, slate: sat('8:03:00') },
 			],
 			actions: [
-				...mainPopupActions(b(7) + beats(0.5), b(7) + beats(2.5)),
+				...mainPopupActions(b(7) + musicBeats(0.5), b(7) + musicBeats(2)),
 				...favoriteActions(starAt),
 				...endActions(endStart),
 			],
@@ -121,7 +126,7 @@ const cut60: Cut = {
 			clock: [{ at: b(13) + beats(2), slate: '2026-10-11T15:00:00.000Z' }],
 			actions: [
 				{ at: b(14), kind: 'click', selector: '.game-card.game-card-clickable[aria-label="Open details for CHI vs GB"]' },
-				{ at: b(14) + beats(2.5), kind: 'click', selector: '#gd-tab-401872990-matchup' },
+				{ at: b(14) + musicBeats(2), kind: 'click', selector: '#gd-tab-401872990-matchup' },
 				{ at: b(15), kind: 'scrollTo', selector: '.popup-container', target: '.gd-matchup > :nth-child(2)', offset: 12, over: beats(2) },
 			],
 		},
@@ -167,40 +172,43 @@ const cut60: Cut = {
 	],
 	tabs: [
 		{ at: b(3), tabId: 102, via: 'cut' },
-		...flickTabs.map((tabId, index) => ({ at: b(4) + beats(index * 0.5), tabId, via: 'flick' as const })),
+		...flickTabs.map((tabId, index) => ({ at: flickTimes[index]!, tabId, via: 'flick' as const })),
 		{ at: toCal, tabId: 103, via: 'swap' },
 		{ at: b(18), tabId: 101, via: 'cut' },
 		{ at: standbyAt, tabId: 106, via: 'standby' },
 		{ at: gotTeamAt, tabId: 101, via: 'cut' },
 	],
-	managedFrom: b(7) + beats(2.5),
+	managedFrom: b(7) + musicBeats(2),
+	landsAt: ending.landsAt,
 	cues: [
-		{ at: 0.2, kind: 'dot', step: 0 },
-		{ at: 1.0, kind: 'whoosh', length: 0.6, gain: 0.5 },
-		{ at: b(3) - 0.25, kind: 'whoosh', length: 0.7 },
-		...flickTabs.map((_, index) => ({ at: b(4) + beats(index * 0.5), kind: 'tick' as const, gain: 0.8 })),
-		{ at: b(5), kind: 'whoosh', length: 0.5, pan: 0.4 },
-		{ at: b(7) + beats(0.5), kind: 'tick' },
-		{ at: b(7) + beats(2.5), kind: 'tick' },
+		{ at: musicBeats(0.25), kind: 'dot', step: 0 },
+		{ at: musicBeats(1.5), kind: 'whoosh', length: musicBeats(1), gain: 0.5 },
+		{ at: b(3) - musicBeats(1), kind: 'whoosh', length: musicBeats(1) },
+		...flickTimes.map(at => ({ at, kind: 'tick' as const, gain: 0.8 })),
+		{ at: b(5) - musicBeats(1), kind: 'whoosh', length: musicBeats(1), pan: 0.4 },
+		{ at: b(7) + musicBeats(0.5), kind: 'tick' },
+		{ at: b(7) + musicBeats(2), kind: 'tick' },
 		{ at: b(8), kind: 'dot', step: 1 },
-		{ at: b(8) + 0.2, kind: 'whoosh', length: 0.5 },
-		{ at: toCal - 0.6, kind: 'whoosh', length: 0.4, gain: 0.6, pan: 0.3 },
+		{ at: b(8), kind: 'whoosh', length: musicBeats(1) },
+		{ at: b(8) + musicBeats(1), kind: 'impact', gain: 0.8 },
+		{ at: toCal - musicBeats(1), kind: 'whoosh', length: musicBeats(1), gain: 0.6, pan: 0.3 },
 		{ at: toCal, kind: 'swap' },
-		...[b(11), b(13) + beats(2), b(15) + beats(3), b(18), b(22), b(24)].map(at => ({ at: at - 0.15, kind: 'whoosh' as const, length: 0.35, gain: 0.55 })),
+		...[b(11), b(13) + beats(2), b(15) + beats(3), b(18), b(22), b(24)].map(at => ({ at: at - musicBeats(0.5), kind: 'whoosh' as const, length: musicBeats(0.5), gain: 0.55 })),
 		{ at: b(14), kind: 'tick' },
-		{ at: b(14) + beats(2.5), kind: 'tick' },
+		{ at: b(14) + musicBeats(2), kind: 'tick' },
 		{ at: b(16) + beats(1), kind: 'tick' },
 		{ at: b(16) + beats(3), kind: 'tick' },
 		{ at: standbyAt, kind: 'swap' },
-		{ at: b(24) + 1.0, kind: 'dot', step: 2 },
+		{ at: b(24) + musicBeats(1.75), kind: 'dot', step: 2 },
 		{ at: gotTeamAt, kind: 'dot', step: 3 },
-		{ at: gotTeamAt + 0.2, kind: 'whoosh', length: 0.5 },
+		{ at: gotTeamAt, kind: 'whoosh', length: musicBeats(1) },
+		{ at: gotTeamAt + musicBeats(1), kind: 'impact', gain: 0.8 },
 		{ at: starAt, kind: 'dot', step: 5 },
-		{ at: b(29) - beats(0.2), kind: 'swell', length: 1.6 },
+		{ at: b(29) - musicBeats(1), kind: 'swell', length: musicBeats(1) },
 		{ at: b(29), kind: 'confetti', gain: 1.2 },
 		{ at: endStart, kind: 'dot', step: 4 },
-		{ at: endStart + beats(0.4), kind: 'whoosh', length: 0.7 },
-		...endingCues(endAt, ending.beats),
+		{ at: endStart, kind: 'whoosh', length: musicBeats(1.5) },
+		...endingCues(ending),
 	],
 };
 

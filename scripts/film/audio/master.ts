@@ -77,6 +77,23 @@ const masterMix = (stems: Stems, arrangement: Arrangement, sampleRate: number): 
 	return mastered;
 };
 
+// The recording is mastered already, so the soundtrack only needs the effects tucked in under the
+// same loudness target and ceiling as the score.
+export const masterSoundtrack = (mix: Stereo, sampleRate: number): Stereo => {
+	removeSubsonics(mix, sampleRate);
+	applyTail(mix, 0.12, sampleRate);
+	let gain = dbToGain(targetLufs - integratedLoudness(mix, sampleRate));
+	let mastered = limit(mix, gain, sampleRate, limiterOptions);
+	for (let pass = 0; pass < 4; pass++) {
+		const error = targetLufs - integratedLoudness(mastered, sampleRate);
+		if (Math.abs(error) < 0.05) break;
+		gain *= dbToGain(error);
+		mastered = limit(mix, gain, sampleRate, limiterOptions);
+	}
+	capTruePeak(mastered);
+	return mastered;
+};
+
 // Isolated sound-effect reels skip loudness matching: they play at the level the effects sit at in a
 // mastered cut, so each one can be judged as the film will present it.
 export const masterReel = (mix: Stereo, sampleRate: number, gain: number): Stereo => {

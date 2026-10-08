@@ -5,181 +5,106 @@ export type BallKind = 'baseball' | 'soccer' | 'hockey' | 'football' | 'basketba
 
 export const ballOrder: BallKind[] = ['baseball', 'soccer', 'hockey', 'football', 'basketball'];
 
-// Every ball is drawn on a unit circle in the dot's own orange, so the dot it grows out of and the
-// ball it becomes are the same object. One dark ink for seams, one deeper orange for the side away
-// from the light.
-const ink = '#170900';
-const shade = '#d9590c';
-const stitch = '#a3240f';
-const lace = '#fff4ea';
-const seam = 0.05;
+// Drawn the way Bootstrap Icons draws its filled icons: a 16-unit grid, one flat colour, and the
+// details cut out of it in lines one unit wide. The cut-outs are the stage's black showing through.
+const cutOut = '#000';
 
-const point = (radius: number, degrees: number) => {
+type Point = [number, number];
+
+const point = (radius: number, degrees: number, centre: Point = [8, 8]): Point => {
 	const radians = (degrees * Math.PI) / 180;
-	return { x: Math.cos(radians) * radius, y: Math.sin(radians) * radius };
+	return [centre[0] + Math.cos(radians) * radius, centre[1] + Math.sin(radians) * radius];
 };
 
-const polygon = (centre: { x: number; y: number }, radius: number, rotate: number) => Array.from({ length: 5 }, (_, index) => {
-	const vertex = point(radius, rotate + index * 72);
-	return `${centre.x + vertex.x},${centre.y + vertex.y}`;
-}).join(' ');
+const pentagon = (centre: Point, radius: number, rotate: number) => Array.from({ length: 5 }, (_, index) => point(radius, rotate + index * 72, centre).join(',')).join(' ');
 
-// Each ball is a body (its orange shape and shading) and its details (seams, laces, ridges), which
-// `detail` fades on their own so one sport's markings can leave before the next one's arrive.
+// `detail` fades the cut-outs on their own, so one sport's markings can leave before the next one's arrive.
 interface Drawn {
 	detail: number;
 }
 
-// A sphere's shading: the ball, then a crescent of the deeper orange along its lower right.
-const Sphere = ({ id, detail, children }: Drawn & { id: string; children?: ReactNode }) => (
-	<>
-		<clipPath id={id}><circle r={1} /></clipPath>
-		<g clipPath={`url(#${id})`}>
-			<circle r={1} fill={shade} />
-			<circle cx={-0.1} cy={-0.1} r={1.02} fill={dotOrange} />
-			<g opacity={detail}>{children}</g>
-		</g>
-		<circle r={1} fill='none' stroke={ink} strokeWidth={0.035} />
-	</>
+const Cuts = ({ d, detail, width = 1 }: { d: string; detail: number; width?: number }) => (
+	<path d={d} fill='none' stroke={cutOut} strokeWidth={width} strokeLinecap='round' strokeLinejoin='round' opacity={detail} />
 );
 
-// Points along a quadratic curve, with the curve's normal, for stitches that sit on their seam.
-const along = (from: number[], control: number[], to: number[], t: number) => {
-	const [x0, y0] = from as [number, number];
-	const [cx, cy] = control as [number, number];
-	const [x1, y1] = to as [number, number];
-	const x = (1 - t) ** 2 * x0 + 2 * (1 - t) * t * cx + t ** 2 * x1;
-	const y = (1 - t) ** 2 * y0 + 2 * (1 - t) * t * cy + t ** 2 * y1;
-	const dx = 2 * (1 - t) * (cx - x0) + 2 * t * (x1 - cx);
-	const dy = 2 * (1 - t) * (cy - y0) + 2 * t * (y1 - cy);
-	const length = Math.hypot(dx, dy);
-	return { x, y, tx: dx / length, ty: dy / length, nx: -dy / length, ny: dx / length };
+const disc = <circle cx={8} cy={8} r={8} fill={dotOrange} />;
+
+// A point on a cubic curve and the curve's unit normal there, so the stitches sit across their seam.
+const along = (curve: Point[], t: number) => {
+	const [p0, p1, p2, p3] = curve as [Point, Point, Point, Point];
+	const m = 1 - t;
+	const at = (axis: 0 | 1) => m ** 3 * p0[axis] + 3 * m ** 2 * t * p1[axis] + 3 * m * t ** 2 * p2[axis] + t ** 3 * p3[axis];
+	const slope = (axis: 0 | 1) => 3 * m ** 2 * (p1[axis] - p0[axis]) + 6 * m * t * (p2[axis] - p1[axis]) + 3 * t ** 2 * (p3[axis] - p2[axis]);
+	const length = Math.hypot(slope(0), slope(1));
+	return { x: at(0), y: at(1), nx: -slope(1) / length, ny: slope(0) / length };
 };
 
-const BaseballSeam = ({ side }: { side: 1 | -1 }) => {
-	const from = [side * 0.5, -0.86];
-	const control = [side * -0.02, 0];
-	const to = [side * 0.5, 0.86];
+const seam = (side: 1 | -1) => {
+	const curve: Point[] = [[8 - side * 4.6, 1.45], [8 - side * 1.9, 4.6], [8 - side * 1.9, 11.4], [8 - side * 4.6, 14.55]];
+	const stitches = [0.2, 0.35, 0.5, 0.65, 0.8].map(t => {
+		const { x, y, nx, ny } = along(curve, t);
+		return `M${x + nx * 1.1 * side} ${y + ny * 1.1 * side - 0.35}L${x} ${y + 0.25}L${x - nx * 1.1 * side} ${y - ny * 1.1 * side - 0.35}`;
+	});
+	return { line: `M${curve[0]}C${curve.slice(1).join(' ')}`, stitches: stitches.join('') };
+};
+
+const Baseball = ({ detail }: Drawn) => {
+	const [left, right] = [seam(1), seam(-1)];
 	return (
 		<>
-			<path d={`M ${from.join(' ')} Q ${control.join(' ')} ${to.join(' ')}`} fill='none' stroke={ink} strokeWidth={0.03} />
-			<g fill='none' stroke={stitch} strokeWidth={0.045} strokeLinecap='round' strokeLinejoin='round'>
-				{Array.from({ length: 11 }, (_, index) => {
-					const at = along(from, control, to, 0.07 + index * 0.086);
-					const tip = { x: at.x + at.tx * 0.045, y: at.y + at.ty * 0.045 };
-					return (
-						<path
-							key={index}
-							d={`M ${at.x + at.nx * 0.085} ${at.y + at.ny * 0.085} L ${tip.x} ${tip.y} L ${at.x - at.nx * 0.085} ${at.y - at.ny * 0.085}`}
-						/>
-					);
-				})}
-			</g>
+			{disc}
+			<Cuts d={left.line + right.line} detail={detail} />
+			<Cuts d={left.stitches + right.stitches} detail={detail} width={0.8} />
 		</>
 	);
 };
 
-const Baseball = ({ detail }: Drawn) => (
-	<Sphere id='ball-baseball' detail={detail}>
-		<BaseballSeam side={-1} />
-		<BaseballSeam side={1} />
-	</Sphere>
+// A pentagon in the middle, five more cut off by the edge, and the seams between them.
+const soccerAngles = Array.from({ length: 5 }, (_, index) => -90 + index * 72);
+
+const Soccer = ({ detail }: Drawn) => (
+	<>
+		<clipPath id='ball-soccer'><circle cx={8} cy={8} r={8} /></clipPath>
+		{disc}
+		<g opacity={detail}>
+			<polygon points={pentagon([8, 8], 2.9, -90)} fill={cutOut} />
+			<g clipPath='url(#ball-soccer)'>
+				{soccerAngles.map(angle => <polygon key={angle} points={pentagon(point(8.9, angle), 2.7, angle + 180)} fill={cutOut} />)}
+			</g>
+		</g>
+		<Cuts d={soccerAngles.map(angle => `M${point(2.75, angle)}L${point(6.4, angle)}`).join('')} detail={detail} />
+	</>
 );
 
-// The classic panel pattern seen straight on: a black pentagon in the middle, five more around the
-// rim, and the seams of the white hexagons between them.
-const Soccer = ({ detail }: Drawn) => {
-	const centre = { x: 0, y: 0 };
-	const inner = 0.3;
-	const rim = Array.from({ length: 5 }, (_, index) => ({ angle: -90 + 36 + index * 72, at: point(0.88, -90 + 36 + index * 72) }));
-	return (
-		<Sphere id='ball-soccer' detail={detail}>
-			<polygon points={polygon(centre, inner, -90)} fill={ink} />
-			<g stroke={ink} strokeWidth={seam} strokeLinecap='round' fill='none'>
-				{Array.from({ length: 5 }, (_, index) => {
-					const vertex = point(inner, -90 + index * 72);
-					const knee = point(0.56, -90 + index * 72);
-					const left = point(0.68, -90 + index * 72 - 26);
-					const right = point(0.68, -90 + index * 72 + 26);
-					return (
-						<g key={index}>
-							<line x1={vertex.x} y1={vertex.y} x2={knee.x} y2={knee.y} />
-							<line x1={knee.x} y1={knee.y} x2={left.x} y2={left.y} />
-							<line x1={knee.x} y1={knee.y} x2={right.x} y2={right.y} />
-						</g>
-					);
-				})}
-			</g>
-			{rim.map(({ angle, at }) => <polygon key={angle} points={polygon(at, 0.3, angle + 180)} fill={ink} />)}
-		</Sphere>
-	);
-};
-
-// Three-quarters on, so it reads as a puck: a face, a ridged edge, and the edge in shadow.
-const puckTop = -0.18;
-const puckDepth = 0.4;
-const puckRx = 0.98;
-const puckRy = 0.4;
-
-const Hockey = ({ detail }: Drawn) => {
-	const ridges = Array.from({ length: 17 }, (_, index) => -0.88 + index * 0.11);
-	const lower = (x: number) => puckRy * Math.sqrt(Math.max(0, 1 - (x / puckRx) ** 2));
-	return (
-		<g strokeLinejoin='round'>
-			<path
-				d={`M ${-puckRx} ${puckTop} L ${-puckRx} ${puckTop + puckDepth} A ${puckRx} ${puckRy} 0 0 0 ${puckRx} ${puckTop + puckDepth} L ${puckRx} ${puckTop} Z`}
-				fill={shade}
-				stroke={ink}
-				strokeWidth={0.035}
-			/>
-			<g stroke={ink} strokeWidth={0.025} opacity={0.45 * detail}>
-				{ridges.map(x => <line key={x} x1={x} y1={puckTop + lower(x) + 0.06} x2={x} y2={puckTop + puckDepth + lower(x) - 0.06} />)}
-			</g>
-			<ellipse cy={puckTop} rx={puckRx} ry={puckRy} fill={dotOrange} stroke={ink} strokeWidth={0.035} />
-			<ellipse cy={puckTop} rx={puckRx * 0.62} ry={puckRy * 0.62} fill='none' stroke={shade} strokeWidth={0.04} opacity={detail} />
-		</g>
-	);
-};
-
-const footballOutline = 'M -1.18 0 C -0.86 -0.64 0.86 -0.64 1.18 0 C 0.86 0.64 -0.86 0.64 -1.18 0 Z';
+// Three-quarters on: the top face, and the edge that turns away under it.
+const Hockey = ({ detail }: Drawn) => (
+	<>
+		<path d='M0.5 5.5A7.5 3 0 0 1 15.5 5.5V10.5A7.5 3 0 0 1 0.5 10.5Z' fill={dotOrange} />
+		<Cuts d='M0.9 6.2A7.2 2.6 0 0 0 15.1 6.2' detail={detail} />
+	</>
+);
 
 const Football = ({ detail }: Drawn) => (
-	<g transform='rotate(-32) scale(1.12)'>
-		<clipPath id='ball-football'><path d={footballOutline} /></clipPath>
-		<g clipPath='url(#ball-football)'>
-			<path d={footballOutline} fill={shade} />
-			<path d={footballOutline} transform='translate(-0.06 -0.07)' fill={dotOrange} />
-			<g fill='none' stroke={lace} strokeWidth={0.075} opacity={detail}>
-				<path d='M -0.74 -0.42 Q -0.66 0 -0.74 0.42' />
-				<path d='M 0.74 -0.42 Q 0.66 0 0.74 0.42' />
-			</g>
-			<path d='M -1.1 0.02 Q 0 0.1 1.1 0.02' fill='none' stroke={ink} strokeWidth={0.025} opacity={0.5 * detail} />
-		</g>
-		<path d={footballOutline} fill='none' stroke={ink} strokeWidth={0.035} />
-		<g stroke={lace} strokeLinecap='round' opacity={detail}>
-			<line x1={-0.36} y1={-0.18} x2={0.36} y2={-0.18} strokeWidth={0.07} />
-			{[-0.27, -0.16, -0.05, 0.06, 0.17, 0.28].map(x => <line key={x} x1={x - 0.01} y1={-0.29} x2={x + 0.01} y2={-0.07} strokeWidth={0.055} />)}
-		</g>
+	<g transform='rotate(-40 8 8)'>
+		<path d='M0.4 8C3.4 2.9 12.6 2.9 15.6 8C12.6 13.1 3.4 13.1 0.4 8Z' fill={dotOrange} />
+		<Cuts d={`M5.4 8H10.6${[6.2, 7.4, 8.6, 9.8].map(x => `M${x} 6.9V9.1`).join('')}M3.3 5.9Q3.9 8 3.3 10.1M12.7 5.9Q12.1 8 12.7 10.1`} detail={detail} />
 	</g>
 );
 
 const Basketball = ({ detail }: Drawn) => (
-	<Sphere id='ball-basketball' detail={detail}>
-		<g fill='none' stroke={ink} strokeWidth={seam} strokeLinecap='round'>
-			<path d='M 0 -1 Q 0.14 0 0 1' />
-			<path d='M -1 0.02 Q 0 0.16 1 0.02' />
-			<path d='M -0.66 -0.75 Q -0.1 0.02 -0.66 0.75' />
-			<path d='M 0.66 -0.75 Q 0.1 0.02 0.66 0.75' />
-		</g>
-	</Sphere>
+	<>
+		{disc}
+		<Cuts d='M8 0.5V15.5M0.5 8H15.5M2.7 2.3C5.9 5.4 5.9 10.6 2.7 13.7M13.3 2.3C10.1 5.4 10.1 10.6 13.3 13.7' detail={detail} />
+	</>
 );
 
 const drawings: Record<BallKind, (props: Drawn) => ReactNode> = { baseball: Baseball, soccer: Soccer, hockey: Hockey, football: Football, basketball: Basketball };
 
+// Centred on (x, y) with radius r, which the 16-unit grid's circle fills.
 const SportBall = ({ kind, x, y, r, rotate = 0, opacity = 1, detail = 1 }: { kind: BallKind; x: number; y: number; r: number; rotate?: number; opacity?: number; detail?: number }) => {
 	const Drawing = drawings[kind];
 	return (
-		<g transform={`translate(${x} ${y}) rotate(${rotate}) scale(${r})`} opacity={opacity}>
+		<g transform={`translate(${x} ${y}) rotate(${rotate}) scale(${r / 8}) translate(-8 -8)`} opacity={opacity}>
 			<Drawing detail={detail} />
 		</g>
 	);

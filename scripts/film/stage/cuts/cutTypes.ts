@@ -34,12 +34,22 @@ export type ShotKind =
 // Where an orange card's dot grows from: an element in a popup, or the league grid's last square.
 export type CardOrigin = { popup: string; selector: string } | 'leagueDot';
 
+// The end card's schedule, in film seconds: when each ball arrives, when the dot is plain again, and
+// when it lands in the wordmark. `pace` squeezes the card's other moves, which are timed in beats.
+export interface Ending {
+	balls: number[];
+	plainAgain: number;
+	landsAt: number;
+	pace: number;
+}
+
 // Seconds into the cut. `from` is inclusive, `to` exclusive; shots may overlap for a transition.
 export interface Shot {
 	kind: ShotKind;
 	from: number;
 	to: number;
 	origin?: CardOrigin;
+	ending?: Ending;
 }
 
 // 'card' is black type on a full-frame orange card.
@@ -110,5 +120,7 @@ export interface Cut {
 	tabs: TabSwitch[];
 	// From here on the tabs are registered, so ArenaSwap mutes every one but the tab in front.
 	managedFrom: number;
+	// When the dot lands in the wordmark: the soundtrack is lined up so its last hit falls here.
+	landsAt: number;
 	cues: Cue[];
 }

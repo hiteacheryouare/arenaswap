@@ -10,8 +10,10 @@ frame. The scores, clocks, PowerScores and tab switches are Saturday, October 3,
 `scripts/powerscore/recordSlate.ts` recorded it, scored by the PowerScore engine in this repo and
 switched by the shipped rule (sensitivity 4, 45-second cooldown). The one exception is the 60's
 pre-game beat: Saturday's recording kept no pre-game data, so it shows Bears at Packers (Sun., Oct.
-11), fetched before kickoff by `npm run film:pregame` into `data/pregame.json`. The music and sound
-effects are synthesized here too, in `audio/`.
+11), fetched before kickoff by `npm run film:pregame` into `data/pregame.json`.
+
+The soundtrack is Otis McDonald's "Put It On The Floor", played 1% fast so it sits at 96 BPM. The
+sound effects on top of it are a synthesized drumline, made in `audio/`.
 
 ## Make them
 
@@ -45,6 +47,8 @@ A full set of six takes roughly 20 minutes on an Apple-silicon Mac with `--jobs 
 - A network connection the first time only. Team crests and league marks are fetched from our
   sources' image servers once and kept in `scripts/film/.cache/` (gitignored); after that a render
   needs no network.
+- The recording, at `scripts/film/music/putItOnTheFloor.mp3` (gitignored, since it isn't ours to
+  redistribute). Without it the films fall back to the old synthesized pep band score.
 
 ## How it works
 
@@ -59,7 +63,7 @@ stage/                  a React page that composes the frame: the wall of scores
         │               for each popup on screen, running the built extension
         ▼
 render/render.ts        headless Chrome on a virtual clock, one screenshot per frame, piped
-        │               into ffmpeg with the score from audio/
+        │               into ffmpeg with the soundtrack from audio/
         ▼
 out/*.mp4
 ```
@@ -81,8 +85,16 @@ out/*.mp4
   the shots, the supers, which popups exist and the night's clock for each, which tab is in front
   and why, the sound cues, and the music's sections. 8, 16 and 32 bars land on exactly 15, 30 and
   60 seconds; the credits come after, three bars in the 15 and the 30 and five in the 60. The end
-  card lifts Kentucky's LIVE badge to centre stage, turns its dot into each sport's ball and lands it
-  as the wordmark's period, in fourteen beats in the 30 and the 60 and eight in the 15.
+  card starts fourteen beats from the end (eight in the 15) and holds one beat of the soundtrack
+  past it. It lifts Kentucky's LIVE badge to centre stage, turns its dot into each sport's ball and
+  lands it as the wordmark's period; `endingFor` in `stage/cuts/shared.ts` times the balls and the
+  landing, and the wordmark builds around the landing.
+- **The soundtrack is cut to the picture.** At 96 BPM, three of its beats fill one of our bars, so
+  every cut lands on one of its sixteenths. `audio/soundtrack.ts` holds what was measured off the
+  recording: its tempo, where its beat grid starts, and its last hit. `audio/soundtrackMix.ts` lines
+  that last hit up with each cut's `landsAt`, the moment the dot lands in the wordmark. Anything you
+  hear as a hit (the balls changing, the Ctrl+Tab flick, a click) is timed with `musicBeats()` so it
+  falls on the recording's grid.
 
 ## Changing things
 
@@ -93,7 +105,9 @@ out/*.mp4
 | When things happen | `stage/cuts/cut*.ts` |
 | How a shot looks or moves | `stage/shots/*.tsx`, `stage/styles/stage.scss` |
 | Which streams are open | `stage/data/tabs.ts` |
-| The music | A college pep band: the stand tune in `audio/arrangement.ts` and `audio/theory.ts`, the brass in `audio/brass.ts`, the drumline's cadences in `audio/cadences.ts`. Audition with `node scripts/film/audio/cli.cjs --demo 60 --out x.wav` after `npm run film:build`; `--drumline` plays the drums alone |
+| The music | Swap the file in `scripts/film/music/` and re-measure `audio/soundtrack.ts`. Hear a cut's soundtrack without the picture: `node scripts/film/audio/cli.cjs --cut 30 --out x.wav --report` after `npm run film:build` |
+| The sound effects | `audio/sfx.ts` (the drumline voices are in `audio/drums.ts`), levelled against the music in `audio/mixer.ts`. `--sfx dot` plays one kind alone |
+| The fallback score | The pep band in `audio/arrangement.ts`, `audio/theory.ts`, `audio/brass.ts` and `audio/cadences.ts`. Audition with `--demo 60` |
 | The night | `extract/slateConfig.ts`, then `npm run film:extract` (needs the recording) |
 | The pre-game game | `npm run film:pregame -- <game id>` (only before kickoff) |
 
