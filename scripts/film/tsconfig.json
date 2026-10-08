@@ -1,0 +1,19 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"noEmit": true,
+		// The synthesizer indexes sample buffers in every inner loop.
+		"noUncheckedIndexedAccess": false,
+		"declaration": false,
+		"declarationMap": false,
+		"lib": ["ES2023", "DOM", "DOM.Iterable"],
+		"types": ["node", "vite/client"],
+		"paths": {
+			"@arenaswap/core": ["../../packages/core/src/index.ts"],
+			"@arenaswap/core/*": ["../../packages/core/src/*"],
+			"powerscore": ["../../packages/powerscore/src/index.ts"]
+		}
+	},
+	"include": ["stage/**/*.ts", "stage/**/*.tsx", "render/**/*.ts", "extract/**/*.ts", "audio/**/*.ts", "*.ts"]
+}

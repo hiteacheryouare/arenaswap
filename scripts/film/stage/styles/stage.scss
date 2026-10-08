@@ -1,0 +1,509 @@
+@use '@arenaswap/ui/src/fonts';
+@use 'bootstrap-icons/font/bootstrap-icons' with ($bootstrap-icons-font-dir: '/fonts');
+// The homepage hero's browser window, used as is so the film and the site draw the same Chrome.
+@use '../../../../apps/docs/src/styles/browser-hero';
+@use '@arenaswap/ui/src/crest';
+
+$dot-orange: #ff751f;
+$ink: #ffffff;
+$ink-secondary: #8b949e;
+$ink-faint: #6e7681;
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+	background: #000000;
+	overflow: hidden;
+}
+
+.stage {
+	position: relative;
+	overflow: hidden;
+	background: #000000;
+	font-family: 'DM Sans', system-ui, sans-serif;
+	color: $ink;
+	-webkit-font-smoothing: antialiased;
+}
+
+.stage-world {
+	position: absolute;
+	inset: 0;
+}
+
+.stage-overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	pointer-events: none;
+}
+
+// ─── Popups ──────────────────────────────────────────────────────────────────────────────────
+.popup-layer {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+
+.popup-slot {
+	position: absolute;
+	left: 0;
+	top: 0;
+	transform-origin: 0 0;
+
+	iframe {
+		display: block;
+		border: 0;
+		background: #0d1117;
+	}
+}
+
+// ─── Supers ──────────────────────────────────────────────────────────────────────────────────
+// Apple's large-type rules in our own face: semibold, tight at size, one line where it fits.
+.supers {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	pointer-events: none;
+}
+
+.super {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	font-weight: 600;
+	letter-spacing: -0.03em;
+	line-height: 1.04;
+	text-wrap: balance;
+}
+
+.super-line {
+	display: block;
+}
+
+.super-word {
+	display: inline-block;
+}
+
+.super-stop {
+	color: $dot-orange;
+}
+
+// Black type on the full-frame orange the dot opens up behind it.
+.super.is-card {
+	left: 0;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	align-items: center;
+	text-align: center;
+	color: #000000;
+	letter-spacing: -0.045em;
+
+	.super-stop {
+		color: #000000;
+	}
+}
+
+.supers.is-landscape {
+	.super {
+		font-size: 76px;
+	}
+
+	.super.is-card {
+		font-size: 168px;
+	}
+
+	// A line that drops in word by word stays on one line across the card.
+	.super.is-card.is-words {
+		font-size: 124px;
+		white-space: nowrap;
+	}
+
+	.super.is-top {
+		left: 0;
+		right: 0;
+		top: 74px;
+		align-items: center;
+		text-align: center;
+	}
+
+	.super.is-left {
+		left: 140px;
+		width: 860px;
+		top: 50%;
+		transform: translateY(-50%);
+		font-size: 92px;
+	}
+
+	.super.is-center {
+		left: 0;
+		right: 0;
+		top: 50%;
+		transform: translateY(-50%);
+		align-items: center;
+		text-align: center;
+		font-size: 96px;
+	}
+}
+
+.supers.is-portrait {
+	.super {
+		font-size: 84px;
+		left: 70px;
+		right: 70px;
+	}
+
+	.super.is-card {
+		font-size: 150px;
+	}
+
+	.super.is-top,
+	.super.is-left {
+		top: 120px;
+		min-height: 190px;
+		justify-content: flex-end;
+	}
+
+	.super.is-center {
+		top: 50%;
+		transform: translateY(-50%);
+		align-items: center;
+		text-align: center;
+	}
+}
+
+// ─── The browser window ──────────────────────────────────────────────────────────────────────
+.film-browser {
+	position: absolute;
+
+	.browser {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.browser-tab {
+		transition: none;
+	}
+
+	.browser-tab-flare {
+		transition: none;
+	}
+}
+
+.film-viewport {
+	position: relative;
+	flex-grow: 1;
+	aspect-ratio: auto;
+	min-height: 0;
+	overflow: hidden;
+	border-radius: 0 0 0.55rem 0.55rem;
+	background: #0d1117;
+}
+
+.film-tab-audio {
+	flex-shrink: 0;
+	font-size: 0.7rem;
+	color: #9aa4b2;
+}
+
+// ─── Streams ─────────────────────────────────────────────────────────────────────────────────
+.stream {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+}
+
+.stream-field {
+	position: absolute;
+	inset: 0;
+}
+
+.stream-crests {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	padding: 0 8%;
+}
+
+.stream-crest {
+	width: 30%;
+	aspect-ratio: 1;
+	object-fit: contain;
+	filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.35));
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 4rem;
+	font-weight: 700;
+}
+
+// The Standby Stream's studio channel.
+.channel-set {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(160deg, #10224a 0%, #0a1733 55%, #050b1c 100%);
+}
+
+.channel-lower-third {
+	position: absolute;
+	left: 6%;
+	right: 6%;
+	bottom: 9%;
+	display: flex;
+	justify-content: space-between;
+	padding: 0.9rem 1.4rem;
+	border-radius: 0.5rem;
+	background: #ffffff;
+	color: #0a1733;
+	font-family: 'Geist', 'DM Sans', sans-serif;
+	font-size: 1.15rem;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: -0.01em;
+
+	b {
+		font-weight: 800;
+	}
+}
+
+.channel-score-divider {
+	display: inline-block;
+	width: 1px;
+	height: 0.9em;
+	margin: 0 0.35em;
+	vertical-align: -0.1em;
+	background: rgba(10, 23, 51, 0.25);
+}
+
+.film-tab-channel {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.75rem;
+	color: #9aa4b2;
+}
+
+// ─── The wall ────────────────────────────────────────────────────────────────────────────────
+.wall {
+	position: absolute;
+	inset: 0;
+}
+
+.wall-tile {
+	position: absolute;
+	overflow: hidden;
+}
+
+.wall-tile-surface {
+	position: absolute;
+	inset: 0;
+}
+
+.wall-tile-body {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 9%;
+}
+
+.wall-tile-crest {
+	width: 26%;
+	aspect-ratio: 1;
+	object-fit: contain;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.1rem;
+	font-weight: 700;
+}
+
+.wall-tile-score {
+	font-family: 'Geist', 'DM Sans', sans-serif;
+	font-weight: 700;
+	font-size: 24px;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: -0.02em;
+	display: flex;
+	gap: 0.4em;
+
+	i {
+		font-style: normal;
+	}
+}
+
+.is-portrait .wall-tile-score {
+	font-size: 20px;
+}
+
+// ─── Leagues ─────────────────────────────────────────────────────────────────────────────────
+.leagues {
+	position: absolute;
+	inset: 0;
+}
+
+.league-mark {
+	position: absolute;
+	object-fit: contain;
+}
+
+// ─── Credits ──────────────────────────────────────────────────────────────────────────────────
+// The parent lockup is DM Serif Text, never DM Sans, and the mark is never recoloured.
+.credits {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.credits-lattice {
+	display: flex;
+	align-items: center;
+	gap: 28px;
+}
+
+.credits-lattice-word {
+	font-family: 'DM Serif Text', Georgia, serif;
+	line-height: 1;
+	color: $ink;
+}
+
+.credits-lattice-amp {
+	color: $ink-secondary;
+}
+
+.credits-signature {
+	width: 460px;
+}
+
+.credits.is-portrait .credits-signature {
+	width: 560px;
+}
+
+.legal {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	align-content: center;
+	gap: 44px 56px;
+	padding: 0 120px;
+	color: $ink-secondary;
+}
+
+.legal-heading {
+	margin: 0 0 10px;
+	font-size: 22px;
+	font-weight: 600;
+	color: $ink;
+}
+
+.legal-body {
+	margin: 0;
+	font-size: 16px;
+	line-height: 1.5;
+}
+
+.legal.is-portrait {
+	grid-template-columns: 1fr;
+	gap: 30px;
+	padding: 0 80px;
+
+	.legal-body {
+		font-size: 18px;
+	}
+}
+
+// ─── End card ────────────────────────────────────────────────────────────────────────────────
+.end-card {
+	position: absolute;
+	inset: 0;
+
+	p {
+		position: absolute;
+		left: 0;
+		right: 0;
+		margin: 0;
+		text-align: center;
+	}
+}
+
+.end-mark {
+	position: absolute;
+	overflow: visible;
+}
+
+// Kentucky's LIVE badge at centre stage, drawn above the popup it was lifted from.
+.end-live {
+	position: absolute;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	transform-origin: 0 0;
+	white-space: nowrap;
+}
+
+.end-live-dot {
+	display: block;
+	flex-shrink: 0;
+	border-radius: 50%;
+}
+
+.end-live-word {
+	display: block;
+}
+
+.end-stage {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	overflow: visible;
+}
+
+.end-tagline {
+	font-size: 68px;
+	font-weight: 600;
+	letter-spacing: -0.03em;
+}
+
+.end-cta {
+	font-size: 30px;
+	font-weight: 500;
+	color: $ink-secondary;
+}
+
+.end-fine-print {
+	font-size: 15px;
+	color: $ink-faint;
+	padding: 0 80px;
+}
+
+.is-portrait {
+	.end-tagline {
+		font-size: 76px;
+		padding: 0 60px;
+	}
+
+	.end-cta {
+		font-size: 34px;
+	}
+
+	.end-fine-print {
+		font-size: 18px;
+	}
+}

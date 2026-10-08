@@ -5,6 +5,29 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The films play a real track — 2026-10-07
+
+The films are scored to Otis McDonald's "Put It On The Floor", sped up 1% to 96 BPM so three of its beats fill one of the cut's bars, and lined up so its last hit lands as the dot drops into the wordmark; the recording stays out of the repo in `scripts/film/music/`, and the synthesized pep band plays when it's missing. The sound effects are now a drumline (tenors for the dots, basses for a switch, stick clicks, cymbals), every ball change sits on one of the track's beats, and the five balls are redrawn as flat filled icons in the style of Bootstrap Icons.
+
+## The 15 and the 30 sign off with the credits — 2026-10-07
+
+The 15 and the 30 now run on into three bars of credits after the film, the Lattice & Company rosette and then Ryan Mullin's wordmark, without the 60's disclaimers. The 30 also asks "Got a team?" on a second orange card that grows out of Kentucky's LIVE dot and shrinks back into it, as the 60 does.
+
+## The films open on the problem — 2026-10-07
+
+Every scene now carries the benefit it shows, opening on "Too many games on?", cutting the switches and box scores that only filled time, demonstrating Standby Stream end to end, and leaving college hockey (no team colours) out of the viewer's leagues. The ending lifts Kentucky's LIVE badge to centre stage and turns its dot into each sport's ball before it becomes the wordmark's period, and the 60 runs on into credits with the Lattice & Company rosette, Ryan Mullin's wordmark and the site's own disclaimers. The score is now a synthesized college pep band, a brass stand tune over sousaphones and a marching drumline, still on the 128 BPM bar grid.
+
+## The films trade arrows for the orange dot — 2026-10-06
+
+The swap arrows, the stream glow and every camera push are gone: the popup holds still beside the browser, and the night runs at real speed while it opens, so its cards never re-sort mid-reveal. The dot opens two full-frame orange cards that shrink back about the point they grew from, and the ending is Kentucky's LIVE dot coming loose to become the tagline's full stop, then the wordmark's. The copy is rewritten benefit-first, and the 60 adds Standby Stream (the real 7:14 PM lull) and a pre-game Matchup screen for Bears at Packers, since Saturday's recording kept no pre-game data.
+
+## The no-leagues notice sits at the top — 2026-10-05
+
+The "No leagues picked" notice on the league picker now shows above the sport groups instead of below them, so it's visible without scrolling to the bottom of the list.
+
+## Three films of a real Saturday night — 2026-10-05
+
+`npm run film` renders 15, 30 and 60-second ads in 16:9 and 9:16 from Saturday, October 3, replaying the recorded slate through the real popup, the real PowerScore engine and the shipped switch rule, so every score, switch and burst of confetti on screen happened. The popup runs inside headless Chrome on a virtual clock with every CSS animation scrubbed to it, and the soundtrack is synthesized in `scripts/film/audio`; `scripts/film/README.md` covers rebuilding, retiming and translating them.
 ## Series dots stay visible, and dash out the games nobody plays — 2026-10-07
 
 A won game's dot is now the team colour brightened the way the win probability chart's lines are, so navy and black wins stop disappearing into the dark hero. Playoff series dash out the games a clinch made unnecessary and fade the ones that only happen if the trailing side keeps winning. The dots read the playoff series entry first, since NBA and NHL summaries carry no current one and MLB's shrinks to the games played once a side clinches.

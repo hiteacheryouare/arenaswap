@@ -24,6 +24,11 @@
 		"powerscore:record": "rolldown -c scripts/powerscore/rolldown.config.ts && node scripts/powerscore/recordSlate.cjs",
 		"powerscore:validate-live": "rolldown scripts/powerscore/validateLive.ts --platform=node --file=scripts/powerscore/validateLive.cjs --format=cjs --log-level=silent && node scripts/powerscore/validateLive.cjs",
 		"ui:wordmark-shapes": "node scripts/ui/buildWordmarkShapes.mjs",
+		"film": "npm run film:build && npm run film:render --",
+		"film:build": "turbo run build:film --filter=@arenaswap/extension && vite build --config scripts/film/vite.config.ts --configLoader runner && rolldown -c scripts/film/rolldown.config.ts",
+		"film:render": "node scripts/film/render/render.cjs",
+		"film:extract": "rolldown -c scripts/film/rolldown.config.ts && node --max-old-space-size=6144 scripts/film/extract/extractSlate.cjs",
+		"film:pregame": "rolldown -c scripts/film/rolldown.config.ts && node scripts/film/extract/fetchPregame.cjs",
 		"docs:validate-hero": "rolldown scripts/docs/validateHeroTimeline.ts --platform=node --file=scripts/docs/validateHeroTimeline.cjs --format=cjs --log-level=silent && node scripts/docs/validateHeroTimeline.cjs"
 	},
 	"devDependencies": {

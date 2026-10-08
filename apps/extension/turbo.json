@@ -16,6 +16,11 @@
 		"build:e2e": {
 			"outputs": [".output/e2e/**"]
 		},
+		// The popup and guide the films put on camera (scripts/film). Its own directory for the same
+		// reason as the e2e build: nothing else rebuilds it while a render is reading it.
+		"build:film": {
+			"outputs": [".output/film/**"]
+		},
 		// The root config pairs each zip with the build for its own target (`zip` -> `build`,
 		// `zip:firefox` -> `build:firefox`, `zip:edge` -> `build:edge`), so zipping Firefox never
 		// builds Chrome for nothing. These entries only declare which artifact each one produces.
