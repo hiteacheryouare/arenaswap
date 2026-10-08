@@ -2,7 +2,7 @@ import { scoreMaxTotal, stallPenaltySteps } from './constants';
 import { resolveLeagueConfig, resolveSportConfig } from './config';
 import { clamp, isFiniteNumber, sum, toFiniteNumber } from './math';
 import { classicMode, getMode } from './modes';
-import { postseasonBoostShare } from './postseason';
+import { postseasonBoostShare, postseasonDetails } from './postseason';
 import { getGameProgress, isPlayFrozen, scoreMargin } from './progress';
 import { renderReasonsEnglish } from './reasons';
 import { computeWinProbVarianceScore } from './winProbability';
@@ -109,7 +109,12 @@ const runMode = (mode: PowerScoreMode, input: SignalInput, disabledSignals?: rea
 			points = Math.min(points, room);
 			bucketRoom.set(boost.bucket!, room - points);
 		}
-		return output.meta ? { id: boost.id, points, meta: output.meta } : { id: boost.id, points };
+		return {
+			id: boost.id,
+			points,
+			...(output.meta ? { meta: output.meta } : {}),
+			...(output.details?.length ? { details: output.details } : {}),
+		};
 	});
 
 	return {
@@ -138,6 +143,11 @@ const blendWithClassic = (own: number, classic: number, blend: ClassicBlend): { 
 		? Math.min(scoreMaxTotal, classic + Math.round(weight * own))
 		: Math.round(weight * own + (1 - weight) * classic);
 	return { total, result: { kind: blend.kind, weight, ownTotal: own, classicTotal: classic } };
+};
+
+const postseasonScoredBoost = (game: Game<string>, points: number): ScoredBoost => {
+	const details = postseasonDetails(game, points);
+	return details.length > 0 ? { id: 'postseasonBoost', points, details } : { id: 'postseasonBoost', points };
 };
 
 const nonNegative = (value: number | undefined): number => (isFiniteNumber(value) ? Math.max(0, Math.round(value)) : 0);
@@ -196,7 +206,7 @@ export const scoreGame = (game: Game<string>, context: ScoringContext = {}, opti
 		...(options.favoriteTeamCount !== undefined ? [{ id: 'favoriteBoost', points: favoriteBoost, meta: { teams: nonNegative(options.favoriteTeamCount) } }] : []),
 		...(options.gameBoost !== undefined ? [{ id: 'gameBoost', points: gameBoost }] : []),
 		...run.boosts,
-		...(options.postseasonBoostPoints !== undefined && paysPostseason ? [{ id: 'postseasonBoost', points: postseasonBoost }] : []),
+		...(options.postseasonBoostPoints !== undefined && paysPostseason ? [postseasonScoredBoost(game, postseasonBoost)] : []),
 	];
 
 	const signalReasons = run.reasons.length > 0 ? run.reasons : [{ key: 'fallback' }];

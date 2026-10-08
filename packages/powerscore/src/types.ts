@@ -354,6 +354,8 @@ export interface SignalDefinition {
 export interface BoostOutput extends SignalOutput {
 	// Anything a UI might want to say about the boost, e.g. { inning: 8 } for a no-hitter.
 	meta?: Record<string, number>;
+	// What is happening in this game that the boost pays (or doesn't) for, as sentences to translate.
+	details?: ReasonFragment[];
 }
 
 export interface BoostDefinition {
@@ -438,6 +440,7 @@ export interface ScoredBoost {
 	id: string;
 	points: number;
 	meta?: Record<string, number>;
+	details?: ReasonFragment[];
 }
 
 export interface PowerScore {

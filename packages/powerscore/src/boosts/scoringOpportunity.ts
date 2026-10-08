@@ -6,7 +6,7 @@ import {
 	thirdAndShortDistance,
 } from '../constants';
 import { isPlayFrozen } from '../progress';
-import type { BoostDefinition, Game, SignalInput, SportTypeConfig } from '../types';
+import type { BoostDefinition, Game, ReasonFragment, SignalInput, SportTypeConfig } from '../types';
 
 // An unknown down (between plays, or a feed that doesn't report one) falls through to `other`, so a
 // missing field costs the boost its bonus rather than the whole thing.
@@ -40,8 +40,46 @@ export const computeScoringOpportunity = ({ game, sport, margin }: Pick<SignalIn
 	return 0;
 };
 
+const baseKeys: Record<string, string> = {
+	'100': 'runnerFirst',
+	'010': 'runnerSecond',
+	'001': 'runnerThird',
+	'110': 'runnersFirstSecond',
+	'101': 'runnersFirstThird',
+	'011': 'runnersSecondThird',
+	'111': 'basesLoaded',
+};
+
+const redZoneKey = (game: Game<string>): string => {
+	if (game.down === 4) return 'redZoneFourthDown';
+	if (game.down === 3 && typeof game.distance === 'number' && game.distance <= thirdAndShortDistance) return 'redZoneThirdAndShort';
+	return 'redZone';
+};
+
+// Says nothing when the boost has nothing to read: a game not yet live, or play stopped.
+const scoringOpportunityDetail = (game: Game<string>, points: number): ReasonFragment | undefined => {
+	if (game.status !== 'in' || isPlayFrozen(game)) return undefined;
+	if (game.sportType === 'baseball' || game.sportType === 'softball') {
+		const r = game.baseRunners;
+		if ((game.outs ?? 0) >= 3) return { key: 'inningOver' };
+		if (!r) return undefined;
+		return { key: baseKeys[[r.first, r.second, r.third].map(Number).join('')] ?? 'basesEmpty' };
+	}
+	if (game.sportType === 'football') {
+		if (!game.isRedZone) return { key: 'outsideRedZone' };
+		const team = game.possession && (game.possession === 'home' ? game.homeTeam : game.awayTeam).abbreviation;
+		if (!team) return undefined;
+		return { key: points > 0 ? redZoneKey(game) : 'redZoneNotClose', params: { team } };
+	}
+	return { key: 'noScoringPosition' };
+};
+
 export const scoringOpportunityBoost: BoostDefinition = {
 	id: 'scoringOpportunity',
 	bucket: 'moment',
-	compute: input => ({ points: computeScoringOpportunity(input) }),
+	compute: input => {
+		const points = computeScoringOpportunity(input);
+		const detail = scoringOpportunityDetail(input.game, points);
+		return detail ? { points, details: [detail] } : { points };
+	},
 };

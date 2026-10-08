@@ -441,3 +441,24 @@ describe('PowerScoreBreakdown from a PowerScore 3 breakdown', () => {
 		});
 	});
 });
+
+describe('PowerScoreBreakdown tooltips', () => {
+	const seriesBreakdown: ScoreBreakdown = {
+		...classicBreakdown,
+		boosts: classicBreakdown.boosts.map(boost => (boost.id === 'stakes'
+			? { id: 'stakes', points: 4, details: [{ key: 'seriesClinch', params: { team: 'CHW' } }] }
+			: boost)),
+	};
+
+	it('says what this game decides, not the general rule', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} breakdown={seriesBreakdown} />);
+		cy.contains('.powerscore-breakdown-row', 'Stakes').find('.setting-tooltip-btn').focus();
+		cy.get('.tooltip').should('contain', 'A win and CHW takes the series.');
+	});
+
+	it('names a favorite playing in the game', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} favoriteBonus={10} favoriteTeamCount={1} favoriteTeams={['CLE']} />);
+		cy.contains('.powerscore-breakdown-row', 'Favorite boost').find('.setting-tooltip-btn').focus();
+		cy.get('.tooltip').should('contain', 'CLE is one of your favorites.');
+	});
+});

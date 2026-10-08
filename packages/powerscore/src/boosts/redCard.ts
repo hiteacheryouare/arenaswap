@@ -1,7 +1,7 @@
 import { redCardTunables } from '../constants';
 import { getElapsedMinutes } from '../progress';
-import { isLive, leadOf, none } from './shared';
-import type { BoostDefinition, Game, RedCard, Side } from '../types';
+import { isLive, leadOf, none, teamOf } from './shared';
+import type { BoostDefinition, Game, ReasonFragment, RedCard, Side } from '../types';
 
 // The team a man down, if the cards aren't even.
 export const shorthandedSide = (game: Game<string>): Side | undefined => {
@@ -43,13 +43,18 @@ export const redCardBoost: BoostDefinition = {
 		if (minute === null) return none;
 		const { fullMinutes, fadeMinutes, secondCardFactor } = redCardTunables;
 		let best = 0;
+		let detail: ReasonFragment | undefined;
 		game.redCards.forEach((card, index) => {
 			const since = minutesSince(card, minute, game.period);
 			if (since < 0 || since >= fadeMinutes) return;
 			const fade = since <= fullMinutes ? 1 : 1 - (since - fullMinutes) / (fadeMinutes - fullMinutes);
-			const earlierForSameTeam = game.redCards!.slice(0, index).some(other => other.side === card.side);
-			best = Math.max(best, cardMagnitude(game, card) * fade * (earlierForSameTeam ? secondCardFactor : 1));
+			const earlierForSameTeam = game.redCards!.slice(0, index).filter(other => other.side === card.side).length;
+			const value = cardMagnitude(game, card) * fade * (earlierForSameTeam > 0 ? secondCardFactor : 1);
+			if (value <= best) return;
+			best = value;
+			detail = { key: 'redCard', params: { team: teamOf(game, card.side).abbreviation ?? '?', players: 10 - earlierForSameTeam, minute: Math.floor(card.minute) } };
 		});
-		return best > 0 ? { points: Math.round(best) } : none;
+		const points = Math.round(best);
+		return points > 0 && detail ? { points, details: [detail] } : none;
 	},
 };

@@ -1,6 +1,7 @@
 import { hockeyTunables } from '../constants';
-import { isDecided, isLive, leadOf, none, secondsLeftInPeriod } from './shared';
-import type { BoostDefinition, Side } from '../types';
+import { formatClock } from '../reasons';
+import { isDecided, isLive, leadOf, none, secondsLeftInPeriod, teamOf } from './shared';
+import type { BoostDefinition, Game, ReasonFragment, Side } from '../types';
 
 const sideOf = (value: Side | boolean | undefined): Side | undefined => (value === 'home' || value === 'away' ? value : undefined);
 
@@ -15,7 +16,11 @@ export const emptyNetBoost: BoostDefinition = {
 		if (secsLeft === null || secsLeft > hockeyTunables.emptyNetWindowSecs) return none;
 		const side = sideOf(context.emptyNet);
 		if (side !== undefined && leadOf(game, side) >= 0) return none;
-		return { points: margin === 1 ? 12 : margin === 2 ? 7 : 0 };
+		const points = margin === 1 ? 12 : margin === 2 ? 7 : 0;
+		// Without a side, the trailing team is the one that pulls its goalie.
+		const puller = side ?? (leadOf(game, 'home') < 0 ? 'home' : 'away');
+		const details = [{ key: 'emptyNet', params: { team: teamOf(game, puller).abbreviation ?? '?', margin, clock: formatClock(secsLeft) } }];
+		return points > 0 ? { points, details } : none;
 	},
 };
 
@@ -34,6 +39,14 @@ const sidedValue = (margin: number, trailingOnPowerPlay: boolean, late: boolean)
 	return 0;
 };
 
+const powerPlayDetail = (game: Game<string>, side: Side | undefined, margin: number): ReasonFragment => {
+	if (side === undefined) return margin === 0 ? { key: 'powerPlayTied' } : { key: 'powerPlayClose', params: { margin } };
+	const team = teamOf(game, side).abbreviation ?? '?';
+	const lead = leadOf(game, side);
+	if (lead === 0) return { key: 'powerPlayTeamTied', params: { team } };
+	return { key: lead < 0 ? 'powerPlayTeamTrailing' : 'powerPlayTeamLeading', params: { team, margin } };
+};
+
 export const powerPlayBoost: BoostDefinition = {
 	id: 'powerPlay',
 	bucket: 'moment',
@@ -42,6 +55,6 @@ export const powerPlayBoost: BoostDefinition = {
 		const late = game.period >= league.regularPeriods;
 		const side = sideOf(context.powerPlay);
 		const points = side === undefined ? sideFreeValue(margin, late) : sidedValue(margin, leadOf(game, side) < 0, late);
-		return points > 0 ? { points } : none;
+		return points > 0 ? { points, details: [powerPlayDetail(game, side, margin)] } : none;
 	},
 };

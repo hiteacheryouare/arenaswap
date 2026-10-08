@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Boost tooltips talk about this game — 2026-10-07
+
+Hovering a boost now tells you what is happening in this game, like "A win and CHW takes the series.", instead of the general rule behind the boost. The engine's boosts return the reason they paid, or didn't, as keyed sentences next to their points, and the popup translates those. Anything without one, such as a score from an older engine, still shows the general rule.
+
 ## Every boost and penalty gets its own colour — 2026-10-07
 
 The breakdown's palette grew from six tones to fifteen, so no two boosts or penalties share a colour, and the go-ahead run, upset rout and clock stall swap the icons they borrowed from elsewhere in the popup for a home plate, a tornado and a pause button. Hues that sit close together go to factors that never land on the same card, and a test now holds every colour and icon unique.

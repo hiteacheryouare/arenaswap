@@ -1,5 +1,6 @@
 import { twoMinuteDrillTunables } from '../constants';
 import { clamp } from '../math';
+import { formatClock } from '../reasons';
 import { isDecided, isLive, leadOf, none, secondsLeftInPeriod, teamOf } from './shared';
 import type { BoostDefinition } from '../types';
 
@@ -56,6 +57,8 @@ export const twoMinuteDrillBoost: BoostDefinition = {
 		// Timeouts move the win odds more than whether a fan wants to watch, so they nudge rather than gate.
 		const clockControl = timeouts === undefined ? 0.925 : 0.85 + 0.05 * clamp(timeouts, 0, 3);
 		const points = Math.round(twoMinuteDrillTunables.max * time * field * clockControl * marginFactor(trailBy));
-		return points > 0 ? { points, meta: { secondsLeft: secsLeft, trailBy } } : none;
+		const params = { team: teamOf(game, game.possession).abbreviation ?? '?', clock: formatClock(secsLeft), yards, trailBy };
+		const details = [{ key: trailBy === 0 ? 'driveTied' : 'driveTrailing', params }];
+		return points > 0 ? { points, meta: { secondsLeft: secsLeft, trailBy }, details } : none;
 	},
 };

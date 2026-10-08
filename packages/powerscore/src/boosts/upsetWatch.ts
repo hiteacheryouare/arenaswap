@@ -1,7 +1,7 @@
 import { upsetTunables } from '../constants';
 import { clamp } from '../math';
-import { isDecided, isLive, leadOf, none, otherSide } from './shared';
-import type { BoostDefinition, PregameLine, SignalInput, SportType } from '../types';
+import { isDecided, isLive, leadOf, none, otherSide, teamOf } from './shared';
+import type { BoostDefinition, PregameLine, ReasonFragment, SignalInput, SportType } from '../types';
 
 // Spread → win probability uses the spread of final margins around the line.
 const marginSigma: Record<string, number> = { nfl: 13.5, ufl: 13.5, ncaaf: 16, nba: 12, wnba: 11, ncaab: 11, ncaaw: 12 };
@@ -47,6 +47,13 @@ export const underdogProbability = (line: PregameLine, sportType: SportType, lea
 	return undefined;
 };
 
+// The chance the underdog wins outright, for saying so. A draw is not a win here.
+const underdogWinChance = (line: PregameLine, p: number): number => {
+	if (line.drawMoneyline === undefined || line.favoriteMoneyline === undefined || line.underdogMoneyline === undefined) return p;
+	const underdog = impliedProbability(line.underdogMoneyline);
+	return underdog / (underdog + impliedProbability(line.favoriteMoneyline) + impliedProbability(line.drawMoneyline));
+};
+
 const upsetParts = (input: Pick<SignalInput, 'game' | 'context' | 'sport' | 'progress' | 'league' | 'margin'>) => {
 	const { game, context, sport, progress } = input;
 	const line = context.pregameLine;
@@ -57,7 +64,21 @@ const upsetParts = (input: Pick<SignalInput, 'game' | 'context' | 'sport' | 'pro
 	const size = clamp((zero - p) / (zero - full), 0, 1);
 	const late = lateProgress[game.sportType];
 	const phase = progress < 0.5 ? 0 : progress < late ? 0.5 : 1;
-	return { size, phase, underdogLead: leadOf(game, otherSide(line.favorite)), sport };
+	const underdog = otherSide(line.favorite);
+	return {
+		size,
+		phase,
+		underdogLead: leadOf(game, underdog),
+		sport,
+		team: teamOf(game, underdog).abbreviation ?? '?',
+		chance: Math.round(100 * underdogWinChance(line, p)),
+	};
+};
+
+const upsetDetail = ({ team, chance, underdogLead }: { team: string; chance: number; underdogLead: number }): ReasonFragment => {
+	if (underdogLead > 0) return { key: 'underdogLeading', params: { team, chance, margin: underdogLead } };
+	if (underdogLead === 0) return { key: 'underdogLevel', params: { team, chance } };
+	return { key: 'underdogClose', params: { team, chance, margin: -underdogLead } };
 };
 
 // The pregame underdog leading, level, or within one score once the game is past halfway.
@@ -70,7 +91,8 @@ export const upsetWatchBoost: BoostDefinition = {
 		const { size, phase, underdogLead, sport } = parts;
 		const oneScore = input.game.sportType === 'football' ? (input.game.league === 'ufl' ? 9 : 8) : sport.closenessMargins[0];
 		const state = underdogLead > 0 ? 1 : underdogLead === 0 ? (input.game.sportType === 'soccer' ? 0.7 : 0.8) : -underdogLead <= oneScore ? 0.5 : 0;
-		return { points: Math.round(upsetTunables.max * size * phase * state) };
+		const points = Math.round(upsetTunables.max * size * phase * state);
+		return points > 0 ? { points, details: [upsetDetail(parts)] } : none;
 	},
 };
 
@@ -80,6 +102,7 @@ export const upsetRoutBoost: BoostDefinition = {
 	compute: input => {
 		const parts = upsetParts(input);
 		if (!parts || parts.underdogLead <= parts.sport.closenessMargins[2]) return none;
-		return { points: Math.round(upsetTunables.max * parts.size * parts.phase) };
+		const points = Math.round(upsetTunables.max * parts.size * parts.phase);
+		return points > 0 ? { points, details: [upsetDetail(parts)] } : none;
 	},
 };

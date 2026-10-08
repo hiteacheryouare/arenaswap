@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
-import { leagueConfigMap, scoreMaxTotal, sportTypeConfigMap } from '@arenaswap/core/constants';
+import { createFavoriteTeamKey, leagueConfigMap, scoreMaxTotal, sportTypeConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, LiveScore, PowerScoreSnapshot, ScoreSnapshot, SignalName, TabRegistration } from '@arenaswap/core/types';
 import type { FantasyRosterEntry } from '@arenaswap/core';
 import DetailHero from './detailHero';
@@ -146,6 +146,9 @@ const gameDetailView = ({
 	const clockBased = (sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball).clockBased;
 	const favoriteBonus = activePowerScore?.favoriteBonus ?? 0;
 	const favoriteTeamCount = activePowerScore?.favoriteTeamCount ?? 0;
+	const favoriteTeams = [game.awayTeam, game.homeTeam]
+		.filter(team => favoriteTeamIds.has(createFavoriteTeamKey(game.league, team.id)))
+		.map(team => team.abbreviation);
 	const decorations = resolveDecorations(game, decorationDate ?? new Date(), decorationPrefs);
 
 	const [scoreFlash, setScoreFlash] = useState<string[] | null>(null);
@@ -307,6 +310,7 @@ const gameDetailView = ({
 					clockBased={clockBased}
 					favoriteBonus={favoriteBonus}
 					favoriteTeamCount={favoriteTeamCount}
+					favoriteTeams={favoriteTeams}
 					currentBoost={appliedBoost}
 					scoringOpportunityBoost={scoringOpportunityBoost}
 					postseasonBoost={postseasonBoost}

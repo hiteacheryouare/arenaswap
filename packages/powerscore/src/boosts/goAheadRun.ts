@@ -1,6 +1,6 @@
 import { goAheadRunTunables } from '../constants';
 import { isBaseball, isLive, none, ramp } from './shared';
-import type { BoostDefinition } from '../types';
+import type { BoostDefinition, ReasonFragment } from '../types';
 
 // On top of the runner count: the batting team has the go-ahead run on base (tied with anyone on,
 // down one with two on, down two with the bases loaded), or failing that the tying run on base.
@@ -31,6 +31,11 @@ export const goAheadRunBoost: BoostDefinition = {
 		// The last chance: the home team's go-ahead run is the winning run, and a trailing road team
 		// may not bat again.
 		const lastChance = inning >= curve.regulationInnings && (battingHome || deficit > 0);
-		return { points: Math.round(base * inningFactor * (lastChance ? goAheadRunTunables.lastChanceFactor : 1)) };
+		const team = (battingHome ? game.homeTeam : game.awayTeam).abbreviation ?? '?';
+		const goAhead = base === goAheadRunTunables.goAhead;
+		const details: ReasonFragment[] = goAhead && lastChance && battingHome
+			? [{ key: 'winningRun', params: { team } }]
+			: [{ key: goAhead ? 'goAheadRun' : 'tyingRun', params: { team } }, ...(lastChance ? [{ key: 'lastChance' }] : [])];
+		return { points: Math.round(base * inningFactor * (lastChance ? goAheadRunTunables.lastChanceFactor : 1)), details };
 	},
 };

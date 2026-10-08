@@ -7,7 +7,7 @@ import {
 	scoreMaxMomentum,
 	scoreMaxTotal,
 } from '@arenaswap/core/constants';
-import type { ScoreBreakdown, SignalName } from '@arenaswap/core/types';
+import type { ReasonFragment, ScoreBreakdown, SignalName } from '@arenaswap/core/types';
 import { i18n } from '#i18n';
 import {
 	boostPresentation,
@@ -21,6 +21,7 @@ import {
 	unknownFactorColor,
 } from '@arenaswap/ui/src/components/scoringModeMeta';
 import SettingTooltipIcon from './settingTooltipIcon';
+import { boostTooltip } from '../../../utils/boostTooltip';
 
 interface powerScoreBreakdownProps {
 	closeness: number;
@@ -36,6 +37,8 @@ interface powerScoreBreakdownProps {
 	clockBased: boolean;
 	favoriteBonus: number;
 	favoriteTeamCount: number;
+	// Abbreviations of the favorited teams in this game, for the favorite boost's tooltip.
+	favoriteTeams?: readonly string[];
 	currentBoost: number;
 	scoringOpportunityBoost: number;
 	postseasonBoost: number;
@@ -59,6 +62,7 @@ interface signalRow {
 interface boostRow {
 	id: string;
 	points: number;
+	details?: readonly ReasonFragment[];
 }
 
 const classicMax: Record<SignalName, number> = {
@@ -97,6 +101,7 @@ const PowerScoreBreakdown = ({
 	clockBased,
 	favoriteBonus,
 	favoriteTeamCount,
+	favoriteTeams = [],
 	currentBoost,
 	scoringOpportunityBoost,
 	postseasonBoost,
@@ -251,6 +256,8 @@ const PowerScoreBreakdown = ({
 			{boostRows.map(boost => {
 				const meta = isBoostId(boost.id) ? boostPresentation[boost.id] : undefined;
 				const label = boostLabel(boost.id);
+				const tooltip = boostTooltip({ ...boost, favoriteTeams, frozen: breakdown?.frozen ?? false }, i18n.t)
+					?? (meta ? i18n.t(meta.tooltipKey) : undefined);
 				return (
 					<Fragment key={boost.id}>
 						<div className='powerscore-breakdown-row'>
@@ -258,7 +265,7 @@ const PowerScoreBreakdown = ({
 								<FactorIcon icon={meta?.icon ?? 'plus-circle'} color={meta?.color ?? unknownFactorColor} />
 								{label}
 								{boost.id === 'postseasonBoost' && postseasonLabel && <span className='powerscore-breakdown-qualifier'>· {postseasonLabel}</span>}
-								{meta && <SettingTooltipIcon text={i18n.t(meta.tooltipKey)} label={label} />}
+								{tooltip && <SettingTooltipIcon text={tooltip} label={label} />}
 							</span>
 							<span className='powerscore-breakdown-value' style={{ color: boost.points > 0 ? meta?.ink : undefined }}>{boost.points > 0 ? `+${boost.points}` : '0'}</span>
 						</div>
