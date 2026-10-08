@@ -70,6 +70,7 @@ const scoringOpportunityDetails = (input: SignalInput, points: number): ReasonFr
 		return [{ key: baseKeys[[r.first, r.second, r.third].map(Number).join('')] ?? 'basesEmpty' }];
 	}
 	if (game.sportType === 'football') {
+		if (game.isRedZone === undefined) return [];
 		if (!game.isRedZone) return [{ key: 'outsideRedZone' }];
 		const team = game.possession && (game.possession === 'home' ? game.homeTeam : game.awayTeam).abbreviation;
 		if (!team) return [];

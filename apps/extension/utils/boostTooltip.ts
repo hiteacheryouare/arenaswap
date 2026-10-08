@@ -12,25 +12,16 @@ export interface boostTooltipInput {
 	details?: readonly ReasonFragment[];
 	// Abbreviations of the favorited teams playing in this game.
 	favoriteTeams: readonly string[];
+	// The favorite boost from Settings. Read over the points, which lag a fresh favorite by a poll.
+	favoriteSetting?: number;
 	// Play is stopped and every boost scores nothing.
 	frozen: boolean;
 }
 
-// The runner sentences already exist for the bases diagram.
-const sharedKeys: Record<string, string> = {
-	runnerFirst: 'bases.first',
-	runnerSecond: 'bases.second',
-	runnerThird: 'bases.third',
-	runnersFirstSecond: 'bases.firstSecond',
-	runnersFirstThird: 'bases.firstThird',
-	runnersSecondThird: 'bases.secondThird',
-	basesLoaded: 'bases.loaded',
-	basesEmpty: 'bases.empty',
-};
-
 export const boostDetailKeys: ReadonlySet<string> = new Set([
 	'seriesClinch', 'seriesDecider', 'rankedMeeting',
 	'raceTitle', 'raceRelegation', 'raceTopQualification', 'raceLine', 'raceClinch', 'raceElimination', 'raceHunt',
+	'basesEmpty', 'runnerFirst', 'runnerSecond', 'runnerThird', 'runnersFirstSecond', 'runnersFirstThird', 'runnersSecondThird', 'basesLoaded',
 	'inningOver', 'outsideRedZone', 'redZone', 'redZoneThirdAndShort', 'redZoneFourthDown', 'redZoneNotClose', 'noScoringPosition',
 	'goAheadRun', 'tyingRun', 'winningRun', 'lastChance',
 	'driveTied', 'driveTrailing',
@@ -43,7 +34,6 @@ export const boostDetailKeys: ReadonlySet<string> = new Set([
 const roundKeys = ['boostDetail.postseasonFinal', 'boostDetail.postseasonSemifinal', 'boostDetail.postseasonQuarterfinal', 'boostDetail.postseasonEarlyRound'];
 
 const translateDetail = ({ key, params }: ReasonFragment, t: translate): string | undefined => {
-	if (sharedKeys[key]) return t(sharedKeys[key]);
 	if (key === 'postseasonRound') {
 		const roundKey = roundKeys[Number(params?.round)];
 		return roundKey ? t(roundKey) : undefined;
@@ -51,18 +41,18 @@ const translateDetail = ({ key, params }: ReasonFragment, t: translate): string 
 	return boostDetailKeys.has(key) ? t(`boostDetail.${key}`, params) : undefined;
 };
 
-const favoriteSentence = (points: number, teams: readonly string[], t: translate): string => {
+const favoriteSentence = (setting: number, teams: readonly string[], t: translate): string => {
 	if (teams.length === 0) return t('boostDetail.favoriteNone');
-	if (points === 0) return t('boostDetail.favoriteOff');
+	if (setting === 0) return t('boostDetail.favoriteOff');
 	return teams.length === 1
 		? t('boostDetail.favoriteOne', { team: teams[0]! })
 		: t('boostDetail.favoriteBoth', { team: teams[0]!, other: teams[1]! });
 };
 
 // One line a translator wrote whole beats a line half in English: an unknown key drops them all.
-export const boostTooltip = ({ id, points, details, favoriteTeams, frozen }: boostTooltipInput, t: translate): string | undefined => {
+export const boostTooltip = ({ id, points, details, favoriteTeams, favoriteSetting, frozen }: boostTooltipInput, t: translate): string | undefined => {
 	if (frozen) return t('boostDetail.playStopped');
-	if (id === 'favoriteBoost') return favoriteSentence(points, favoriteTeams, t);
+	if (id === 'favoriteBoost') return favoriteSentence(favoriteSetting ?? points, favoriteTeams, t);
 	if (id === 'gameBoost') return t(points > 0 ? 'boostDetail.gameBoostSet' : 'boostDetail.gameBoostNone');
 	if (!details?.length) return undefined;
 	const sentences = details.map(detail => translateDetail(detail, t));

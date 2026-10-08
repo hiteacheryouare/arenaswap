@@ -69,6 +69,7 @@ interface gameDetailViewProps {
 	// Pre-game only: the setup card and the poster's favourite stars need these. They are
 	// optional so the live screen, and anything mounting it, is unaffected.
 	favoriteTeamIds?: ReadonlySet<string>;
+	favoriteBoostSetting?: number;
 	openTabs?: Browser.tabs.Tab[];
 	registry?: TabRegistration[];
 	onToggleFavoriteTeam?: (leagueId: LeagueId, teamId: string) => void;
@@ -109,6 +110,7 @@ const gameDetailView = ({
 	disabledSignals = [],
 	fantasyRoster = noRoster,
 	favoriteTeamIds = noFavorites,
+	favoriteBoostSetting,
 	openTabs = [],
 	registry = [],
 	onToggleFavoriteTeam = () => {},
@@ -311,6 +313,7 @@ const gameDetailView = ({
 					favoriteBonus={favoriteBonus}
 					favoriteTeamCount={favoriteTeamCount}
 					favoriteTeams={favoriteTeams}
+					favoriteSetting={favoriteBoostSetting}
 					currentBoost={appliedBoost}
 					scoringOpportunityBoost={scoringOpportunityBoost}
 					postseasonBoost={postseasonBoost}

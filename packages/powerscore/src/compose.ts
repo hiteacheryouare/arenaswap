@@ -145,8 +145,8 @@ const blendWithClassic = (own: number, classic: number, blend: ClassicBlend): { 
 	return { total, result: { kind: blend.kind, weight, ownTotal: own, classicTotal: classic } };
 };
 
-const postseasonScoredBoost = (game: Game<string>, points: number): ScoredBoost => {
-	const details = postseasonDetails(game, points);
+const postseasonScoredBoost = (game: Game<string>, points: number, setting: number): ScoredBoost => {
+	const details = postseasonDetails(game, setting);
 	return details.length > 0 ? { id: 'postseasonBoost', points, details } : { id: 'postseasonBoost', points };
 };
 
@@ -206,7 +206,7 @@ export const scoreGame = (game: Game<string>, context: ScoringContext = {}, opti
 		...(options.favoriteTeamCount !== undefined ? [{ id: 'favoriteBoost', points: favoriteBoost, meta: { teams: nonNegative(options.favoriteTeamCount) } }] : []),
 		...(options.gameBoost !== undefined ? [{ id: 'gameBoost', points: gameBoost }] : []),
 		...run.boosts,
-		...(options.postseasonBoostPoints !== undefined && paysPostseason ? [postseasonScoredBoost(game, postseasonBoost)] : []),
+		...(options.postseasonBoostPoints !== undefined && paysPostseason ? [postseasonScoredBoost(game, postseasonBoost, options.postseasonBoostPoints)] : []),
 	];
 
 	const signalReasons = run.reasons.length > 0 ? run.reasons : [{ key: 'fallback' }];

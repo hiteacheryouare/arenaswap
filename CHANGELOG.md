@@ -5,17 +5,13 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
-## A power play is a scoring opportunity — 2026-10-06
+## The boost tooltips get a second look — 2026-10-08
 
-Hockey's power play and empty net no longer get line items of their own: they are the hockey case of the `scoringOpportunity` boost, so the breakdown, reasons and chart show one Scoring opportunity row in every sport. The `powerPlay` and `emptyNet` boost ids and their `BoostDefinition` exports are gone from powerscore 3.0.0, which hasn't been published yet, and the points they pay are unchanged. Their tooltip sentences come along, so hovering Scoring opportunity in hockey names the pulled goalie or the power play, and both on a 6-on-4.
-
-## Only the clock ticks in Lekton — 2026-10-06
-
-The detail hero, its sticky bar and the Guide's bars set a running clock's period ("Q3", "P1") in DM Sans and only the digits after it in Lekton, where before the whole string went monospace. `resolveStatus` now hands the clock back on its own, and `gameStatusText` renders the pair.
+A game decided at the horn no longer pays the empty net, baseball's Scoring opportunity tooltip speaks in whole sentences, and the postseason and favorite tooltips read the setting rather than the rounded points, so a boost of 1 stops claiming it's set to 0. The no-hitter moves to amber so no two factors on one card sit closer than 11 in ΔE00, and the powerscore README and docs now list every `details` key. Tests push every sentence through all 12 locales, and a stored hockey score through to its tooltip.
 
 ## Open tab menus sit above the Up Next day pager — 2026-10-07
 
-The tab picker on a live card no longer tucks behind the orange day label ("Today") of the Up Next pager when its menu opens downward over it. The open card now climbs to 4, past Bootstrap's active page link at 3 and still under the sticky header at 5.
+The tab picker on a live card no longer tucks behind the orange day label ("Today") of the Up Next pager when its menu opens downward over it. The open card now climbs to 4, past Bootstrap's active page link at 3.
 
 ## Boost tooltips talk about this game — 2026-10-07
 
@@ -23,7 +19,7 @@ Hovering a boost now tells you what is happening in this game, like "A win and C
 
 ## Every boost and penalty gets its own colour — 2026-10-07
 
-The breakdown's palette grew from six tones to fifteen, so no two boosts or penalties share a colour, and the go-ahead run, upset rout and clock stall swap the icons they borrowed from elsewhere in the popup for a home plate, a tornado and a pause button. Hues that sit close together go to factors that never land on the same card, and a test now holds every colour and icon unique.
+The breakdown's palette grew from six tones to thirteen, so no two boosts or penalties share a colour, and the go-ahead run, upset rout and clock stall swap the icons they borrowed from elsewhere in the popup for a home plate, a tornado and a pause button. Hues that sit close together only meet across sports, and tests now hold every colour and icon unique and any two on one card at least 11 apart in ΔE00.
 
 ## The films play a real track — 2026-10-07
 
@@ -36,6 +32,14 @@ The 15 and the 30 now run on into three bars of credits after the film, the Latt
 ## The films open on the problem — 2026-10-07
 
 Every scene now carries the benefit it shows, opening on "Too many games on?", cutting the switches and box scores that only filled time, demonstrating Standby Stream end to end, and leaving college hockey (no team colours) out of the viewer's leagues. The ending lifts Kentucky's LIVE badge to centre stage and turns its dot into each sport's ball before it becomes the wordmark's period, and the 60 runs on into credits with the Lattice & Company rosette, Ryan Mullin's wordmark and the site's own disclaimers. The score is now a synthesized college pep band, a brass stand tune over sousaphones and a marching drumline, still on the 128 BPM bar grid.
+
+## A power play is a scoring opportunity — 2026-10-06
+
+Hockey's power play and empty net no longer get line items of their own: they are the hockey case of the `scoringOpportunity` boost, so the breakdown, reasons and chart show one Scoring opportunity row in every sport. The `powerPlay` and `emptyNet` boost ids and their `BoostDefinition` exports are gone from powerscore 3.0.0, which hasn't been published yet, and the points they pay are unchanged. Their tooltip sentences come along, so hovering Scoring opportunity in hockey names the pulled goalie or the power play, and both on a 6-on-4.
+
+## Only the clock ticks in Lekton — 2026-10-06
+
+The detail hero, its sticky bar and the Guide's bars set a running clock's period ("Q3", "P1") in DM Sans and only the digits after it in Lekton, where before the whole string went monospace. `resolveStatus` now hands the clock back on its own, and `gameStatusText` renders the pair.
 
 ## The films trade arrows for the orange dot — 2026-10-06
 

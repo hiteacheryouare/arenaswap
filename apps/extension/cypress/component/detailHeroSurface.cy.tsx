@@ -3,6 +3,7 @@ import DetailPosterHero from '../../entrypoints/popup/components/detailPosterHer
 import DetailStickyBar from '../../entrypoints/popup/components/detailStickyBar';
 import type { Game } from '@arenaswap/core/types';
 import type { MonoLogos } from '../../entrypoints/popup/components/useSummaryData';
+import type { GameStatus } from '../../entrypoints/popup/components/gameSituation';
 
 // Baltimore and Indianapolis: a purple and a navy, the pair that used to come out of the resolver as
 // black against white. Both are dark, which is what makes them the right fixture for a hero whose
@@ -150,6 +151,28 @@ describe('the detail hero surface', () => {
 		cy.get('.gd-poster-crest.is-bare').should('have.length', 2).each($crest => {
 			expect(getComputedStyle($crest[0]!).boxShadow).to.equal('none');
 		});
+	});
+});
+
+const fontFace = ($el: JQuery<HTMLElement>) => getComputedStyle($el[0]!).fontFamily.split(',')[0]!.replace(/["']/g, '');
+
+// Lekton holds a counting clock's digits still. The period beside it never moves, so it keeps the body face.
+describe('the sticky bar status', () => {
+	const mountBar = (game: Game, status: GameStatus) => cy.mount(
+		<div style={{ width: '320px', background: '#0d1117' }}>
+			<DetailStickyBar game={game} status={status} compact monoLogos={mono} onBack={() => {}} />
+		</div>,
+	);
+
+	it('sets only the running clock in Lekton', () => {
+		mountBar(liveGame, { text: 'Q2', clock: '5:00' });
+		cy.get('.gd-bar-status').should('have.text', 'Q2 • 5:00').and($el => expect(fontFace($el), 'the period').to.not.equal('Lekton'));
+		cy.get('.gd-bar-status .game-status-clock').should($el => expect(fontFace($el), 'the clock').to.equal('Lekton'));
+	});
+
+	it('keeps a pregame countdown in Lekton, since every digit of it ticks', () => {
+		mountBar({ ...liveGame, status: 'pre', startTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString() }, { text: '' });
+		cy.get('.gd-bar-status').should('not.be.empty').and($el => expect(fontFace($el)).to.equal('Lekton'));
 	});
 });
 

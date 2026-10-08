@@ -367,6 +367,13 @@ const rink = ({ period, secs, home, away }: Rink): Game<string> => ({
 describe('hockey: the empty net and the power play are scoring opportunities', () => {
 	const chance = (game: Game<string>, context: ScoringContext) => boostPoints(classic(game, context), 'scoringOpportunity');
 
+	// The scoreboard can read 0:00 of the 3rd, still live, for a poll before it calls the period over.
+	test('a game decided at the horn pays no empty net, as it pays no power play', () => {
+		const horn = rink({ period: 3, secs: 0, home: 2, away: 1 });
+		expect(chance(horn, { powerPlay: true })).toBe(0);
+		expect(chance(horn, { emptyNet: true })).toBe(0);
+	});
+
 	test('a pulled goalie late in the 3rd pays 12 down one and 7 down two', () => {
 		const pulled = (home: number, away: number, secs = 90) => chance(rink({ period: 3, secs, home, away }), { emptyNet: true });
 		expect(pulled(2, 1)).toBe(12);

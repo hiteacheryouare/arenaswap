@@ -8,9 +8,10 @@ export const postseasonBoostShare = (round: PostseasonRound | undefined): number
 	round === undefined ? 0 : roundShares[round] ?? 0;
 
 // A postseason game the feed gave no round for says nothing: there is no rule to point at.
-export const postseasonDetails = (game: Game<string>, points: number): ReasonFragment[] => {
+// The off sentence reads the setting, not the points: a setting of 1 rounds an early round to 0.
+export const postseasonDetails = (game: Game<string>, setting: number): ReasonFragment[] => {
 	const round = game.postseasonRound;
 	if (round === undefined) return game.seasonType === 'postseason' ? [] : [{ key: 'regularSeason' }];
-	if (points === 0) return [{ key: 'postseasonBoostOff' }];
+	if (setting <= 0) return [{ key: 'postseasonBoostOff' }];
 	return [{ key: 'postseasonRound', params: { round } }];
 };

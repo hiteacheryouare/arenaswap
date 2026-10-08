@@ -39,6 +39,7 @@ interface powerScoreBreakdownProps {
 	favoriteTeamCount: number;
 	// Abbreviations of the favorited teams in this game, for the favorite boost's tooltip.
 	favoriteTeams?: readonly string[];
+	favoriteSetting?: number;
 	currentBoost: number;
 	scoringOpportunityBoost: number;
 	postseasonBoost: number;
@@ -102,6 +103,7 @@ const PowerScoreBreakdown = ({
 	favoriteBonus,
 	favoriteTeamCount,
 	favoriteTeams = [],
+	favoriteSetting,
 	currentBoost,
 	scoringOpportunityBoost,
 	postseasonBoost,
@@ -256,7 +258,7 @@ const PowerScoreBreakdown = ({
 			{boostRows.map(boost => {
 				const meta = isBoostId(boost.id) ? boostPresentation[boost.id] : undefined;
 				const label = boostLabel(boost.id);
-				const tooltip = boostTooltip({ ...boost, favoriteTeams, frozen: breakdown?.frozen ?? false }, i18n.t)
+				const tooltip = boostTooltip({ ...boost, favoriteTeams, favoriteSetting, frozen: breakdown?.frozen ?? false }, i18n.t)
 					?? (meta ? i18n.t(meta.tooltipKey) : undefined);
 				return (
 					<Fragment key={boost.id}>

@@ -4,6 +4,8 @@ import { buildBar, buildHeatCurve, type guideBar } from '../../entrypoints/guide
 import { gutterPx } from '../../entrypoints/guide/guideLayout';
 import { makeGame } from '../support/fixtures';
 
+const fontFace = ($el: JQuery<HTMLElement>) => getComputedStyle($el[0]!).fontFamily.split(',')[0]!.replace(/["']/g, '');
+
 const now = new Date('2026-09-13T20:00:00Z').getTime();
 
 const bar = (id: string, league: LeagueId, startTime: string, overrides: Partial<Game> = {}, isFavorite = false): guideBar => {
@@ -153,6 +155,12 @@ describe('the guide grid', () => {
 		});
 		cy.get('.guide-bar-status').should('have.text', 'Q2 • 5:12');
 		cy.get('.guide-bar-at').should('not.exist');
+	});
+
+	it('sets only a live bar\'s running clock in Lekton', () => {
+		mountGrid([bar('live', 'nfl', '2026-09-13T19:00:00Z', { status: 'in', period: 2, clockSeconds: 312 })]);
+		cy.get('.guide-bar-status').should($el => expect(fontFace($el), 'the period').to.not.equal('Lekton'));
+		cy.get('.guide-bar-status .game-status-clock').should('have.text', '5:12').and($el => expect(fontFace($el), 'the clock').to.equal('Lekton'));
 	});
 
 	it('prints a final with the loser receded, as the final card does', () => {

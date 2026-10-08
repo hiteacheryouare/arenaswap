@@ -1,5 +1,5 @@
-import { scoreGame } from '../src';
-import type { Game, ReasonFragment, ScoreOptions, ScoringContext } from '../src';
+import { boostBucketCaps, boostPoints, scoreGame } from '../src';
+import type { Game, ReasonFragment, ScoreOptions, ScoringContext, Side } from '../src';
 
 const detailsOf = (game: Game<string>, id: string, context: ScoringContext = {}, options: ScoreOptions = {}): ReasonFragment[] | undefined => (
 	scoreGame(game, context, { mode: 'classic', ...options }).boosts.find(boost => boost.id === id)?.details
@@ -72,6 +72,12 @@ describe('scoring opportunity names the situation, paying or not', () => {
 		expect(detailsOf(redZone(0, 1), 'scoringOpportunity')).toEqual([{ key: 'redZoneNotClose', params: { team: 'KC' } }]);
 	});
 
+	test('football only says nobody is in the red zone when the feed says so', () => {
+		const drive = (isRedZone: boolean | undefined) => game('football', 'nfl', 'KC', 'BUF', { period: 3, clockSeconds: 400, possession: 'home', isRedZone });
+		expect(detailsOf(drive(false), 'scoringOpportunity')).toEqual([{ key: 'outsideRedZone' }]);
+		expect(detailsOf(drive(undefined), 'scoringOpportunity')).toBeUndefined();
+	});
+
 	test('a sport without a scoring position says so', () => {
 		expect(detailsOf(game('basketball', 'nba', 'OKC', 'DEN', { period: 2, clockSeconds: 300 }), 'scoringOpportunity')).toEqual([{ key: 'noScoringPosition' }]);
 	});
@@ -109,14 +115,6 @@ describe('the moments name the team they are about', () => {
 		expect(detailsOf(powerPlay, 'scoringOpportunity', { powerPlay: 'away' })).toEqual([{ key: 'powerPlayTeamTrailing', params: { team: 'TOR', margin: 1 } }]);
 	});
 
-	test('a 6-on-4 names the pulled goalie and the power play', () => {
-		const sixOnFour = game('hockey', 'nhl', 'BOS', 'TOR', { period: 3, clockSeconds: 80, homeTeam: { abbreviation: 'BOS', score: 2 }, awayTeam: { abbreviation: 'TOR', score: 1 } });
-		expect(detailsOf(sixOnFour, 'scoringOpportunity', { emptyNet: 'away', powerPlay: 'away' })).toEqual([
-			{ key: 'emptyNet', params: { team: 'TOR', margin: 1, clock: '1:20' } },
-			{ key: 'powerPlayTeamTrailing', params: { team: 'TOR', margin: 1 } },
-		]);
-	});
-
 	test('hockey at even strength falls back to the general rule', () => {
 		const evenStrength = game('hockey', 'nhl', 'BOS', 'TOR', { period: 2, clockSeconds: 600 });
 		expect(detailsOf(evenStrength, 'scoringOpportunity')).toBeUndefined();
@@ -152,6 +150,59 @@ describe('the moments name the team they are about', () => {
 	});
 });
 
+// The live feed only says a power play or an empty net is on, never whose, so these are the
+// sentences a hockey fan actually reads.
+describe('hockey says what the feed can tell it', () => {
+	const rink = (home: number, away: number, extra: Partial<Game<string>> = {}) => game('hockey', 'nhl', 'BOS', 'TOR', {
+		period: 3, clockSeconds: 600, homeTeam: { abbreviation: 'BOS', score: home }, awayTeam: { abbreviation: 'TOR', score: away }, ...extra,
+	});
+
+	test('a power play in a tie game, including overtime', () => {
+		expect(detailsOf(rink(1, 1, { period: 2 }), 'scoringOpportunity', { powerPlay: true })).toEqual([{ key: 'powerPlayTied' }]);
+		expect(detailsOf(rink(2, 2, { period: 4, clockSeconds: 200 }), 'scoringOpportunity', { powerPlay: true })).toEqual([{ key: 'powerPlayTied' }]);
+	});
+
+	test('a power play in a one- or two-goal game carries the margin', () => {
+		expect(detailsOf(rink(2, 1), 'scoringOpportunity', { powerPlay: true })).toEqual([{ key: 'powerPlayClose', params: { margin: 1 } }]);
+		expect(detailsOf(rink(3, 1), 'scoringOpportunity', { powerPlay: true })).toEqual([{ key: 'powerPlayClose', params: { margin: 2 } }]);
+	});
+
+	test('a power play three goals up pays nothing and says nothing', () => {
+		expect(detailsOf(rink(4, 1), 'scoringOpportunity', { powerPlay: true })).toBeUndefined();
+	});
+
+	test('a pulled goalie during a power play names the trailing team first, then the power play', () => {
+		const score = scoreGame(rink(2, 1, { clockSeconds: 80 }), { emptyNet: true, powerPlay: true }, { mode: 'classic' });
+		expect(boostPoints(score, 'scoringOpportunity')).toBe(19);
+		expect(score.boosts.find(boost => boost.id === 'scoringOpportunity')?.details).toEqual([
+			{ key: 'emptyNet', params: { team: 'TOR', margin: 1, clock: '1:20' } },
+			{ key: 'powerPlayClose', params: { margin: 1 } },
+		]);
+	});
+
+	test('a home team trailing pulls its own goalie', () => {
+		expect(detailsOf(rink(1, 2, { clockSeconds: 80 }), 'scoringOpportunity', { emptyNet: true })).toEqual([
+			{ key: 'emptyNet', params: { team: 'BOS', margin: 1, clock: '1:20' } },
+		]);
+	});
+
+	test('a feed that names the side says whether the team on the power play leads or is level', () => {
+		const sided = (home: number, side: Side) => detailsOf(rink(home, 1), 'scoringOpportunity', { powerPlay: side });
+		expect(sided(2, 'home')).toEqual([{ key: 'powerPlayTeamLeading', params: { team: 'BOS', margin: 1 } }]);
+		expect(sided(1, 'home')).toEqual([{ key: 'powerPlayTeamTied', params: { team: 'BOS' } }]);
+	});
+
+	test('a 6-on-4 cut down by the moment cap still names both', () => {
+		const score = scoreGame(rink(2, 1, { clockSeconds: 80 }), { emptyNet: 'away', powerPlay: 'away' }, { mode: 'classic' });
+		expect(boostPoints(score, 'scoringOpportunity')).toBe(boostBucketCaps.moment);
+		expect(score.boosts.find(boost => boost.id === 'scoringOpportunity')?.details?.map(detail => detail.key)).toEqual(['emptyNet', 'powerPlayTeamTrailing']);
+	});
+
+	test('play stopped for an intermission says nothing, even with the man advantage carrying over', () => {
+		expect(detailsOf(rink(2, 1, { period: 2, clockSeconds: 0, intermission: true }), 'scoringOpportunity', { powerPlay: true })).toBeUndefined();
+	});
+});
+
 describe('the postseason boost says which round', () => {
 	const series = (extra: Partial<Game<string>>) => game('basketball', 'nba', 'OKC', 'DEN', { period: 2, clockSeconds: 300, ...extra });
 
@@ -159,5 +210,12 @@ describe('the postseason boost says which round', () => {
 		expect(detailsOf(series({ seasonType: 'postseason', postseasonRound: 1 }), 'postseasonBoost', {}, { postseasonBoostPoints: 8 })).toEqual([{ key: 'postseasonRound', params: { round: 1 } }]);
 		expect(detailsOf(series({}), 'postseasonBoost', {}, { postseasonBoostPoints: 8 })).toEqual([{ key: 'regularSeason' }]);
 		expect(detailsOf(series({ seasonType: 'postseason', postseasonRound: 0 }), 'postseasonBoost', {}, { postseasonBoostPoints: 0 })).toEqual([{ key: 'postseasonBoostOff' }]);
+	});
+
+	test('a boost of 1 that rounds an early round to nothing still names the round', () => {
+		const early = series({ seasonType: 'postseason', postseasonRound: 3 });
+		const boost = scoreGame(early, {}, { mode: 'classic', postseasonBoostPoints: 1 }).boosts.find(entry => entry.id === 'postseasonBoost');
+		expect(boost?.points).toBe(0);
+		expect(boost?.details).toEqual([{ key: 'postseasonRound', params: { round: 3 } }]);
 	});
 });

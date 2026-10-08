@@ -76,4 +76,22 @@ describe('upcomingDayPager', () => {
 		mountPager(0, 3);
 		cy.get('[data-testid="upcoming-day-label"]').should('have.css', 'color', 'rgb(13, 17, 23)');
 	});
+
+	// Bootstrap lifts the active day to z-index 3; a card holding an open menu has to climb past it.
+	it('lets an open tab menu on the card above paint over the active day', () => {
+		cy.viewport(320, 560);
+		cy.mount(
+			<div className='popup-container'>
+				<div className='game-card' style={{ height: '40px' }}>
+					<div className='dropdown-menu show' style={{ top: '100%', left: 0, right: 0, height: '120px' }}>menu</div>
+				</div>
+				<UpcomingDayPager dayLabel='Tuesday, Sep 2' index={1} total={3} onSelect={() => {}} />
+			</div>,
+		);
+		cy.get('[data-testid="upcoming-day-label"]').then(([label]: JQuery<HTMLElement>) => {
+			const box = label!.getBoundingClientRect();
+			const top = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+			expect(top?.closest('.dropdown-menu') ?? null, 'the open menu, not the pager').to.not.equal(null);
+		});
+	});
 });

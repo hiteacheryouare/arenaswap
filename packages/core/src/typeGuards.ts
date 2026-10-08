@@ -57,6 +57,7 @@ export const isPowerScoreSnapshotLike = (value: unknown): value is PowerScoreSna
 
 const isScoredItem = (value: unknown): value is { id: string; points: number; ceiling?: unknown } => (
 	isObjectRecord(value) && typeof value.id === 'string' && isFiniteNumber(value.points)
+	&& (value.details === undefined || Array.isArray(value.details))
 );
 
 const isBlendResult = (value: unknown): value is ScoreBreakdown['blend'] => (

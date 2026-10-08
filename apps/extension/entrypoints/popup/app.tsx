@@ -646,6 +646,7 @@ export default () => {
 						powerScoreHistory={selectedPowerScoreHistory}
 						proTipsEnabled={prefs.proTipsEnabled}
 						gameBoosts={gameBoosts}
+						favoriteBoostSetting={prefs.favoriteTeamBonusPoints}
 						bettingPrefs={{
 							bettingEnabled: prefs.bettingEnabled,
 						}}

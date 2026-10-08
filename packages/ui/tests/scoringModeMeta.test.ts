@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { builtInModes, scorerTunables, scoreGame } from 'powerscore';
 import type { BuiltInModeId } from 'powerscore';
 import {
@@ -10,11 +12,13 @@ import {
 	signalPresentation,
 } from '../src/components/scoringModeMeta';
 import { signalColors } from '../src/components/signalColors';
+import { colorDifference } from '../src/components/colorMath';
 
 // The engine's ids are plain strings, so nothing at compile time stops it growing one this table
 // has never heard of. That is what these check.
 
 const modes = Object.keys(builtInModes) as BuiltInModeId[];
+const colorOf = (id: string) => (id in boostPresentation ? boostPresentation[id as keyof typeof boostPresentation] : penaltyPresentation[id as keyof typeof penaltyPresentation]).color;
 
 describe('scoringModeMeta keeps up with the engine', () => {
 	test('lists every built-in mode, with its signals in the engine\'s display order', () => {
@@ -74,6 +78,28 @@ describe('scoringModeMeta colours', () => {
 	test('gives every boost and penalty its own colour', () => {
 		expect(new Set(factors.map(entry => entry.color)).size).toBe(factors.length);
 		expect(new Set(factors.map(entry => entry.ink)).size).toBe(factors.length);
+	});
+
+	// The boosts that only one sport can pay never land on the same card as another sport's.
+	const sportOnly: Record<string, string> = { goAheadRun: 'baseball', noHitter: 'baseball', twoMinuteDrill: 'football', redCard: 'soccer' };
+
+	test('keeps any two factors that can share a card at least 11 apart in ΔE00', () => {
+		const tooClose = modes.flatMap(mode => ['baseball', 'football', 'soccer', 'hockey'].flatMap(sport => {
+			const ids = ['favoriteBoost', 'gameBoost', 'postseasonBoost', ...builtInModes[mode].boosts.map(boost => boost.id), 'clockStall', 'volatility']
+				.filter(id => !sportOnly[id] || sportOnly[id] === sport);
+			return ids.flatMap((one, index) => ids.slice(index + 1)
+				.filter(two => colorDifference(colorOf(one), colorOf(two)) < 11)
+				.map(two => `${mode} ${sport}: ${one} / ${two}`));
+		}));
+		expect(tooClose).toEqual([]);
+	});
+
+	// Bootstrap Icons draws a name it doesn't have as nothing, so a typo is a blank space beside the row.
+	test('names only icons the extension\'s copy of Bootstrap Icons has', () => {
+		const glyphsPath = require.resolve('bootstrap-icons/font/bootstrap-icons.json', { paths: [join(__dirname, '../../../apps/extension')] });
+		const glyphs = JSON.parse(readFileSync(glyphsPath, 'utf8')) as Record<string, number>;
+		const missing = [...factors.map(entry => entry.icon), 'layers-half'].filter(icon => !(icon in glyphs));
+		expect(missing).toEqual([]);
 	});
 
 	test('gives every boost and penalty its own icon, apart from the blend rows\' too', () => {

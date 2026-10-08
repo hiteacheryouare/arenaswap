@@ -54,9 +54,7 @@ export const factorTones = {
 	sky: { color: '#0ea5e9', ink: '#0369a1' },
 	blue: { color: '#2274a5', ink: '#2274a5' },
 	indigo: { color: '#6366f1', ink: '#4338ca' },
-	violet: { color: '#8b5cf6', ink: '#6d28d9' },
 	purple: { color: '#a855f7', ink: '#7e22ce' },
-	fuchsia: { color: '#d946ef', ink: '#a21caf' },
 	pink: { color: '#ec4899', ink: '#be185d' },
 } as const satisfies Record<string, FactorTone>;
 
@@ -93,8 +91,8 @@ export const signalPresentation = {
 	exposure: { labelKey: 'powerScore.signalExposure', tooltipKey: 'powerScore.tooltipExposure', color: signalColors.leadChanges },
 } as const satisfies Record<ModeSignalId, SignalPresentation>;
 
-// Every boost and penalty has its own icon and tone. Hues that sit close together go to factors
-// that never share a card: the sport-only boosts and Blowouts' pair against Classic's.
+// Every boost and penalty has its own icon and tone, and any two that can share a card sit at least
+// 11 apart in ΔE00. Closer hues only meet across sports, like the two-minute drill and the red card.
 export const boostPresentation = {
 	favoriteBoost: { labelKey: 'powerScore.favoriteBoost', tooltipKey: 'powerScore.tooltipFavoriteBoost', icon: 'star-fill', moment: false, ...factorTones.gold },
 	gameBoost: { labelKey: 'powerScore.gameBoost', tooltipKey: 'powerScore.tooltipGameBoost', icon: 'lightning-fill', moment: false, ...factorTones.green },
@@ -102,7 +100,7 @@ export const boostPresentation = {
 	goAheadRun: { labelKey: 'powerScore.goAheadRun', tooltipKey: 'powerScore.tooltipGoAheadRun', icon: 'pentagon-fill', moment: true, ...factorTones.lime },
 	twoMinuteDrill: { labelKey: 'powerScore.twoMinuteDrill', tooltipKey: 'powerScore.tooltipTwoMinuteDrill', icon: 'stopwatch-fill', moment: true, ...factorTones.rose },
 	redCard: { labelKey: 'powerScore.redCard', tooltipKey: 'powerScore.tooltipRedCard', icon: 'file-fill', moment: true, ...factorTones.red },
-	noHitter: { labelKey: 'powerScore.noHitter', tooltipKey: 'powerScore.tooltipNoHitter', icon: 'slash-circle-fill', moment: true, ...factorTones.fuchsia },
+	noHitter: { labelKey: 'powerScore.noHitter', tooltipKey: 'powerScore.tooltipNoHitter', icon: 'slash-circle-fill', moment: true, ...factorTones.amber },
 	upsetWatch: { labelKey: 'powerScore.upsetWatch', tooltipKey: 'powerScore.tooltipUpsetWatch', icon: 'binoculars-fill', moment: true, ...factorTones.indigo },
 	upsetRout: { labelKey: 'powerScore.upsetRout', tooltipKey: 'powerScore.tooltipUpsetRout', icon: 'tornado', moment: false, ...factorTones.sky },
 	stakes: { labelKey: 'powerScore.stakes', tooltipKey: 'powerScore.tooltipStakes', icon: 'flag-fill', moment: true, ...factorTones.teal },

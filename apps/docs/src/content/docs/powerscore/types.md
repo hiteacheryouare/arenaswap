@@ -228,11 +228,62 @@ interface PowerScore {
 
 ```ts
 interface ScoredSignal { id: string; points: number; ceiling: number; disabled: boolean }
-interface ScoredBoost  { id: string; points: number; meta?: Record<string, number> }
+interface ScoredBoost  { id: string; points: number; meta?: Record<string, number>; details?: ReasonFragment[] }
 interface ReasonFragment { key: string; params?: Record<string, string | number> }
 ```
 
 `meta` on a boost carries what a UI might want to say, such as `{ inning: 8 }` on a no-hitter or `{ secondsLeft: 95, trailBy: 3 }` on a two-minute drill. A reason fragment looks like `{ key: 'outscoring', params: { team: 'BOS' } }`. Reason keys the built-in modes know render as English in `reason`. A key of your own renders as itself, so translate from `reasons`, not from the string.
+
+`details` on a boost says what is happening in this game that the boost pays for, or doesn't, as reason fragments for a UI to translate: `{ key: 'seriesClinch', params: { team: 'CHW' } }` on stakes, or a pulled goalie and a power play together on a hockey 6-on-4. It's absent when there's nothing to say, such as before a game starts or while play is stopped. There is no English renderer for these keys; the table below lists every one the built-in boosts send, with the sentence ArenaSwap shows for it.
+
+| Boost | Key | Params | In English |
+| --- | --- | --- | --- |
+| `scoringOpportunity` | `basesEmpty` | — | Bases empty, so there's nobody to bring home. |
+| `scoringOpportunity` | `runnerFirst` | — | A runner on first. |
+| `scoringOpportunity` | `runnerSecond` | — | A runner on second, in scoring position. |
+| `scoringOpportunity` | `runnerThird` | — | A runner on third, one base from home. |
+| `scoringOpportunity` | `runnersFirstSecond` | — | Runners on first and second. |
+| `scoringOpportunity` | `runnersFirstThird` | — | Runners on the corners. |
+| `scoringOpportunity` | `runnersSecondThird` | — | Runners on second and third, both in scoring position. |
+| `scoringOpportunity` | `basesLoaded` | — | Bases loaded. Nowhere to put anybody. |
+| `scoringOpportunity` | `inningOver` | — | Three outs, so the bases are clear. |
+| `scoringOpportunity` | `outsideRedZone` | — | Nobody's in the red zone. |
+| `scoringOpportunity` | `redZone` | `team` | {team} is in the red zone. |
+| `scoringOpportunity` | `redZoneThirdAndShort` | `team` | {team} is in the red zone, facing third and short. |
+| `scoringOpportunity` | `redZoneFourthDown` | `team` | {team} is in the red zone on fourth down. This snap matters. |
+| `scoringOpportunity` | `redZoneNotClose` | `team` | {team} is in the red zone, but the score's too lopsided for it to count. |
+| `scoringOpportunity` | `emptyNet` | `team`, `margin`, `clock` | {team} pulled the goalie, down {margin} with {clock} left. |
+| `scoringOpportunity` | `powerPlayTied` | — | A power play in a tie game. |
+| `scoringOpportunity` | `powerPlayClose` | `margin` | A power play, and only {margin} in it. |
+| `scoringOpportunity` | `powerPlayTeamTied` | `team` | {team} is on the power play in a tie game. |
+| `scoringOpportunity` | `powerPlayTeamTrailing` | `team`, `margin` | {team} is on the power play, down {margin}. |
+| `scoringOpportunity` | `powerPlayTeamLeading` | `team`, `margin` | {team} is on the power play, up {margin}. |
+| `scoringOpportunity` | `noScoringPosition` | — | No runners or red zones in this sport, so this one sits out. |
+| `goAheadRun` | `goAheadRun` | `team` | {team} has the go-ahead run on base. |
+| `goAheadRun` | `tyingRun` | `team` | {team} has the tying run on base. |
+| `goAheadRun` | `winningRun` | `team` | {team} has the winning run on base. One swing could end it. |
+| `goAheadRun` | `lastChance` | — | It could be their last chance. |
+| `twoMinuteDrill` | `driveTied` | `team`, `yards`, `clock` | Tie game. {team} has the ball {yards} yards out with {clock} left. |
+| `twoMinuteDrill` | `driveTrailing` | `team`, `trailBy`, `yards`, `clock` | {team} is down {trailBy}, driving from {yards} yards out with {clock} left. |
+| `redCard` | `redCard` | `team`, `players`, `minute` | {team} has been down to {players} since {minute}′. |
+| `noHitter` | `noHitter` | `team`, `innings` | {team} still doesn't have a hit through {innings} innings. |
+| `noHitter` | `doubleNoHitter` | `innings` | Neither team has a hit through {innings} innings. |
+| `upsetWatch` | `underdogLeading` | `team`, `chance`, `margin` | Our sources gave {team} a {chance}% chance before the game. They lead by {margin}. |
+| `upsetWatch` | `underdogLevel` | `team`, `chance` | Our sources gave {team} a {chance}% chance before the game. It's all square. |
+| `upsetWatch` | `underdogClose` | `team`, `chance`, `margin` | Our sources gave {team} a {chance}% chance before the game. They trail by just {margin}. |
+| `stakes` | `seriesClinch` | `team` | A win and {team} takes the series. |
+| `stakes` | `seriesDecider` | `game` | Game {game}. Winner takes the series. |
+| `stakes` | `rankedMeeting` | `rank`, `team`, `otherRank`, `other` | No. {rank} {team} vs. No. {otherRank} {other}. |
+| `stakes` | `raceTitle` | `team` | {team} is in the title race. |
+| `stakes` | `raceRelegation` | `team` | {team} is in a relegation fight. |
+| `stakes` | `raceTopQualification` | `team` | {team} is chasing a top European spot. |
+| `stakes` | `raceLine` | `team` | {team} is right on the edge of a playoff or qualifying spot. |
+| `stakes` | `raceClinch` | `team` | {team} can clinch with a win. |
+| `stakes` | `raceElimination` | `team` | A loss knocks {team} out of the race. |
+| `stakes` | `raceHunt` | `team` | {team} is still in the playoff hunt. |
+| `postseasonBoost` | `postseasonRound` | `round` | 0 is the final, 1 a semifinal, 2 a quarterfinal, 3 an earlier round |
+| `postseasonBoost` | `regularSeason` | — | Regular season, so nothing extra here. |
+| `postseasonBoost` | `postseasonBoostOff` | — | Your postseason boost is set to 0 in Settings. |
 
 ## PowerScoreMode
 
@@ -279,7 +330,7 @@ interface BoostDefinition {
 }
 
 interface SignalOutput { points: number; reason?: ReasonFragment }
-interface BoostOutput extends SignalOutput { meta?: Record<string, number> }
+interface BoostOutput extends SignalOutput { meta?: Record<string, number>; details?: ReasonFragment[] }
 ```
 
 A signal's `points` are clamped to its `ceiling`. A boost has no ceiling of its own, but its bucket may have a cap.

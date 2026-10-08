@@ -17,6 +17,22 @@ const makeGame = (overrides: Partial<Game> = {}): Game => ({
 });
 
 describe('resolveStatus', () => {
+	test('hands back each clock sport\'s clock apart from its period, in that sport\'s own notation', () => {
+		expect(resolveStatus(makeGame({ league: 'nhl', sportType: 'hockey', period: 3, clockSeconds: 80 }), false, t)).toEqual({ text: 'P3', clock: '1:20' });
+		expect(resolveStatus(makeGame({ league: 'nfl', sportType: 'football', period: 4, clockSeconds: 95 }), false, t)).toEqual({ text: 'Q4', clock: '1:35' });
+		expect(resolveStatus(makeGame({ league: 'epl', sportType: 'soccer', period: 2, clockSeconds: 62 * 60 }), false, t)).toEqual({ text: '2H', clock: '62\'' });
+	});
+
+	test('keeps soccer\'s stoppage time and extra time on the running minute', () => {
+		expect(resolveStatus(makeGame({ league: 'epl', sportType: 'soccer', period: 2, clockSeconds: 95 * 60 }), false, t)).toEqual({ text: '2H', clock: '95\'' });
+		expect(resolveStatus(makeGame({ league: 'epl', sportType: 'soccer', period: 3, clockSeconds: 98 * 60 }), false, t)).toEqual({ text: 'ET1', clock: '98\'' });
+	});
+
+	test('hockey overtime keeps its clock, and its intermission has none', () => {
+		expect(resolveStatus(makeGame({ league: 'nhl', sportType: 'hockey', period: 4, clockSeconds: 200 }), false, t)).toEqual({ text: 'OT', clock: '3:20' });
+		expect(resolveStatus(makeGame({ league: 'nhl', sportType: 'hockey', period: 2, clockSeconds: 0, intermission: true }), false, t)).toEqual({ text: 'Intermission' });
+	});
+
 	test('shows period and clock for a live clock sport', () => {
 		expect(resolveStatus(makeGame(), false, t)).toEqual({ text: 'Q3', clock: '6:40' });
 	});

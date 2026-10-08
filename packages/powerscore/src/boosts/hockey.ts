@@ -7,8 +7,9 @@ const sideOf = (value: Side | boolean | undefined): Side | undefined => (value =
 
 // A pulled goalie late in the 3rd of a one- or two-goal game. When the feed says whose net is empty
 // it pays only for the trailing team's: the leader's empty net is a delayed penalty.
-const emptyNetPoints = ({ game, context, sport, league, margin }: SignalInput): number => {
-	if (!context.emptyNet || game.period !== league.regularPeriods) return 0;
+const emptyNetPoints = (input: SignalInput): number => {
+	const { game, context, sport, league, margin } = input;
+	if (!context.emptyNet || game.period !== league.regularPeriods || isDecided(input)) return 0;
 	const secsLeft = secondsLeftInPeriod(game, sport, league);
 	if (secsLeft === null || secsLeft > hockeyTunables.emptyNetWindowSecs) return 0;
 	const side = sideOf(context.emptyNet);
