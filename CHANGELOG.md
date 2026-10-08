@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Open tab menus sit above the Up Next day pager — 2026-10-07
+
+The tab picker on a live card no longer tucks behind the orange day label ("Today") of the Up Next pager when its menu opens downward over it. The open card now climbs to 4, past Bootstrap's active page link at 3 and still under the sticky header at 5.
+
 ## Boost tooltips talk about this game — 2026-10-07
 
 Hovering a boost now tells you what is happening in this game, like "A win and CHW takes the series.", instead of the general rule behind the boost. The engine's boosts return the reason they paid, or didn't, as keyed sentences next to their points, and the popup translates those. Anything without one, such as a score from an older engine, still shows the general rule.

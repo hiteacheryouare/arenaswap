@@ -459,9 +459,11 @@
 // A hovered card is lifted with a transform, and a transform makes the card a stacking context of
 // its own: the menu's z-index then only counts inside the card, and the next card in the list paints
 // over it. While a card holds an open menu, the card itself is what climbs.
+// It climbs past 3, where Bootstrap holds the active page of the Up Next day pager, and stops short
+// of the sticky header at 5.
 .game-card:has(.dropdown-menu.show) {
 	position: relative;
-	z-index:  1;
+	z-index:  4;
 }
 
 .settings-search {
