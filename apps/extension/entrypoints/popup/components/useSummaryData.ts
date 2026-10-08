@@ -164,6 +164,7 @@ const won = (id: string): SeriesEvent => ({
 const pending = (): SeriesEvent => ({ statusType: { completed: false } });
 
 interface MockSeriesEntry {
+	type: 'playoff';
 	summary: string;
 	totalCompetitions: number;
 	events: SeriesEvent[];
@@ -171,16 +172,19 @@ interface MockSeriesEntry {
 
 const mockSeriesMap: Record<string, MockSeriesEntry> = {
 	'mock-4': {
+		type: 'playoff',
 		summary: 'PHI leads series 2-1',
 		totalCompetitions: 7,
 		events: [won('22'), won('21'), won('22'), pending(), pending(), pending(), pending()],
 	},
 	'mock-14': {
+		type: 'playoff',
 		summary: 'BOS leads series 3-2',
 		totalCompetitions: 7,
 		events: [won('1'), won('3'), won('1'), won('1'), won('3'), pending(), pending()],
 	},
 	'mock-16': {
+		type: 'playoff',
 		summary: 'Series tied 2-2',
 		totalCompetitions: 7,
 		events: [won('28'), won('10'), won('28'), won('10'), pending(), pending(), pending()],
@@ -217,9 +221,13 @@ const mockRecordsMap: Record<string, TeamRecords> = {
 // head-to-head — six meetings spread across the year — and a series opener carries that and
 // nothing else, so falling back to it captions a series that has not started with the record from
 // the last one. It is not reliably index 0 either: a 'preseason' entry can sit in front of it.
+// A playoff series comes first: the NBA and NHL ship no 'current' entry at all, and MLB's shrinks
+// to the games actually played once a side clinches, losing the length of the series.
 export const pickSeriesEntry = (entries: SeriesInfo[] | undefined): SeriesInfo | null => {
 	if (!Array.isArray(entries)) return null;
-	return entries.find(entry => entry.type === 'current') ?? null;
+	return entries.find(entry => entry.type === 'playoff')
+		?? entries.find(entry => entry.type === 'current')
+		?? null;
 };
 
 const useSummaryData = (game: SummaryGameArg): summaryDataResult => {

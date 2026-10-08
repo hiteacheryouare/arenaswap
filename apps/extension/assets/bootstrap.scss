@@ -1203,7 +1203,8 @@
 
 	.series-dots-wrap { margin-top: 0.5rem; }
 	.series-dots-summary { color: rgba(255, 255, 255, 0.75); box-shadow: none; }
-	.series-dot-empty { color: rgba(255, 255, 255, 0.45); }
+	.series-dot-empty,
+	.series-dot-not-needed { color: rgba(255, 255, 255, 0.45); }
 }
 
 // ── Pre-game setup card ──────────────────────────────────────────────────────
@@ -2091,8 +2092,13 @@ button.game-info-attribution {
 	font-size: 0.72rem;
 }
 
-.series-dot-empty {
+.series-dot-empty,
+.series-dot-not-needed {
 	color: #374151;
+}
+
+.series-dot-empty.is-if-necessary {
+	opacity: 0.45;
 }
 
 .game-detail-shell {
@@ -2492,7 +2498,8 @@ button.game-info-attribution {
 	.bso-label { color: rgba(255, 255, 255, 0.72); }
 
 	.series-dots-summary { color: rgba(255, 255, 255, 0.75); box-shadow: none; }
-	.series-dot-empty { color: rgba(255, 255, 255, 0.45); }
+	.series-dot-empty,
+	.series-dot-not-needed { color: rgba(255, 255, 255, 0.45); }
 
 	// A delayed game keeps its hero rather than being dimmed to 40% opacity, which on a dark surface
 	// is a disappearance rather than a dim. The status line carries it, the way the poster's does.
