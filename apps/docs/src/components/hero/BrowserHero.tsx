@@ -268,6 +268,7 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 								favoriteTeamIds={noFavorites}
 								onToggleFavoriteTeam={noop}
 								onOpenGameDetail={noop}
+								interactive={false}
 								bettingPrefs={{ bettingEnabled: false }}
 								tabSlot={<HeroTabSlot label={copy.tabLabel.split('{number}').join(String(entry.index + 1)).split('{host}').join(heroGames[entry.index].tabHost)} />}
 								leagueSlot={<LeagueMark league={entry.game.league} logos={emptyLeagueLogos} onColor={leagueMarkOnColor(entry.game)} />}

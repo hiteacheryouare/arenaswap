@@ -1,11 +1,11 @@
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
 import type { GameCardDisplayProps } from './gameCardTypes';
-import { CardStatusRow, GameMeta, SeasonLabel, TeamColumn, buildCardHandlers, buildGameCardSurface, formatStartDateTime, formatStartTime } from './gameCardShared';
+import { CardStatusRow, GameMeta, SeasonLabel, TeamColumn, CardDetailsButton, buildCardShellProps, buildGameCardSurface, formatStartDateTime, formatStartTime } from './gameCardShared';
 import { conditionIcon, formatTemperature } from './weatherUtils';
 import { useDisplayLocale, useT } from './i18nContext';
 import useSwitchCrest from './useSwitchCrest';
 
-const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, weatherPrefs, tabSlot, leagueSlot, dayNamedAbove = false }: GameCardDisplayProps) => {
+const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, weatherPrefs, tabSlot, leagueSlot, dayNamedAbove = false, interactive = true }: GameCardDisplayProps) => {
 	const t = useT();
 	const locale = useDisplayLocale();
 	useSwitchCrest(game?.awayTeam ?? {}, game?.homeTeam ?? {});
@@ -15,19 +15,16 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 	const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
 	const awayFavorited = favoriteTeamIds.has(awayFavoriteTeamKey);
 	const homeFavorited = favoriteTeamIds.has(homeFavoriteTeamKey);
-	const { onClick: onCardClick, onKeyDown: onCardKeyDown } = buildCardHandlers(onOpenGameDetail, game.id);
+	const shellProps = buildCardShellProps(game, t, onOpenGameDetail, interactive);
 	const surface = buildGameCardSurface(game);
 
 	return (
 		<div
-			className='game-card game-card-clickable is-team-colored'
+			className={`game-card${interactive ? ' game-card-clickable' : ''} is-team-colored`}
 			style={surface.style}
-			role='button'
-			tabIndex={0}
-			onClick={onCardClick}
-			onKeyDown={onCardKeyDown}
-			aria-label={t('gameCard.openDetails', { away: game.awayTeam.abbreviation, home: game.homeTeam.abbreviation })}
+			{...shellProps}
 		>
+			{interactive && <CardDetailsButton game={game} onOpenGameDetail={onOpenGameDetail} />}
 			{/* A scheduled card has no status row of its own, so the league mark or the round name
 			    brings one. Without either, the card keeps the height it has always had. */}
 			{(leagueSlot || game.postseasonLabel || game.isPreseason) && (
@@ -35,7 +32,7 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 			)}
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' surface={surface.awayColor} />
+				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' surface={surface.awayColor} interactive={interactive} />
 				<div className='d-flex flex-column align-items-center game-card-center'>
 					<span className='pre-game-vs'>{t('gameCard.vs')}</span>
 					{game.startTime && (
@@ -50,9 +47,9 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 						</div>
 					)}
 				</div>
-				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' surface={surface.homeColor} />
+				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' surface={surface.homeColor} interactive={interactive} />
 			</div>
-			<GameMeta game={game} bettingPrefs={bettingPrefs} hideBroadcasts dark />
+			<GameMeta game={game} bettingPrefs={bettingPrefs} hideBroadcasts dark interactive={interactive} />
 			<div className='game-card-footer'>{tabSlot}</div>
 		</div>
 	);

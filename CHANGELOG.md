@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Game cards stop being buttons with buttons inside — 2026-10-09
+
+A card is now a labelled group with a hidden details button as its first Tab stop, so screen readers read the matchup, score, clock and status, and the stars, odds tooltip and tab picker are controls of their own. Clicking the card still opens the game, and the website's demo cards take `interactive={false}` and drop out of the tab order.
+
 ## The boost tooltips get a second look — 2026-10-08
 
 A game decided at the horn no longer pays the empty net, baseball's Scoring opportunity tooltip speaks in whole sentences, and the postseason and favorite tooltips read the setting rather than the rounded points, so a boost of 1 stops claiming it's set to 0. The no-hitter moves to amber so no two factors on one card sit closer than 11 in ΔE00, and the powerscore README and docs now list every `details` key. Tests push every sentence through all 12 locales, and a stored hockey score through to its tooltip.
