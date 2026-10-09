@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The baseball detail screen shows who's due up — 2026-10-09
+
+Under the hero, a Due Up block lists the next three hitters with a portrait, their position and their line for the day ("0-1, BB"), and disappears when our sources name nobody, as they do between innings. The list keeps the order it arrives in rather than sorting on lineup slot, because the lineup wraps and the ninth hitter really does bat ahead of the leadoff man.
+
 ## The boost tooltips get a second look — 2026-10-08
 
 A game decided at the horn no longer pays the empty net, baseball's Scoring opportunity tooltip speaks in whole sentences, and the postseason and favorite tooltips read the setting rather than the rounded points, so a boost of 1 stops claiming it's set to 0. The no-hitter moves to amber so no two factors on one card sit closer than 11 in ΔE00, and the powerscore README and docs now list every `details` key. Tests push every sentence through all 12 locales, and a stored hockey score through to its tooltip.

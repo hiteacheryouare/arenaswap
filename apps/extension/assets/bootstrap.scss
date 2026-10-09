@@ -1943,6 +1943,41 @@
 	margin-top: 0.34rem;
 }
 
+// The due-up block borrows the section skin above and only adds its rows. The portrait is the same
+// disc the pre-game starters use, a size down, so a long name gives up width before the face does.
+.gd-dueup-row {
+	padding: 0.18rem 0;
+
+	& + & { border-top: 1px solid var(--as-secondary-bg); }
+}
+
+.gd-dueup-shot {
+	width:  26px;
+	height: 26px;
+}
+
+.gd-dueup-name {
+	font-size:   0.66rem;
+	font-weight: 600;
+	color:       var(--as-body-color);
+}
+
+.gd-dueup-position {
+	font-size: 0.56rem;
+	color:     var(--as-secondary-color);
+}
+
+// Right-aligned and quiet: "0-1, BB" is a footnote to the name, not a second headline. Tabular so
+// the lines down the right edge keep their digits in step.
+.gd-dueup-line {
+	flex-shrink:          1;
+	max-width:            45%;
+	font-size:            0.6rem;
+	color:                var(--as-secondary-color);
+	text-align:           right;
+	font-variant-numeric: tabular-nums;
+}
+
 // Venue / broadcast / odds / weather, as one titled section rather than four stacked centred
 // lines. Takes the chart cards' treatment, not the breakdown's white card: everything below the
 // PowerScore math reads as one dark column of sections.

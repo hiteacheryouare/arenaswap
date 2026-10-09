@@ -161,6 +161,11 @@ export class MockGameSimulator {
 					pitcher: { name: 'Edwin Diaz', jersey: '39', position: 'RP', summary: '0.2 IP, 0 ER, H, BB' },
 					batter: { name: 'Bryce Harper', jersey: '3', position: 'RF', summary: '2-3, 2B, RBI' },
 				},
+				dueUp: [
+					{ name: 'Kyle Schwarber', jersey: '12', position: 'DH', summary: '1-3, HR, BB' },
+					{ name: 'Alec Bohm', jersey: '28', position: '3B', summary: '0-3, K' },
+					{ name: 'Brandon Marsh', jersey: '16', position: 'LF', summary: '1-2, BB' },
+				],
 				lastPlay: 'Pitch 2 : Ball 1',
 				broadcasts: ['MLB.TV'],
 				weather: { temperatureF: 61, conditionLabel: 'Clear' },
@@ -436,6 +441,7 @@ export class MockGameSimulator {
 		awayTeam: { ...g.awayTeam },
 		bso: g.bso ? { ...g.bso } : undefined,
 		atBat: g.atBat ? { pitcher: { ...g.atBat.pitcher }, batter: { ...g.atBat.batter } } : undefined,
+		dueUp: g.dueUp?.map(hitter => ({ ...hitter })),
 	}));
 
 	// The slate as constructed, before any tick has advanced it. Anything that needs the shipped

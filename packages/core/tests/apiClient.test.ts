@@ -3159,6 +3159,13 @@ describe('a window asked for one day at a time', () => {
 	});
 });
 
+// ESPN's due-up entry: the athlete, the lineup slot and the line for the day.
+const dueUpHitter = (name: string, batOrder: number) => ({
+	athlete: { displayName: name, jersey: 10 + batOrder, position: 'LF', headshot: `https://a.espncdn.com/${batOrder}.png` },
+	batOrder,
+	summary: '0-1, BB',
+});
+
 // Three fields that ride the scoreboard poll we already make, and one — the rank — that every
 // league sends whether it has a poll or not.
 describe('rank, timeouts and the last play', () => {
@@ -3323,6 +3330,61 @@ describe('rank, timeouts and the last play', () => {
 			const game = await parseOne('mlb', { state: 'pre', homeExtra: { leaders }, awayExtra: { leaders } });
 			expect(game?.homeTeam.leaders?.[0]?.player).toBe('B. Harper');
 			expect(game?.homeTeam.leaders?.[0]?.value).toBe('.312');
+		});
+	});
+
+	describe('dueUp', () => {
+		test('reads the hitters in the order ESPN lists them', async () => {
+			const game = await parseOne('mlb', { situation: { dueUp: [dueUpHitter('Fernando Tatis Jr.', 4), dueUpHitter('Jackson Merrill', 5), dueUpHitter('Xander Bogaerts', 6)] } });
+			expect(game?.dueUp?.map(h => h.name)).toEqual(['Fernando Tatis Jr.', 'Jackson Merrill', 'Xander Bogaerts']);
+			expect(game?.dueUp?.[0]).toEqual({
+				name: 'Fernando Tatis Jr.', jersey: '14', position: 'LF', headshot: 'https://a.espncdn.com/4.png', summary: '0-1, BB',
+			});
+		});
+
+		// The lineup wraps, and the ninth hitter really does come up ahead of the leadoff man.
+		test('keeps a wrapped lineup in the order it comes up', async () => {
+			const game = await parseOne('mlb', { situation: { dueUp: [dueUpHitter('Ninth', 9), dueUpHitter('Leadoff', 1), dueUpHitter('Second', 2)] } });
+			expect(game?.dueUp?.map(h => h.name)).toEqual(['Ninth', 'Leadoff', 'Second']);
+		});
+
+		test('is undefined when the list is missing or empty', async () => {
+			expect((await parseOne('mlb', { situation: { balls: 1 } }))?.dueUp).toBeUndefined();
+			expect((await parseOne('mlb', { situation: { dueUp: [] } }))?.dueUp).toBeUndefined();
+		});
+
+		test('drops a hitter with no name and keeps the rest, with a partial athlete still read', async () => {
+			const game = await parseOne('mlb', {
+				situation: {
+					dueUp: [
+						{ batOrder: 3, summary: '1-2' },
+						{ athlete: { shortName: 'J. Merrill' }, batOrder: 4 },
+						dueUpHitter('Xander Bogaerts', 5),
+					],
+				},
+			});
+			expect(game?.dueUp).toEqual([
+				{ name: 'J. Merrill' },
+				{ name: 'Xander Bogaerts', jersey: '15', position: 'LF', headshot: 'https://a.espncdn.com/5.png', summary: '0-1, BB' },
+			]);
+		});
+
+		test('stops at three', async () => {
+			const game = await parseOne('mlb', { situation: { dueUp: [1, 2, 3, 4, 5].map(n => dueUpHitter(`Hitter ${n}`, n)) } });
+			expect(game?.dueUp?.map(h => h.name)).toEqual(['Hitter 1', 'Hitter 2', 'Hitter 3']);
+		});
+
+		// A list ESPN shapes wrongly must cost the block alone, never the situation beside it.
+		test('a malformed list leaves the rest of the situation intact', async () => {
+			const game = await parseOne('mlb', { situation: { balls: 2, strikes: 1, outs: 1, dueUp: 'nobody' } });
+			expect(game?.dueUp).toBeUndefined();
+			expect(game?.bso).toEqual({ balls: 2, strikes: 1, outs: 1 });
+		});
+
+		test('is absent outside the inning sports and outside a live game', async () => {
+			const situation = { dueUp: [dueUpHitter('Fernando Tatis Jr.', 4)] };
+			expect((await parseOne('nfl', { situation }))?.dueUp).toBeUndefined();
+			expect((await parseOne('mlb', { state: 'post', situation }))?.dueUp).toBeUndefined();
 		});
 	});
 });

@@ -399,6 +399,7 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "投球",
 		"atBatLabel": "打席",
+		"dueUpHeading": "次の打者",
 		"bonus": "ボーナス",
 		"foulsBonus": "{team}がボーナス",
 		"foulsDoubleBonus": "{team}がダブルボーナス",

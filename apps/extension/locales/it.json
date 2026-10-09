@@ -399,6 +399,7 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "Lancio",
 		"atBatLabel": "In battuta",
+		"dueUpHeading": "Prossimi battitori",
 		"bonus": "Bonus",
 		"foulsBonus": "{team} in bonus",
 		"foulsDoubleBonus": "{team} in doppio bonus",

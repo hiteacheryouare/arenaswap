@@ -194,6 +194,9 @@ export interface Game {
 	bso?: { balls: number; strikes: number; outs: number };
 	// Inning sports only. Dropped between innings, which is what makes the panel come and go.
 	atBat?: AtBat;
+	// Inning sports only: the next hitters, in batting order, at most three. Absent when ESPN sends
+	// none, as it does between innings and once a game is out of hitters to name.
+	dueUp?: AtBatPlayer[];
 	// The play that just happened, as ESPN describes it. Live games only, and absent in soccer,
 	// which sends no situation at all. Newlines are meaningful — a penalty is two sentences — so
 	// this is rendered with `white-space: pre-line` rather than collapsed.

@@ -399,6 +399,7 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "Pitching",
 		"atBatLabel": "At Bat",
+		"dueUpHeading": "Susunod na Batter",
 		"bonus": "Bonus",
 		"foulsBonus": "Nasa bonus ang {team}",
 		"foulsDoubleBonus": "Nasa double bonus ang {team}",

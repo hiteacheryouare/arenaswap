@@ -399,6 +399,7 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "Lancer",
 		"atBatLabel": "Au bâton",
+		"dueUpHeading": "Prochains frappeurs",
 		"bonus": "Bonus",
 		"foulsBonus": "{team} en bonus",
 		"foulsDoubleBonus": "{team} en double bonus",

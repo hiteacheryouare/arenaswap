@@ -510,6 +510,18 @@ const parseAtBat = (situation: EspnSituation): AtBat | undefined => {
 	return pitcher && batter ? { pitcher, batter } : undefined;
 };
 
+const dueUpLimit = 3;
+
+// Capped at three because that is what the block has room for. A hitter ESPN names without a name
+// is skipped rather than shown as a blank row.
+const parseDueUp = (situation: EspnSituation): AtBatPlayer[] | undefined => {
+	const hitters = (situation.dueUp ?? [])
+		.map(parseAtBatPlayer)
+		.filter((player): player is AtBatPlayer => player !== undefined)
+		.slice(0, dueUpLimit);
+	return hitters.length > 0 ? hitters : undefined;
+};
+
 // `possession` disappears at every dead ball while the rest of the situation survives, so a
 // timeout or the end of a quarter would otherwise take the field diagram's direction of travel
 // with it. `lastPlay.team` holds the offense through those states: at the end of the 2nd quarter
@@ -732,6 +744,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			: undefined,
 		driveStartYardLine: isGridironSituation ? situation.lastPlay?.drive?.start?.yardLine : undefined,
 		atBat: isInningSport && liveSituation ? parseAtBat(situation) : undefined,
+		dueUp: isInningSport && liveSituation ? parseDueUp(situation) : undefined,
 		// No sport gate: baseball and hockey describe their last play as readily as football does.
 		lastPlay: liveSituation ? parseLastPlay(situation) : undefined,
 		lastPlayTeamId: liveSituation ? parseLastPlayTeam(situation, home.id, away.id) : undefined,
