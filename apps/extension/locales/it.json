@@ -615,6 +615,11 @@
 		"oddsProvidedBy": "Quote fornite da:",
 		"openDetails": "Apri i dettagli di {away} vs {home}",
 		"live": "DIRETTA",
+		"staleMinutes": {
+			"1": "Ultimo aggiornamento 1 minuto fa",
+			"n": "Ultimo aggiornamento $1 minuti fa"
+		},
+		"staleUnderMinute": "Ultimo aggiornamento meno di un minuto fa",
 		"final": "Finale",
 		"delay": "RITARDO",
 		"delayFallback": "Ritardo",

@@ -63,6 +63,7 @@ describe('a worker restart with everything intact', () => {
 			onStandbyStream: true,
 			standbyStreamTabId: 41,
 			slateShedLeagues: ['nba', 'nhl'],
+			leagueLastGoodAt: { nba: 1_760_000_000_000, nhl: 1_760_000_060_000 },
 		};
 
 		expect(BackgroundStateSchema.parse(reload(written))).toEqual(written);
@@ -152,7 +153,7 @@ describe('storage that came back corrupt', () => {
 
 		expect(parsed).toEqual({
 			games: [], scores: [], leagueLogos: {}, scoreHistory: {}, powerScoreHistory: {},
-			gameBoosts: {}, onStandbyStream: false, standbyStreamTabId: null, slateShedLeagues: [],
+			gameBoosts: {}, onStandbyStream: false, standbyStreamTabId: null, slateShedLeagues: [], leagueLastGoodAt: {},
 		});
 	});
 
@@ -232,5 +233,21 @@ describe('the leagues ESPN refused on the last slate fetch', () => {
 	test('drops entries that are not ids and keeps the ones that are', () => {
 		expect(BackgroundStateSchema.parse({ slateShedLeagues: ['nba', 7, null, { id: 'nhl' }] }).slateShedLeagues)
 			.toEqual(['nba']);
+	});
+});
+
+describe('when each league last answered a poll', () => {
+	test('survives the round trip, because the stale card counts its minutes from it', () => {
+		expect(BackgroundStateSchema.parse(reload({ leagueLastGoodAt: { nba: 1_760_000_000_000 } })).leagueLastGoodAt)
+			.toEqual({ nba: 1_760_000_000_000 });
+	});
+
+	test('keeps real leagues with real times and drops the rest', () => {
+		expect(BackgroundStateSchema.parse({ leagueLastGoodAt: { nba: 5, quidditch: 6, nhl: '7', nfl: Number.NaN } }).leagueLastGoodAt)
+			.toEqual({ nba: 5 });
+	});
+
+	test('is empty when it is not an object', () => {
+		expect(BackgroundStateSchema.parse({ leagueLastGoodAt: [1, 2] }).leagueLastGoodAt).toEqual({});
 	});
 });

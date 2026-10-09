@@ -428,6 +428,8 @@ export interface LiveScore extends PowerScoreResult {
 
 export type PowerScoreHistoryMap = Record<string, PowerScoreSnapshot[]>;
 
+export type LeagueLastGoodAt = Partial<Record<LeagueId, number>>;
+
 export interface BackgroundState {
 	games: Game[];
 	scores: PowerScoreResult[];
@@ -440,6 +442,9 @@ export interface BackgroundState {
 	// Leagues ESPN refused on the last slate fetch. An empty slate alongside a non-empty list here
 	// is a slate we cannot vouch for, which the popup reports as a failure rather than as no games.
 	slateShedLeagues: LeagueId[];
+	// When each league last answered a poll, in epoch milliseconds, so a card whose league is in
+	// `slateShedLeagues` can say how old its score is.
+	leagueLastGoodAt: LeagueLastGoodAt;
 }
 
 export interface ScoresUpdatedMessage {
@@ -453,6 +458,7 @@ export interface ScoresUpdatedMessage {
 	onStandbyStream: boolean;
 	standbyStreamTabId: number | null;
 	slateShedLeagues: LeagueId[];
+	leagueLastGoodAt: LeagueLastGoodAt;
 }
 
 export interface UpdatePrefsMessage {

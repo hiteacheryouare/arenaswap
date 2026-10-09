@@ -615,6 +615,11 @@
 		"oddsProvidedBy": "Odds provided by:",
 		"openDetails": "Open details for {away} vs {home}",
 		"live": "LIVE",
+		"staleMinutes": {
+			"1": "Last updated 1 minute ago",
+			"n": "Last updated $1 minutes ago"
+		},
+		"staleUnderMinute": "Last updated less than a minute ago",
 		"final": "Final",
 		"delay": "DELAY",
 		"delayFallback": "Delay",

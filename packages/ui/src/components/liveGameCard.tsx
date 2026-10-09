@@ -11,6 +11,7 @@ import InningHalfIcon from './inningHalfIcon';
 import type { GameCardDisplayProps } from './gameCardTypes';
 import { buildCardHandlers, buildGameCardSurface, CardStatusRow, formatGameClock, formatPeriod, GameMeta, isHalftime, SeasonLabel, powerScoreColor, TeamColumn } from './gameCardShared';
 import { useT } from './i18nContext';
+import { StaleLeagueNote } from './staleLeagueNote';
 import useSwitchCrest from './useSwitchCrest';
 
 const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, tabSlot, leagueSlot }: GameCardDisplayProps) => {
@@ -111,6 +112,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 			</div>
 
 			<GameMeta game={game} bettingPrefs={bettingPrefs} dark />
+			<StaleLeagueNote league={game.league} />
 
 			{excitementResult && (
 				<div className='d-flex align-items-center gap-2 game-card-ps-bar-row'>

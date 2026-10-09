@@ -1989,6 +1989,7 @@ describe('a scoreboard ESPN refused', () => {
 	const state = async () => await sendMessage({ type: 'GET_STATE' }) as {
 		games: Game[];
 		slateShedLeagues: string[];
+		leagueLastGoodAt: Record<string, number>;
 	};
 
 	const pollOnce = async () => {
@@ -2030,6 +2031,22 @@ describe('a scoreboard ESPN refused', () => {
 		await pollOnce();
 
 		expect((await state()).slateShedLeagues).toEqual([]);
+	});
+
+	test('remembers when the league last answered, and a refusal does not move it', async () => {
+		await loadWithLiveGame();
+		await pollOnce();
+		const answeredAt = (await state()).leagueLastGoodAt.nba;
+		expect(answeredAt).toBeGreaterThan(0);
+
+		fetchMock.mockResolvedValue({ games: [], leagueLogos: {}, shedLeagues: ['nba'] });
+		await pollOnce();
+		await pollOnce();
+		expect((await state()).leagueLastGoodAt.nba).toBe(answeredAt);
+
+		fetchMock.mockResolvedValue({ games: [liveGame], leagueLogos: {}, shedLeagues: [] });
+		await pollOnce();
+		expect((await state()).leagueLastGoodAt.nba).toBeGreaterThan(answeredAt);
 	});
 
 	// An empty answer ESPN actually gave is a quiet night and should read as one.

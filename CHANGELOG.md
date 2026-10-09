@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Live cards say when their league went quiet — 2026-10-09
+
+A live card whose league has stopped answering now carries one muted line under its venue, "Last updated 7 minutes ago", which counts up while the popup is open and disappears on the next good poll. The worker reports when each league last answered a poll as `leagueLastGoodAt`, and the line reads it against `slateShedLeagues`; nothing else on the card changes.
+
 ## The boost tooltips get a second look — 2026-10-08
 
 A game decided at the horn no longer pays the empty net, baseball's Scoring opportunity tooltip speaks in whole sentences, and the postseason and favorite tooltips read the setting rather than the rounded points, so a boost of 1 stops claiming it's set to 0. The no-hitter moves to amber so no two factors on one card sit closer than 11 in ΔE00, and the powerscore README and docs now list every `details` key. Tests push every sentence through all 12 locales, and a stored hockey score through to its tooltip.

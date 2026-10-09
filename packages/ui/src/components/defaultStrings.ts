@@ -8,6 +8,8 @@
 
 export const defaultStrings: Record<string, string> = {
 	'gameCard.live': 'LIVE',
+	'gameCard.staleMinutes': 'Last updated 1 minute ago | Last updated $1 minutes ago',
+	'gameCard.staleUnderMinute': 'Last updated less than a minute ago',
 	'gameCard.final': 'Final',
 	'gameCard.powerScore': 'PowerScore',
 	'gameCard.watchLabel': 'Watch:',

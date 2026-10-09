@@ -50,6 +50,7 @@ import type {
 	Game,
 	GuideSlate,
 	LeagueId,
+	LeagueLastGoodAt,
 	LiveScore,
 	PowerScoreSnapshot,
 	LeagueLogoMap,
@@ -142,6 +143,7 @@ export default defineBackground(() => {
 	let guideSlate: Game[] = [];
 	let guideSlateAt = 0;
 	let slateShedLeagues: LeagueId[] = [];
+	const leagueLastGoodAt: LeagueLastGoodAt = {};
 	// When each finished game actually ended, so the guide can stop drawing it at its estimate.
 	let endRecords: gameEndRecords = {};
 	// Per worker rather than persisted: a final whose summary has no duration would otherwise cost a
@@ -395,6 +397,7 @@ export default defineBackground(() => {
 		onStandbyStream,
 		standbyStreamTabId,
 		slateShedLeagues,
+		leagueLastGoodAt,
 	});
 
 	const broadcastScoresUpdated = () => {
@@ -908,6 +911,7 @@ export default defineBackground(() => {
 					return;
 				}
 				slateShedLeagues = fetchResult.shedLeagues;
+				for (const id of enabledLeagues) if (!slateShedLeagues.includes(id)) leagueLastGoodAt[id] = Date.now();
 				fetched = fetchResult.games;
 				leagueLogos = fetchResult.leagueLogos;
 			} catch (err) {
@@ -958,6 +962,7 @@ export default defineBackground(() => {
 			// spend a request on.
 			const nextStartMs = earliestUpcomingStartMs(games.filter(g => g.league === leagueId));
 			pollModeTracker.recordPollResult(leagueId, hasLiveGames, nextStartMs);
+			leagueLastGoodAt[leagueId] = Date.now();
 			fetchSucceeded = true;
 		} catch (err) {
 			logWarn(`Failed to fetch ${leagueId} games.`, err);
