@@ -79,6 +79,8 @@ interface mainViewProps {
 	onRefresh: () => unknown;
 	showReviewPrompt: boolean;
 	onToggleEnabled: () => void;
+	onBossButton?: () => void;
+	bossShortcut?: string;
 	onDismissReviewPrompt: () => void;
 	onLeaveReview: () => void;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
@@ -179,6 +181,8 @@ const mainView = ({
 	onDismissSuggestions,
 	onStartWalkthrough,
 	onOpenGuide,
+	onBossButton,
+	bossShortcut,
 	onRefresh,
 	showReviewPrompt,
 	onToggleEnabled,
@@ -303,6 +307,8 @@ const mainView = ({
 				onOpenSettings={onOpenSetup}
 				onStartTour={onStartWalkthrough}
 				onOpenGuide={onOpenGuide}
+				onBossButton={onBossButton}
+				bossShortcut={bossShortcut}
 			/>
 
 			<GameListHeader isLoading={isLoading} hasError={hasError} loadingMessage={loadingMessage} onRefresh={onRefresh} />
@@ -320,6 +326,13 @@ const mainView = ({
 			    waits its turn behind the suggest banner, so two notices never stack above the first game. */}
 			{!isLoading && !hasError && showReviewPrompt && suggestionCount === 0 && (
 				<ReviewPromptBanner onDismiss={onDismissReviewPrompt} onLeaveReview={onLeaveReview} />
+			)}
+
+			{prefsLoaded && !prefs.enabled && (
+				<div className='alert popup-notice d-flex align-items-center gap-2' role='status' data-testid='paused-banner'>
+					<i className='bi bi-pause-circle popup-notice-icon' aria-hidden='true' />
+					<span>{i18n.t('main.pausedNotice')}</span>
+				</div>
 			)}
 
 			{onStandbyStream && (

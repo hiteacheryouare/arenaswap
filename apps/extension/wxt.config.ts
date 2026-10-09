@@ -1,6 +1,7 @@
 import { defineConfig } from 'wxt';
 import pkg from '../../package.json';
 import sassOptions from '@arenaswap/ui/src/sassOptions';
+import { bossCommandName } from './utils/bossMode';
 
 const year = new Date().getFullYear();
 const version = pkg.version;
@@ -90,6 +91,14 @@ export default defineConfig({
 			},
 		},
 		permissions: ['tabs', 'storage', 'notifications'],
+		// Alt+Shift+X is in none of Chrome's, Edge's or Firefox's own shortcut lists on Windows, Linux
+		// or macOS. `commands` needs no entry in `permissions`.
+		commands: {
+			[bossCommandName]: {
+				suggested_key: { default: 'Alt+Shift+X' },
+				description: '__MSG_bossCommandDescription__',
+			},
+		},
 		host_permissions: [
 			'https://site.api.espn.com/*',
 			'https://a.espncdn.com/*',

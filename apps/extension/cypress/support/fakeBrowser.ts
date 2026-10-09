@@ -169,6 +169,7 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 				return Promise.resolve({ id: 9000 + background.openedUrls.length, url, title: url });
 			},
 		},
+		commands: { getAll: () => Promise.resolve([]) },
 		i18n: {
 			getUILanguage: () => 'en-US',
 			getMessage: (key: string, substitutions?: string | string[]) =>

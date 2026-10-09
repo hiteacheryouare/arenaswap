@@ -15,6 +15,7 @@ const defaultPrefs: UserPreferences = {
 	finishedTabAction: 'keep' as const,
 	proTipsEnabled: true,
 	notificationsEnabled: false,
+	bossDecoyUrl: '',
 	favoriteTeamBonusPoints: 0,
 	favoriteTeamIds: [],
 	standbyStreamEnabled: false,
@@ -204,6 +205,26 @@ describe('mainView standby banner', () => {
 			expect(plate, 'plate above the popup').to.be.greaterThan(relativeLuminance(popup));
 			expect(plate, 'plate below its own ink').to.be.lessThan(relativeLuminance(style.color));
 		});
+	});
+});
+
+describe('mainView paused notice', () => {
+	it('says auto-switching is paused, and where to turn it back on, while the switch is off', () => {
+		cy.viewport(320, 480);
+		cy.mount(<MainView {...defaultProps} prefs={{ ...defaultPrefs, enabled: false }} />);
+		cy.get('[data-testid="paused-banner"]').should('contain.text', 'Auto-switching is paused');
+	});
+
+	it('is absent while auto-switching is on', () => {
+		cy.viewport(320, 480);
+		cy.mount(<MainView {...defaultProps} />);
+		cy.get('[data-testid="paused-banner"]').should('not.exist');
+	});
+
+	it('waits for the stored preferences rather than flashing on the defaults', () => {
+		cy.viewport(320, 480);
+		cy.mount(<MainView {...defaultProps} prefsLoaded={false} prefs={{ ...defaultPrefs, enabled: false }} />);
+		cy.get('[data-testid="paused-banner"]').should('not.exist');
 	});
 });
 

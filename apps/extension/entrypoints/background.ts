@@ -13,7 +13,8 @@ import {
 	resolveFinishedTabs,
 } from '../utils/finishedTabs';
 import { loadConferenceDirectory } from '../utils/collegeConferences';
-import { loadStoredUserPreferences } from '../utils/prefsStorage';
+import { bossCommandName, bossHushedKey, createBossMode } from '../utils/bossMode';
+import { loadStoredUserPreferences, persistStoredUserPreferences } from '../utils/prefsStorage';
 import { loadFantasyRoster } from '../utils/fantasyRosterStorage';
 import { capitalizeReason, speakReason } from '../utils/powerScoreReason';
 import { displayLocale } from '../utils/displayLocale';
@@ -417,6 +418,20 @@ export default defineBackground(() => {
 		return [...new Set(managedTabIds)];
 	};
 
+	const bossMode = createBossMode({
+		tabs: browser.tabs,
+		windows: browser.windows,
+		getDecoyUrl: () => prefs.bossDecoyUrl,
+		pause: async () => {
+			prefs = { ...prefs, enabled: false };
+			setLastSwitchTime(0);
+			clearPendingSwitch();
+			await persistStoredUserPreferences(prefs);
+		},
+		muteManagedTabs: () => syncManagedTabMuteState(prefs.enabled),
+		saveHushed: hushed => browser.storage.session.set({ [bossHushedKey]: hushed }),
+	});
+
 	const syncManagedTabMuteState = async (enabled: boolean) => {
 		const managedTabIds = getManagedTabIds();
 		if (managedTabIds.length === 0 && mutedTabIds.size === 0) return;
@@ -441,7 +456,7 @@ export default defineBackground(() => {
 		const nextMuteStates = new Map<number, boolean>();
 		for (const tabId of releasedTabIds) nextMuteStates.set(tabId, false);
 		for (const tabId of managedOpenTabIds) {
-			nextMuteStates.set(tabId, enabled ? tabId !== watchedTabId : false);
+			nextMuteStates.set(tabId, bossMode.isHushed() || (enabled ? tabId !== watchedTabId : false));
 		}
 
 		// A tab can close between the query above and the update below. Failing the whole batch
@@ -1131,7 +1146,7 @@ export default defineBackground(() => {
 
 	const stateReady = Promise.all([
 		loadStoredUserPreferences(),
-		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, lastSwitchTime: 0, ...historyStorageDefaults }),
+		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, lastSwitchTime: 0, [bossHushedKey]: false, ...historyStorageDefaults }),
 		browser.storage.local.get({ demoMode: false, [gameEndTimesKey]: {} }),
 		loadFantasyRoster().catch(() => []),
 	]).then(([storedPrefs, sessionResult, demoResult, roster]) => {
@@ -1140,6 +1155,7 @@ export default defineBackground(() => {
 		tabRegistry = sessionResult.tabRegistry as TabRegistration[];
 		standbyStreamTabId = (sessionResult.standbyStreamTabId as number | null) ?? null;
 		lastSwitchTime = readStoredSwitchTime(sessionResult.lastSwitchTime, Date.now());
+		bossMode.restore(sessionResult[bossHushedKey]);
 		gameBoosts = normalizeGameBoosts(sessionResult.gameBoosts);
 		if (Array.isArray(sessionResult.mutedTabIds)) {
 			for (const tabId of sessionResult.mutedTabIds) {
@@ -1223,6 +1239,7 @@ export default defineBackground(() => {
 				const prevCollegeKey = collegeFetchKey();
 				prefs = normalizeUserPreferences(msg.prefs);
 				if (wasEnabled && !prefs.enabled) setLastSwitchTime(0);
+				if (prefs.enabled) await bossMode.release();
 				clearPendingSwitch();
 				// The popup persists before it sends, and the GET_STATE recovery path relies on that,
 				// so writing again here would only double the storage.sync traffic against Chrome's
@@ -1259,6 +1276,7 @@ export default defineBackground(() => {
 				await syncManagedTabMuteState(prefs.enabled);
 			});
 		}
+		if (msg.type === 'BOSS_BUTTON') return stateReady.then(() => bossMode.press());
 		if (msg.type === 'SET_GAME_BOOST') {
 			return stateReady.then(async () => {
 				const boost = clampBoostPoints(Number(msg.boost));
@@ -1378,6 +1396,11 @@ export default defineBackground(() => {
 				}
 			});
 		}
+	});
+
+	browser.commands.onCommand.addListener(command => {
+		if (command !== bossCommandName) return;
+		void stateReady.then(() => bossMode.press()).catch(err => logWarn('The boss button hit a snag.', err));
 	});
 
 	browser.tabs.onActivated.addListener(({ tabId }) => {

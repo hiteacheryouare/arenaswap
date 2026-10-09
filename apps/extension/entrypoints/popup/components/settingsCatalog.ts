@@ -45,6 +45,7 @@ export const settingsEntries: readonly settingsEntry[] = [
 	{ group: 'switching', labelKey: 'switchDelay.label', keywordsKey: 'setup.keywordsSwitchDelay', controlId: 'switch-delay-range' },
 	{ group: 'switching', labelKey: 'setup.switchNotifications', keywordsKey: 'setup.keywordsNotifications', controlId: 'notificationsToggle' },
 	{ group: 'switching', labelKey: 'setup.finishedTabAction', keywordsKey: 'setup.keywordsFinishedTab', controlId: 'finishedTabSelect' },
+	{ group: 'switching', labelKey: 'setup.bossDecoy', keywordsKey: 'setup.keywordsBossDecoy', controlId: 'bossDecoyInput' },
 	{ group: 'switching', labelKey: 'setup.demoMode', keywordsKey: 'setup.keywordsDemo', controlId: 'demoToggle' },
 	{ group: 'scoring', labelKey: 'setup.scoringMode', keywordsKey: 'setup.keywordsScoringMode', controlId: 'scoringModeSelect' },
 	{ group: 'scoring', labelKey: 'setup.leagueModes', keywordsKey: 'setup.keywordsLeagueModes', controlId: 'leagueModeList', requires: 'custom' },

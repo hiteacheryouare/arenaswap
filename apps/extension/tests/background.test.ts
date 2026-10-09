@@ -177,6 +177,8 @@ const loadBackground = async (options: LoadOptions = {}) => {
 			},
 		},
 		notifications: { create: notificationsCreate },
+		windows: { update: jest.fn().mockResolvedValue(undefined) },
+		commands: { onCommand: { addListener: jest.fn() } },
 		// A switch notification formats its reason in the UI language, as the popup's fake does.
 		i18n: { getUILanguage: () => 'en-US' },
 	};

@@ -18,6 +18,7 @@ import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
 import { resolveOpenRevealMode, revealSettleMs, revealSkipOutMs, writeOpenRevealEnabled } from './cardReveal';
 import { isLeagueLogoCacheFresh, leagueLogoCacheKey, seededLeagueLogos } from './leagueLogoCache';
 import useToast from './useToast';
+import useBossShortcut from './useBossShortcut';
 import SuggestView from './components/suggestView';
 import {
 	applyTabSuggestions,
@@ -98,6 +99,7 @@ export default () => {
 	const settledRef = useRef(false);
 	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
 	const { toasts, showToast, dismissToast } = useToast();
+	const bossShortcut = useBossShortcut();
 
 	// Updates arrive by push, so revalidation is off: a second SWR fetch (StrictMode remount or
 	// a React 19 store re-snapshot) would overwrite data that came in via SCORES_UPDATED.
@@ -335,6 +337,15 @@ export default () => {
 		void syncPromise.catch(() => {});
 	};
 
+	// The background mutes, pauses and opens the decoy. The popup only shows the pause, in case the
+	// browser leaves it open behind the new tab.
+	const pressBossButton = () => {
+		const paused = { ...prefsRef.current, enabled: false };
+		prefsRef.current = paused;
+		setPrefs(paused);
+		browser.runtime.sendMessage({ type: 'BOSS_BUTTON' }).catch(() => {}).finally(() => window.close());
+	};
+
 	const onOnboardingComplete = (leagues: LeagueId[], favorites: string[]) => {
 		persistPrefs(currentPrefs => ({ ...currentPrefs, enabledLeagues: leagues, favoriteTeamIds: favorites }));
 		void browser.storage.local.set({ onboardingCompleted: true });
@@ -559,6 +570,8 @@ export default () => {
 						onUpcomingGamesDaysChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, upcomingGamesDays: val }))}
 						onToggleProTips={() => persistPrefs(currentPrefs => ({ ...currentPrefs, proTipsEnabled: !currentPrefs.proTipsEnabled }))}
 						onToggleNotifications={() => persistPrefs(currentPrefs => ({ ...currentPrefs, notificationsEnabled: !currentPrefs.notificationsEnabled }))}
+						bossShortcut={bossShortcut}
+						onBossDecoyChange={url => persistPrefs(currentPrefs => ({ ...currentPrefs, bossDecoyUrl: url }))}
 						onToggleDemo={() => {
 							const next = !demoMode;
 							setDemoMode(next);
@@ -616,6 +629,8 @@ export default () => {
 						onOpenGuide={openGuide}
 						showReviewPrompt={shouldShowReviewPrompt(reviewPromptState)}
 						onToggleEnabled={() => persistPrefs(currentPrefs => ({ ...currentPrefs, enabled: !currentPrefs.enabled }))}
+						onBossButton={pressBossButton}
+						bossShortcut={bossShortcut}
 						onDismissReviewPrompt={dismissReviewPrompt}
 						onLeaveReview={leaveReview}
 						onToggleFavoriteTeam={toggleFavoriteTeam}
