@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## A league that keeps getting refused backs off, and a hung request gives up — 2026-10-09
+
+A failed league poll now waits twice as long after each failure, starting at 15 seconds and stopping at the interval that league was already on, so a refusal no longer speeds up a sleeping league; the first good answer resets it. Every scoreboard, standings, team and situation request now gives up after 10 seconds, so one that never answers can't hold a league's slate hostage; win probability keeps the signal its caller hands it.
+
 ## The boost tooltips get a second look — 2026-10-08
 
 A game decided at the horn no longer pays the empty net, baseball's Scoring opportunity tooltip speaks in whole sentences, and the postseason and favorite tooltips read the setting rather than the rounded points, so a boost of 1 stops claiming it's set to 0. The no-hitter moves to amber so no two factors on one card sit closer than 11 in ΔE00, and the powerscore README and docs now list every `details` key. Tests push every sentence through all 12 locales, and a stored hockey score through to its tooltip.
