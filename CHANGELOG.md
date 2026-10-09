@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The detail screen follows a live game — 2026-10-09
+
+While a game is live, the detail screen asks for its summary again every minute, the pace the background already polls at, so the win probability line, box score and series state keep moving instead of freezing at the moment you opened it. A refresh swaps the data in quietly: a failed one keeps what's on screen, and a slow answer that lands after a newer one is dropped.
+
 ## The boost tooltips get a second look — 2026-10-08
 
 A game decided at the horn no longer pays the empty net, baseball's Scoring opportunity tooltip speaks in whole sentences, and the postseason and favorite tooltips read the setting rather than the rounded points, so a boost of 1 stops claiming it's set to 0. The no-hitter moves to amber so no two factors on one card sit closer than 11 in ΔE00, and the powerscore README and docs now list every `details` key. Tests push every sentence through all 12 locales, and a stored hockey score through to its tooltip.
