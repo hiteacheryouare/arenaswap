@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The Guide stops mistaking a refusal for a quiet day — 2026-10-09
+
+When our sources refuse every league, the Guide now shows the popup's "Couldn't load games" banner with its Retry button instead of "no games", and a worker that never answers no longer leaves the spinner up. A slate that every league refused is not cached, and one that lost some leagues keeps their previous games and is asked again on the next open rather than after ten minutes.
+
 ## The boost tooltips get a second look — 2026-10-08
 
 A game decided at the horn no longer pays the empty net, baseball's Scoring opportunity tooltip speaks in whole sentences, and the postseason and favorite tooltips read the setting rather than the rounded points, so a boost of 1 stops claiming it's set to 0. The no-hitter moves to amber so no two factors on one card sit closer than 11 in ΔE00, and the powerscore README and docs now list every `details` key. Tests push every sentence through all 12 locales, and a stored hockey score through to its tooltip.

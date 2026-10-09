@@ -44,6 +44,7 @@ const App = () => {
 	const [prefsLoaded, setPrefsLoaded] = useState(false);
 	const theme = useTheme(prefsLoaded ? prefs.theme : null);
 	const [slate, setSlate] = useState<GuideSlate | null>(null);
+	const [slateFailed, setSlateFailed] = useState(false);
 	// The popup's own state: the scores, the PowerScores and their history. The slate carries the
 	// whole day but none of that, and the drawer printed 0 / 100 on a live game without it.
 	const [live, setLive] = useState<BackgroundState | null>(null);
@@ -60,8 +61,14 @@ const App = () => {
 	const hasScrolledToNow = useRef(false);
 
 	const loadSlate = useCallback(async () => {
-		const reply = await browser.runtime.sendMessage({ type: 'GET_GUIDE_SLATE' }) as GuideSlate | undefined;
-		if (reply) setSlate(reply);
+		try {
+			const reply = await browser.runtime.sendMessage({ type: 'GET_GUIDE_SLATE' }) as GuideSlate | undefined;
+			if (!reply) throw new Error('The background did not answer.');
+			setSlate(reply);
+			setSlateFailed(false);
+		} catch {
+			setSlateFailed(true);
+		}
 	}, []);
 
 	// The reads go out together rather than one after the other: none depends on another, and all
@@ -227,6 +234,7 @@ const App = () => {
 	const selectedGame = selectedGameId ? slateGames.find(game => game.id === selectedGameId) : undefined;
 	const leagueLogos: LeagueLogoMap = slate?.leagueLogos ?? {};
 	const monoLogos: TeamMonoLogoMap = slate?.monoLogos ?? {};
+	const hasError = slateFailed || Boolean(slate?.refused);
 
 	return (
 		<TranslationContext.Provider value={i18n.t}>
@@ -273,12 +281,13 @@ const App = () => {
 					selectedGameId={selectedGameId} onOpen={openGame} theme={theme} />
 				</div>
 			) : (
-				/* The popup's own two states, so a slow network and an empty slate read the way they do
-				   there: a wait is a spinner with a line of patter, and only an answer is news. */
+				/* The popup's own three states, so a slow network, a refusal and an empty slate read the way
+				   they do there: a wait is a spinner with a line of patter, a refusal is the error banner
+				   with its retry, and only an answer is news. */
 				<div className='guide-status'>
-					{slate
+					{slate && !hasError
 						? <NoGamesMessage onRefresh={() => loadSlate()} />
-						: <GameListHeader isLoading hasError={false} loadingMessage={loadingMessage} onRefresh={() => void loadSlate()} />}
+						: <GameListHeader isLoading={!slate && !hasError} hasError={hasError} loadingMessage={loadingMessage} onRefresh={() => loadSlate()} />}
 				</div>
 			)}
 

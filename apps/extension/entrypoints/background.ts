@@ -17,6 +17,7 @@ import { loadStoredUserPreferences } from '../utils/prefsStorage';
 import { loadFantasyRoster } from '../utils/fantasyRosterStorage';
 import { capitalizeReason, speakReason } from '../utils/powerScoreReason';
 import { displayLocale } from '../utils/displayLocale';
+import { keepRefusedLeagues, resolveGuideSlate, resolveGuideSlateFailure } from '../utils/slateMerge';
 import {
 	normalizeReviewPromptState,
 	recordSuccessfulReviewPromptSwitch,
@@ -692,8 +693,7 @@ export default defineBackground(() => {
 			   so its live games kept arriving from the undated board while its finals silently went.
 			   That is the same "a shed league contributes nothing and says nothing" trap as everywhere
 			   else here, one layer up. */
-			const answered = new Set(prefs.enabledLeagues.filter(id => !result.shedLeagues.includes(id)));
-			const heldFor = (list: Game[]): Game[] => list.filter(g => !answered.has(g.league));
+			const heldFor = (list: Game[]): Game[] => keepRefusedLeagues(list, result.shedLeagues);
 
 			upcomingGames = prefs.showUpcomingGames
 				? [...heldFor(upcomingGames), ...result.games.filter(g => g.status === 'pre')]
@@ -1361,12 +1361,14 @@ export default defineBackground(() => {
 						upcomingDays: Math.max(prefs.upcomingGamesDays, guideMinUpcomingDays),
 						includeFinal: true,
 					});
-					guideSlate = result.games;
-					guideSlateAt = Date.now();
+					const outcome = resolveGuideSlate(guideSlate, result.games, prefs.enabledLeagues, result.shedLeagues);
+					if (outcome.write) guideSlate = outcome.games;
+					if (outcome.stamp) guideSlateAt = Date.now();
 					noteGameEnds(result.games);
 					void fillMissingDurations(result.games);
 					return {
-						games: result.games,
+						games: outcome.games,
+						refused: outcome.refused,
 						leagueLogos: result.leagueLogos,
 						monoLogos: await ensureMonoLogos(prefs.enabledLeagues),
 						gameBoosts,
@@ -1374,7 +1376,8 @@ export default defineBackground(() => {
 					};
 				} catch (err) {
 					logWarn('Failed to fetch the guide slate.', err);
-					return { games: [], leagueLogos, monoLogos, gameBoosts, endTimes: {} };
+					const outcome = resolveGuideSlateFailure(guideSlate);
+					return { games: outcome.games, refused: outcome.refused, leagueLogos, monoLogos, gameBoosts, endTimes: gameEndTimes(endRecords) };
 				}
 			});
 		}

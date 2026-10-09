@@ -500,6 +500,9 @@ export interface GetGuideSlateMessage {
 
 export interface GuideSlate {
 	games: Game[];
+	// Our sources refused to answer and there is nothing held to show instead, so an empty `games`
+	// is not a quiet day.
+	refused?: boolean;
 	leagueLogos: LeagueLogoMap;
 	monoLogos: TeamMonoLogoMap;
 	gameBoosts: Record<string, number>;
