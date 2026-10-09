@@ -29,7 +29,7 @@
 		"@arenaswap/core": "*",
 		"@arenaswap/ui": "*",
 		"@porkyproductions/hat": "^1.5.0",
-		"@wxt-dev/i18n": "^0.2.7",
+		"@wxt-dev/i18n": "^0.2.8",
 		"canvas-confetti": "^1.9.4",
 		"echarts": "^6.1.0",
 		"powerscore": "*",
@@ -50,7 +50,7 @@
 		"jest": "^30.5.2",
 		"react": "^19.3.0",
 		"react-dom": "^19.3.0",
-		"sass": "^1.105.0",
+		"sass": "^1.105.1",
 		"typescript": "^7.0.2",
 		"vite-plugin-istanbul": "^9.0.1",
 		"wxt": "^0.21.4"
