@@ -1,7 +1,6 @@
 import type { EChartsOption } from 'echarts';
 import { scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, PowerScoreSnapshot, ResolvedTheme, ScoreSnapshot, SignalName } from '@arenaswap/core/types';
-import { hexToRgb } from './colorMath';
 import { resolveChartLineColors } from './colorUtils';
 import { defaultTranslate } from './defaultStrings';
 import { boostPresentation, isBoostId, isModeSignalId, modeSignalIds, signalColorOf, signalPresentation } from './scoringModeMeta';
@@ -92,17 +91,12 @@ const baseOption = (
 export const englishSignalLabel = (id: string): string => (isModeSignalId(id) ? defaultTranslate(signalPresentation[id].labelKey) : id);
 export const englishBoostLabel = (id: string): string => (isBoostId(id) ? defaultTranslate(boostPresentation[id].labelKey) : id);
 
-const tint = (hex: string, alpha: number): string => {
-	const rgb = hexToRgb(hex);
-	return rgb ? `rgba(${rgb.red}, ${rgb.green}, ${rgb.blue}, ${alpha})` : hex;
-};
-
-// The moment boost paying most at this reading. One per reading, so two at once shade one stretch.
-// These last for innings or a whole game. Shading them by size would hide every short live moment
-// inside them, so they only shade a stretch where nothing live is happening.
+// The moment boost paying most at this reading, named in the tooltip. These last for innings or a
+// whole game, so ranking them by size would bury every short live moment inside them; they only win
+// a reading where nothing live is happening.
 const contextBoostIds: ReadonlySet<string> = new Set(['noHitter', 'upsetWatch', 'stakes']);
 
-const momentOf = (snapshot: PowerScoreSnapshot): BoostId | undefined => {
+export const boostMomentOf = (snapshot: PowerScoreSnapshot): BoostId | undefined => {
 	let strongest: BoostId | undefined;
 	let strongestRank = 0;
 	for (const [id, points] of Object.entries(snapshot.boosts ?? {})) {
@@ -113,29 +107,6 @@ const momentOf = (snapshot: PowerScoreSnapshot): BoostId | undefined => {
 		strongestRank = rank;
 	}
 	return strongest;
-};
-
-export interface boostMoment {
-	id: BoostId;
-	// Reading indices. The stretch runs to the first reading the boost had stopped paying at, since
-	// it ended somewhere between the two.
-	start: number;
-	end: number;
-}
-
-export const boostMoments = (powerHistory: readonly PowerScoreSnapshot[]): boostMoment[] => {
-	const moments: boostMoment[] = [];
-	let open: { id: BoostId; start: number } | undefined;
-	powerHistory.forEach((snapshot, index) => {
-		const id = momentOf(snapshot);
-		if (open && open.id !== id) {
-			moments.push({ id: open.id, start: open.start, end: index });
-			open = undefined;
-		}
-		if (id && !open) open = { id, start: index };
-	});
-	if (open) moments.push({ id: open.id, start: open.start, end: powerHistory.length - 1 });
-	return moments;
 };
 
 interface axisTooltipParam {
@@ -156,17 +127,17 @@ export const buildPowerScoreOption = (
 	const totals = powerHistory.map(point => point.total);
 	const showSinglePointSymbols = totals.length === 1;
 	const option = baseOption(labels, palette);
-	const moments = boostMoments(powerHistory);
+	const hasMoments = powerHistory.some(snapshot => boostMomentOf(snapshot));
 	return {
 		...option,
-		...(moments.length > 0 ? {
+		...(hasMoments ? {
 			tooltip: {
 				...(option.tooltip as object),
 				formatter: (params: unknown) => {
 					const [point] = params as axisTooltipParam[];
 					if (!point) return '';
 					const snapshot = powerHistory[point.dataIndex];
-					const moment = snapshot ? momentOf(snapshot) : undefined;
+					const moment = snapshot ? boostMomentOf(snapshot) : undefined;
 					const line = `${point.axisValueLabel}<br/>${point.marker}${point.seriesName}: ${point.value}`;
 					return moment
 						? `${line}<br/><span style="color:${boostPresentation[moment].color}">●</span> ${boostLabel(moment)}`
@@ -188,17 +159,6 @@ export const buildPowerScoreOption = (
 				areaStyle: { color: 'rgba(247, 92, 3, 0.2)' },
 				data: totals,
 				name: 'PowerScore',
-				...(moments.length > 0 ? {
-					markArea: {
-						silent: true,
-						// The tooltip names the moment; a label inside each band crowds the line.
-						label: { show: false },
-						data: moments.map(moment => [
-							{ name: boostLabel(moment.id), xAxis: moment.start, itemStyle: { color: tint(boostPresentation[moment.id].color, 0.16) } },
-							{ xAxis: moment.end },
-						]),
-					},
-				} : {}),
 			},
 		],
 	};
