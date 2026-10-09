@@ -32,22 +32,11 @@ POWERSCOREアルゴリズム
 対応リーグ（31）
 ━━━━━━━━━━━━━━━━━━━━━━
 
-🏀 バスケットボール（6）
-NBA · WNBA · NCAA Men's · NCAA Women's · Olympic Men's · Olympic Women's
+ArenaSwapは6つのスポーツにまたがる31のリーグを監視しており、それぞれを個別にオン・オフで切り替えられます。
 
-🏈 アメリカンフットボール（3）
-NFL · NCAA Football · UFL
+対象はバスケットボール、アメリカンフットボール、ホッケー、野球・ソフトボールで、プロ、大学、オリンピックの各レベルを網羅します。NBAとWNBA、NFL、NHL、MLB、そしてそれぞれの大学リーグや国際大会が含まれます。さらにサッカーも対象で、北米のクラブからヨーロッパの主要リーグ、そして主要な国際大会まで幅広くカバーします。
 
-🏒 ホッケー（4）
-NHL · NCAA Men's · Olympic Men's · Olympic Women's
-
-⚾ 野球・ソフトボール（5）
-MLB · NCAA Baseball · NCAA Softball · Olympic Baseball · World Baseball Classic
-
-⚽ サッカー（13）
-MLS · NWSL · English Premier League · La Liga · Bundesliga · Serie A · Liga MX · UEFA Champions League · UEFA Europa League · Olympic Men's · Olympic Women's · FIFA World Cup · FIFA Women's World Cup
-
-6つのスポーツ、31のリーグ。それぞれをオン・オフで切り替えられます。
+興味のあるスポーツだけを見てもいいですし、すべてオンにしてArenaSwapにいつでも世界で一番の試合を見つけさせることもできます。
 
 ━━━━━━━━━━━━━━━━━━━━━━
 あなた好みに調整
