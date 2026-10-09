@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Football reads its win probability off the scoreboard — 2026-10-09
+
+NFL and college football games no longer get a summary request every minute: the scoreboard already carries the home side's win probability, so the background builds the line from its own polls, one reading per play, and keeps it in session storage across worker restarts. The summary is still read once per game for its closing line, and stays on a loop for basketball (its box score feeds the lead-change count), fantasy rosters and every league whose scoreboard we haven't checked.
+
 ## The boost tooltips get a second look — 2026-10-08
 
 A game decided at the horn no longer pays the empty net, baseball's Scoring opportunity tooltip speaks in whole sentences, and the postseason and favorite tooltips read the setting rather than the rounded points, so a boost of 1 stops claiming it's set to 0. The no-hitter moves to amber so no two factors on one card sit closer than 11 in ΔE00, and the powerscore README and docs now list every `details` key. Tests push every sentence through all 12 locales, and a stored hockey score through to its tooltip.

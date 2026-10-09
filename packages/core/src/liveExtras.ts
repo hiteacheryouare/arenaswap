@@ -249,6 +249,7 @@ export const readStandingsStakes = (standings: unknown, league: LeagueId, sportT
 };
 
 interface GameExtras {
+	summarySeen?: boolean;
 	pregameLine?: PregameLine;
 	boxLeadChanges: { ts: number; count: number }[];
 	powerPlay?: boolean;
@@ -331,6 +332,7 @@ export const createLiveExtras = () => {
 
 	const ingestSummary = (game: Pick<Game, 'id' | 'sportType'> & Partial<Game>, summary: unknown, ts: number) => {
 		const state = stateOf(game.id);
+		state.summarySeen = true;
 		state.pregameLine ??= readPregameLine(summary);
 		if (game.homeTeam && game.awayTeam && game.league) ingestFantasy(game as Game, state, summary, ts);
 		if (game.sportType !== 'basketball') return;
@@ -399,7 +401,9 @@ export const createLiveExtras = () => {
 
 	const hasRosteredPlayer = (game: Game): boolean => rosterInGame(roster, game).length > 0;
 
-	return { ingestSummary, ingestSituation, ingestStandings, contextFor, forget, setRoster, setFantasyScoring, hasRosteredPlayer };
+	const hasSeenSummary = (gameId: string): boolean => games.get(gameId)?.summarySeen === true;
+
+	return { ingestSummary, ingestSituation, ingestStandings, contextFor, forget, setRoster, setFantasyScoring, hasRosteredPlayer, hasSeenSummary };
 };
 
 export type LiveExtras = ReturnType<typeof createLiveExtras>;
