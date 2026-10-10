@@ -738,6 +738,13 @@ export default defineBackground(() => {
 		prefs.keepFinalGames ? fetched : fetched.filter(game => game.status !== 'post')
 	);
 
+	// The slate's copy of a game is older than the one already on screen: a game that went live since
+	// the slate was fetched is still in it as upcoming, and shows twice unless the live copy wins.
+	const slateBeside = (onScreen: Game[], slate: Game[]): Game[] => {
+		const shownIds = new Set(onScreen.map(g => g.id));
+		return slate.filter(g => !shownIds.has(g.id));
+	};
+
 	// Runs on every poll, ahead of the mute sync so a freed tab is unmuted in the same pass that
 	// released it. Demo mode is excluded outright: its games reach 'post' on a script while the
 	// tabs registered to them are real, and mock-20 ships already final — so the first poll after
@@ -927,10 +934,7 @@ export default defineBackground(() => {
 			// game, still marked upcoming, cannot come back beside them.
 			const heldLive = games.filter(g => slateShedLeagues.includes(g.league) && g.status === 'in');
 			games = displayableGames(fetched);
-			const freshGameIds = new Set([...fetched, ...heldLive].map(g => g.id));
-			const stillUpcoming = upcomingGames.filter(g => !freshGameIds.has(g.id));
-			const stillFinal = liveRetainedFinals().filter(g => !freshGameIds.has(g.id));
-			games = [...games, ...heldLive, ...stillUpcoming, ...stillFinal];
+			games = [...games, ...heldLive, ...slateBeside([...fetched, ...heldLive], [...upcomingGames, ...liveRetainedFinals()])];
 		}
 
 		await afterFetch(null, allowTabSwitch, finishedGames);
@@ -1242,7 +1246,8 @@ export default defineBackground(() => {
 					(prefs.showUpcomingGames && prefs.upcomingGamesDays !== prevUpcomingGamesDays);
 				if (slateSettingChanged) {
 					await refreshSlate();
-					games = [...games.filter(g => g.status === 'in'), ...upcomingGames, ...liveRetainedFinals()];
+					const live = games.filter(g => g.status === 'in');
+					games = [...live, ...slateBeside(live, [...upcomingGames, ...liveRetainedFinals()])];
 					broadcastScoresUpdated();
 				}
 				const newLeagues = new Set(prefs.enabledLeagues);
@@ -1252,7 +1257,8 @@ export default defineBackground(() => {
 				if ((leaguesChanged || collegeChanged) && !demoMode) {
 					await warmCollegeDirectories();
 					await refreshSlate();
-					games = [...keepCollegeGames(games.filter(g => g.status === 'in')), ...upcomingGames, ...liveRetainedFinals()];
+					const live = keepCollegeGames(games.filter(g => g.status === 'in'));
+					games = [...live, ...slateBeside(live, [...upcomingGames, ...liveRetainedFinals()])];
 					broadcastScoresUpdated();
 					startLeaguePolling();
 					// A league switched off keeps its cached lines until the next sweep otherwise.

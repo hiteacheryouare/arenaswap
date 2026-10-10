@@ -2285,6 +2285,7 @@ describe('a fan-out poll with a league refused', () => {
 				shed: false,
 			},
 			mlb: { poll: [slateGame('mlbg', 'mlb', 'in')], slate: [slateGame('mlbg', 'mlb', 'in')], shed: false },
+			nhl: { poll: [], slate: [], shed: false },
 		};
 		await loadBackground({ prefs: bothLeagues, initialSystemTime: 1_000_000 });
 		serveWorld();
@@ -2311,6 +2312,28 @@ describe('a fan-out poll with a league refused', () => {
 		world.nba.shed = true;
 
 		expect(summary((await refresh()).games)).toEqual(['early:in', 'later:pre', 'mlbg:in']);
+	});
+
+	// The preference moves that rebuild the list from the slate: a slate setting, and the league set.
+	const changePrefs = (over: Partial<UserPreferences>) => sendMessage({
+		type: 'UPDATE_PREFS',
+		prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...bothLeagues, ...over }),
+	});
+
+	const currentGames = async () => (await sendMessage({ type: 'GET_STATE' }) as { games: Game[] }).games;
+
+	test.each([
+		['a slate setting changes', { upcomingGamesDays: 5 }],
+		['a league is added', { enabledLeagues: ['nba', 'mlb', 'nhl'] as LeagueId[] }],
+	])('shows a game that went live once, not also as upcoming, when %s', async (_label, over) => {
+		world.nba.poll = [slateGame('early', 'nba', 'in'), slateGame('later', 'nba', 'in')];
+		await refresh();
+		world.nba.shed = true;
+		await refresh();
+
+		await changePrefs(over);
+
+		expect(summary(await currentGames())).toEqual(['early:in', 'later:in', 'mlbg:in']);
 	});
 
 	test('stamps the leagues that answered and leaves the refused one at its last good poll', async () => {
