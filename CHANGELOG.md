@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## A league that keeps getting refused backs off, and a hung request gives up — 2026-10-09
+
+A failed league poll now waits twice as long after each failure, starting at 15 seconds and stopping at the interval that league was already on, so a refusal no longer speeds up a sleeping league; the first good answer resets it. Every scoreboard, standings, team and situation request now gives up after 10 seconds, so one that never answers can't hold a league's slate hostage; win probability keeps the signal its caller hands it.
+
 ## Work that went missing on the way to dev comes back — 2026-10-09
 
 The store listings' prose league list and the 2.1.1 release notes only ever reached `mega`, so `dev` gets them back, along with two agent memory notes. The finished-tabs changelog entry that a September merge dropped is back too, shortened to fit the rule above.
