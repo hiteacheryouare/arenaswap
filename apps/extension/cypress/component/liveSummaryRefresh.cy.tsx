@@ -1,3 +1,4 @@
+import * as echarts from 'echarts/core';
 import GameDetailChartCanvas from '../../entrypoints/popup/components/gameDetailChartCanvas';
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import useSummaryData from '../../entrypoints/popup/components/useSummaryData';
@@ -97,6 +98,22 @@ describe('the detail screen following a live game', () => {
 		cy.get('@summary.all').should('have.length', 2);
 	});
 
+	it('skips a poll while the page is hidden and carries on when it is back', () => {
+		cy.intercept({ url: summaryUrl }, { body: line(0.5) }).as('summary');
+		cy.mount(probe(live));
+		cy.get('[data-testid=line]').should('have.text', '0.5');
+		cy.document().then(doc => {
+			Object.defineProperty(doc, 'hidden', { configurable: true, get: () => true });
+		});
+		tickOnePoll();
+		cy.get('@summary.all').should('have.length', 1);
+		cy.document().then(doc => {
+			Object.defineProperty(doc, 'hidden', { configurable: true, get: () => false });
+		});
+		tickOnePoll();
+		cy.get('@summary.all').should('have.length', 2);
+	});
+
 	it('stops asking when the screen is left', () => {
 		cy.intercept({ url: summaryUrl }, { body: line(0.5) }).as('summary');
 		cy.mount(probe(live));
@@ -167,21 +184,60 @@ describe('the detail screen following a live game', () => {
 		cy.get('[data-testid=line]').should('have.text', '0.5,0.1,0.9');
 	});
 
-	it('leaves the open tab where the reader put it', () => {
-		cy.intercept({ url: summaryUrl }, { body: { ...(mockBoxScorePayloads['mock-5'] as object), ...line(0.5, 0.6) } }).as('summary');
-		cy.mount(detail(live));
-		cy.get(`#gd-tab-${live.id}-box`).click();
-		cy.get('.gd-tabs .nav-link.active').should('have.text', en.box.heading);
-		tickOnePoll();
-		cy.get('@summary.all').should('have.length', 2);
-		cy.get('.gd-tabs .nav-link.active').should('have.text', en.box.heading);
-		cy.get('.tab-pane.active').should('have.id', `gd-pane-${live.id}-box`);
+	describe('on the screen itself', () => {
+		const withBox = (body: object) => ({ ...(mockBoxScorePayloads['mock-5'] as object), ...body });
+		const passingYards = (from: string, to: string) => (
+			JSON.parse(JSON.stringify(mockBoxScorePayloads['mock-5']).replace(`"${from}"`, `"${to}"`)) as object
+		);
+
+		it('leaves the open tab where the reader put it', () => {
+			cy.intercept({ url: summaryUrl }, { body: withBox(line(0.5, 0.6)) }).as('summary');
+			cy.mount(detail(live));
+			cy.get(`#gd-tab-${live.id}-box`).click();
+			cy.get('.gd-tabs .nav-link.active').should('have.text', en.box.heading);
+			tickOnePoll();
+			cy.get('@summary.all').should('have.length', 2);
+			cy.get('.gd-tabs .nav-link.active').should('have.text', en.box.heading);
+			cy.get('.tab-pane.active').should('have.id', `gd-pane-${live.id}-box`);
+		});
+
+		it('shows the new numbers in the box score the reader is on', () => {
+			let answered = 0;
+			cy.intercept({ url: summaryUrl }, req => {
+				answered += 1;
+				req.reply({ body: answered === 1 ? withBox({}) : passingYards('213', '287') });
+			}).as('summary');
+			cy.mount(detail(live));
+			cy.get(`#gd-tab-${live.id}-box`).click();
+			cy.get('.tab-pane.active').should('contain.text', '213').and('not.contain.text', '287');
+			tickOnePoll();
+			cy.get('.tab-pane.active').should('contain.text', '287').and('not.contain.text', '213');
+			cy.get('.gd-tabs .nav-link.active').should('have.text', en.box.heading);
+		});
+
+		it('keeps the Box tab, and its numbers, through an answer that carries no box score', () => {
+			let answered = 0;
+			cy.intercept({ url: summaryUrl }, req => {
+				answered += 1;
+				req.reply({ body: answered === 1 ? withBox(line(0.5)) : line(0.5, 0.6) });
+			}).as('summary');
+			cy.mount(detail(live));
+			cy.get(`#gd-tab-${live.id}-box`).click();
+			cy.get('.tab-pane.active').should('contain.text', '213');
+			tickOnePoll();
+			cy.get('@summary.all').should('have.length', 2);
+			cy.wait(200);
+			cy.get('.gd-tabs .nav-link.active').should('have.text', en.box.heading);
+			cy.get('.tab-pane.active').should('contain.text', '213');
+		});
 	});
 });
 
+const introMs = 1200;
+
 const chartOption = (points: number) => ({
-	animationDuration: 100,
-	animationDurationUpdate: 100,
+	animationDuration: introMs,
+	animationDurationUpdate: introMs,
 	grid: { left: 0, right: 0, top: 0, bottom: 0 },
 	xAxis: { type: 'category' as const, data: Array.from({ length: points }, (_, index) => index), show: false },
 	yAxis: { type: 'value' as const, min: 0, max: 1, show: false },
@@ -207,22 +263,25 @@ describe('the chart canvas taking a new point', () => {
 				<GameDetailChartCanvas option={chartOption(points) as never} />
 			</div>
 		);
+		const seriesLength = ($canvas: JQuery<HTMLElement>) => {
+			const chart = echarts.getInstanceByDom($canvas[0]!.closest('.game-detail-chart-canvas') as HTMLElement)!;
+			return (chart.getOption().series as { data: unknown[] }[])[0]!.data.length;
+		};
+		let before = 0;
 		cy.mount(view(20)).then(({ rerender }) => {
 			cy.get('canvas').should($canvas => {
 				expect(paintedPixels($canvas[0] as HTMLCanvasElement)).to.be.greaterThan(1000);
 			});
-			cy.wait(300);
+			cy.wait(introMs + 300);
 			cy.get('canvas').then($canvas => {
-				const before = paintedPixels($canvas[0] as HTMLCanvasElement);
+				before = paintedPixels($canvas[0] as HTMLCanvasElement);
 				rerender(view(21));
-				return new Cypress.Promise<number>(resolve => {
-					$canvas[0]!.ownerDocument.defaultView!.requestAnimationFrame(() => resolve(before));
-				});
-			}).then(before => {
-				cy.get('canvas').then($canvas => {
-					expect(paintedPixels($canvas[0] as HTMLCanvasElement)).to.be.greaterThan(before * 0.8);
-				});
 			});
+		});
+		cy.get('canvas').should($canvas => expect(seriesLength($canvas)).to.equal(21));
+		// `then`, not `should`: a retry would wait out the update and pass on the finished line.
+		cy.get('canvas').then($canvas => {
+			expect(paintedPixels($canvas[0] as HTMLCanvasElement)).to.be.greaterThan(before * 0.8);
 		});
 	});
 });
