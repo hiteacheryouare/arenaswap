@@ -543,11 +543,13 @@ export default defineBackground(() => {
 
 		const allTabs = await browser.tabs.query({});
 		const tabExists = allTabs.some(tab => tab.id === tabId);
-		if (!tabExists) return;
+		// Read last, with nothing awaited before the update: a boss press during the queries above
+		// pauses auto-switching, and a switch that lands over the decoy would undo it.
+		if (!tabExists || !prefs.enabled) return;
 
 		await browser.tabs.update(tabId, { active: true });
 		setLastSwitchTime(Date.now());
-		await syncManagedTabMuteState(true);
+		await syncManagedTabMuteState(prefs.enabled);
 		if (gameId) await recordSuccessfulSwitchForReviewPrompt(lastSwitchTime);
 
 		if (prefs.notificationsEnabled) {

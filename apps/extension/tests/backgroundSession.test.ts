@@ -714,6 +714,35 @@ describe('the boss button', () => {
 		expect(sessionStore.bossHushed).toBe(false);
 	});
 
+	test('is not undone by a switch that was already on its way when it was pressed', async () => {
+		seedStorage(switchingPrefs);
+		await startWorker({ games: [runaway('g1'), thriller('g2')], openTabIds: [1, 2, 3], activeTabId: 2, atMs: 1_000_000 });
+
+		// The poll has decided to move to g2's tab. The press arrives while it is still asking the
+		// browser which tabs exist, the last thing it does before activating one.
+		let tabListQueries = 0;
+		tabsQuery.mockImplementation((query: unknown) => {
+			if ((query as { active?: boolean }).active) return Promise.resolve([{ id: 2 }]);
+			tabListQueries += 1;
+			if (tabListQueries === 2) void bossIsComing();
+			return Promise.resolve([1, 2, 3].map(id => ({ id, windowId: 1 })));
+		});
+		await poll();
+		await drain();
+
+		expect(tabsUpdate).not.toHaveBeenCalledWith(expect.anything(), { active: true });
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { muted: true });
+		expect(tabsUpdate).toHaveBeenCalledWith(3, { muted: true });
+		expect(sessionStore.bossHushed).toBe(true);
+
+		tabsUpdate.mockClear();
+		mockTabs([1, 2, 3, 4], 4);
+		await poll();
+
+		expect(tabsUpdate).not.toHaveBeenCalledWith(expect.anything(), { muted: false });
+		expect(tabsUpdate).not.toHaveBeenCalledWith(expect.anything(), { active: true });
+	});
+
 	test('answers to the popup button the same way as to the shortcut', async () => {
 		await startWatching();
 
