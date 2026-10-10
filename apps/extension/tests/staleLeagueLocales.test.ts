@@ -3,9 +3,11 @@ import { join } from 'node:path';
 
 const localesDir = join(__dirname, '../locales');
 
+interface PluralStrings { 1: string; n: string }
+
 interface StaleStrings {
-	staleMinutes: { 1: string; n: string };
-	staleUnderMinute: string;
+	staleMinutes: PluralStrings;
+	staleHours: PluralStrings;
 }
 
 const gameCardStrings = (file: string) => (
@@ -13,12 +15,18 @@ const gameCardStrings = (file: string) => (
 ).gameCard;
 
 describe('the stale league note', () => {
-	test.each(readdirSync(localesDir).filter(file => file.endsWith('.json')))('%s writes both plural forms and the under-a-minute line', file => {
-		const { staleMinutes, staleUnderMinute } = gameCardStrings(file);
+	test.each(readdirSync(localesDir).filter(file => file.endsWith('.json')))('%s writes both plural forms for minutes and for hours', file => {
+		const { staleMinutes, staleHours } = gameCardStrings(file);
 
-		expect(staleMinutes['1']).toContain('1');
-		expect(staleMinutes.n).toContain('$1');
-		expect(staleUnderMinute).not.toContain('$1');
-		expect(new Set([staleMinutes['1'], staleMinutes.n, staleUnderMinute]).size).toBe(3);
+		for (const forms of [staleMinutes, staleHours]) {
+			expect(forms['1']).toContain('1');
+			expect(forms.n).toContain('$1');
+			expect(forms['1']).not.toBe(forms.n);
+		}
+		expect(staleHours.n).not.toBe(staleMinutes.n);
+	});
+
+	test('pt_PT keeps the European spelling the rest of its file uses', () => {
+		expect(gameCardStrings('pt_PT.json').staleMinutes.n).toContain('actualização');
 	});
 });

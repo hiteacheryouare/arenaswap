@@ -7,7 +7,7 @@
 
 ## Live cards say when their league went quiet — 2026-10-09
 
-A live card whose league has stopped answering now carries one muted line under its venue, "Last updated 7 minutes ago", which counts up while the popup is open and disappears on the next good poll. The worker reports when each league last answered a poll as `leagueLastGoodAt`, and the line reads it against `slateShedLeagues`; nothing else on the card changes.
+A live card whose league has been refusing polls for a full minute now carries one muted line under its venue, "Last updated 7 minutes ago", which counts up while the popup is open, turns to hours past an hour and disappears on the next good poll. The worker reports when each league last answered as `leagueLastGoodAt`. A refresh that finds a league refusing also keeps that league's live cards instead of dropping them, and a game that has gone live no longer comes back as an upcoming one.
 
 ## Work that went missing on the way to dev comes back — 2026-10-09
 

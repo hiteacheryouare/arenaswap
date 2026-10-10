@@ -922,11 +922,15 @@ export default defineBackground(() => {
 			noteGameEnds(fetched);
 			mergeGuideSlate(fetched);
 			finishedGames = fetched.filter(g => g.status === 'post');
+			// A refused league answered with nothing, not with no games: its live cards stay, as they do
+			// under `tickLeague`. Their ids join the fresh set so the slate's older copy of the same
+			// game, still marked upcoming, cannot come back beside them.
+			const heldLive = games.filter(g => slateShedLeagues.includes(g.league) && g.status === 'in');
 			games = displayableGames(fetched);
-			const freshGameIds = new Set(fetched.map(g => g.id));
+			const freshGameIds = new Set([...fetched, ...heldLive].map(g => g.id));
 			const stillUpcoming = upcomingGames.filter(g => !freshGameIds.has(g.id));
 			const stillFinal = liveRetainedFinals().filter(g => !freshGameIds.has(g.id));
-			games = [...games, ...stillUpcoming, ...stillFinal];
+			games = [...games, ...heldLive, ...stillUpcoming, ...stillFinal];
 		}
 
 		await afterFetch(null, allowTabSwitch, finishedGames);

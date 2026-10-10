@@ -619,7 +619,10 @@
 			"1": "Última actualización hace 1 minuto",
 			"n": "Última actualización hace $1 minutos"
 		},
-		"staleUnderMinute": "Última actualización hace menos de un minuto",
+		"staleHours": {
+			"1": "Última actualización hace 1 hora",
+			"n": "Última actualización hace $1 horas"
+		},
 		"final": "Final",
 		"delay": "SUSPENDIDO",
 		"delayFallback": "Suspendido",

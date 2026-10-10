@@ -18,7 +18,9 @@ import zhTW from '../../locales/zh_TW.json';
 
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
 
+// The popup is 320 wide and a card in its list is 289 of that, which is the width the line has to fit.
 const popupWidth = 320;
+const cardWidth = 289;
 const minute = 60_000;
 // Ages are written a few seconds past the minute, since the card reads its clock in whole seconds.
 const past = 5_000;
@@ -70,7 +72,7 @@ const mountCard = ({ shed = ['nba'], lastGoodAt = { nba: Date.now() - (7 * minut
 	cy.mount(
 		<TranslationContext.Provider value={translatorFor(bundle)}>
 			<StaleLeaguesProvider shedLeagues={shed} lastGoodAt={lastGoodAt}>
-				<div style={{ width: `${popupWidth}px` }}>
+				<div style={{ width: `${cardWidth}px` }}>
 					<LiveGameCard {...cardProps} />
 				</div>
 			</StaleLeaguesProvider>
@@ -86,11 +88,20 @@ describe('a live card whose league stopped answering', () => {
 		staleLine().should('have.text', 'Last updated 7 minutes ago');
 	});
 
-	it('uses the singular for one minute and its own line for less than one', () => {
-		mountCard({ lastGoodAt: { nba: Date.now() - (minute + 5_000) } });
+	it('uses the singular for one minute and counts in hours from the sixtieth', () => {
+		mountCard({ lastGoodAt: { nba: Date.now() - minute - past } });
 		staleLine().should('have.text', 'Last updated 1 minute ago');
-		mountCard({ lastGoodAt: { nba: Date.now() - 20_000 } });
-		staleLine().should('have.text', 'Last updated less than a minute ago');
+		mountCard({ lastGoodAt: { nba: Date.now() - (59 * minute) - past } });
+		staleLine().should('have.text', 'Last updated 59 minutes ago');
+		mountCard({ lastGoodAt: { nba: Date.now() - (60 * minute) - past } });
+		staleLine().should('have.text', 'Last updated 1 hour ago');
+		mountCard({ lastGoodAt: { nba: Date.now() - (150 * minute) } });
+		staleLine().should('have.text', 'Last updated 2 hours ago');
+	});
+
+	it('says nothing until the league has been quiet for a full minute', () => {
+		mountCard({ lastGoodAt: { nba: Date.now() - 40_000 } });
+		cy.get('.bi-clock-history').should('not.exist');
 	});
 
 	it('is absent while the league is answering', () => {
@@ -134,7 +145,7 @@ describe('a live card whose league stopped answering', () => {
 	it('keeps counting while the popup stays open', () => {
 		cy.clock(Date.now());
 		mountCard({ lastGoodAt: { nba: Date.now() - (59 * 1_000) } });
-		staleLine().should('have.text', 'Last updated less than a minute ago');
+		cy.get('.bi-clock-history').should('not.exist');
 		cy.tick(minute);
 		staleLine().should('have.text', 'Last updated 1 minute ago');
 		cy.tick(4 * minute);
@@ -151,13 +162,16 @@ describe('a live card whose league stopped answering', () => {
 	describe('in every locale', () => {
 		it('fits on one line inside the popup', () => {
 			for (const [code, bundle] of Object.entries(locales)) {
-				for (const age of [0, 1, 12, 135]) {
-					mountCard({ bundle, lastGoodAt: { nba: Date.now() - (age * minute) - 1_000 } });
-					staleLine().then(([line]) => {
-						const box = line.getBoundingClientRect();
-						const lineHeight = parseFloat(getComputedStyle(line).lineHeight) || box.height;
-						expect(box.height, `${code} at ${age} minutes`).to.be.at.most(lineHeight * 1.5);
-						expect(box.right, `${code} at ${age} minutes`).to.be.at.most(popupWidth);
+				for (const age of [1, 12, 135, 1_500]) {
+					mountCard({ bundle, lastGoodAt: { nba: Date.now() - (age * minute) - past } });
+					cy.get('.game-card').then(([card]) => {
+						const innerRight = card.getBoundingClientRect().right - parseFloat(getComputedStyle(card).paddingRight);
+						staleLine().then(([line]) => {
+							const box = line.getBoundingClientRect();
+							const lineHeight = parseFloat(getComputedStyle(line).lineHeight) || box.height;
+							expect(box.height, `${code} at ${age} minutes`).to.be.at.most(lineHeight * 1.5);
+							expect(box.right, `${code} at ${age} minutes`).to.be.at.most(innerRight);
+						});
 					});
 				}
 			}

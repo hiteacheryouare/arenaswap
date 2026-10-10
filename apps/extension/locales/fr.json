@@ -619,7 +619,10 @@
 			"1": "Dernière mise à jour il y a 1 minute",
 			"n": "Dernière mise à jour il y a $1 minutes"
 		},
-		"staleUnderMinute": "Dernière mise à jour il y a moins d'une minute",
+		"staleHours": {
+			"1": "Dernière mise à jour il y a 1 heure",
+			"n": "Dernière mise à jour il y a $1 heures"
+		},
 		"final": "Terminé",
 		"delay": "EN ATTENTE",
 		"delayFallback": "En attente",

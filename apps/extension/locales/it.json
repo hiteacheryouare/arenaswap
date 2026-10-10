@@ -619,7 +619,10 @@
 			"1": "Ultimo aggiornamento 1 minuto fa",
 			"n": "Ultimo aggiornamento $1 minuti fa"
 		},
-		"staleUnderMinute": "Ultimo aggiornamento meno di un minuto fa",
+		"staleHours": {
+			"1": "Ultimo aggiornamento 1 ora fa",
+			"n": "Ultimo aggiornamento $1 ore fa"
+		},
 		"final": "Finale",
 		"delay": "RITARDO",
 		"delayFallback": "Ritardo",

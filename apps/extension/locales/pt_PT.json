@@ -616,10 +616,13 @@
 		"openDetails": "Abrir detalhes de {away} vs {home}",
 		"live": "EM DIRECTO",
 		"staleMinutes": {
-			"1": "Última atualização há 1 minuto",
-			"n": "Última atualização há $1 minutos"
+			"1": "Última actualização há 1 minuto",
+			"n": "Última actualização há $1 minutos"
 		},
-		"staleUnderMinute": "Última atualização há menos de um minuto",
+		"staleHours": {
+			"1": "Última actualização há 1 hora",
+			"n": "Última actualização há $1 horas"
+		},
 		"final": "Final",
 		"delay": "ATRASO",
 		"delayFallback": "Atraso",

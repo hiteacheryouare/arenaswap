@@ -619,7 +619,10 @@
 			"1": "Last updated 1 minute ago",
 			"n": "Last updated $1 minutes ago"
 		},
-		"staleUnderMinute": "Last updated less than a minute ago",
+		"staleHours": {
+			"1": "Last updated 1 hour ago",
+			"n": "Last updated $1 hours ago"
+		},
 		"final": "Final",
 		"delay": "DELAY",
 		"delayFallback": "Delay",

@@ -18,8 +18,13 @@ describe('staleLeagueMinutes', () => {
 		expect(staleLeagueMinutes(['mlb'], { nba: now }, now)).toEqual({});
 	});
 
-	test('reads zero minutes for a refusal moments after a good poll, and for a clock that stepped back', () => {
-		expect(staleLeagueMinutes(['nba', 'nhl'], { nba: now - 20_000, nhl: now + 5_000 }, now)).toEqual({ nba: 0, nhl: 0 });
+	test('waits for a full minute, so a refusal moments after a good poll says nothing', () => {
+		expect(staleLeagueMinutes(['nba', 'nhl', 'mlb'], { nba: now - 59_999, nhl: now - minute, mlb: now - 20_000 }, now))
+			.toEqual({ nhl: 1 });
+	});
+
+	test('says nothing for a clock that stepped back', () => {
+		expect(staleLeagueMinutes(['nba'], { nba: now + 5_000 }, now)).toEqual({});
 	});
 
 	test('is empty when nothing is refused', () => {
@@ -29,10 +34,13 @@ describe('staleLeagueMinutes', () => {
 
 describe('formatStaleNote', () => {
 	test.each([
-		[0, 'Last updated less than a minute ago'],
 		[1, 'Last updated 1 minute ago'],
 		[2, 'Last updated 2 minutes ago'],
-		[95, 'Last updated 95 minutes ago'],
+		[59, 'Last updated 59 minutes ago'],
+		[60, 'Last updated 1 hour ago'],
+		[119, 'Last updated 1 hour ago'],
+		[120, 'Last updated 2 hours ago'],
+		[1_500, 'Last updated 25 hours ago'],
 	])('%i minutes reads %s', (minutes, expected) => {
 		expect(formatStaleNote(minutes, defaultTranslate)).toBe(expected);
 	});

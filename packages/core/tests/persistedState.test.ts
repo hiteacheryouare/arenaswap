@@ -236,8 +236,8 @@ describe('the leagues ESPN refused on the last slate fetch', () => {
 	});
 });
 
-describe('when each league last answered a poll', () => {
-	test('survives the round trip, because the stale card counts its minutes from it', () => {
+describe('the time each league last answered a poll, as the popup receives it', () => {
+	test('crosses the message to the popup intact, which is all the stale line asks of it', () => {
 		expect(BackgroundStateSchema.parse(reload({ leagueLastGoodAt: { nba: 1_760_000_000_000 } })).leagueLastGoodAt)
 			.toEqual({ nba: 1_760_000_000_000 });
 	});

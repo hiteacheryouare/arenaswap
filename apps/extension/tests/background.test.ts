@@ -2249,6 +2249,81 @@ describe('what the slate keeps for a league that did not answer', () => {
 	});
 });
 
+const summary = (games: Game[]) => games.map(g => `${g.id}:${g.status}`).toSorted();
+
+/* The popup's Refresh, closing Settings and finishing onboarding all ask for a fresh state, which
+   polls every league at once. A league refused in that poll answered with nothing, not with no games:
+   its live cards have to stay, and the slate's older copy of a game that has since gone live must
+   not come back beside them as an upcoming one. */
+describe('a fan-out poll with a league refused', () => {
+	const bothLeagues: Partial<UserPreferences> = {
+		enabledLeagues: ['nba' as LeagueId, 'mlb' as LeagueId],
+		enabled: false,
+		showUpcomingGames: true,
+	};
+
+	interface LeagueAnswer { poll: Game[]; slate: Game[]; shed: boolean }
+	let world: Record<string, LeagueAnswer>;
+
+	const serveWorld = () => fetchMock.mockImplementation(async (leagues: LeagueId[], options?: { includeUpcoming?: boolean }) => ({
+		games: leagues.flatMap(id => world[id]!.shed ? [] : (options?.includeUpcoming ? world[id]!.slate : world[id]!.poll)),
+		leagueLogos: {},
+		shedLeagues: leagues.filter(id => world[id]!.shed),
+	}));
+
+	const refresh = async () => await sendMessage({ type: 'GET_STATE', forceRefresh: true }) as {
+		games: Game[];
+		slateShedLeagues: string[];
+		leagueLastGoodAt: Record<string, number>;
+	};
+
+	beforeEach(async () => {
+		world = {
+			nba: {
+				poll: [slateGame('early', 'nba', 'in')],
+				slate: [slateGame('early', 'nba', 'in'), slateGame('later', 'nba', 'pre')],
+				shed: false,
+			},
+			mlb: { poll: [slateGame('mlbg', 'mlb', 'in')], slate: [slateGame('mlbg', 'mlb', 'in')], shed: false },
+		};
+		await loadBackground({ prefs: bothLeagues, initialSystemTime: 1_000_000 });
+		serveWorld();
+		// A preference move is what re-runs refreshSlate, which is where the upcoming list comes from.
+		await sendMessage({
+			type: 'UPDATE_PREFS',
+			prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...bothLeagues, upcomingGamesDays: 9 }),
+		});
+		await refresh();
+	});
+
+	test('keeps the live cards of the refused league, including one that went live since the slate was fetched', async () => {
+		world.nba.poll = [slateGame('early', 'nba', 'in'), slateGame('later', 'nba', 'in')];
+		expect(summary((await refresh()).games)).toEqual(['early:in', 'later:in', 'mlbg:in']);
+
+		world.nba.shed = true;
+		const after = await refresh();
+
+		expect(after.slateShedLeagues).toEqual(['nba']);
+		expect(summary(after.games)).toEqual(['early:in', 'later:in', 'mlbg:in']);
+	});
+
+	test('still lists a refused league\'s kickoffs once, as upcoming', async () => {
+		world.nba.shed = true;
+
+		expect(summary((await refresh()).games)).toEqual(['early:in', 'later:pre', 'mlbg:in']);
+	});
+
+	test('stamps the leagues that answered and leaves the refused one at its last good poll', async () => {
+		const first = (await refresh()).leagueLastGoodAt;
+		expect(first).toEqual({ nba: 1_000_000, mlb: 1_000_000 });
+
+		jest.setSystemTime(1_000_000 + (5 * 60_000));
+		world.nba.shed = true;
+
+		expect((await refresh()).leagueLastGoodAt).toEqual({ nba: 1_000_000, mlb: 1_000_000 + (5 * 60_000) });
+	});
+});
+
 /* The regression this exists to catch. ESPN caps a scoreboard response server-side — near 80 events
    on a dated college football query — and the truncation takes the days furthest ahead. Widening
    this fetch so the guide could share it spent that whole budget on a college football weekend's
