@@ -146,22 +146,22 @@ describe('the due-up block', () => {
 
 		it('is the home club after the middle of an inning', () => {
 			mountPanel({ ...liveGame, topOfInning: false, inningEnded: undefined });
-			cy.get('.gd-dueup-shot').first().should('have.css', 'background-color', home);
+			cy.get('.gd-pregame-leader-shot').first().should('have.css', 'background-color', home);
 		});
 
 		it('is the away club after the end of an inning', () => {
 			mountPanel({ ...liveGame, topOfInning: undefined, inningEnded: true });
-			cy.get('.gd-dueup-shot').first().should('have.css', 'background-color', away);
+			cy.get('.gd-pregame-leader-shot').first().should('have.css', 'background-color', away);
 		});
 
 		it('is the away club at the start of a top half', () => {
 			mountPanel({ ...liveGame, topOfInning: true, inningEnded: undefined });
-			cy.get('.gd-dueup-shot').first().should('have.css', 'background-color', away);
+			cy.get('.gd-pregame-leader-shot').first().should('have.css', 'background-color', away);
 		});
 
 		it('is neutral grey when no half-inning is known', () => {
 			mountPanel({ ...liveGame, topOfInning: undefined, inningEnded: undefined });
-			cy.get('.gd-dueup-shot').first().should('have.css', 'background-color', 'rgb(229, 231, 235)');
+			cy.get('.gd-pregame-leader-shot').first().should('have.css', 'background-color', 'rgb(229, 231, 235)');
 		});
 	});
 

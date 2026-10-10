@@ -1944,9 +1944,8 @@
 }
 
 // The due-up block borrows the section skin above and the Your Players text (`fantasy-player-*`),
-// and only adds its own row: a portrait the size of that list's, then the name, then the line
-// pushed to the right edge. The portrait is the pre-game starters' disc, so a long name gives up
-// width before the face does.
+// and only adds its own row: that list's 20px portrait (`gd-pregame-leader-shot`), then the name, then
+// the line pushed to the right edge.
 .gd-dueup-row {
 	padding: 0.18rem 0;
 
@@ -1958,11 +1957,6 @@
 .gd-dueup-who {
 	font-size:   0.62rem;
 	line-height: 1.35;
-}
-
-.gd-dueup-shot {
-	width:  20px;
-	height: 20px;
 }
 
 // Quiet and on one line: "0-1, BB" is a footnote to the name. The cap stops a long line squeezing

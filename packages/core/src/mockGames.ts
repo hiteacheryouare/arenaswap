@@ -475,6 +475,9 @@ export class MockGameSimulator {
 		const regularPeriods = leagueConfigMap[game.league].regularPeriods;
 
 		if (game.sportType === 'baseball' || game.sportType === 'softball') {
+			// A game carrying a due-up list is a held between-innings frame. Ticking its count or
+			// inning would put a live count under a list that only exists while nobody is at the plate.
+			if (game.dueUp) return;
 				if (game.bso) {
 				const roll = Math.random();
 				if (roll < 0.3) {

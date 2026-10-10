@@ -378,6 +378,21 @@ describe('MockGameSimulator', () => {
 			expect(getGameById(games, 'mock-16').atBat).toBeUndefined();
 		});
 
+		// The "Mid 10th" demo is a held frame: its list is only true while nobody is at the plate.
+		test('a game carrying a due-up list stays a still between-innings frame', () => {
+			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.1);
+			const simulator = new MockGameSimulator();
+			const before = getGameById(simulator.tick(), 'mock-16');
+			for (let tick = 0; tick < 20; tick++) simulator.tick();
+			const after = getGameById(simulator.tick(), 'mock-16');
+			expect(after.bso).toEqual({ balls: 0, strikes: 0, outs: 0 });
+			expect(after.period).toBe(before.period);
+			expect(after.homeTeam.score).toBe(before.homeTeam.score);
+			expect(after.awayTeam.score).toBe(before.awayTeam.score);
+			expect(after.dueUp).toHaveLength(3);
+			randomSpy.mockRestore();
+		});
+
 		test('post-game reset sets bso back to all zeros', () => {
 			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.99);
 			const simulator = new MockGameSimulator();
