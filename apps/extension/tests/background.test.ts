@@ -1,7 +1,7 @@
 import { pollWinProbabilityMs } from '@arenaswap/core';
 import { gameEndTimesKey } from '../utils/gameEndTimes';
 import { monoLogoCacheKey, monoLogoCacheTtlMs } from '../utils/monoLogoCache';
-import { createDefaultUserPreferences, createFavoriteTeamKey, guideMinUpcomingDays, historyWindowMs, normalizeUserPreferences, pollDormantMaxMs, pollHebetudinousMaxMs, pollIntervalMs, pollMaxEagerMs } from '@arenaswap/core/constants';
+import { createDefaultUserPreferences, createFavoriteTeamKey, guideMinUpcomingDays, historyWindowMs, normalizeUserPreferences, pollDormantMaxMs, pollHebetudinousMaxMs, pollIntervalMs, pollLookaheadTtlMs, pollMaxEagerMs } from '@arenaswap/core/constants';
 import { chartHistory, coversWholeGame } from '../entrypoints/popup/components/wrapCoverage';
 import type { Game, LeagueId, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import { prefsStorageUpdatedAtKey } from '../utils/prefsStorage';
@@ -1612,6 +1612,38 @@ describe('polling a league with nothing on', () => {
 			fetchMock.mockResolvedValue(refused);
 
 			expect(await retryDelays(6)).toEqual([17_000, 32_000, 62_000, 122_000, pollDormantMaxMs, pollDormantMaxMs]);
+		});
+
+		test('a league that has never answered backs off to the dormant beat, not the live one', async () => {
+			await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: refused });
+
+			expect(await retryDelays(6)).toEqual([17_000, 32_000, 62_000, 122_000, pollDormantMaxMs, pollDormantMaxMs]);
+		});
+
+		test('a league with a game on never retries slower than the live cadence', async () => {
+			await loadBackground({
+				prefs: nbaOnly,
+				initialSystemTime: startMs,
+				fetchReturnValue: { games: [liveGame], leagueLogos: {}, shedLeagues: [] },
+			});
+			await pollOnce();
+			fetchMock.mockResolvedValue(refused);
+
+			const delays = await retryDelays(6);
+			expect(Math.max(...delays)).toBeLessThanOrEqual(pollMaxEagerMs + 2_000);
+			expect(Math.min(...delays)).toBeGreaterThanOrEqual(17_000);
+		});
+
+		test('a sleeping league keeps its ceiling after the lookahead it slept on has expired', async () => {
+			await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+			await goQuiet();
+			expect((await debugState()).pollModes.nba).toBe('hebetudinous');
+			fetchMock.mockResolvedValue(refused);
+			await retryDelays(9);
+
+			jest.setSystemTime(startMs + pollLookaheadTtlMs + 60 * 60_000);
+			expect(await retryDelays(2)).toEqual([pollHebetudinousMaxMs, pollHebetudinousMaxMs]);
+			expect((await debugState()).pollModes.nba).toBe('dormant');
 		});
 
 		test('really does wait that long before asking again', async () => {
