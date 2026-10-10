@@ -16,3 +16,4 @@
 - [Popup open reveal](review_popup_open_reveal.md) — measured DM Sans tricode widths, the harness/production nesting mismatch, the 3400ms JS↔SCSS duplication
 - [PowerScore replay harness](review_powerscore_replay_harness.md) — hit@1 tie-break luck, dist+src engine mix, non-self-contained hourly files, recorder dies with the session
 - [Cypress test strength](review_cypress_test_strength.md) — StrictMode wrappers do not double-run effects here; growing alias counts; CI skips Cypress when jest fails; mutation recipe
+- [Film stage map](review_film_stage_map.md) — ad-film renders: one page per cut+format, card close vs next-shot seam, zoom scales Desk transforms

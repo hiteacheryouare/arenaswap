@@ -32,22 +32,11 @@ Cada card no popup mostra uma barra de PowerScore colorida para você ver o nív
 LIGAS SUPORTADAS (31)
 ━━━━━━━━━━━━━━━━━━━━━━
 
-🏀 Basquete (6)
-NBA · WNBA · NCAA Men's · NCAA Women's · Olympic Men's · Olympic Women's
+O ArenaSwap monitora 31 ligas em seis esportes, e você pode ativar ou desativar qualquer uma delas.
 
-🏈 Futebol americano (3)
-NFL · NCAA Football · UFL
+A cobertura abrange basquete, futebol americano, hóquei, beisebol e softbol nos níveis profissional, universitário e olímpico. Isso inclui a NBA e a WNBA, a NFL, a NHL e a MLB, além de seus equivalentes universitários e internacionais. Também inclui futebol, desde clubes norte-americanos até as principais ligas europeias e os grandes torneios internacionais.
 
-🏒 Hóquei (4)
-NHL · NCAA Men's · Olympic Men's · Olympic Women's
-
-⚾ Beisebol e softbol (5)
-MLB · NCAA Baseball · NCAA Softball · Olympic Baseball · World Baseball Classic
-
-⚽ Futebol (13)
-MLS · NWSL · English Premier League · La Liga · Bundesliga · Serie A · Liga MX · UEFA Champions League · UEFA Europa League · Olympic Men's · Olympic Women's · FIFA World Cup · FIFA Women's World Cup
-
-Seis esportes. 31 ligas. Ative ou desative qualquer uma delas.
+Assista só aos esportes que você acompanha, ou ative tudo e deixe o ArenaSwap encontrar o melhor jogo do mundo a qualquer momento.
 
 ━━━━━━━━━━━━━━━━━━━━━━
 AJUSTADO A VOCÊ

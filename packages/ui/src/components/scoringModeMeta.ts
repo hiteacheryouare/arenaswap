@@ -62,7 +62,7 @@ export interface BoostPresentation extends FactorTone {
 	labelKey: string;
 	tooltipKey: string;
 	icon: string;
-	// Drawn as a shaded stretch on the PowerScore chart while it pays.
+	// Named in the PowerScore chart's tooltip while it pays.
 	moment: boolean;
 }
 
