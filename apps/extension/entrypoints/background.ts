@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, computeRetryDelayMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
 import type { ClockStallEntry } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
@@ -251,6 +251,8 @@ export default defineBackground(() => {
 		});
 	};
 	const leagueTimers = new Map<string, ReturnType<typeof setTimeout>>();
+	const leagueFailureCounts = new Map<LeagueId, number>();
+	const leagueHealthyIntervalMs = new Map<LeagueId, number>();
 	const leagueNextIntervalMs = new Map<string, number>();
 	// Lives on the summary endpoint (one request per game) rather than the scoreboard, so it
 	// refreshes on its own slow cadence. Every PowerScore reader pulls from here, so the card,
@@ -986,12 +988,17 @@ export default defineBackground(() => {
 
 			const mode = pollModeTracker.getMode(leagueId);
 			let nextInterval: number;
-			if (fetchSucceeded && mode === 'hebetudinous') {
+			const liveLeagueGames = games.filter(g => g.league === leagueId && g.status === 'in');
+			const liveInHand = mode === 'eager' && liveLeagueGames.length > 0;
+			// A failed poll still works out the interval the league would normally be on, because that
+			// is the ceiling its retries back off towards.
+			if (mode === 'hebetudinous') {
 				nextInterval = computeHebetudinousIntervalMs(pollModeTracker.getNextStartMs(leagueId) ?? null);
-			} else if (fetchSucceeded && mode === 'dormant') {
+			} else if (mode === 'dormant' || (!fetchSucceeded && !liveInHand)) {
+				// A league that has never answered is still `eager` with nothing live, so without the
+				// second half its ceiling would be the 25s live beat for as long as it keeps failing.
 				nextInterval = pollDormantMinMs + randomInRange(0, pollDormantMaxMs - pollDormantMinMs);
-			} else if (fetchSucceeded) {
-				const liveLeagueGames = games.filter(g => g.league === leagueId && g.status === 'in');
+			} else {
 				const refreshMs = scoreboardRefreshMs(leagueId);
 				const base = computeLeagueIntervalMs(liveLeagueGames, currentScores, refreshMs);
 				// Proportional so fast polls stay dense and slow polls spread out.
@@ -1000,8 +1007,18 @@ export default defineBackground(() => {
 				// ESPN is still serving the previous answer for, which is the poll this floor exists to
 				// stop. De-syncing leagues stays the job of the positive half.
 				nextInterval = Math.max(refreshMs, base + randomInRange(-jitterMax, jitterMax));
+			}
+			if (fetchSucceeded) {
+				leagueFailureCounts.delete(leagueId);
+				leagueHealthyIntervalMs.set(leagueId, nextInterval);
 			} else {
-				nextInterval = pollIntervalMs + randomInRange(-2_000, 2_000);
+				const failures = (leagueFailureCounts.get(leagueId) ?? 0) + 1;
+				leagueFailureCounts.set(leagueId, failures);
+				// A sleeping league keeps the beat it last answered at, which the lookahead's own expiry
+				// would otherwise shorten partway through a long refusal. A live one never does, so a game
+				// on screen is not left stale.
+				const ceiling = liveInHand ? nextInterval : Math.max(nextInterval, leagueHealthyIntervalMs.get(leagueId) ?? 0);
+				nextInterval = computeRetryDelayMs(failures, ceiling, randomInRange(-2_000, 2_000));
 			}
 			leagueNextIntervalMs.set(leagueId, nextInterval);
 			scheduleLeagueTick(leagueId, nextInterval);
@@ -1025,6 +1042,8 @@ export default defineBackground(() => {
 	const startLeaguePolling = () => {
 		stopLeaguePolling();
 		pollModeTracker.reset();
+		leagueFailureCounts.clear();
+		leagueHealthyIntervalMs.clear();
 		for (const leagueId of prefs.enabledLeagues) {
 			scheduleLeagueTick(leagueId, randomInRange(0, pollIntervalMs));
 		}

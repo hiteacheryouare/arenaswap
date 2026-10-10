@@ -9,6 +9,10 @@
 
 Between half-innings, a Due Up block under the hero lists the next three hitters with a portrait, their position and their line for the day ("0-1, BB"). It gives way to the at-bat panel at the first pitch, because our sources only name the next hitters while nobody is at the plate. The list keeps the order it arrives in rather than sorting on lineup slot, since the lineup wraps and the ninth hitter bats ahead of the leadoff man.
 
+## A league that keeps getting refused backs off, and a hung request gives up — 2026-10-09
+
+A failed league poll now waits twice as long after each failure, starting at 15 seconds and stopping at the interval that league was already on, so a refusal no longer speeds up a sleeping league; the first good answer resets it. Every scoreboard, standings, team and situation request now gives up after 10 seconds, so one that never answers can't hold a league's slate hostage; win probability keeps the signal its caller hands it.
+
 ## Work that went missing on the way to dev comes back — 2026-10-09
 
 The store listings' prose league list and the 2.1.1 release notes only ever reached `mega`, so `dev` gets them back, along with two agent memory notes. The finished-tabs changelog entry that a September merge dropped is back too, shortened to fit the rule above.
