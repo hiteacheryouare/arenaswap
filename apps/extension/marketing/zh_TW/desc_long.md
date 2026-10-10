@@ -32,22 +32,11 @@ POWERSCORE 演算法
 支援的聯賽（31 個）
 ━━━━━━━━━━━━━━━━━━━━━━
 
-🏀 籃球（6）
-NBA · WNBA · NCAA Men's · NCAA Women's · Olympic Men's · Olympic Women's
+ArenaSwap 會監控六種運動、總共 31 個聯賽，你可以自行開關其中任何一個。
 
-🏈 美式足球（3）
-NFL · NCAA Football · UFL
+涵蓋範圍包括籃球、美式足球、冰球、棒球與壘球，橫跨職業、大學與奧運各個層級。其中包括 NBA 與 WNBA、NFL、NHL、MLB，以及各項目對應的大學聯賽與國際賽事。此外還包括足球，從北美俱樂部到歐洲各大頂級聯賽，再到重要的國際賽事都涵蓋在內。
 
-🏒 冰球（4）
-NHL · NCAA Men's · Olympic Men's · Olympic Women's
-
-⚾ 棒球與壘球（5）
-MLB · NCAA Baseball · NCAA Softball · Olympic Baseball · World Baseball Classic
-
-⚽ 足球（13）
-MLS · NWSL · English Premier League · La Liga · Bundesliga · Serie A · Liga MX · UEFA Champions League · UEFA Europa League · Olympic Men's · Olympic Women's · FIFA World Cup · FIFA Women's World Cup
-
-六種運動，31 個聯賽，每一個都能自行開關。
+只關注你感興趣的運動，或是把所有聯賽都打開，讓 ArenaSwap 隨時幫你找到全世界最精彩的比賽。
 
 ━━━━━━━━━━━━━━━━━━━━━━
 為你量身調整
