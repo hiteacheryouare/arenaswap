@@ -354,7 +354,6 @@
 		"guideButton": "Guide",
 		"bossButton": "Le chef arrive",
 		"bossButtonShortcut": "Le chef arrive ({shortcut})",
-		"pausedNotice": "Le changement automatique est en pause. Active l'interrupteur en haut quand la voie est libre.",
 		"onStandbyStream": "Sur Standby Stream jusqu'à ce que ça chauffe",
 		"sectionActiveLiveTabs": "Onglets actifs",
 		"sectionOtherLiveGames": "Matchs en direct",

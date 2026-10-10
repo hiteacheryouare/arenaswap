@@ -328,13 +328,6 @@ const mainView = ({
 				<ReviewPromptBanner onDismiss={onDismissReviewPrompt} onLeaveReview={onLeaveReview} />
 			)}
 
-			{prefsLoaded && !prefs.enabled && (
-				<div className='alert popup-notice d-flex align-items-center gap-2' role='status' data-testid='paused-banner'>
-					<i className='bi bi-pause-circle popup-notice-icon' aria-hidden='true' />
-					<span>{i18n.t('main.pausedNotice')}</span>
-				</div>
-			)}
-
 			{onStandbyStream && (
 				<div className='alert popup-notice d-flex align-items-center gap-2' role='status' data-testid='standby-banner'>
 					<i className='bi bi-broadcast popup-notice-icon' aria-hidden='true' />

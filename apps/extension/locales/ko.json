@@ -354,7 +354,6 @@
 		"guideButton": "편성표",
 		"bossButton": "상사가 온다",
 		"bossButtonShortcut": "상사가 온다 ({shortcut})",
-		"pausedNotice": "자동 전환이 일시 중지됐어요. 상황이 정리되면 위쪽 스위치를 켜 주세요.",
 		"onStandbyStream": "뭔가 뜨거워질 때까지 Standby Stream에서 대기 중",
 		"sectionActiveLiveTabs": "활성 탭",
 		"sectionOtherLiveGames": "진행 중인 경기",

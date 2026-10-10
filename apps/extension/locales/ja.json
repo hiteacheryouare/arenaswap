@@ -354,7 +354,6 @@
 		"guideButton": "番組表",
 		"bossButton": "上司が来た",
 		"bossButtonShortcut": "上司が来た（{shortcut}）",
-		"pausedNotice": "自動切り替えは一時停止中です。ほとぼりが冷めたら、上のスイッチを入れてください。",
 		"onStandbyStream": "何かが盛り上がるまで Standby Stream で待機中",
 		"sectionActiveLiveTabs": "アクティブタブ",
 		"sectionOtherLiveGames": "ライブ試合",

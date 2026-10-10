@@ -354,7 +354,6 @@
 		"guideButton": "Guide",
 		"bossButton": "Boss is coming",
 		"bossButtonShortcut": "Boss is coming ({shortcut})",
-		"pausedNotice": "Auto-switching is paused. Flip the switch up top when the coast is clear.",
 		"onStandbyStream": "On Standby Stream until something heats up",
 		"sectionActiveLiveTabs": "Active Tabs",
 		"sectionOtherLiveGames": "Live Games",

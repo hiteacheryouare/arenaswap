@@ -208,26 +208,6 @@ describe('mainView standby banner', () => {
 	});
 });
 
-describe('mainView paused notice', () => {
-	it('says auto-switching is paused, and where to turn it back on, while the switch is off', () => {
-		cy.viewport(320, 480);
-		cy.mount(<MainView {...defaultProps} prefs={{ ...defaultPrefs, enabled: false }} />);
-		cy.get('[data-testid="paused-banner"]').should('contain.text', 'Auto-switching is paused');
-	});
-
-	it('is absent while auto-switching is on', () => {
-		cy.viewport(320, 480);
-		cy.mount(<MainView {...defaultProps} />);
-		cy.get('[data-testid="paused-banner"]').should('not.exist');
-	});
-
-	it('waits for the stored preferences rather than flashing on the defaults', () => {
-		cy.viewport(320, 480);
-		cy.mount(<MainView {...defaultProps} prefsLoaded={false} prefs={{ ...defaultPrefs, enabled: false }} />);
-		cy.get('[data-testid="paused-banner"]').should('not.exist');
-	});
-});
-
 // React builds pointerenter out of pointerover, so that is the event a resting pointer sends. Forced
 // because the stub card is empty and so has no height to be visible at.
 describe('mainView hover prefetch', () => {

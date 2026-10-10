@@ -433,6 +433,9 @@ export default defineBackground(() => {
 	});
 
 	const syncManagedTabMuteState = async (enabled: boolean) => {
+		// The hush is the pause's mute. Prefs can come back on without an UPDATE_PREFS, from a
+		// storage reload or a worker restart, so this is where it ends rather than at one message.
+		if (enabled) await bossMode.release();
 		const managedTabIds = getManagedTabIds();
 		if (managedTabIds.length === 0 && mutedTabIds.size === 0) return;
 
@@ -456,7 +459,7 @@ export default defineBackground(() => {
 		const nextMuteStates = new Map<number, boolean>();
 		for (const tabId of releasedTabIds) nextMuteStates.set(tabId, false);
 		for (const tabId of managedOpenTabIds) {
-			nextMuteStates.set(tabId, bossMode.isHushed() || (enabled ? tabId !== watchedTabId : false));
+			nextMuteStates.set(tabId, enabled ? tabId !== watchedTabId : bossMode.isHushed());
 		}
 
 		// A tab can close between the query above and the update below. Failing the whole batch
@@ -1239,7 +1242,6 @@ export default defineBackground(() => {
 				const prevCollegeKey = collegeFetchKey();
 				prefs = normalizeUserPreferences(msg.prefs);
 				if (wasEnabled && !prefs.enabled) setLastSwitchTime(0);
-				if (prefs.enabled) await bossMode.release();
 				clearPendingSwitch();
 				// The popup persists before it sends, and the GET_STATE recovery path relies on that,
 				// so writing again here would only double the storage.sync traffic against Chrome's

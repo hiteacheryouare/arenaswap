@@ -337,13 +337,17 @@ export default () => {
 		void syncPromise.catch(() => {});
 	};
 
-	// The background mutes, pauses and opens the decoy. The popup only shows the pause, in case the
-	// browser leaves it open behind the new tab.
+	// Queued behind any preferences save still on its way, so an earlier UPDATE_PREFS carrying
+	// `enabled: true` cannot land after the press and switch auto-switching back on. The popup shows
+	// the pause itself in case the browser leaves it open behind the new tab.
 	const pressBossButton = () => {
 		const paused = { ...prefsRef.current, enabled: false };
 		prefsRef.current = paused;
 		setPrefs(paused);
-		browser.runtime.sendMessage({ type: 'BOSS_BUTTON' }).catch(() => {}).finally(() => window.close());
+		prefsSyncRef.current.catch(() => {})
+			.then(() => browser.runtime.sendMessage({ type: 'BOSS_BUTTON' }))
+			.catch(() => {})
+			.finally(() => window.close());
 	};
 
 	const onOnboardingComplete = (leagues: LeagueId[], favorites: string[]) => {

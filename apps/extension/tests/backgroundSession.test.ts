@@ -682,6 +682,38 @@ describe('the boss button', () => {
 		expect(tabsUpdate).not.toHaveBeenCalledWith(expect.anything(), { muted: false });
 	});
 
+	test('keeps every tab muted while hushed, even one the user unmuted by hand', async () => {
+		await startWatching();
+		await bossIsComing();
+		await drain();
+		tabsUpdate.mockClear();
+
+		// The user clicks over to a game tab and lets it speak; the next sync puts it back.
+		mockTabs([1, 2, 3, 4], 2);
+		await onActivatedHandler!({ tabId: 2 });
+		await drain();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { muted: true });
+	});
+
+	test('lets go of the hush when auto-switching came back on without a message reaching the worker', async () => {
+		await startWatching();
+		await bossIsComing();
+		await drain();
+
+		// The switch was flipped back on and written to storage, but the worker was torn down
+		// before the UPDATE_PREFS arrived, so the next one boots with enabled true and a hush.
+		const resumed = { prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...switchingPrefs, enabled: true }), prefsUpdatedAt: 2_000_000 };
+		syncStore = { ...resumed };
+		localStore = { ...localStore, ...resumed };
+		await startWorker({ games: [thriller('g1'), runaway('g2')], openTabIds: [1, 2, 3, 4], activeTabId: 2, atMs: 1_060_000 });
+		await poll();
+
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { muted: true });
+		expect(tabsUpdate).toHaveBeenCalledWith(3, { muted: true });
+		expect(sessionStore.bossHushed).toBe(false);
+	});
+
 	test('answers to the popup button the same way as to the shortcut', async () => {
 		await startWatching();
 

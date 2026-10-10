@@ -354,7 +354,6 @@
 		"guideButton": "节目表",
 		"bossButton": "老板来了",
 		"bossButtonShortcut": "老板来了（{shortcut}）",
-		"pausedNotice": "自动切换已暂停。风头过了，再打开上方的开关。",
 		"onStandbyStream": "在 Standby Stream 待命，等比赛升温",
 		"sectionActiveLiveTabs": "活跃标签页",
 		"sectionOtherLiveGames": "直播比赛",

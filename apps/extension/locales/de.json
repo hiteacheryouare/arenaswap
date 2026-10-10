@@ -354,7 +354,6 @@
 		"guideButton": "Guide",
 		"bossButton": "Chef kommt",
 		"bossButtonShortcut": "Chef kommt ({shortcut})",
-		"pausedNotice": "Das automatische Wechseln ist pausiert. Leg oben den Schalter um, wenn die Luft rein ist.",
 		"onStandbyStream": "Im Standby Stream, bis es wieder heiß wird",
 		"sectionActiveLiveTabs": "Aktive Tabs",
 		"sectionOtherLiveGames": "Live-Spiele",
