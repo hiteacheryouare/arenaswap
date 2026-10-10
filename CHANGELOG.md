@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The onboarding e2e waits for every league's teams — 2026-10-09
+
+The test that walks all three onboarding steps gives the team picker 15 seconds to show the 76ers, since it waits for every enabled league's teams while the request alias it waits on only covers the first. It had failed on a loaded runner twice in one day and passed every time it ran alone.
+
 ## The detail screen follows a live game — 2026-10-09
 
 While a game is live, the detail screen asks for its summary again every minute, the pace the background already polls at, so the win probability line, box score and series state keep moving instead of freezing at the moment you opened it. A refresh swaps the data in quietly: a failed or thin one keeps what's on screen, a slow answer that lands after a newer one is dropped, and a hidden page skips its polls.
