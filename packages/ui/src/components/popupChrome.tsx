@@ -64,6 +64,8 @@ export const PopupHeader = ({
 	onOpenSettings,
 	onStartTour,
 	onOpenGuide,
+	onBossButton,
+	bossShortcut,
 }: {
 	// The element the header should collapse against. Absent on the website, which shows this header
 	// as a picture of the popup rather than a scrolling one, so the mark simply stays whole there.
@@ -81,6 +83,11 @@ export const PopupHeader = ({
 	// Optional, and the button is absent without it. The website renders this header twice and has no
 	// guide page to open, so there is nothing there for a third control to do.
 	onOpenGuide?: () => void;
+	// Absent on the website for the same reason as the guide: there is no background to hand it to.
+	onBossButton?: () => void;
+	// What the browser registered for the boss command, to be shown in the tooltip. Left out when
+	// the browser reports none, which is a shortcut the user has cleared or another extension took.
+	bossShortcut?: string;
 }) => {
 	const t = useT();
 	const { headerRef, wordmarkRef } = usePopupHeaderCollapse(scroller);
@@ -88,6 +95,11 @@ export const PopupHeader = ({
 		<div ref={headerRef} className='popup-header d-flex justify-content-between align-items-center'>
 			<Wordmark ref={wordmarkRef} className='arenaswap-logo' />
 			<div className='d-flex align-items-center gap-2' aria-hidden={interactive ? undefined : true}>
+				{onBossButton && (
+					<button className='btn btn-sm p-0 popup-settings-button' onClick={onBossButton} title={bossShortcut ? t('main.bossButtonShortcut', { shortcut: bossShortcut }) : t('main.bossButton')} aria-label={t('main.bossButton')} disabled={!interactive} tabIndex={interactive ? undefined : -1}>
+						<i className='bi bi-incognito popup-settings-icon' />
+					</button>
+				)}
 				{/* Before the help mark rather than after the cog: settingsCog.cy.tsx identifies the cog
 				    as `.popup-settings-button` .last(), and a third button appended after it would
 				    silently repoint those assertions at this one. */}

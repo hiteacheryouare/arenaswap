@@ -46,6 +46,8 @@ export const defaultStrings: Record<string, string> = {
 	'main.tourButton': 'Tour',
 	'main.settingsButton': 'Settings',
 	'main.guideButton': 'Guide',
+	'main.bossButton': 'Boss is coming',
+	'main.bossButtonShortcut': 'Boss is coming ({shortcut})',
 	'main.sectionActiveLiveTabs': 'Active Tabs',
 	'main.sectionOtherLiveGames': 'Live Games',
 	'main.sectionUpNext': 'Up Next',

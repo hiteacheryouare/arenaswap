@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## A boss-is-coming button — 2026-10-09
+
+One press, from the new header button or Alt+Shift+X, mutes every tab ArenaSwap manages, jumps to the decoy page set under Settings (a blank tab if none), and pauses auto-switching until you flip the header switch back on. The shortcut shown in the tooltip and the settings comes from what the browser actually registered.
+
 ## The baseball detail screen shows who's due up — 2026-10-09
 
 Between half-innings, a Due Up block under the hero lists the next three hitters with a portrait, their position and their line for the day ("0-1, BB"). It gives way to the at-bat panel at the first pitch, because our sources only name the next hitters while nobody is at the plate. The list keeps the order it arrives in rather than sorting on lineup slot, since the lineup wraps and the ninth hitter bats ahead of the leadoff man.

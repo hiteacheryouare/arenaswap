@@ -215,6 +215,7 @@ const setupProps = {
 	onUpcomingGamesDaysChange: () => {},
 	onToggleProTips: () => {},
 	onToggleNotifications: () => {},
+	onBossDecoyChange: () => {},
 	onToggleDemo: () => {},
 	onDemoSeasonChange: () => {},
 	onToggleStandbyStream: () => {},

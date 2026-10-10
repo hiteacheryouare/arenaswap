@@ -292,6 +292,9 @@ export interface UserPreferences {
 	finishedTabAction: FinishedTabAction;
 	proTipsEnabled: boolean;
 	notificationsEnabled: boolean;
+	// Where the boss button takes you. Stored as typed and tidied by the settings field, so an
+	// older or hand-edited value is read again at press time rather than trusted.
+	bossDecoyUrl: string;
 	standbyStreamEnabled: boolean;
 	// Switch to standby once every registered game falls below this.
 	standbyStreamThreshold: number;
@@ -501,6 +504,10 @@ export interface SetStandbyStreamTabMessage {
 	tabId: number | null;
 }
 
+export interface BossButtonMessage {
+	type: 'BOSS_BUTTON';
+}
+
 export interface GetDebugStateMessage {
 	type: 'GET_DEBUG_STATE';
 }
@@ -562,5 +569,6 @@ export type ExtensionMessage =
 	| GetStateMessage
 	| SetDemoModeMessage
 	| SetStandbyStreamTabMessage
+	| BossButtonMessage
 	| GetDebugStateMessage
 	| GetGuideSlateMessage;
