@@ -399,6 +399,7 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "Pitching",
 		"atBatLabel": "At bat",
+		"dueUpHeading": "Due Up",
 		"bonus": "Bonus",
 		"foulsBonus": "{team} in the bonus",
 		"foulsDoubleBonus": "{team} in the double bonus",

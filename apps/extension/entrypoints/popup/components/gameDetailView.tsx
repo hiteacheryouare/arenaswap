@@ -8,6 +8,7 @@ import DetailHero from './detailHero';
 import DetailPosterHero from './detailPosterHero';
 import DetailStickyBar from './detailStickyBar';
 import DetailTabs from './detailTabs';
+import DueUpPanel from './dueUpPanel';
 import FantasyPlayersPanel from './fantasyPlayersPanel';
 import type { DetailTab, DetailTabId } from './detailTabs';
 import StandingsTable from './standingsTable';
@@ -294,7 +295,9 @@ const gameDetailView = ({
 			</>
 		) : (
 			<>
-				{/* First, and deliberately not next to the info panel: what just happened is
+				{/* Between half-innings, when the hero has no at-bat panel: who steps in next. */}
+				<DueUpPanel game={game} awayColor={awayLineColor} homeColor={homeLineColor} />
+				{/* Next, and deliberately not next to the info panel: what just happened is
 				    the most time-sensitive thing on this screen, and putting it beside the
 				    venue and the networks is what made it read as venue chrome on the card. */}
 				<LatestPlayPanel game={game} awayColor={awayLineColor} homeColor={homeLineColor} />

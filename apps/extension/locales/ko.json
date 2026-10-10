@@ -399,6 +399,7 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "투구",
 		"atBatLabel": "타석",
+		"dueUpHeading": "다음 타자",
 		"bonus": "보너스",
 		"foulsBonus": "{team} 보너스",
 		"foulsDoubleBonus": "{team} 더블 보너스",

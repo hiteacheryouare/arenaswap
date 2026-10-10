@@ -399,6 +399,7 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "Lançamentos",
 		"atBatLabel": "A rebater",
+		"dueUpHeading": "Próximos batedores",
 		"bonus": "Bónus",
 		"foulsBonus": "{team} em bónus",
 		"foulsDoubleBonus": "{team} em bónus duplo",

@@ -399,6 +399,7 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "Pitcheo",
 		"atBatLabel": "Al bate",
+		"dueUpHeading": "Próximos bateadores",
 		"bonus": "Bonus",
 		"foulsBonus": "{team} en bonus",
 		"foulsDoubleBonus": "{team} en doble bonus",

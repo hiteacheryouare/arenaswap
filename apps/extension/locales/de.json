@@ -399,6 +399,7 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "Werfen",
 		"atBatLabel": "Am Schlag",
+		"dueUpHeading": "Als Nächstes am Schlag",
 		"bonus": "Bonus",
 		"foulsBonus": "{team} im Bonus",
 		"foulsDoubleBonus": "{team} im Double Bonus",

@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The baseball detail screen shows who's due up — 2026-10-09
+
+Between half-innings, a Due Up block under the hero lists the next three hitters with a portrait, their position and their line for the day ("0-1, BB"). It gives way to the at-bat panel at the first pitch, because our sources only name the next hitters while nobody is at the plate. The list keeps the order it arrives in rather than sorting on lineup slot, since the lineup wraps and the ninth hitter bats ahead of the leadoff man.
+
 ## Game cards stop being buttons with buttons inside — 2026-10-09
 
 A card is now a labelled group with a details button as its first Tab stop, so screen readers read the matchup, score, clock and status, the PowerScore bar has a name, and the stars, odds tooltip and tab picker are controls of their own. Clicking the card still opens the game, and the website's demo cards take `interactive={false}`: they keep the hover lift but lose the tab stop and the pointer cursor.
