@@ -1,5 +1,12 @@
 import type { Game, LeagueId } from '@arenaswap/core/types';
 
+export const guideSlateTtlMs = 10 * 60 * 1000;
+
+// How long a slate that lost leagues, or one every league refused, is trusted before the next open
+// asks again. Short, but not zero: every poll broadcast makes an open Guide ask, and a refusal that
+// was asked about again each time would add a wide fetch to the very quota that caused it.
+export const guideSlateRetryMs = 60 * 1000;
+
 export interface guideSlateOutcome {
 	/** What the Guide is shown. */
 	games: Game[];
@@ -7,8 +14,8 @@ export interface guideSlateOutcome {
 	refused: boolean;
 	/** Whether `games` replaces the slate the worker holds between opens. */
 	write: boolean;
-	/** Whether the ten-minute clock restarts. Only an answer from every league earns that. */
-	stamp: boolean;
+	/** How long before the next open asks again. Only an answer from every league earns the full TTL. */
+	holdMs: number;
 }
 
 // A league that did not answer contributes nothing and says nothing, so its entries are carried over
@@ -23,7 +30,7 @@ export const isEveryLeagueRefused = (enabledLeagues: LeagueId[], shedLeagues: Le
 
 // The fetch threw outright, or every league refused. Hold what there is, and say so if there is nothing.
 export const resolveGuideSlateFailure = (previous: Game[]): guideSlateOutcome => (
-	{ games: previous, refused: previous.length === 0, write: false, stamp: false }
+	{ games: previous, refused: previous.length === 0, write: false, holdMs: guideSlateRetryMs }
 );
 
 // The fetch resolves whatever happened, so this is where a refusal is told apart from a quiet day.
@@ -39,6 +46,6 @@ export const resolveGuideSlate = (
 		games,
 		refused: games.length === 0 && shedLeagues.length > 0,
 		write: true,
-		stamp: shedLeagues.length === 0,
+		holdMs: shedLeagues.length === 0 ? guideSlateTtlMs : guideSlateRetryMs,
 	};
 };

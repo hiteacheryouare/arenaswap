@@ -1714,7 +1714,7 @@ describe('GET_GUIDE_SLATE', () => {
 
 	// Every league refused resolves rather than throws, so the empty list looked like a quiet day for
 	// the whole ten minutes the slate is held.
-	test('does not cache a slate every league refused, and asks again on the next open', async () => {
+	test('does not cache a slate every league refused, and asks again once the retry window passes', async () => {
 		await loadBackground({
 			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },
 			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
@@ -1722,11 +1722,66 @@ describe('GET_GUIDE_SLATE', () => {
 		fetchMock.mockResolvedValue({ games: [], leagueLogos: {}, shedLeagues: ['nba'] });
 		await expect(guideSlate()).resolves.toMatchObject({ games: [], refused: true });
 
+		jest.setSystemTime(Date.now() + 61_000);
 		fetchMock.mockClear();
 		fetchMock.mockResolvedValue({ games: [game('later', 'pre')], leagueLogos: {}, shedLeagues: [] });
 		const slate = await guideSlate();
 
 		expect(fetchMock).toHaveBeenCalled();
+		expect(slate.games.map(g => g.id)).toEqual(['later']);
+		expect(slate.refused).toBe(false);
+	});
+
+	// Every poll broadcast makes an open Guide ask again, so a refusal asked about each time would
+	// spend a wide fetch per league tick on the quota that caused it.
+	test('costs one wide fetch, not one per open, while a partial refusal is held', async () => {
+		const nflGame = (id: string): Game => ({ ...game(id, 'pre'), league: 'nfl' as LeagueId });
+		await loadBackground({
+			prefs: { enabledLeagues: ['nba' as LeagueId, 'nfl' as LeagueId], enabled: false, showUpcomingGames: false, keepFinalGames: false },
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
+		});
+		fetchMock.mockResolvedValue({ games: [game('nba-new', 'pre')], leagueLogos: {}, shedLeagues: ['nfl'] });
+		fetchMock.mockClear();
+
+		await guideSlate();
+		await guideSlate();
+		await guideSlate();
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+
+		jest.setSystemTime(Date.now() + 61_000);
+		fetchMock.mockResolvedValue({ games: [game('nba-new', 'pre'), nflGame('nfl-back')], leagueLogos: {}, shedLeagues: [] });
+		const slate = await guideSlate();
+		expect(fetchMock).toHaveBeenCalledTimes(2);
+		expect(slate.games.map(g => g.id).toSorted()).toEqual(['nba-new', 'nfl-back']);
+	});
+
+	test('keeps saying so, without asking again, while a refusal with nothing held is waited out', async () => {
+		await loadBackground({
+			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
+		});
+		fetchMock.mockResolvedValue({ games: [], leagueLogos: {}, shedLeagues: ['nba'] });
+		fetchMock.mockClear();
+
+		const replies = [await guideSlate(), await guideSlate(), await guideSlate()];
+
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(replies.map(reply => reply.refused)).toEqual([true, true, true]);
+	});
+
+	test('lets Retry skip the wait', async () => {
+		await loadBackground({
+			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
+		});
+		fetchMock.mockResolvedValue({ games: [], leagueLogos: {}, shedLeagues: ['nba'] });
+		await guideSlate();
+
+		fetchMock.mockClear();
+		fetchMock.mockResolvedValue({ games: [game('later', 'pre')], leagueLogos: {}, shedLeagues: [] });
+		const slate = await onMessageHandler({ type: 'GET_GUIDE_SLATE', force: true }) as { games: Game[]; refused?: boolean };
+
+		expect(fetchMock).toHaveBeenCalledTimes(1);
 		expect(slate.games.map(g => g.id)).toEqual(['later']);
 		expect(slate.refused).toBe(false);
 	});
@@ -2265,6 +2320,28 @@ describe('what the slate keeps for a league that did not answer', () => {
 		await rerunSlate();
 
 		expect(await stateGames()).toContain('mlb-later');
+	});
+
+	// Held entries belong to leagues that refused, not to every league that did not answer: a league
+	// switched off is not asked, and used to keep its kickoffs in the popup until the worker restarted.
+	test('drops the kickoffs of a league that was switched off', async () => {
+		await loadBackground({
+			prefs: bothLeagues,
+			fetchReturnValue: {
+				games: [slateGame('mlb-later', 'mlb', 'pre'), slateGame('nba-later', 'nba', 'pre')],
+				leagueLogos: {},
+				shedLeagues: [],
+			},
+		});
+		expect(await stateGames()).toContain('mlb-later');
+
+		fetchMock.mockResolvedValue({ games: [slateGame('nba-later', 'nba', 'pre')], leagueLogos: {}, shedLeagues: [] });
+		await sendMessage({
+			type: 'UPDATE_PREFS',
+			prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...bothLeagues, enabledLeagues: ['nba' as LeagueId] }),
+		});
+
+		expect(await stateGames()).not.toContain('mlb-later');
 	});
 });
 

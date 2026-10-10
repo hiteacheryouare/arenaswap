@@ -7,7 +7,7 @@
 
 ## The Guide stops mistaking a refusal for a quiet day — 2026-10-09
 
-When our sources refuse every league, the Guide now shows the popup's "Couldn't load games" banner with its Retry button instead of "no games", and a worker that never answers no longer leaves the spinner up. A slate that every league refused is not cached, and one that lost some leagues keeps their previous games and is asked again on the next open rather than after ten minutes.
+When our sources refuse every league, the Guide now shows the popup's "Couldn't load games" banner with its Retry button instead of "no games", and a worker that never answers no longer leaves the spinner up. A slate that every league refused is not cached, and one that lost some leagues keeps their previous games; both are asked about again after a minute, or at once on Retry, rather than after ten minutes or on every poll.
 
 ## Work that went missing on the way to dev comes back — 2026-10-09
 

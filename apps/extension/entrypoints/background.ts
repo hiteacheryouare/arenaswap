@@ -17,7 +17,8 @@ import { loadStoredUserPreferences } from '../utils/prefsStorage';
 import { loadFantasyRoster } from '../utils/fantasyRosterStorage';
 import { capitalizeReason, speakReason } from '../utils/powerScoreReason';
 import { displayLocale } from '../utils/displayLocale';
-import { keepRefusedLeagues, resolveGuideSlate, resolveGuideSlateFailure } from '../utils/slateMerge';
+import type { guideSlateOutcome } from '../utils/slateMerge';
+import { guideSlateTtlMs, keepRefusedLeagues, resolveGuideSlate, resolveGuideSlateFailure } from '../utils/slateMerge';
 import {
 	normalizeReviewPromptState,
 	recordSuccessfulReviewPromptSwitch,
@@ -85,7 +86,6 @@ const readStoredSwitchTime = (value: unknown, now: number): number => (
 // How long the guide will draw the slate the last wide fetch produced. Generous because the live
 // polls merge their answers into it, so what ages here is only the roster of games — a kickoff
 // being added to the day — rather than any score or clock on screen.
-const guideSlateTtlMs = 10 * 60 * 1000;
 const switchNotificationId = 'arenaswap-switch';
 const standingsRefreshMs = 30 * 60 * 1000;
 const blowoutSummaryIntervalMs = 180_000;
@@ -142,6 +142,11 @@ export default defineBackground(() => {
 	   array, so an extra entry there would change which game the extension switches to. */
 	let guideSlate: Game[] = [];
 	let guideSlateAt = 0;
+	let guideSlateHoldMs = guideSlateTtlMs;
+	let guideSlateRefused = false;
+	// Set when a fetch left nothing worth stamping as the slate, so a refusal is not asked about again
+	// on every poll broadcast.
+	let guideRetryAfter = 0;
 	let slateShedLeagues: LeagueId[] = [];
 	// When each finished game actually ended, so the guide can stop drawing it at its estimate.
 	let endRecords: gameEndRecords = {};
@@ -712,6 +717,18 @@ export default defineBackground(() => {
 	// Any game a poll just reported replaces the copy the slate holds; everything else is kept, which
 	// is what carries the days the dateless poll cannot see. Skipped until a wide fetch has actually
 	// run, so a poll cannot seed a slate that would then look like a whole day to the guide.
+	const holdGuideSlate = (outcome: guideSlateOutcome) => {
+		guideSlateRefused = outcome.refused;
+		if (!outcome.write) {
+			guideRetryAfter = Date.now() + outcome.holdMs;
+			return;
+		}
+		guideSlate = outcome.games;
+		guideSlateAt = Date.now();
+		guideSlateHoldMs = outcome.holdMs;
+		guideRetryAfter = 0;
+	};
+
 	const mergeGuideSlate = (fresh: Game[]) => {
 		if (guideSlateAt === 0) return;
 		const freshIds = new Set(fresh.map(g => g.id));
@@ -1342,9 +1359,10 @@ export default defineBackground(() => {
 				// The slate this built last time, which the live polls have kept current since. The
 				// first open of a session still pays for it; the repeat opens that a pager invites do
 				// not, where every open used to cost two requests per enabled league.
-				if (guideSlateAt !== 0 && Date.now() - guideSlateAt < guideSlateTtlMs) {
+				const slateHeld = guideSlateAt !== 0 && Date.now() - guideSlateAt < guideSlateHoldMs;
+				if (!msg.force && (slateHeld || Date.now() < guideRetryAfter)) {
 					void fillMissingDurations(guideSlate);
-					return { games: guideSlate, leagueLogos, monoLogos: await ensureMonoLogos(prefs.enabledLeagues), gameBoosts, endTimes: gameEndTimes(endRecords) };
+					return { games: guideSlate, refused: guideSlateRefused, leagueLogos, monoLogos: await ensureMonoLogos(prefs.enabledLeagues), gameBoosts, endTimes: gameEndTimes(endRecords) };
 				}
 
 				// Deliberately bypasses both of refreshSlate's preference gates: the guide draws the
@@ -1362,8 +1380,7 @@ export default defineBackground(() => {
 						includeFinal: true,
 					});
 					const outcome = resolveGuideSlate(guideSlate, result.games, prefs.enabledLeagues, result.shedLeagues);
-					if (outcome.write) guideSlate = outcome.games;
-					if (outcome.stamp) guideSlateAt = Date.now();
+					holdGuideSlate(outcome);
 					noteGameEnds(result.games);
 					void fillMissingDurations(result.games);
 					return {
@@ -1377,6 +1394,7 @@ export default defineBackground(() => {
 				} catch (err) {
 					logWarn('Failed to fetch the guide slate.', err);
 					const outcome = resolveGuideSlateFailure(guideSlate);
+					holdGuideSlate(outcome);
 					return { games: outcome.games, refused: outcome.refused, leagueLogos, monoLogos, gameBoosts, endTimes: gameEndTimes(endRecords) };
 				}
 			});

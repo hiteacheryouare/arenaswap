@@ -171,6 +171,30 @@ describe('the guide page', () => {
 
 		cy.get('.guide-bar').should('have.length', 2);
 		cy.get('.popup-error-banner').should('not.exist');
+		// Only the button skips the background's wait on a refusal; the poll-driven asks do not.
+		cy.get<guideHandle>('@guide').should(guide => {
+			const asks = guide.sentMessages.filter(message => message.type === 'GET_GUIDE_SLATE');
+			expect(asks.at(-1)).to.deep.include({ force: true });
+			expect(asks.slice(0, -1).some(message => message.force)).to.equal(false);
+		});
+	});
+
+	// One bad refresh behind a quiet day is not news: the popup would not flip to its banner for it.
+	it('keeps saying the day is quiet when a later refresh fails', () => {
+		mountGuide({ games: [] });
+		cy.get('.popup-no-games-wrap').should('be.visible');
+
+		cy.get<guideHandle>('@guide').then(guide => {
+			guide.fail();
+			const before = guide.slateRequests();
+			guide.pushScoresUpdated();
+			cy.wrap(null).should(() => {
+				expect(guide.slateRequests()).to.be.greaterThan(before);
+			});
+		});
+
+		cy.get('.popup-no-games-wrap').should('be.visible');
+		cy.get('.popup-error-banner').should('not.exist');
 	});
 
 	it('keeps drawing the grid when a later refresh fails', () => {

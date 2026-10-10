@@ -60,9 +60,11 @@ const App = () => {
 	const scrollerRef = useRef<HTMLDivElement | null>(null);
 	const hasScrolledToNow = useRef(false);
 
-	const loadSlate = useCallback(async () => {
+	// `force` is only for a reader pressing Retry or Refresh: the background holds a refusal for a
+	// minute so that the broadcasts after every poll cannot each cost a wide fetch.
+	const loadSlate = useCallback(async (force = false) => {
 		try {
-			const reply = await browser.runtime.sendMessage({ type: 'GET_GUIDE_SLATE' }) as GuideSlate | undefined;
+			const reply = await browser.runtime.sendMessage({ type: 'GET_GUIDE_SLATE', ...(force ? { force } : {}) }) as GuideSlate | undefined;
 			if (!reply) throw new Error('The background did not answer.');
 			setSlate(reply);
 			setSlateFailed(false);
@@ -234,7 +236,7 @@ const App = () => {
 	const selectedGame = selectedGameId ? slateGames.find(game => game.id === selectedGameId) : undefined;
 	const leagueLogos: LeagueLogoMap = slate?.leagueLogos ?? {};
 	const monoLogos: TeamMonoLogoMap = slate?.monoLogos ?? {};
-	const hasError = slateFailed || Boolean(slate?.refused);
+	const hasError = Boolean(slate?.refused) || (slateFailed && !slate);
 
 	return (
 		<TranslationContext.Provider value={i18n.t}>
@@ -286,8 +288,8 @@ const App = () => {
 				   with its retry, and only an answer is news. */
 				<div className='guide-status'>
 					{slate && !hasError
-						? <NoGamesMessage onRefresh={() => loadSlate()} />
-						: <GameListHeader isLoading={!slate && !hasError} hasError={hasError} loadingMessage={loadingMessage} onRefresh={() => loadSlate()} />}
+						? <NoGamesMessage onRefresh={() => loadSlate(true)} />
+						: <GameListHeader isLoading={!slate && !hasError} hasError={hasError} loadingMessage={loadingMessage} onRefresh={() => loadSlate(true)} />}
 				</div>
 			)}
 

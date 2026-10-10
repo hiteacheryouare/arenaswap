@@ -496,6 +496,8 @@ export interface GetDebugStateMessage {
 // for itself rather than reading GET_STATE.
 export interface GetGuideSlateMessage {
 	type: 'GET_GUIDE_SLATE';
+	// Set only by the Guide's own Retry button, which skips the wait a refusal puts on asking again.
+	force?: boolean;
 }
 
 export interface GuideSlate {
