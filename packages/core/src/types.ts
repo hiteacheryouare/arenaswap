@@ -200,6 +200,11 @@ export interface Game {
 	lastPlay?: string;
 	// ESPN's own summary of the drive in progress, e.g. "3 plays, 5 yards, 0:10". Football only.
 	lastPlayDrive?: string;
+	// The home side's chance of winning after the last play, 0 to 1, as the scoreboard reports it.
+	// Live games in the leagues that send it; see scoreboardWinProbability.ts.
+	homeWinProbability?: number;
+	// Which play that probability follows, so a poll that lands between plays isn't counted twice.
+	lastPlayId?: string;
 	// Whose play it was, as ESPN attributes it — the offense in football, the shooting side in
 	// hockey, the fielding side in baseball. Matches `homeTeam.id` or `awayTeam.id`, and is
 	// undefined when ESPN names a team we do not recognise. Colours the play's accent bar.
@@ -502,10 +507,15 @@ export interface GetDebugStateMessage {
 // for itself rather than reading GET_STATE.
 export interface GetGuideSlateMessage {
 	type: 'GET_GUIDE_SLATE';
+	// Set only by the Guide's own Retry button, which skips the wait a refusal puts on asking again.
+	force?: boolean;
 }
 
 export interface GuideSlate {
 	games: Game[];
+	// Our sources refused to answer and there is nothing held to show instead, so an empty `games`
+	// is not a quiet day.
+	refused?: boolean;
 	leagueLogos: LeagueLogoMap;
 	monoLogos: TeamMonoLogoMap;
 	gameBoosts: Record<string, number>;
