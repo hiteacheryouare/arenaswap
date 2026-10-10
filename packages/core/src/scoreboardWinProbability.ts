@@ -20,7 +20,7 @@ export const readHomeWinProbability = (situation: EspnSituation): number | undef
 };
 
 export interface SummaryNeeds {
-	// The scoreboard is giving this game a win probability right now, and has been since early on.
+	// The scoreboard is giving this game a win probability right now.
 	hasScoreboardReadings: boolean;
 	// The summary's line for this game is already in hand, closing line and all.
 	hasSummaryLine: boolean;
