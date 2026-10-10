@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Work that went missing on the way to dev comes back — 2026-10-09
+
+The store listings' prose league list and the 2.1.1 release notes only ever reached `mega`, so `dev` gets them back, along with two agent memory notes. The finished-tabs changelog entry that a September merge dropped is back too, shortened to fit the rule above.
+
 ## The PowerScore chart drops its boost shading — 2026-10-08
 
 The tinted bands behind the PowerScore line while a moment boost paid are gone; the orange fill under the line stays. Hovering a reading still names the boost that was paying, so the ECharts mark-area component is no longer registered in the popup.
@@ -288,6 +292,10 @@ Its fixture game started on 2026-09-21 and end times are kept for three days, so
 
 Display has a Theme setting, defaulting to Dark, and Light is a flat white palette whose tokens live in `packages/ui/src/_theme.scss` and switch on `data-bs-theme` on `<html>`; dark stays what `:root` compiles to, so the website is untouched. `public/themeBoot.js` reads a `localStorage` copy of the setting before first paint so a light popup never opens dark for a frame, and it repeats `utils/theme.ts`'s rule, which a test holds the two to. Charts, snow and league logos are drawn from JavaScript and are told the theme instead of reading CSS; onboarding and the tour stay dark.
 
+## 2.1.1 folds back into the 2.2 line — 2026-09-22
+
+Merging `dev` into `mega` brings over the store listings that swapped the SUPPORTED LEAGUES list for prose in all 12 `desc_long.md` files, along with the 2.1.1 release notes. `mega`'s own backport of the day-at-a-time scoreboard fix was dropped in favour of `dev`'s version, whose token bucket is the reason its day pool can stay three wide.
+
 ## The Firefox sources zip stops shipping test output — 2026-09-22
 
 `wxt zip:firefox` was sweeping the gitignored `coverage/` reports and failed-run `cypress/screenshots/` into the archive AMO reviewers download, 368 files and ~10MB of a 13.4MB upload. Both are now in `excludeSources`, the same trap `dist/` fell into before: anything left lying in `apps/extension/` ships unless it is listed there.
@@ -527,6 +535,10 @@ Astro sets Vite's `base` for the build and not for the dev server, so no path in
 ## The Guide reads as a grid rather than as bars floating in a void — 2026-09-13
 
 Legibility pass over the rendered page: three weights of rule plus a banded odd row, the league name as a sticky 168px left column, a lighter fill and red dot on live bars, the best-window band's dashed edges moved up to the ruler where they cut nothing, and the first hour's tick lined up with its own gridline. No x coordinate accounts for the gutter — only the canvas width and the opening scroll position add it, and anything drawn in canvas coordinates scrolls away from the sticky column it is meant to continue, which is why the tail below the last group is a sticky cell rather than a rule on the body. The band explainer keeps its full sentence and lives inside the switch's own control, so the switch label opens it and nothing prints 'Best time to watch' twice.
+
+## A tab stops being ArenaSwap's the moment its game is over — 2026-09-12
+
+A new Display setting decides what happens to a registered tab once its game wraps: leave it alone, free it from ArenaSwap, or close it, and it's off by default. A game only counts as over when our sources say it's final, never because it went missing from a scoreboard, and a freed tab goes straight back into the tab suggestions.
 
 ## The Guide opens on today rather than on the day before yesterday — 2026-09-12
 
