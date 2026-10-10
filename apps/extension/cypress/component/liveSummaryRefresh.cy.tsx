@@ -45,14 +45,24 @@ const detail = (game: Game) => (
 	/>
 );
 
-// Only the interval and the clock are faked: the summary itself still travels through the real
-// network stack, so a slow answer can be raced against a fast one.
+const withBox = (body: object) => ({ ...(mockBoxScorePayloads['mock-5'] as object), ...body });
+const passingYards = (from: string, to: string) => (
+	JSON.parse(JSON.stringify(mockBoxScorePayloads['mock-5']).replace(`"${from}"`, `"${to}"`)) as object
+);
+
+const seriesLength = ($canvas: JQuery<HTMLElement>) => {
+	const chart = echarts.getInstanceByDom($canvas[0]!.closest('.game-detail-chart-canvas') as HTMLElement)!;
+	return (chart.getOption().series as { data: unknown[] }[])[0]!.data.length;
+};
+
 const tickOnePoll = () => cy.tick(pollWinProbabilityMs);
 
 describe('the detail screen following a live game', () => {
 	beforeEach(() => {
 		clearSharedRequests();
 		cy.viewport(320, 560);
+		// Only the interval and the clock are faked: the summary itself still travels through the real
+		// network stack, so a slow answer can be raced against a fast one.
 		cy.clock(Date.now(), ['Date', 'setInterval', 'clearInterval']);
 		cy.intercept({ url: /\/standings\?level=3/ }, { body: {} });
 	});
@@ -185,11 +195,6 @@ describe('the detail screen following a live game', () => {
 	});
 
 	describe('on the screen itself', () => {
-		const withBox = (body: object) => ({ ...(mockBoxScorePayloads['mock-5'] as object), ...body });
-		const passingYards = (from: string, to: string) => (
-			JSON.parse(JSON.stringify(mockBoxScorePayloads['mock-5']).replace(`"${from}"`, `"${to}"`)) as object
-		);
-
 		it('leaves the open tab where the reader put it', () => {
 			cy.intercept({ url: summaryUrl }, { body: withBox(line(0.5, 0.6)) }).as('summary');
 			cy.mount(detail(live));
@@ -263,10 +268,6 @@ describe('the chart canvas taking a new point', () => {
 				<GameDetailChartCanvas option={chartOption(points) as never} />
 			</div>
 		);
-		const seriesLength = ($canvas: JQuery<HTMLElement>) => {
-			const chart = echarts.getInstanceByDom($canvas[0]!.closest('.game-detail-chart-canvas') as HTMLElement)!;
-			return (chart.getOption().series as { data: unknown[] }[])[0]!.data.length;
-		};
 		let before = 0;
 		cy.mount(view(20)).then(({ rerender }) => {
 			cy.get('canvas').should($canvas => {
