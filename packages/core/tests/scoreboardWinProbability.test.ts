@@ -129,6 +129,42 @@ describe('building the line from our own polls', () => {
 	});
 });
 
+describe('picking up a game after its first play', () => {
+	const fullLine = Array.from({ length: 20 }, (_, i) => 0.5 + (i % 3) / 100);
+
+	test('the summary\'s longer line replaces what the tracker has seen, and polls carry on from it', () => {
+		const tracker = createWinProbabilityTracker();
+		tracker.record([liveGame({ homeWinProbability: 0.7, lastPlayId: 'p20' })]);
+		tracker.adopt('g1', fullLine);
+		expect(tracker.historyOf('g1')).toEqual(fullLine);
+
+		tracker.record([liveGame({ homeWinProbability: 0.7, lastPlayId: 'p20' })]);
+		tracker.record([liveGame({ homeWinProbability: 0.72, lastPlayId: 'p21' })]);
+		expect(tracker.historyOf('g1')).toEqual([...fullLine, 0.72]);
+	});
+
+	test('a game the scoreboard has given nothing for is not started from the summary', () => {
+		const tracker = createWinProbabilityTracker();
+		tracker.adopt('g1', fullLine);
+		expect(tracker.historyOf('g1')).toBeUndefined();
+	});
+
+	test('a summary line no longer than the tracker\'s own is ignored', () => {
+		const tracker = createWinProbabilityTracker();
+		fullLine.forEach((homeWinProbability, i) => tracker.record([liveGame({ homeWinProbability, lastPlayId: `p${i}` })]));
+		tracker.adopt('g1', [0.1, 0.2]);
+		expect(tracker.historyOf('g1')).toEqual(fullLine);
+	});
+
+	test('an adopted line still respects the cap', () => {
+		const tracker = createWinProbabilityTracker();
+		tracker.record([liveGame()]);
+		tracker.adopt('g1', Array.from({ length: 800 }, (_, i) => i / 1000));
+		expect(tracker.historyOf('g1')).toHaveLength(600);
+		expect(tracker.historyOf('g1')![599]).toBe(0.799);
+	});
+});
+
 // MV3 ends the worker whenever it idles, so the line has to come back from session storage and
 // carry on from where it left off.
 describe('a worker restart in the middle of a game', () => {
@@ -159,7 +195,7 @@ describe('a worker restart in the middle of a game', () => {
 });
 
 describe('when the summary is still worth fetching', () => {
-	const settled = { hasScoreboardReadings: true, hasSeenSummary: true, hasRosteredPlayer: false };
+	const settled = { hasScoreboardReadings: true, hasSummaryLine: true, hasRosteredPlayer: false };
 	const football = { league: 'nfl' as LeagueId, sportType: 'football' as const };
 
 	test('not once the scoreboard has the line and the summary has been read', () => {
@@ -170,8 +206,8 @@ describe('when the summary is still worth fetching', () => {
 		expect(summaryStillNeeded(football, { ...settled, hasScoreboardReadings: false })).toBe(true);
 	});
 
-	test('until its closing line has been read once', () => {
-		expect(summaryStillNeeded(football, { ...settled, hasSeenSummary: false })).toBe(true);
+	test('until the summary\'s line and closing line are in hand', () => {
+		expect(summaryStillNeeded(football, { ...settled, hasSummaryLine: false })).toBe(true);
 	});
 
 	test('while a rostered fantasy player is in the game, for the box score', () => {

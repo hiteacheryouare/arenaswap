@@ -1088,6 +1088,8 @@ export default defineBackground(() => {
 		for (const gameId of winProbHistory.keys()) {
 			if (!liveIds.has(gameId)) winProbHistory.delete(gameId);
 		}
+		// An empty slate after a failed fetch must not wipe the lines read back from storage.
+		if (games.length > 0) winProbTracker.retainOnly(liveIds);
 		for (const gameId of summaryFetchedAt.keys()) {
 			if (liveIds.has(gameId)) continue;
 			summaryFetchedAt.delete(gameId);
@@ -1095,15 +1097,14 @@ export default defineBackground(() => {
 		}
 
 		if (liveGames.length === 0) return;
-		winProbTracker.retainOnly(liveIds);
 		refreshStandings(liveGames);
 		// Read once a sweep rather than watched: the popup writes it, and a minute is soon enough.
 		liveExtras.setRoster(await loadFantasyRoster().catch(() => []));
 
 		const now = Date.now();
 		const summaryNeeded = (game: Game) => summaryStillNeeded(game, {
-			hasScoreboardReadings: winProbTracker.historyOf(game.id) !== undefined,
-			hasSeenSummary: liveExtras.hasSeenSummary(game.id),
+			hasScoreboardReadings: winProbTracker.historyOf(game.id) !== undefined && game.homeWinProbability !== undefined,
+			hasSummaryLine: winProbHistory.has(game.id),
 			hasRosteredPlayer: liveExtras.hasRosteredPlayer(game),
 		});
 		await Promise.all(liveGames.filter(game => summaryNeeded(game) && summaryDue(game, now)).map(async game => {
@@ -1112,7 +1113,10 @@ export default defineBackground(() => {
 				const line = await fetchWinProbability(game, { onSummary: summary => liveExtras.ingestSummary(game, summary, Date.now()) });
 				// ESPN returns [] during delays and brief interruptions even when earlier play
 				// produced a line; keep the last good one rather than dropping the signal.
-				if (line.length > 0) winProbHistory.set(game.id, line);
+				if (line.length > 0) {
+					winProbHistory.set(game.id, line);
+					winProbTracker.adopt(game.id, line);
+				}
 			} catch (err) {
 				logWarn(`Failed to fetch win probability for ${game.id}.`, err);
 			}

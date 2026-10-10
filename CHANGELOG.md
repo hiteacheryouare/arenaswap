@@ -7,7 +7,7 @@
 
 ## Football reads its win probability off the scoreboard — 2026-10-09
 
-NFL and college football games no longer get a summary request every minute: the scoreboard already carries the home side's win probability, so the background builds the line from its own polls, one reading per play, and keeps it in session storage across worker restarts. The summary is still read once per game for its closing line, and stays on a loop for basketball (its box score feeds the lead-change count), fantasy rosters and every league whose scoreboard we haven't checked.
+NFL and college football games no longer get a summary request every minute: the background reads the home side's win probability off the scoreboard, one reading per play, and keeps it in session storage across worker restarts. A game picked up mid-play still starts from the summary's full line, and the summary stays on for basketball (its box score feeds the lead-change count), fantasy rosters, leagues whose scoreboard we haven't checked, and any game whose scoreboard goes quiet.
 
 ## The boost tooltips get a second look — 2026-10-08
 

@@ -20,10 +20,10 @@ export const readHomeWinProbability = (situation: EspnSituation): number | undef
 };
 
 export interface SummaryNeeds {
-	// The scoreboard has already given this game a win probability reading.
+	// The scoreboard is giving this game a win probability right now, and has been since early on.
 	hasScoreboardReadings: boolean;
-	// The closing line is read from the summary once and kept, so one look is enough.
-	hasSeenSummary: boolean;
+	// The summary's line for this game is already in hand, closing line and all.
+	hasSummaryLine: boolean;
 	hasRosteredPlayer: boolean;
 }
 
@@ -32,7 +32,7 @@ export interface SummaryNeeds {
 export const summaryStillNeeded = (game: Pick<Game, 'league' | 'sportType'>, needs: SummaryNeeds): boolean => (
 	!scoreboardWinProbabilityLeagues.has(game.league)
 	|| !needs.hasScoreboardReadings
-	|| !needs.hasSeenSummary
+	|| !needs.hasSummaryLine
 	|| needs.hasRosteredPlayer
 	|| game.sportType === 'basketball'
 );
@@ -63,6 +63,14 @@ export const createWinProbabilityTracker = () => {
 
 	const historyOf = (gameId: string): number[] | undefined => readings.get(gameId);
 
+	// The summary's line goes back to the first play, which a tracker started mid-game never saw.
+	// A game with no readings of its own stays untracked, so the summary line keeps its own slot.
+	const adopt = (gameId: string, summaryLine: readonly number[]) => {
+		const own = readings.get(gameId);
+		if (!own || summaryLine.length <= own.length) return;
+		readings.set(gameId, summaryLine.slice(-maxReadingsPerGame));
+	};
+
 	const retainOnly = (gameIds: ReadonlySet<string>) => {
 		for (const gameId of readings.keys()) {
 			if (gameIds.has(gameId)) continue;
@@ -88,7 +96,7 @@ export const createWinProbabilityTracker = () => {
 		}
 	};
 
-	return { record, historyOf, retainOnly, clear, serialize, hydrate };
+	return { record, historyOf, adopt, retainOnly, clear, serialize, hydrate };
 };
 
 export type WinProbabilityTracker = ReturnType<typeof createWinProbabilityTracker>;
