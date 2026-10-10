@@ -61,6 +61,7 @@ describe('constants', () => {
 			finishedTabAction: 'keep',
 			proTipsEnabled: true,
 			notificationsEnabled: true,
+			bossDecoyUrl: '',
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,
 			bettingEnabled: false,
@@ -161,6 +162,7 @@ describe('constants', () => {
 			finishedTabAction: 'keep',
 			proTipsEnabled: false,
 			notificationsEnabled: true,
+			bossDecoyUrl: '',
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,
 			bettingEnabled: false,
@@ -182,6 +184,12 @@ describe('constants', () => {
 			fantasyScoring: {},
 			collegeFilters: {},
 		});
+	});
+
+	test('keeps a trimmed decoy address and drops anything that is not text', () => {
+		expect(normalizeUserPreferences({ bossDecoyUrl: '  https://example.com/board  ' }).bossDecoyUrl).toBe('https://example.com/board');
+		expect(normalizeUserPreferences({ bossDecoyUrl: 42 }).bossDecoyUrl).toBe('');
+		expect(normalizeUserPreferences({ bossDecoyUrl: `https://example.com/${'a'.repeat(5000)}` }).bossDecoyUrl).toHaveLength(2048);
 	});
 
 	test('keeps a stored Rømer unit instead of silently rewriting it to Fahrenheit', () => {

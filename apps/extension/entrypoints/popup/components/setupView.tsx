@@ -8,6 +8,7 @@ import { fantasySportOf, type FantasySport } from 'powerscore';
 import type { Browser } from 'wxt/browser';
 import CollegeFilterPage from './collegeFilterPage';
 import CollegeLeagueButton from './collegeLeagueButton';
+import BossDecoyInput from './bossDecoyInput';
 import CooldownSlider from './cooldownSlider';
 import FavoriteTeamBonusInput from './favoriteTeamBonusInput';
 import FavoriteTeamsPage from './favoriteTeamsPage';
@@ -66,6 +67,8 @@ interface setupViewProps {
 	onUpcomingGamesDaysChange: (val: number) => void;
 	onToggleProTips: () => void;
 	onToggleNotifications: () => void;
+	bossShortcut?: string;
+	onBossDecoyChange: (url: string) => void;
 	onToggleDemo: () => void;
 	onDemoSeasonChange: (season: demoSeason) => void;
 	onToggleStandbyStream: () => void;
@@ -114,7 +117,7 @@ const setupView = ({
 	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
 	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder, onCollegeFilterChange,
 	onToggleGroupByLeague, onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onThemeChange, onUpcomingGamesDaysChange,
-	onToggleProTips, onToggleNotifications, onToggleDemo, onDemoSeasonChange, onToggleStandbyStream, onStandbyThresholdChange,
+	onToggleProTips, onToggleNotifications, bossShortcut, onBossDecoyChange, onToggleDemo, onDemoSeasonChange, onToggleStandbyStream, onStandbyThresholdChange,
 	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onToggleOpenReveal,
 	onPostseasonBoostChange,
 	onToggleHolidayDecorations, onToggleHolidaySnow, onToggleHolidayLights, onToggleHolidayLeaves,
@@ -249,6 +252,10 @@ const setupView = ({
 				{prefs.finishedTabAction === 'close' && (
 					<div className='setting-explainer mt-1'>{i18n.t('setup.finishedTabCloseExplainer')}</div>
 				)}
+			</div>
+
+			<div className='mt-3'>
+				<BossDecoyInput value={prefs.bossDecoyUrl} shortcut={bossShortcut} disabled={!prefsLoaded} onChange={onBossDecoyChange} />
 			</div>
 
 			<div className='fw-bold popup-section-label mt-3'><i className='bi bi-joystick' />{i18n.t('setup.demoSection')}</div>

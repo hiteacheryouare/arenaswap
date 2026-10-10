@@ -15,6 +15,7 @@ const defaultPrefs: UserPreferences = {
 	finishedTabAction: 'keep' as const,
 	proTipsEnabled: true,
 	notificationsEnabled: false,
+	bossDecoyUrl: '',
 	favoriteTeamBonusPoints: 0,
 	favoriteTeamIds: [],
 	standbyStreamEnabled: false,

@@ -42,6 +42,8 @@ const readStore = (store: Record<string, unknown>, request: unknown): Record<str
 let fetchMock: jest.Mock;
 let tabsQuery: jest.Mock;
 let tabsUpdate: jest.Mock;
+let tabsCreate: jest.Mock;
+let onCommandHandler: ((command: string) => unknown) | undefined;
 let onMessageHandler!: (msg: unknown) => unknown;
 let onActivatedHandler: ((info: { tabId: number }) => unknown) | undefined;
 
@@ -73,6 +75,7 @@ const startWorker = async ({ games, openTabIds, activeTabId, atMs }: StartOption
 
 	tabsQuery = jest.fn();
 	tabsUpdate = jest.fn().mockResolvedValue(undefined);
+	tabsCreate = jest.fn().mockResolvedValue(undefined);
 	onActivatedHandler = undefined;
 	mockTabs(openTabIds, activeTabId);
 
@@ -108,10 +111,13 @@ const startWorker = async ({ games, openTabIds, activeTabId, atMs }: StartOption
 		tabs: {
 			query: tabsQuery,
 			update: tabsUpdate,
+			create: tabsCreate,
 			remove: jest.fn().mockResolvedValue(undefined),
 			onActivated: { addListener: (h: (info: { tabId: number }) => unknown) => { onActivatedHandler = h; } },
 			onRemoved: { addListener: () => {} },
 		},
+		windows: { update: jest.fn().mockResolvedValue(undefined) },
+		commands: { onCommand: { addListener: (h: (command: string) => unknown) => { onCommandHandler = h; } } },
 		notifications: { create: jest.fn().mockResolvedValue(undefined) },
 	};
 
@@ -624,5 +630,156 @@ describe('a Saturday afternoon with four games on', () => {
 			// Still where the first poll put them, three polls later.
 			expect(moved).toHaveLength(0);
 		}
+	});
+});
+
+describe('the boss button', () => {
+	const bossIsComing = () => onCommandHandler!('boss-button');
+
+	const startWatching = async (atMs = 1_000_000) => {
+		seedStorage(switchingPrefs);
+		await startWorker({ games: [thriller('g1'), runaway('g2')], openTabIds: [1, 2, 3], activeTabId: 2, atMs });
+	};
+
+	test('mutes every tab it manages, the one being watched included, and opens a plain tab', async () => {
+		await startWatching();
+
+		await bossIsComing();
+		await drain();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { muted: true });
+		expect(tabsUpdate).toHaveBeenCalledWith(3, { muted: true });
+		expect(tabsCreate).toHaveBeenCalledWith({});
+	});
+
+	test('pauses auto-switching, so the next poll does not jump back to a game', async () => {
+		await startWatching();
+		await bossIsComing();
+		await drain();
+		tabsUpdate.mockClear();
+
+		// The decoy is in front now, and a game on a tab we manage is begging to be watched.
+		mockTabs([1, 2, 3, 4], 4);
+		await poll();
+
+		expect(tabsUpdate).not.toHaveBeenCalledWith(expect.anything(), { active: true });
+		expect(tabsUpdate).not.toHaveBeenCalledWith(expect.anything(), { muted: false });
+		const stored = syncStore.prefs as { enabled: boolean };
+		expect(stored.enabled).toBe(false);
+	});
+
+	test('stays quiet across a service worker restart', async () => {
+		await startWatching();
+		await bossIsComing();
+		await drain();
+
+		await startWorker({ games: [thriller('g1'), runaway('g2')], openTabIds: [1, 2, 3, 4], activeTabId: 4, atMs: 1_060_000 });
+		await poll();
+		await onActivatedHandler!({ tabId: 2 });
+		await drain();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { muted: true });
+		expect(tabsUpdate).not.toHaveBeenCalledWith(expect.anything(), { muted: false });
+	});
+
+	test('keeps every tab muted while hushed, even one the user unmuted by hand', async () => {
+		await startWatching();
+		await bossIsComing();
+		await drain();
+		tabsUpdate.mockClear();
+
+		// The user clicks over to a game tab and lets it speak; the next sync puts it back.
+		mockTabs([1, 2, 3, 4], 2);
+		await onActivatedHandler!({ tabId: 2 });
+		await drain();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { muted: true });
+	});
+
+	test('lets go of the hush when auto-switching came back on without a message reaching the worker', async () => {
+		await startWatching();
+		await bossIsComing();
+		await drain();
+
+		// The switch was flipped back on and written to storage, but the worker was torn down
+		// before the UPDATE_PREFS arrived, so the next one boots with enabled true and a hush.
+		const resumed = { prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...switchingPrefs, enabled: true }), prefsUpdatedAt: 2_000_000 };
+		syncStore = { ...resumed };
+		localStore = { ...localStore, ...resumed };
+		await startWorker({ games: [thriller('g1'), runaway('g2')], openTabIds: [1, 2, 3, 4], activeTabId: 2, atMs: 1_060_000 });
+		await poll();
+
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { muted: true });
+		expect(tabsUpdate).toHaveBeenCalledWith(3, { muted: true });
+		expect(sessionStore.bossHushed).toBe(false);
+	});
+
+	test('is not undone by a switch that was already on its way when it was pressed', async () => {
+		seedStorage(switchingPrefs);
+		await startWorker({ games: [runaway('g1'), thriller('g2')], openTabIds: [1, 2, 3], activeTabId: 2, atMs: 1_000_000 });
+
+		// The poll has decided to move to g2's tab. The press arrives while it is still asking the
+		// browser which tabs exist, the last thing it does before activating one.
+		let tabListQueries = 0;
+		tabsQuery.mockImplementation((query: unknown) => {
+			if ((query as { active?: boolean }).active) return Promise.resolve([{ id: 2 }]);
+			tabListQueries += 1;
+			if (tabListQueries === 2) void bossIsComing();
+			return Promise.resolve([1, 2, 3].map(id => ({ id, windowId: 1 })));
+		});
+		await poll();
+		await drain();
+
+		expect(tabsUpdate).not.toHaveBeenCalledWith(expect.anything(), { active: true });
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { muted: true });
+		expect(tabsUpdate).toHaveBeenCalledWith(3, { muted: true });
+		expect(sessionStore.bossHushed).toBe(true);
+
+		tabsUpdate.mockClear();
+		mockTabs([1, 2, 3, 4], 4);
+		await poll();
+
+		expect(tabsUpdate).not.toHaveBeenCalledWith(expect.anything(), { muted: false });
+		expect(tabsUpdate).not.toHaveBeenCalledWith(expect.anything(), { active: true });
+	});
+
+	test('answers to the popup button the same way as to the shortcut', async () => {
+		await startWatching();
+
+		await sendMessage({ type: 'BOSS_BUTTON' });
+
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { muted: true });
+		expect(tabsUpdate).toHaveBeenCalledWith(3, { muted: true });
+	});
+
+	test('goes back to normal when the user turns auto-switching back on', async () => {
+		await startWatching();
+		await bossIsComing();
+		await drain();
+		tabsUpdate.mockClear();
+		mockTabs([1, 2, 3], 2);
+
+		await sendMessage({ type: 'UPDATE_PREFS', prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...switchingPrefs, enabled: true }) });
+
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { muted: false });
+		expect(sessionStore.bossHushed).toBe(false);
+	});
+
+	test('takes the user to a tab already on the decoy page instead of opening another', async () => {
+		seedStorage({ ...switchingPrefs, bossDecoyUrl: 'docs.google.com/spreadsheets/d/abc123/edit' });
+		await startWorker({ games: [thriller('g1'), runaway('g2')], openTabIds: [1, 2, 3], activeTabId: 2, atMs: 1_000_000 });
+		tabsQuery.mockImplementation((query: unknown) => {
+			if ((query as { active?: boolean }).active) return Promise.resolve([{ id: 2 }]);
+			return Promise.resolve([
+				{ id: 1, windowId: 1, url: 'https://example.com/' },
+				{ id: 8, windowId: 5, url: 'https://docs.google.com/spreadsheets/d/abc123/edit#gid=2' },
+			]);
+		});
+
+		await bossIsComing();
+		await drain();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(8, { active: true });
+		expect(tabsCreate).not.toHaveBeenCalled();
 	});
 });

@@ -402,6 +402,7 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	finishedTabAction: 'keep' as const,
 	proTipsEnabled: true,
 	notificationsEnabled: true,
+	bossDecoyUrl: '',
 	standbyStreamEnabled: false,
 	standbyStreamThreshold: 20,
 	bettingEnabled: false,
@@ -506,6 +507,7 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		finishedTabAction: normalizeFinishedTabAction(candidate.finishedTabAction),
 		proTipsEnabled: typeof candidate.proTipsEnabled === 'boolean' ? candidate.proTipsEnabled : defaults.proTipsEnabled,
 		notificationsEnabled: typeof candidate.notificationsEnabled === 'boolean' ? candidate.notificationsEnabled : defaults.notificationsEnabled,
+		bossDecoyUrl: typeof candidate.bossDecoyUrl === 'string' ? candidate.bossDecoyUrl.trim().slice(0, 2048) : defaults.bossDecoyUrl,
 		standbyStreamEnabled: typeof candidate.standbyStreamEnabled === 'boolean' ? candidate.standbyStreamEnabled : defaults.standbyStreamEnabled,
 		standbyStreamThreshold: typeof candidate.standbyStreamThreshold === 'number' && isFinite(candidate.standbyStreamThreshold)
 			? Math.max(0, Math.min(100, Math.round(candidate.standbyStreamThreshold)))

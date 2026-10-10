@@ -310,9 +310,17 @@ export class MockGameSimulator {
 				venueName: 'Daikin Park',
 				venueLocation: 'Houston, Texas',
 				period: 10, clockSeconds: 0, status: 'in',
-				topOfInning: true,
-				baseRunners: { first: false, second: true, third: false },
-				bso: { balls: 0, strikes: 1, outs: 0 },
+				// "Mid 10th": the side is retired and nobody is at the plate, which is the only state
+				// our sources name the next hitters in. So this game has a due-up list and no at-bat
+				// pair, where the live-at-bat demo above has the pair and no list.
+				topOfInning: false,
+				baseRunners: { first: false, second: false, third: false },
+				bso: { balls: 0, strikes: 0, outs: 0 },
+				dueUp: [
+					{ name: 'Yordan Alvarez', jersey: '44', position: 'DH', summary: '1-4, HR' },
+					{ name: 'Jose Altuve', jersey: '27', position: '2B', summary: '2-4, 2B' },
+					{ name: 'Jeremy Pena', jersey: '3', position: 'SS', summary: '0-3, K' },
+				],
 				broadcasts: ['Fox'],
 			},
 			{
@@ -436,6 +444,7 @@ export class MockGameSimulator {
 		awayTeam: { ...g.awayTeam },
 		bso: g.bso ? { ...g.bso } : undefined,
 		atBat: g.atBat ? { pitcher: { ...g.atBat.pitcher }, batter: { ...g.atBat.batter } } : undefined,
+		dueUp: g.dueUp?.map(hitter => ({ ...hitter })),
 	}));
 
 	// The slate as constructed, before any tick has advanced it. Anything that needs the shipped
@@ -466,6 +475,9 @@ export class MockGameSimulator {
 		const regularPeriods = leagueConfigMap[game.league].regularPeriods;
 
 		if (game.sportType === 'baseball' || game.sportType === 'softball') {
+			// A game carrying a due-up list is a held between-innings frame. Ticking its count or
+			// inning would put a live count under a list that only exists while nobody is at the plate.
+			if (game.dueUp) return;
 				if (game.bso) {
 				const roll = Math.random();
 				if (roll < 0.3) {

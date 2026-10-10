@@ -194,6 +194,10 @@ export interface Game {
 	bso?: { balls: number; strikes: number; outs: number };
 	// Inning sports only. Dropped between innings, which is what makes the panel come and go.
 	atBat?: AtBat;
+	// Inning sports only: the next hitters, in batting order, at most three. Sent between
+	// half-innings, from the third out until the first pitch of the next half, and dropped once a
+	// batter is up — so it and `atBat` all but never exist together.
+	dueUp?: AtBatPlayer[];
 	// The play that just happened, as ESPN describes it. Live games only, and absent in soccer,
 	// which sends no situation at all. Newlines are meaningful — a penalty is two sentences — so
 	// this is rendered with `white-space: pre-line` rather than collapsed.
@@ -288,6 +292,9 @@ export interface UserPreferences {
 	finishedTabAction: FinishedTabAction;
 	proTipsEnabled: boolean;
 	notificationsEnabled: boolean;
+	// Where the boss button takes you. Stored as typed and tidied by the settings field, so an
+	// older or hand-edited value is read again at press time rather than trusted.
+	bossDecoyUrl: string;
 	standbyStreamEnabled: boolean;
 	// Switch to standby once every registered game falls below this.
 	standbyStreamThreshold: number;
@@ -497,6 +504,10 @@ export interface SetStandbyStreamTabMessage {
 	tabId: number | null;
 }
 
+export interface BossButtonMessage {
+	type: 'BOSS_BUTTON';
+}
+
 export interface GetDebugStateMessage {
 	type: 'GET_DEBUG_STATE';
 }
@@ -558,5 +569,6 @@ export type ExtensionMessage =
 	| GetStateMessage
 	| SetDemoModeMessage
 	| SetStandbyStreamTabMessage
+	| BossButtonMessage
 	| GetDebugStateMessage
 	| GetGuideSlateMessage;

@@ -9,6 +9,18 @@
 
 The test that walks all three onboarding steps gives the team picker 15 seconds to show the 76ers, since it waits for every enabled league's teams while the request alias it waits on only covers the first. It had failed on a loaded runner twice in one day and passed every time it ran alone.
 
+## A boss-is-coming button — 2026-10-09
+
+One press, from the new header button or Alt+Shift+X, mutes every tab ArenaSwap manages, jumps to the decoy page set under Settings (a blank tab if none), and pauses auto-switching until you flip the header switch back on. The shortcut shown in the tooltip and the settings comes from what the browser actually registered.
+
+## The baseball detail screen shows who's due up — 2026-10-09
+
+Between half-innings, a Due Up block under the hero lists the next three hitters with a portrait, their position and their line for the day ("0-1, BB"). It gives way to the at-bat panel at the first pitch, because our sources only name the next hitters while nobody is at the plate. The list keeps the order it arrives in rather than sorting on lineup slot, since the lineup wraps and the ninth hitter bats ahead of the leadoff man.
+
+## Game cards stop being buttons with buttons inside — 2026-10-09
+
+A card is now a labelled group with a details button as its first Tab stop, so screen readers read the matchup, score, clock and status, the PowerScore bar has a name, and the stars, odds tooltip and tab picker are controls of their own. Clicking the card still opens the game, and the website's demo cards take `interactive={false}`: they keep the hover lift but lose the tab stop and the pointer cursor.
+
 ## The detail screen follows a live game — 2026-10-09
 
 While a game is live, the detail screen asks for its summary again every minute, the pace the background already polls at, so the win probability line, box score and series state keep moving instead of freezing at the moment you opened it. A refresh swaps the data in quietly: a failed or thin one keeps what's on screen, a slow answer that lands after a newer one is dropped, and a hidden page skips its polls.

@@ -38,6 +38,7 @@ const NotFoundCard = ({ strings }: { strings?: Record<string, string> }) => (
 			favoriteTeamIds={new Set()}
 			onToggleFavoriteTeam={() => {}}
 			onOpenGameDetail={() => {}}
+			interactive={false}
 			bettingPrefs={{ bettingEnabled: false }}
 		/>
 	</TranslationContext.Provider>

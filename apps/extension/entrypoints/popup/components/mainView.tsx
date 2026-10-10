@@ -79,6 +79,8 @@ interface mainViewProps {
 	onRefresh: () => unknown;
 	showReviewPrompt: boolean;
 	onToggleEnabled: () => void;
+	onBossButton?: () => void;
+	bossShortcut?: string;
 	onDismissReviewPrompt: () => void;
 	onLeaveReview: () => void;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
@@ -179,6 +181,8 @@ const mainView = ({
 	onDismissSuggestions,
 	onStartWalkthrough,
 	onOpenGuide,
+	onBossButton,
+	bossShortcut,
 	onRefresh,
 	showReviewPrompt,
 	onToggleEnabled,
@@ -303,6 +307,8 @@ const mainView = ({
 				onOpenSettings={onOpenSetup}
 				onStartTour={onStartWalkthrough}
 				onOpenGuide={onOpenGuide}
+				onBossButton={onBossButton}
+				bossShortcut={bossShortcut}
 			/>
 
 			<GameListHeader isLoading={isLoading} hasError={hasError} loadingMessage={loadingMessage} onRefresh={onRefresh} />

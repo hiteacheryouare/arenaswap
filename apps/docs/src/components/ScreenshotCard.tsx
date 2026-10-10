@@ -14,6 +14,7 @@ const ScreenshotCard = ({ game, excitementResult, tabLabel }: ScreenshotCardProp
 		favoriteTeamIds={new Set()}
 		onToggleFavoriteTeam={() => {}}
 		onOpenGameDetail={() => {}}
+		interactive={false}
 		bettingPrefs={{ bettingEnabled: false }}
 		tabSlot={tabLabel ? (
 			<div className='game-card-tab-assign'>
