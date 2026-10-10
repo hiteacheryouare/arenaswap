@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, computeRetryDelayMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, createWinProbabilityTracker, summaryStillNeeded, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, computeRetryDelayMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
 import type { ClockStallEntry } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
@@ -18,6 +18,8 @@ import { loadStoredUserPreferences, persistStoredUserPreferences } from '../util
 import { loadFantasyRoster } from '../utils/fantasyRosterStorage';
 import { capitalizeReason, speakReason } from '../utils/powerScoreReason';
 import { displayLocale } from '../utils/displayLocale';
+import type { guideSlateOutcome } from '../utils/slateMerge';
+import { guideSlateTtlMs, keepRefusedLeagues, resolveGuideSlate, resolveGuideSlateFailure } from '../utils/slateMerge';
 import {
 	normalizeReviewPromptState,
 	recordSuccessfulReviewPromptSwitch,
@@ -82,10 +84,6 @@ const readStoredSwitchTime = (value: unknown, now: number): number => (
 	typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= now ? value : 0
 );
 
-// How long the guide will draw the slate the last wide fetch produced. Generous because the live
-// polls merge their answers into it, so what ages here is only the roster of games — a kickoff
-// being added to the day — rather than any score or clock on screen.
-const guideSlateTtlMs = 10 * 60 * 1000;
 const switchNotificationId = 'arenaswap-switch';
 const standingsRefreshMs = 30 * 60 * 1000;
 const blowoutSummaryIntervalMs = 180_000;
@@ -142,6 +140,14 @@ export default defineBackground(() => {
 	   array, so an extra entry there would change which game the extension switches to. */
 	let guideSlate: Game[] = [];
 	let guideSlateAt = 0;
+	let guideSlateHoldMs = guideSlateTtlMs;
+	let guideSlateRefused = false;
+	// Set when a fetch left nothing worth stamping as the slate, so a refusal is not asked about again
+	// on every poll broadcast.
+	let guideRetryAfter = 0;
+	// One wide fetch at a time: it takes a while through the request queue, and every poll broadcast
+	// that lands meanwhile makes an open Guide ask again before anything has been stamped.
+	let guideSlateRequest: Promise<GuideSlate> | null = null;
 	let slateShedLeagues: LeagueId[] = [];
 	// When each finished game actually ended, so the guide can stop drawing it at its estimate.
 	let endRecords: gameEndRecords = {};
@@ -259,6 +265,8 @@ export default defineBackground(() => {
 	// refreshes on its own slow cadence. Every PowerScore reader pulls from here, so the card,
 	// the detail screen and the switcher all agree on the same number.
 	const winProbHistory = new Map<string, number[]>();
+	// Leagues whose scoreboard carries the line build it from our own polls instead, and persist it.
+	const winProbTracker = createWinProbabilityTracker();
 	// The closing line, box score, hockey situation and standings races the boosts read.
 	const liveExtras = createLiveExtras();
 	const summaryFetchedAt = new Map<string, number>();
@@ -277,7 +285,7 @@ export default defineBackground(() => {
 	// idle — an in-memory set would come back empty and strand every muted tab silent with no
 	// record that we were the cause.
 	const mutedTabIds = new Set<number>();
-	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {}, mutedTabIds: [] };
+	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {}, mutedTabIds: [], scoreboardWinProbHistory: {} };
 
 	const persistMutedTabIds = async () => {
 		try {
@@ -383,6 +391,7 @@ export default defineBackground(() => {
 		void browser.storage.session.set({
 			scoreHistory: serializeScoreHistory(),
 			powerScoreHistory: serializePowerScoreHistory(),
+			scoreboardWinProbHistory: winProbTracker.serialize(),
 		}).catch(err => {
 			logWarn('Failed to persist score history to session storage.', err);
 		});
@@ -714,8 +723,7 @@ export default defineBackground(() => {
 			   so its live games kept arriving from the undated board while its finals silently went.
 			   That is the same "a shed league contributes nothing and says nothing" trap as everywhere
 			   else here, one layer up. */
-			const answered = new Set(prefs.enabledLeagues.filter(id => !result.shedLeagues.includes(id)));
-			const heldFor = (list: Game[]): Game[] => list.filter(g => !answered.has(g.league));
+			const heldFor = (list: Game[]): Game[] => keepRefusedLeagues(list, result.shedLeagues);
 
 			upcomingGames = prefs.showUpcomingGames
 				? [...heldFor(upcomingGames), ...result.games.filter(g => g.status === 'pre')]
@@ -728,6 +736,53 @@ export default defineBackground(() => {
 				: [];
 		} catch (err) {
 			logWarn('Failed to fetch the slate.', err);
+		}
+	};
+
+	const holdGuideSlate = (outcome: guideSlateOutcome) => {
+		guideSlateRefused = outcome.refused;
+		if (!outcome.write) {
+			guideRetryAfter = Date.now() + outcome.holdMs;
+			return;
+		}
+		guideSlate = outcome.games;
+		guideSlateAt = Date.now();
+		guideSlateHoldMs = outcome.holdMs;
+		guideRetryAfter = 0;
+	};
+
+	const fetchGuideSlate = async (): Promise<GuideSlate> => {
+		// Deliberately bypasses both of refreshSlate's preference gates: the guide draws the
+		// whole day whatever the popup is configured to list. Equally deliberately it does not
+		// widen `games` — afterFetch scores off games.filter(status === 'in'), and the switch
+		// target and the poll cadence read that same array, so extra entries would change
+		// which game the extension switches to.
+		try {
+			const result = await fetchFilteredGames(prefs.enabledLeagues, {
+				includeUpcoming: true,
+				// Follows the Up Next setting so the two surfaces agree about how far ahead the
+				// product looks, floored so a guide that can only ever show today still has a
+				// future to page into.
+				upcomingDays: Math.max(prefs.upcomingGamesDays, guideMinUpcomingDays),
+				includeFinal: true,
+			});
+			const outcome = resolveGuideSlate(guideSlate, result.games, prefs.enabledLeagues, result.shedLeagues);
+			holdGuideSlate(outcome);
+			noteGameEnds(result.games);
+			void fillMissingDurations(result.games);
+			return {
+				games: outcome.games,
+				refused: outcome.refused,
+				leagueLogos: result.leagueLogos,
+				monoLogos: await ensureMonoLogos(prefs.enabledLeagues),
+				gameBoosts,
+				endTimes: gameEndTimes(endRecords),
+			};
+		} catch (err) {
+			logWarn('Failed to fetch the guide slate.', err);
+			const outcome = resolveGuideSlateFailure(guideSlate);
+			holdGuideSlate(outcome);
+			return { games: outcome.games, refused: outcome.refused, leagueLogos, monoLogos, gameBoosts, endTimes: gameEndTimes(endRecords) };
 		}
 	};
 
@@ -828,12 +883,13 @@ export default defineBackground(() => {
 		const favoriteTeamIds = new Set(prefs.favoriteTeamIds);
 		const now = Date.now();
 		liveExtras.setFantasyScoring(prefs.fantasyScoring);
+		winProbTracker.record(freshGames);
 		const scores = liveGames.map(g => toLiveScore(scoreLiveGame(
 			{
 				game: g,
 				history: history.get(g.id) ?? [],
 				stallCount: clockStallMap.get(g.id)?.stallCount ?? 0,
-				winProbability: winProbHistory.get(g.id) ?? [],
+				winProbability: winProbTracker.historyOf(g.id) ?? winProbHistory.get(g.id) ?? [],
 				now,
 				extras: liveExtras.contextFor(g, now),
 			},
@@ -1123,6 +1179,8 @@ export default defineBackground(() => {
 		for (const gameId of winProbHistory.keys()) {
 			if (!liveIds.has(gameId)) winProbHistory.delete(gameId);
 		}
+		// An empty slate after a failed fetch must not wipe the lines read back from storage.
+		if (games.length > 0) winProbTracker.retainOnly(liveIds);
 		for (const gameId of summaryFetchedAt.keys()) {
 			if (liveIds.has(gameId)) continue;
 			summaryFetchedAt.delete(gameId);
@@ -1135,13 +1193,21 @@ export default defineBackground(() => {
 		liveExtras.setRoster(await loadFantasyRoster().catch(() => []));
 
 		const now = Date.now();
-		await Promise.all(liveGames.filter(game => summaryDue(game, now)).map(async game => {
+		const summaryNeeded = (game: Game) => summaryStillNeeded(game, {
+			hasScoreboardReadings: winProbTracker.historyOf(game.id) !== undefined && game.homeWinProbability !== undefined,
+			hasSummaryLine: winProbHistory.has(game.id),
+			hasRosteredPlayer: liveExtras.hasRosteredPlayer(game),
+		});
+		await Promise.all(liveGames.filter(game => summaryNeeded(game) && summaryDue(game, now)).map(async game => {
 			summaryFetchedAt.set(game.id, now);
 			try {
 				const line = await fetchWinProbability(game, { onSummary: summary => liveExtras.ingestSummary(game, summary, Date.now()) });
 				// ESPN returns [] during delays and brief interruptions even when earlier play
 				// produced a line; keep the last good one rather than dropping the signal.
-				if (line.length > 0) winProbHistory.set(game.id, line);
+				if (line.length > 0) {
+					winProbHistory.set(game.id, line);
+					winProbTracker.adopt(game.id, line);
+				}
 			} catch (err) {
 				logWarn(`Failed to fetch win probability for ${game.id}.`, err);
 			}
@@ -1187,6 +1253,7 @@ export default defineBackground(() => {
 			}
 		}
 		hydrateHistoryMaps(sessionResult.scoreHistory, sessionResult.powerScoreHistory);
+		winProbTracker.hydrate(sessionResult.scoreboardWinProbHistory);
 		demoMode = demoResult.demoMode as boolean;
 		endRecords = readGameEndRecords(demoResult[gameEndTimesKey]);
 		if (demoMode) simulator = new MockGameSimulator();
@@ -1322,6 +1389,7 @@ export default defineBackground(() => {
 					// Demo games have no ESPN summary behind them; drop any real lines we cached.
 					stopWinProbabilityPolling();
 					winProbHistory.clear();
+					winProbTracker.clear();
 					if (!demoTimer) {
 						// Routed through refreshScores so a slow tick cannot overlap the next one.
 						demoTimer = setInterval(() => void refreshScores(true), pollIntervalMs);
@@ -1380,43 +1448,19 @@ export default defineBackground(() => {
 				// Demo mode has no network behind it, so the simulator's own slate is the answer.
 				if (demoMode && simulator) return { games, leagueLogos, monoLogos: {}, gameBoosts, endTimes: {} };
 
+				if (guideSlateRequest) return guideSlateRequest;
+
 				// The slate this built last time, which the live polls have kept current since. The
 				// first open of a session still pays for it; the repeat opens that a pager invites do
 				// not, where every open used to cost two requests per enabled league.
-				if (guideSlateAt !== 0 && Date.now() - guideSlateAt < guideSlateTtlMs) {
+				const slateHeld = guideSlateAt !== 0 && Date.now() - guideSlateAt < guideSlateHoldMs;
+				if (!msg.force && (slateHeld || Date.now() < guideRetryAfter)) {
 					void fillMissingDurations(guideSlate);
-					return { games: guideSlate, leagueLogos, monoLogos: await ensureMonoLogos(prefs.enabledLeagues), gameBoosts, endTimes: gameEndTimes(endRecords) };
+					return { games: guideSlate, refused: guideSlateRefused && guideSlate.length === 0, leagueLogos, monoLogos: await ensureMonoLogos(prefs.enabledLeagues), gameBoosts, endTimes: gameEndTimes(endRecords) };
 				}
 
-				// Deliberately bypasses both of refreshSlate's preference gates: the guide draws the
-				// whole day whatever the popup is configured to list. Equally deliberately it does not
-				// widen `games` — afterFetch scores off games.filter(status === 'in'), and the switch
-				// target and the poll cadence read that same array, so extra entries would change
-				// which game the extension switches to.
-				try {
-					const result = await fetchFilteredGames(prefs.enabledLeagues, {
-						includeUpcoming: true,
-						// Follows the Up Next setting so the two surfaces agree about how far ahead the
-						// product looks, floored so a guide that can only ever show today still has a
-						// future to page into.
-						upcomingDays: Math.max(prefs.upcomingGamesDays, guideMinUpcomingDays),
-						includeFinal: true,
-					});
-					guideSlate = result.games;
-					guideSlateAt = Date.now();
-					noteGameEnds(result.games);
-					void fillMissingDurations(result.games);
-					return {
-						games: result.games,
-						leagueLogos: result.leagueLogos,
-						monoLogos: await ensureMonoLogos(prefs.enabledLeagues),
-						gameBoosts,
-						endTimes: gameEndTimes(endRecords),
-					};
-				} catch (err) {
-					logWarn('Failed to fetch the guide slate.', err);
-					return { games: [], leagueLogos, monoLogos, gameBoosts, endTimes: {} };
-				}
+				guideSlateRequest ??= fetchGuideSlate().finally(() => { guideSlateRequest = null; });
+				return guideSlateRequest;
 			});
 		}
 	});

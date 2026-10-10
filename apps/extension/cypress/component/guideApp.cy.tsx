@@ -35,6 +35,8 @@ interface MountOptions {
 	/** Held open so the spec can decide when — or whether — the slate ever arrives. */
 	deferSlate?: boolean;
 	games?: Game[];
+	/** How the background answers the slate request until `recover` is called. */
+	slateFault?: 'rejects' | 'refused';
 	atMs?: number;
 	/** What GET_STATE answers with: the popup's own state, scores and history included. */
 	state?: Partial<BackgroundState>;
@@ -43,13 +45,17 @@ interface MountOptions {
 interface guideHandle {
 	/** Resolves the slate request the app made on mount. */
 	deliver: (games: Game[]) => void;
+	/** Makes the next slate request succeed, as it does once our sources come back. */
+	recover: (games: Game[]) => void;
+	/** Makes every slate request after this one fail, as a worker that has gone away does. */
+	fail: () => void;
 	/** Fires the broadcast the background sends after every poll. */
 	pushScoresUpdated: () => void;
 	sentMessages: { type: string;[key: string]: unknown }[];
 	slateRequests: () => number;
 }
 
-const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], atMs = now, state }: MountOptions = {}) => {
+const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], slateFault, atMs = now, state }: MountOptions = {}) => {
 	cy.clock(atMs, ['Date', 'setInterval', 'clearInterval']);
 	cy.viewport(1280, 800);
 
@@ -57,6 +63,7 @@ const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], atMs
 	const listeners: ((message: unknown) => void)[] = [];
 	let releaseSlate: ((slate: GuideSlate) => void) | null = null;
 	let slate = slateOf(games);
+	let fault = slateFault;
 
 	const win = window as unknown as Record<string, unknown>;
 	win.browser = {
@@ -65,6 +72,8 @@ const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], atMs
 				sentMessages.push(message);
 				if (message.type === 'GET_STATE') return Promise.resolve(state);
 				if (message.type !== 'GET_GUIDE_SLATE') return Promise.resolve(undefined);
+				if (fault === 'rejects') return Promise.reject(new Error('Could not establish connection.'));
+				if (fault === 'refused') return Promise.resolve({ ...slateOf([]), refused: true });
 				if (!deferSlate) return Promise.resolve(slate);
 				return new Promise<GuideSlate>(resolve => { releaseSlate = resolve; });
 			},
@@ -91,6 +100,11 @@ const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], atMs
 			releaseSlate?.(slate);
 			releaseSlate = null;
 		},
+		recover: (recovered: Game[]) => {
+			fault = undefined;
+			slate = slateOf(recovered);
+		},
+		fail: () => { fault = 'rejects'; },
 		pushScoresUpdated: () => { listeners.forEach(listener => listener({ type: 'SCORES_UPDATED' })); },
 		sentMessages,
 		slateRequests: () => sentMessages.filter(message => message.type === 'GET_GUIDE_SLATE').length,
@@ -127,6 +141,77 @@ describe('the guide page', () => {
 
 		cy.get('.popup-no-games-wrap').should('be.visible');
 		cy.get('.popup-loading-spinner').should('not.exist');
+	});
+
+	/* A refused scoreboard is not a quiet day. The background says so with `refused`, and the guide
+	   shows the popup's own banner rather than the no-games panel. */
+	it('shows the error banner, not a quiet day, when our sources refused to answer', () => {
+		mountGuide({ slateFault: 'refused' });
+
+		cy.get('.popup-error-banner').should('be.visible').and('contain.text', 'Couldn\'t load games');
+		cy.get('.popup-no-games-wrap').should('not.exist');
+		cy.get('.popup-loading-spinner').should('not.exist');
+		cy.get('#guideBandToggle').should('not.exist');
+	});
+
+	it('clears the spinner and shows the error when the background never answers', () => {
+		mountGuide({ slateFault: 'rejects' });
+
+		cy.get('.popup-error-banner').should('be.visible');
+		cy.get('.popup-loading-spinner').should('not.exist');
+		cy.get('.popup-no-games-wrap').should('not.exist');
+	});
+
+	it('draws the grid after Retry once our sources are back', () => {
+		mountGuide({ slateFault: 'refused' });
+		cy.get('.popup-error-banner').should('be.visible');
+
+		cy.get<guideHandle>('@guide').then(guide => guide.recover([eagles, niners]));
+		cy.get('.popup-error-banner button').click();
+
+		cy.get('.guide-bar').should('have.length', 2);
+		cy.get('.popup-error-banner').should('not.exist');
+		// Only the button skips the background's wait on a refusal; the poll-driven asks do not.
+		cy.get<guideHandle>('@guide').should(guide => {
+			const asks = guide.sentMessages.filter(message => message.type === 'GET_GUIDE_SLATE');
+			expect(asks.at(-1)).to.deep.include({ force: true });
+			expect(asks.slice(0, -1).some(message => message.force)).to.equal(false);
+		});
+	});
+
+	// One bad refresh behind a quiet day is not news: the popup would not flip to its banner for it.
+	it('keeps saying the day is quiet when a later refresh fails', () => {
+		mountGuide({ games: [] });
+		cy.get('.popup-no-games-wrap').should('be.visible');
+
+		cy.get<guideHandle>('@guide').then(guide => {
+			guide.fail();
+			const before = guide.slateRequests();
+			guide.pushScoresUpdated();
+			cy.wrap(null).should(() => {
+				expect(guide.slateRequests()).to.be.greaterThan(before);
+			});
+		});
+
+		cy.get('.popup-no-games-wrap').should('be.visible');
+		cy.get('.popup-error-banner').should('not.exist');
+	});
+
+	it('keeps drawing the grid when a later refresh fails', () => {
+		mountGuide();
+		cy.get('.guide-bar').should('have.length', 2);
+
+		cy.get<guideHandle>('@guide').then(guide => {
+			guide.fail();
+			const before = guide.slateRequests();
+			guide.pushScoresUpdated();
+			cy.wrap(null).should(() => {
+				expect(guide.slateRequests()).to.be.greaterThan(before);
+			});
+		});
+
+		cy.get('.guide-bar').should('have.length', 2);
+		cy.get('.popup-error-banner').should('not.exist');
 	});
 
 	it('draws only the selected day, not the whole slate', () => {

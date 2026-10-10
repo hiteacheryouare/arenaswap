@@ -9,6 +9,14 @@
 
 One press, from the new header button or Alt+Shift+X, mutes every tab ArenaSwap manages, jumps to the decoy page set under Settings (a blank tab if none), and pauses auto-switching until you flip the header switch back on. The shortcut shown in the tooltip and the settings comes from what the browser actually registered.
 
+## The Guide stops mistaking a refusal for a quiet day — 2026-10-09
+
+When our sources refuse every league, the Guide now shows the popup's "Couldn't load games" banner with its Retry button instead of "no games", and a worker that never answers no longer leaves the spinner up. A slate that every league refused is not cached, and one that lost some leagues keeps their previous games; both are asked about again after a minute, or at once on Retry, rather than after ten minutes or on every poll.
+
+## Football reads its win probability off the scoreboard — 2026-10-09
+
+NFL and college football games no longer get a summary request every minute: the background reads the home side's win probability off the scoreboard, one reading per play, and keeps it in session storage across worker restarts. A game picked up mid-play still starts from the summary's full line, and the summary stays on for basketball (its box score feeds the lead-change count), fantasy rosters, leagues whose scoreboard we haven't checked, and any game whose scoreboard goes quiet.
+
 ## A league that keeps getting refused backs off, and a hung request gives up — 2026-10-09
 
 A failed league poll now waits twice as long after each failure, starting at 15 seconds and stopping at the interval that league was already on, so a refusal no longer speeds up a sleeping league; the first good answer resets it. Every scoreboard, standings, team and situation request now gives up after 10 seconds, so one that never answers can't hold a league's slate hostage; win probability keeps the signal its caller hands it.
