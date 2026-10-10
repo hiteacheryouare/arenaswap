@@ -32,22 +32,11 @@ Ipinapakita ng bawat card sa popup ang color-coded PowerScore bar para makita mo
 MGA SUPPORTED LEAGUE (31)
 ━━━━━━━━━━━━━━━━━━━━━━
 
-🏀 Basketball (6)
-NBA · WNBA · NCAA Men's · NCAA Women's · Olympic Men's · Olympic Women's
+Sinusubaybayan ng ArenaSwap ang 31 league sa anim na sports, at pwede mong i-toggle on o off ang kahit alin dito.
 
-🏈 Football (3)
-NFL · NCAA Football · UFL
+Kasama sa coverage ang Basketball, Football, Hockey, Baseball, at Softball sa antas propesyonal, kolehiyo, at Olympics. Kasama rito ang NBA at WNBA, ang NFL, ang NHL, ang MLB, pati na ang mga katapat nila sa kolehiyo at sa internasyonal na larangan. Kasama rin dito ang Soccer, mula sa mga North American club hanggang sa mga nangungunang liga sa Europe at ang mga malalaking internasyonal na torneo.
 
-🏒 Hockey (4)
-NHL · NCAA Men's · Olympic Men's · Olympic Women's
-
-⚾ Baseball at Softball (5)
-MLB · NCAA Baseball · NCAA Softball · Olympic Baseball · World Baseball Classic
-
-⚽ Soccer (13)
-MLS · NWSL · English Premier League · La Liga · Bundesliga · Serie A · Liga MX · UEFA Champions League · UEFA Europa League · Olympic Men's · Olympic Women's · FIFA World Cup · FIFA Women's World Cup
-
-Anim na sports. 31 league. I-toggle on o off ang kahit alin dito.
+Panoorin lang ang mga sports na sinusubaybayan mo, o buksan lahat at hayaang hanapin ng ArenaSwap ang pinakamagandang laro sa buong mundo anumang oras.
 
 ━━━━━━━━━━━━━━━━━━━━━━
 NAKA-TUNE SA'YO
