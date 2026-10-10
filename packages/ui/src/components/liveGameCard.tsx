@@ -48,7 +48,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 
 	return (
 		<div
-			className={`game-card${interactive ? ' game-card-clickable' : ''} is-team-colored${isOt ? ' is-ot' : ''}${isDelayed ? ' is-delayed' : ''}`}
+			className={`game-card${interactive ? ' game-card-clickable' : ' game-card-lift'} is-team-colored${isOt ? ' is-ot' : ''}${isDelayed ? ' is-delayed' : ''}`}
 			style={surface.style}
 			{...shellProps}
 		>
@@ -116,6 +116,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 						<div
 							className='progress-bar'
 							role='progressbar'
+							aria-label={t('gameCard.powerScore')}
 							style={{ width: `${psBarPercent}%`, backgroundColor: psColor }}
 							aria-valuenow={totalPowerScore}
 							aria-valuemin={0}

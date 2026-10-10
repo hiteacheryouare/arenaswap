@@ -65,7 +65,7 @@ const kinds = [
 
 describe('game card is a group, not a button', () => {
 	for (const [label, render, status] of kinds) {
-		it(`labels the ${label} card with its matchup and keeps its text readable`, () => {
+		it(`makes the ${label} card a group named by its matchup`, () => {
 			mountInPopup(render(cardProps({ game: game(status) })));
 			cy.get('.game-card').should('have.attr', 'role', 'group').and('have.attr', 'aria-label', 'PHI vs BOS');
 			cy.get('.game-card').should('not.have.attr', 'tabindex');
@@ -73,15 +73,23 @@ describe('game card is a group, not a button', () => {
 		});
 	}
 
-	it('leaves the live card scores, clock and status in the accessibility tree', () => {
+	it('does not hide the score, clock or status from assistive tech behind a button role', () => {
 		mountInPopup(<LiveGameCard {...cardProps()} />);
-		cy.get('.game-card').should('contain.text', '48').and('contain.text', '50')
-			.and('contain.text', '5:00').and('contain.text', 'LIVE');
+		for (const selector of ['.game-score-row', '.game-clock', '.live-status-label']) {
+			cy.get(selector).then($element => {
+				expect($element[0]!.closest('[role="button"], [aria-hidden="true"], [inert]'), selector).to.equal(null);
+			});
+		}
+	});
+
+	it('names the PowerScore bar', () => {
+		mountInPopup(<LiveGameCard {...cardProps()} />);
+		cy.get('[role="progressbar"]').should('have.attr', 'aria-label', 'PowerScore');
 	});
 });
 
 const boxes = ($card: JQuery<HTMLElement>) => Array.from($card[0]!.querySelectorAll('*'))
-	.filter(element => !element.classList.contains('game-card-details-button'))
+	.filter(element => !element.closest('.game-card-details-button'))
 	.map(element => JSON.stringify(element.getBoundingClientRect()));
 
 describe('the details button', () => {
@@ -118,12 +126,28 @@ describe('the details button', () => {
 		cy.get('@openDetail').should('have.been.calledOnceWith', 'g1');
 	});
 
-	it('draws the card focus ring when the button is reached by keyboard', () => {
+	it('draws a 2px ring 2px outside the card when the button is reached by keyboard', () => {
 		mountInPopup(<LiveGameCard {...cardProps()} />);
-		cy.get('.game-card').should('have.css', 'outline-style', 'none');
+		cy.get('.game-card-details-button').should('have.css', 'outline-style', 'none');
 		cy.get('body').focus();
 		cy.press(Cypress.Keyboard.Keys.TAB);
-		cy.get('.game-card').should('have.css', 'outline-style', 'solid').and('have.css', 'outline-width', '2px');
+		cy.get('.game-card-details-button').should('have.css', 'outline-style', 'solid')
+			.and('have.css', 'outline-width', '2px').and('have.css', 'outline-offset', '2px');
+		cy.get('.game-card').then($card => {
+			const card = $card[0]!.getBoundingClientRect();
+			const button = $card.find('.game-card-details-button')[0]!.getBoundingClientRect();
+			expect(JSON.stringify(button)).to.equal(JSON.stringify(card));
+		});
+	});
+
+	it('never takes a click from the card', () => {
+		mountInPopup(<LiveGameCard {...cardProps()} />);
+		cy.get('.game-card-details-button').should('have.css', 'pointer-events', 'none');
+		cy.get('.game-card').then($card => {
+			const box = $card[0]!.getBoundingClientRect();
+			const hit = document.elementFromPoint(box.left + (box.width / 2), box.top + (box.height / 2));
+			expect(hit?.closest('.game-card-details-button')).to.equal(null);
+		});
 	});
 
 	it('moves nothing in the card', () => {
@@ -172,7 +196,7 @@ describe('interactive={false}', () => {
 		it(`leaves nothing to focus on the ${label} card`, () => {
 			mountInPopup(render(cardProps({ game: game(status), interactive: false })));
 			cy.get('.game-card-details-button').should('not.exist');
-			cy.get('.game-card').should('not.have.class', 'game-card-clickable');
+			cy.get('.game-card').should('not.have.class', 'game-card-clickable').and('have.class', 'game-card-lift');
 			cy.get('.game-card').then($card => {
 				const candidates = $card[0]!.querySelectorAll<HTMLElement>('a[href], button, input, select, textarea, [tabindex]');
 				candidates.forEach(element => {
@@ -189,8 +213,21 @@ describe('interactive={false}', () => {
 		cy.get('@openDetail').should('not.have.been.called');
 	});
 
-	it('keeps the matchup label and the readable text', () => {
+	it('keeps the matchup label', () => {
 		mountInPopup(<LiveGameCard {...cardProps({ interactive: false })} />);
-		cy.get('.game-card').should('have.attr', 'aria-label', 'PHI vs BOS').and('contain.text', '48');
+		cy.get('.game-card').should('have.attr', 'aria-label', 'PHI vs BOS');
+	});
+
+	it('keeps the hover lift and shadow but not the pointer cursor', () => {
+		mountInPopup(<LiveGameCard {...cardProps({ interactive: false })} />);
+		cy.get('.game-card').should('have.css', 'transition-property').and('contain', 'transform');
+		cy.get('.game-card').should('not.have.css', 'cursor', 'pointer');
+		cy.get('.game-card').then($card => {
+			const lift = Array.from(document.styleSheets).flatMap(sheet => Array.from(sheet.cssRules))
+				.filter((rule): rule is CSSStyleRule => rule instanceof CSSStyleRule && rule.selectorText.includes('.game-card-lift:hover'));
+			expect(lift.length, 'a hover rule for .game-card-lift').to.be.greaterThan(0);
+			expect(lift[0]!.style.transform).to.equal('translateY(-1px)');
+			expect($card).to.have.length(1);
+		});
 	});
 });

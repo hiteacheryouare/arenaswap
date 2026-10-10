@@ -20,7 +20,7 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 
 	return (
 		<div
-			className={`game-card${interactive ? ' game-card-clickable' : ''} is-team-colored`}
+			className={`game-card${interactive ? ' game-card-clickable' : ' game-card-lift'} is-team-colored`}
 			style={surface.style}
 			{...shellProps}
 		>

@@ -80,16 +80,34 @@
 	}
 }
 
-.game-card-clickable {
-	cursor: pointer;
+// The lift is shared with the website's demo cards, which are not clickable and so have no cursor.
+.game-card-clickable,
+.game-card-lift {
 	transition: transform m.$motion-quick m.$motion-ease, box-shadow m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease;
 
 	&:hover {
 		transform: translateY(-1px);
 		box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
 	}
+}
 
-	&:has(.game-card-details-button:focus-visible) {
+.game-card-clickable {
+	cursor: pointer;
+}
+
+// Sized to the card's border box, so the ring sits where it did when the card itself took focus.
+// pointer-events: none sends every click to the card's own handler; assistive tech activates the
+// button without a hit test.
+.game-card-details-button {
+	position: absolute;
+	inset: -1px;
+	padding: 0;
+	border: 0;
+	background: none;
+	border-radius: inherit;
+	pointer-events: none;
+
+	&:focus-visible {
 		outline: 2px solid bs.$primary;
 		outline-offset: 2px;
 	}

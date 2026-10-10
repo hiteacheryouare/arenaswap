@@ -105,13 +105,15 @@ export const buildCardShellProps = (game: Game, t: Translator, onOpenGameDetail:
 		: undefined,
 });
 
-// Visually hidden and first in the card, so it is the first stop in the tab order and the card's
-// focus ring is drawn from it (see `.game-card-clickable` in _game-card.scss).
+// First in the card, so it is the first stop in the tab order. It covers the card so its focus ring
+// and its focus box are the card's, but ignores the pointer: clicks reach the card's own handler.
 export const CardDetailsButton = ({ game, onOpenGameDetail }: { game: Game; onOpenGameDetail: (gameId: string) => void }) => {
 	const t = useT();
 	return (
-		<button type='button' className='visually-hidden game-card-details-button' onClick={() => onOpenGameDetail(game.id)}>
-			{t('gameCard.openDetails', { away: game.awayTeam.abbreviation, home: game.homeTeam.abbreviation })}
+		<button type='button' className='game-card-details-button' onClick={() => onOpenGameDetail(game.id)}>
+			<span className='visually-hidden'>
+				{t('gameCard.openDetails', { away: game.awayTeam.abbreviation, home: game.homeTeam.abbreviation })}
+			</span>
 		</button>
 	);
 };

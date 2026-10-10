@@ -7,7 +7,7 @@
 
 ## Game cards stop being buttons with buttons inside — 2026-10-09
 
-A card is now a labelled group with a hidden details button as its first Tab stop, so screen readers read the matchup, score, clock and status, and the stars, odds tooltip and tab picker are controls of their own. Clicking the card still opens the game, and the website's demo cards take `interactive={false}` and drop out of the tab order.
+A card is now a labelled group with a details button as its first Tab stop, so screen readers read the matchup, score, clock and status, the PowerScore bar has a name, and the stars, odds tooltip and tab picker are controls of their own. Clicking the card still opens the game, and the website's demo cards take `interactive={false}`: they keep the hover lift but lose the tab stop and the pointer cursor.
 
 ## Work that went missing on the way to dev comes back — 2026-10-09
 

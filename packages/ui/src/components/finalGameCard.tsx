@@ -41,7 +41,7 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 
 	return (
 		<div
-			className={`game-card${interactive ? ' game-card-clickable' : ''} is-final`}
+			className={`game-card${interactive ? ' game-card-clickable' : ' game-card-lift'} is-final`}
 			{...shellProps}
 		>
 			{interactive && <CardDetailsButton game={game} onOpenGameDetail={onOpenGameDetail} />}
