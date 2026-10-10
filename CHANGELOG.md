@@ -7,7 +7,11 @@
 
 ## Live cards say when their league went quiet — 2026-10-09
 
-A live card whose league has been refusing polls for a full minute now carries one muted line under its venue, "Last updated 7 minutes ago", which counts up while the popup is open, turns to hours past an hour and disappears on the next good poll. The worker reports when each league last answered as `leagueLastGoodAt`. A refresh that finds a league refusing also keeps that league's live cards instead of dropping them, and a game that has gone live no longer comes back as an upcoming one.
+A live card whose league has been refusing polls for a full minute now carries one muted line under its venue, "Last updated 7 minutes ago", which counts up while the popup is open, turns to hours past an hour and disappears on the next good poll. The worker reports when each league last answered as `leagueLastGoodAt`. A refresh that finds a league refusing also keeps that league's live cards instead of dropping them, and neither a refresh nor a settings change brings back a game that has gone live as an upcoming one too.
+
+## A league that keeps getting refused backs off, and a hung request gives up — 2026-10-09
+
+A failed league poll now waits twice as long after each failure, starting at 15 seconds and stopping at the interval that league was already on, so a refusal no longer speeds up a sleeping league; the first good answer resets it. Every scoreboard, standings, team and situation request now gives up after 10 seconds, so one that never answers can't hold a league's slate hostage; win probability keeps the signal its caller hands it.
 
 ## Work that went missing on the way to dev comes back — 2026-10-09
 
