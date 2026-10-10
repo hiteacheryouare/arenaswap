@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The onboarding e2e waits for every league's teams — 2026-10-09
+
+The test that walks all three onboarding steps gives the team picker 15 seconds to show the 76ers, since it waits for every enabled league's teams while the request alias it waits on only covers the first. It had failed on a loaded runner twice in one day and passed every time it ran alone.
+
 ## A boss-is-coming button — 2026-10-09
 
 One press, from the new header button or Alt+Shift+X, mutes every tab ArenaSwap manages, jumps to the decoy page set under Settings (a blank tab if none), and pauses auto-switching until you flip the header switch back on. The shortcut shown in the tooltip and the settings comes from what the browser actually registered.

@@ -2,6 +2,11 @@ import { liveState, sixersThunder } from '../support/fixtures';
 
 // The three onboarding steps plus the "all set" screen, from a genuinely empty profile: no stored
 // prefs and no onboardingCompleted flag, which is the only state a real first install is in.
+
+// `@espnTeams` resolves on the first league's /teams reply, but the picker waits for every enabled
+// league's, and under a loaded runner that has run past the default 4s.
+const teamsLoaded = 15_000;
+
 describe('onboarding', () => {
 	beforeEach(() => cy.openPopup({ state: liveState() }));
 
@@ -22,7 +27,7 @@ describe('onboarding', () => {
 		cy.wait('@espnTeams');
 		cy.contains('Step 3 of 3').should('be.visible');
 		cy.contains('Pick Your Teams').should('be.visible');
-		cy.get('[aria-label="Add Philadelphia 76ers to favorites"]').click();
+		cy.get('[aria-label="Add Philadelphia 76ers to favorites"]', { timeout: teamsLoaded }).click();
 		cy.contains('button', 'Done').click();
 
 		cy.contains(/You.re all set!/).should('be.visible');
