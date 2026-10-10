@@ -101,6 +101,8 @@
 .game-card-details-button {
 	position: absolute;
 	inset: -1px;
+	width: calc(100% + 2px);
+	height: calc(100% + 2px);
 	padding: 0;
 	border: 0;
 	background: none;
