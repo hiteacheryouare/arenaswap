@@ -124,6 +124,13 @@ const describeOpenWindows = (allTabs: { id?: number; windowId?: number }[]) => {
 	return { windowIdByTabId, tabCountByWindowId };
 };
 
+// The slate's copy of a game is older than the one already on screen: a game that went live since
+// the slate was fetched is still in it as upcoming, and shows twice unless the live copy wins.
+const slateBeside = (onScreen: Game[], slate: Game[]): Game[] => {
+	const shownIds = new Set(onScreen.map(g => g.id));
+	return slate.filter(g => !shownIds.has(g.id));
+};
+
 export default defineBackground(() => {
 	let games: Game[] = [];
 	let upcomingGames: Game[] = [];
@@ -739,13 +746,6 @@ export default defineBackground(() => {
 	const displayableGames = (fetched: Game[]): Game[] => (
 		prefs.keepFinalGames ? fetched : fetched.filter(game => game.status !== 'post')
 	);
-
-	// The slate's copy of a game is older than the one already on screen: a game that went live since
-	// the slate was fetched is still in it as upcoming, and shows twice unless the live copy wins.
-	const slateBeside = (onScreen: Game[], slate: Game[]): Game[] => {
-		const shownIds = new Set(onScreen.map(g => g.id));
-		return slate.filter(g => !shownIds.has(g.id));
-	};
 
 	// Runs on every poll, ahead of the mute sync so a freed tab is unmuted in the same pass that
 	// released it. Demo mode is excluded outright: its games reach 'post' on a script while the
