@@ -1755,6 +1755,36 @@ describe('GET_GUIDE_SLATE', () => {
 		expect(slate.games.map(g => g.id).toSorted()).toEqual(['nba-new', 'nfl-back']);
 	});
 
+	// The first wide fetch queues behind the token bucket, and nothing is stamped until it lands, so
+	// every poll broadcast in that stretch used to start another one.
+	test('costs one wide fetch for three asks made while the first is still running, force included', async () => {
+		await loadBackground({
+			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
+		});
+		const pending = Promise.withResolvers<unknown>();
+		fetchMock.mockClear();
+		fetchMock.mockImplementation(() => pending.promise);
+
+		const asks = [
+			guideSlate(),
+			guideSlate(),
+			onMessageHandler({ type: 'GET_GUIDE_SLATE', force: true }) as Promise<{ games: Game[] }>,
+		];
+		await drain(16);
+		pending.resolve({ games: [game('later', 'pre')], leagueLogos: {}, shedLeagues: [] });
+		const replies = await Promise.all(asks);
+
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(replies.map(reply => reply.games.map(g => g.id))).toEqual([['later'], ['later'], ['later']]);
+
+		fetchMock.mockClear();
+		jest.setSystemTime(Date.now() + 11 * 60_000);
+		fetchMock.mockResolvedValue({ games: [game('next', 'pre')], leagueLogos: {}, shedLeagues: [] });
+		expect((await guideSlate()).games.map(g => g.id)).toEqual(['next']);
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+	});
+
 	test('keeps saying so, without asking again, while a refusal with nothing held is waited out', async () => {
 		await loadBackground({
 			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },

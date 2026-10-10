@@ -1,5 +1,8 @@
 import type { Game, LeagueId } from '@arenaswap/core/types';
 
+// How long the guide will draw the slate the last wide fetch produced. Generous because the live
+// polls merge their answers into it, so what ages here is only the roster of games — a kickoff
+// being added to the day — rather than any score or clock on screen.
 export const guideSlateTtlMs = 10 * 60 * 1000;
 
 // How long a slate that lost leagues, or one every league refused, is trusted before the next open

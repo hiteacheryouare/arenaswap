@@ -83,9 +83,6 @@ const readStoredSwitchTime = (value: unknown, now: number): number => (
 	typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= now ? value : 0
 );
 
-// How long the guide will draw the slate the last wide fetch produced. Generous because the live
-// polls merge their answers into it, so what ages here is only the roster of games — a kickoff
-// being added to the day — rather than any score or clock on screen.
 const switchNotificationId = 'arenaswap-switch';
 const standingsRefreshMs = 30 * 60 * 1000;
 const blowoutSummaryIntervalMs = 180_000;
@@ -147,6 +144,9 @@ export default defineBackground(() => {
 	// Set when a fetch left nothing worth stamping as the slate, so a refusal is not asked about again
 	// on every poll broadcast.
 	let guideRetryAfter = 0;
+	// One wide fetch at a time: it takes a while through the request queue, and every poll broadcast
+	// that lands meanwhile makes an open Guide ask again before anything has been stamped.
+	let guideSlateRequest: Promise<GuideSlate> | null = null;
 	let slateShedLeagues: LeagueId[] = [];
 	// When each finished game actually ended, so the guide can stop drawing it at its estimate.
 	let endRecords: gameEndRecords = {};
@@ -714,9 +714,6 @@ export default defineBackground(() => {
 		}
 	};
 
-	// Any game a poll just reported replaces the copy the slate holds; everything else is kept, which
-	// is what carries the days the dateless poll cannot see. Skipped until a wide fetch has actually
-	// run, so a poll cannot seed a slate that would then look like a whole day to the guide.
 	const holdGuideSlate = (outcome: guideSlateOutcome) => {
 		guideSlateRefused = outcome.refused;
 		if (!outcome.write) {
@@ -729,6 +726,44 @@ export default defineBackground(() => {
 		guideRetryAfter = 0;
 	};
 
+	const fetchGuideSlate = async (): Promise<GuideSlate> => {
+		// Deliberately bypasses both of refreshSlate's preference gates: the guide draws the
+		// whole day whatever the popup is configured to list. Equally deliberately it does not
+		// widen `games` — afterFetch scores off games.filter(status === 'in'), and the switch
+		// target and the poll cadence read that same array, so extra entries would change
+		// which game the extension switches to.
+		try {
+			const result = await fetchFilteredGames(prefs.enabledLeagues, {
+				includeUpcoming: true,
+				// Follows the Up Next setting so the two surfaces agree about how far ahead the
+				// product looks, floored so a guide that can only ever show today still has a
+				// future to page into.
+				upcomingDays: Math.max(prefs.upcomingGamesDays, guideMinUpcomingDays),
+				includeFinal: true,
+			});
+			const outcome = resolveGuideSlate(guideSlate, result.games, prefs.enabledLeagues, result.shedLeagues);
+			holdGuideSlate(outcome);
+			noteGameEnds(result.games);
+			void fillMissingDurations(result.games);
+			return {
+				games: outcome.games,
+				refused: outcome.refused,
+				leagueLogos: result.leagueLogos,
+				monoLogos: await ensureMonoLogos(prefs.enabledLeagues),
+				gameBoosts,
+				endTimes: gameEndTimes(endRecords),
+			};
+		} catch (err) {
+			logWarn('Failed to fetch the guide slate.', err);
+			const outcome = resolveGuideSlateFailure(guideSlate);
+			holdGuideSlate(outcome);
+			return { games: outcome.games, refused: outcome.refused, leagueLogos, monoLogos, gameBoosts, endTimes: gameEndTimes(endRecords) };
+		}
+	};
+
+	// Any game a poll just reported replaces the copy the slate holds; everything else is kept, which
+	// is what carries the days the dateless poll cannot see. Skipped until a wide fetch has actually
+	// run, so a poll cannot seed a slate that would then look like a whole day to the guide.
 	const mergeGuideSlate = (fresh: Game[]) => {
 		if (guideSlateAt === 0) return;
 		const freshIds = new Set(fresh.map(g => g.id));
@@ -1356,47 +1391,19 @@ export default defineBackground(() => {
 				// Demo mode has no network behind it, so the simulator's own slate is the answer.
 				if (demoMode && simulator) return { games, leagueLogos, monoLogos: {}, gameBoosts, endTimes: {} };
 
+				if (guideSlateRequest) return guideSlateRequest;
+
 				// The slate this built last time, which the live polls have kept current since. The
 				// first open of a session still pays for it; the repeat opens that a pager invites do
 				// not, where every open used to cost two requests per enabled league.
 				const slateHeld = guideSlateAt !== 0 && Date.now() - guideSlateAt < guideSlateHoldMs;
 				if (!msg.force && (slateHeld || Date.now() < guideRetryAfter)) {
 					void fillMissingDurations(guideSlate);
-					return { games: guideSlate, refused: guideSlateRefused, leagueLogos, monoLogos: await ensureMonoLogos(prefs.enabledLeagues), gameBoosts, endTimes: gameEndTimes(endRecords) };
+					return { games: guideSlate, refused: guideSlateRefused && guideSlate.length === 0, leagueLogos, monoLogos: await ensureMonoLogos(prefs.enabledLeagues), gameBoosts, endTimes: gameEndTimes(endRecords) };
 				}
 
-				// Deliberately bypasses both of refreshSlate's preference gates: the guide draws the
-				// whole day whatever the popup is configured to list. Equally deliberately it does not
-				// widen `games` — afterFetch scores off games.filter(status === 'in'), and the switch
-				// target and the poll cadence read that same array, so extra entries would change
-				// which game the extension switches to.
-				try {
-					const result = await fetchFilteredGames(prefs.enabledLeagues, {
-						includeUpcoming: true,
-						// Follows the Up Next setting so the two surfaces agree about how far ahead the
-						// product looks, floored so a guide that can only ever show today still has a
-						// future to page into.
-						upcomingDays: Math.max(prefs.upcomingGamesDays, guideMinUpcomingDays),
-						includeFinal: true,
-					});
-					const outcome = resolveGuideSlate(guideSlate, result.games, prefs.enabledLeagues, result.shedLeagues);
-					holdGuideSlate(outcome);
-					noteGameEnds(result.games);
-					void fillMissingDurations(result.games);
-					return {
-						games: outcome.games,
-						refused: outcome.refused,
-						leagueLogos: result.leagueLogos,
-						monoLogos: await ensureMonoLogos(prefs.enabledLeagues),
-						gameBoosts,
-						endTimes: gameEndTimes(endRecords),
-					};
-				} catch (err) {
-					logWarn('Failed to fetch the guide slate.', err);
-					const outcome = resolveGuideSlateFailure(guideSlate);
-					holdGuideSlate(outcome);
-					return { games: outcome.games, refused: outcome.refused, leagueLogos, monoLogos, gameBoosts, endTimes: gameEndTimes(endRecords) };
-				}
+				guideSlateRequest ??= fetchGuideSlate().finally(() => { guideSlateRequest = null; });
+				return guideSlateRequest;
 			});
 		}
 	});
