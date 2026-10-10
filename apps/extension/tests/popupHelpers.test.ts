@@ -395,6 +395,7 @@ describe('normalizeBackgroundState', () => {
 			onStandbyStream: false,
 			standbyStreamTabId: null,
 			slateShedLeagues: [],
+			leagueLastGoodAt: {},
 		};
 		expect(normalizeBackgroundState(null)).toEqual(emptyState);
 		expect(normalizeBackgroundState(undefined)).toEqual(emptyState);

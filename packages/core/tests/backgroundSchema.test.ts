@@ -10,6 +10,7 @@ const empty = {
 	onStandbyStream: false,
 	standbyStreamTabId: null,
 	slateShedLeagues: [],
+	leagueLastGoodAt: {},
 };
 
 describe('BackgroundStateSchema', () => {

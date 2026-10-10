@@ -615,6 +615,14 @@
 		"oddsProvidedBy": "배당률 제공:",
 		"openDetails": "{away} vs {home} 상세 정보 열기",
 		"live": "LIVE",
+		"staleMinutes": {
+			"1": "마지막 업데이트: 1분 전",
+			"n": "마지막 업데이트: $1분 전"
+		},
+		"staleHours": {
+			"1": "마지막 업데이트: 1시간 전",
+			"n": "마지막 업데이트: $1시간 전"
+		},
 		"final": "종료",
 		"delay": "지연",
 		"delayFallback": "지연",

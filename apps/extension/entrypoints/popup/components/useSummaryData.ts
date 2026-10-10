@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { leagueConfigMap } from '@arenaswap/core/constants';
-import { logWarn, monoMarksFromLogos, parseGameDurationMins } from '@arenaswap/core';
+import { logWarn, monoMarksFromLogos, parseGameDurationMins, pollWinProbabilityMs } from '@arenaswap/core';
 import type { Game, LeagueId, TeamMonoMarks } from '@arenaswap/core/types';
 import { emptyBoxScore, parseBoxScore } from './boxScoreParse';
+import { hasBoxScoreContent } from './boxScoreColumns';
 import type { BoxScore } from './boxScoreParse';
 import { emptyStandings, parseLeagueStandings, parseStandings, usesFullLeagueStandings } from './standingsParse';
 import type { StandingsGroup } from './standingsParse';
@@ -327,49 +328,68 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		const config = leagueConfigMap[league as LeagueId];
 		if (!config) return;
 
-		// Fetched once per game rather than per score change: the line only moves on the scale of
+		// Asked once per game and status, not per score change: the line only moves on the scale of
 		// possessions, and the switcher reads volatility from the background scorer, not from here.
-		// Shared with the card's hover prefetch, which has usually started this already.
+		// Shared with the card's hover prefetch, which has usually started this already. A live game
+		// is asked again on the background's own pace so the screen keeps up with it.
 		let cancelled = false;
-		fetchSummary(config.espnPath, gameId, status)
-			.then(raw => {
-				if (cancelled) return;
-				const data = raw as Record<string, unknown>;
-				const wp = data?.winprobability;
-				// ESPN returns [] during rain delays and brief interruptions even when earlier play
-				// produced data, which would clear the chart mid-game and desync it from the score.
-				if (Array.isArray(wp) && wp.length > 0) {
-					setWinProbability(wp.map((p: { homeWinPercentage?: number }) => p.homeWinPercentage ?? 0.5));
-				}
-				setSeriesInfo(pickSeriesEntry(data?.seasonseries as SeriesInfo[] | undefined));
-				setRecords(parseTeamRecords(data, teamIdsRef.current.home, teamIdsRef.current.away));
-				setMonoLogos(parseMonoLogos(data, teamIdsRef.current.home, teamIdsRef.current.away));
-				setGameDurationMins(parseGameDurationMins(data));
-				// Only where the whole-league fetch below is not running. Both would otherwise
-				// write this state, and whichever landed second would win.
-				if (!usesFullLeagueStandings(league)) {
-					setStandings(parseStandings(
-						data,
-						gameRef.current.sportType,
-						teamIdsRef.current.home,
-						teamIdsRef.current.away,
-					));
-				}
-				setBoxScore(parseBoxScore(
+		let latestRequest = 0;
+		const applySummary = (data: Record<string, unknown>) => {
+			const wp = data?.winprobability;
+			// ESPN returns [] during rain delays and brief interruptions even when earlier play
+			// produced data, which would clear the chart mid-game and desync it from the score.
+			if (Array.isArray(wp) && wp.length > 0) {
+				setWinProbability(wp.map((p: { homeWinPercentage?: number }) => p.homeWinPercentage ?? 0.5));
+			}
+			setSeriesInfo(pickSeriesEntry(data?.seasonseries as SeriesInfo[] | undefined));
+			setRecords(parseTeamRecords(data, teamIdsRef.current.home, teamIdsRef.current.away));
+			setMonoLogos(parseMonoLogos(data, teamIdsRef.current.home, teamIdsRef.current.away));
+			setGameDurationMins(parseGameDurationMins(data));
+			// Only where the whole-league fetch below is not running. Both would otherwise
+			// write this state, and whichever landed second would win.
+			if (!usesFullLeagueStandings(league)) {
+				const nextStandings = parseStandings(
 					data,
+					gameRef.current.sportType,
 					teamIdsRef.current.home,
 					teamIdsRef.current.away,
-					abbreviationsRef.current.home,
-					abbreviationsRef.current.away,
-				));
-				if (status === 'pre') {
-					setMatchup(parseMatchup(data, gameRef.current.sportType, teamIdsRef.current));
-					setTickets(parseTickets(data));
-				}
-			})
-			.catch(err => {
-				if (!cancelled) logWarn(`Failed to load summary data for ${gameId}.`, err);
-			});
+				);
+				setStandings(previous => (nextStandings.length > 0 ? nextStandings : previous));
+			}
+			const nextBoxScore = parseBoxScore(
+				data,
+				teamIdsRef.current.home,
+				teamIdsRef.current.away,
+				abbreviationsRef.current.home,
+				abbreviationsRef.current.away,
+			);
+			// A thin answer must not take the Box tab away from a reader who is on it: the strip is
+			// built from this state, and a vanished tab sends them back to Overview.
+			setBoxScore(previous => (
+				hasBoxScoreContent(gameRef.current.sportType, nextBoxScore) || !hasBoxScoreContent(gameRef.current.sportType, previous)
+					? nextBoxScore
+					: previous
+			));
+			if (status === 'pre') {
+				setMatchup(parseMatchup(data, gameRef.current.sportType, teamIdsRef.current));
+				setTickets(parseTickets(data));
+			}
+		};
+		const loadSummary = () => {
+			const request = ++latestRequest;
+			fetchSummary(config.espnPath, gameId, status)
+				.then(raw => {
+					if (cancelled || request !== latestRequest) return;
+					applySummary(raw as Record<string, unknown>);
+				})
+				.catch(err => {
+					if (!cancelled) logWarn(`Failed to load summary data for ${gameId}.`, err);
+				});
+		};
+		loadSummary();
+		const refresh = status === 'in' ? setInterval(() => {
+			if (!document.hidden) loadSummary();
+		}, pollWinProbabilityMs) : undefined;
 
 		// The whole league, alongside the summary rather than when the Standings tab is opened.
 		// It is 4-15KB gzipped and identical for every game in the league, so a second game in the
@@ -386,7 +406,10 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 				});
 		}
 
-		return () => { cancelled = true; };
+		return () => {
+			cancelled = true;
+			clearInterval(refresh);
+		};
 	}, [gameId, league, status]);
 
 	return { winProbability, seriesInfo, records: resolvedRecords, monoLogos, boxScore, standings, gameDurationMins, matchup, tickets };
