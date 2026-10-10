@@ -12,3 +12,8 @@ Every user-facing string in `apps/extension` must go through `i18n.t('<dotted.ke
 **How to apply:** during review, extract dotted string literals from changed components and diff them against a flattened `locales/en.json` — cheap and catches typo'd keys. Then separately grep the changed files for bare uppercase/English literals in JSX text, `title=`, and `aria-label=`; those are the ones the key check cannot see. Numeric substitution arrays (`i18n.t('x.step', [1, 8])`) are the established pattern and are fine — do not flag them. `PowerScore` is untranslated in every locale, so hardcoding that one word is harmless.
 
 Related: [[review-popup-failure-map]]
+
+**`pt_PT.json` uses pre-1990-Agreement spelling throughout** ("Actualizar", "actualizações",
+"directo" x17). New strings written as "atualização"/"direto" (the pt-BR/modern form) read
+inconsistently next to the Refresh button. Check new pt_PT strings against the file's own spelling, not
+a dictionary.

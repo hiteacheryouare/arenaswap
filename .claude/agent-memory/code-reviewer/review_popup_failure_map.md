@@ -16,8 +16,8 @@ Characteristic risk areas in the extension popup, worth checking on every review
   (`data?.seasonseries as SeriesInfo[]`), yet every read is guarded — `parseTeamRecords` optional-chains
   the whole `header.competitions[0].competitors` hop and `Array.isArray`-checks before use, `!r.ok`
   throws, `winprobability` is length-checked with `?? 0.5` per point, and the whole `.then` sits under a
-  `.catch` that filters `AbortError`. The effect has a real `AbortController` cleanup, so tapping
-  between two games cannot land a stale response. Do not open a generic "unvalidated boundary" finding
+  `.catch`. Stale answers are dropped by a per-effect `cancelled` flag (no AbortController since
+  at least 2026-10), plus a request sequence id once PR #207 added the live 60s refresh. Do not open a generic "unvalidated boundary" finding
   here without naming an actual unguarded hop. The `teamIdsRef`/`scoreRef` effect with no dep array is
   also correct: effects run in declaration order, so the refs are current before the fetch effect runs.
   Its `mockSeriesMap`/`mockRecordsMap` demo tables cover exactly the 15 ids `mockGames.ts` defines
@@ -33,3 +33,15 @@ Related: [[review-i18n-contract]], [[project-platform-floor]]
 **Detail tab strip (`detailTabs.tsx`) — Bootstrap owns the active classes after first render.** A tab that disappears while the strip stays mounted leaves *nothing* active (blank body). Real-data game swaps are safe only because the `useSummaryData` reset empties standings/box/matchup in one commit, so `tabbed` drops to false and the strip unmounts. The demo path re-sets standings synchronously in the same effect, so there `tabbed` stays true across a swap. The Matchup tab (pre-game only) is handled with a `Fragment key={isPreGame}` remount; any new conditional tab needs the same thinking.
 
 **Calendar-day math in the popup runs in the viewer's timezone** (`setHours(0,0,0,0)`), not the venue's. Anything "days since last game" misreads for non-US viewers whenever one game crosses their midnight and the other does not.
+
+**`GameDetailView` is mounted in two hosts**: the popup (unmounts on close) and the guide tab's drawer (`entrypoints/guide/app.tsx`), a long-lived page that sits hidden in the tab strip. Any "it stops when the popup closes" argument for a timer or poll in the detail view is false for the guide. Nothing in `entrypoints/` listens for `visibilitychange`.
+
+**The detail `game` prop is a new object on every `SCORES_UPDATED`**, so every chart option memo that lists `game` rebuilds and `setOption(option, true)` runs at broadcast cadence already. Guards that keep an array identity "so the chart doesn't redraw" save nothing while `game` is in the deps.
+
+**Repeated summary refreshes make sparse answers matter**: the tab list is derived from summary state (box score, standings), and `detailTabs.tsx` sends the reader to Overview when the open tab vanishes. A one-shot fetch could not bounce a reader; a 60s refresh can, unless a sparse answer keeps the previous value the way the win-probability line does.
+
+**A card in the popup is ~289px outer, ~263px inside** (`assets/bootstrap.scss` comment near the
+top), not 320. Cypress specs that mount a card in a 320px wrapper give text ~30px more room than the
+real popup, so their "fits on one line in every locale" checks overstate the margin. Measured
+2026-10-09 at the real width: the Filipino stale line (0.6rem DM Sans) is 260px of 263. Re-measure at
+289px outer before trusting a fit test.
