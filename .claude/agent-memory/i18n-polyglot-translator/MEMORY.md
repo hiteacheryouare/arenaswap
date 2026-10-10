@@ -34,3 +34,4 @@
 - [project_matchup_tab_terms.md](project_matchup_tab_terms.md) — 2026-10-02: detail.tabMatchup/form*/stat*/injury*/tickets* (42 keys), 11 locales; form letters reuse standings.draws, ja/ko/zh rank and at/vs forms, Day-to-day and hockey special-teams labels are the shakiest
 - [project_college_filter_terms.md](project_college_filter_terms.md) — 2026-10-02: collegeFilter.* (NCAA division/conference picker), 11 locales; division/conference/Top N term map, scouts-joke per locale
 - [project_powerscore3_modes_fantasy.md](project_powerscore3_modes_fantasy.md) — 2026-10-04: PowerScore 3 (modes, Blowouts/Fantasy signals, fantasy.*) for de/es/fil/fr/it/pt_BR; mode-name map, upset/bonus terms
+- [project_store_listing_kword_stuffing_fix.md](project_store_listing_kword_stuffing_fix.md) — 2026-09-05: SUPPORTED LEAGUES bulleted list -> prose in all 12 desc_long.md; no em dash anywhere in these files, professional/college/Olympic term set per locale
