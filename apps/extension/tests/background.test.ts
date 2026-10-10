@@ -114,6 +114,7 @@ interface LoadOptions {
 	storedLocal?: Record<string, unknown>;
 	openTabIds?: number[];
 	activeTabId?: number;
+	storedSession?: Record<string, unknown>;
 }
 
 const loadBackground = async (options: LoadOptions = {}) => {
@@ -151,6 +152,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 					scoreHistory: {},
 					powerScoreHistory: {},
 					gameBoosts: {},
+					...options.storedSession,
 				}),
 				set: storageSessionSet,
 			},
@@ -535,6 +537,170 @@ describe('win probability polling', () => {
 
 		// One live game and one chain: a second chain would double every sweep from here on.
 		expect(winProbMock).toHaveBeenCalledTimes(1);
+	});
+});
+
+// A summary with a real line behind it: twenty plays that never leave the middle of the court.
+const summaryLine = Array.from({ length: 20 }, () => 0.5);
+
+const summaryMock = () => {
+	const mock = (require('@arenaswap/core') as { fetchWinProbability: jest.Mock }).fetchWinProbability;
+	mock.mockImplementation(async () => summaryLine);
+	mock.mockClear();
+	return mock;
+};
+
+describe('win probability read off the scoreboard', () => {
+	const footballGame: Game = {
+		id: 'nfl-1',
+		league: 'nfl' as LeagueId,
+		sportType: 'football',
+		status: 'in',
+		homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 14 },
+		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 10 },
+		period: 3,
+		clockSeconds: 600,
+		homeWinProbability: 0.55,
+		lastPlayId: 'play-1',
+	};
+
+	const loadWith = async (game: Game, storedSession?: Record<string, unknown>) => {
+		await loadBackground({
+			prefs: { enabledLeagues: [game.league], notificationsEnabled: false },
+			fetchReturnValue: { games: [game], leagueLogos: {}, shedLeagues: [] },
+			storedSession,
+		});
+	};
+
+	const sweepsLater = async (sweeps: number) => {
+		for (let i = 0; i < sweeps; i++) {
+			jest.advanceTimersByTime(pollWinProbabilityMs);
+			await drain();
+		}
+	};
+
+	const persistedLine = (gameId: string) => {
+		const writes = storageSessionSet.mock.calls.map(([value]) => value as { scoreboardWinProbHistory?: Record<string, number[]> });
+		return writes.filter(write => write.scoreboardWinProbHistory !== undefined).at(-1)?.scoreboardWinProbHistory?.[gameId];
+	};
+
+	test('a football game is summarised once for its full line and then left to the scoreboard', async () => {
+		await loadWith(footballGame);
+		const winProbMock = summaryMock();
+		// The startup sweep ran before this mock had a line to give, so the first sweep here is the read.
+		await sweepsLater(1);
+		expect(winProbMock).toHaveBeenCalledTimes(1);
+
+		await sweepsLater(4);
+		expect(winProbMock).toHaveBeenCalledTimes(1);
+	});
+
+	test('a football game the scoreboard gives no line for keeps its summary every sweep', async () => {
+		await loadWith({ ...footballGame, homeWinProbability: undefined });
+		const winProbMock = summaryMock();
+
+		await sweepsLater(3);
+		expect(winProbMock).toHaveBeenCalledTimes(3);
+	});
+
+	test('a league whose scoreboard was not checked keeps its summary every sweep', async () => {
+		await loadWith({
+			...footballGame,
+			id: 'hockey-1',
+			league: 'nhl' as LeagueId,
+			sportType: 'hockey',
+			homeTeam: { ...footballGame.homeTeam, score: 2 },
+			awayTeam: { ...footballGame.awayTeam, score: 1 },
+		});
+		const winProbMock = summaryMock();
+
+		await sweepsLater(3);
+		expect(winProbMock).toHaveBeenCalledTimes(3);
+	});
+
+	test('basketball keeps its summary every sweep, for the lead-change count in the box score', async () => {
+		await loadWith({ ...footballGame, id: 'nba-1', league: 'nba' as LeagueId, sportType: 'basketball' });
+		const winProbMock = summaryMock();
+
+		await sweepsLater(3);
+		expect(winProbMock).toHaveBeenCalledTimes(3);
+	});
+
+	test('a game picked up mid-play is scored on the summary\'s full line, not just the plays since', async () => {
+		await loadWith(footballGame);
+		summaryMock();
+		await sweepsLater(1);
+		jest.advanceTimersByTime(pollMaxEagerMs + 2000);
+		await drain(12);
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string; winProbabilityVariance?: number }[] };
+		expect(state.scores.find(s => s.gameId === 'nfl-1')?.winProbabilityVariance).toBe(5);
+		expect(persistedLine('nfl-1')).toHaveLength(summaryLine.length);
+	});
+
+	test('the summary comes back while the scoreboard has stopped sending the line', async () => {
+		await loadWith(footballGame);
+		const winProbMock = summaryMock();
+		await sweepsLater(1);
+		await sweepsLater(1);
+		expect(winProbMock).toHaveBeenCalledTimes(1);
+
+		fetchMock.mockResolvedValue({ games: [{ ...footballGame, homeWinProbability: undefined }], leagueLogos: {}, shedLeagues: [] });
+		jest.advanceTimersByTime(pollMaxEagerMs + 2000);
+		await drain(12);
+		await sweepsLater(1);
+		expect(winProbMock).toHaveBeenCalledTimes(2);
+	});
+
+	test('a trip through demo mode mid-game starts the line over from the summary', async () => {
+		await loadWith(footballGame);
+		const winProbMock = summaryMock();
+		await sweepsLater(1);
+		expect(winProbMock).toHaveBeenCalledTimes(1);
+
+		await sendMessage({ type: 'SET_DEMO_MODE', enabled: true });
+		await sendMessage({ type: 'SET_DEMO_MODE', enabled: false });
+		await sweepsLater(1);
+		expect(winProbMock).toHaveBeenCalledTimes(2);
+	});
+
+	test('a line stored for a game that is no longer live is not kept', async () => {
+		await loadWith(footballGame, { scoreboardWinProbHistory: { 'old-game': [0.4, 0.5, 0.6], 'nfl-1': [0.5, 0.5] } });
+		summaryMock();
+		await sweepsLater(1);
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		expect(persistedLine('old-game')).toBeUndefined();
+		expect(persistedLine('nfl-1')).toBeDefined();
+	});
+
+	test('the line is written to session storage with the score history', async () => {
+		await loadWith(footballGame);
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		expect(persistedLine('nfl-1')).toEqual([0.55]);
+	});
+
+	test('a restarted worker scores from the line it stored', async () => {
+		const stored = { 'nfl-1': [0.5, 0.52, 0.5, 0.55, 0.5, 0.51] };
+		await loadWith({ ...footballGame, homeWinProbability: 0.52, lastPlayId: 'play-9' }, { scoreboardWinProbHistory: stored });
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string; winProbabilityVariance?: number }[] };
+		expect(state.scores.find(s => s.gameId === 'nfl-1')?.winProbabilityVariance).toBeGreaterThan(0);
+		expect(persistedLine('nfl-1')).toEqual([...stored['nfl-1']!, 0.52]);
+	});
+
+	test('without the stored line the same game has too little history to boost', async () => {
+		await loadWith({ ...footballGame, homeWinProbability: 0.52, lastPlayId: 'play-9' });
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string; winProbabilityVariance?: number }[] };
+		expect(state.scores.find(s => s.gameId === 'nfl-1')?.winProbabilityVariance).toBeUndefined();
 	});
 });
 
@@ -1696,7 +1862,7 @@ const game = (id: string, status: Game['status']): Game => ({
 describe('GET_GUIDE_SLATE', () => {
 	const nbaOnly: Partial<UserPreferences> = { enabledLeagues: ['nba' as LeagueId], enabled: false };
 
-	const guideSlate = () => onMessageHandler({ type: 'GET_GUIDE_SLATE' }) as Promise<{ games: Game[] }>;
+	const guideSlate = () => onMessageHandler({ type: 'GET_GUIDE_SLATE' }) as Promise<{ games: Game[]; refused?: boolean }>;
 
 	const guideDebugState = async () => await onMessageHandler({ type: 'GET_DEBUG_STATE' }) as {
 		totalGameCount: number;
@@ -1795,7 +1961,7 @@ describe('GET_GUIDE_SLATE', () => {
 		expect(state.upcomingGameCount).toBe(0);
 	});
 
-	test('answers with an empty slate rather than throwing when it has nothing and ESPN cannot be reached', async () => {
+	test('answers with an error rather than throwing when it has nothing and ESPN cannot be reached', async () => {
 		await loadBackground({
 			// Both display preferences off, so refreshSlate never ran and there is no held slate to
 			// fall back on — the one remaining case where the guide still has to ask ESPN itself.
@@ -1804,7 +1970,128 @@ describe('GET_GUIDE_SLATE', () => {
 		});
 		fetchMock.mockRejectedValue(new Error('503'));
 
-		await expect(guideSlate()).resolves.toEqual({ games: [], leagueLogos: {}, monoLogos: {}, gameBoosts: {}, endTimes: {} });
+		await expect(guideSlate()).resolves.toMatchObject({ games: [], refused: true });
+	});
+
+	// Every league refused resolves rather than throws, so the empty list looked like a quiet day for
+	// the whole ten minutes the slate is held.
+	test('does not cache a slate every league refused, and asks again once the retry window passes', async () => {
+		await loadBackground({
+			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
+		});
+		fetchMock.mockResolvedValue({ games: [], leagueLogos: {}, shedLeagues: ['nba'] });
+		await expect(guideSlate()).resolves.toMatchObject({ games: [], refused: true });
+
+		jest.setSystemTime(Date.now() + 61_000);
+		fetchMock.mockClear();
+		fetchMock.mockResolvedValue({ games: [game('later', 'pre')], leagueLogos: {}, shedLeagues: [] });
+		const slate = await guideSlate();
+
+		expect(fetchMock).toHaveBeenCalled();
+		expect(slate.games.map(g => g.id)).toEqual(['later']);
+		expect(slate.refused).toBe(false);
+	});
+
+	// Every poll broadcast makes an open Guide ask again, so a refusal asked about each time would
+	// spend a wide fetch per league tick on the quota that caused it.
+	test('costs one wide fetch, not one per open, while a partial refusal is held', async () => {
+		const nflGame = (id: string): Game => ({ ...game(id, 'pre'), league: 'nfl' as LeagueId });
+		await loadBackground({
+			prefs: { enabledLeagues: ['nba' as LeagueId, 'nfl' as LeagueId], enabled: false, showUpcomingGames: false, keepFinalGames: false },
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
+		});
+		fetchMock.mockResolvedValue({ games: [game('nba-new', 'pre')], leagueLogos: {}, shedLeagues: ['nfl'] });
+		fetchMock.mockClear();
+
+		await guideSlate();
+		await guideSlate();
+		await guideSlate();
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+
+		jest.setSystemTime(Date.now() + 61_000);
+		fetchMock.mockResolvedValue({ games: [game('nba-new', 'pre'), nflGame('nfl-back')], leagueLogos: {}, shedLeagues: [] });
+		const slate = await guideSlate();
+		expect(fetchMock).toHaveBeenCalledTimes(2);
+		expect(slate.games.map(g => g.id).toSorted()).toEqual(['nba-new', 'nfl-back']);
+	});
+
+	// The first wide fetch queues behind the token bucket, and nothing is stamped until it lands, so
+	// every poll broadcast in that stretch used to start another one.
+	test('costs one wide fetch for three asks made while the first is still running, force included', async () => {
+		await loadBackground({
+			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
+		});
+		const pending = Promise.withResolvers<unknown>();
+		fetchMock.mockClear();
+		fetchMock.mockImplementation(() => pending.promise);
+
+		const asks = [
+			guideSlate(),
+			guideSlate(),
+			onMessageHandler({ type: 'GET_GUIDE_SLATE', force: true }) as Promise<{ games: Game[] }>,
+		];
+		await drain(16);
+		pending.resolve({ games: [game('later', 'pre')], leagueLogos: {}, shedLeagues: [] });
+		const replies = await Promise.all(asks);
+
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(replies.map(reply => reply.games.map(g => g.id))).toEqual([['later'], ['later'], ['later']]);
+
+		fetchMock.mockClear();
+		jest.setSystemTime(Date.now() + 11 * 60_000);
+		fetchMock.mockResolvedValue({ games: [game('next', 'pre')], leagueLogos: {}, shedLeagues: [] });
+		expect((await guideSlate()).games.map(g => g.id)).toEqual(['next']);
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+	});
+
+	test('keeps saying so, without asking again, while a refusal with nothing held is waited out', async () => {
+		await loadBackground({
+			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
+		});
+		fetchMock.mockResolvedValue({ games: [], leagueLogos: {}, shedLeagues: ['nba'] });
+		fetchMock.mockClear();
+
+		const replies = [await guideSlate(), await guideSlate(), await guideSlate()];
+
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(replies.map(reply => reply.refused)).toEqual([true, true, true]);
+	});
+
+	test('lets Retry skip the wait', async () => {
+		await loadBackground({
+			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
+		});
+		fetchMock.mockResolvedValue({ games: [], leagueLogos: {}, shedLeagues: ['nba'] });
+		await guideSlate();
+
+		fetchMock.mockClear();
+		fetchMock.mockResolvedValue({ games: [game('later', 'pre')], leagueLogos: {}, shedLeagues: [] });
+		const slate = await onMessageHandler({ type: 'GET_GUIDE_SLATE', force: true }) as { games: Game[]; refused?: boolean };
+
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(slate.games.map(g => g.id)).toEqual(['later']);
+		expect(slate.refused).toBe(false);
+	});
+
+	test('keeps the held games of a league that refused while the others are replaced', async () => {
+		const nflGame = (id: string): Game => ({ ...game(id, 'pre'), league: 'nfl' as LeagueId });
+		await loadBackground({
+			prefs: { enabledLeagues: ['nba' as LeagueId, 'nfl' as LeagueId], enabled: false, showUpcomingGames: false, keepFinalGames: false },
+			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
+		});
+		fetchMock.mockResolvedValue({ games: [game('nba-old', 'pre'), nflGame('nfl-old')], leagueLogos: {}, shedLeagues: [] });
+		await guideSlate();
+		jest.setSystemTime(Date.now() + 11 * 60_000);
+
+		fetchMock.mockResolvedValue({ games: [game('nba-new', 'pre')], leagueLogos: {}, shedLeagues: ['nfl'] });
+		const slate = await guideSlate();
+
+		expect(slate.games.map(g => g.id).toSorted()).toEqual(['nba-new', 'nfl-old']);
+		expect(slate.refused).toBe(false);
 	});
 });
 
@@ -2084,6 +2371,7 @@ describe('a scoreboard ESPN refused', () => {
 	const state = async () => await sendMessage({ type: 'GET_STATE' }) as {
 		games: Game[];
 		slateShedLeagues: string[];
+		leagueLastGoodAt: Record<string, number>;
 	};
 
 	const pollOnce = async () => {
@@ -2125,6 +2413,22 @@ describe('a scoreboard ESPN refused', () => {
 		await pollOnce();
 
 		expect((await state()).slateShedLeagues).toEqual([]);
+	});
+
+	test('remembers when the league last answered, and a refusal does not move it', async () => {
+		await loadWithLiveGame();
+		await pollOnce();
+		const answeredAt = (await state()).leagueLastGoodAt.nba;
+		expect(answeredAt).toBeGreaterThan(0);
+
+		fetchMock.mockResolvedValue({ games: [], leagueLogos: {}, shedLeagues: ['nba'] });
+		await pollOnce();
+		await pollOnce();
+		expect((await state()).leagueLastGoodAt.nba).toBe(answeredAt);
+
+		fetchMock.mockResolvedValue({ games: [liveGame], leagueLogos: {}, shedLeagues: [] });
+		await pollOnce();
+		expect((await state()).leagueLastGoodAt.nba).toBeGreaterThan(answeredAt);
 	});
 
 	// An empty answer ESPN actually gave is a quiet night and should read as one.
@@ -2324,6 +2628,126 @@ describe('what the slate keeps for a league that did not answer', () => {
 		await rerunSlate();
 
 		expect(await stateGames()).toContain('mlb-later');
+	});
+
+	// Held entries belong to leagues that refused, not to every league that did not answer: a league
+	// switched off is not asked, and used to keep its kickoffs in the popup until the worker restarted.
+	test('drops the kickoffs of a league that was switched off', async () => {
+		await loadBackground({
+			prefs: bothLeagues,
+			fetchReturnValue: {
+				games: [slateGame('mlb-later', 'mlb', 'pre'), slateGame('nba-later', 'nba', 'pre')],
+				leagueLogos: {},
+				shedLeagues: [],
+			},
+		});
+		expect(await stateGames()).toContain('mlb-later');
+
+		fetchMock.mockResolvedValue({ games: [slateGame('nba-later', 'nba', 'pre')], leagueLogos: {}, shedLeagues: [] });
+		await sendMessage({
+			type: 'UPDATE_PREFS',
+			prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...bothLeagues, enabledLeagues: ['nba' as LeagueId] }),
+		});
+
+		expect(await stateGames()).not.toContain('mlb-later');
+	});
+});
+
+const summary = (games: Game[]) => games.map(g => `${g.id}:${g.status}`).toSorted();
+
+/* The popup's Refresh, closing Settings and finishing onboarding all ask for a fresh state, which
+   polls every league at once. A league refused in that poll answered with nothing, not with no games:
+   its live cards have to stay, and the slate's older copy of a game that has since gone live must
+   not come back beside them as an upcoming one. */
+describe('a fan-out poll with a league refused', () => {
+	const bothLeagues: Partial<UserPreferences> = {
+		enabledLeagues: ['nba' as LeagueId, 'mlb' as LeagueId],
+		enabled: false,
+		showUpcomingGames: true,
+	};
+
+	interface LeagueAnswer { poll: Game[]; slate: Game[]; shed: boolean }
+	let world: Record<string, LeagueAnswer>;
+
+	const serveWorld = () => fetchMock.mockImplementation(async (leagues: LeagueId[], options?: { includeUpcoming?: boolean }) => ({
+		games: leagues.flatMap(id => world[id]!.shed ? [] : (options?.includeUpcoming ? world[id]!.slate : world[id]!.poll)),
+		leagueLogos: {},
+		shedLeagues: leagues.filter(id => world[id]!.shed),
+	}));
+
+	const refresh = async () => await sendMessage({ type: 'GET_STATE', forceRefresh: true }) as {
+		games: Game[];
+		slateShedLeagues: string[];
+		leagueLastGoodAt: Record<string, number>;
+	};
+
+	beforeEach(async () => {
+		world = {
+			nba: {
+				poll: [slateGame('early', 'nba', 'in')],
+				slate: [slateGame('early', 'nba', 'in'), slateGame('later', 'nba', 'pre')],
+				shed: false,
+			},
+			mlb: { poll: [slateGame('mlbg', 'mlb', 'in')], slate: [slateGame('mlbg', 'mlb', 'in')], shed: false },
+			nhl: { poll: [], slate: [], shed: false },
+		};
+		await loadBackground({ prefs: bothLeagues, initialSystemTime: 1_000_000 });
+		serveWorld();
+		// A preference move is what re-runs refreshSlate, which is where the upcoming list comes from.
+		await sendMessage({
+			type: 'UPDATE_PREFS',
+			prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...bothLeagues, upcomingGamesDays: 9 }),
+		});
+		await refresh();
+	});
+
+	test('keeps the live cards of the refused league, including one that went live since the slate was fetched', async () => {
+		world.nba.poll = [slateGame('early', 'nba', 'in'), slateGame('later', 'nba', 'in')];
+		expect(summary((await refresh()).games)).toEqual(['early:in', 'later:in', 'mlbg:in']);
+
+		world.nba.shed = true;
+		const after = await refresh();
+
+		expect(after.slateShedLeagues).toEqual(['nba']);
+		expect(summary(after.games)).toEqual(['early:in', 'later:in', 'mlbg:in']);
+	});
+
+	test('still lists a refused league\'s kickoffs once, as upcoming', async () => {
+		world.nba.shed = true;
+
+		expect(summary((await refresh()).games)).toEqual(['early:in', 'later:pre', 'mlbg:in']);
+	});
+
+	// The preference moves that rebuild the list from the slate: a slate setting, and the league set.
+	const changePrefs = (over: Partial<UserPreferences>) => sendMessage({
+		type: 'UPDATE_PREFS',
+		prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...bothLeagues, ...over }),
+	});
+
+	const currentGames = async () => (await sendMessage({ type: 'GET_STATE' }) as { games: Game[] }).games;
+
+	test.each([
+		['a slate setting changes', { upcomingGamesDays: 5 }],
+		['a league is added', { enabledLeagues: ['nba', 'mlb', 'nhl'] as LeagueId[] }],
+	])('shows a game that went live once, not also as upcoming, when %s', async (_label, over) => {
+		world.nba.poll = [slateGame('early', 'nba', 'in'), slateGame('later', 'nba', 'in')];
+		await refresh();
+		world.nba.shed = true;
+		await refresh();
+
+		await changePrefs(over);
+
+		expect(summary(await currentGames())).toEqual(['early:in', 'later:in', 'mlbg:in']);
+	});
+
+	test('stamps the leagues that answered and leaves the refused one at its last good poll', async () => {
+		const first = (await refresh()).leagueLastGoodAt;
+		expect(first).toEqual({ nba: 1_000_000, mlb: 1_000_000 });
+
+		jest.setSystemTime(1_000_000 + (5 * 60_000));
+		world.nba.shed = true;
+
+		expect((await refresh()).leagueLastGoodAt).toEqual({ nba: 1_000_000, mlb: 1_000_000 + (5 * 60_000) });
 	});
 });
 

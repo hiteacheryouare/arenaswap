@@ -228,6 +228,7 @@
 @include m.reduced-motion {
 	.popup-view-shell,
 	.game-card-clickable,
+	.game-card-lift,
 	.popup-settings-button .bi-gear-fill::before {
 		@include m.motion-still;
 	}

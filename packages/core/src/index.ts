@@ -22,6 +22,8 @@ export type { LeagueOffseason } from './leagueSchedule';
 export { gradePostseason, postseasonBoostShare, reduceEventName } from './postseasonRound';
 export type { PostseasonGrade, PostseasonRound } from './postseasonRound';
 export { createPollModeTracker } from './pollModeTracker';
+export { createWinProbabilityTracker, summaryStillNeeded } from './scoreboardWinProbability';
+export type { SummaryNeeds, WinProbabilityTracker } from './scoreboardWinProbability';
 export { computeRetryDelayMs } from './pollBackoff';
 export { fetchConferenceDirectory } from './collegeConferences';
 export type { PollMode, PollModeTracker } from './pollModeTracker';

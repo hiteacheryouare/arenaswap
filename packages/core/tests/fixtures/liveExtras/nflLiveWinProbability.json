@@ -1,0 +1,549 @@
+{
+	"_source": "scoreboard events[0], football/nfl, recordings/2026-10-04 (IND vs WSH, 1st quarter)",
+	"event": {
+		"id": "401872965",
+		"uid": "s:20~l:28~e:401872965",
+		"date": "2026-10-04T13:30Z",
+		"name": "Indianapolis Colts at Washington Commanders",
+		"shortName": "IND VS WSH",
+		"season": {
+			"year": 2026,
+			"type": 2,
+			"slug": "regular-season"
+		},
+		"week": {
+			"number": 4
+		},
+		"competitions": [
+			{
+				"id": "401872965",
+				"uid": "s:20~l:28~e:401872965~c:401872965",
+				"date": "2026-10-04T13:30Z",
+				"attendance": 0,
+				"type": {
+					"id": "1",
+					"abbreviation": "STD"
+				},
+				"timeValid": true,
+				"neutralSite": true,
+				"conferenceCompetition": false,
+				"playByPlayAvailable": true,
+				"recent": true,
+				"venue": {
+					"id": "5534",
+					"fullName": "Tottenham Hotspur Stadium",
+					"address": {
+						"city": "London",
+						"country": "England"
+					},
+					"indoor": false
+				},
+				"competitors": [
+					{
+						"id": "28",
+						"uid": "s:20~l:28~t:28",
+						"type": "team",
+						"order": 0,
+						"homeAway": "home",
+						"team": {
+							"id": "28",
+							"uid": "s:20~l:28~t:28",
+							"location": "Washington",
+							"name": "Commanders",
+							"abbreviation": "WSH",
+							"displayName": "Washington Commanders",
+							"shortDisplayName": "Commanders",
+							"color": "5a1414",
+							"alternateColor": "ffb612",
+							"isActive": true,
+							"venue": {
+								"id": "3719"
+							},
+							"links": [
+								{
+									"rel": [
+										"clubhouse",
+										"desktop",
+										"team"
+									],
+									"href": "https://www.espn.com/nfl/team/_/name/wsh/washington-commanders",
+									"text": "Clubhouse",
+									"isExternal": false,
+									"isPremium": false
+								},
+								{
+									"rel": [
+										"roster",
+										"desktop",
+										"team"
+									],
+									"href": "https://www.espn.com/nfl/team/roster/_/name/wsh/washington-commanders",
+									"text": "Roster",
+									"isExternal": false,
+									"isPremium": false
+								},
+								{
+									"rel": [
+										"roster",
+										"sportscenter",
+										"app",
+										"team"
+									],
+									"href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:28&section=roster",
+									"text": "Roster",
+									"isExternal": false,
+									"isPremium": false
+								},
+								{
+									"rel": [
+										"stats",
+										"desktop",
+										"team"
+									],
+									"href": "https://www.espn.com/nfl/team/stats/_/name/wsh/washington-commanders",
+									"text": "Statistics",
+									"isExternal": false,
+									"isPremium": false
+								},
+								{
+									"rel": [
+										"stats",
+										"sportscenter",
+										"app",
+										"team"
+									],
+									"href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:28&section=stats",
+									"text": "Statistics",
+									"isExternal": false,
+									"isPremium": false
+								},
+								{
+									"rel": [
+										"schedule",
+										"desktop",
+										"team"
+									],
+									"href": "https://www.espn.com/nfl/team/schedule/_/name/wsh",
+									"text": "Schedule",
+									"isExternal": false,
+									"isPremium": false
+								},
+								{
+									"rel": [
+										"schedule",
+										"sportscenter",
+										"app",
+										"team"
+									],
+									"href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:28&section=scores",
+									"text": "Schedule",
+									"isExternal": false,
+									"isPremium": false
+								}
+							],
+							"logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/wsh.png"
+						},
+						"score": "0",
+						"linescores": [
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 1
+							}
+						],
+						"statistics": [],
+						"curatedRank": {
+							"current": 99
+						},
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "Any",
+								"type": "total",
+								"summary": "1-2"
+							},
+							{
+								"name": "Home",
+								"type": "home",
+								"summary": "1-0"
+							},
+							{
+								"name": "Road",
+								"type": "road",
+								"summary": "0-2"
+							}
+						]
+					},
+					{
+						"id": "11",
+						"uid": "s:20~l:28~t:11",
+						"type": "team",
+						"order": 1,
+						"homeAway": "away",
+						"team": {
+							"id": "11",
+							"uid": "s:20~l:28~t:11",
+							"location": "Indianapolis",
+							"name": "Colts",
+							"abbreviation": "IND",
+							"displayName": "Indianapolis Colts",
+							"shortDisplayName": "Colts",
+							"color": "003b75",
+							"alternateColor": "ffffff",
+							"isActive": true,
+							"venue": {
+								"id": "3812"
+							},
+							"links": [
+								{
+									"rel": [
+										"clubhouse",
+										"desktop",
+										"team"
+									],
+									"href": "https://www.espn.com/nfl/team/_/name/ind/indianapolis-colts",
+									"text": "Clubhouse",
+									"isExternal": false,
+									"isPremium": false
+								},
+								{
+									"rel": [
+										"roster",
+										"desktop",
+										"team"
+									],
+									"href": "https://www.espn.com/nfl/team/roster/_/name/ind/indianapolis-colts",
+									"text": "Roster",
+									"isExternal": false,
+									"isPremium": false
+								},
+								{
+									"rel": [
+										"roster",
+										"sportscenter",
+										"app",
+										"team"
+									],
+									"href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:11&section=roster",
+									"text": "Roster",
+									"isExternal": false,
+									"isPremium": false
+								},
+								{
+									"rel": [
+										"stats",
+										"desktop",
+										"team"
+									],
+									"href": "https://www.espn.com/nfl/team/stats/_/name/ind/indianapolis-colts",
+									"text": "Statistics",
+									"isExternal": false,
+									"isPremium": false
+								},
+								{
+									"rel": [
+										"stats",
+										"sportscenter",
+										"app",
+										"team"
+									],
+									"href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:11&section=stats",
+									"text": "Statistics",
+									"isExternal": false,
+									"isPremium": false
+								},
+								{
+									"rel": [
+										"schedule",
+										"desktop",
+										"team"
+									],
+									"href": "https://www.espn.com/nfl/team/schedule/_/name/ind",
+									"text": "Schedule",
+									"isExternal": false,
+									"isPremium": false
+								},
+								{
+									"rel": [
+										"schedule",
+										"sportscenter",
+										"app",
+										"team"
+									],
+									"href": "sportscenter://x-callback-url/showClubhouse?uid=s:20~l:28~t:11&section=scores",
+									"text": "Schedule",
+									"isExternal": false,
+									"isPremium": false
+								}
+							],
+							"logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ind.png"
+						},
+						"score": "0",
+						"linescores": [
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 1
+							}
+						],
+						"statistics": [],
+						"curatedRank": {
+							"current": 99
+						},
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "Any",
+								"type": "total",
+								"summary": "1-2"
+							},
+							{
+								"name": "Home",
+								"type": "home",
+								"summary": "1-1"
+							},
+							{
+								"name": "Road",
+								"type": "road",
+								"summary": "0-1"
+							}
+						]
+					}
+				],
+				"notes": [
+					{
+						"type": "event",
+						"headline": "NFL London Games"
+					}
+				],
+				"situation": {
+					"lastPlay": {
+						"id": "40187296562",
+						"type": {
+							"id": "3",
+							"text": "Pass Incompletion"
+						},
+						"text": "(Shotgun) D.Jones pass incomplete short left to J.Taylor (J.Kinlaw).",
+						"scoreValue": 0,
+						"team": {
+							"id": "11"
+						},
+						"probability": {
+							"tiePercentage": 0,
+							"homeWinPercentage": 0.4271,
+							"awayWinPercentage": 0.5729,
+							"secondsLeft": 0
+						},
+						"statYardage": 0,
+						"drive": {
+							"description": "1 play, 0 yards, 0:06",
+							"start": {
+								"yardLine": 68,
+								"text": "IND 32"
+							},
+							"timeElapsed": {
+								"displayValue": "0:06"
+							}
+						},
+						"start": {
+							"yardLine": 68,
+							"team": {
+								"id": "11"
+							}
+						},
+						"end": {
+							"yardLine": 68,
+							"team": {
+								"id": "11"
+							}
+						},
+						"athletesInvolved": [
+							{
+								"id": "4242335",
+								"fullName": "Jonathan Taylor",
+								"displayName": "Jonathan Taylor",
+								"shortName": "J. Taylor",
+								"links": [
+									{
+										"rel": [
+											"playercard",
+											"desktop",
+											"athlete"
+										],
+										"href": "https://www.espn.com/nfl/player/_/id/4242335/jonathan-taylor"
+									}
+								],
+								"headshot": "https://a.espncdn.com/i/headshots/nfl/players/full/4242335.png",
+								"jersey": "28",
+								"position": "RB",
+								"team": {
+									"id": "11"
+								}
+							}
+						]
+					},
+					"down": 2,
+					"yardLine": 68,
+					"distance": 10,
+					"downDistanceText": "2nd & 10 at IND 32",
+					"shortDownDistanceText": "2nd & 10",
+					"possessionText": "IND 32",
+					"isRedZone": false,
+					"homeTimeouts": 3,
+					"awayTimeouts": 3,
+					"possession": "11"
+				},
+				"status": {
+					"clock": 890,
+					"displayClock": "14:50",
+					"period": 1,
+					"type": {
+						"id": "2",
+						"name": "STATUS_IN_PROGRESS",
+						"state": "in",
+						"completed": false,
+						"description": "In Progress",
+						"detail": "14:50 - 1st Quarter",
+						"shortDetail": "14:50 - 1st"
+					},
+					"isTBDFlex": false
+				},
+				"broadcasts": [
+					{
+						"market": "national",
+						"names": [
+							"NFL Net"
+						]
+					}
+				],
+				"leaders": [
+					{
+						"name": "passingYards",
+						"displayName": "Passing Leader",
+						"shortDisplayName": "PASS",
+						"abbreviation": "PYDS",
+						"leaders": [
+							{
+								"displayValue": "1, 0 YDS",
+								"value": 0,
+								"athlete": {
+									"id": "3917792",
+									"fullName": "Daniel Jones",
+									"displayName": "Daniel Jones",
+									"shortName": "D. Jones",
+									"links": [
+										{
+											"rel": [
+												"playercard",
+												"desktop",
+												"athlete"
+											],
+											"href": "https://www.espn.com/nfl/player/_/id/3917792/daniel-jones"
+										}
+									],
+									"headshot": "https://a.espncdn.com/i/headshots/nfl/players/full/3917792.png",
+									"jersey": "17",
+									"position": {
+										"abbreviation": "QB"
+									},
+									"team": {
+										"id": "11"
+									},
+									"active": true
+								},
+								"team": {
+									"id": "11"
+								}
+							}
+						]
+					}
+				],
+				"format": {
+					"regulation": {
+						"periods": 4
+					},
+					"overtime": {
+						"periods": 1
+					}
+				},
+				"startDate": "2026-10-04T13:30Z",
+				"broadcast": "NFL Net",
+				"geoBroadcasts": [
+					{
+						"type": {
+							"id": "1",
+							"shortName": "TV"
+						},
+						"market": {
+							"id": "1",
+							"type": "National"
+						},
+						"media": {
+							"shortName": "NFL Net",
+							"logo": "https://a.espncdn.com/guid/8281947e-bd6c-3a8a-9b1d-6fc957d1709a/logos/default.png",
+							"darkLogo": "https://a.espncdn.com/guid/8281947e-bd6c-3a8a-9b1d-6fc957d1709a/logos/default-dark.png"
+						},
+						"lang": "en",
+						"region": "us"
+					}
+				],
+				"highlights": []
+			}
+		],
+		"links": [
+			{
+				"language": "en-US",
+				"rel": [
+					"live",
+					"desktop",
+					"event"
+				],
+				"href": "https://www.espn.com/nfl/game?gameId=401872965",
+				"text": "Gamecast",
+				"shortText": "Gamecast",
+				"isExternal": false,
+				"isPremium": false
+			},
+			{
+				"language": "en-US",
+				"rel": [
+					"boxscore",
+					"desktop",
+					"event"
+				],
+				"href": "https://www.espn.com/nfl/boxscore/_/gameId/401872965",
+				"text": "Box Score",
+				"shortText": "Box Score",
+				"isExternal": false,
+				"isPremium": false
+			},
+			{
+				"language": "en-US",
+				"rel": [
+					"pbp",
+					"desktop",
+					"event"
+				],
+				"href": "https://www.espn.com/nfl/playbyplay/_/gameId/401872965",
+				"text": "Play-by-Play",
+				"shortText": "Play-by-Play",
+				"isExternal": false,
+				"isPremium": false
+			}
+		],
+		"status": {
+			"clock": 890,
+			"displayClock": "14:50",
+			"period": 1,
+			"type": {
+				"id": "2",
+				"name": "STATUS_IN_PROGRESS",
+				"state": "in",
+				"completed": false,
+				"description": "In Progress",
+				"detail": "14:50 - 1st Quarter",
+				"shortDetail": "14:50 - 1st"
+			}
+		}
+	}
+}

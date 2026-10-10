@@ -5,6 +5,7 @@ import {
 	isGameArray,
 	isLeagueLogoMap,
 	normalizeGameBoosts,
+	normalizeLeagueLastGoodAt,
 	normalizePowerScoreHistory,
 	normalizeScoreHistory,
 	normalizeScores,
@@ -21,6 +22,7 @@ const defaultState = (): BackgroundState => ({
 	onStandbyStream: false,
 	standbyStreamTabId: null,
 	slateShedLeagues: [],
+	leagueLastGoodAt: {},
 });
 
 // zod/mini has no method chain, so a defaulted-then-normalized field is a pipe rather than
@@ -38,4 +40,5 @@ export const BackgroundStateSchema = z.catch(z.object({
 	onStandbyStream:    normalized(false, v => v === true),
 	standbyStreamTabId: normalized(null, v => typeof v === 'number' ? v : null),
 	slateShedLeagues:   normalized([], v => Array.isArray(v) ? v.filter((id): id is LeagueId => typeof id === 'string') : []),
+	leagueLastGoodAt:   normalized({}, normalizeLeagueLastGoodAt),
 }), defaultState);
