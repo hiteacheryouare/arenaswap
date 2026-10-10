@@ -24,7 +24,7 @@ const homeColor = '#3E9BD1';
 // exercise the initials fallback.
 const portrait = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
-const longName = 'Christian Encarnacion-Strand Jr.';
+const longName = 'Christian Encarnacion-Strand-Villanueva Jr.';
 
 const liveGame: Game = {
 	id: 'mlb-due-up',
@@ -33,15 +33,12 @@ const liveGame: Game = {
 	status: 'in',
 	period: 7,
 	clockSeconds: 0,
+	// "Mid 7th": the visitors are out, so the home side bats next and nobody is at the plate.
 	topOfInning: false,
 	homeTeam: { id: 'h', name: 'San Diego Padres', abbreviation: 'SD', score: 3, color: homeColor, alternateColor: '#FFC425' },
 	awayTeam: { id: 'a', name: 'Chicago Cubs', abbreviation: 'CHC', score: 2, color: awayColor, alternateColor: '#0E3386' },
-	baseRunners: { first: false, second: true, third: false },
-	bso: { balls: 1, strikes: 1, outs: 1 },
-	atBat: {
-		pitcher: { name: 'Will Dion', jersey: '76', position: 'RP', summary: '1.1 IP, 0 ER, H, BB' },
-		batter: { name: 'Nathan Church', jersey: '27', position: 'CF', summary: '0-2, K' },
-	},
+	baseRunners: { first: false, second: false, third: false },
+	bso: { balls: 0, strikes: 0, outs: 0 },
 	dueUp: [
 		{ name: 'Fernando Tatis Jr.', position: 'RF', headshot: portrait, summary: '0-1, BB' },
 		{ name: longName, position: 'DH', summary: '2-3, 2B, HR, RBI, BB' },
@@ -98,10 +95,10 @@ describe('the due-up block', () => {
 		mountPanel(liveGame);
 		cy.get('.gd-play-heading').should('have.text', en.detail.dueUpHeading);
 		cy.get('.gd-dueup-row').should('have.length', 3);
-		cy.get('.gd-dueup-name').then($names => {
+		cy.get('.gd-dueup-row .fantasy-player-name').then($names => {
 			expect([...$names].map(name => name.textContent)).to.deep.equal(['Fernando Tatis Jr.', longName, 'Xander Bogaerts']);
 		});
-		cy.get('.gd-dueup-position').then($positions => {
+		cy.get('.gd-dueup-row .fantasy-player-position').then($positions => {
 			expect([...$positions].map(position => position.textContent)).to.deep.equal(['RF', 'DH', '3B']);
 		});
 		cy.get('.gd-dueup-row').eq(0).find('.gd-dueup-line').should('have.text', '0-1, BB');
@@ -117,8 +114,8 @@ describe('the due-up block', () => {
 		mountPanel(liveGame);
 		cy.get('.gd-dueup-row').eq(1).then(([row]: JQuery<HTMLElement>) => {
 			const rowBox = row.getBoundingClientRect();
-			const name = row.querySelector('.gd-dueup-name') as HTMLElement;
-			const position = row.querySelector('.gd-dueup-position') as HTMLElement;
+			const name = row.querySelector('.fantasy-player-name') as HTMLElement;
+			const position = row.querySelector('.fantasy-player-position') as HTMLElement;
 			const line = row.querySelector('.gd-dueup-line') as HTMLElement;
 			expect(name.scrollWidth, 'the name is cut with an ellipsis').to.be.greaterThan(name.clientWidth);
 			expect(getComputedStyle(name).textOverflow).to.equal('ellipsis');
@@ -141,11 +138,31 @@ describe('the due-up block', () => {
 		cy.get('.gd-dueup-row').eq(2).find('.crest-fallback').should('contain.text', 'XB');
 	});
 
-	it('paints the disc in the colour of the club at bat', () => {
-		mountPanel(liveGame);
-		cy.get('.gd-dueup-shot').first().should('have.css', 'background-color', 'rgb(62, 155, 209)');
-		mountPanel({ ...liveGame, topOfInning: true });
-		cy.get('.gd-dueup-shot').first().should('have.css', 'background-color', 'rgb(189, 48, 57)');
+	// Both halves of the between-innings gap carry the side that bats next, and they spell it
+	// differently: "Mid 7th" is `topOfInning: false`, "End 7th" is only `inningEnded`.
+	describe('the disc colour', () => {
+		const home = 'rgb(62, 155, 209)';
+		const away = 'rgb(189, 48, 57)';
+
+		it('is the home club after the middle of an inning', () => {
+			mountPanel({ ...liveGame, topOfInning: false, inningEnded: undefined });
+			cy.get('.gd-dueup-shot').first().should('have.css', 'background-color', home);
+		});
+
+		it('is the away club after the end of an inning', () => {
+			mountPanel({ ...liveGame, topOfInning: undefined, inningEnded: true });
+			cy.get('.gd-dueup-shot').first().should('have.css', 'background-color', away);
+		});
+
+		it('is the away club at the start of a top half', () => {
+			mountPanel({ ...liveGame, topOfInning: true, inningEnded: undefined });
+			cy.get('.gd-dueup-shot').first().should('have.css', 'background-color', away);
+		});
+
+		it('is neutral grey when no half-inning is known', () => {
+			mountPanel({ ...liveGame, topOfInning: undefined, inningEnded: undefined });
+			cy.get('.gd-dueup-shot').first().should('have.css', 'background-color', 'rgb(229, 231, 235)');
+		});
 	});
 
 	it('keeps every locale heading on one line', () => {
@@ -173,20 +190,21 @@ describe('the due-up block', () => {
 		cy.get('.gd-play-panel').should('not.exist');
 	});
 
-	it('sits under the hero on the detail screen and is gone with the data', () => {
+	// The real between-innings state: the pitcher and batter pair has gone, the list has arrived.
+	it('takes the at-bat panel\'s place under the hero on the detail screen', () => {
 		mountDetail(liveGame);
-		cy.get('.gd-atbat-panel').should('exist');
+		cy.get('.gd-atbat-panel').should('not.exist');
 		cy.get('.gd-dueup-row').should('have.length', 3);
-		cy.get('.gd-atbat-panel').then(([atBat]: JQuery<HTMLElement>) => {
+		cy.get('.gd-hero-live').then(([hero]: JQuery<HTMLElement>) => {
 			cy.get('.gd-dueup-row').first().should(([row]: JQuery<HTMLElement>) => {
-				expect(row.getBoundingClientRect().top).to.be.greaterThan(atBat.getBoundingClientRect().bottom);
+				expect(row.getBoundingClientRect().top).to.be.greaterThan(hero.getBoundingClientRect().bottom);
 			});
 		});
 	});
 
 	it('is not on the detail screen without it', () => {
 		mountDetail({ ...liveGame, dueUp: undefined });
-		cy.get('.gd-atbat-panel').should('exist');
+		cy.get('.gd-hero-live').should('exist');
 		cy.get('.gd-dueup-row').should('not.exist');
 	});
 });

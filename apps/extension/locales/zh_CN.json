@@ -399,7 +399,7 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "投球",
 		"atBatLabel": "打席",
-		"dueUpHeading": "后续打者",
+		"dueUpHeading": "后续击球手",
 		"bonus": "罚球",
 		"foulsBonus": "{team}进入罚球",
 		"foulsDoubleBonus": "{team}进入双倍罚球",

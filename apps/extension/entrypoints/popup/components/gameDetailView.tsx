@@ -295,7 +295,7 @@ const gameDetailView = ({
 			</>
 		) : (
 			<>
-				{/* Straight under the hero, whose at-bat panel says who is up: this is who follows. */}
+				{/* Between half-innings, when the hero has no at-bat panel: who steps in next. */}
 				<DueUpPanel game={game} awayColor={awayLineColor} homeColor={homeLineColor} />
 				{/* Next, and deliberately not next to the info panel: what just happened is
 				    the most time-sensitive thing on this screen, and putting it beside the

@@ -161,11 +161,6 @@ export class MockGameSimulator {
 					pitcher: { name: 'Edwin Diaz', jersey: '39', position: 'RP', summary: '0.2 IP, 0 ER, H, BB' },
 					batter: { name: 'Bryce Harper', jersey: '3', position: 'RF', summary: '2-3, 2B, RBI' },
 				},
-				dueUp: [
-					{ name: 'Kyle Schwarber', jersey: '12', position: 'DH', summary: '1-3, HR, BB' },
-					{ name: 'Alec Bohm', jersey: '28', position: '3B', summary: '0-3, K' },
-					{ name: 'Brandon Marsh', jersey: '16', position: 'LF', summary: '1-2, BB' },
-				],
 				lastPlay: 'Pitch 2 : Ball 1',
 				broadcasts: ['MLB.TV'],
 				weather: { temperatureF: 61, conditionLabel: 'Clear' },
@@ -315,9 +310,17 @@ export class MockGameSimulator {
 				venueName: 'Daikin Park',
 				venueLocation: 'Houston, Texas',
 				period: 10, clockSeconds: 0, status: 'in',
-				topOfInning: true,
-				baseRunners: { first: false, second: true, third: false },
-				bso: { balls: 0, strikes: 1, outs: 0 },
+				// "Mid 10th": the side is retired and nobody is at the plate, which is the only state
+				// our sources name the next hitters in. So this game has a due-up list and no at-bat
+				// pair, where the live-at-bat demo above has the pair and no list.
+				topOfInning: false,
+				baseRunners: { first: false, second: false, third: false },
+				bso: { balls: 0, strikes: 0, outs: 0 },
+				dueUp: [
+					{ name: 'Yordan Alvarez', jersey: '44', position: 'DH', summary: '1-4, HR' },
+					{ name: 'Jose Altuve', jersey: '27', position: '2B', summary: '2-4, 2B' },
+					{ name: 'Jeremy Pena', jersey: '3', position: 'SS', summary: '0-3, K' },
+				],
 				broadcasts: ['Fox'],
 			},
 			{

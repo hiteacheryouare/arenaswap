@@ -368,6 +368,16 @@ describe('MockGameSimulator', () => {
 			expect(updated.bso?.strikes).toBeLessThanOrEqual(2);
 		});
 
+		// Our sources only name the next hitters while nobody is at the plate, so a demo game
+		// carrying both would show a screen the live feed never produces.
+		test('no demo game carries the at-bat pair and a due-up list together', () => {
+			const games = new MockGameSimulator().tick();
+			expect(games.filter(g => g.atBat && g.dueUp)).toEqual([]);
+			expect(getGameById(games, 'mock-4').atBat).toBeDefined();
+			expect(getGameById(games, 'mock-16').dueUp).toHaveLength(3);
+			expect(getGameById(games, 'mock-16').atBat).toBeUndefined();
+		});
+
 		test('post-game reset sets bso back to all zeros', () => {
 			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.99);
 			const simulator = new MockGameSimulator();

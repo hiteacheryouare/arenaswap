@@ -1943,37 +1943,33 @@
 	margin-top: 0.34rem;
 }
 
-// The due-up block borrows the section skin above and only adds its rows. The portrait is the same
-// disc the pre-game starters use, a size down, so a long name gives up width before the face does.
+// The due-up block borrows the section skin above and the Your Players text (`fantasy-player-*`),
+// and only adds its own row: a portrait the size of that list's, then the name, then the line
+// pushed to the right edge. The portrait is the pre-game starters' disc, so a long name gives up
+// width before the face does.
 .gd-dueup-row {
 	padding: 0.18rem 0;
 
 	& + & { border-top: 1px solid var(--as-secondary-bg); }
 }
 
+// The position is a sibling of the name here, not nested in it as in Your Players, so it needs the
+// name's size handed down or it falls back to the body's.
+.gd-dueup-who {
+	font-size:   0.62rem;
+	line-height: 1.35;
+}
+
 .gd-dueup-shot {
-	width:  26px;
-	height: 26px;
+	width:  20px;
+	height: 20px;
 }
 
-.gd-dueup-name {
-	font-size:   0.66rem;
-	font-weight: 600;
-	color:       var(--as-body-color);
-}
-
-.gd-dueup-position {
-	font-size: 0.56rem;
-	color:     var(--as-secondary-color);
-}
-
-// Right-aligned and quiet: "0-1, BB" is a footnote to the name, not a second headline. Tabular so
-// the lines down the right edge keep their digits in step.
+// Quiet and on one line: "0-1, BB" is a footnote to the name. The cap stops a long line squeezing
+// the name to nothing, and the tabular figures keep the digits down the edge in step.
 .gd-dueup-line {
-	flex-shrink:          1;
 	max-width:            45%;
-	font-size:            0.6rem;
-	color:                var(--as-secondary-color);
+	white-space:          nowrap;
 	text-align:           right;
 	font-variant-numeric: tabular-nums;
 }
