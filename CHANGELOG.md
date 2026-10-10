@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Football reads its win probability off the scoreboard — 2026-10-09
+
+NFL and college football games no longer get a summary request every minute: the background reads the home side's win probability off the scoreboard, one reading per play, and keeps it in session storage across worker restarts. A game picked up mid-play still starts from the summary's full line, and the summary stays on for basketball (its box score feeds the lead-change count), fantasy rosters, leagues whose scoreboard we haven't checked, and any game whose scoreboard goes quiet.
+
 ## A league that keeps getting refused backs off, and a hung request gives up — 2026-10-09
 
 A failed league poll now waits twice as long after each failure, starting at 15 seconds and stopping at the interval that league was already on, so a refusal no longer speeds up a sleeping league; the first good answer resets it. Every scoreboard, standings, team and situation request now gives up after 10 seconds, so one that never answers can't hold a league's slate hostage; win probability keeps the signal its caller hands it.

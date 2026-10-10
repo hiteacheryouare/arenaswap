@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, computeRetryDelayMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, createWinProbabilityTracker, summaryStillNeeded, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, computeRetryDelayMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
 import type { ClockStallEntry } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
@@ -258,6 +258,8 @@ export default defineBackground(() => {
 	// refreshes on its own slow cadence. Every PowerScore reader pulls from here, so the card,
 	// the detail screen and the switcher all agree on the same number.
 	const winProbHistory = new Map<string, number[]>();
+	// Leagues whose scoreboard carries the line build it from our own polls instead, and persist it.
+	const winProbTracker = createWinProbabilityTracker();
 	// The closing line, box score, hockey situation and standings races the boosts read.
 	const liveExtras = createLiveExtras();
 	const summaryFetchedAt = new Map<string, number>();
@@ -276,7 +278,7 @@ export default defineBackground(() => {
 	// idle — an in-memory set would come back empty and strand every muted tab silent with no
 	// record that we were the cause.
 	const mutedTabIds = new Set<number>();
-	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {}, mutedTabIds: [] };
+	const historyStorageDefaults = { scoreHistory: {}, powerScoreHistory: {}, gameBoosts: {}, mutedTabIds: [], scoreboardWinProbHistory: {} };
 
 	const persistMutedTabIds = async () => {
 		try {
@@ -382,6 +384,7 @@ export default defineBackground(() => {
 		void browser.storage.session.set({
 			scoreHistory: serializeScoreHistory(),
 			powerScoreHistory: serializePowerScoreHistory(),
+			scoreboardWinProbHistory: winProbTracker.serialize(),
 		}).catch(err => {
 			logWarn('Failed to persist score history to session storage.', err);
 		});
@@ -808,12 +811,13 @@ export default defineBackground(() => {
 		const favoriteTeamIds = new Set(prefs.favoriteTeamIds);
 		const now = Date.now();
 		liveExtras.setFantasyScoring(prefs.fantasyScoring);
+		winProbTracker.record(freshGames);
 		const scores = liveGames.map(g => toLiveScore(scoreLiveGame(
 			{
 				game: g,
 				history: history.get(g.id) ?? [],
 				stallCount: clockStallMap.get(g.id)?.stallCount ?? 0,
-				winProbability: winProbHistory.get(g.id) ?? [],
+				winProbability: winProbTracker.historyOf(g.id) ?? winProbHistory.get(g.id) ?? [],
 				now,
 				extras: liveExtras.contextFor(g, now),
 			},
@@ -1103,6 +1107,8 @@ export default defineBackground(() => {
 		for (const gameId of winProbHistory.keys()) {
 			if (!liveIds.has(gameId)) winProbHistory.delete(gameId);
 		}
+		// An empty slate after a failed fetch must not wipe the lines read back from storage.
+		if (games.length > 0) winProbTracker.retainOnly(liveIds);
 		for (const gameId of summaryFetchedAt.keys()) {
 			if (liveIds.has(gameId)) continue;
 			summaryFetchedAt.delete(gameId);
@@ -1115,13 +1121,21 @@ export default defineBackground(() => {
 		liveExtras.setRoster(await loadFantasyRoster().catch(() => []));
 
 		const now = Date.now();
-		await Promise.all(liveGames.filter(game => summaryDue(game, now)).map(async game => {
+		const summaryNeeded = (game: Game) => summaryStillNeeded(game, {
+			hasScoreboardReadings: winProbTracker.historyOf(game.id) !== undefined && game.homeWinProbability !== undefined,
+			hasSummaryLine: winProbHistory.has(game.id),
+			hasRosteredPlayer: liveExtras.hasRosteredPlayer(game),
+		});
+		await Promise.all(liveGames.filter(game => summaryNeeded(game) && summaryDue(game, now)).map(async game => {
 			summaryFetchedAt.set(game.id, now);
 			try {
 				const line = await fetchWinProbability(game, { onSummary: summary => liveExtras.ingestSummary(game, summary, Date.now()) });
 				// ESPN returns [] during delays and brief interruptions even when earlier play
 				// produced a line; keep the last good one rather than dropping the signal.
-				if (line.length > 0) winProbHistory.set(game.id, line);
+				if (line.length > 0) {
+					winProbHistory.set(game.id, line);
+					winProbTracker.adopt(game.id, line);
+				}
 			} catch (err) {
 				logWarn(`Failed to fetch win probability for ${game.id}.`, err);
 			}
@@ -1166,6 +1180,7 @@ export default defineBackground(() => {
 			}
 		}
 		hydrateHistoryMaps(sessionResult.scoreHistory, sessionResult.powerScoreHistory);
+		winProbTracker.hydrate(sessionResult.scoreboardWinProbHistory);
 		demoMode = demoResult.demoMode as boolean;
 		endRecords = readGameEndRecords(demoResult[gameEndTimesKey]);
 		if (demoMode) simulator = new MockGameSimulator();
@@ -1300,6 +1315,7 @@ export default defineBackground(() => {
 					// Demo games have no ESPN summary behind them; drop any real lines we cached.
 					stopWinProbabilityPolling();
 					winProbHistory.clear();
+					winProbTracker.clear();
 					if (!demoTimer) {
 						// Routed through refreshScores so a slow tick cannot overlap the next one.
 						demoTimer = setInterval(() => void refreshScores(true), pollIntervalMs);

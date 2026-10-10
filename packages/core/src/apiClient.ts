@@ -21,6 +21,7 @@ import type {
 	EspnVenueAddress,
 } from './espnSchemas';
 import { logWarn } from './logger';
+import { readHomeWinProbability } from './scoreboardWinProbability';
 import type { AtBat, AtBatPlayer, Game, GameCondition, RedCardEvent, SeriesState, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, LeagueSchedule, LeagueScheduleMap, ProbableStarter, TeamLeader, TeamMonoLogoMap, TeamMonoMarks } from './types';
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
@@ -743,6 +744,8 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		// No sport gate: baseball and hockey describe their last play as readily as football does.
 		lastPlay: liveSituation ? parseLastPlay(situation) : undefined,
 		lastPlayTeamId: liveSituation ? parseLastPlayTeam(situation, home.id, away.id) : undefined,
+		homeWinProbability: liveSituation ? readHomeWinProbability(situation) : undefined,
+		lastPlayId: liveSituation ? situation.lastPlay?.id : undefined,
 		lastPlayDrive: isGridironSituation ? situation.lastPlay?.drive?.description?.trim() || undefined : undefined,
 		weather: parseWeather(event, comp.venue?.indoor),
 		isPostseason: postseason,

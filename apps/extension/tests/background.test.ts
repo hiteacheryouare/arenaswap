@@ -114,6 +114,7 @@ interface LoadOptions {
 	storedLocal?: Record<string, unknown>;
 	openTabIds?: number[];
 	activeTabId?: number;
+	storedSession?: Record<string, unknown>;
 }
 
 const loadBackground = async (options: LoadOptions = {}) => {
@@ -151,6 +152,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 					scoreHistory: {},
 					powerScoreHistory: {},
 					gameBoosts: {},
+					...options.storedSession,
 				}),
 				set: storageSessionSet,
 			},
@@ -535,6 +537,170 @@ describe('win probability polling', () => {
 
 		// One live game and one chain: a second chain would double every sweep from here on.
 		expect(winProbMock).toHaveBeenCalledTimes(1);
+	});
+});
+
+// A summary with a real line behind it: twenty plays that never leave the middle of the court.
+const summaryLine = Array.from({ length: 20 }, () => 0.5);
+
+const summaryMock = () => {
+	const mock = (require('@arenaswap/core') as { fetchWinProbability: jest.Mock }).fetchWinProbability;
+	mock.mockImplementation(async () => summaryLine);
+	mock.mockClear();
+	return mock;
+};
+
+describe('win probability read off the scoreboard', () => {
+	const footballGame: Game = {
+		id: 'nfl-1',
+		league: 'nfl' as LeagueId,
+		sportType: 'football',
+		status: 'in',
+		homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 14 },
+		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 10 },
+		period: 3,
+		clockSeconds: 600,
+		homeWinProbability: 0.55,
+		lastPlayId: 'play-1',
+	};
+
+	const loadWith = async (game: Game, storedSession?: Record<string, unknown>) => {
+		await loadBackground({
+			prefs: { enabledLeagues: [game.league], notificationsEnabled: false },
+			fetchReturnValue: { games: [game], leagueLogos: {}, shedLeagues: [] },
+			storedSession,
+		});
+	};
+
+	const sweepsLater = async (sweeps: number) => {
+		for (let i = 0; i < sweeps; i++) {
+			jest.advanceTimersByTime(pollWinProbabilityMs);
+			await drain();
+		}
+	};
+
+	const persistedLine = (gameId: string) => {
+		const writes = storageSessionSet.mock.calls.map(([value]) => value as { scoreboardWinProbHistory?: Record<string, number[]> });
+		return writes.filter(write => write.scoreboardWinProbHistory !== undefined).at(-1)?.scoreboardWinProbHistory?.[gameId];
+	};
+
+	test('a football game is summarised once for its full line and then left to the scoreboard', async () => {
+		await loadWith(footballGame);
+		const winProbMock = summaryMock();
+		// The startup sweep ran before this mock had a line to give, so the first sweep here is the read.
+		await sweepsLater(1);
+		expect(winProbMock).toHaveBeenCalledTimes(1);
+
+		await sweepsLater(4);
+		expect(winProbMock).toHaveBeenCalledTimes(1);
+	});
+
+	test('a football game the scoreboard gives no line for keeps its summary every sweep', async () => {
+		await loadWith({ ...footballGame, homeWinProbability: undefined });
+		const winProbMock = summaryMock();
+
+		await sweepsLater(3);
+		expect(winProbMock).toHaveBeenCalledTimes(3);
+	});
+
+	test('a league whose scoreboard was not checked keeps its summary every sweep', async () => {
+		await loadWith({
+			...footballGame,
+			id: 'hockey-1',
+			league: 'nhl' as LeagueId,
+			sportType: 'hockey',
+			homeTeam: { ...footballGame.homeTeam, score: 2 },
+			awayTeam: { ...footballGame.awayTeam, score: 1 },
+		});
+		const winProbMock = summaryMock();
+
+		await sweepsLater(3);
+		expect(winProbMock).toHaveBeenCalledTimes(3);
+	});
+
+	test('basketball keeps its summary every sweep, for the lead-change count in the box score', async () => {
+		await loadWith({ ...footballGame, id: 'nba-1', league: 'nba' as LeagueId, sportType: 'basketball' });
+		const winProbMock = summaryMock();
+
+		await sweepsLater(3);
+		expect(winProbMock).toHaveBeenCalledTimes(3);
+	});
+
+	test('a game picked up mid-play is scored on the summary\'s full line, not just the plays since', async () => {
+		await loadWith(footballGame);
+		summaryMock();
+		await sweepsLater(1);
+		jest.advanceTimersByTime(pollMaxEagerMs + 2000);
+		await drain(12);
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string; winProbabilityVariance?: number }[] };
+		expect(state.scores.find(s => s.gameId === 'nfl-1')?.winProbabilityVariance).toBe(5);
+		expect(persistedLine('nfl-1')).toHaveLength(summaryLine.length);
+	});
+
+	test('the summary comes back while the scoreboard has stopped sending the line', async () => {
+		await loadWith(footballGame);
+		const winProbMock = summaryMock();
+		await sweepsLater(1);
+		await sweepsLater(1);
+		expect(winProbMock).toHaveBeenCalledTimes(1);
+
+		fetchMock.mockResolvedValue({ games: [{ ...footballGame, homeWinProbability: undefined }], leagueLogos: {}, shedLeagues: [] });
+		jest.advanceTimersByTime(pollMaxEagerMs + 2000);
+		await drain(12);
+		await sweepsLater(1);
+		expect(winProbMock).toHaveBeenCalledTimes(2);
+	});
+
+	test('a trip through demo mode mid-game starts the line over from the summary', async () => {
+		await loadWith(footballGame);
+		const winProbMock = summaryMock();
+		await sweepsLater(1);
+		expect(winProbMock).toHaveBeenCalledTimes(1);
+
+		await sendMessage({ type: 'SET_DEMO_MODE', enabled: true });
+		await sendMessage({ type: 'SET_DEMO_MODE', enabled: false });
+		await sweepsLater(1);
+		expect(winProbMock).toHaveBeenCalledTimes(2);
+	});
+
+	test('a line stored for a game that is no longer live is not kept', async () => {
+		await loadWith(footballGame, { scoreboardWinProbHistory: { 'old-game': [0.4, 0.5, 0.6], 'nfl-1': [0.5, 0.5] } });
+		summaryMock();
+		await sweepsLater(1);
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		expect(persistedLine('old-game')).toBeUndefined();
+		expect(persistedLine('nfl-1')).toBeDefined();
+	});
+
+	test('the line is written to session storage with the score history', async () => {
+		await loadWith(footballGame);
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		expect(persistedLine('nfl-1')).toEqual([0.55]);
+	});
+
+	test('a restarted worker scores from the line it stored', async () => {
+		const stored = { 'nfl-1': [0.5, 0.52, 0.5, 0.55, 0.5, 0.51] };
+		await loadWith({ ...footballGame, homeWinProbability: 0.52, lastPlayId: 'play-9' }, { scoreboardWinProbHistory: stored });
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string; winProbabilityVariance?: number }[] };
+		expect(state.scores.find(s => s.gameId === 'nfl-1')?.winProbabilityVariance).toBeGreaterThan(0);
+		expect(persistedLine('nfl-1')).toEqual([...stored['nfl-1']!, 0.52]);
+	});
+
+	test('without the stored line the same game has too little history to boost', async () => {
+		await loadWith({ ...footballGame, homeWinProbability: 0.52, lastPlayId: 'play-9' });
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string; winProbabilityVariance?: number }[] };
+		expect(state.scores.find(s => s.gameId === 'nfl-1')?.winProbabilityVariance).toBeUndefined();
 	});
 });
 
