@@ -501,10 +501,15 @@ export interface GetDebugStateMessage {
 // for itself rather than reading GET_STATE.
 export interface GetGuideSlateMessage {
 	type: 'GET_GUIDE_SLATE';
+	// Set only by the Guide's own Retry button, which skips the wait a refusal puts on asking again.
+	force?: boolean;
 }
 
 export interface GuideSlate {
 	games: Game[];
+	// Our sources refused to answer and there is nothing held to show instead, so an empty `games`
+	// is not a quiet day.
+	refused?: boolean;
 	leagueLogos: LeagueLogoMap;
 	monoLogos: TeamMonoLogoMap;
 	gameBoosts: Record<string, number>;
