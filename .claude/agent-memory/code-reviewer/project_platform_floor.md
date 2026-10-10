@@ -28,3 +28,9 @@ Cypress (current Chrome) while throwing on the declared minimum.
 QUOTA_BYTES is 1 MB before Chrome 112 and 10 MB from 112 on — and the declared floor is 110. So any
 growth in what `background.ts` mirrors into session storage has a real ceiling on Chrome 110-111.
 See [[project-extension-runtime-footguns]].
+
+**CSS features count too, not just ES built-ins.** `:has()` is Chrome 105 but **Firefox 121**, so on the declared
+Firefox 115 floor a `:has()` rule is silently dropped. `.game-card:has(.dropdown-menu.show)` (bootstrap.scss) already
+depends on it (cosmetic z-index). Anything that puts a *focus indicator* or other required affordance behind `:has()`
+needs an `@supports not selector(:has(*))` fallback or a different mechanism (flagged on PR #209, 2026-10-09).
+`inert` is Chrome 102 / Firefox 112 — inside the floor; React 19 renders `inert={false}` as nothing.
