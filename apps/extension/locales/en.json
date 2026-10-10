@@ -407,6 +407,7 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "Pitching",
 		"atBatLabel": "At bat",
+		"dueUpHeading": "Due Up",
 		"bonus": "Bonus",
 		"foulsBonus": "{team} in the bonus",
 		"foulsDoubleBonus": "{team} in the double bonus",
@@ -623,6 +624,14 @@
 		"oddsProvidedBy": "Odds provided by:",
 		"openDetails": "Open details for {away} vs {home}",
 		"live": "LIVE",
+		"staleMinutes": {
+			"1": "Last updated 1 minute ago",
+			"n": "Last updated $1 minutes ago"
+		},
+		"staleHours": {
+			"1": "Last updated 1 hour ago",
+			"n": "Last updated $1 hours ago"
+		},
 		"final": "Final",
 		"delay": "DELAY",
 		"delayFallback": "Delay",

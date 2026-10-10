@@ -407,6 +407,7 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "Pitching",
 		"atBatLabel": "At Bat",
+		"dueUpHeading": "Mga Susunod na Batter",
 		"bonus": "Bonus",
 		"foulsBonus": "Nasa bonus ang {team}",
 		"foulsDoubleBonus": "Nasa double bonus ang {team}",
@@ -623,6 +624,14 @@
 		"oddsProvidedBy": "Odds mula sa:",
 		"openDetails": "Buksan ang detalye ng {away} vs {home}",
 		"live": "LIVE",
+		"staleMinutes": {
+			"1": "Huling na-update 1 minuto na ang nakalipas",
+			"n": "Huling na-update $1 minuto na ang nakalipas"
+		},
+		"staleHours": {
+			"1": "Huling na-update 1 oras na ang nakalipas",
+			"n": "Huling na-update $1 oras na ang nakalipas"
+		},
 		"final": "Final",
 		"delay": "DELAY",
 		"delayFallback": "Delay",

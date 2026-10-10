@@ -9,6 +9,22 @@
 
 One press, from the new header button or Alt+Shift+X, mutes every tab ArenaSwap manages, jumps to the decoy page set under Settings (a blank tab if none), and pauses auto-switching until you flip the header switch back on. The shortcut shown in the tooltip and the settings comes from what the browser actually registered.
 
+## The baseball detail screen shows who's due up — 2026-10-09
+
+Between half-innings, a Due Up block under the hero lists the next three hitters with a portrait, their position and their line for the day ("0-1, BB"). It gives way to the at-bat panel at the first pitch, because our sources only name the next hitters while nobody is at the plate. The list keeps the order it arrives in rather than sorting on lineup slot, since the lineup wraps and the ninth hitter bats ahead of the leadoff man.
+
+## Game cards stop being buttons with buttons inside — 2026-10-09
+
+A card is now a labelled group with a details button as its first Tab stop, so screen readers read the matchup, score, clock and status, the PowerScore bar has a name, and the stars, odds tooltip and tab picker are controls of their own. Clicking the card still opens the game, and the website's demo cards take `interactive={false}`: they keep the hover lift but lose the tab stop and the pointer cursor.
+
+## The detail screen follows a live game — 2026-10-09
+
+While a game is live, the detail screen asks for its summary again every minute, the pace the background already polls at, so the win probability line, box score and series state keep moving instead of freezing at the moment you opened it. A refresh swaps the data in quietly: a failed or thin one keeps what's on screen, a slow answer that lands after a newer one is dropped, and a hidden page skips its polls.
+
+## Live cards say when their league went quiet — 2026-10-09
+
+A live card whose league has been refusing polls for a full minute now carries one muted line under its venue, "Last updated 7 minutes ago", which counts up while the popup is open, turns to hours past an hour and disappears on the next good poll. The worker reports when each league last answered as `leagueLastGoodAt`. A refresh that finds a league refusing also keeps that league's live cards instead of dropping them, and neither a refresh nor a settings change brings back a game that has gone live as an upcoming one too.
+
 ## The Guide stops mistaking a refusal for a quiet day — 2026-10-09
 
 When our sources refuse every league, the Guide now shows the popup's "Couldn't load games" banner with its Retry button instead of "no games", and a worker that never answers no longer leaves the spinner up. A slate that every league refused is not cached, and one that lost some leagues keeps their previous games; both are asked about again after a minute, or at once on Retry, rather than after ten minutes or on every poll.

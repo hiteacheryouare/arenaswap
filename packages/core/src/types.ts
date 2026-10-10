@@ -194,6 +194,10 @@ export interface Game {
 	bso?: { balls: number; strikes: number; outs: number };
 	// Inning sports only. Dropped between innings, which is what makes the panel come and go.
 	atBat?: AtBat;
+	// Inning sports only: the next hitters, in batting order, at most three. Sent between
+	// half-innings, from the third out until the first pitch of the next half, and dropped once a
+	// batter is up — so it and `atBat` all but never exist together.
+	dueUp?: AtBatPlayer[];
 	// The play that just happened, as ESPN describes it. Live games only, and absent in soccer,
 	// which sends no situation at all. Newlines are meaningful — a penalty is two sentences — so
 	// this is rendered with `white-space: pre-line` rather than collapsed.
@@ -436,6 +440,8 @@ export interface LiveScore extends PowerScoreResult {
 
 export type PowerScoreHistoryMap = Record<string, PowerScoreSnapshot[]>;
 
+export type LeagueLastGoodAt = Partial<Record<LeagueId, number>>;
+
 export interface BackgroundState {
 	games: Game[];
 	scores: PowerScoreResult[];
@@ -448,6 +454,9 @@ export interface BackgroundState {
 	// Leagues ESPN refused on the last slate fetch. An empty slate alongside a non-empty list here
 	// is a slate we cannot vouch for, which the popup reports as a failure rather than as no games.
 	slateShedLeagues: LeagueId[];
+	// When each league last answered a poll, in epoch milliseconds, so a card whose league is in
+	// `slateShedLeagues` can say how old its score is.
+	leagueLastGoodAt: LeagueLastGoodAt;
 }
 
 export interface ScoresUpdatedMessage {
@@ -461,6 +470,7 @@ export interface ScoresUpdatedMessage {
 	onStandbyStream: boolean;
 	standbyStreamTabId: number | null;
 	slateShedLeagues: LeagueId[];
+	leagueLastGoodAt: LeagueLastGoodAt;
 }
 
 export interface UpdatePrefsMessage {

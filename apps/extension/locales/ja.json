@@ -407,6 +407,7 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "投球",
 		"atBatLabel": "打席",
+		"dueUpHeading": "次の打順",
 		"bonus": "ボーナス",
 		"foulsBonus": "{team}がボーナス",
 		"foulsDoubleBonus": "{team}がダブルボーナス",
@@ -623,6 +624,14 @@
 		"oddsProvidedBy": "オッズ提供元：",
 		"openDetails": "{away} vs {home}の詳細を開く",
 		"live": "ライブ",
+		"staleMinutes": {
+			"1": "最終更新: 1分前",
+			"n": "最終更新: $1分前"
+		},
+		"staleHours": {
+			"1": "最終更新: 1時間前",
+			"n": "最終更新: $1時間前"
+		},
 		"final": "終了",
 		"delay": "中断",
 		"delayFallback": "中断",

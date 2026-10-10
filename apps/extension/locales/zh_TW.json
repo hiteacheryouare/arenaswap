@@ -407,6 +407,7 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "投球",
 		"atBatLabel": "打席",
+		"dueUpHeading": "後續打者",
 		"bonus": "罰球",
 		"foulsBonus": "{team}進入罰球",
 		"foulsDoubleBonus": "{team}進入雙倍罰球",
@@ -623,6 +624,14 @@
 		"oddsProvidedBy": "賠率提供：",
 		"openDetails": "查看 {away} 對 {home} 的比賽詳情",
 		"live": "直播",
+		"staleMinutes": {
+			"1": "上次更新於 1 分鐘前",
+			"n": "上次更新於 $1 分鐘前"
+		},
+		"staleHours": {
+			"1": "上次更新於 1 小時前",
+			"n": "上次更新於 $1 小時前"
+		},
 		"final": "終場",
 		"delay": "延誤",
 		"delayFallback": "延誤",

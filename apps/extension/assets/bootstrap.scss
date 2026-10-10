@@ -1943,6 +1943,31 @@
 	margin-top: 0.34rem;
 }
 
+// The due-up block borrows the section skin above and the Your Players text (`fantasy-player-*`),
+// and only adds its own row: that list's 20px portrait (`gd-pregame-leader-shot`), then the name, then
+// the line pushed to the right edge.
+.gd-dueup-row {
+	padding: 0.18rem 0;
+
+	& + & { border-top: 1px solid var(--as-secondary-bg); }
+}
+
+// The position is a sibling of the name here, not nested in it as in Your Players, so it needs the
+// name's size handed down or it falls back to the body's.
+.gd-dueup-who {
+	font-size:   0.62rem;
+	line-height: 1.35;
+}
+
+// Quiet and on one line: "0-1, BB" is a footnote to the name. The cap stops a long line squeezing
+// the name to nothing, and the tabular figures keep the digits down the edge in step.
+.gd-dueup-line {
+	max-width:            45%;
+	white-space:          nowrap;
+	text-align:           right;
+	font-variant-numeric: tabular-nums;
+}
+
 // Venue / broadcast / odds / weather, as one titled section rather than four stacked centred
 // lines. Takes the chart cards' treatment, not the breakdown's white card: everything below the
 // PowerScore math reads as one dark column of sections.

@@ -6,6 +6,7 @@ import type { Tooltip } from 'bootstrap';
 interface hoverTooltipProps {
 	text: string;
 	className?: string;
+	inert?: boolean;
 	children: ReactNode;
 }
 
@@ -15,7 +16,7 @@ interface hoverTooltipProps {
 //
 // `title` stays on the element as well as being passed as an option, so that if the import never
 // resolves the browser's own tooltip still does the job.
-const HoverTooltip = ({ text, className, children }: hoverTooltipProps) => {
+const HoverTooltip = ({ text, className, inert, children }: hoverTooltipProps) => {
 	const ref = useRef<HTMLButtonElement>(null);
 
 	useEffect(() => {
@@ -42,7 +43,7 @@ const HoverTooltip = ({ text, className, children }: hoverTooltipProps) => {
 	// A button rather than a span so it is focusable without a hand-placed tabIndex, and because the
 	// card's own click handler already skips targets inside a `button` — see isInteractiveCardTarget.
 	return (
-		<button ref={ref} type='button' className={className} title={text}>
+		<button ref={ref} type='button' className={className} title={text} inert={inert}>
 			{children}
 		</button>
 	);

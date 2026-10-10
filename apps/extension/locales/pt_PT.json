@@ -407,6 +407,7 @@
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "Lançamentos",
 		"atBatLabel": "A rebater",
+		"dueUpHeading": "Próximos batedores",
 		"bonus": "Bónus",
 		"foulsBonus": "{team} em bónus",
 		"foulsDoubleBonus": "{team} em bónus duplo",
@@ -623,6 +624,14 @@
 		"oddsProvidedBy": "Odds fornecidas por:",
 		"openDetails": "Abrir detalhes de {away} vs {home}",
 		"live": "EM DIRECTO",
+		"staleMinutes": {
+			"1": "Última actualização há 1 minuto",
+			"n": "Última actualização há $1 minutos"
+		},
+		"staleHours": {
+			"1": "Última actualização há 1 hora",
+			"n": "Última actualização há $1 horas"
+		},
 		"final": "Final",
 		"delay": "ATRASO",
 		"delayFallback": "Atraso",

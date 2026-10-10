@@ -53,6 +53,7 @@ import type {
 	Game,
 	GuideSlate,
 	LeagueId,
+	LeagueLastGoodAt,
 	LiveScore,
 	PowerScoreSnapshot,
 	LeagueLogoMap,
@@ -122,6 +123,13 @@ const describeOpenWindows = (allTabs: { id?: number; windowId?: number }[]) => {
 	return { windowIdByTabId, tabCountByWindowId };
 };
 
+// The slate's copy of a game is older than the one already on screen: a game that went live since
+// the slate was fetched is still in it as upcoming, and shows twice unless the live copy wins.
+const slateBeside = (onScreen: Game[], slate: Game[]): Game[] => {
+	const shownIds = new Set(onScreen.map(g => g.id));
+	return slate.filter(g => !shownIds.has(g.id));
+};
+
 export default defineBackground(() => {
 	let games: Game[] = [];
 	let upcomingGames: Game[] = [];
@@ -149,6 +157,7 @@ export default defineBackground(() => {
 	// that lands meanwhile makes an open Guide ask again before anything has been stamped.
 	let guideSlateRequest: Promise<GuideSlate> | null = null;
 	let slateShedLeagues: LeagueId[] = [];
+	const leagueLastGoodAt: LeagueLastGoodAt = {};
 	// When each finished game actually ended, so the guide can stop drawing it at its estimate.
 	let endRecords: gameEndRecords = {};
 	// Per worker rather than persisted: a final whose summary has no duration would otherwise cost a
@@ -407,6 +416,7 @@ export default defineBackground(() => {
 		onStandbyStream,
 		standbyStreamTabId,
 		slateShedLeagues,
+		leagueLastGoodAt,
 	});
 
 	const broadcastScoresUpdated = () => {
@@ -986,6 +996,7 @@ export default defineBackground(() => {
 					return;
 				}
 				slateShedLeagues = fetchResult.shedLeagues;
+				for (const id of enabledLeagues) if (!slateShedLeagues.includes(id)) leagueLastGoodAt[id] = Date.now();
 				fetched = fetchResult.games;
 				leagueLogos = fetchResult.leagueLogos;
 			} catch (err) {
@@ -996,11 +1007,12 @@ export default defineBackground(() => {
 			noteGameEnds(fetched);
 			mergeGuideSlate(fetched);
 			finishedGames = fetched.filter(g => g.status === 'post');
+			// A refused league answered with nothing, not with no games: its live cards stay, as they do
+			// under `tickLeague`. Their ids join the fresh set so the slate's older copy of the same
+			// game, still marked upcoming, cannot come back beside them.
+			const heldLive = games.filter(g => slateShedLeagues.includes(g.league) && g.status === 'in');
 			games = displayableGames(fetched);
-			const freshGameIds = new Set(fetched.map(g => g.id));
-			const stillUpcoming = upcomingGames.filter(g => !freshGameIds.has(g.id));
-			const stillFinal = liveRetainedFinals().filter(g => !freshGameIds.has(g.id));
-			games = [...games, ...stillUpcoming, ...stillFinal];
+			games = [...games, ...heldLive, ...slateBeside([...fetched, ...heldLive], [...upcomingGames, ...liveRetainedFinals()])];
 		}
 
 		await afterFetch(null, allowTabSwitch, finishedGames);
@@ -1036,6 +1048,7 @@ export default defineBackground(() => {
 			// spend a request on.
 			const nextStartMs = earliestUpcomingStartMs(games.filter(g => g.league === leagueId));
 			pollModeTracker.recordPollResult(leagueId, hasLiveGames, nextStartMs);
+			leagueLastGoodAt[leagueId] = Date.now();
 			fetchSucceeded = true;
 		} catch (err) {
 			logWarn(`Failed to fetch ${leagueId} games.`, err);
@@ -1340,7 +1353,8 @@ export default defineBackground(() => {
 					(prefs.showUpcomingGames && prefs.upcomingGamesDays !== prevUpcomingGamesDays);
 				if (slateSettingChanged) {
 					await refreshSlate();
-					games = [...games.filter(g => g.status === 'in'), ...upcomingGames, ...liveRetainedFinals()];
+					const live = games.filter(g => g.status === 'in');
+					games = [...live, ...slateBeside(live, [...upcomingGames, ...liveRetainedFinals()])];
 					broadcastScoresUpdated();
 				}
 				const newLeagues = new Set(prefs.enabledLeagues);
@@ -1350,7 +1364,8 @@ export default defineBackground(() => {
 				if ((leaguesChanged || collegeChanged) && !demoMode) {
 					await warmCollegeDirectories();
 					await refreshSlate();
-					games = [...keepCollegeGames(games.filter(g => g.status === 'in')), ...upcomingGames, ...liveRetainedFinals()];
+					const live = keepCollegeGames(games.filter(g => g.status === 'in'));
+					games = [...live, ...slateBeside(live, [...upcomingGames, ...liveRetainedFinals()])];
 					broadcastScoresUpdated();
 					startLeaguePolling();
 					// A league switched off keeps its cached lines until the next sweep otherwise.

@@ -208,6 +208,11 @@ const EspnSituationSchema = z.object({
 	awayTimeouts: z.optional(z.number()),
 	pitcher: z.optional(EspnSituationPlayerSchema),
 	batter: z.optional(EspnSituationPlayerSchema),
+	// The next hitters, already in the order they come up. Each carries a `batOrder` lineup slot,
+	// which is deliberately not read: the slots wrap (9, 1, 2), so sorting on them would put the
+	// leadoff man ahead of the ninth hitter he follows. A malformed list costs the due-up block and
+	// nothing else on the situation.
+	dueUp: z.optional(z.catch(z.array(EspnSituationPlayerSchema), [])),
 	lastPlay: z.optional(EspnLastPlaySchema),
 });
 

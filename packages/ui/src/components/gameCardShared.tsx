@@ -1,12 +1,13 @@
 import type { ReactNode } from 'react';
 import { useState } from 'react';
-import type { CSSProperties, KeyboardEvent, MouseEvent } from 'react';
+import type { CSSProperties, MouseEvent } from 'react';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import type { BettingDisplayPrefs } from './gameCardTypes';
 import { matchupSurface, resolveTeamColorPair } from './colorUtils';
 import OnColorCrest from './onColorCrest';
 import HoverTooltip from './hoverTooltip';
 import { useT } from './i18nContext';
+import type { Translator } from './i18nContext';
 import { formatClock, formatGameClock, formatPeriod, isHalftime } from './gameFormat';
 import TimeoutDots from './timeoutDots';
 
@@ -90,18 +91,32 @@ export const leagueMarkOnColor = (game: Game): boolean => {
 	return matchupSurface(awayColor, homeColor, game.delayed === true).inks.away === '#ffffff';
 };
 
-export const buildCardHandlers = (onOpenGameDetail: (gameId: string) => void, gameId: string) => ({
-	onClick: (event: MouseEvent<HTMLDivElement>) => {
-		if (isInteractiveCardTarget(event.target)) return;
-		onOpenGameDetail(gameId);
-	},
-	onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => {
-		if (event.key !== 'Enter' && event.key !== ' ') return;
-		if (isInteractiveCardTarget(event.target)) return;
-		event.preventDefault();
-		onOpenGameDetail(gameId);
-	},
+// The card is a group, not a button, so the stars, the odds tooltip and the tab picker stay controls
+// of their own. A click anywhere else on it still opens the game; the keyboard and screen readers
+// get the same thing from CardDetailsButton.
+export const buildCardShellProps = (game: Game, t: Translator, onOpenGameDetail: (gameId: string) => void, interactive: boolean) => ({
+	role: 'group' as const,
+	'aria-label': `${game.awayTeam.abbreviation} ${t('gameCard.vs')} ${game.homeTeam.abbreviation}`,
+	onClick: interactive
+		? (event: MouseEvent<HTMLDivElement>) => {
+			if (isInteractiveCardTarget(event.target)) return;
+			onOpenGameDetail(game.id);
+		}
+		: undefined,
 });
+
+// First in the card, so it is the first stop in the tab order. It covers the card so its focus ring
+// and its focus box are the card's, but ignores the pointer: clicks reach the card's own handler.
+export const CardDetailsButton = ({ game, onOpenGameDetail }: { game: Game; onOpenGameDetail: (gameId: string) => void }) => {
+	const t = useT();
+	return (
+		<button type='button' className='game-card-details-button' onClick={() => onOpenGameDetail(game.id)}>
+			<span className='visually-hidden'>
+				{t('gameCard.openDetails', { away: game.awayTeam.abbreviation, home: game.homeTeam.abbreviation })}
+			</span>
+		</button>
+	);
+};
 
 export const TeamColumn = ({
 	team,
@@ -110,6 +125,7 @@ export const TeamColumn = ({
 	onToggleFavoriteTeam,
 	side,
 	surface,
+	interactive = true,
 }: {
 	team: Team;
 	leagueId: LeagueId;
@@ -118,6 +134,7 @@ export const TeamColumn = ({
 	side: 'away' | 'home';
 	// The colour this side of the card is painted in, where it is painted in one.
 	surface?: string;
+	interactive?: boolean;
 }) => {
 	const t = useT();
 	return (
@@ -143,6 +160,7 @@ export const TeamColumn = ({
 				data-team-star='true'
 				aria-label={isFavorited ? t('gameCard.removeFromFavorites', { team: team.abbreviation }) : t('gameCard.addToFavorites', { team: team.abbreviation })}
 				title={isFavorited ? t('gameCard.favorited') : t('gameCard.addToFavoritesShort')}
+				inert={!interactive}
 				onClick={() => onToggleFavoriteTeam(leagueId, team.id)}
 			>
 				<i className={`bi ${isFavorited ? 'bi-star-fill' : 'bi-star'}`} />
@@ -211,12 +229,14 @@ export const GameMeta = ({
 	bettingPrefs,
 	hideBroadcasts,
 	hideVenue,
+	interactive = true,
 }: {
 	game: Game;
 	dark?: boolean;
 	bettingPrefs?: BettingDisplayPrefs;
 	hideBroadcasts?: boolean;
 	hideVenue?: boolean;
+	interactive?: boolean;
 }) => {
 	const t = useT();
 	const networks = hideBroadcasts ? undefined : game.broadcasts?.join(' • ');
@@ -248,6 +268,7 @@ export const GameMeta = ({
 						// introduce a visible name with.
 						<HoverTooltip
 							className='game-meta-attribution'
+							inert={!interactive}
 							text={`${t('gameCard.oddsProvidedBy')} ${game.odds!.provider!.name}`}
 						>
 							<OddsProvider game={game} dark={dark} />

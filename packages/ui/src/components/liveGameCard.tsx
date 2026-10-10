@@ -9,11 +9,12 @@ import BsoIndicator from './bsoIndicator';
 import FlipScore from './flipScore';
 import InningHalfIcon from './inningHalfIcon';
 import type { GameCardDisplayProps } from './gameCardTypes';
-import { buildCardHandlers, buildGameCardSurface, CardStatusRow, formatGameClock, formatPeriod, GameMeta, isHalftime, SeasonLabel, powerScoreColor, TeamColumn } from './gameCardShared';
+import { buildCardShellProps, buildGameCardSurface, CardDetailsButton, CardStatusRow, formatGameClock, formatPeriod, GameMeta, isHalftime, SeasonLabel, powerScoreColor, TeamColumn } from './gameCardShared';
 import { useT } from './i18nContext';
+import { StaleLeagueNote } from './staleLeagueNote';
 import useSwitchCrest from './useSwitchCrest';
 
-const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, tabSlot, leagueSlot }: GameCardDisplayProps) => {
+const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, tabSlot, leagueSlot, interactive = true }: GameCardDisplayProps) => {
 	const t = useT();
 	useSwitchCrest(game?.awayTeam ?? {}, game?.homeTeam ?? {});
 	if (!game) return null;
@@ -42,20 +43,17 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const atHalftime = !isInningSport && game.intermission === true && isHalftime(game);
 	const psBarPercent = Math.min((totalPowerScore / scoreMaxTotal) * 100, 100);
 	const psColor = powerScoreColor(totalPowerScore, scoreMaxTotal);
-	const { onClick: onCardClick, onKeyDown: onCardKeyDown } = buildCardHandlers(onOpenGameDetail, game.id);
+	const shellProps = buildCardShellProps(game, t, onOpenGameDetail, interactive);
 	const surface = buildGameCardSurface(game, isDelayed);
 
 
 	return (
 		<div
-			className={`game-card game-card-clickable is-team-colored${isOt ? ' is-ot' : ''}${isDelayed ? ' is-delayed' : ''}`}
+			className={`game-card${interactive ? ' game-card-clickable' : ' game-card-lift'} is-team-colored${isOt ? ' is-ot' : ''}${isDelayed ? ' is-delayed' : ''}`}
 			style={surface.style}
-			role='button'
-			tabIndex={0}
-			onClick={onCardClick}
-			onKeyDown={onCardKeyDown}
-			aria-label={t('gameCard.openDetails', { away: game.awayTeam.abbreviation, home: game.homeTeam.abbreviation })}
+			{...shellProps}
 		>
+			{interactive && <CardDetailsButton game={game} onOpenGameDetail={onOpenGameDetail} />}
 			<CardStatusRow
 				league={leagueSlot}
 				status={isDelayed ? (
@@ -74,7 +72,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 			</CardStatusRow>
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' surface={surface.awayColor} />
+				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' surface={surface.awayColor} interactive={interactive} />
 				<div className='d-flex flex-column align-items-center game-card-center'>
 					<div className='d-flex align-items-center game-score-row'>
 						<FlipScore value={game.awayTeam.score} className='fw-bold lh-1 game-score-value' />
@@ -107,10 +105,11 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 						<span className='game-period'>{downDistanceLine}</span>
 					)}
 				</div>
-				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' surface={surface.homeColor} />
+				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' surface={surface.homeColor} interactive={interactive} />
 			</div>
 
-			<GameMeta game={game} bettingPrefs={bettingPrefs} dark />
+			<GameMeta game={game} bettingPrefs={bettingPrefs} dark interactive={interactive} />
+			<StaleLeagueNote league={game.league} />
 
 			{excitementResult && (
 				<div className='d-flex align-items-center gap-2 game-card-ps-bar-row'>
@@ -119,6 +118,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 						<div
 							className='progress-bar'
 							role='progressbar'
+							aria-label={t('gameCard.powerScore')}
 							style={{ width: `${psBarPercent}%`, backgroundColor: psColor }}
 							aria-valuenow={totalPowerScore}
 							aria-valuemin={0}

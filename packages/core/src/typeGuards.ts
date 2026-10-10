@@ -1,5 +1,6 @@
 import { normalizePowerScoreResult } from 'powerscore';
-import type { Game, LeagueLogoMap, LiveScore, PowerScoreHistoryMap, PowerScoreResult, PowerScoreSnapshot, ReasonFragment, ScoreBreakdown, ScoreHistoryMap, ScoreSnapshot } from './types';
+import { isLeagueId } from './constants';
+import type { Game, LeagueLastGoodAt, LeagueLogoMap, LiveScore, PowerScoreHistoryMap, PowerScoreResult, PowerScoreSnapshot, ReasonFragment, ScoreBreakdown, ScoreHistoryMap, ScoreSnapshot } from './types';
 
 export const isObjectRecord = (value: unknown): value is Record<string, unknown> => (
 	typeof value === 'object' && value !== null
@@ -93,6 +94,15 @@ export const normalizeGameBoosts = (value: unknown): Record<string, number> => {
 	const result: Record<string, number> = {};
 	for (const [k, v] of Object.entries(value)) {
 		if (isFiniteNumber(v) && v > 0) result[k] = v;
+	}
+	return result;
+};
+
+export const normalizeLeagueLastGoodAt = (value: unknown): LeagueLastGoodAt => {
+	if (!isObjectRecord(value)) return {};
+	const result: LeagueLastGoodAt = {};
+	for (const [league, at] of Object.entries(value)) {
+		if (isLeagueId(league) && isFiniteNumber(at)) result[league] = at;
 	}
 	return result;
 };
