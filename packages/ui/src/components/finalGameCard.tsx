@@ -1,19 +1,19 @@
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
 import FlipScore from './flipScore';
 import type { GameCardDisplayProps } from './gameCardTypes';
-import { buildCardHandlers, CardStatusRow, GameMeta, SeasonLabel, TeamColumn } from './gameCardShared';
+import { buildCardShellProps, CardDetailsButton, CardStatusRow, GameMeta, SeasonLabel, TeamColumn } from './gameCardShared';
 import { useT } from './i18nContext';
 
 // A finished game offers nothing to act on, so this card is the live one with every affordance
 // taken away: no tab dropdown, no PowerScore bar, no clock, no broadcast line. What is left is the
 // result, and the result is what the card is styled around.
-const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, leagueSlot }: GameCardDisplayProps) => {
+const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, leagueSlot, interactive = true }: GameCardDisplayProps) => {
 	const t = useT();
 	if (!game) return null;
 
 	const awayFavorited = favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.awayTeam.id));
 	const homeFavorited = favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.homeTeam.id));
-	const { onClick: onCardClick, onKeyDown: onCardKeyDown } = buildCardHandlers(onOpenGameDetail, game.id);
+	const shellProps = buildCardShellProps(game, t, onOpenGameDetail, interactive);
 
 	const awayScore = game.awayTeam.score;
 	const homeScore = game.homeTeam.score;
@@ -41,19 +41,16 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 
 	return (
 		<div
-			className='game-card game-card-clickable is-final'
-			role='button'
-			tabIndex={0}
-			onClick={onCardClick}
-			onKeyDown={onCardKeyDown}
-			aria-label={t('gameCard.openDetails', { away: game.awayTeam.abbreviation, home: game.homeTeam.abbreviation })}
+			className={`game-card${interactive ? ' game-card-clickable' : ' game-card-lift'} is-final`}
+			{...shellProps}
 		>
+			{interactive && <CardDetailsButton game={game} onOpenGameDetail={onOpenGameDetail} />}
 			<CardStatusRow league={leagueSlot} status={<span className='d-flex align-items-center gap-1 fw-bold text-uppercase final-status-label'>{statusLabel}</span>}>
 				<SeasonLabel game={game} />
 			</CardStatusRow>
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' />
+				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' interactive={interactive} />
 				<div className='d-flex flex-column align-items-center game-card-center'>
 					<div className='d-flex align-items-center game-score-row'>
 						<FlipScore value={awayScore} className={scoreClass(awayScore, homeScore)} />
@@ -62,13 +59,13 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 					</div>
 					{shootout && <span className='game-shootout-score'>{shootout}</span>}
 				</div>
-				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' />
+				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' interactive={interactive} />
 			</div>
 
 			{/* The broadcast and the line are gone: a game you cannot watch any more has no channel
 			    worth naming, and a decided game has nothing left to bet on. The venue stays, because
 			    where it was played is still true. */}
-			<GameMeta game={game} hideBroadcasts />
+			<GameMeta game={game} hideBroadcasts interactive={interactive} />
 		</div>
 	);
 };

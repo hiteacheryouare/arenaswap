@@ -23,4 +23,6 @@ export interface GameCardDisplayProps {
 	leagueSlot?: ReactNode;
 	// Set under the Up Next day pager, which already names the day, so a card there shows the time alone.
 	dayNamedAbove?: boolean;
+	// False on the website's demo cards: no details button, and the stars and odds tooltip leave the tab order.
+	interactive?: boolean;
 }

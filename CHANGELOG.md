@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Game cards stop being buttons with buttons inside — 2026-10-09
+
+A card is now a labelled group with a details button as its first Tab stop, so screen readers read the matchup, score, clock and status, the PowerScore bar has a name, and the stars, odds tooltip and tab picker are controls of their own. Clicking the card still opens the game, and the website's demo cards take `interactive={false}`: they keep the hover lift but lose the tab stop and the pointer cursor.
+
 ## The detail screen follows a live game — 2026-10-09
 
 While a game is live, the detail screen asks for its summary again every minute, the pace the background already polls at, so the win probability line, box score and series state keep moving instead of freezing at the moment you opened it. A refresh swaps the data in quietly: a failed or thin one keeps what's on screen, a slow answer that lands after a newer one is dropped, and a hidden page skips its polls.
