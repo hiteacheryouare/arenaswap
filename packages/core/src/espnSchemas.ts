@@ -146,6 +146,7 @@ const EspnDriveSchema = z.object({
 });
 
 const EspnLastPlaySchema = z.object({
+	id: z.catch(z.optional(espnNumericText), undefined),
 	// "Defensive Rebound", "Free Throw - 2 of 2", "Full Timeout". Basketball reads its possession
 	// off this, and nothing else depends on it, so a shape we don't expect drops the field rather
 	// than the scoreboard.
@@ -158,6 +159,9 @@ const EspnLastPlaySchema = z.object({
 	// situation at all, and routinely carries a leading space and an embedded newline — a penalty
 	// is two sentences. Normalized in parseLastPlay rather than here.
 	text: z.optional(z.string()),
+	// The home side's chance of winning after this play, as a fraction of 1. Basketball and football
+	// send it, baseball only now and then, hockey and soccer never.
+	probability: z.catch(z.optional(z.object({ homeWinPercentage: z.optional(z.number()) })), undefined),
 });
 
 // The pitcher and batter carry a `position` that is a bare string — "RP", "CF" — where the same

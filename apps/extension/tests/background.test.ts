@@ -1,7 +1,7 @@
 import { pollWinProbabilityMs } from '@arenaswap/core';
 import { gameEndTimesKey } from '../utils/gameEndTimes';
 import { monoLogoCacheKey, monoLogoCacheTtlMs } from '../utils/monoLogoCache';
-import { createDefaultUserPreferences, createFavoriteTeamKey, guideMinUpcomingDays, historyWindowMs, normalizeUserPreferences, pollDormantMaxMs, pollHebetudinousMaxMs, pollIntervalMs, pollMaxEagerMs } from '@arenaswap/core/constants';
+import { createDefaultUserPreferences, createFavoriteTeamKey, guideMinUpcomingDays, historyWindowMs, normalizeUserPreferences, pollDormantMaxMs, pollHebetudinousMaxMs, pollIntervalMs, pollLookaheadTtlMs, pollMaxEagerMs } from '@arenaswap/core/constants';
 import { chartHistory, coversWholeGame } from '../entrypoints/popup/components/wrapCoverage';
 import type { Game, LeagueId, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import { prefsStorageUpdatedAtKey } from '../utils/prefsStorage';
@@ -114,6 +114,7 @@ interface LoadOptions {
 	storedLocal?: Record<string, unknown>;
 	openTabIds?: number[];
 	activeTabId?: number;
+	storedSession?: Record<string, unknown>;
 }
 
 const loadBackground = async (options: LoadOptions = {}) => {
@@ -151,6 +152,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 					scoreHistory: {},
 					powerScoreHistory: {},
 					gameBoosts: {},
+					...options.storedSession,
 				}),
 				set: storageSessionSet,
 			},
@@ -535,6 +537,170 @@ describe('win probability polling', () => {
 
 		// One live game and one chain: a second chain would double every sweep from here on.
 		expect(winProbMock).toHaveBeenCalledTimes(1);
+	});
+});
+
+// A summary with a real line behind it: twenty plays that never leave the middle of the court.
+const summaryLine = Array.from({ length: 20 }, () => 0.5);
+
+const summaryMock = () => {
+	const mock = (require('@arenaswap/core') as { fetchWinProbability: jest.Mock }).fetchWinProbability;
+	mock.mockImplementation(async () => summaryLine);
+	mock.mockClear();
+	return mock;
+};
+
+describe('win probability read off the scoreboard', () => {
+	const footballGame: Game = {
+		id: 'nfl-1',
+		league: 'nfl' as LeagueId,
+		sportType: 'football',
+		status: 'in',
+		homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 14 },
+		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 10 },
+		period: 3,
+		clockSeconds: 600,
+		homeWinProbability: 0.55,
+		lastPlayId: 'play-1',
+	};
+
+	const loadWith = async (game: Game, storedSession?: Record<string, unknown>) => {
+		await loadBackground({
+			prefs: { enabledLeagues: [game.league], notificationsEnabled: false },
+			fetchReturnValue: { games: [game], leagueLogos: {}, shedLeagues: [] },
+			storedSession,
+		});
+	};
+
+	const sweepsLater = async (sweeps: number) => {
+		for (let i = 0; i < sweeps; i++) {
+			jest.advanceTimersByTime(pollWinProbabilityMs);
+			await drain();
+		}
+	};
+
+	const persistedLine = (gameId: string) => {
+		const writes = storageSessionSet.mock.calls.map(([value]) => value as { scoreboardWinProbHistory?: Record<string, number[]> });
+		return writes.filter(write => write.scoreboardWinProbHistory !== undefined).at(-1)?.scoreboardWinProbHistory?.[gameId];
+	};
+
+	test('a football game is summarised once for its full line and then left to the scoreboard', async () => {
+		await loadWith(footballGame);
+		const winProbMock = summaryMock();
+		// The startup sweep ran before this mock had a line to give, so the first sweep here is the read.
+		await sweepsLater(1);
+		expect(winProbMock).toHaveBeenCalledTimes(1);
+
+		await sweepsLater(4);
+		expect(winProbMock).toHaveBeenCalledTimes(1);
+	});
+
+	test('a football game the scoreboard gives no line for keeps its summary every sweep', async () => {
+		await loadWith({ ...footballGame, homeWinProbability: undefined });
+		const winProbMock = summaryMock();
+
+		await sweepsLater(3);
+		expect(winProbMock).toHaveBeenCalledTimes(3);
+	});
+
+	test('a league whose scoreboard was not checked keeps its summary every sweep', async () => {
+		await loadWith({
+			...footballGame,
+			id: 'hockey-1',
+			league: 'nhl' as LeagueId,
+			sportType: 'hockey',
+			homeTeam: { ...footballGame.homeTeam, score: 2 },
+			awayTeam: { ...footballGame.awayTeam, score: 1 },
+		});
+		const winProbMock = summaryMock();
+
+		await sweepsLater(3);
+		expect(winProbMock).toHaveBeenCalledTimes(3);
+	});
+
+	test('basketball keeps its summary every sweep, for the lead-change count in the box score', async () => {
+		await loadWith({ ...footballGame, id: 'nba-1', league: 'nba' as LeagueId, sportType: 'basketball' });
+		const winProbMock = summaryMock();
+
+		await sweepsLater(3);
+		expect(winProbMock).toHaveBeenCalledTimes(3);
+	});
+
+	test('a game picked up mid-play is scored on the summary\'s full line, not just the plays since', async () => {
+		await loadWith(footballGame);
+		summaryMock();
+		await sweepsLater(1);
+		jest.advanceTimersByTime(pollMaxEagerMs + 2000);
+		await drain(12);
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string; winProbabilityVariance?: number }[] };
+		expect(state.scores.find(s => s.gameId === 'nfl-1')?.winProbabilityVariance).toBe(5);
+		expect(persistedLine('nfl-1')).toHaveLength(summaryLine.length);
+	});
+
+	test('the summary comes back while the scoreboard has stopped sending the line', async () => {
+		await loadWith(footballGame);
+		const winProbMock = summaryMock();
+		await sweepsLater(1);
+		await sweepsLater(1);
+		expect(winProbMock).toHaveBeenCalledTimes(1);
+
+		fetchMock.mockResolvedValue({ games: [{ ...footballGame, homeWinProbability: undefined }], leagueLogos: {}, shedLeagues: [] });
+		jest.advanceTimersByTime(pollMaxEagerMs + 2000);
+		await drain(12);
+		await sweepsLater(1);
+		expect(winProbMock).toHaveBeenCalledTimes(2);
+	});
+
+	test('a trip through demo mode mid-game starts the line over from the summary', async () => {
+		await loadWith(footballGame);
+		const winProbMock = summaryMock();
+		await sweepsLater(1);
+		expect(winProbMock).toHaveBeenCalledTimes(1);
+
+		await sendMessage({ type: 'SET_DEMO_MODE', enabled: true });
+		await sendMessage({ type: 'SET_DEMO_MODE', enabled: false });
+		await sweepsLater(1);
+		expect(winProbMock).toHaveBeenCalledTimes(2);
+	});
+
+	test('a line stored for a game that is no longer live is not kept', async () => {
+		await loadWith(footballGame, { scoreboardWinProbHistory: { 'old-game': [0.4, 0.5, 0.6], 'nfl-1': [0.5, 0.5] } });
+		summaryMock();
+		await sweepsLater(1);
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		expect(persistedLine('old-game')).toBeUndefined();
+		expect(persistedLine('nfl-1')).toBeDefined();
+	});
+
+	test('the line is written to session storage with the score history', async () => {
+		await loadWith(footballGame);
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		expect(persistedLine('nfl-1')).toEqual([0.55]);
+	});
+
+	test('a restarted worker scores from the line it stored', async () => {
+		const stored = { 'nfl-1': [0.5, 0.52, 0.5, 0.55, 0.5, 0.51] };
+		await loadWith({ ...footballGame, homeWinProbability: 0.52, lastPlayId: 'play-9' }, { scoreboardWinProbHistory: stored });
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string; winProbabilityVariance?: number }[] };
+		expect(state.scores.find(s => s.gameId === 'nfl-1')?.winProbabilityVariance).toBeGreaterThan(0);
+		expect(persistedLine('nfl-1')).toEqual([...stored['nfl-1']!, 0.52]);
+	});
+
+	test('without the stored line the same game has too little history to boost', async () => {
+		await loadWith({ ...footballGame, homeWinProbability: 0.52, lastPlayId: 'play-9' });
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string; winProbabilityVariance?: number }[] };
+		expect(state.scores.find(s => s.gameId === 'nfl-1')?.winProbabilityVariance).toBeUndefined();
 	});
 });
 
@@ -1580,6 +1746,101 @@ describe('polling a league with nothing on', () => {
 		const state = await debugState();
 		expect(state.pollModes.nba).toBe('dormant');
 		expect(state.leagueIntervals.nba).toBe(pollDormantMaxMs);
+	});
+
+	// A refusal used to retry at 15s whatever the league's own cadence was, so a 403 on a sleeping
+	// league multiplied its request rate by sixty. Jitter is pinned to +2s by the `randomInRange` mock.
+	describe('when the poll keeps failing', () => {
+		const refused = { games: [], leagueLogos: {}, shedLeagues: ['nba' as LeagueId] };
+		const retryDelays = async (count: number) => {
+			const delays: number[] = [];
+			for (let attempt = 0; attempt < count; attempt += 1) {
+				await pollOnce(40 * 60_000);
+				delays.push((await debugState()).leagueIntervals.nba!);
+			}
+			return delays;
+		};
+
+		test('each retry waits twice as long as the last, up to the interval the league was on', async () => {
+			await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+			await goQuiet();
+			fetchMock.mockResolvedValue(refused);
+
+			expect(await retryDelays(9)).toEqual([
+				17_000, 32_000, 62_000, 122_000, 242_000, 482_000, 962_000, pollHebetudinousMaxMs, pollHebetudinousMaxMs,
+			]);
+		});
+
+		test('a dormant league stops backing off at its own beat', async () => {
+			await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+			lookahead().mockResolvedValue(startMs + 45 * 60_000);
+			await goQuiet();
+			fetchMock.mockResolvedValue(refused);
+
+			expect(await retryDelays(6)).toEqual([17_000, 32_000, 62_000, 122_000, pollDormantMaxMs, pollDormantMaxMs]);
+		});
+
+		test('a league that has never answered backs off to the dormant beat, not the live one', async () => {
+			await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: refused });
+
+			expect(await retryDelays(6)).toEqual([17_000, 32_000, 62_000, 122_000, pollDormantMaxMs, pollDormantMaxMs]);
+		});
+
+		test('a league with a game on never retries slower than the live cadence', async () => {
+			await loadBackground({
+				prefs: nbaOnly,
+				initialSystemTime: startMs,
+				fetchReturnValue: { games: [liveGame], leagueLogos: {}, shedLeagues: [] },
+			});
+			await pollOnce();
+			fetchMock.mockResolvedValue(refused);
+
+			const delays = await retryDelays(6);
+			expect(Math.max(...delays)).toBeLessThanOrEqual(pollMaxEagerMs + 2_000);
+			expect(Math.min(...delays)).toBeGreaterThanOrEqual(17_000);
+		});
+
+		test('a sleeping league keeps its ceiling after the lookahead it slept on has expired', async () => {
+			await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+			await goQuiet();
+			expect((await debugState()).pollModes.nba).toBe('hebetudinous');
+			fetchMock.mockResolvedValue(refused);
+			await retryDelays(9);
+
+			jest.setSystemTime(startMs + pollLookaheadTtlMs + 60 * 60_000);
+			expect(await retryDelays(2)).toEqual([pollHebetudinousMaxMs, pollHebetudinousMaxMs]);
+			expect((await debugState()).pollModes.nba).toBe('dormant');
+		});
+
+		test('really does wait that long before asking again', async () => {
+			await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+			await goQuiet();
+			fetchMock.mockResolvedValue(refused);
+			await retryDelays(2);
+
+			fetchMock.mockClear();
+			jest.advanceTimersByTime(30_000);
+			await drain();
+			expect(fetchMock).not.toHaveBeenCalled();
+
+			jest.advanceTimersByTime(3_000);
+			await drain();
+			expect(fetchMock).toHaveBeenCalled();
+		});
+
+		test('the first answer puts the league back on its own beat and the count back to zero', async () => {
+			await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+			await goQuiet();
+			fetchMock.mockResolvedValue(refused);
+			expect(await retryDelays(3)).toEqual([17_000, 32_000, 62_000]);
+
+			fetchMock.mockResolvedValue(emptySlate);
+			await pollOnce();
+			expect((await debugState()).leagueIntervals.nba).toBe(pollHebetudinousMaxMs);
+
+			fetchMock.mockResolvedValue(refused);
+			expect(await retryDelays(2)).toEqual([17_000, 32_000]);
+		});
 	});
 });
 
