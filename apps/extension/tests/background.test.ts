@@ -2371,6 +2371,7 @@ describe('a scoreboard ESPN refused', () => {
 	const state = async () => await sendMessage({ type: 'GET_STATE' }) as {
 		games: Game[];
 		slateShedLeagues: string[];
+		leagueLastGoodAt: Record<string, number>;
 	};
 
 	const pollOnce = async () => {
@@ -2412,6 +2413,22 @@ describe('a scoreboard ESPN refused', () => {
 		await pollOnce();
 
 		expect((await state()).slateShedLeagues).toEqual([]);
+	});
+
+	test('remembers when the league last answered, and a refusal does not move it', async () => {
+		await loadWithLiveGame();
+		await pollOnce();
+		const answeredAt = (await state()).leagueLastGoodAt.nba;
+		expect(answeredAt).toBeGreaterThan(0);
+
+		fetchMock.mockResolvedValue({ games: [], leagueLogos: {}, shedLeagues: ['nba'] });
+		await pollOnce();
+		await pollOnce();
+		expect((await state()).leagueLastGoodAt.nba).toBe(answeredAt);
+
+		fetchMock.mockResolvedValue({ games: [liveGame], leagueLogos: {}, shedLeagues: [] });
+		await pollOnce();
+		expect((await state()).leagueLastGoodAt.nba).toBeGreaterThan(answeredAt);
 	});
 
 	// An empty answer ESPN actually gave is a quiet night and should read as one.
@@ -2633,6 +2650,104 @@ describe('what the slate keeps for a league that did not answer', () => {
 		});
 
 		expect(await stateGames()).not.toContain('mlb-later');
+	});
+});
+
+const summary = (games: Game[]) => games.map(g => `${g.id}:${g.status}`).toSorted();
+
+/* The popup's Refresh, closing Settings and finishing onboarding all ask for a fresh state, which
+   polls every league at once. A league refused in that poll answered with nothing, not with no games:
+   its live cards have to stay, and the slate's older copy of a game that has since gone live must
+   not come back beside them as an upcoming one. */
+describe('a fan-out poll with a league refused', () => {
+	const bothLeagues: Partial<UserPreferences> = {
+		enabledLeagues: ['nba' as LeagueId, 'mlb' as LeagueId],
+		enabled: false,
+		showUpcomingGames: true,
+	};
+
+	interface LeagueAnswer { poll: Game[]; slate: Game[]; shed: boolean }
+	let world: Record<string, LeagueAnswer>;
+
+	const serveWorld = () => fetchMock.mockImplementation(async (leagues: LeagueId[], options?: { includeUpcoming?: boolean }) => ({
+		games: leagues.flatMap(id => world[id]!.shed ? [] : (options?.includeUpcoming ? world[id]!.slate : world[id]!.poll)),
+		leagueLogos: {},
+		shedLeagues: leagues.filter(id => world[id]!.shed),
+	}));
+
+	const refresh = async () => await sendMessage({ type: 'GET_STATE', forceRefresh: true }) as {
+		games: Game[];
+		slateShedLeagues: string[];
+		leagueLastGoodAt: Record<string, number>;
+	};
+
+	beforeEach(async () => {
+		world = {
+			nba: {
+				poll: [slateGame('early', 'nba', 'in')],
+				slate: [slateGame('early', 'nba', 'in'), slateGame('later', 'nba', 'pre')],
+				shed: false,
+			},
+			mlb: { poll: [slateGame('mlbg', 'mlb', 'in')], slate: [slateGame('mlbg', 'mlb', 'in')], shed: false },
+			nhl: { poll: [], slate: [], shed: false },
+		};
+		await loadBackground({ prefs: bothLeagues, initialSystemTime: 1_000_000 });
+		serveWorld();
+		// A preference move is what re-runs refreshSlate, which is where the upcoming list comes from.
+		await sendMessage({
+			type: 'UPDATE_PREFS',
+			prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...bothLeagues, upcomingGamesDays: 9 }),
+		});
+		await refresh();
+	});
+
+	test('keeps the live cards of the refused league, including one that went live since the slate was fetched', async () => {
+		world.nba.poll = [slateGame('early', 'nba', 'in'), slateGame('later', 'nba', 'in')];
+		expect(summary((await refresh()).games)).toEqual(['early:in', 'later:in', 'mlbg:in']);
+
+		world.nba.shed = true;
+		const after = await refresh();
+
+		expect(after.slateShedLeagues).toEqual(['nba']);
+		expect(summary(after.games)).toEqual(['early:in', 'later:in', 'mlbg:in']);
+	});
+
+	test('still lists a refused league\'s kickoffs once, as upcoming', async () => {
+		world.nba.shed = true;
+
+		expect(summary((await refresh()).games)).toEqual(['early:in', 'later:pre', 'mlbg:in']);
+	});
+
+	// The preference moves that rebuild the list from the slate: a slate setting, and the league set.
+	const changePrefs = (over: Partial<UserPreferences>) => sendMessage({
+		type: 'UPDATE_PREFS',
+		prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...bothLeagues, ...over }),
+	});
+
+	const currentGames = async () => (await sendMessage({ type: 'GET_STATE' }) as { games: Game[] }).games;
+
+	test.each([
+		['a slate setting changes', { upcomingGamesDays: 5 }],
+		['a league is added', { enabledLeagues: ['nba', 'mlb', 'nhl'] as LeagueId[] }],
+	])('shows a game that went live once, not also as upcoming, when %s', async (_label, over) => {
+		world.nba.poll = [slateGame('early', 'nba', 'in'), slateGame('later', 'nba', 'in')];
+		await refresh();
+		world.nba.shed = true;
+		await refresh();
+
+		await changePrefs(over);
+
+		expect(summary(await currentGames())).toEqual(['early:in', 'later:in', 'mlbg:in']);
+	});
+
+	test('stamps the leagues that answered and leaves the refused one at its last good poll', async () => {
+		const first = (await refresh()).leagueLastGoodAt;
+		expect(first).toEqual({ nba: 1_000_000, mlb: 1_000_000 });
+
+		jest.setSystemTime(1_000_000 + (5 * 60_000));
+		world.nba.shed = true;
+
+		expect((await refresh()).leagueLastGoodAt).toEqual({ nba: 1_000_000, mlb: 1_000_000 + (5 * 60_000) });
 	});
 });
 

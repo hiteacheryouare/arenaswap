@@ -14,6 +14,7 @@ import ToastContainer from './components/toastContainer';
 import { fetchState, formatTabLabel, insertLeagueAtDefaultPosition, leagueOrder, leaguesBySportType, moveLeague, normalizeBackgroundState, popupView } from './popupHelpers';
 import { i18n } from '#i18n';
 import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
+import { StaleLeaguesProvider } from '@arenaswap/ui/src/components/staleLeagueNote';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
 import { resolveOpenRevealMode, revealSettleMs, revealSkipOutMs, writeOpenRevealEnabled } from './cardReveal';
 import { isLeagueLogoCacheFresh, leagueLogoCacheKey, seededLeagueLogos } from './leagueLogoCache';
@@ -523,6 +524,7 @@ export default () => {
 
 	return (
 		<TranslationContext.Provider value={i18n.t}>
+		<StaleLeaguesProvider shedLeagues={data?.slateShedLeagues} lastGoodAt={data?.leagueLastGoodAt}>
 		<div className='popup-root'>
 			<canvas ref={confettiCanvasRef} className='popup-confetti-canvas' aria-hidden='true' />
 			<ToastContainer toasts={toasts} onDismiss={dismissToast} />
@@ -681,6 +683,7 @@ export default () => {
 				)}
 			</div>
 		</div>
+		</StaleLeaguesProvider>
 		</TranslationContext.Provider>
 	);
 };

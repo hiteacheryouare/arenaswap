@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Live cards say when their league went quiet — 2026-10-09
+
+A live card whose league has been refusing polls for a full minute now carries one muted line under its venue, "Last updated 7 minutes ago", which counts up while the popup is open, turns to hours past an hour and disappears on the next good poll. The worker reports when each league last answered as `leagueLastGoodAt`. A refresh that finds a league refusing also keeps that league's live cards instead of dropping them, and neither a refresh nor a settings change brings back a game that has gone live as an upcoming one too.
+
 ## The Guide stops mistaking a refusal for a quiet day — 2026-10-09
 
 When our sources refuse every league, the Guide now shows the popup's "Couldn't load games" banner with its Retry button instead of "no games", and a worker that never answers no longer leaves the spinner up. A slate that every league refused is not cached, and one that lost some leagues keeps their previous games; both are asked about again after a minute, or at once on Retry, rather than after ten minutes or on every poll.
