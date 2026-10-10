@@ -32,22 +32,12 @@ Every card in the popup shows a color-coded PowerScore bar so you can see the ex
 SUPPORTED LEAGUES (31)
 ━━━━━━━━━━━━━━━━━━━━━━
 
-🏀 Basketball (6)
-NBA · WNBA · NCAA Men's · NCAA Women's · Olympic Men's · Olympic Women's
+ArenaSwap monitors 31 leagues across six sports, and you can toggle any of them on or off.
 
-🏈 Football (3)
-NFL · NCAA Football · UFL
+Coverage spans basketball, football, hockey, baseball and softball at the professional, college, and Olympic levels — the NBA and WNBA, the NFL, the NHL, MLB, and their college and international counterparts. This also includes soccer, reaching from North American clubs through Europe's top domestic leagues to the major international tournaments.
 
-🏒 Hockey (4)
-NHL · NCAA Men's · Olympic Men's · Olympic Women's
+Watch only the sports you follow, or turn everything on and let ArenaSwap find the best game in the world at any given moment.
 
-⚾ Baseball & Softball (5)
-MLB · NCAA Baseball · NCAA Softball · Olympic Baseball · World Baseball Classic
-
-⚽ Soccer (13)
-MLS · NWSL · English Premier League · La Liga · Bundesliga · Serie A · Liga MX · UEFA Champions League · UEFA Europa League · Olympic Men's · Olympic Women's · FIFA World Cup · FIFA Women's World Cup
-
-Six sports. 31 leagues. Toggle any of them on or off.
 
 ━━━━━━━━━━━━━━━━━━━━━━
 TUNED IN TO YOU

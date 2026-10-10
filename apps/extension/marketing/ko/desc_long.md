@@ -32,22 +32,11 @@ POWERSCORE 알고리즘
 지원 리그 (31개)
 ━━━━━━━━━━━━━━━━━━━━━━
 
-🏀 농구 (6)
-NBA · WNBA · NCAA Men's · NCAA Women's · Olympic Men's · Olympic Women's
+ArenaSwap은 6개 스포츠에 걸친 31개 리그를 지켜보고, 각각을 켜고 끌 수 있어요.
 
-🏈 미식축구 (3)
-NFL · NCAA Football · UFL
+농구, 미식축구, 아이스하키, 야구 및 소프트볼을 프로, 대학, 올림픽 레벨까지 아울러요. 여기에는 NBA와 WNBA, NFL, NHL, MLB는 물론, 각 종목의 대학 리그와 국제 대회도 포함돼요. 축구도 포함되어 있어서, 북미 클럽부터 유럽 최상위 리그, 주요 국제 대회까지 폭넓게 다뤄요.
 
-🏒 아이스하키 (4)
-NHL · NCAA Men's · Olympic Men's · Olympic Women's
-
-⚾ 야구 및 소프트볼 (5)
-MLB · NCAA Baseball · NCAA Softball · Olympic Baseball · World Baseball Classic
-
-⚽ 축구 (13)
-MLS · NWSL · English Premier League · La Liga · Bundesliga · Serie A · Liga MX · UEFA Champions League · UEFA Europa League · Olympic Men's · Olympic Women's · FIFA World Cup · FIFA Women's World Cup
-
-6개 스포츠, 31개 리그. 각각을 켜고 끌 수 있어요.
+관심 있는 스포츠만 보거나, 전부 켜 두고 ArenaSwap이 언제든 전 세계에서 가장 좋은 경기를 찾아주게 하세요.
 
 ━━━━━━━━━━━━━━━━━━━━━━
 당신에게 맞춰서

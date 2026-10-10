@@ -32,22 +32,11 @@ Ogni scheda nel popup mostra una barra PowerScore con codice colore, così vedi 
 LEGHE SUPPORTATE (31)
 ━━━━━━━━━━━━━━━━━━━━━━
 
-🏀 Basket (6)
-NBA · WNBA · NCAA Men's · NCAA Women's · Olympic Men's · Olympic Women's
+ArenaSwap monitora 31 leghe in sei sport, e puoi attivare o disattivare ognuna di esse.
 
-🏈 Football americano (3)
-NFL · NCAA Football · UFL
+La copertura comprende basket, football americano, hockey su ghiaccio, baseball e softball a livello professionistico, universitario e olimpico. Questo include NBA e WNBA, NFL, NHL e MLB, oltre alle rispettive controparti universitarie e internazionali. C'è anche il calcio, dai club nordamericani ai principali campionati europei fino ai grandi tornei internazionali.
 
-🏒 Hockey su ghiaccio (4)
-NHL · NCAA Men's · Olympic Men's · Olympic Women's
-
-⚾ Baseball e softball (5)
-MLB · NCAA Baseball · NCAA Softball · Olympic Baseball · World Baseball Classic
-
-⚽ Calcio (13)
-MLS · NWSL · English Premier League · La Liga · Bundesliga · Serie A · Liga MX · UEFA Champions League · UEFA Europa League · Olympic Men's · Olympic Women's · FIFA World Cup · FIFA Women's World Cup
-
-Sei sport. 31 leghe. Attiva o disattiva ognuna di esse.
+Segui solo gli sport che ti interessano, oppure attivali tutti e lascia che ArenaSwap trovi la partita migliore al mondo in qualsiasi momento.
 
 ━━━━━━━━━━━━━━━━━━━━━━
 SINTONIZZATO SU DI TE
