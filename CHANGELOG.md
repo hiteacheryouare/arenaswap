@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The detail screen follows a live game — 2026-10-09
+
+While a game is live, the detail screen asks for its summary again every minute, the pace the background already polls at, so the win probability line, box score and series state keep moving instead of freezing at the moment you opened it. A refresh swaps the data in quietly: a failed or thin one keeps what's on screen, a slow answer that lands after a newer one is dropped, and a hidden page skips its polls.
+
 ## Live cards say when their league went quiet — 2026-10-09
 
 A live card whose league has been refusing polls for a full minute now carries one muted line under its venue, "Last updated 7 minutes ago", which counts up while the popup is open, turns to hours past an hour and disappears on the next good poll. The worker reports when each league last answered as `leagueLastGoodAt`. A refresh that finds a league refusing also keeps that league's live cards instead of dropping them, and neither a refresh nor a settings change brings back a game that has gone live as an upcoming one too.
