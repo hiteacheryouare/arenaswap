@@ -1,7 +1,7 @@
 import { pollWinProbabilityMs } from '@arenaswap/core';
 import { gameEndTimesKey } from '../utils/gameEndTimes';
 import { monoLogoCacheKey, monoLogoCacheTtlMs } from '../utils/monoLogoCache';
-import { createDefaultUserPreferences, createFavoriteTeamKey, guideMinUpcomingDays, historyWindowMs, normalizeUserPreferences, pollDormantMaxMs, pollHebetudinousMaxMs, pollIntervalMs, pollMaxEagerMs } from '@arenaswap/core/constants';
+import { createDefaultUserPreferences, createFavoriteTeamKey, guideMinUpcomingDays, historyWindowMs, normalizeUserPreferences, pollDormantMaxMs, pollHebetudinousMaxMs, pollIntervalMs, pollLookaheadTtlMs, pollMaxEagerMs } from '@arenaswap/core/constants';
 import { chartHistory, coversWholeGame } from '../entrypoints/popup/components/wrapCoverage';
 import type { Game, LeagueId, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import { prefsStorageUpdatedAtKey } from '../utils/prefsStorage';
@@ -1746,6 +1746,101 @@ describe('polling a league with nothing on', () => {
 		const state = await debugState();
 		expect(state.pollModes.nba).toBe('dormant');
 		expect(state.leagueIntervals.nba).toBe(pollDormantMaxMs);
+	});
+
+	// A refusal used to retry at 15s whatever the league's own cadence was, so a 403 on a sleeping
+	// league multiplied its request rate by sixty. Jitter is pinned to +2s by the `randomInRange` mock.
+	describe('when the poll keeps failing', () => {
+		const refused = { games: [], leagueLogos: {}, shedLeagues: ['nba' as LeagueId] };
+		const retryDelays = async (count: number) => {
+			const delays: number[] = [];
+			for (let attempt = 0; attempt < count; attempt += 1) {
+				await pollOnce(40 * 60_000);
+				delays.push((await debugState()).leagueIntervals.nba!);
+			}
+			return delays;
+		};
+
+		test('each retry waits twice as long as the last, up to the interval the league was on', async () => {
+			await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+			await goQuiet();
+			fetchMock.mockResolvedValue(refused);
+
+			expect(await retryDelays(9)).toEqual([
+				17_000, 32_000, 62_000, 122_000, 242_000, 482_000, 962_000, pollHebetudinousMaxMs, pollHebetudinousMaxMs,
+			]);
+		});
+
+		test('a dormant league stops backing off at its own beat', async () => {
+			await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+			lookahead().mockResolvedValue(startMs + 45 * 60_000);
+			await goQuiet();
+			fetchMock.mockResolvedValue(refused);
+
+			expect(await retryDelays(6)).toEqual([17_000, 32_000, 62_000, 122_000, pollDormantMaxMs, pollDormantMaxMs]);
+		});
+
+		test('a league that has never answered backs off to the dormant beat, not the live one', async () => {
+			await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: refused });
+
+			expect(await retryDelays(6)).toEqual([17_000, 32_000, 62_000, 122_000, pollDormantMaxMs, pollDormantMaxMs]);
+		});
+
+		test('a league with a game on never retries slower than the live cadence', async () => {
+			await loadBackground({
+				prefs: nbaOnly,
+				initialSystemTime: startMs,
+				fetchReturnValue: { games: [liveGame], leagueLogos: {}, shedLeagues: [] },
+			});
+			await pollOnce();
+			fetchMock.mockResolvedValue(refused);
+
+			const delays = await retryDelays(6);
+			expect(Math.max(...delays)).toBeLessThanOrEqual(pollMaxEagerMs + 2_000);
+			expect(Math.min(...delays)).toBeGreaterThanOrEqual(17_000);
+		});
+
+		test('a sleeping league keeps its ceiling after the lookahead it slept on has expired', async () => {
+			await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+			await goQuiet();
+			expect((await debugState()).pollModes.nba).toBe('hebetudinous');
+			fetchMock.mockResolvedValue(refused);
+			await retryDelays(9);
+
+			jest.setSystemTime(startMs + pollLookaheadTtlMs + 60 * 60_000);
+			expect(await retryDelays(2)).toEqual([pollHebetudinousMaxMs, pollHebetudinousMaxMs]);
+			expect((await debugState()).pollModes.nba).toBe('dormant');
+		});
+
+		test('really does wait that long before asking again', async () => {
+			await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+			await goQuiet();
+			fetchMock.mockResolvedValue(refused);
+			await retryDelays(2);
+
+			fetchMock.mockClear();
+			jest.advanceTimersByTime(30_000);
+			await drain();
+			expect(fetchMock).not.toHaveBeenCalled();
+
+			jest.advanceTimersByTime(3_000);
+			await drain();
+			expect(fetchMock).toHaveBeenCalled();
+		});
+
+		test('the first answer puts the league back on its own beat and the count back to zero', async () => {
+			await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
+			await goQuiet();
+			fetchMock.mockResolvedValue(refused);
+			expect(await retryDelays(3)).toEqual([17_000, 32_000, 62_000]);
+
+			fetchMock.mockResolvedValue(emptySlate);
+			await pollOnce();
+			expect((await debugState()).leagueIntervals.nba).toBe(pollHebetudinousMaxMs);
+
+			fetchMock.mockResolvedValue(refused);
+			expect(await retryDelays(2)).toEqual([17_000, 32_000]);
+		});
 	});
 });
 

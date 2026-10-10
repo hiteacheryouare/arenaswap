@@ -26,6 +26,14 @@ import type { AtBat, AtBatPlayer, Game, GameCondition, RedCardEvent, SeriesState
 
 const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
 
+/* A request that never answers would otherwise hold its in-flight dedup entry for good, so every
+   later poll for that league and day would wait on it. `fetchWinProbability` is the exception: it
+   takes its caller's signal, and combining two needs `AbortSignal.any`, which Chrome 110 and
+   Firefox 115 (the manifest minimums) do not have. `AbortSignal.timeout` needs Chrome 103 and
+   Firefox 100. */
+export const requestTimeoutMs = 10_000;
+const requestSignal = (): AbortSignal => AbortSignal.timeout(requestTimeoutMs);
+
 /* ESPN sheds load on this host by recent request volume from an IP and answers 403 to whatever it
    drops. Measured from one machine against the NBA scoreboard: 16 requests at once all came back
    200, 24 at once lost four of them, and the same size passed cleanly a minute later — so the window
@@ -777,6 +785,7 @@ const fetchScoreboard = async (url: string, leagueId: LeagueId, warnKey: string 
 		headers: {
 			'Accept': 'application/json',
 		},
+		signal: requestSignal(),
 	});
 	recordScoreboardMaxAge(leagueId, res.headers.get('cache-control'));
 	if (!res.ok) throw new LeagueFetchError(leagueId, res.status);
@@ -1193,7 +1202,7 @@ export const fetchCompetitionSituation = async (game: Pick<Game, 'id' | 'league'
 	const [sport, leaguePath] = config.espnPath.split('/');
 	await takeRequestSlot();
 	// Its replies are cacheable for seconds and stale for hours, so it's always asked afresh.
-	const res = await fetch(`${coreApiBase}/${sport}/leagues/${leaguePath}/events/${game.id}/competitions/${game.id}/situation`, { headers: { Accept: 'application/json' }, cache: 'no-cache' });
+	const res = await fetch(`${coreApiBase}/${sport}/leagues/${leaguePath}/events/${game.id}/competitions/${game.id}/situation`, { headers: { Accept: 'application/json' }, cache: 'no-cache', signal: requestSignal() });
 	if (!res.ok) throw new Error(`Failed to fetch the situation for ${game.id}: HTTP ${res.status}`);
 	return await res.json();
 };
@@ -1202,7 +1211,7 @@ export const fetchCompetitionSituation = async (game: Pick<Game, 'id' | 'league'
 export const fetchLeagueStandings = async (league: LeagueId): Promise<unknown> => {
 	const config = leagueConfigMap[league];
 	await takeRequestSlot();
-	const res = await fetch(`https://site.api.espn.com/apis/v2/sports/${config.espnPath}/standings?level=3`, { headers: { Accept: 'application/json' } });
+	const res = await fetch(`https://site.api.espn.com/apis/v2/sports/${config.espnPath}/standings?level=3`, { headers: { Accept: 'application/json' }, signal: requestSignal() });
 	if (!res.ok) throw new Error(`Failed to fetch ${league} standings: HTTP ${res.status}`);
 	return await res.json();
 };
@@ -1244,7 +1253,7 @@ export const fetchGameDurationMins = async (game: Pick<Game, 'id' | 'league'>): 
 
 	const url = `${espnBase}/${config.espnPath}/summary?event=${encodeURIComponent(game.id)}`;
 	await takeRequestSlot();
-	const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+	const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: requestSignal() });
 	if (!res.ok) throw new Error(`Failed to fetch the duration of ${game.id}: HTTP ${res.status}`);
 	return parseGameDurationMins(await res.json());
 };
@@ -1295,7 +1304,7 @@ export const fetchTeamMonoLogos = async (leagueIds: LeagueId[], size = 120): Pro
 	const results = await settledInPool(configs, async (config) => {
 		const url = `${espnBase}/${config.espnPath}/teams?limit=1000`;
 		await takeRequestSlot();
-		const res = await fetch(url, { headers: { Accept: 'application/json' } });
+		const res = await fetch(url, { headers: { Accept: 'application/json' }, signal: requestSignal() });
 		if (!res.ok) throw new Error(`Failed to fetch team logos for ${config.id}: HTTP ${res.status}`);
 		const parsed = parseTeams(await res.json());
 		const entries = parsed.teams.reduce<Record<string, TeamMonoMarks>>((acc, { team }) => {
@@ -1328,7 +1337,7 @@ export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnT
 		if (config.id === 'ncaaw') params.set('groups', '49');
 		const url = `${espnBase}/${config.espnPath}/teams?${params.toString()}`;
 		await takeRequestSlot();
-		const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+		const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: requestSignal() });
 		if (!res.ok) throw new Error(`Failed to fetch teams for ${config.id}: HTTP ${res.status}`);
 		const parsed = parseTeams(await res.json());
 		warnOnDroppedCountChange(
