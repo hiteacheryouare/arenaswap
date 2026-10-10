@@ -32,22 +32,11 @@ Chaque carte du popup affiche une barre de PowerScore avec un code couleur pour 
 LIGUES PRISES EN CHARGE (31)
 ━━━━━━━━━━━━━━━━━━━━━━
 
-🏀 Basketball (6)
-NBA · WNBA · NCAA Men's · NCAA Women's · Olympic Men's · Olympic Women's
+ArenaSwap surveille 31 ligues dans six sports, et tu peux activer ou désactiver chacune d'entre elles.
 
-🏈 Football américain (3)
-NFL · NCAA Football · UFL
+La couverture s'étend sur le basketball, le football américain, le hockey, le baseball et le softball aux niveaux professionnel, universitaire et olympique. Cela comprend la NBA et la WNBA, la NFL, la NHL, la MLB, ainsi que leurs équivalents universitaires et internationaux. Le football y figure aussi, des clubs nord-américains aux plus grands championnats européens en passant par les grandes compétitions internationales.
 
-🏒 Hockey (4)
-NHL · NCAA Men's · Olympic Men's · Olympic Women's
-
-⚾ Baseball et softball (5)
-MLB · NCAA Baseball · NCAA Softball · Olympic Baseball · World Baseball Classic
-
-⚽ Football (13)
-MLS · NWSL · English Premier League · La Liga · Bundesliga · Serie A · Liga MX · UEFA Champions League · UEFA Europa League · Olympic Men's · Olympic Women's · FIFA World Cup · FIFA Women's World Cup
-
-Six sports. 31 ligues. Active ou désactive chacune d'entre elles.
+Ne suis que les sports qui t'intéressent, ou active-les tous et laisse ArenaSwap trouver le meilleur match au monde à tout moment.
 
 ━━━━━━━━━━━━━━━━━━━━━━
 RÉGLÉ SUR TOI

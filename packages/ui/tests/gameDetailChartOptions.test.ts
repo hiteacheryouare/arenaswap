@@ -2,7 +2,7 @@ import type { EChartsOption } from 'echarts';
 import { scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import {
-	boostMoments,
+	boostMomentOf,
 	buildComponentContributionOption,
 	buildLeadTrackerOption,
 	buildPowerScoreOption,
@@ -452,57 +452,27 @@ describe('buildComponentContributionOption across modes', () => {
 	});
 });
 
-interface markAreaLike {
-	silent?: boolean;
-	data?: [{ name?: string; xAxis?: number; itemStyle?: { color?: string } }, { xAxis?: number }][];
-}
-
-const markAreaOf = (option: EChartsOption): markAreaLike | undefined => (
-	(seriesOf(option)[0] as { markArea?: markAreaLike } | undefined)?.markArea
-);
-
 const point = (index: number) => [{ axisValueLabel: 'x', dataIndex: index, marker: '', seriesName: 'PowerScore', value: 60 + index }];
 
 describe('boost moments on the PowerScore line', () => {
-	test('shades nothing, and keeps the stock tooltip, on a game with no moment boosts', () => {
+	test('keeps the stock tooltip on a game with no moment boosts', () => {
 		const option = buildPowerScoreOption([powerPoint(0), powerPoint(1, { boosts: { favoriteBoost: 10 } })]);
-		expect(markAreaOf(option)).toBeUndefined();
 		expect((option.tooltip as { formatter?: unknown }).formatter).toBeUndefined();
 	});
 
-	// The stretch ends at the first reading that no longer pays, since the moment ended somewhere
-	// between the two.
-	test('shades each stretch a moment boost paid, in that boost\'s tone', () => {
-		const history = [
-			powerPoint(0),
-			powerPoint(1, { boosts: { twoMinuteDrill: 8 } }),
-			powerPoint(2, { boosts: { twoMinuteDrill: 10 } }),
-			powerPoint(3),
-			powerPoint(4, { boosts: { redCard: 6 } }),
-		];
-		expect(boostMoments(history)).toEqual([
-			{ id: 'twoMinuteDrill', start: 1, end: 3 },
-			{ id: 'redCard', start: 4, end: 4 },
-		]);
-		const area = markAreaOf(buildPowerScoreOption(history))!;
-		expect(area.silent).toBe(true);
-		expect(area.label).toEqual({ show: false });
-		expect(area.data).toHaveLength(2);
-		expect(area.data![0]![0].name).toBe('Two-minute drill');
-		expect(area.data![0]![0].xAxis).toBe(1);
-		expect(area.data![0]![1].xAxis).toBe(3);
-		expect(area.data![0]![0].itemStyle!.color).toBe('rgba(244, 63, 94, 0.16)');
-		expect(area.data![1]![0].itemStyle!.color).toBe('rgba(239, 68, 68, 0.16)');
+	test('shades nothing behind the line while a moment boost pays', () => {
+		const option = buildPowerScoreOption([powerPoint(0), powerPoint(1, { boosts: { twoMinuteDrill: 8 } })]);
+		expect(seriesOf(option)[0]).not.toHaveProperty('markArea');
 	});
 
 	test('names the strongest moment when two pay at once, and leaves out the boosts that are not moments', () => {
-		const history = [powerPoint(0, { boosts: { scoringOpportunity: 3, goAheadRun: 8, favoriteBoost: 10, postseasonBoost: 5 } })];
-		expect(boostMoments(history)).toEqual([{ id: 'goAheadRun', start: 0, end: 0 }]);
+		const snapshot = powerPoint(0, { boosts: { scoringOpportunity: 3, goAheadRun: 8, favoriteBoost: 10, postseasonBoost: 5 } });
+		expect(boostMomentOf(snapshot)).toBe('goAheadRun');
+		expect(boostMomentOf(powerPoint(1, { boosts: { favoriteBoost: 10 } }))).toBeUndefined();
 	});
 
-	test('splits the stretch where one moment hands over to another', () => {
-		const history = [powerPoint(0, { boosts: { twoMinuteDrill: 6 } }), powerPoint(1, { boosts: { scoringOpportunity: 9 } })];
-		expect(boostMoments(history).map(moment => moment.id)).toEqual(['twoMinuteDrill', 'scoringOpportunity']);
+	test('lets a live moment outrank a bigger boost that lasts all game', () => {
+		expect(boostMomentOf(powerPoint(0, { boosts: { noHitter: 22, scoringOpportunity: 4 } }))).toBe('scoringOpportunity');
 	});
 
 	test('names the boost in the tooltip, in the language it is given', () => {

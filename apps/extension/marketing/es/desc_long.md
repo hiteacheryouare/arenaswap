@@ -32,22 +32,11 @@ Cada tarjeta en el popup muestra una barra de PowerScore codificada por color pa
 LIGAS COMPATIBLES (31)
 ━━━━━━━━━━━━━━━━━━━━━━
 
-🏀 Baloncesto (6)
-NBA · WNBA · NCAA Men's · NCAA Women's · Olympic Men's · Olympic Women's
+ArenaSwap monitorea 31 ligas en seis deportes, y puedes activar o desactivar cualquiera de ellas.
 
-🏈 Fútbol americano (3)
-NFL · NCAA Football · UFL
+La cobertura abarca baloncesto, fútbol americano, hockey, béisbol y sóftbol a nivel profesional, universitario y olímpico. Eso incluye a la NBA y la WNBA, la NFL, la NHL y la MLB, además de sus equivalentes universitarios e internacionales en cada deporte. También incluye fútbol, desde clubes norteamericanos hasta las principales ligas europeas y los grandes torneos internacionales.
 
-🏒 Hockey (4)
-NHL · NCAA Men's · Olympic Men's · Olympic Women's
-
-⚾ Béisbol y sóftbol (5)
-MLB · NCAA Baseball · NCAA Softball · Olympic Baseball · World Baseball Classic
-
-⚽ Fútbol (13)
-MLS · NWSL · English Premier League · La Liga · Bundesliga · Serie A · Liga MX · UEFA Champions League · UEFA Europa League · Olympic Men's · Olympic Women's · FIFA World Cup · FIFA Women's World Cup
-
-Seis deportes. 31 ligas. Activa o desactiva cualquiera de ellas.
+Mira solo los deportes que sigues, o actívalos todos y deja que ArenaSwap encuentre el mejor partido del mundo en cualquier momento.
 
 ━━━━━━━━━━━━━━━━━━━━━━
 AJUSTADO A TU MEDIDA
