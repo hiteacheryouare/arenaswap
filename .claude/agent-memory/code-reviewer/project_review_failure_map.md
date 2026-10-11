@@ -73,4 +73,4 @@ crest-sampled colour into `team.color` inside `fetchFilteredGames`, which all fo
 surface reads colour through `resolveTeamColorPair`, so sampled colours behave exactly like published ones
 (including the clash switch, which falls through to `cachedLogoSwitchColor` because sampled teams have no
 alternate). `sampleCrestColor` itself has no jest coverage: jest has no `OffscreenCanvas`, so it returns
-`undefined` immediately everywhere in the unit suites. A failed read is not retried for the worker's lifetime.
+`undefined` immediately everywhere in the unit suites. A failed read is retried after `retryAfterMs` (5 min, c2fd4037).
