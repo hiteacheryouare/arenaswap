@@ -7,7 +7,7 @@
 
 ## Teams without published colours get theirs from the crest — 2026-10-11
 
-Our sources send no colours for any men's college hockey team, the Olympic hockey nations, or about a hundred programmes each in college baseball, softball and football, so those games used to fall back to grey or blue and orange. The background now reads the most common colour off each such crest (black only when the crest has no colour in it) and stores it by logo URL, so every surface paints it on first load and nothing changes colour on screen.
+Our sources send no colours for any men's college hockey team, the Olympic hockey nations, or about a hundred programmes each in college baseball, softball and football, so those games used to fall back to grey or blue and orange. The background now reads the most common colour off each such crest (black only when the crest has no colour in it) and stores it by logo URL, so every surface paints it on first load and nothing changes colour on screen. Crests download eight at a time, and one that fails gets another try five minutes later.
 
 ## The onboarding e2e waits for every league's teams — 2026-10-09
 

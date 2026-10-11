@@ -21,6 +21,8 @@ interface storedCrestColors {
 
 const cacheLimit = 4096;
 const fetchTimeoutMs = 4000;
+const fetchConcurrency = 8;
+const retryAfterMs = 5 * 60_000;
 
 export const readStoredCrestColors = (stored: unknown): crestColorMap => {
 	if (typeof stored !== 'object' || stored === null) return new Map();
@@ -83,20 +85,45 @@ interface crestColorDeps {
 	load: () => Promise<unknown>;
 	save: (stored: storedCrestColors) => Promise<void>;
 	sample?: (src: string) => Promise<string | null | undefined>;
+	now?: () => number;
 }
 
-export const createCrestColors = ({ load, save, sample = sampleCrestColor }: crestColorDeps) => {
+export const createCrestColors = ({ load, save, sample = sampleCrestColor, now = Date.now }: crestColorDeps) => {
 	let colors: crestColorMap = new Map();
-	let loading: Promise<void> | null = null;
-	// One read per crest per worker, whatever it returned, so a crest that will not load is not
-	// fetched again on every poll. Held as promises so a second fetch landing mid-read waits for it.
+	let loading: Promise<boolean> | null = null;
+	// Held as promises so a second fetch landing mid-read waits for it.
 	const reads = new Map<string, Promise<boolean>>();
+	// A first college Saturday asks for a couple of hundred crests at once. Fetched all together on a
+	// slow link they would hit the timeout together, so they queue, and a failure waits a while
+	// before it is tried again rather than being tried on every poll.
+	const failedAt = new Map<string, number>();
+	const waiting: (() => void)[] = [];
+	let active = 0;
+
+	const withSlot = async <T>(task: () => Promise<T>): Promise<T> => {
+		if (active < fetchConcurrency) active += 1;
+		else await new Promise<void>(resolve => waiting.push(resolve));
+		try {
+			return await task();
+		} finally {
+			const next = waiting.shift();
+			if (next) next();
+			else active -= 1;
+		}
+	};
 
 	const read = (src: string): Promise<boolean> => {
 		const existing = reads.get(src);
 		if (existing) return existing;
-		const pending = sample(src).then(color => {
-			if (color === undefined) return false;
+		const failed = failedAt.get(src);
+		if (failed !== undefined && now() - failed < retryAfterMs) return Promise.resolve(false);
+		const pending = withSlot(() => sample(src)).then(color => {
+			reads.delete(src);
+			if (color === undefined) {
+				failedAt.set(src, now());
+				return false;
+			}
+			failedAt.delete(src);
 			colors.set(src, color);
 			for (const oldest of colors.keys()) {
 				if (colors.size <= cacheLimit) break;
@@ -112,14 +139,20 @@ export const createCrestColors = ({ load, save, sample = sampleCrestColor }: cre
 		loading ??= load()
 			.then(stored => {
 				colors = new Map([...readStoredCrestColors(stored), ...colors]);
+				return true;
 			})
-			.catch(err => logWarn('Failed to read the stored crest colours.', err));
-		await loading;
+			.catch(err => {
+				logWarn('Failed to read the stored crest colours.', err);
+				loading = null;
+				return false;
+			});
+		const loaded = await loading;
 
 		const missing = crestsToRead(games, colors);
 		if (missing.length > 0) {
 			const recorded = await Promise.all(missing.map(read));
-			if (recorded.some(Boolean)) {
+			// Saving over a store that never loaded would replace it with just this session's reads.
+			if (loaded && recorded.some(Boolean)) {
 				await save(toStored(colors)).catch(err => logWarn('Failed to persist crest colours.', err));
 			}
 		}

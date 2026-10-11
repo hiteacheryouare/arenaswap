@@ -24,10 +24,11 @@ const game = (awayTeam: Team, homeTeam: Team): Game => ({
 const collegeHockey = () => game(team('NU', { logo: huskies }), team('BENT', { logo: falcons }));
 
 const setup = (stored: unknown = undefined, colors: Record<string, string | null | undefined> = {}) => {
+	const clock = { now: 0 };
 	const save = jest.fn().mockResolvedValue(undefined);
 	const sample = jest.fn((src: string) => Promise.resolve(colors[src]));
-	const crestColors = createCrestColors({ load: () => Promise.resolve(stored), save, sample });
-	return { crestColors, save, sample };
+	const crestColors = createCrestColors({ load: () => Promise.resolve(stored), save, sample, now: () => clock.now });
+	return { crestColors, save, sample, clock };
 };
 
 describe('createCrestColors', () => {
@@ -71,15 +72,63 @@ describe('createCrestColors', () => {
 		expect(save).toHaveBeenCalledWith({ calibration: crestColorCalibration, colors: { [huskies]: '#DC0000', [falcons]: null } });
 	});
 
-	// A crest that would not load is not a crest without colour, so it stays unrecorded for the next
-	// worker to try. This one does not retry it on every poll.
-	test('does not store or retry a crest that could not be read', async () => {
-		const { crestColors, save, sample } = setup(undefined, {});
+	// A crest that would not load is not a crest without colour, so it is never stored.
+	test('does not store a crest that could not be read, and retries it only after a while', async () => {
+		const { crestColors, save, sample, clock } = setup(undefined, {});
 		const first = await crestColors.paint([collegeHockey()]);
 		await crestColors.paint([collegeHockey()]);
 		expect(first[0]!.awayTeam.color).toBeUndefined();
 		expect(save).not.toHaveBeenCalled();
 		expect(sample).toHaveBeenCalledTimes(2);
+
+		clock.now = 5 * 60_000;
+		await crestColors.paint([collegeHockey()]);
+		expect(sample).toHaveBeenCalledTimes(4);
+	});
+
+	test('shares one read between polls that land at the same time', async () => {
+		const { crestColors, sample } = setup(undefined, { [huskies]: '#DC0000', [falcons]: '#75B5DE' });
+		const [first, second] = await Promise.all([crestColors.paint([collegeHockey()]), crestColors.paint([collegeHockey()])]);
+		expect(sample).toHaveBeenCalledTimes(2);
+		expect(first![0]!.awayTeam.color).toBe('#DC0000');
+		expect(second![0]!.awayTeam.color).toBe('#DC0000');
+	});
+
+	test('reads a big slate a few crests at a time', async () => {
+		let inFlight = 0;
+		let mostInFlight = 0;
+		const sample = jest.fn(async () => {
+			inFlight += 1;
+			mostInFlight = Math.max(mostInFlight, inFlight);
+			await new Promise(resolve => setTimeout(resolve, 0));
+			inFlight -= 1;
+			return '#DC0000';
+		});
+		const crestColors = createCrestColors({ load: () => Promise.resolve(undefined), save: jest.fn().mockResolvedValue(undefined), sample });
+		const slate = Array.from({ length: 30 }, (_, index) => game(
+			team(`A${index}`, { logo: `https://a.espncdn.com/away/${index}.png` }),
+			team(`H${index}`, { logo: `https://a.espncdn.com/home/${index}.png` }),
+		));
+		const painted = await crestColors.paint(slate);
+		expect(sample).toHaveBeenCalledTimes(60);
+		expect(mostInFlight).toBe(8);
+		expect(painted.every(entry => entry.homeTeam.color === '#DC0000')).toBe(true);
+	});
+
+	test('does not save over the stored colours when they failed to load, and loads them on the next poll', async () => {
+		const stored = { calibration: crestColorCalibration, colors: { [falcons]: '#75B5DE' } };
+		const load = jest.fn()
+			.mockRejectedValueOnce(new Error('storage unavailable'))
+			.mockResolvedValue(stored);
+		const save = jest.fn().mockResolvedValue(undefined);
+		const crestColors = createCrestColors({ load, save, sample: () => Promise.resolve('#DC0000') });
+		await crestColors.paint([game(team('NU', { logo: huskies }), team('BU', { color: '#CC0000' }))]);
+		expect(save).not.toHaveBeenCalled();
+
+		const [painted] = await crestColors.paint([collegeHockey()]);
+		expect(load).toHaveBeenCalledTimes(2);
+		expect(painted!.awayTeam.color).toBe('#DC0000');
+		expect(painted!.homeTeam.color).toBe('#75B5DE');
 	});
 
 	test('returns the same game object when there is nothing to paint', async () => {
