@@ -1,4 +1,5 @@
 import { colorDifference, hexToLab, hexToRgb, rgbToHex } from './colorMath';
+import { crestInkGrouping, groupCrestInk } from './crestColor';
 import { samplePixels } from './logoTint';
 
 // The colour a team switches to when its published alternate is white, which a card cannot paint
@@ -7,10 +8,6 @@ import { samplePixels } from './logoTint';
 // Louisville is the evidence that it should.
 const sampleSize = 96;
 const minAlpha = 200;
-const bucketShift = 3;
-// Close enough to be one colour of the artwork. A crest's edges blend every colour into its
-// neighbours, and grouping is what stops a hundred faint blends outvoting the gold they came from.
-const sameColorDifference = 12;
 // A real second colour, not antialiasing: the Reds' crest is red and white and nothing else, and
 // every pink in it together is under this share.
 const minShare = 0.06;
@@ -33,55 +30,11 @@ const isBlendWithWhite = (color: string, primary: string): boolean => {
 	});
 };
 
-interface colorGroup {
-	seed: string;
-	count: number;
-	red: number;
-	green: number;
-	blue: number;
-}
-
 export const switchColorFromPixels = (pixels: Uint8ClampedArray, primary: string): string | null => {
-	const buckets = new Map<number, colorGroup>();
-	let ink = 0;
-	for (let index = 0; index + 3 < pixels.length; index += 4) {
-		if (pixels[index + 3]! < minAlpha) continue;
-		ink += 1;
-		const red = pixels[index]!;
-		const green = pixels[index + 1]!;
-		const blue = pixels[index + 2]!;
-		const key = ((red >> bucketShift) << 10) | ((green >> bucketShift) << 5) | (blue >> bucketShift);
-		const bucket = buckets.get(key);
-		if (bucket) {
-			bucket.count += 1;
-			bucket.red += red;
-			bucket.green += green;
-			bucket.blue += blue;
-		} else {
-			buckets.set(key, { seed: rgbToHex(red, green, blue), count: 1, red, green, blue });
-		}
-	}
-
-	// Largest buckets seed the groups, so a group is named after its most common shade rather than
-	// whichever blend happened to be read first.
-	const groups: colorGroup[] = [];
-	for (const bucket of [...buckets.values()].toSorted((a, b) => b.count - a.count)) {
-		const shade = rgbToHex(bucket.red / bucket.count, bucket.green / bucket.count, bucket.blue / bucket.count);
-		const group = groups.find(candidate => colorDifference(candidate.seed, shade) < sameColorDifference);
-		if (!group) {
-			groups.push({ ...bucket, seed: shade });
-			continue;
-		}
-		group.count += bucket.count;
-		group.red += bucket.red;
-		group.green += bucket.green;
-		group.blue += bucket.blue;
-	}
-
+	const { total, groups } = groupCrestInk(pixels, minAlpha);
 	const winner = groups
-		.filter(group => group.count >= ink * minShare)
-		.toSorted((a, b) => b.count - a.count)
-		.map(group => rgbToHex(group.red / group.count, group.green / group.count, group.blue / group.count))
+		.filter(group => group.count >= total * minShare)
+		.map(group => group.color)
 		.find(color => (
 			hexToLab(color)!.lightness <= whiteLightness
 			&& colorDifference(color, primary) >= nearPrimaryDifference
@@ -93,7 +46,7 @@ export const switchColorFromPixels = (pixels: Uint8ClampedArray, primary: string
 // Persisted for the same reason the crest verdicts are: a popup is a new document every time it
 // opens, and without this the card would paint its fallback and then change colour on every open.
 const storageKey = 'arenaswap.logoSwitchColors';
-const calibration = [sampleSize, minAlpha, bucketShift, sameColorDifference, minShare, whiteLightness, nearPrimaryDifference, blendDifference].join('/');
+const calibration = [sampleSize, minAlpha, crestInkGrouping, minShare, whiteLightness, nearPrimaryDifference, blendDifference].join('/');
 const cacheLimit = 1024;
 
 const readStored = (): Map<string, string | null> => {

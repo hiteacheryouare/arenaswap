@@ -6,6 +6,7 @@ import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
 import type { gameEndRecords } from '../utils/gameEndTimes';
 import { isMonoLogoCacheFresh, missingMonoLogoLeagues, monoLogoCacheKey } from '../utils/monoLogoCache';
+import { createCrestColors, crestColorCacheKey } from '../utils/crestColors';
 import {
 	finishedTabNoticeKey,
 	mergeFinishedTabNotice,
@@ -207,6 +208,10 @@ export default defineBackground(() => {
 		}
 		return monoLogos;
 	};
+	const crestColors = createCrestColors({
+		load: async () => (await browser.storage.local.get(crestColorCacheKey))[crestColorCacheKey],
+		save: stored => browser.storage.local.set({ [crestColorCacheKey]: stored }),
+	});
 	const storeEndRecords = (next: gameEndRecords) => {
 		endRecords = pruneGameEndRecords(next, Date.now());
 		void browser.storage.local.set({ [gameEndTimesKey]: endRecords }).catch(err => {
@@ -701,7 +706,7 @@ export default defineBackground(() => {
 	const fetchFilteredGames = async (leagues: LeagueId[], options: Parameters<typeof fetchGamesWithLeagueLogos>[1]) => {
 		const groupsByLeague = Object.fromEntries(leagues.filter(isCollegeLeagueId).map(leagueId => [leagueId, collegeGroupsFor(leagueId)]));
 		const result = await fetchGamesWithLeagueLogos(leagues, { ...options, groupsByLeague });
-		return { ...result, games: keepCollegeGames(result.games) };
+		return { ...result, games: await crestColors.paint(keepCollegeGames(result.games)) };
 	};
 
 	/* Asks for exactly what the display preferences want and no more. Widening this to cover the guide

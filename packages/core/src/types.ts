@@ -100,7 +100,8 @@ export interface Team {
 	// scoreline while this decides the tie.
 	shootoutScore?: number;
 	logo?: string;
-	// CSS hex, from the API. `alternateColor` is used when the primary clashes with the opponent.
+	// CSS hex, from the API, or read off the crest in the background when the API sends none.
+	// `alternateColor` is used when the primary clashes with the opponent.
 	color?: string;
 	alternateColor?: string;
 	// The overall record, e.g. "76-58". Carried in every status because the detail hero shows it
