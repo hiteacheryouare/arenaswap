@@ -66,3 +66,11 @@ path each consumer imports from before concluding the values agree.
 - Running the full suite rebuilds tracked `docs/` output, so a working tree mid-test shows ~400 modified docs files. Not the author's change.
 
 **How to apply:** check these seams first when a diff touches card/hero styling, colour resolution, or component props.
+
+**`team.color` is no longer API-only (PR #216, 2026-10-11).** `apps/extension/utils/crestColors.ts` paints a
+crest-sampled colour into `team.color` inside `fetchFilteredGames`, which all four background fetch paths
+(refreshSlate, guide slate, tick, tickLeague) share; demo mode and the docs site are not painted. Every card
+surface reads colour through `resolveTeamColorPair`, so sampled colours behave exactly like published ones
+(including the clash switch, which falls through to `cachedLogoSwitchColor` because sampled teams have no
+alternate). `sampleCrestColor` itself has no jest coverage: jest has no `OffscreenCanvas`, so it returns
+`undefined` immediately everywhere in the unit suites. A failed read is not retried for the worker's lifetime.

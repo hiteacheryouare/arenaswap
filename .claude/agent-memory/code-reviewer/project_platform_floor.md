@@ -34,3 +34,9 @@ Firefox 115 floor a `:has()` rule is silently dropped. `.game-card:has(.dropdown
 depends on it (cosmetic z-index). Anything that puts a *focus indicator* or other required affordance behind `:has()`
 needs an `@supports not selector(:has(*))` fallback or a different mechanism (flagged on PR #209, 2026-10-09).
 `inert` is Chrome 102 / Firefox 112 — inside the floor; React 19 renders `inert={false}` as nothing.
+
+**Canvas/bitmap APIs in the background (checked on PR #216, 2026-10-11, against MDN BCD):** `OffscreenCanvas` is
+Firefox 105, `createImageBitmap` `resizeWidth`/`resizeHeight` are Firefox 98, all inside the floor. But
+`resizeQuality` is **Firefox 149** — on 115-148 it is silently ignored and Firefox downsamples with its default
+filter, so pixel-sampling code (the crest colour sampler) can give Chrome and Firefox different answers under the
+same calibration key. Low risk for share-of-pixels maths, worth naming when thresholds are tight.

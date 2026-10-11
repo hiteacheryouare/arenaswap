@@ -1,7 +1,7 @@
 # ArenaSwap — code-reviewer memory
 
 - [CI and enforcement](project_ci_and_enforcement.md) — ci.yml runs lint/typecheck/test/e2e/zip on workspaces only; scripts/ is never checked; no react-hooks lint
-- [Platform floor](project_platform_floor.md) — Chrome 110 / FF 115 declared; check new ES built-ins, CSS `:has()` (FF 121!), storage.session 1MB below Chrome 112
+- [Platform floor](project_platform_floor.md) — Chrome 110 / FF 115; ES built-ins, CSS `:has()` (FF 121), storage.session 1MB <Chrome 112, resizeQuality FF 149
 - [Repo failure map](project_review_failure_map.md) — Firefox-only DnD, the walkthrough overlay that blocks its own nav, the empty-merge gate, defaultStrings, team-colour card seams (hero grid inherit, direct team.color readers, walkthrough card copies)
 - [Popup failure map](review_popup_failure_map.md) — 320x560 geometry, JS/SCSS duration coupling, scroll container, tab strip trap, detail view also lives in the guide tab, viewer-tz day math
 - [Extension runtime footguns](project_extension_runtime_footguns.md) — MV3 worker teardown, unbounded session history, the muted-tab ledger, the three paths prefs.enabled arrives by, what is in-memory only
