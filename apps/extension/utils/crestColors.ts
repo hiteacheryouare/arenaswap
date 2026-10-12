@@ -1,7 +1,7 @@
 import { logWarn } from '@arenaswap/core';
 import type { Game, Team } from '@arenaswap/core/types';
-// Subpaths rather than the package root: the root also loads logoTint and logoSwitchColor, which
-// read localStorage at import and have no business in the service worker.
+// Only colorMath and crestColor stay clear of logoTint and logoSwitchColor, which read localStorage
+// at import; the package root and /colorUtils both pull those into the service worker.
 import { isHex } from '@arenaswap/chromatic/colorMath';
 import { crestColorCalibration, crestColorFromPixels, crestSampleSize } from '@arenaswap/chromatic/crestColor';
 

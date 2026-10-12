@@ -104,6 +104,7 @@ apps/
   extension/   → WXT browser extension (React + TypeScript)
   docs/        → Astro site — docs, PowerScore reference, releases, FAQ, legal, in 12 locales
 packages/
+  chromatic/   → Colour science shared by the extension and the site
   core/        → Extension engine
   powerscore/  → Scoring algorithm, published to npm as powerscore
   ui/          → Components shared by the extension and the site
