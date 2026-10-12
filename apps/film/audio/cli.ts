@@ -1,13 +1,13 @@
 // Renders the ad-film soundtrack to WAV.
 //
-//   npx rolldown scripts/film/audio/cli.ts --platform=node --file=scripts/film/audio/cli.cjs --format=cjs --log-level=silent
-//   node scripts/film/audio/cli.cjs --demo 30 --out temporary/adfilm/audioTests/demo30.wav --report
-//   node scripts/film/audio/cli.cjs --plan plan.json --out film.wav [--bits 16] [--seed 7]
-//   node scripts/film/audio/cli.cjs --sfx dot --out temporary/adfilm/audioTests/sfx/dot.wav
-//   node scripts/film/audio/cli.cjs --demo 30 --drumline --out temporary/adfilm/audioTests/drumline30.wav
-//   node scripts/film/audio/cli.cjs --cut 30 --out temporary/adfilm/audioTests/soundtrack30.wav --report
+//   npm run film:build
+//   node apps/film/audio/cli.cjs --demo 30 --out temporary/adfilm/audioTests/demo30.wav --report
+//   node apps/film/audio/cli.cjs --plan plan.json --out film.wav [--bits 16] [--seed 7]
+//   node apps/film/audio/cli.cjs --sfx dot --out temporary/adfilm/audioTests/sfx/dot.wav
+//   node apps/film/audio/cli.cjs --demo 30 --drumline --out temporary/adfilm/audioTests/drumline30.wav
+//   node apps/film/audio/cli.cjs --cut 30 --out temporary/adfilm/audioTests/soundtrack30.wav --report
 //
-// --cut renders a cut's soundtrack: the recording in scripts/film/music/ under the film's effects.
+// --cut renders a cut's soundtrack: the recording in apps/film/music/ under the film's effects.
 // --report prints duration, loudness, true peak, DC, click and tail checks; --arc prints the loudness
 // of every half bar; --stems prints each stem's share of the raw mix; --drumline renders the drums alone.
 import { readFileSync } from 'node:fs';

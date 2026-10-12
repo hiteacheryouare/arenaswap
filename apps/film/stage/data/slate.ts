@@ -1,4 +1,4 @@
-import type { BackgroundState, Game, GuideSlate, LiveScore, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '../../../../packages/core/src/types';
+import type { BackgroundState, Game, GuideSlate, LiveScore, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import type { FilmSlate, PregameData, ScoreEntry, ScoreTotal } from './slateTypes';
 
 // The popup's live charts keep this much history, the same windows as core's scoring config.
@@ -153,6 +153,7 @@ const createSlate = (raw: FilmSlate, pregame: PregameData): Slate => {
 			onStandbyStream: false,
 			standbyStreamTabId: null,
 			slateShedLeagues: [],
+			leagueLastGoodAt: {},
 		};
 	};
 
@@ -166,6 +167,7 @@ const createSlate = (raw: FilmSlate, pregame: PregameData): Slate => {
 		onStandbyStream: false,
 		standbyStreamTabId: null,
 		slateShedLeagues: [],
+		leagueLastGoodAt: {},
 	});
 
 	const guideAt = (ts: number): GuideSlate => ({

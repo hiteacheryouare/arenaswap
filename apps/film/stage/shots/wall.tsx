@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
-import OnColorCrest from '../../../../packages/ui/src/components/onColorCrest';
+import OnColorCrest from '@arenaswap/ui/src/components/onColorCrest';
 import { resolveTeamColorPair, matchupSurface } from '@arenaswap/chromatic';
-import type { Team } from '../../../../packages/core/src/types';
+import type { Team } from '@arenaswap/core/types';
 import { dotOrange } from '../components/overlay';
 import type { Format } from '../cuts/cutTypes';
 import type { WallGame, WallTeam } from '../data/slateTypes';

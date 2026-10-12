@@ -1,4 +1,4 @@
-import type { LeagueId } from '../../../../packages/core/src/types';
+import type { LeagueId } from '@arenaswap/core/types';
 
 export interface FilmTab {
 	id: number;

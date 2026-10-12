@@ -18,9 +18,11 @@ const workspaces = [
 	'',
 	'apps/docs/',
 	'apps/extension/',
+	'apps/film/',
 	'packages/chromatic/',
 	'packages/core/',
 	'packages/powerscore/',
+	'packages/powerscore-tools/',
 	'packages/sideline/',
 	'packages/ui/',
 ];

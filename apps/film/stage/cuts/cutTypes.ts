@@ -1,4 +1,4 @@
-import type { UserPreferences } from '../../../../packages/core/src/types';
+import type { UserPreferences } from '@arenaswap/core/types';
 import type { Cue, ScoreSection } from '../../audio/score';
 import type { Profile } from '../data/slate';
 

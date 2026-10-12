@@ -1,5 +1,5 @@
-import { allLeagueIds } from '../../../../packages/powerscore/src/constants';
-import { resolveLeagueLogoUrl } from '../../../../packages/core/src/constants';
+import { allLeagueIds } from 'powerscore';
+import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import { easeIn, easeSignature, progress, spring } from '../timing';
 import type { PopupPlacement, ShotContext, ShotModule } from './shotTypes';
 

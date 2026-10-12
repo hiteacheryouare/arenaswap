@@ -1,4 +1,4 @@
-import type { Game, GuideSlate, LeagueId, LeagueLogoMap, LiveScore } from '../../../../packages/core/src/types';
+import type { Game, GuideSlate, LeagueId, LeagueLogoMap, LiveScore } from '@arenaswap/core/types';
 
 export interface ScoreTotal {
 	total: number;

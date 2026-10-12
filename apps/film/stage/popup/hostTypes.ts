@@ -1,4 +1,4 @@
-import type { BackgroundState, GuideSlate } from '../../../../packages/core/src/types';
+import type { BackgroundState, GuideSlate } from '@arenaswap/core/types';
 
 export interface PopupBoot {
 	messages: Record<string, { message: string }>;

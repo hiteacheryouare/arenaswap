@@ -103,6 +103,7 @@ Turborepo monorepo:
 apps/
   extension/         → WXT browser extension (React + TypeScript)
   docs/              → Astro site — docs, PowerScore reference, releases, FAQ, legal, in 12 locales
+  film/              → Ad films rendered frame by frame from the shipped popup and a recorded night
 packages/
   chromatic/         → Colour science shared by the extension and the site
   core/              → Game model, scoring, polling cadence and preferences

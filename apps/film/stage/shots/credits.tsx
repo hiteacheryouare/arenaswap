@@ -2,7 +2,7 @@ import ryanMullinWordmark from '../assets/ryanMullinWordmark.png';
 import { easeIn, easeSignature, easeStandard, progress } from '../timing';
 import type { ShotContext, ShotModule } from './shotTypes';
 
-const legalStrings = import.meta.glob<{ default: { legal: { terms: Record<string, string> } } }>('../../../../apps/docs/src/i18n/strings/*.json', { eager: true });
+const legalStrings = import.meta.glob<{ default: { legal: { terms: Record<string, string> } } }>('../../../docs/src/i18n/strings/*.json', { eager: true });
 
 // The Lattice mark as the parent site draws it: eight ellipses a sixteenth of a turn apart, each
 // stroke drawing itself on a stagger (latticeandcompany.github.io, rosette.tsx).
@@ -75,7 +75,7 @@ const links: Partial<Record<(typeof legalSections)[number], string>> = { estimat
 
 const termsFor = () => {
 	const locale = document.documentElement.lang || 'en';
-	const strings = legalStrings[`../../../../apps/docs/src/i18n/strings/${locale}.json`] ?? legalStrings['../../../../apps/docs/src/i18n/strings/en.json']!;
+	const strings = legalStrings[`../../../docs/src/i18n/strings/${locale}.json`] ?? legalStrings['../../../docs/src/i18n/strings/en.json']!;
 	return strings.default.legal.terms;
 };
 

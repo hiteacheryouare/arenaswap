@@ -1,6 +1,6 @@
-import { allLeagueIds } from '../../../../packages/powerscore/src/constants';
-import { createDefaultUserPreferences, resolveLeagueLogoUrl } from '../../../../packages/core/src/constants';
-import type { BackgroundState, UserPreferences } from '../../../../packages/core/src/types';
+import { allLeagueIds } from 'powerscore';
+import { createDefaultUserPreferences, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
+import type { BackgroundState, UserPreferences } from '@arenaswap/core/types';
 import type { ClockKey, Cut, PopupAction, PopupPlan } from '../cuts/cutTypes';
 import type { Profile, Slate } from '../data/slate';
 import { browserTabs, filmTabs, standbyTab } from '../data/tabs';

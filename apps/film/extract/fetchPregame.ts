@@ -3,12 +3,12 @@
 // kicked off yet.
 //
 // Run: npm run film:pregame -- [game id] [--league nfl]
-// Writes: scripts/film/data/pregame.json
+// Writes: apps/film/data/pregame.json
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { parseScoreboardEvents } from '@arenaswap/sideline';
-import { leagueConfigMap } from '../../../packages/powerscore/src/constants';
-import type { Game, LeagueId } from '../../../packages/core/src/types';
+import { leagueConfigMap } from 'powerscore';
+import type { Game, LeagueId } from '@arenaswap/core/types';
 
 // Bears at Packers, Sunday, October 11, 2026.
 const defaultGameId = '401872990';
@@ -19,7 +19,7 @@ const league = (leagueIndex >= 0 ? args[leagueIndex + 1] : 'nfl') as LeagueId;
 const gameId = args.find(arg => /^\d+$/.test(arg)) ?? defaultGameId;
 
 const root = join(__dirname, '..', '..', '..');
-const outFile = join(root, 'scripts', 'film', 'data', 'pregame.json');
+const outFile = join(root, 'apps', 'film', 'data', 'pregame.json');
 const base = `https://site.api.espn.com/apis/site/v2/sports/${leagueConfigMap[league].espnPath}`;
 
 // Everything useSummaryData reads before kickoff. The rest (plays, news, odds, leaders, the

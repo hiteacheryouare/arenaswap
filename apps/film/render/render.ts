@@ -1,6 +1,6 @@
 // Shoots the films: drives the stage in headless Chrome one frame at a time on a virtual clock, pipes
 // every frame into ffmpeg, and lays the soundtrack under it (the synthesized score when the
-// recording in scripts/film/music/ is missing).
+// recording in apps/film/music/ is missing).
 //
 // Run: npm run film -- [options]   (builds first; `npm run film:render -- …` skips the build)
 //   --cut 15,30,60           which cuts (default: all three)
@@ -11,7 +11,7 @@
 //   --scale 0.5              a smaller, quicker preview (default: 1)
 //   --offline                never fetch a crest the cache does not already hold
 //
-// Output: scripts/film/out/ (gitignored)
+// Output: apps/film/out/ (gitignored)
 import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -36,7 +36,7 @@ const option = (name: string) => {
 const list = (name: string, fallback: string[]) => option(name)?.split(',').map(value => value.trim()).filter(Boolean) ?? fallback;
 
 const root = join(__dirname, '..', '..', '..');
-const filmDir = join(root, 'scripts', 'film');
+const filmDir = join(root, 'apps', 'film');
 const outDir = join(filmDir, 'out');
 const cacheDir = join(filmDir, '.cache', 'net');
 const extensionRoot = join(root, 'apps', 'extension', '.output', 'film', 'chrome-mv3');

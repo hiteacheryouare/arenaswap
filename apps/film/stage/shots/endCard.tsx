@@ -1,6 +1,6 @@
-import { aPath, arenPath, chevronFrom, chevronTo, headFrom, headTo, sPath, wapPath } from '../../../../packages/ui/src/components/wordmarkShapes';
-import { ringPath } from '../../../../packages/ui/src/components/wordmarkPose';
-import { barCentreRest, barJoint, barRest, barStrokeRest, dashCentreRest, dashFirstCapRest, dashLastCapRest, dashStrokeRest, restBox } from '../../../../packages/ui/src/components/wordmarkFrame';
+import { aPath, arenPath, chevronFrom, chevronTo, headFrom, headTo, sPath, wapPath } from '@arenaswap/ui/src/components/wordmarkShapes';
+import { ringPath } from '@arenaswap/ui/src/components/wordmarkPose';
+import { barCentreRest, barJoint, barRest, barStrokeRest, dashCentreRest, dashFirstCapRest, dashLastCapRest, dashStrokeRest, restBox } from '@arenaswap/ui/src/components/wordmarkFrame';
 import { dotOrange } from '../components/overlay';
 import SportBall, { ballOrder, type BallKind } from '../components/sportBalls';
 import { liveBadgeSelector, liveDotSelector } from '../cuts/shared';

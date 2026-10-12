@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
-import { resolveLeagueLogoUrl } from '../../../../packages/core/src/constants';
-import type { Game } from '../../../../packages/core/src/types';
+import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
+import type { Game } from '@arenaswap/core/types';
 import type { Slate } from '../data/slate';
 import { browserTabs, filmTabs, isGameTab, tabById, type BrowserTab } from '../data/tabs';
 import StreamView, { ChannelView } from './streamView';

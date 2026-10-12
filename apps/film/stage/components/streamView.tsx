@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
-import OnColorCrest from '../../../../packages/ui/src/components/onColorCrest';
-import { buildGameCardSurface } from '../../../../packages/ui/src/components/gameCardShared';
-import type { Game } from '../../../../packages/core/src/types';
+import OnColorCrest from '@arenaswap/ui/src/components/onColorCrest';
+import { buildGameCardSurface } from '@arenaswap/ui/src/components/gameCardShared';
+import type { Game } from '@arenaswap/core/types';
 
 // What plays in a tab. Not footage: the two teams' colours, split the way the popup's cards split
 // them, with each side's dark-ground crest.

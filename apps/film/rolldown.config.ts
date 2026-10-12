@@ -1,25 +1,19 @@
-import { resolve } from 'node:path';
 import { defineConfig } from 'rolldown';
+import alias from './sourceAliases';
 
-// Same aliases as the PowerScore tooling: the films score games with the engine and core in the
-// working tree, not whatever was last built into their dist folders.
-const alias = {
-	powerscore: resolve(import.meta.dirname, '../../packages/powerscore/src/index.ts'),
-	'@arenaswap/core': resolve(import.meta.dirname, '../../packages/core/src/index.ts'),
-};
 const node = { platform: 'node' as const, resolve: { alias }, logLevel: 'silent' as const };
 
 export default defineConfig([
-	{ ...node, input: 'scripts/film/extract/extractSlate.ts', output: { file: 'scripts/film/extract/extractSlate.cjs', format: 'cjs' } },
-	{ ...node, input: 'scripts/film/extract/fetchPregame.ts', output: { file: 'scripts/film/extract/fetchPregame.cjs', format: 'cjs' } },
-	{ ...node, input: 'scripts/film/render/render.ts', output: { file: 'scripts/film/render/render.cjs', format: 'cjs' } },
-	{ ...node, input: 'scripts/film/audio/cli.ts', output: { file: 'scripts/film/audio/cli.cjs', format: 'cjs' } },
+	{ ...node, input: 'extract/extractSlate.ts', output: { file: 'extract/extractSlate.cjs', format: 'cjs' } },
+	{ ...node, input: 'extract/fetchPregame.ts', output: { file: 'extract/fetchPregame.cjs', format: 'cjs' } },
+	{ ...node, input: 'render/render.ts', output: { file: 'render/render.cjs', format: 'cjs' } },
+	{ ...node, input: 'audio/cli.ts', output: { file: 'audio/cli.cjs', format: 'cjs' } },
 	// Runs inside each popup before the app does, so it is one classic script with nothing to import.
 	{
-		input: 'scripts/film/stage/popup/popupShim.ts',
+		input: 'stage/popup/popupShim.ts',
 		platform: 'browser',
 		resolve: { alias },
 		logLevel: 'silent',
-		output: { file: 'scripts/film/.build/stage/popupShim.js', format: 'iife' },
+		output: { file: '.build/stage/popupShim.js', format: 'iife' },
 	},
 ]);

@@ -1,7 +1,7 @@
 // Loaded into every popup and guide the stage puts on screen, ahead of the app's own scripts, by
 // the film server. It runs in the popup's realm so everything the app touches is the app's own kind
 // of object; the stage only hands it plain data.
-import { installFakeBrowser } from '../../../../apps/extension/cypress/support/fakeBrowser';
+import { installFakeBrowser } from '../../../extension/cypress/support/fakeBrowser';
 import type { PopupBoot, FilmHost } from './hostTypes';
 
 const host = (window.parent as unknown as { filmHost: FilmHost }).filmHost;

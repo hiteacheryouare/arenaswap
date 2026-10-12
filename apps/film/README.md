@@ -25,8 +25,13 @@ npm run film:render -- --cut 15 --stills 4.2,9  # PNG frames at those seconds in
 npm run film -- --locale ja                     # any locale the extension ships
 ```
 
-Everything lands in `scripts/film/out/` (gitignored), named `arenaswap-<cut>s-<16x9|9x16>.mp4`.
+Everything lands in `apps/film/out/` (gitignored), named `arenaswap-<cut>s-<16x9|9x16>.mp4`.
 A full set of six takes roughly 20 minutes on an Apple-silicon Mac with `--jobs 2`.
+
+Run these from the repo root. They hand off to this workspace's own scripts (`build:film`, `render`,
+`extract` and `pregame` in `package.json`), so `npm run render -w @arenaswap/film -- --cut 15` does the
+same as `npm run film:render -- --cut 15`. `film:build` goes through turbo, which builds the extension's
+popup first and restores both builds from its cache when nothing has changed.
 
 | Option | Default | |
 |---|---|---|
@@ -45,9 +50,9 @@ A full set of six takes roughly 20 minutes on an Apple-silicon Mac with `--jobs 
 - ffmpeg with libx264 and AAC. Found on `PATH`, in Homebrew's prefix, or inside kdenlive on a Mac
   (`/Applications/kdenlive.app/Contents/MacOS/ffmpeg`), or set `FFMPEG_PATH`.
 - A network connection the first time only. Team crests and league marks are fetched from our
-  sources' image servers once and kept in `scripts/film/.cache/` (gitignored); after that a render
+  sources' image servers once and kept in `apps/film/.cache/` (gitignored); after that a render
   needs no network.
-- The recording, at `scripts/film/music/putItOnTheFloor.mp3` (gitignored, since it isn't ours to
+- The recording, at `apps/film/music/putItOnTheFloor.mp3` (gitignored, since it isn't ours to
   redistribute). Without it the films fall back to the old synthesized pep band score.
 
 ## How it works
@@ -68,7 +73,7 @@ render/render.ts        headless Chrome on a virtual clock, one screenshot per f
 out/*.mp4
 ```
 
-- **The popups are real.** `build:film` builds the extension into `apps/extension/.output/film`.
+- **The popups are real.** The extension's `build:film` builds it into `apps/extension/.output/film`.
   The film server serves that build and slips `stage/popup/popupShim.ts` into `popup.html` and
   `guide.html` ahead of the app. The shim installs the same fake `browser` the Cypress e2e suite
   uses, serves the recorded box scores, and pins each popup's clock to the moment of the night it
@@ -105,7 +110,7 @@ out/*.mp4
 | When things happen | `stage/cuts/cut*.ts` |
 | How a shot looks or moves | `stage/shots/*.tsx`, `stage/styles/stage.scss` |
 | Which streams are open | `stage/data/tabs.ts` |
-| The music | Swap the file in `scripts/film/music/` and re-measure `audio/soundtrack.ts`. Hear a cut's soundtrack without the picture: `node scripts/film/audio/cli.cjs --cut 30 --out x.wav --report` after `npm run film:build` |
+| The music | Swap the file in `apps/film/music/` and re-measure `audio/soundtrack.ts`. Hear a cut's soundtrack without the picture: `node apps/film/audio/cli.cjs --cut 30 --out x.wav --report` after `npm run film:build` |
 | The sound effects | `audio/sfx.ts` (the drumline voices are in `audio/drums.ts`), levelled against the music in `audio/mixer.ts`. `--sfx dot` plays one kind alone |
 | The fallback score | The pep band in `audio/arrangement.ts`, `audio/theory.ts`, `audio/brass.ts` and `audio/cadences.ts`. Audition with `--demo 60` |
 | The night | `extract/slateConfig.ts`, then `npm run film:extract` (needs the recording) |

@@ -1,6 +1,6 @@
 import { musicBpm } from '../stage/timing';
 
-// The recording the films are scored to. It is kept out of the repo: drop it in scripts/film/music/.
+// The recording the films are scored to. It is kept out of the repo: drop it in apps/film/music/.
 // The numbers are measured off the file: its tempo, where its beat grid starts, and its last hit.
 export const soundtrack = {
 	file: 'putItOnTheFloor.mp3',

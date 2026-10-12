@@ -1,5 +1,5 @@
-import { createDefaultUserPreferences, createFavoriteTeamKey } from '../../../packages/core/src/constants';
-import type { LeagueId, UserPreferences } from '../../../packages/core/src/types';
+import { createDefaultUserPreferences, createFavoriteTeamKey } from '@arenaswap/core/constants';
+import type { LeagueId, UserPreferences } from '@arenaswap/core/types';
 
 // Saturday, October 3, 2026, as the recorder saw it. Everything the films show comes out of this
 // window: the popup's cards, the PowerScores, the guide and the wall of live games.

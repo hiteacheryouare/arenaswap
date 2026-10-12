@@ -2,26 +2,24 @@
 //
 // Run: npm run film:extract -- [--recording <day folder or file>]
 // Reads: packages/powerscore-tools/recordings/2026-10-03 (gitignored; made by `npm run powerscore:record`)
-// Writes: scripts/film/data/saturday.json (committed, so a render never needs the recording)
+// Writes: apps/film/data/saturday.json (committed, so a render never needs the recording)
 //
 // Every poll is played through the same steps background.ts takes, with the same core functions:
 // clock stalls, `scoreLiveGame` against the history so far, then the score and PowerScore history.
 // Nothing here scores a game any other way.
 import { createReadStream, mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { createInterface } from 'node:readline';
 import { constants as zlibConstants, createGunzip } from 'node:zlib';
 import { createLiveExtras, parseScoreboardEvents, parseWinProbability } from '@arenaswap/sideline';
-import { getHistoryWindowMsForGame, nextClockStall, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot, type ClockStallEntry } from '../../../packages/core/src/scoring';
-import { leagueConfigMap, sportTypeConfigMap } from '../../../packages/powerscore/src/constants';
-import { resolveLeagueLogoUrl } from '../../../packages/core/src/constants';
-import type { Game, LeagueId, LeagueLogoMap } from '../../../packages/core/src/types';
-import type { ScoreSnapshot } from '../../../packages/powerscore/src/types';
+import { getHistoryWindowMsForGame, nextClockStall, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot, type ClockStallEntry } from '@arenaswap/core';
+import { leagueConfigMap, sportTypeConfigMap, type ScoreSnapshot } from 'powerscore';
+import { createFavoriteTeamKey, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
+import type { Game, LeagueId, LeagueLogoMap } from '@arenaswap/core/types';
 import { listRecordingFiles } from '@arenaswap/powerscore-tools/recording';
 import { detailGameIds, guideAt, kentuckyKey, profiles, slateFrom, slateTo, summaryMoments, viewerLeagues, wallAt, type ProfileName } from './slateConfig';
 import trimSummary from './trimSummary';
 import type { FilmSlate, GameTrack, ScoreEntry, WallGame } from '../stage/data/slateTypes';
-import { createFavoriteTeamKey } from '../../../packages/core/src/constants';
 
 interface RawEvent {
 	id?: string;
@@ -40,10 +38,16 @@ const option = (name: string) => {
 	const index = args.indexOf(`--${name}`);
 	return index >= 0 ? args[index + 1] : undefined;
 };
+// npm runs the script from the package folder, so a relative path resolves against wherever
+// `npm run film:extract` was started.
+const pathOption = (name: string) => {
+	const value = option(name);
+	return value === undefined ? undefined : resolve(process.env.INIT_CWD ?? process.cwd(), value);
+};
 
 const root = join(__dirname, '..', '..', '..');
-const recordingPath = option('recording') ?? join(root, 'packages', 'powerscore-tools', 'recordings', '2026-10-03');
-const outFile = option('out') ?? join(root, 'scripts', 'film', 'data', 'saturday.json');
+const recordingPath = pathOption('recording') ?? join(root, 'packages', 'powerscore-tools', 'recordings', '2026-10-03');
+const outFile = pathOption('out') ?? join(root, 'apps', 'film', 'data', 'saturday.json');
 
 const readLines = async function* (file: string): AsyncGenerator<RecordedLine> {
 	const gunzip = createGunzip({ finishFlush: zlibConstants.Z_SYNC_FLUSH });

@@ -1,5 +1,5 @@
-import { allLeagueIds } from '../../../packages/powerscore/src/constants';
-import { resolveLeagueLogoUrl, teamLogoOnColor } from '../../../packages/core/src/constants';
+import { allLeagueIds } from 'powerscore';
+import { resolveLeagueLogoUrl, teamLogoOnColor } from '@arenaswap/core/constants';
 import type { Cut } from './cuts/cutTypes';
 import type { Slate } from './data/slate';
 import { filmTabs } from './data/tabs';

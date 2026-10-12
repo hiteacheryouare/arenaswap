@@ -1,0 +1,35 @@
+{
+	"name": "@arenaswap/film",
+	"version": "3.0.0",
+	"description": "ArenaSwap's ad films, rendered frame by frame from the shipped popup and a real Saturday night",
+	"private": true,
+	"scripts": {
+		"build:film": "vite build --configLoader runner && rolldown -c",
+		"render": "node render/render.cjs",
+		"extract": "rolldown -c && node --max-old-space-size=6144 extract/extractSlate.cjs",
+		"pregame": "rolldown -c && node extract/fetchPregame.cjs",
+		"typecheck": "tsc --noEmit",
+		"lint": "oxlint ."
+	},
+	"dependencies": {
+		"@arenaswap/chromatic": "*",
+		"@arenaswap/core": "*",
+		"@arenaswap/powerscore-tools": "*",
+		"@arenaswap/sideline": "*",
+		"@arenaswap/ui": "*",
+		"bootstrap": "^5.3.8",
+		"bootstrap-icons": "^1.13.1",
+		"powerscore": "*",
+		"react": "^19.3.0",
+		"react-dom": "^19.3.0"
+	},
+	"devDependencies": {
+		"@types/react": "^19.3.0",
+		"@types/react-dom": "^19.3.0",
+		"@vitejs/plugin-react": "^5.2.0",
+		"rolldown": "^1.2.9",
+		"sass": "^1.105.0",
+		"typescript": "^7.0.2",
+		"vite": "^8.3.0"
+	}
+}

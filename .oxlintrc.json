@@ -19,7 +19,7 @@
 	},
 	"overrides": [
 		{
-			"files": ["packages/powerscore-tools/**"],
+			"files": ["apps/film/**", "packages/powerscore-tools/**"],
 			"rules": { "no-console": "off" }
 		}
 	],
