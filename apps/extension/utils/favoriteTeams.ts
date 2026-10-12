@@ -1,7 +1,7 @@
 import type { EspnTeamEntry } from '@arenaswap/sideline';
 import { createFavoriteTeamKey, parseFavoriteTeamKey } from '@arenaswap/core/constants';
 import type { LeagueId } from '@arenaswap/core/types';
-import { leagueOrder } from '../entrypoints/popup/popupHelpers';
+import { leagueOrder } from './leagueOrder';
 import { foldForSearch } from './searchText';
 
 export interface favoriteTeamRow {

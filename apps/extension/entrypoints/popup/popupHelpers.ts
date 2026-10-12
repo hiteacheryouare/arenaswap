@@ -1,5 +1,5 @@
 import { BackgroundStateSchema } from '@arenaswap/core';
-import { estimatedWrapMs, isFavoriteTeamGame, leagueConfigs } from '@arenaswap/core/constants';
+import { estimatedWrapMs, isFavoriteTeamGame, leagueConfigs, leagueLabels } from '@arenaswap/core/constants';
 import type {
 	BackgroundState,
 	Game,
@@ -8,12 +8,13 @@ import type {
 } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import { i18n } from '#i18n';
+import { leagueOrder } from '../../utils/leagueOrder';
 
+export { leagueOrder };
 export type popupView = 'main' | 'setup' | 'detail' | 'suggest';
 export interface leagueGroup { league: LeagueId; games: Game[] }
 export interface dateGroup { key: string; dateLabel: string; games: Game[] }
 
-export const leagueOrder = Object.fromEntries(leagueConfigs.map((config, index) => [config.id, index])) as Record<LeagueId, number>;
 export const sportTypeOrder: Record<SportType, number> = {
 	basketball: 0,
 	football: 1,
@@ -30,7 +31,7 @@ export const sportTypeLabels: Record<SportType, string> = {
 	softball: i18n.t('sport.softball'),
 	soccer: i18n.t('sport.soccer'),
 };
-export const leagueLabels = Object.fromEntries(leagueConfigs.map(config => [config.id, config.label])) as Record<LeagueId, string>;
+export { leagueLabels };
 
 // Must match the number of `loading.mN` keys in the locale files.
 const LOADING_MESSAGE_COUNT = 112;
