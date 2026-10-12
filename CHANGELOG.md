@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## A top-to-bottom QA sweep — 2026-10-12
+
+Code review, coverage, translation and sports-rules passes over the extension and its packages fixed 80 issues and 262 translations. The bigger ones: team pickers were missing 562 college football teams, a game boost marked every live game as stalled, standby ignored the cooldown in one direction and enforced it in the other, and suspended soccer matches read as finished and closed their tabs. Hockey now reads SO for a shootout and 2OT in the playoffs, quarter breaks say "End of Q1" instead of "Intermission", and 262 translation fixes landed across 11 languages.
+
 ## The films are their own workspace — 2026-10-11
 
 The ad films moved from `scripts/film` into `apps/film` (`@arenaswap/film`), which is now linted and type-checked with everything else, and `npm run film`, `film:build`, `film:render`, `film:extract` and `film:pregame` still take the same arguments. `film:build` goes through turbo, which builds the extension's popup first and restores both builds from cache when nothing has changed, while a plain `npm run build` still leaves the films alone. Move any soundtrack, crest cache or renders you have from `scripts/film` into `apps/film`.

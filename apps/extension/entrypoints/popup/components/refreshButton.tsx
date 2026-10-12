@@ -12,8 +12,10 @@ const refreshButton = ({ label, className, onRefresh }: refreshButtonProps) => {
 
 	const refresh = async () => {
 		setPending(true);
+		// A refresh that fails again is already on screen as the error state it was pressed from.
 		try {
 			await onRefresh();
+		} catch {
 		} finally {
 			setPending(false);
 		}

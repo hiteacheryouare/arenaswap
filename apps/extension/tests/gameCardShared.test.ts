@@ -27,9 +27,13 @@ describe('formatPeriod', () => {
 		expect(formatPeriod(makeGame({ league: 'nba', sportType: 'basketball', period: 6 }))).toBe('2OT');
 	});
 
-	test('formats every NHL overtime as bare OT because its periodFormat is "periods"', () => {
+	test('formats NHL regular-season overtime as OT, then the shootout as SO', () => {
 		expect(formatPeriod(makeGame({ league: 'nhl', sportType: 'hockey', period: 4 }))).toBe('OT');
-		expect(formatPeriod(makeGame({ league: 'nhl', sportType: 'hockey', period: 5 }))).toBe('OT');
+		expect(formatPeriod(makeGame({ league: 'nhl', sportType: 'hockey', period: 5 }))).toBe('SO');
+	});
+
+	test('formats NHL playoff overtime as OT, 2OT because the playoffs never shoot out', () => {
+		expect(formatPeriod(makeGame({ league: 'nhl', sportType: 'hockey', period: 5, isPostseason: true }))).toBe('2OT');
 	});
 
 	test('formats soccer halves as 1H and 2H', () => {

@@ -697,44 +697,11 @@ button, input, select, optgroup, textarea {
 	letter-spacing: 0.02em;
 }
 
-.ps-bloom-max-badge {
-	font-size: 0.7rem;
-	border: 1px solid;
-	border-radius: 999px;
-	padding: 0.1rem 0.6rem;
-	font-weight: 600;
-	margin-bottom: 0.6rem;
-	opacity: 0.85;
-}
-
-.ps-bloom-section-head {
-	text-transform: uppercase;
-	font-size: 0.58rem;
-	letter-spacing: 0.07em;
-	font-weight: 600;
-	align-self: flex-start;
-}
-
 .ps-bloom-body {
 	font-size: 0.78rem;
 	line-height: 1.45;
 	text-align: left;
 	align-self: flex-start;
-}
-
-.ps-bloom-got-it {
-	margin-top: 1rem;
-	padding: 0.5rem 1.5rem;
-	border-radius: 999px;
-	border: none;
-	font-weight: 700;
-	font-size: 0.85rem;
-	cursor: pointer;
-	transition: opacity m.$motion-instant m.$motion-ease;
-
-	&:hover {
-		opacity: 0.88;
-	}
 }
 
 /* ─── Rømer reveal ────────────────────────────────────────────────────────── */

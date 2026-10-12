@@ -29,7 +29,9 @@ const useBasketballSituation = (game: Pick<Game, 'id' | 'league' | 'sportType' |
 				.catch((err: unknown) => logWarn(`Failed to fetch the situation for ${id}.`, err));
 		};
 		load();
-		const timer = setInterval(load, pollIntervalMs);
+		const timer = setInterval(() => {
+			if (!document.hidden) load();
+		}, pollIntervalMs);
 		return () => {
 			cancelled = true;
 			clearInterval(timer);

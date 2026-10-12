@@ -1,4 +1,4 @@
-import type { SportType } from '@arenaswap/core/types';
+import type { LeagueId, SportType } from '@arenaswap/core/types';
 import type { BoxScore, BoxScoreAthlete, BoxScoreCategory, BoxScoreTeam, TeamComparisonRow } from '@arenaswap/sideline';
 
 // Which categories a sport shows, in what order, and which of ESPN's columns each one keeps.
@@ -275,17 +275,24 @@ export interface PeriodLabelInput {
 	// value that moves a heading: a hockey shootout and a second overtime both arrive as a fifth
 	// entry, and a shootout cannot happen in the playoffs, so the suffix separates the two.
 	finalPeriodSuffix?: string;
+	// Before the Final there is no suffix, so a live game falls back on the rule itself: only NHL
+	// and NCAA playoff hockey plays a second overtime, and everything else shoots out instead.
+	league?: LeagueId;
+	isPostseason?: boolean;
 }
+
+const unlimitedOvertimeHockey = new Set<LeagueId>(['nhl', 'ncaamh']);
+
+const isLiveShootout = ({ periodCount, regularPeriods, finalPeriodSuffix, league, isPostseason }: PeriodLabelInput): boolean => (
+	finalPeriodSuffix === undefined
+	&& periodCount === regularPeriods + 2
+	&& !(isPostseason && league !== undefined && unlimitedOvertimeHockey.has(league))
+);
 
 // Extra innings are just numbered — a 12th inning reads "12". A fifth quarter does not read "5";
 // it reads OT, and the ones after it 2OT and 3OT.
-export const periodLabels = ({
-	periodCount,
-	regularPeriods,
-	periodFormat,
-	sportType,
-	finalPeriodSuffix,
-}: PeriodLabelInput): PeriodLabel[] => {
+export const periodLabels = (input: PeriodLabelInput): PeriodLabel[] => {
+	const { periodCount, regularPeriods, periodFormat, sportType, finalPeriodSuffix } = input;
 	// Keyed on the sport rather than on `periodFormat`: 'halves' over two regular periods also
 	// describes NCAAB, whose fifth column is an overtime and not extra time.
 	if (sportType === 'soccer') {
@@ -294,7 +301,7 @@ export const periodLabels = ({
 		));
 	}
 
-	const shootoutIndex = sportType === 'hockey' && finalPeriodSuffix === 'SO' && periodCount > regularPeriods
+	const shootoutIndex = sportType === 'hockey' && periodCount > regularPeriods && (finalPeriodSuffix === 'SO' || isLiveShootout(input))
 		? periodCount - 1
 		: -1;
 

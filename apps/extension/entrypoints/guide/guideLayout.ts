@@ -19,6 +19,14 @@ export const gutterPx = 168;
 
 const hourMs = 60 * 60_000;
 
+// In local time rather than on the epoch's hours, which only line up with the clock on the wall in
+// zones a whole number of hours from UTC. India, Newfoundland and Adelaide otherwise mark every :30.
+const floorToLocalHour = (ms: number): number => new Date(ms).setMinutes(0, 0, 0);
+const ceilToLocalHour = (ms: number): number => {
+	const floored = floorToLocalHour(ms);
+	return floored === ms ? ms : floored + hourMs;
+};
+
 export const minutesToPx = (minutes: number): number => minutes * pxPerMinute;
 export const msToPx = (ms: number, fromMs: number): number => ((ms - fromMs) / 60_000) * pxPerMinute;
 
@@ -29,8 +37,8 @@ export const axisBounds = (bars: guideBar[]): { fromMs: number; toMs: number } |
 	const earliest = Math.min(...bars.map(b => b.startMs));
 	const latest = Math.max(...bars.map(b => b.endMs));
 	return {
-		fromMs: Math.floor((earliest - 30 * 60_000) / hourMs) * hourMs,
-		toMs: Math.ceil((latest + 30 * 60_000) / hourMs) * hourMs,
+		fromMs: floorToLocalHour(earliest - 30 * 60_000),
+		toMs: ceilToLocalHour(latest + 30 * 60_000),
 	};
 };
 

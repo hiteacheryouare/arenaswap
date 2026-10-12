@@ -708,6 +708,8 @@ describe('gameDetailView sticky bar', () => {
 			cy.get('.gd-bar-status').should(([el]: JQuery<HTMLElement>) => {
 				el.textContent = locale.detail.intermission;
 				expectSingleLine(el, `status in ${name}`);
+				el.textContent = locale.detail.endOfPeriod.replace('{period}', locale.gameCard.periodQuarter.replace('{count}', '3'));
+				expectSingleLine(el, `end of period in ${name}`);
 			});
 			cy.get('.gd-bar-compact').should(([el]: JQuery<HTMLElement>) => {
 				expect(el.getBoundingClientRect().width, `compact fits in ${name}`).to.be.at.most(296);
@@ -1291,11 +1293,18 @@ describe('gameDetailView basketball situation', () => {
 
 	it('draws a smaller allotment at gridiron\'s size', () => {
 		answer(basketballSituations.lastMinutes.raw);
-		mountDetail(liveBasketball({ league: 'wnba' }), { excitementResult: excitement });
+		mountDetail(liveBasketball({ league: 'ncaab' }), { excitementResult: excitement });
 		cy.get('.gd-area-away-timeouts .timeout-dots').should('not.have.class', 'is-compact');
 		cy.get('.gd-area-away-timeouts .timeout-dot').should('have.length', 4);
 		cy.get('.gd-area-away-timeouts .timeout-dot:not(.is-empty)').should('have.length', 2);
 		cy.get('.gd-area-home-timeouts .timeout-dot:not(.is-empty)').should('have.length', 1);
+	});
+
+	it('draws the WNBA\'s five timeouts, so a spent one still shows', () => {
+		answer(basketballSituations.lastMinutes.raw);
+		mountDetail(liveBasketball({ league: 'wnba' }), { excitementResult: excitement });
+		cy.get('.gd-area-away-timeouts .timeout-dot').should('have.length', 5);
+		cy.get('.gd-area-away-timeouts .timeout-dot:not(.is-empty)').should('have.length', 2);
 	});
 
 	// A timeout row and a bonus line under it. The fouls sentence that used to sit under the period

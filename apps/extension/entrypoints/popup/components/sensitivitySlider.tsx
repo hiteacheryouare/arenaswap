@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { sensitivityThresholds } from '@arenaswap/core/constants';
 import { i18n } from '#i18n';
 import SettingTooltipIcon from './settingTooltipIcon';
@@ -21,10 +21,13 @@ const labels: Record<number, string> = {
 
 const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
 	const [showLudicrous, setShowLudicrous] = useState(false);
+	// Stable, because the overlay's close timer restarts whenever this changes and Settings
+	// re-renders on every broadcast.
+	const closeLudicrous = useCallback(() => setShowLudicrous(false), []);
 
 	return (
 	<div>
-		{showLudicrous && <LudicrousSpeedOverlay onClose={() => setShowLudicrous(false)} />}
+		{showLudicrous && <LudicrousSpeedOverlay onClose={closeLudicrous} />}
 		<div className='d-flex justify-content-between align-items-center mb-1'>
 			<div className='d-flex align-items-center gap-1'>
 				<label htmlFor='sensitivity-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-sliders me-1 text-primary' />{i18n.t('sensitivity.label')}</label>

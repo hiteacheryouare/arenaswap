@@ -213,7 +213,7 @@ const setupView = ({
 		return <StandbyStreamGuide onDone={handleStandbyGuideDone} />;
 	}
 
-	const switchingPage = (
+	const switchingPage = () => (
 		<>
 			<div className='fw-bold popup-section-label'><i className='bi bi-speedometer2' />{i18n.t('setup.whenToSwitchSection')}</div>
 			<div className='settings-stack'>
@@ -287,7 +287,7 @@ const setupView = ({
 		</>
 	);
 
-	const scoringIndexPage = (
+	const scoringIndexPage = () => (
 		<>
 			<ScoringModeSection
 				prefs={prefs}
@@ -324,7 +324,7 @@ const setupView = ({
 		</>
 	);
 
-	const favoritesPage = (
+	const favoritesPage = () => (
 		<FavoriteTeamsPage
 			enabledLeagues={prefs.enabledLeagues}
 			favoriteTeamIds={favoriteTeamIds}
@@ -332,7 +332,7 @@ const setupView = ({
 		/>
 	);
 
-	const displayPage = (
+	const displayPage = () => (
 		<>
 			<div className='fw-bold popup-section-label'><i className='bi bi-list-ul' />{i18n.t('setup.gameListSection')}</div>
 			<div className='d-flex justify-content-between align-items-center'>
@@ -488,7 +488,7 @@ const setupView = ({
 		</>
 	);
 
-	const standbyPage = (
+	const standbyPage = () => (
 		<>
 			<div className='d-flex justify-content-between align-items-center'>
 				<label className='text-body-secondary setting-toggle-label' htmlFor='standbyStreamToggle'>{i18n.t('setup.enableStandby')}</label>
@@ -545,7 +545,7 @@ const setupView = ({
 	);
 
 	const now = Date.now();
-	const leaguesPage = (
+	const leaguesPage = () => (
 		<>
 			{noLeaguesSelected && (
 				<div className='setup-no-leagues-warn mb-2'>
@@ -618,7 +618,7 @@ const setupView = ({
 		</>
 	);
 
-	const pages: Record<settingsGroupId, ReactNode> = {
+	const pages: Record<settingsGroupId, () => ReactNode> = {
 		switching: switchingPage,
 		scoring: scoringIndexPage,
 		favorites: favoritesPage,
@@ -685,7 +685,7 @@ const setupView = ({
 					{group ? i18n.t(group.labelKey) : i18n.t('setup.header')}
 				</button>
 				{group && <div className='settings-page-lede'>{i18n.t(group.descriptionKey)}</div>}
-				{pages[page]}
+				{pages[page]()}
 			</div>
 		);
 	}
@@ -749,7 +749,10 @@ const setupView = ({
 								<span className='settings-index-desc'>{i18n.t(group.descriptionKey)}</span>
 							</span>
 							{group.id === 'leagues' && noLeaguesSelected && (
-								<i className='bi bi-exclamation-circle settings-index-warn' title={i18n.t('setup.noLeaguesWarning')} />
+								<>
+									<i className='bi bi-exclamation-circle settings-index-warn' title={i18n.t('setup.noLeaguesWarning')} aria-hidden='true' />
+									<span className='visually-hidden'>{i18n.t('setup.noLeaguesWarning')}</span>
+								</>
 							)}
 							<i className='bi bi-chevron-right settings-index-caret' aria-hidden='true' />
 						</button>

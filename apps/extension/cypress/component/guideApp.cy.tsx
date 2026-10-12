@@ -1,4 +1,4 @@
-import type { BackgroundState, Game, GuideSlate, LeagueId } from '@arenaswap/core/types';
+import type { BackgroundState, Game, GuideSlate, LeagueId, UserPreferences } from '@arenaswap/core/types';
 import { createDefaultUserPreferences } from '@arenaswap/core/constants';
 import App from '../../entrypoints/guide/app';
 import { makeGame, makeScore } from '../support/fixtures';
@@ -51,6 +51,9 @@ interface guideHandle {
 	fail: () => void;
 	/** Fires the broadcast the background sends after every poll. */
 	pushScoresUpdated: () => void;
+	/** Saves prefs the way the popup does, firing storage.onChanged at the open guide. */
+	savePrefsElsewhere: (prefs: UserPreferences) => void;
+	storedPrefs: () => UserPreferences | null;
 	sentMessages: { type: string;[key: string]: unknown }[];
 	slateRequests: () => number;
 }
@@ -64,6 +67,20 @@ const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], slat
 	let releaseSlate: ((slate: GuideSlate) => void) | null = null;
 	let slate = slateOf(games);
 	let fault = slateFault;
+	const stored: Record<'local' | 'sync', Record<string, unknown>> = {
+		sync: { prefs: createDefaultUserPreferences(), prefsUpdatedAt: 0 },
+		local: { prefs: null, prefsUpdatedAt: 0 },
+	};
+	const storageListeners: ((changes: Record<string, unknown>, area: string) => void)[] = [];
+	const storageArea = (area: 'local' | 'sync') => ({
+		get: () => Promise.resolve({ ...stored[area] }),
+		set: (values: Record<string, unknown>) => {
+			Object.assign(stored[area], values);
+			const changes = Object.fromEntries(Object.entries(values).map(([key, newValue]) => [key, { newValue }]));
+			storageListeners.forEach(listener => listener(changes, area));
+			return Promise.resolve();
+		},
+	});
 
 	const win = window as unknown as Record<string, unknown>;
 	win.browser = {
@@ -87,8 +104,15 @@ const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], slat
 		},
 		i18n: { getUILanguage: () => 'en-US' },
 		storage: {
-			sync: { get: () => Promise.resolve({ prefs: createDefaultUserPreferences(), prefsUpdatedAt: 0 }) },
-			local: { get: () => Promise.resolve({ prefs: null, prefsUpdatedAt: 0 }) },
+			sync: storageArea('sync'),
+			local: storageArea('local'),
+			onChanged: {
+				addListener: (listener: (changes: Record<string, unknown>, area: string) => void) => { storageListeners.push(listener); },
+				removeListener: (listener: (changes: Record<string, unknown>, area: string) => void) => {
+					const index = storageListeners.indexOf(listener);
+					if (index >= 0) storageListeners.splice(index, 1);
+				},
+			},
 		},
 	};
 
@@ -106,6 +130,8 @@ const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], slat
 		},
 		fail: () => { fault = 'rejects'; },
 		pushScoresUpdated: () => { listeners.forEach(listener => listener({ type: 'SCORES_UPDATED' })); },
+		savePrefsElsewhere: (prefs: UserPreferences) => { void storageArea('local').set({ prefs, prefsUpdatedAt: Date.now() + 1 }); },
+		storedPrefs: () => (stored.local.prefs as UserPreferences | null),
 		sentMessages,
 		slateRequests: () => sentMessages.filter(message => message.type === 'GET_GUIDE_SLATE').length,
 	}, { log: false }).as('guide');
@@ -354,6 +380,28 @@ describe('the guide page', () => {
 		cy.get('.guide-drawer .gd-setup').should('exist');
 		cy.get('.guide-drawer select').should('not.exist');
 		cy.get('.guide-drawer .game-detail-back-button').should('contain.text', 'Close').find('.bi-x-lg').should('exist');
+	});
+
+	// The guide sits open in its own tab while settings change in the popup.
+	it('follows a preference saved in the popup without being reloaded', () => {
+		mountGuide();
+		cy.get("[data-game-id='nfl-eagles'] .bi-star-fill").should('not.exist');
+
+		cy.get<guideHandle>('@guide').then(guide => guide.savePrefsElsewhere({ ...createDefaultUserPreferences(), favoriteTeamIds: ['nfl:21'] }));
+
+		cy.get("[data-game-id='nfl-eagles'] .bi-star-fill").should('exist');
+	});
+
+	it('saves a star pressed on the drawer poster and tells the background', () => {
+		mountGuide();
+		cy.get("[data-game-id='nfl-niners'] .guide-bar-shape").click();
+		cy.get('.guide-drawer .gd-poster-star').first().click();
+
+		cy.get('.guide-drawer .gd-poster-star').first().should('have.attr', 'data-favorited', 'true');
+		cy.get<guideHandle>('@guide').should(guide => {
+			expect(guide.storedPrefs()?.favoriteTeamIds).to.deep.equal(['nfl:nfl-niners-a']);
+			expect(guide.sentMessages.some(message => message.type === 'UPDATE_PREFS')).to.equal(true);
+		});
 	});
 
 	it('still draws the grid when the slate comes back with no day it can anchor to now', () => {

@@ -115,7 +115,7 @@ const GuideBar = ({ bar, fromMs, selected, onOpen, mono, theme }: guideBarProps)
 				<BarTeam team={away} mono={mono?.[away.id]} score={scored ? away.score : undefined} lost={decided && away.score < home.score} theme={theme} />
 				{!scored && <span className='guide-bar-at'>{i18n.t('guide.at')}</span>}
 				<BarTeam team={home} mono={mono?.[home.id]} score={scored ? home.score : undefined} lost={decided && home.score < away.score} theme={theme} />
-				{bar.isFavorite && <i className='bi bi-star-fill guide-bar-star' aria-label={i18n.t('guide.favoriteGame')} />}
+				{bar.isFavorite && <i className='bi bi-star-fill guide-bar-star' aria-label={i18n.t('guide.favoriteGame')} role='img' />}
 				{scored && <BarStatus game={game} startMs={bar.startMs} />}
 				{network && <span className='guide-bar-network'>{network}</span>}
 			</span>

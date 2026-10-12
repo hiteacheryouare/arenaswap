@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { i18n } from '#i18n';
 import type { EspnTeamEntry } from '@arenaswap/sideline';
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
@@ -28,19 +28,25 @@ interface teamPickerListProps {
 const teamPickerList = ({
 	teams, query, onQueryChange, isLoading, hasError, selectedFavorites, onToggleFavorite, onRetry, pinned,
 }: teamPickerListProps) => {
-	const filteredTeams = teams.filter(team => matchesTeamQuery(team, query));
-	// Our sources list a league's teams in their own order, which reads as no order at all.
-	const collator = new Intl.Collator(useDisplayLocale());
-	const byName = (a: EspnTeamEntry, b: EspnTeamEntry) => collator.compare(a.name ?? '', b.name ?? '');
-
-	const grouped = filteredTeams.reduce<Partial<Record<LeagueId, EspnTeamEntry[]>>>((acc, team) => {
-		(acc[team.leagueId] ??= []).push(team);
-		return acc;
-	}, {});
-
-	const sortedLeagues = (Object.keys(grouped) as LeagueId[]).toSorted(
-		(a, b) => (leagueOrder[a] ?? 99) - (leagueOrder[b] ?? 99)
-	);
+	const locale = useDisplayLocale();
+	// Kept across renders: with the college leagues on this is well over a thousand teams, and the
+	// popup re-renders on every broadcast while Settings is open.
+	const groups = useMemo(() => {
+		// Our sources list a league's teams in their own order, which reads as no order at all.
+		const collator = new Intl.Collator(locale);
+		const grouped = teams
+			.filter(team => matchesTeamQuery(team, query))
+			.reduce<Partial<Record<LeagueId, EspnTeamEntry[]>>>((acc, team) => {
+				(acc[team.leagueId] ??= []).push(team);
+				return acc;
+			}, {});
+		return (Object.keys(grouped) as LeagueId[])
+			.toSorted((a, b) => (leagueOrder[a] ?? 99) - (leagueOrder[b] ?? 99))
+			.map(leagueId => ({
+				leagueId,
+				teams: (grouped[leagueId] ?? []).toSorted((a, b) => collator.compare(a.name ?? '', b.name ?? '')),
+			}));
+	}, [teams, query, locale]);
 
 	return (
 		<>
@@ -73,12 +79,12 @@ const teamPickerList = ({
 				{!isLoading && !hasError && (
 					<>
 						{pinned}
-						{sortedLeagues.map(leagueId => (
+						{groups.map(({ leagueId, teams: leagueTeams }) => (
 							<div key={leagueId}>
 								<div className='fw-bold text-uppercase popup-section-label mt-2'>
 									{leagueLabels[leagueId] ?? leagueId.toUpperCase()}
 								</div>
-								{(grouped[leagueId] ?? []).toSorted(byName).map(team => (
+								{leagueTeams.map(team => (
 									<TeamPickerRow
 										key={team.id}
 										team={team}
@@ -88,7 +94,7 @@ const teamPickerList = ({
 								))}
 							</div>
 						))}
-						{sortedLeagues.length === 0 && query && (
+						{groups.length === 0 && query && (
 							<div className='small text-body-secondary text-center mt-3'>
 								{i18n.t('teamPicker.noMatch', { query })}
 							</div>

@@ -1,6 +1,7 @@
 import { i18n } from '#i18n';
 import type { BasketballSituation } from '@arenaswap/sideline';
 import type { Game, Team } from '@arenaswap/core/types';
+import { gridironTimeoutAllotment } from '@arenaswap/ui/src/components/timeoutDots';
 import AtBatPanel from './atBatPanel';
 import BaseDiamond from './baseDiamond';
 import BsoIndicator from './bsoIndicator';
@@ -12,7 +13,6 @@ import GameStatusText from './gameStatusText';
 import InningHalfIcon from './inningHalfIcon';
 import PossessionArrow from './possessionArrow';
 import SeriesDots from './seriesDots';
-import StartCountdownDisplay from './startCountdownDisplay';
 import { emptyTeamRecords, type MonoLogos, type SeriesInfo, type TeamRecords } from './useSummaryData';
 
 interface detailHeroProps {
@@ -35,7 +35,6 @@ const withTimeouts = (team: Team, timeoutsLeft: number | undefined): Team => (
 );
 
 const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, isDelayed, isInningSport, status, heroStyle, awayColor, homeColor, basketballSituation, possession }: detailHeroProps) => {
-	const isPre = game.status === 'pre';
 	// The list card carries this line itself; on the detail screen it is the field strip's caption,
 	// and it is the only place the down, the distance and the yard marker appear as words.
 	const downDistanceLine = game.downDistance && game.fieldPosition
@@ -46,7 +45,9 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 
 	const liveBasketball = game.sportType === 'basketball' && game.status === 'in';
 	const situation = liveBasketball ? basketballSituation : null;
-	const timeoutMax = situation ? basketballTimeoutAllotment(game.league) : undefined;
+	const timeoutMax = situation
+		? basketballTimeoutAllotment(game.league)
+		: game.sportType === 'football' ? gridironTimeoutAllotment(game) : undefined;
 	// Between periods the fouls have already reset for the next one, so nobody is in the bonus.
 	const bonusOf = (side: 'home' | 'away') => (
 		situation && game.intermission !== true ? bonusKind(situation[side], game.league) : undefined
@@ -72,20 +73,16 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 			<div className='game-detail-teams-row'>
 				<DetailTeamPill team={awayTeam} side='away' record={records.away} color={awayColor} timeoutMax={timeoutMax} bonus={bonusOf('away')} bonusSlot={Boolean(situation)} />
 				<div className='game-detail-center'>
-					{isPre ? (
-						<div className='gd-vs'>{i18n.t('gameCard.vs')}</div>
-					) : (
-						<div className='d-flex align-items-center game-detail-score-row'>
-							<FlipScore value={game.awayTeam.score} className={scoreClass(game.awayTeam.score, game.homeTeam.score)} />
-							{liveBasketball && <PossessionArrow side='away' possession={possession} team={game.awayTeam} />}
-							{isInningSport && game.baseRunners
-								? <BaseDiamond {...game.baseRunners} />
-								// Without a divider two three-digit scores read as one number: "112108".
-								: <span className='game-score-sep' aria-hidden='true' />}
-							{liveBasketball && <PossessionArrow side='home' possession={possession} team={game.homeTeam} />}
-							<FlipScore value={game.homeTeam.score} className={scoreClass(game.homeTeam.score, game.awayTeam.score)} />
-						</div>
-					)}
+					<div className='d-flex align-items-center game-detail-score-row'>
+						<FlipScore value={game.awayTeam.score} className={scoreClass(game.awayTeam.score, game.homeTeam.score)} />
+						{liveBasketball && <PossessionArrow side='away' possession={possession} team={game.awayTeam} />}
+						{isInningSport && game.baseRunners
+							? <BaseDiamond {...game.baseRunners} />
+							// Without a divider two three-digit scores read as one number: "112108".
+							: <span className='game-score-sep' aria-hidden='true' />}
+						{liveBasketball && <PossessionArrow side='home' possession={possession} team={game.homeTeam} />}
+						<FlipScore value={game.homeTeam.score} className={scoreClass(game.homeTeam.score, game.awayTeam.score)} />
+					</div>
 				</div>
 				<DetailTeamPill team={homeTeam} side='home' record={records.home} color={homeColor} timeoutMax={timeoutMax} bonus={bonusOf('home')} bonusSlot={Boolean(situation)} />
 				{status.text && (
@@ -109,8 +106,6 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 					<FootballFieldStrip game={game} monoMarks={monoLogos} />
 				</div>
 			)}
-
-			{isPre && <StartCountdownDisplay startTime={game.startTime} />}
 
 			{seriesInfo && <SeriesDots info={seriesInfo} game={game} />}
 		</div>

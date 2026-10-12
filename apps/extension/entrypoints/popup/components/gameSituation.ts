@@ -25,7 +25,9 @@ export const resolveStatus = (game: Game, isInningSport: boolean, t: Translate):
 	if (game.status === 'pre') return { text: '' };
 	if (isInningSport) return { text: formatPeriod(game, t) };
 	if (game.intermission === true) {
-		return { text: isHalftime(game) ? t('detail.halftime') : t('detail.intermission') };
+		if (isHalftime(game)) return { text: t('detail.halftime') };
+		// Intermission is hockey's word. A quarter break reads the way a broadcast says it, "End of Q1".
+		return { text: game.sportType === 'hockey' ? t('detail.intermission') : t('detail.endOfPeriod', { period: formatPeriod(game, t) }) };
 	}
 
 	const clockBased = sportTypeConfigMap[game.sportType]?.clockBased ?? false;
@@ -33,7 +35,7 @@ export const resolveStatus = (game: Game, isInningSport: boolean, t: Translate):
 };
 
 // A full allotment, so the dots can show the ones already spent.
-const basketballTimeoutAllotments: Partial<Record<LeagueId, number>> = { nba: 7 };
+const basketballTimeoutAllotments: Partial<Record<LeagueId, number>> = { nba: 7, wnba: 5 };
 
 export const basketballTimeoutAllotment = (league: LeagueId): number => basketballTimeoutAllotments[league] ?? 4;
 

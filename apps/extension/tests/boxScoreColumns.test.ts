@@ -69,6 +69,16 @@ describe('periodLabels', () => {
 			.toEqual({ kind: 'overtime', index: 1 });
 	});
 
+	test('a live regular-season shootout is headed SO before the Final suffix exists', () => {
+		expect(periodLabels({ periodCount: 5, regularPeriods: 3, periodFormat: 'periods', sportType: 'hockey', league: 'nhl' })[4])
+			.toEqual({ kind: 'named', labelKey: 'box.periodSo' });
+	});
+
+	test('a live playoff second overtime stays 2OT', () => {
+		expect(periodLabels({ periodCount: 5, regularPeriods: 3, periodFormat: 'periods', sportType: 'hockey', league: 'nhl', isPostseason: true })[4])
+			.toEqual({ kind: 'overtime', index: 2 });
+	});
+
 	// ESPN's soccer linescores are positional — [1H, 2H, ET1, ET2, PENS] — so what a column means
 	// is its index rather than its distance past regulation.
 	test('a match settled in ninety minutes is two halves', () => {

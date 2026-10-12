@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import LeagueOrderList from '../../entrypoints/popup/components/leagueOrderList';
+import { leagueOrder, moveLeague } from '../../entrypoints/popup/popupHelpers';
 import type { LeagueId } from '@arenaswap/core/types';
 
 const defaultOrder: LeagueId[] = ['nba', 'nhl', 'mlb'];
@@ -82,6 +84,41 @@ describe('leagueOrderList', () => {
 		cy.get('.league-order-row').eq(0).should('have.class', 'is-dragging');
 		cy.get('.league-order-row').eq(1).trigger('dragover', { dataTransfer });
 		cy.get('.league-order-row').eq(1).should('have.class', 'is-drag-over');
+	});
+
+	describe('keeping keyboard focus through a reorder', () => {
+		const Reorderable = ({ initial }: { initial: LeagueId[] }) => {
+			const [order, setOrder] = useState(initial);
+			return (
+				<LeagueOrderList
+					{...defaultProps}
+					order={order}
+					onReorder={(from, to) => setOrder(current => moveLeague(current, from, to))}
+					onReset={() => setOrder(current => current.toSorted((a, b) => leagueOrder[a] - leagueOrder[b]))}
+				/>
+			);
+		};
+
+		it('keeps focus on the arrow that moved a league down', () => {
+			cy.mount(<Reorderable initial={defaultOrder} />);
+			cy.get('#league-order-down-nba').focus().click();
+			cy.get('.league-order-label').eq(1).should('contain.text', 'NBA');
+			cy.focused().should('have.id', 'league-order-down-nba');
+		});
+
+		it('hands focus to the other arrow when a league reaches the end', () => {
+			cy.mount(<Reorderable initial={defaultOrder} />);
+			cy.get('#league-order-up-nhl').focus().click();
+			cy.get('#league-order-up-nhl').should('be.disabled');
+			cy.focused().should('have.id', 'league-order-down-nhl');
+		});
+
+		it('puts focus on the first row once Reset has removed itself', () => {
+			cy.mount(<Reorderable initial={['mlb', 'nba', 'nhl']} />);
+			cy.get('#leagueOrderReset').focus().click();
+			cy.get('#leagueOrderReset').should('not.exist');
+			cy.focused().should('have.id', 'league-order-down-nba');
+		});
 	});
 
 	it('ignores a drop onto the row being dragged', () => {

@@ -97,7 +97,7 @@ const suggestView = ({ suggestions, games, openTabs, formatTabLabel, onApply, on
 										<span className='min-w-0'>
 											<span className='d-flex align-items-center gap-1 suggest-matchup'>
 												<TeamMark team={game.awayTeam} />
-												<span className='text-body-tertiary'>@</span>
+												<span className='text-body-tertiary'>{i18n.t('guide.at')}</span>
 												<TeamMark team={game.homeTeam} />
 											</span>
 											<span className='d-block text-truncate suggest-tab-label'>{formatTabLabel(tab)}</span>

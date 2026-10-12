@@ -115,9 +115,10 @@ const walkthroughStepAutoSwitch = ({ onNext, onBack }: walkthroughStepAutoSwitch
 
 	useEffect(() => {
 		const t1 = setTimeout(() => setPs76ers(89), 800);
-		const t2 = setTimeout(() => { setFlash(true); setTimeout(() => setFlash(false), 300); setWatching76ers(true); }, 1800);
+		let t4: ReturnType<typeof setTimeout> | undefined;
+		const t2 = setTimeout(() => { setFlash(true); t4 = setTimeout(() => setFlash(false), 300); setWatching76ers(true); }, 1800);
 		const t3 = setTimeout(() => setPhase(1), 2200);
-		return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+		return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
 	}, []);
 
 	return (
@@ -131,14 +132,14 @@ const walkthroughStepAutoSwitch = ({ onNext, onBack }: walkthroughStepAutoSwitch
 					abbr1='PHI' color1={eaglesColor} logo1={LOGO_EAGLES}
 					abbr2='NYG' color2={giantsColor} logo2={LOGO_GIANTS}
 					score1={14} score2={10}
-					clock='7:43' period='Q2'
+					clock='7:43' period={i18n.t('gameCard.periodQuarter', { count: '2' })}
 					ps={52} watching={!watching76ers}
 				/>
 				<MockCard
 					abbr1='PHI' color1={sixersColor} logo1={LOGO_SIXERS}
 					abbr2='BOS' color2={celticsColor} logo2={LOGO_CELTICS}
 					score1={98} score2={95}
-					clock='1:22' period='Q4'
+					clock='1:22' period={i18n.t('gameCard.periodQuarter', { count: '4' })}
 					ps={ps76ers} watching={watching76ers}
 				/>
 				{flash && (

@@ -163,22 +163,6 @@
 	letter-spacing: 0.03em;
 }
 
-.powerscore-button {
-	border:      none;
-	display:     inline-flex;
-	align-items: center;
-	gap:         0.25rem;
-
-	&:hover {
-		filter: brightness(1.05);
-	}
-
-	&:focus-visible {
-		outline: 2px solid rgba(#111827, 0.9);
-		outline-offset: 1px;
-	}
-}
-
 .powerscore-breakdown {
 	margin-top:    0.4rem;
 	background:    #f8fafc;
@@ -718,11 +702,6 @@
 .popup-loading-text {
 	font-size: 0.78rem;
 	color: var(--as-body-color);
-}
-
-.popup-loading-subtext {
-	font-size: 0.65rem;
-	color: var(--as-faint);
 }
 
 // Every notice above the list shares one surface. Bootstrap's alert variants read the
@@ -2341,18 +2320,6 @@ button.game-info-attribution {
 	font-variant-numeric: tabular-nums;
 }
 
-// Spans the full card rather than the narrow centre column so the longest
-// "X days Y hours Z minutes" string stays on one line.
-.game-detail-countdown {
-	font-size: 0.72rem;
-	font-family: 'Lekton', monospace;
-	font-variant-numeric: tabular-nums;
-	color: #495057;
-	width: 100%;
-	text-align: center;
-	margin-top: 0.3rem;
-}
-
 .game-detail-formula-card {
 	margin-top: 0.45rem;
 	margin-bottom: 0.6rem;
@@ -2495,8 +2462,7 @@ button.game-info-attribution {
 
 	.game-detail-team-name,
 	.game-detail-team-record,
-	.game-detail-team-rank,
-	.gd-vs { color: inherit; }
+	.game-detail-team-rank { color: inherit; }
 
 	.game-detail-score-value {
 		color: inherit;
@@ -2544,13 +2510,6 @@ button.game-info-attribution {
 
 .gd-hero {
 	padding: 0.4rem 0.4rem 0.35rem;
-}
-
-.gd-vs {
-	font-size: 0.8rem;
-	font-weight: 600;
-	color: #9ca3af;
-	letter-spacing: 0.04em;
 }
 
 .gd-bso-row {
@@ -2793,16 +2752,6 @@ button.game-info-attribution {
 	.toast-slide-up { animation: none; }
 }
 
-.error-boundary-icon {
-	filter: drop-shadow(0 0 14px rgba(217, 3, 104, 0.45));
-}
-
-@include m.reduced-motion {
-	.error-boundary-icon {
-		animation: none;
-	}
-}
-
 .popup-debug-panel {
 	margin-top: 1rem;
 
@@ -2901,38 +2850,6 @@ button.game-info-attribution {
 	.debug-score-flag {
 		flex-shrink: 0;
 		width: 0.65rem;
-	}
-}
-
-// Lattice & Company endorsement. DM Serif Text per the parent brand, and left
-// untranslated in every locale — it is a company name, not a string.
-.popup-lattice-line {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	gap: 0.35rem;
-	margin-top: 0.5rem;
-	font-family: 'DM Serif Text', Georgia, serif;
-	font-size: 0.8rem;
-	line-height: 1;
-	color: var(--as-body-color);
-
-	// global.scss sets font-family on `*`, which beats the serif this block only passes down by
-	// inheritance. Re-inheriting from the line restores DM Serif Text.
-	span {
-		font-family: inherit;
-	}
-
-	// The ampersand steps back into ArenaSwap's own muted gray rather than a
-	// Lattice gray, matching the docs footer lockup.
-	.popup-lattice-amp {
-		color: var(--as-secondary-color);
-	}
-
-	// 20px is the floor for the small-variant mark; below it the woven gaps close up.
-	img {
-		width: 20px;
-		height: 20px;
 	}
 }
 

@@ -155,13 +155,13 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 	// the seam is cut at an angle the bars are no longer skewed by.
 	useLayoutEffect(() => {
 		const wrapper = wrapperRef.current;
-		if (!wrapper) return;
+		if (!wrapper || mode === 'none' || done) return;
 		measure();
 		if (typeof ResizeObserver === 'undefined') return;
 		const observer = new ResizeObserver(measure);
 		observer.observe(wrapper);
 		return () => observer.disconnect();
-	}, [mode, measure]);
+	}, [mode, done, measure]);
 
 	// Per card rather than for the list: the first card has finished long before the last one
 	// starts, and until its stage is gone it is a layer sitting over a card you can already click.

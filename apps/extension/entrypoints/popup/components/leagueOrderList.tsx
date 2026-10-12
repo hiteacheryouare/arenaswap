@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { i18n } from '#i18n';
 import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap } from '@arenaswap/core/types';
@@ -22,8 +22,34 @@ const LeagueOrderList = ({ order, leagueLogos, disabled, onReorder, onReset }: l
 	const dragIndexRef = useRef<number | null>(null);
 	const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
 	const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+	// A row that moves, a button that disables itself at either end and a Reset that removes itself
+	// all take keyboard focus down with them, so it is put back once the new order has rendered.
+	const pendingFocusRef = useRef<{ leagueId: LeagueId; direction: 'up' | 'down' } | null>(null);
+
+	useLayoutEffect(() => {
+		const pending = pendingFocusRef.current;
+		if (!pending) return;
+		pendingFocusRef.current = null;
+		const opposite = pending.direction === 'up' ? 'down' : 'up';
+		const preferred = document.getElementById(`league-order-${pending.direction}-${pending.leagueId}`) as HTMLButtonElement | null;
+		const target = preferred && !preferred.disabled
+			? preferred
+			: document.getElementById(`league-order-${opposite}-${pending.leagueId}`);
+		target?.focus();
+	});
 
 	if (order.length < 2) return null;
+
+	const move = (leagueId: LeagueId, index: number, direction: 'up' | 'down') => {
+		pendingFocusRef.current = { leagueId, direction };
+		onReorder(index, direction === 'up' ? index - 1 : index + 1);
+	};
+
+	const reset = () => {
+		const first = order.toSorted((a, b) => (leagueOrder[a] ?? 99) - (leagueOrder[b] ?? 99))[0];
+		if (first) pendingFocusRef.current = { leagueId: first, direction: 'down' };
+		onReset();
+	};
 
 	const clearDragState = () => {
 		dragIndexRef.current = null;
@@ -80,7 +106,7 @@ const LeagueOrderList = ({ order, leagueLogos, disabled, onReorder, onReset }: l
 							type='button'
 							id={`league-order-up-${leagueId}`}
 							className='btn btn-sm btn-link league-order-move-btn'
-							onClick={() => onReorder(index, index - 1)}
+							onClick={() => move(leagueId, index, 'up')}
 							disabled={disabled || index === 0}
 							aria-label={i18n.t('setup.leagueMoveUp', { label: league.label })}
 						>
@@ -90,7 +116,7 @@ const LeagueOrderList = ({ order, leagueLogos, disabled, onReorder, onReset }: l
 							type='button'
 							id={`league-order-down-${leagueId}`}
 							className='btn btn-sm btn-link league-order-move-btn'
-							onClick={() => onReorder(index, index + 1)}
+							onClick={() => move(leagueId, index, 'down')}
 							disabled={disabled || index === order.length - 1}
 							aria-label={i18n.t('setup.leagueMoveDown', { label: league.label })}
 						>
@@ -104,7 +130,7 @@ const LeagueOrderList = ({ order, leagueLogos, disabled, onReorder, onReset }: l
 					type='button'
 					id='leagueOrderReset'
 					className='btn btn-sm btn-link league-order-reset'
-					onClick={onReset}
+					onClick={reset}
 					disabled={disabled}
 				>
 					<i className='bi bi-arrow-counterclockwise me-1' aria-hidden='true' />

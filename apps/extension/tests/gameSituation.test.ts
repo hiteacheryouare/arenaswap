@@ -50,8 +50,10 @@ describe('resolveStatus', () => {
 		expect(resolveStatus(makeGame({ intermission: true, period: 2 }), false, t).text).toBe('Halftime');
 	});
 
-	test('says intermission outside the midpoint break', () => {
-		expect(resolveStatus(makeGame({ intermission: true, period: 3 }), false, t).text).toBe('Intermission');
+	test('says which quarter ended outside the midpoint break, keeping intermission for hockey', () => {
+		expect(resolveStatus(makeGame({ intermission: true, period: 3 }), false, t).text).toBe('End of Q3');
+		expect(resolveStatus(makeGame({ league: 'nfl', sportType: 'football', intermission: true, period: 1 }), false, t).text).toBe('End of Q1');
+		expect(resolveStatus(makeGame({ league: 'nhl', sportType: 'hockey', intermission: true, period: 1 }), false, t).text).toBe('Intermission');
 	});
 
 	test('a delay outranks the clock and keeps ESPN\'s description', () => {
@@ -99,7 +101,7 @@ describe('bonusKind', () => {
 describe('basketballTimeoutAllotment', () => {
 	test('the NBA carries seven, everyone else four', () => {
 		expect(basketballTimeoutAllotment('nba')).toBe(7);
-		expect(basketballTimeoutAllotment('wnba')).toBe(4);
+		expect(basketballTimeoutAllotment('wnba')).toBe(5);
 		expect(basketballTimeoutAllotment('ncaab')).toBe(4);
 	});
 });

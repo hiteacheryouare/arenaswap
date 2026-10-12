@@ -34,35 +34,21 @@ const walkthroughView = ({ onComplete, leagues, scoringMode }: walkthroughViewPr
 	const [step, setStep] = useState<walkthroughStep>(1);
 	const [initialSubStep, setInitialSubStep] = useState<number>(0);
 
-	const next = () => setStep(prev => {
-		if (prev === 1) {
-			setInitialSubStep(0);
-			return 2;
-		}
-		if (prev === 2) return 3;
-		if (prev === 3) return 4;
-		if (prev === 4) return 5;
-		if (prev === 5) return 6;
-		if (prev === 6) return 7;
-		return 8;
-	});
+	const next = () => {
+		if (step === 1) setInitialSubStep(0);
+		setStep(prev => Math.min(prev + 1, 8) as walkthroughStep);
+	};
 
 	const finish = () => {
 		void celebrate();
 		onComplete();
 	};
 
+	// Stepping back into the PowerScore step lands on its last sub-step, the one just left.
 	const back = (from: walkthroughStep) => {
-		if (from === 2) setStep(1);
-		else if (from === 3) {
-			setInitialSubStep(lastPowerScoreSubStep(modeId));
-			setStep(2);
-		}
-		else if (from === 4) setStep(3);
-		else if (from === 5) setStep(4);
-		else if (from === 6) setStep(5);
-		else if (from === 7) setStep(6);
-		else if (from === 8) setStep(7);
+		if (from === 1) return;
+		if (from === 3) setInitialSubStep(lastPowerScoreSubStep(modeId));
+		setStep((from - 1) as walkthroughStep);
 	};
 
 	return (

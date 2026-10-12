@@ -73,7 +73,7 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 								<span className='fw-bold lh-1 game-score-value'>17</span>
 							</div>
 							<span className='game-clock'>2:14</span>
-							<span className='game-period'>Q4</span>
+							<span className='game-period'>{i18n.t('gameCard.periodQuarter', { count: '4' })}</span>
 						</div>
 						<div className='d-flex flex-column align-items-center gap-1 team-column is-home'>
 							<TeamLogo abbr='NYG' color={giantsColor} logoUrl={LOGO_GIANTS} />

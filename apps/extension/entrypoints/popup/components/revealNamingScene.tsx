@@ -133,8 +133,8 @@ const OpeningName = ({ side, team }: { side: 'away' | 'home'; team: Team }) => {
 const revealNamingScene = ({ game }: { game: Game }) => (
 	<>
 		{namingBands}
-		<OpeningName key={game.awayTeam.name} side='away' team={game.awayTeam} />
-		<OpeningName key={game.homeTeam.name} side='home' team={game.homeTeam} />
+		<OpeningName key={`away-${game.awayTeam.name}`} side='away' team={game.awayTeam} />
+		<OpeningName key={`home-${game.homeTeam.name}`} side='home' team={game.homeTeam} />
 	</>
 );
 

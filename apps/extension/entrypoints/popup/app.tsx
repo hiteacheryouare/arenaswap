@@ -3,7 +3,7 @@ import useSWR from 'swr';
 import { fetchGamesWithLeagueLogos } from '@arenaswap/sideline';
 import { allLeagueIds, createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences, withCollegeFilter } from '@arenaswap/core/constants';
 import type { FantasyRosterEntry } from '@arenaswap/core';
-import type { CollegeFilter, CollegeLeagueId, LeagueId, LeagueLogoMap, LeagueScheduleMap, SignalName, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import type { CollegeFilter, CollegeLeagueId, LeagueId, LeagueLogoMap, LeagueScheduleMap, PowerScoreSnapshot, ScoreSnapshot, SignalName, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
@@ -46,6 +46,11 @@ import {
 	reviewPromptStorageKey,
 	shouldShowReviewPrompt,
 } from '../../utils/reviewPrompt';
+
+// Shared rather than a fresh [] per render, which would rebuild the detail view's chart memos on
+// every push for a game with no history yet.
+const noSnapshots: ScoreSnapshot[] = [];
+const noPowerScoreSnapshots: PowerScoreSnapshot[] = [];
 
 const onSetGameBoost = (gameId: string, boost: number) => {
 	void browser.runtime.sendMessage({ type: 'SET_GAME_BOOST', gameId, boost });
@@ -509,8 +514,8 @@ export default () => {
 
 	const selectedGame = selectedGameId ? games.find(game => game.id === selectedGameId) : undefined;
 	const selectedScore = selectedGameId ? scores.find(score => score.gameId === selectedGameId) : undefined;
-	const selectedScoreHistory = selectedGameId ? scoreHistory[selectedGameId] ?? [] : [];
-	const selectedPowerScoreHistory = selectedGameId ? powerScoreHistory[selectedGameId] ?? [] : [];
+	const selectedScoreHistory = (selectedGameId && scoreHistory[selectedGameId]) || noSnapshots;
+	const selectedPowerScoreHistory = (selectedGameId && powerScoreHistory[selectedGameId]) || noPowerScoreSnapshots;
 
 	if (onboardingDone === null) return <div className='popup-root' />;
 

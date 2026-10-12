@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
-import { createDefaultUserPreferences, isFavoriteTeamGame } from '@arenaswap/core/constants';
-import type { BackgroundState, Game, GuideSlate, LeagueLogoMap, PowerScoreSnapshot, ScoreSnapshot, TeamMonoLogoMap, UserPreferences } from '@arenaswap/core/types';
+import { createDefaultUserPreferences, createFavoriteTeamKey, isFavoriteTeamGame, normalizeUserPreferences } from '@arenaswap/core/constants';
+import type { BackgroundState, Game, GuideSlate, LeagueId, LeagueLogoMap, PowerScoreSnapshot, ScoreSnapshot, TeamMonoLogoMap, UserPreferences } from '@arenaswap/core/types';
 import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { browser } from 'wxt/browser';
@@ -11,7 +11,7 @@ import NoGamesMessage from '../popup/components/noGamesMessage';
 import UpcomingDayPager from '../popup/components/upcomingDayPager';
 import { fetchState, getRandomLoadingMessage, groupByDate, normalizeBackgroundState, resolveSelectedDayIndex } from '../popup/popupHelpers';
 import useFavoriteScoreConfetti from '../popup/useFavoriteScoreConfetti';
-import { loadStoredUserPreferences } from '../../utils/prefsStorage';
+import { loadStoredUserPreferences, persistStoredUserPreferences } from '../../utils/prefsStorage';
 import { fullLogoSrc, useTheme } from '../../utils/theme';
 import { bandLabel } from './guideFormat';
 import GuideGrid from './guideGrid';
@@ -41,6 +41,7 @@ const prefersReducedMotion = () => globalThis.matchMedia?.('(prefers-reduced-mot
 
 const App = () => {
 	const [prefs, setPrefs] = useState<UserPreferences>(() => createDefaultUserPreferences());
+	const prefsRef = useRef(prefs);
 	const [prefsLoaded, setPrefsLoaded] = useState(false);
 	const theme = useTheme(prefsLoaded ? prefs.theme : null);
 	const [slate, setSlate] = useState<GuideSlate | null>(null);
@@ -78,6 +79,7 @@ const App = () => {
 	useEffect(() => {
 		const load = async () => {
 			const stored = loadStoredUserPreferences().then(storedPrefs => {
+				prefsRef.current = storedPrefs;
 				setPrefs(storedPrefs);
 				setPrefsLoaded(true);
 			});
@@ -86,17 +88,51 @@ const App = () => {
 		void load();
 	}, [loadSlate]);
 
+	// The guide is a long-lived tab and the popup is where settings change, so it follows the stored
+	// copy rather than only the one it read on load.
+	useEffect(() => {
+		const onStorageChanged = (changes: Record<string, unknown>, area: string) => {
+			if ((area !== 'local' && area !== 'sync') || !('prefs' in changes)) return;
+			void loadStoredUserPreferences().then(storedPrefs => {
+				prefsRef.current = storedPrefs;
+				setPrefs(storedPrefs);
+			});
+		};
+		browser.storage.onChanged.addListener(onStorageChanged);
+		return () => browser.storage.onChanged.removeListener(onStorageChanged);
+	}, []);
+
 	// The background already broadcasts on every poll, so the guide rides that rather than polling
 	// on a timer of its own. The second message is end times that landed after the slate went back.
-	// The poll's broadcast is the whole background state, so it is kept as it arrives.
+	// The poll's broadcast is the whole background state, so it is kept as it arrives. A hidden tab
+	// holds on to the latest broadcast and catches up once it is looked at again.
 	useEffect(() => {
+		let pendingLive: unknown = null;
+		let slateStale = false;
 		const onMessage = (message: unknown) => {
 			const type = (message as { type?: string })?.type;
+			if (type !== 'SCORES_UPDATED' && type !== 'GUIDE_SLATE_UPDATED') return;
+			if (document.hidden) {
+				if (type === 'SCORES_UPDATED') pendingLive = message;
+				slateStale = true;
+				return;
+			}
 			if (type === 'SCORES_UPDATED') setLive(normalizeBackgroundState(message));
-			if (type === 'SCORES_UPDATED' || type === 'GUIDE_SLATE_UPDATED') void loadSlate();
+			void loadSlate();
+		};
+		const onVisibilityChange = () => {
+			if (document.hidden) return;
+			if (pendingLive) setLive(normalizeBackgroundState(pendingLive));
+			if (slateStale) void loadSlate();
+			pendingLive = null;
+			slateStale = false;
 		};
 		browser.runtime.onMessage.addListener(onMessage);
-		return () => browser.runtime.onMessage.removeListener(onMessage);
+		document.addEventListener('visibilitychange', onVisibilityChange);
+		return () => {
+			browser.runtime.onMessage.removeListener(onMessage);
+			document.removeEventListener('visibilitychange', onVisibilityChange);
+		};
 	}, [loadSlate]);
 
 	// Only the now line and the live bar floor depend on this, so a minute is plenty.
@@ -141,6 +177,20 @@ const App = () => {
 		globalThis.addEventListener('keydown', onKeyDown);
 		return () => globalThis.removeEventListener('keydown', onKeyDown);
 	});
+
+	// The popup's own save path, so a star pressed here reaches the background and the popup alike.
+	const toggleFavoriteTeam = (leagueId: LeagueId, teamId: string) => {
+		const favoriteTeamKey = createFavoriteTeamKey(leagueId, teamId);
+		const current = new Set(prefsRef.current.favoriteTeamIds);
+		if (current.has(favoriteTeamKey)) current.delete(favoriteTeamKey);
+		else current.add(favoriteTeamKey);
+		const next = normalizeUserPreferences({ ...prefsRef.current, favoriteTeamIds: [...current] });
+		prefsRef.current = next;
+		setPrefs(next);
+		void persistStoredUserPreferences(next)
+			.then(() => browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: next }))
+			.catch(() => {});
+	};
 
 	const favoriteTeamIds = useMemo(() => new Set(prefs.favoriteTeamIds), [prefs.favoriteTeamIds]);
 
@@ -234,6 +284,13 @@ const App = () => {
 	};
 
 	const selectedGame = selectedGameId ? slateGames.find(game => game.id === selectedGameId) : undefined;
+
+	// A game that drops off the slate takes the drawer with it, and the selection has to go too:
+	// left behind, it marks the drawer closing with nothing left to finish the animation.
+	if (selectedGameId && slate && !selectedGame) {
+		setSelectedGameId(null);
+		setClosingDrawer(false);
+	}
 	const leagueLogos: LeagueLogoMap = slate?.leagueLogos ?? {};
 	const monoLogos: TeamMonoLogoMap = slate?.monoLogos ?? {};
 	const hasError = Boolean(slate?.refused) || (slateFailed && !slate);
@@ -297,13 +354,14 @@ const App = () => {
 				<aside
 					className='guide-drawer'
 					data-closing={closingDrawer ? 'true' : undefined}
-					onAnimationEnd={() => {
-						if (!closingDrawer) return;
+					onAnimationEnd={event => {
+						if (!closingDrawer || event.target !== event.currentTarget) return;
 						setClosingDrawer(false);
 						setSelectedGameId(null);
 					}}
 				>
 					<GameDetailView
+						key={selectedGame.id}
 						game={selectedGame}
 						excitementResult={live?.scores.find(score => score.gameId === selectedGame.id)}
 						scoreHistory={live?.scoreHistory[selectedGame.id] ?? noSnapshots}
@@ -322,6 +380,7 @@ const App = () => {
 						disabledSignals={prefs.disabledSignals}
 						favoriteTeamIds={favoriteTeamIds}
 						favoriteBoostSetting={prefs.favoriteTeamBonusPoints}
+						onToggleFavoriteTeam={toggleFavoriteTeam}
 						tabAssignEnabled={false}
 						dismiss='close'
 						onSetGameBoost={setGameBoost}

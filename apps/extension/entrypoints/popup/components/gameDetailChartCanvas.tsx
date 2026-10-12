@@ -16,24 +16,22 @@ interface gameDetailChartCanvasProps {
 const gameDetailChartCanvas = ({ option }: gameDetailChartCanvasProps) => {
 	const chartElementRef = useRef<HTMLDivElement | null>(null);
 	const chartInstanceRef = useRef<EChartsType | null>(null);
-	const resizeHandlerRef = useRef<(() => void) | null>(null);
 	const optionRef = useRef(option);
 	optionRef.current = option;
 
+	// Observed rather than listening on the window: a chart that mounts inside a hidden tab pane
+	// starts at 0x0, and the pane being shown is a resize the window never hears about.
 	useEffect(() => {
-		if (!chartElementRef.current) return;
-		const instance = echarts.init(chartElementRef.current, undefined, { renderer: 'canvas' });
+		const element = chartElementRef.current;
+		if (!element) return;
+		const instance = echarts.init(element, undefined, { renderer: 'canvas' });
 		chartInstanceRef.current = instance;
 		instance.setOption(optionRef.current, true);
-		const onResize = () => instance.resize();
-		resizeHandlerRef.current = onResize;
-		window.addEventListener('resize', onResize);
+		const observer = new ResizeObserver(() => instance.resize());
+		observer.observe(element);
 
 		return () => {
-			if (resizeHandlerRef.current) {
-				window.removeEventListener('resize', resizeHandlerRef.current);
-				resizeHandlerRef.current = null;
-			}
+			observer.disconnect();
 			instance.dispose();
 			chartInstanceRef.current = null;
 		};

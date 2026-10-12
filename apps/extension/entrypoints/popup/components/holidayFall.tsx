@@ -71,11 +71,19 @@ const holidayFall = ({ kind, theme = 'dark' }: holidayFallProps) => {
 		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
 		const ratio = window.devicePixelRatio || 1;
-		const width = canvas.clientWidth;
-		const height = canvas.clientHeight;
-		canvas.width = Math.round(width * ratio);
-		canvas.height = Math.round(height * ratio);
-		ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+		let width = 0;
+		let height = 0;
+		// Re-sized with the window it is pinned to, or a wider Guide window stretches every flake.
+		const fitToWindow = () => {
+			width = canvas.clientWidth;
+			height = canvas.clientHeight;
+			canvas.width = Math.round(width * ratio);
+			canvas.height = Math.round(height * ratio);
+			ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+		};
+		fitToWindow();
+		const observer = new ResizeObserver(fitToWindow);
+		observer.observe(canvas);
 
 		const ink = snowInk[theme];
 		const particles = Array.from({ length: settings[kind].count }, () => makeParticle(kind, width, height, false));
@@ -118,7 +126,10 @@ const holidayFall = ({ kind, theme = 'dark' }: holidayFallProps) => {
 		};
 
 		animationId = requestAnimationFrame(tick);
-		return () => cancelAnimationFrame(animationId);
+		return () => {
+			cancelAnimationFrame(animationId);
+			observer.disconnect();
+		};
 	}, [kind, theme]);
 
 	return <canvas ref={canvasRef} className='holiday-fall' aria-hidden='true' />;
