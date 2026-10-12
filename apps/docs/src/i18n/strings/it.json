@@ -422,6 +422,7 @@
 			"periodExtraTimeFirst": "TS1",
 			"periodExtraTimeSecond": "TS2",
 			"periodShootout": "RIG",
+			"periodHockeyShootout": "SO",
 			"downDistanceAt": "{downDistance} a {fieldPosition}"
 		},
 		"field": {

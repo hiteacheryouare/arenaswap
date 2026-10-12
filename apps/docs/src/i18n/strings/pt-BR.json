@@ -406,11 +406,11 @@
 			"addToFavorites": "Adicionar {team} aos favoritos",
 			"removeFromFavorites": "Remover {team} dos favoritos",
 			"openDetails": "Abrir detalhes de {away} vs {home}",
-			"delay": "SUSPENSO",
-			"delayFallback": "Suspenso",
+			"delay": "ATRASO",
+			"delayFallback": "Atraso",
 			"vs": "vs",
-			"topOfInning": "Início da entrada",
-			"bottomOfInning": "Fim da entrada",
+			"topOfInning": "Parte alta da entrada",
+			"bottomOfInning": "Parte baixa da entrada",
 			"shootout": "PEN {away}–{home}",
 			"periodQuarter": "{count}º Q",
 			"periodFirstHalf": "1ºT",
@@ -422,6 +422,7 @@
 			"periodExtraTimeFirst": "PR1",
 			"periodExtraTimeSecond": "PR2",
 			"periodShootout": "PEN",
+			"periodHockeyShootout": "SO",
 			"downDistanceAt": "{downDistance} na {fieldPosition}"
 		},
 		"field": {

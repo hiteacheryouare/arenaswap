@@ -399,7 +399,7 @@
 		"gameCard": {
 			"live": "LIVE",
 			"powerScore": "PowerScore",
-			"watchLabel": "Schauen:",
+			"watchLabel": "Sender:",
 			"oddsProvidedBy": "Quoten bereitgestellt von:",
 			"favorited": "Favorisiert",
 			"addToFavoritesShort": "Zu Favoriten hinzufügen",
@@ -409,8 +409,8 @@
 			"delay": "VERZÖGERUNG",
 			"delayFallback": "Verzögerung",
 			"vs": "vs",
-			"topOfInning": "Anfang des Innings",
-			"bottomOfInning": "Ende des Innings",
+			"topOfInning": "Obere Hälfte des Innings",
+			"bottomOfInning": "Untere Hälfte des Innings",
 			"shootout": "I.E. {away}–{home}",
 			"periodQuarter": "Q{count}",
 			"periodFirstHalf": "1. HZ",
@@ -422,6 +422,7 @@
 			"periodExtraTimeFirst": "V1",
 			"periodExtraTimeSecond": "V2",
 			"periodShootout": "I.E.",
+			"periodHockeyShootout": "SO",
 			"downDistanceAt": "{downDistance} an {fieldPosition}"
 		},
 		"field": {

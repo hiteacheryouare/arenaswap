@@ -409,8 +409,8 @@
 			"delay": "ATRASO",
 			"delayFallback": "Atraso",
 			"vs": "vs",
-			"topOfInning": "Início da entrada",
-			"bottomOfInning": "Fim da entrada",
+			"topOfInning": "Parte alta da entrada",
+			"bottomOfInning": "Parte baixa da entrada",
 			"shootout": "GP {away}–{home}",
 			"periodQuarter": "{count}.º P",
 			"periodFirstHalf": "1.ª P",
@@ -422,6 +422,7 @@
 			"periodExtraTimeFirst": "PR1",
 			"periodExtraTimeSecond": "PR2",
 			"periodShootout": "GP",
+			"periodHockeyShootout": "SO",
 			"downDistanceAt": "{downDistance} na {fieldPosition}"
 		},
 		"field": {

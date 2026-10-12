@@ -169,9 +169,9 @@
 		"m106": "兩位裁判同時比出相反的手勢……",
 		"m107": "好奇泳池為什麼是綠色的……",
 		"m108": "為求保險再頒一面金牌……",
-		"m109": "放錯國歌……",
-		"m110": "銷毀錄影帶……",
-		"m111": "拉長國歌的最後一個音……",
+		"m109": "銷毀錄影帶……",
+		"m110": "拉長國歌的最後一個音……",
+		"m111": "放錯國歌……",
 		"m112": "介紹先發陣容……"
 	},
 	"setup": {
@@ -207,7 +207,6 @@
 		"demoSeasonThanksgiving": "感恩節當週",
 		"demoSeasonDecember": "十二月",
 		"demoSeasonExplainer": "僅影響節日裝飾，方便你在非節日期間查看。",
-		"standbySection": "Standby Stream",
 		"enableStandby": "啟用 Standby Stream",
 		"standbyBelow": "低於此分數時待機",
 		"morePatient": "更有耐心",
@@ -290,7 +289,7 @@
 		"keywordsNotifications": "警示, 通知, 提醒, 橫幅, 彈出視窗",
 		"keywordsBetting": "賠率, 盤口, 讓分, 博彩, 投注",
 		"keywordsTemperature": "攝氏, 華氏, 度, 天氣, 單位",
-		"keywordsOpenReveal": "動畫, 片頭, 揭幕, 海報, 動效, 開場, 閃屏",
+		"keywordsOpenReveal": "動畫, 片頭, 揭幕, 海報, 動效, 開場, 啟動畫面",
 		"keywordsHoliday": "聖誕, 雪, 彩燈, 落葉, 季節, 天氣, 感恩節",
 		"keywordsStandby": "備用, 後備, 閒置, 替補, 冷場",
 		"keywordsStandbyThreshold": "分數, 閾值, 下限, 低於, 冷場",
@@ -393,6 +392,7 @@
 		"unitSeconds": "秒",
 		"halftime": "中場休息",
 		"intermission": "節間休息",
+		"endOfPeriod": "{period}結束",
 		"chartPowerScoreTitle": "PowerScore 走勢",
 		"chartScoreTitle": "比分走勢",
 		"chartWinProbTitle": "勝率",
@@ -408,9 +408,9 @@
 		"pitchingLabel": "投球",
 		"atBatLabel": "打席",
 		"dueUpHeading": "後續打者",
-		"bonus": "罰球",
-		"foulsBonus": "{team}進入罰球",
-		"foulsDoubleBonus": "{team}進入雙倍罰球",
+		"bonus": "罰球狀態",
+		"foulsBonus": "{team}進入罰球狀態",
+		"foulsDoubleBonus": "{team}進入雙倍罰球狀態",
 		"infoWatch": "轉播",
 		"infoVenue": "場館",
 		"infoEnded": "結束",
@@ -609,7 +609,7 @@
 		"shotsOnGoal": "射門",
 		"powerPlayGoals": "強打進球",
 		"powerPlayChances": "強打次數",
-		"penaltyMinutesTotal": "罰球時間",
+		"penaltyMinutesTotal": "受罰時間",
 		"hitsDelivered": "身體對抗",
 		"blockedShots": "封蓋射門",
 		"faceoffPct": "爭球成功率",
@@ -653,6 +653,7 @@
 		"periodExtraTimeFirst": "加1",
 		"periodExtraTimeSecond": "加2",
 		"periodShootout": "點球",
+		"periodHockeyShootout": "SO",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"preseason": "季前賽",
@@ -778,7 +779,7 @@
 		"tooltipTwoMinuteDrill": "落後不超過一個得分回合的球隊，在半場尾聲發動進攻。進入射程後達到高峰。領先方拖延時間則不得分。",
 		"tooltipRedCard": "在平手或一球差距的比賽中出現紅牌。之後十分鐘內逐漸衰減，若有進球打開局面則更早消退。",
 		"tooltipNoHitter": "從第 6 局起（壘球為第 4 局），投手群還沒被擊出安打。每個無安打的出局都會讓數值上升。",
-		"tooltipUpsetWatch": "賽前不被看好的一方在比賽過半後領先、戰平，或落後不超過一個得分回合。",
+		"tooltipUpsetWatch": "賽前不被看好的一方在比賽過半後領先、打平，或落後不超過一個得分回合。",
 		"tooltipUpsetRout": "賽前不被看好的一方把熱門打得毫無招架之力。",
 		"tooltipStakes": "這場比賽的結果決定什麼：命懸一線的系列賽、兩支排名球隊的對決，或賽季尾聲的爭奪。比賽勝負已定後消失。",
 		"reasonBlowoutPoints": {
@@ -871,7 +872,7 @@
 		"underdogClose": "賽前，我們的線人給 {team} 的勝率是 {chance}%。現在比分只落後 {margin}。",
 		"postseasonFinal": "這場決定冠軍，所以享有全額加成。",
 		"postseasonSemifinal": "準決賽，加成為全額的四分之三。",
-		"postseasonQuarterfinal": "四分之一決賽，加成為全額的一半。",
+		"postseasonQuarterfinal": "八強賽，加成為全額的一半。",
 		"postseasonEarlyRound": "早期輪次，加成為全額的四分之一。",
 		"regularSeason": "例行賽，沒有額外加成。",
 		"postseasonBoostOff": "你的季後賽加成在設定裡是 0。"
@@ -1147,7 +1148,7 @@
 	"postseasonBoost": {
 		"label": "季後賽加成",
 		"points": "最多 +$1 分",
-		"explainer": "決賽能加的最高分。更早的輪次只拿一部分，準決賽四分之三、四分之一決賽一半、更早的輪次四分之一。表演賽不加分。"
+		"explainer": "決賽能加的最高分。更早的輪次只拿一部分，準決賽四分之三、八強賽一半、更早的輪次四分之一。表演賽不加分。"
 	},
 	"proTip": {
 		"label": "達人技巧：",
@@ -1208,7 +1209,7 @@
 		"label": "切換靈敏度",
 		"valueLabel": "{label}（差距 ≥ {gap}）",
 		"explainer": "控制 PowerScore 差距要多大，ArenaSwap 才會切換分頁。",
-		"hyperdriveTitle": "啟動超空間引擎…",
+		"hyperdriveTitle": "啟動超空間引擎……",
 		"level": {
 			"l1": "幾乎不動",
 			"l2": "被動",
@@ -1221,14 +1222,13 @@
 	},
 	"footer": {
 		"builtWith": "用心打造於",
-		"credit": "Philadelphia 與 Boston，由 Ryan Mullin 製作",
+		"credit": "費城與波士頓，由 Ryan Mullin 製作",
 		"toggleDebug": "切換除錯資訊"
 	},
 	"ludicrousSpeed": {
 		"skip": "點擊跳過",
 		"announce": "LUDICROUS SPEED……",
 		"go": "衝！",
-		"plaid": "他們衝到格紋境界了！",
 		"stop": "停！",
 		"emergencyBrake": "⚠ 緊急煞車——絕對別用",
 		"intro": {
@@ -1318,11 +1318,11 @@
 		"keywords": "college ncaa division conference fbs fcs d1 d2 d3 di dii diii top 25 ranked poll sec big ten acc big 12 ivy 大學 大專 學院 級別 分級 聯盟 分區 排名 排行榜 前25 票選 民調 march madness playoff cfp tournament bracket frozen four college world series 瘋狂三月 季後賽 錦標賽 淘汰賽 對戰表 冰凍四強 大學世界大賽"
 	},
 	"fantasy": {
-		"loading": "載入中…",
+		"loading": "載入中……",
 		"yourPlayersHeading": "你的球員",
 		"rosterLede": "夢幻模式會盯著這些球員參與的每一場比賽。最多 50 個，防守組也算在內。",
 		"rulesLede": "每項數據對應的得分。跟你的聯盟設得一樣，夢幻模式就會像你一樣解讀數據統計。",
-		"searchPlaceholder": "搜尋球員或 NFL 球隊…",
+		"searchPlaceholder": "搜尋球員或 NFL 球隊……",
 		"searchError": "球探空手而歸。再試一次？",
 		"noMatch": "找不到符合「{query}」的結果",
 		"playersHeading": "球員",

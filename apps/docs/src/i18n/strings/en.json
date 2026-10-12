@@ -422,6 +422,7 @@
 			"periodExtraTimeFirst": "ET1",
 			"periodExtraTimeSecond": "ET2",
 			"periodShootout": "PENS",
+			"periodHockeyShootout": "SO",
 			"downDistanceAt": "{downDistance} at {fieldPosition}"
 		},
 		"field": {

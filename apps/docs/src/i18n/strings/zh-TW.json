@@ -422,6 +422,7 @@
 			"periodExtraTimeFirst": "加1",
 			"periodExtraTimeSecond": "加2",
 			"periodShootout": "點球",
+			"periodHockeyShootout": "SO",
 			"downDistanceAt": "{fieldPosition} {downDistance}"
 		},
 		"field": {

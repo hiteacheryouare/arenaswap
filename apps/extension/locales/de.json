@@ -37,7 +37,7 @@
 		},
 		"m2": {
 			"title": "Die Arena liegt im Dunkeln.",
-			"sub": "Kein Live-Action in deinen Ligen. Schau wieder vorbei, wenn die Spiele loslegen."
+			"sub": "Keine Live-Action in deinen Ligen. Schau wieder vorbei, wenn die Spiele loslegen."
 		},
 		"m3": {
 			"title": "Ein ruhiger Sporttag.",
@@ -77,7 +77,7 @@
 		"m14": "Scheinwerfer werden ausgerichtet…",
 		"m15": "Schiedsrichter werden bestochen…",
 		"m16": "Sportkalender wird zu Rate gezogen…",
-		"m17": "Überlegen, ob wir auf dem vierten Down gehen…",
+		"m17": "Überlegen, ob wir den vierten Down ausspielen…",
 		"m18": "GOAT-Debatte wird aktualisiert…",
 		"m19": "Pressetribüne wird befüllt…",
 		"m20": "Banner werden entrollt…",
@@ -163,15 +163,15 @@
 		"m100": "Überzeugt sein: Das ist definitiv unser Jahr…",
 		"m101": "Auf Mülltonnen wird getrommelt…",
 		"m102": "Hose wird nach Sandpapier durchsucht…",
-		"m103": "Beide Tore gleichzeitig werden verteidigt…",
+		"m103": "Beide Tore werden gleichzeitig verteidigt…",
 		"m104": "Von der Couch aus wird beim Regelausschuss angerufen…",
 		"m105": "Drei Sekunden werden auf die Uhr zurückgesetzt…",
 		"m106": "Zwei widersprüchliche Handzeichen werden gleichzeitig gegeben…",
 		"m107": "Sich fragen, warum das Becken grün ist…",
 		"m108": "Sicherheitshalber wird eine zweite Goldmedaille vergeben…",
-		"m109": "Die falsche Nationalhymne wird eingespielt…",
-		"m110": "Die Bänder werden geschreddert…",
-		"m111": "Der letzte Ton der Hymne wird gehalten…",
+		"m109": "Die Bänder werden geschreddert…",
+		"m110": "Der letzte Ton der Hymne wird gehalten…",
+		"m111": "Die falsche Nationalhymne wird eingespielt…",
 		"m112": "Die Startaufstellung wird vorgestellt…"
 	},
 	"setup": {
@@ -207,7 +207,6 @@
 		"demoSeasonThanksgiving": "Thanksgiving-Woche",
 		"demoSeasonDecember": "Dezember",
 		"demoSeasonExplainer": "Betrifft nur den Festtagsschmuck, damit du ihn außerhalb der Saison sehen kannst.",
-		"standbySection": "Standby Stream",
 		"enableStandby": "Standby Stream aktivieren",
 		"standbyBelow": "Standby unter",
 		"morePatient": "Geduldiger",
@@ -295,7 +294,7 @@
 		"keywordsStandby": "ruckfall, ausweich, leerlauf, reserve, ruhig",
 		"keywordsStandbyThreshold": "wert, grenze, limit, unter, ruhig",
 		"keywordsStandbyTab": "tab, fenster, seite, ziel",
-		"keywordsBossDecoy": "chef, verstecken, panik, arbeit, schule, tabelle, tarnung, stumm, tastenkuerzel, flucht",
+		"keywordsBossDecoy": "chef, verstecken, panik, arbeit, schule, tabelle, tarnung, stumm, tastenkürzel, flucht",
 		"keywordsDemo": "fake, beispiel, test, vorschau, sandkasten, attrappe",
 		"aboutSetting": "Info zu {setting}",
 		"moreInfo": "Mehr erfahren",
@@ -393,6 +392,7 @@
 		"unitSeconds": "Sek",
 		"halftime": "Halbzeit",
 		"intermission": "Pause",
+		"endOfPeriod": "Ende {period}",
 		"chartPowerScoreTitle": "PowerScore über die Zeit",
 		"chartScoreTitle": "Spielstand über die Zeit",
 		"chartWinProbTitle": "Siegwahrscheinlichkeit",
@@ -405,7 +405,7 @@
 		"redCardTeam": "{minute} {team}",
 		"matchMinute": "{minute}'",
 		"matchMinuteAdded": "{minute}+{added}'",
-		"pitchingLabel": "Werfen",
+		"pitchingLabel": "Pitcher",
 		"atBatLabel": "Am Schlag",
 		"dueUpHeading": "Als Nächstes am Schlag",
 		"bonus": "Bonus",
@@ -492,7 +492,7 @@
 		"ticketsFrom": "Tickets ab {price}",
 		"chartLeadTitle": "Führung über die Zeit",
 		"leadTied": "Unentschieden",
-		"leadBy": "{team} mit {margin}"
+		"leadBy": "{team} mit {margin} vorn"
 	},
 	"standings": {
 		"wins": "S",
@@ -620,7 +620,7 @@
 		"addToFavorites": "{team} zu Favoriten hinzufügen",
 		"favorited": "Favorisiert",
 		"addToFavoritesShort": "Zu Favoriten hinzufügen",
-		"watchLabel": "Schauen:",
+		"watchLabel": "Sender:",
 		"oddsProvidedBy": "Quoten bereitgestellt von:",
 		"openDetails": "Details für {away} vs {home} öffnen",
 		"live": "LIVE",
@@ -653,12 +653,13 @@
 		"periodExtraTimeFirst": "V1",
 		"periodExtraTimeSecond": "V2",
 		"periodShootout": "I.E.",
+		"periodHockeyShootout": "SO",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"preseason": "Preseason",
 		"springTraining": "Spring Training",
-		"topOfInning": "Anfang des Innings",
-		"bottomOfInning": "Ende des Innings"
+		"topOfInning": "Obere Hälfte des Innings",
+		"bottomOfInning": "Untere Hälfte des Innings"
 	},
 	"field": {
 		"possession": "{team} hat den Ball",
@@ -678,7 +679,7 @@
 		"volatilityBoost": "Volatilitätsboost",
 		"volatilityPenalty": "Volatilitätsstrafe",
 		"volatility": "Volatilität",
-		"signalsTotal": "Signalgesamtpunktzahl",
+		"signalsTotal": "Signale gesamt",
 		"cappedAt": "(begrenzt auf {max})",
 		"signalsNormalizedNote": "Neu skaliert für den Bereich 0–100 bei deaktivierten Signalen",
 		"tooltipSignalsNormalized": "Wenn Signale deaktiviert werden, werden die verbleibenden Signale proportional hochskaliert, damit die Punktzahl ihren vollen Bereich von 0–100 behält.",
@@ -689,20 +690,20 @@
 			"n": "$1 Lieblingsteams im Spiel"
 		},
 		"gameBoost": "Spielboost",
-		"scoringOpportunity": "Torgelegenheit",
+		"scoringOpportunity": "Punktchance",
 		"postseasonBoost": "Postseason-Boost",
 		"signalOff": "Aus",
 		"finalPowerScore": "PowerScore gesamt",
 		"tooltipCloseness": "Wird anhand des aktuellen Punkteabstands berechnet. Ein Gleichstand bringt die höchste Wertung; größere Abstände erzielen progressiv niedrigere Werte. Die Obergrenze skaliert mit dem Spielfortschritt, sodass derselbe Abstand am Spielende mehr wert ist als am Anfang.",
-		"tooltipLateGame": "Kombiniert den Spielfortschritt mit der Nähe des Spielstands. Steigt linear über das letzte Spielviertel an. Klare Niederlagen erzielen hier kaum Punkte, egal wie viel Zeit verbleibt. Gibt Extrapunkte, wenn das Spiel in den letzten Sekunden unentschieden steht — als Vorgriff auf eine Verlängerung.",
-		"tooltipMomentum": "Misst die Nettopunkte eines Teams in der jüngsten Verlaufshistorie. Wenn ein Team den anderen um einen bestimmten Betrag übertroffen hat, wird das hier gewertet. Klingt mit der Zeit ab, wenn keine weiteren Punkte fallen.",
+		"tooltipLateGame": "Kombiniert den Spielfortschritt mit der Nähe des Spielstands. Steigt linear über den letzten Spielabschnitt an. Kantersiege erzielen hier kaum Punkte, egal wie viel Zeit verbleibt. Gibt Extrapunkte, wenn das Spiel in den letzten Sekunden unentschieden steht — als Vorgriff auf eine Verlängerung.",
+		"tooltipMomentum": "Misst die Nettopunkte eines Teams in der jüngsten Verlaufshistorie. Wenn ein Team das andere um einen bestimmten Betrag übertroffen hat, wird das hier gewertet. Klingt mit der Zeit ab, wenn keine weiteren Punkte fallen.",
 		"tooltipLeadChanges": "Zählt, wie oft die Führung im Verlaufshistoriefenster gewechselt hat. Kein Wechsel ergibt null Punkte; ein oder mehrere Wechsel erzielen progressiv höhere Werte. Klingt ab, wenn eine Weile kein neuer Wechsel stattfindet.",
 		"tooltipComeback": "Vergleicht den Spielabstand am ältesten Punkt im Fenster mit dem aktuellen Abstand. Wenn das zurückliegende Team aufgeholt hat, wird gewertet, wie viel Boden es gutgemacht hat. Zählt mehr am Spielende; klingt ab, wenn die Punktewertung stockt.",
 		"tooltipClockStallPenalty": "Wird angewendet, wenn die Spieluhr über mehrere aufeinanderfolgende Datenabrufe kaum weitergelaufen ist. Zieht einen pauschalen Punktabzug von der Signalzwischensumme ab, der umso stärker ausfällt, je länger die Uhr eingefroren bleibt.",
 		"tooltipVolatility": "Basiert darauf, wie nahe die Live-Siegwahrscheinlichkeit in der jüngsten Verlaufshistorie bei 50 % lag. Spiele, bei denen sie um 50 % schwebte (kein Team mit klarem Vorteil), erhalten einen Boost. Spiele, bei denen sie dauerhaft weit von 50 % entfernt war, werden bestraft.",
 		"tooltipFavoriteBoost": "Wird hinzugefügt, wenn eines deiner gespeicherten Lieblingsteams in diesem Spiel antritt. Zwei Lieblinge im Spiel zählen mehr als einer.",
 		"tooltipGameBoost": "Punkte, die du diesem Spiel manuell über den Spielboost hinzugefügt hast.",
-		"tooltipScoringOpportunity": "Wird basierend auf aktiver Torgelegenheit hinzugefügt. Im American Football ist das die Red Zone; im Baseball und Softball skaliert es mit der Anzahl der Läufer auf den Bases; im Eishockey ist es Überzahl oder ein vom Eis genommener Torwart in einem engen Spiel.",
+		"tooltipScoringOpportunity": "Wird bei einer aktiven Punktchance hinzugefügt. Im American Football ist das die Red Zone; im Baseball und Softball skaliert es mit der Anzahl der Läufer auf den Bases; im Eishockey ist es Überzahl oder ein vom Eis genommener Torwart in einem engen Spiel.",
 		"tooltipPostseasonBoost": "Ein Boost für Postseason-Spiele: Playoffs, Conference Finals und Meisterschaften.",
 		"reasonJoiner": ", ",
 		"reasonTied": "Gleichstand",
@@ -725,8 +726,8 @@
 		"reasonInning": "{inning}. Inning",
 		"reasonClockLeft": "noch {clock}",
 		"reasonUnderMinutes": {
-			"1": "weniger als 1 Minute",
-			"n": "weniger als $1 Minuten"
+			"1": "noch unter 1 Minute",
+			"n": "noch unter $1 Minuten"
 		},
 		"reasonMinutesIn": {
 			"1": "1. Minute",
@@ -743,7 +744,7 @@
 		"reasonFallback": "das beste Spiel gerade",
 		"reasonFavoriteBoost": "Favoritenboost (+{points})",
 		"reasonGameBoost": "Spielboost (+{points})",
-		"reasonScoringOpportunity": "Torgelegenheit (+{points})",
+		"reasonScoringOpportunity": "Punktchance (+{points})",
 		"reasonPostseasonBoost": "Postseason-Boost (+{points})",
 		"headingMode": "Aufschlüsselung: {mode}",
 		"modeClassic": "Klassisch",
@@ -775,11 +776,11 @@
 		"upsetRout": "Sensation",
 		"stakes": "Brisanz",
 		"tooltipGoAheadRun": "Das Schlagteam hat den Go-ahead-Run auf Base, ersatzweise den Ausgleichs-Run. Zählt später mehr und am meisten, wenn es die letzte Chance ist.",
-		"tooltipTwoMinuteDrill": "Ein Team liegt höchstens einen Score zurück und marschiert spät in der Halbzeit. Am höchsten, sobald es in Reichweite ist. Der Führende, der die Uhr runterspielt, bekommt nichts.",
+		"tooltipTwoMinuteDrill": "Ein Team liegt höchstens einen Score zurück und marschiert kurz vor Ende einer Hälfte. Am höchsten, sobald es in Reichweite ist. Der Führende, der die Uhr runterspielt, bekommt nichts.",
 		"tooltipRedCard": "Eine Rote Karte bei Gleichstand oder einem Tor Unterschied. Klingt in den nächsten zehn Minuten ab, oder früher, wenn ein Tor das Spiel öffnet.",
 		"tooltipNoHitter": "Ein Pitching-Team, das ab dem 6. Inning (im Softball ab dem 4.) keinen Hit zugelassen hat. Wächst mit jedem hitlosen Out.",
 		"tooltipUpsetWatch": "Der Außenseiter vor dem Spiel führt, liegt gleichauf oder ist nach der Hälfte höchstens einen Score zurück.",
-		"tooltipUpsetRout": "Der Außenseiter vor dem Spiel schickt den Favoriten vom Platz.",
+		"tooltipUpsetRout": "Der Außenseiter vor dem Spiel fegt den Favoriten vom Platz.",
 		"tooltipStakes": "Worum es im Ergebnis geht: eine Serie auf der Kippe, zwei Teams aus dem Ranking oder ein Rennen am Saisonende. Weg, sobald das Spiel entschieden ist.",
 		"reasonBlowoutPoints": {
 			"1": "1 Punkt Vorsprung",
@@ -837,12 +838,12 @@
 		"raceElimination": "Bei einer Niederlage ist {team} raus.",
 		"raceHunt": "{team} ist weiter im Playoff-Rennen.",
 		"basesEmpty": "Bases leer, also gibt's niemanden, der nach Hause kommen könnte.",
-		"runnerFirst": "Ein Runner auf der ersten Base.",
-		"runnerSecond": "Ein Runner auf der zweiten Base, in Scoring Position.",
-		"runnerThird": "Ein Runner auf der dritten Base, nur noch eine Base bis Home.",
-		"runnersFirstSecond": "Runner auf der ersten und zweiten Base.",
-		"runnersFirstThird": "Runner auf der ersten und dritten Base, an beiden Ecken.",
-		"runnersSecondThird": "Runner auf der zweiten und dritten Base, beide in Scoring Position.",
+		"runnerFirst": "Ein Läufer auf der ersten Base.",
+		"runnerSecond": "Ein Läufer auf der zweiten Base, in Scoring Position.",
+		"runnerThird": "Ein Läufer auf der dritten Base, nur noch eine Base bis Home.",
+		"runnersFirstSecond": "Läufer auf der ersten und zweiten Base.",
+		"runnersFirstThird": "Läufer auf der ersten und dritten Base.",
+		"runnersSecondThird": "Läufer auf der zweiten und dritten Base, beide in Scoring Position.",
 		"basesLoaded": "Bases voll. Eine freie Base gibt's nicht mehr.",
 		"inningOver": "Drei Outs, also sind die Bases leer.",
 		"outsideRedZone": "Niemand ist in der Red Zone.",
@@ -850,8 +851,8 @@
 		"redZoneThirdAndShort": "{team} ist in der Red Zone und steht vor einem Third and short.",
 		"redZoneFourthDown": "{team} ist in der Red Zone und spielt Fourth Down. Dieser Snap zählt.",
 		"redZoneNotClose": "{team} ist in der Red Zone, aber der Spielstand ist zu einseitig, als dass es zählt.",
-		"noScoringPosition": "In dieser Sportart gibt es weder Runner noch Red Zones, also setzt dieser Boost aus.",
-		"goAheadRun": "{team} hat den Führungs-Run auf der Base.",
+		"noScoringPosition": "In dieser Sportart gibt es weder Läufer noch Red Zones, also setzt dieser Boost aus.",
+		"goAheadRun": "{team} hat den Go-ahead-Run auf Base.",
 		"tyingRun": "{team} hat den Ausgleichs-Run auf der Base.",
 		"winningRun": "{team} hat den Sieg-Run auf der Base. Ein Schlag kann alles entscheiden.",
 		"lastChance": "Es könnte die letzte Chance sein.",
@@ -937,7 +938,7 @@
 	"tabControl": {
 		"step": "Schritt $1 von $2",
 		"title": "Willkommen bei ArenaSwap",
-		"subtitle": "Bevor wir einrichten, hier ist, was dich erwartet.",
+		"subtitle": "Bevor wir alles einrichten: Das erwartet dich.",
 		"feature1Title": "Automatischer Tab-Wechsel",
 		"feature1Body": "Wenn ein Spiel heiß wird, springt ArenaSwap zu seinem Tab, auch wenn du gerade etwas anderes schaust.",
 		"feature2Title": "Du weist Tabs Spielen zu",
@@ -971,13 +972,13 @@
 		"progressAriaLabel": "Tour-Fortschritt",
 		"introBody": "PowerScore bewertet jedes Live-Spiel dynamisch, um die spannendste Action zu finden. Lass uns ansehen, was in die Formel einfließt!",
 		"introButton": "Formel erkunden",
-		"boostsHeading": "Boni & Strafen",
+		"boostsHeading": "Boosts & Strafen",
 		"boostsSubtitle": "Anpassungen, die die Punktzahl feintunen",
 		"clockStallPenaltyName": "Uhr-Stagnationsstrafe",
 		"volatilityName": "Volatilitätsboost oder -strafe",
 		"favoriteBoostName": "Favoritenboost",
 		"gameBoostName": "Spielboost",
-		"scoringOpportunityName": "Torgelegenheit",
+		"scoringOpportunityName": "Punktchance",
 		"postseasonBoostName": "Postseason-Boost",
 		"back": "Zurück",
 		"next": "Weiter",
@@ -996,12 +997,12 @@
 	"stepAutoSwitch": {
 		"step": "Schritt $1 von $2",
 		"title": "Sieh es in Aktion",
-		"watchingCaption": "schaut das Eagles-Spiel…",
+		"watchingCaption": "Du schaust das Eagles-Spiel…",
 		"reveal": "Hast du das gesehen? 👀",
 		"revealBody": "Das 76ers-Spiel wurde heiß (PowerScore 89). ArenaSwap hat es erkannt und automatisch gewechselt. Kein Klick nötig.",
 		"back": "Zurück",
 		"next": "Weiter",
-		"watchingBadge": "WATCHING"
+		"watchingBadge": "LÄUFT"
 	},
 	"stepSettings": {
 		"step": "Schritt $1 von $2",
@@ -1071,7 +1072,7 @@
 		"subtitle": "Ein Rückfallplan für ruhige Momente.",
 		"quietTitle": "Wenn die Spiele einschlafen",
 		"quietBody": "Wenn jedes Spiel, das du verfolgst, unter deinen Schwellenwert fällt, wechselt ArenaSwap automatisch auf deinen Standby Stream.",
-		"returnTitle": "Er kommt von selbst zurück",
+		"returnTitle": "Zurück geht's von selbst",
 		"returnBody": "Sobald ein Spiel wieder über deinen Schwellenwert steigt, wechselt ArenaSwap dich sofort zurück.",
 		"chooseTitle": "Du wählst den Standby-Tab",
 		"chooseBody": "Öffne den gewünschten Stream in einem Tab und wähle ihn dann als Standby-Tab aus.",
@@ -1094,7 +1095,7 @@
 	},
 	"gameListHeader": {
 		"loading": "Wird geladen…",
-		"loadFailed": "Funkstille bei unseren Quellen. Keine Spiele.",
+		"loadFailed": "Funkstille bei unseren Quellen. Nichts geladen.",
 		"retry": "Erneut versuchen"
 	},
 	"toast": {
@@ -1155,7 +1156,7 @@
 			"t0": "Den Schalter oben rechts nutzen, um ArenaSwap zu pausieren, ohne die Einstellungen zu verlieren.",
 			"t1": "ArenaSwap funktioniert am besten mit zwei oder mehr offenen Spiel-Tabs gleichzeitig.",
 			"t2": "Auf eine Spielkarte klicken, um in die PowerScore-Aufschlüsselung einzutauchen.",
-			"t3": "Mehrere Sportarten? Extra Ligen in den Einstellungen aktivieren, um alle auf einmal zu wechseln.",
+			"t3": "Mehrere Sportarten? Weitere Ligen in den Einstellungen aktivieren, damit ArenaSwap zwischen allen wechselt.",
 			"t4": "Giraffen und Igel sind toll. Alle Spiele gleichzeitig zu sehen auch.",
 			"t5": "ArenaSwap wird besser, je länger du es laufen lässt!",
 			"t6": "Wechselbenachrichtigungen in den Einstellungen aktivieren, um bei jedem Tab-Wechsel durch ArenaSwap eine Meldung zu erhalten."
@@ -1178,7 +1179,7 @@
 			"t6": "Im Abschnitt PowerScore-Signale lassen sich einzelne Signale deaktivieren — ArenaSwap skaliert alles automatisch neu."
 		},
 		"detail": {
-			"t0": "PowerScore kombiniert Ausgeglichenheit, Schlussdruck, Schwung, Führungswechsel und Comebacks — dann wendet es einen Volatilitätsboost oder eine Strafe basierend darauf an, wie stark die Siegwahrscheinlichkeit schwankt.",
+			"t0": "Der PowerScore kombiniert Ausgeglichenheit, Schlussdruck, Schwung, Führungswechsel und Comebacks — dann wendet er einen Volatilitätsboost oder eine -strafe an, je nachdem, wie stark die Siegwahrscheinlichkeit schwankt.",
 			"t1": "Eine Uhr-Stagnationsstrafe greift, wenn die Spieluhr zwischen Aktualisierungen kaum weiterrückt.",
 			"t2": "0:0-Spiele erhalten einen kleinen PowerScore-Abzug in Sportarten, in denen 0:0 nicht spannend ist.",
 			"t3": "Über die Diagramme hovern, um spezifische Spielmomente zu inspizieren.",
@@ -1192,7 +1193,7 @@
 		"title": "Gefällt dir ArenaSwap?",
 		"copy": "Eine kurze Bewertung hilft mehr Fans, das beste Spiel zu finden ❤️",
 		"leaveReview": "Bewertung abgeben",
-		"dismiss": "Bewertungsanfrage ablehnen"
+		"dismiss": "Bewertungsanfrage ausblenden"
 	},
 	"cooldown": {
 		"label": "Wechsel-Cooldown",
@@ -1228,7 +1229,6 @@
 		"skip": "klicken zum Überspringen",
 		"announce": "LUDICROUS SPEED…",
 		"go": "LOS!",
-		"plaid": "SIE SIND IM KAROMUSTER!",
 		"stop": "HALT!",
 		"emergencyBrake": "⚠ NOTBREMSE — NIE BENUTZEN",
 		"intro": {
@@ -1252,7 +1252,7 @@
 			"l8": "Alle Tiere im Zoo sichern…",
 			"l9": "Halt die Klappe, du erbärmliche Entschuldigung für einen Offizier!",
 			"l10": "Achtung. Ludicrous Speed!",
-			"l11": "Herr, sollten Sie sich nicht lieber anschnallen?",
+			"l11": "Sir, sollten Sie sich nicht lieber anschnallen?",
 			"l12": "Den Gurt kannst du dir sonst wohin stecken!"
 		},
 		"gforce": {

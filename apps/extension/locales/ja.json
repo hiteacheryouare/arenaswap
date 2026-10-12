@@ -169,9 +169,9 @@
 		"m106": "審判団が正反対のジャッジを同時に下しています…",
 		"m107": "プールが緑色の理由を考え中…",
 		"m108": "念のため金メダルをもう一つ授与中…",
-		"m109": "国歌を間違えて流しています…",
-		"m110": "テープを処分しています…",
-		"m111": "国歌の最後の音を伸ばしています…",
+		"m109": "テープを処分しています…",
+		"m110": "国歌の最後の音を伸ばしています…",
+		"m111": "国歌を間違えて流しています…",
 		"m112": "スターティングメンバーを紹介中…"
 	},
 	"setup": {
@@ -183,7 +183,7 @@
 			"n": "$1日"
 		},
 		"keepFinalGames": "終了した試合を残す",
-		"keepFinalGamesExplainer": "終了した試合は試合終了後 24 時間リストに残ります。",
+		"keepFinalGamesExplainer": "終了した試合は試合終了後24時間リストに残ります。",
 		"theme": "テーマ",
 		"themeDark": "ダーク",
 		"themeLight": "ライト",
@@ -195,7 +195,7 @@
 		"finishedTabActiveExplainer": "視聴中のタブは、離れるまでそのままです。",
 		"finishedTabCloseExplainer": "ウィンドウの最後のタブは閉じずに解放されるので、ウィンドウが閉じることはありません。",
 		"bossDecoy": "ダミーページ",
-		"bossDecoyExplainer": "「上司が来た」ボタンで開くページです。スプレッドシートやドキュメントなど、忙しそうに見えるものをどうぞ。押すと ArenaSwap が管理しているタブをすべてミュートし、オンに戻すまで自動切り替えを一時停止します。空のままなら新しい空白タブが開きます。",
+		"bossDecoyExplainer": "「上司が来た」ボタンで開くページです。スプレッドシートやドキュメントなど、忙しそうに見えるものをどうぞ。押すとArenaSwapが管理しているタブをすべてミュートし、オンに戻すまで自動切り替えを一時停止します。空のままなら新しい空白タブが開きます。",
 		"bossDecoyInvalid": "ウェブアドレスではないようです。",
 		"bossShortcut": "ショートカット: {shortcut}",
 		"proTips": "プロのヒント",
@@ -207,7 +207,6 @@
 		"demoSeasonThanksgiving": "感謝祭の週",
 		"demoSeasonDecember": "12月",
 		"demoSeasonExplainer": "ホリデー装飾だけに影響します。季節外でも確認できます。",
-		"standbySection": "Standby Stream",
 		"enableStandby": "Standby Streamを有効にする",
 		"standbyBelow": "スタンバイ閾値",
 		"morePatient": "より辛抱強く",
@@ -233,7 +232,7 @@
 		"selectAll": "すべて選択",
 		"noLeaguesWarning": "リーグが選ばれていないので、ArenaSwapは何も見られません。",
 		"groupByLeague": "試合をリーグごとにグループ化",
-		"groupByLeagueExplainer": "オフにすると、全リーグが 1 つのリストにまとまります。ライブ中の試合はPowerScore順、これからの試合は開始時刻順です。お気に入りのチームはどちらの場合も一番上に表示されます。",
+		"groupByLeagueExplainer": "オフにすると、全リーグが1つのリストにまとまります。ライブ中の試合はPowerScore順、これからの試合は開始時刻順です。お気に入りのチームはどちらの場合も一番上に表示されます。",
 		"leagueOrderSection": "表示順",
 		"leagueOrderExplainer": "メイン画面のリーグセクションはこの順で表示されます。ドラッグまたは矢印で並べ替えできます。",
 		"leagueOrderReset": "デフォルトの順序に戻す",
@@ -311,7 +310,7 @@
 		"fantasyBlend": "選手が試合を押し上げる度合い",
 		"fantasyBlendValue": "{percent}%",
 		"fantasyBlendLow": "反映しない",
-		"fantasyBlendHigh": "スコア全部",
+		"fantasyBlendHigh": "スコアをすべて反映",
 		"fantasyRoster": "あなたの選手",
 		"fantasyRosterEmpty": "まだ誰も指名していません",
 		"fantasyRosterSize": {
@@ -354,7 +353,7 @@
 		"guideButton": "番組表",
 		"bossButton": "上司が来た",
 		"bossButtonShortcut": "上司が来た（{shortcut}）",
-		"onStandbyStream": "何かが盛り上がるまで Standby Stream で待機中",
+		"onStandbyStream": "何かが盛り上がるまでStandby Streamで待機中",
 		"sectionActiveLiveTabs": "アクティブタブ",
 		"sectionOtherLiveGames": "ライブ試合",
 		"sectionUpNext": "次の試合",
@@ -393,6 +392,7 @@
 		"unitSeconds": "秒",
 		"halftime": "ハーフタイム",
 		"intermission": "インターバル",
+		"endOfPeriod": "{period}終了",
 		"chartPowerScoreTitle": "PowerScoreの推移",
 		"chartScoreTitle": "スコアの推移",
 		"chartWinProbTitle": "勝利確率",
@@ -653,6 +653,7 @@
 		"periodExtraTimeFirst": "延前",
 		"periodExtraTimeSecond": "延後",
 		"periodShootout": "PK",
+		"periodHockeyShootout": "SO",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"preseason": "プレシーズン",
@@ -674,7 +675,7 @@
 		"signalLateGame": "終盤",
 		"signalMomentum": "勢い",
 		"signalLeadChanges": "リード交代",
-		"signalComeback": "逆転",
+		"signalComeback": "追い上げ",
 		"volatilityBoost": "ボラティリティブースト",
 		"volatilityPenalty": "ボラティリティペナルティ",
 		"volatility": "ボラティリティ",
@@ -685,8 +686,8 @@
 		"clockStallPenalty": "クロック停止ペナルティ",
 		"favoriteBoost": "お気に入りブースト",
 		"favoriteTeamsInMatchup": {
-			"1": "マッチアップに1チームのお気に入り",
-			"n": "マッチアップに$1チームのお気に入り"
+			"1": "お気に入りチームが1チーム出場",
+			"n": "お気に入りチームが$1チーム出場"
 		},
 		"gameBoost": "ゲームブースト",
 		"scoringOpportunity": "得点チャンス",
@@ -734,7 +735,7 @@
 		},
 		"reasonOvertimeLooming": "同点、延長の気配",
 		"reasonLevelLate": "終盤でも同点",
-		"reasonOutscoring": "{team}が{other}に{run}",
+		"reasonOutscoring": "{team}が{other}相手に{run}の猛攻",
 		"reasonOnARoll": "{team}が勢いづく",
 		"reasonTradingLeads": "リードが入れ替わる展開",
 		"reasonJustTookLead": "逆転したばかり",
@@ -922,7 +923,7 @@
 		"step": "ステップ $1 / $2",
 		"title": "チームを選ぶ",
 		"explainer": "お気に入りにはPowerScoreブーストが付き、その試合が切り替えで選ばれやすくなります。",
-		"yourFavorites": "マイお気に入り",
+		"yourFavorites": "あなたのお気に入り",
 		"leagueNotTracked": "{league} · 未追跡",
 		"searchPlaceholder": "チームを検索…",
 		"loading": "チームを読み込み中…",
@@ -1032,7 +1033,7 @@
 		"signalLateGame": "終盤",
 		"signalMomentum": "勢い",
 		"signalLeadChanges": "リード交代",
-		"signalComeback": "逆転",
+		"signalComeback": "追い上げ",
 		"detailPreviewCaption": "スコアチャートとシグナルの全履歴も確認できます。",
 		"body": "ライブ試合カードをクリックすると詳細ビューが開きます。PowerScoreに貢献する各シグナルの完全な内訳と、スコアの時系列チャートが表示されます。",
 		"bodyAfterTap": "任意の試合を上位に押し上げるゲームブーストの入力欄もあります。",
@@ -1061,7 +1062,7 @@
 		"title": "ここに戻る方法",
 		"subtitle": "ツアーはいつでもワンクリックで。",
 		"callout": "これです",
-		"body": "上部バーの?ボタンをいつでもタップすると、このツアーを再生できます。設定後も使えます。復習したいときや友人に使い方を見せたいときに便利です。",
+		"body": "上部バーの?ボタンをいつでもクリックすると、このツアーを再生できます。設定後も使えます。復習したいときや友人に使い方を見せたいときに便利です。",
 		"back": "戻る",
 		"next": "完了"
 	},
@@ -1104,7 +1105,7 @@
 		"close": "閉じる"
 	},
 	"notification": {
-		"standbyTitle": "Standby Stream で待機中",
+		"standbyTitle": "Standby Streamで待機中",
 		"standbyMessage": "すべての試合が静かになったので、Standby Streamに切り替えました。",
 		"switchedTitle": "切り替え → {score}",
 		"switchedMessage": "{venue}へGO！",
@@ -1158,7 +1159,7 @@
 			"t3": "複数スポーツをミックスしたい？設定で追加リーグを有効にすると、すべてを同時に切り替えられます。",
 			"t4": "キリンとハリネズミはクールです。すべての試合を同時に観るのも同様です。",
 			"t5": "ArenaSwapは使い続けるほど精度が上がります！",
-			"t6": "設定でスイッチ通知をオンにすると、ArenaSwapがタブを切り替えるたびにアラートが届きます。"
+			"t6": "設定で切り替え通知をオンにすると、ArenaSwapがタブを切り替えるたびにアラートが届きます。"
 		},
 		"main": {
 			"t0": "お気に入りチームにスターを付けると、その試合がリストの上部に固定されます。",
@@ -1178,7 +1179,7 @@
 			"t6": "PowerScoreシグナルのセクションで不要なシグナルをオフにできます — ArenaSwapはすべて自動的に再スケーリングします。"
 		},
 		"detail": {
-			"t0": "PowerScoreは接戦度、終盤のプレッシャー、勢い、リード交代、逆転を組み合わせ、勝利確率の変動に基づくボラティリティブーストまたはペナルティを適用します。",
+			"t0": "PowerScoreは接戦度、終盤のプレッシャー、勢い、リード交代、追い上げを組み合わせ、勝利確率の変動に基づくボラティリティブーストまたはペナルティを適用します。",
 			"t1": "更新の間にゲームクロックがほぼ動かないとき、クロック停止ペナルティが発動します。",
 			"t2": "0–0が盛り上がらないスポーツでは、0–0の試合はPowerScoreが少し下がります。",
 			"t3": "チャートにカーソルを合わせると、試合の特定の瞬間を確認できます。",
@@ -1221,14 +1222,13 @@
 	},
 	"footer": {
 		"builtWith": "制作：",
-		"credit": "Ryan MullinがPhiladelphiaとBostonで作りました",
+		"credit": "Ryan Mullinがフィラデルフィアとボストンで作りました",
 		"toggleDebug": "デバッグ情報を切り替え"
 	},
 	"ludicrousSpeed": {
 		"skip": "クリックでスキップ",
 		"announce": "LUDICROUS SPEED…",
 		"go": "ゴー！",
-		"plaid": "チェック柄に突入！",
 		"stop": "ストップ！",
 		"emergencyBrake": "⚠ 緊急ブレーキ — 絶対に使うな",
 		"intro": {

@@ -406,8 +406,8 @@
 			"addToFavorites": "Añadir {team} a favoritos",
 			"removeFromFavorites": "Quitar {team} de favoritos",
 			"openDetails": "Abrir detalles de {away} vs {home}",
-			"delay": "SUSPENDIDO",
-			"delayFallback": "Suspendido",
+			"delay": "RETRASO",
+			"delayFallback": "Retraso",
 			"vs": "vs",
 			"topOfInning": "Parte alta de la entrada",
 			"bottomOfInning": "Parte baja de la entrada",
@@ -422,6 +422,7 @@
 			"periodExtraTimeFirst": "TE1",
 			"periodExtraTimeSecond": "TE2",
 			"periodShootout": "PEN",
+			"periodHockeyShootout": "SO",
 			"downDistanceAt": "{downDistance} en {fieldPosition}"
 		},
 		"field": {
@@ -450,7 +451,7 @@
 			"groupSwitching": "Cambios",
 			"groupSwitchingDesc": "Con cuántas ganas ArenaSwap te lleva a un partido mejor.",
 			"groupScoring": "Puntuación",
-			"groupScoringDesc": "Qué señales alimentan el PowerScore y qué gana un impulso.",
+			"groupScoringDesc": "Qué señales alimentan el PowerScore y qué otorga un impulso.",
 			"groupLeagues": "Ligas",
 			"groupLeaguesDesc": "Qué ligas se siguen y si cada una tiene su propia sección.",
 			"groupDisplay": "Visualización",

@@ -1,6 +1,6 @@
 {
 	"extName": "ArenaSwap — Auto-Switch sa Live na NFL, NBA, March Madness at MLB",
-	"extDescription": "Nanonood ng bawat live game sa 31 liga at awtomatikong nagpapalit sa pinaka-exciting, kada 6 segundo.",
+	"extDescription": "Nanonood ng bawat live game sa 31 liga at awtomatikong inililipat ang browser tab mo sa pinaka-exciting, hanggang kada 6 na segundo.",
 	"bossCommandDescription": "Parating na ang boss: i-mute ang mga laro at lumipat sa pekeng pahina mo",
 	"app": {
 		"welcomeToast": "Maligayang pagdating sa ArenaSwap!",
@@ -33,11 +33,11 @@
 	"noGames": {
 		"m1": {
 			"title": "Wala pang pumapasok sa laro. 🕐",
-			"sub": "Walang live na laro sa mga league mong pinili."
+			"sub": "Walang live na laro sa mga ligang pinili mo."
 		},
 		"m2": {
 			"title": "Madilim ang arena.",
-			"sub": "Walang live na aksyon sa mga league mo. Bumalik ka pag nag-kick off na ang mga laro."
+			"sub": "Walang live na aksyon sa mga liga mo. Bumalik ka pag nag-kick off na ang mga laro."
 		},
 		"m3": {
 			"title": "Tahimik na araw sa sports.",
@@ -57,7 +57,7 @@
 		},
 		"m7": {
 			"title": "Chine-check sa ilalim ng bleachers…",
-			"sub": "Wala pa ring live na laro sa mga league mong pinili."
+			"sub": "Wala pa ring live na laro sa mga ligang pinili mo."
 		}
 	},
 	"loading": {
@@ -169,20 +169,20 @@
 		"m106": "Sabay na sine-signal ang touchdown at touchback…",
 		"m107": "Nag-iisip kung bakit berde ang pool…",
 		"m108": "Nagbibigay ng pangalawang gold medal, para sigurado…",
-		"m109": "Pinapatugtog ang maling pambansang awit…",
-		"m110": "Sinisira ang mga tape…",
-		"m111": "Hinihila ang huling nota ng pambansang awit…",
+		"m109": "Sinisira ang mga tape…",
+		"m110": "Hinihila ang huling nota ng pambansang awit…",
+		"m111": "Pinapatugtog ang maling pambansang awit…",
 		"m112": "Ipinapakilala ang mga starters…"
 	},
 	"setup": {
 		"header": "Mga Setting",
 		"showUpcoming": "Ipakita ang mga paparating na laro",
-		"upcomingDaysLabel": "Araw pasulong",
+		"upcomingDaysLabel": "Ilang araw ang ipapakita",
 		"upcomingDaysValue": {
 			"1": "1 araw",
 			"n": "$1 na araw"
 		},
-		"keepFinalGames": "Itago ang mga tapos nang laro",
+		"keepFinalGames": "Panatilihin ang mga tapos nang laro",
 		"keepFinalGamesExplainer": "Mananatili sa listahan ang mga natapos nang laro nang 24 oras.",
 		"theme": "Theme",
 		"themeDark": "Dark",
@@ -207,7 +207,6 @@
 		"demoSeasonThanksgiving": "Linggo ng Thanksgiving",
 		"demoSeasonDecember": "Disyembre",
 		"demoSeasonExplainer": "Nakakaapekto lang sa holiday decorations para makita mo ang mga ito kahit wala sa season.",
-		"standbySection": "Standby Stream",
 		"enableStandby": "I-enable ang Standby Stream",
 		"standbyBelow": "Standby sa ibaba ng",
 		"morePatient": "Mas matiyaga",
@@ -252,7 +251,7 @@
 		"groupScoringDesc": "Kung aling mga signal ang bumubuo sa PowerScore, at ano ang nagbibigay ng boost.",
 		"groupFavorites": "Mga Paboritong Team",
 		"groupFavoritesDesc": "Ang mga team na sinusundan mo ay nasa itaas ng listahan.",
-		"followedTeams": "Mga Team na Na-star Mo",
+		"followedTeams": "Mga Team na Sinusundan Mo",
 		"groupLeagues": "Mga Liga",
 		"groupLeaguesDesc": "Ang mga liga lang na pipiliin mo ang tine-track at isinasaalang-alang para sa paglipat.",
 		"groupDisplay": "Display",
@@ -345,7 +344,7 @@
 		},
 		"toastClosed": {
 			"1": "Isinara ang tab ng 1 natapos nang laro.",
-			"n": "Isinara ang mga tab ng $1 natapos nang laro."
+			"n": "Isinara ang mga tab ng $1 na tapos nang laro."
 		}
 	},
 	"main": {
@@ -393,13 +392,14 @@
 		"unitSeconds": "s",
 		"halftime": "Halftime",
 		"intermission": "Pahinga",
+		"endOfPeriod": "Katapusan ng {period}",
 		"chartPowerScoreTitle": "Pag-usad ng PowerScore",
 		"chartScoreTitle": "Pag-usad ng Score ng Laro",
 		"chartWinProbTitle": "Posibilidad ng Panalo",
 		"chartComponentsTitle": "Pag-usad ng mga Bahagi ng PowerScore",
 		"gameInfoHeading": "Impormasyon ng Laro",
-		"latestPlayHeading": "Huling play",
-		"redCardsHeading": "Mga red card",
+		"latestPlayHeading": "Huling Play",
+		"redCardsHeading": "Mga Red Card",
 		"redCardLine": "{minute} {player}, {team}",
 		"redCardPlayer": "{minute} {player}",
 		"redCardTeam": "{minute} {team}",
@@ -429,7 +429,7 @@
 		"pitcherRecordLabel": "W-L",
 		"pitcherEraLabel": "ERA",
 		"starterExpected": "Inaasahan",
-		"teamLeaders": "Mga Lider ng Koponan",
+		"teamLeaders": "Mga Lider ng Team",
 		"leaderAvg": "AVG",
 		"leaderHomeRuns": "HR",
 		"leaderRbis": "RBI",
@@ -456,8 +456,8 @@
 		"formVs": "vs {team}",
 		"backToBack": "Back-to-back",
 		"daysRest": {
-			"1": "1 araw pahinga",
-			"n": "$1 araw pahinga"
+			"1": "1 araw ng pahinga",
+			"n": "$1 na araw ng pahinga"
 		},
 		"statRank": "#{rank}",
 		"statPoints": "Points",
@@ -626,11 +626,11 @@
 		"live": "LIVE",
 		"staleMinutes": {
 			"1": "Huling na-update 1 minuto na ang nakalipas",
-			"n": "Huling na-update $1 minuto na ang nakalipas"
+			"n": "Huling na-update $1 na minuto na ang nakalipas"
 		},
 		"staleHours": {
 			"1": "Huling na-update 1 oras na ang nakalipas",
-			"n": "Huling na-update $1 oras na ang nakalipas"
+			"n": "Huling na-update $1 na oras na ang nakalipas"
 		},
 		"final": "Final",
 		"delay": "DELAY",
@@ -653,6 +653,7 @@
 		"periodExtraTimeFirst": "ET1",
 		"periodExtraTimeSecond": "ET2",
 		"periodShootout": "PENS",
+		"periodHockeyShootout": "SO",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"preseason": "Preseason",
@@ -707,16 +708,16 @@
 		"reasonJoiner": ", ",
 		"reasonTied": "tabla",
 		"reasonMarginPoints": {
-			"1": "1 puntos na lang ang agwat",
-			"n": "$1 puntos na lang ang agwat"
+			"1": "1 punto na lang ang agwat",
+			"n": "$1 na puntos na lang ang agwat"
 		},
 		"reasonMarginGoals": {
 			"1": "1 goal na lang ang agwat",
-			"n": "$1 goals na lang ang agwat"
+			"n": "$1 na goal na lang ang agwat"
 		},
 		"reasonMarginRuns": {
 			"1": "1 run na lang ang agwat",
-			"n": "$1 runs na lang ang agwat"
+			"n": "$1 na run na lang ang agwat"
 		},
 		"reasonOvertime": "overtime",
 		"reasonExtraTime": "extra time",
@@ -729,8 +730,8 @@
 			"n": "wala nang $1 minuto"
 		},
 		"reasonMinutesIn": {
-			"1": "ika-1 minuto",
-			"n": "ika-$1 minuto"
+			"1": "ika-1 na minuto",
+			"n": "ika-$1 na minuto"
 		},
 		"reasonOvertimeLooming": "tabla, papuntang overtime",
 		"reasonLevelLate": "tabla pa rin sa dulo",
@@ -1060,7 +1061,7 @@
 		"step": "Step $1 ng $2",
 		"title": "Pagbalik Dito",
 		"subtitle": "Isang click lang ang layo ng tour.",
-		"callout": "ayan yun",
+		"callout": "ayan 'yun",
 		"body": "Pindutin ang ? button sa top bar kahit kailan para ulitin ang tour na ito. Gumagana pa rin ito kahit tapos na ang setup. Kapaki-pakinabang kung gusto mong mag-refresh o ipakita sa kaibigan mo kung paano ito gumagana.",
 		"back": "Bumalik",
 		"next": "Tapos na"
@@ -1128,7 +1129,7 @@
 		"header": "Mga Iminumungkahing Tab",
 		"lede": "Alisan ng check ang mali naming na-detect. Ang dropdown sa bawat card ang may huling say pa rin.",
 		"empty": "Wala sa mga bukas mong tab na mukhang isang laro mo ngayon.",
-		"rowLabel": "I-pair ang {tab} sa {away} at {home}",
+		"rowLabel": "I-pair ang {tab} sa {away} vs {home}",
 		"apply": {
 			"1": "I-assign ang 1 tab",
 			"n": "I-assign ang $1 na tab"
@@ -1228,7 +1229,6 @@
 		"skip": "i-click para i-skip",
 		"announce": "LUDICROUS SPEED…",
 		"go": "GO!",
-		"plaid": "NAG-PLAID NA SILA!",
 		"stop": "TIGIL!",
 		"emergencyBrake": "⚠ EMERGENCY BRAKE — HUWAG GAMITIN",
 		"intro": {

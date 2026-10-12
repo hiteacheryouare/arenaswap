@@ -177,7 +177,7 @@
 					"copy": "当所有直播比赛都冷场时，ArenaSwap 会让您停留在您选择的备用标签页上。"
 				},
 				{
-					"name": "比赛加速",
+					"name": "比赛加成",
 					"copy": "手动提高某场比赛的 PowerScore，让它在屏幕上停留更久。"
 				}
 			],
@@ -422,6 +422,7 @@
 			"periodExtraTimeFirst": "加1",
 			"periodExtraTimeSecond": "加2",
 			"periodShootout": "点球",
+			"periodHockeyShootout": "SO",
 			"downDistanceAt": "{fieldPosition} {downDistance}"
 		},
 		"field": {

@@ -169,9 +169,9 @@
 		"m106": "Dando due segnali arbitrali opposti…",
 		"m107": "Chiedendosi perché la piscina sia verde…",
 		"m108": "Assegnando una seconda medaglia d'oro, tanto per sicurezza…",
-		"m109": "Facendo partire l'inno nazionale sbagliato…",
-		"m110": "Distruggendo le videocassette…",
-		"m111": "Tenendo l'ultima nota dell'inno…",
+		"m109": "Distruggendo le videocassette…",
+		"m110": "Tenendo l'ultima nota dell'inno…",
+		"m111": "Facendo partire l'inno nazionale sbagliato…",
 		"m112": "Presentando i titolari…"
 	},
 	"setup": {
@@ -207,7 +207,6 @@
 		"demoSeasonThanksgiving": "Settimana del Ringraziamento",
 		"demoSeasonDecember": "Dicembre",
 		"demoSeasonExplainer": "Riguarda solo le decorazioni delle feste, così puoi vederle fuori stagione.",
-		"standbySection": "Standby Stream",
 		"enableStandby": "Attiva Standby Stream",
 		"standbyBelow": "Standby sotto",
 		"morePatient": "Più paziente",
@@ -336,7 +335,7 @@
 		"keywordsSituation": "fantasy, zona rossa, in battuta, sul ghiaccio, segnale",
 		"keywordsProduction": "fantasy, punti, statistiche, segnale",
 		"keywordsExposure": "fantasy, giocatori, rosa, quanti, segnale",
-		"fantasyBlendExplainer": "Il punteggio Fantasy dei tuoi giocatori si aggiunge al punteggio Classica della partita, quindi le loro partite possono solo salire."
+		"fantasyBlendExplainer": "Il punteggio Fantasy dei tuoi giocatori si aggiunge al punteggio classico della partita, quindi le loro partite possono solo salire."
 	},
 	"finishedTabs": {
 		"toastFreed": {
@@ -375,7 +374,7 @@
 			"n": "$1 preferite"
 		},
 		"favoriteGame": "Una delle tue squadre preferite",
-		"at": "-"
+		"at": "@"
 	},
 	"detail": {
 		"tabOverview": "Panoramica",
@@ -393,6 +392,7 @@
 		"unitSeconds": "s",
 		"halftime": "Intervallo",
 		"intermission": "Pausa",
+		"endOfPeriod": "Fine {period}",
 		"chartPowerScoreTitle": "PowerScore nel tempo",
 		"chartScoreTitle": "Punteggio della partita nel tempo",
 		"chartWinProbTitle": "Probabilità di vittoria",
@@ -653,9 +653,10 @@
 		"periodExtraTimeFirst": "TS1",
 		"periodExtraTimeSecond": "TS2",
 		"periodShootout": "RIG",
+		"periodHockeyShootout": "SO",
 		"powerScore": "PowerScore",
 		"vs": "vs",
-		"preseason": "Preseason",
+		"preseason": "Precampionato",
 		"springTraining": "Spring Training",
 		"topOfInning": "Parte alta dell'inning",
 		"bottomOfInning": "Parte bassa dell'inning"
@@ -696,7 +697,7 @@
 		"tooltipCloseness": "Calcolato in base allo scarto di punti attuale. Un pareggio vale il massimo; scarti più ampi valgono progressivamente meno. Il tetto massimo aumenta con l'avanzare della partita, quindi lo stesso scarto vale di più nel finale che all'inizio.",
 		"tooltipLateGame": "Combina quanto è avanzata la partita con quanto è equilibrato il punteggio. Cresce in modo lineare durante l'ultimo periodo. Le partite a senso unico non ottengono quasi nulla qui, indipendentemente dal tempo. Aggiunge punti extra quando il punteggio è in parità negli ultimi secondi, anticipando l'overtime.",
 		"tooltipMomentum": "Misura il punteggio netto di una squadra nella finestra di storico recente. Se una squadra ha segnato più dell'altra oltre una certa soglia in quel tratto, il punteggio sale. Decade verso zero se passa tempo senza ulteriori segnature.",
-		"tooltipLeadChanges": "Conta quante volte è cambiato il vantaggio nella finestra di storico monitorata. Nessun cambio non dà punti; uno o più sorpassi valgono progressivamente di più. Decade se passa tempo senza un altro cambio.",
+		"tooltipLeadChanges": "Conta quante volte è cambiato il vantaggio nella finestra di storico monitorata. Senza cambi non si ottengono punti; uno o più sorpassi valgono progressivamente di più. Decade se passa tempo senza un altro cambio.",
 		"tooltipComeback": "Confronta lo scarto al punto più vecchio della finestra con quello attuale. Se la squadra in svantaggio ha recuperato terreno, il punteggio dipende da quanto ne ha guadagnato. Vale di più nel finale della partita; decade se le segnature si fermano.",
 		"tooltipClockStallPenalty": "Si applica quando il cronometro è rimasto quasi fermo per più rilevazioni consecutive. Sottrae un numero fisso di punti dal subtotale dei segnali, penalità che si aggrava più a lungo il cronometro resta fermo.",
 		"tooltipVolatility": "Si basa su quanto la probabilità di vittoria in diretta è rimasta vicina al 50% nello storico recente. Le partite in cui è oscillata intorno al 50% — senza un chiaro favorito — ricevono un boost. Quelle in cui è rimasta costantemente lontana dal 50%, in un senso o nell'altro, vengono penalizzate.",
@@ -801,7 +802,7 @@
 		"reasonFantasyFieldGoalRange": "{name} a tiro di field goal",
 		"reasonFantasyDefense": "{name} in campo",
 		"reasonFantasyAtBat": "{name} in battuta",
-		"reasonFantasyOnDeck": "{name} on deck",
+		"reasonFantasyOnDeck": "{name} nel cerchio di attesa",
 		"reasonFantasyPitching": "{name} lancia",
 		"reasonFantasyInGame": "{name} in partita",
 		"reasonFantasyPoints": "{name} +{points} punti fantasy",
@@ -989,7 +990,7 @@
 		"subtitle": "ArenaSwap tocca solo le schede che registri.",
 		"assignPlaceholder": "— Assegna una scheda —",
 		"linkHint": "↑ collega qui una scheda del browser",
-		"body": "Apri ogni diretta nella sua scheda del browser, poi usa il menu a tendina sulla scheda della partita per collegarle. ArenaSwap passerà solo alle schede che hai assegnato.",
+		"body": "Apri ogni diretta nella sua scheda del browser, poi usa il menu a tendina sul riquadro della partita per collegarle. ArenaSwap passerà solo alle schede che hai assegnato.",
 		"back": "Indietro",
 		"next": "Avanti"
 	},
@@ -1025,7 +1026,7 @@
 	"stepGameDetail": {
 		"step": "Passo $1 di $2",
 		"title": "Approfondisci qualsiasi partita",
-		"subtitle": "Fai clic su una scheda partita per vedere cosa guida il suo punteggio.",
+		"subtitle": "Fai clic su un riquadro partita per vedere cosa guida il suo punteggio.",
 		"tapHint": "fai clic per aprire",
 		"detailPreviewTitle": "Dettaglio PowerScore",
 		"signalCloseness": "Equilibrio",
@@ -1034,7 +1035,7 @@
 		"signalLeadChanges": "Sorpassi",
 		"signalComeback": "Rimonta",
 		"detailPreviewCaption": "Sono disponibili anche i grafici del punteggio e lo storico completo dei segnali.",
-		"body": "Fai clic su qualsiasi scheda di partita in diretta per aprire la vista dettagliata. Vedrai il dettaglio completo di ogni segnale che contribuisce al suo PowerScore, oltre a un grafico di come il punteggio è cambiato nel tempo.",
+		"body": "Fai clic su qualsiasi riquadro di partita in diretta per aprire la vista dettagliata. Vedrai il dettaglio completo di ogni segnale che contribuisce al suo PowerScore, oltre a un grafico di come il punteggio è cambiato nel tempo.",
 		"bodyAfterTap": "Troverai anche un campo Boost partita per far salire qualsiasi partita nell'ordine.",
 		"back": "Indietro",
 		"next": "Avanti"
@@ -1048,7 +1049,7 @@
 		"leaguesExplain": "Attivare una lega dice ad ArenaSwap di cercare partite in diretta in quella competizione. Solo le leghe attive contano per il cambio automatico.",
 		"leaguesBody": "Attiva ogni lega che vuoi monitorare in Impostazioni → Leghe. Più ne attivi, più ampia è la rete che ArenaSwap getta in cerca di azione emozionante.",
 		"favoritesExplain": "Mettere una stella su una squadra dà un boost di PowerScore alle sue partite ogni volta che gioca, rendendole più propense a vincere il cambio automatico.",
-		"favoritesBody": "Metti una stella sulle tue squadre preferite su qualsiasi scheda partita o nelle Impostazioni. Non è un filtro: tutte le partite continuano a comparire; le tue squadre ricevono solo un piccolo boost.",
+		"favoritesBody": "Metti una stella sulle tue squadre preferite su qualsiasi riquadro partita o nelle Impostazioni. Non è un filtro: tutte le partite continuano a comparire; le tue squadre ricevono solo un piccolo boost.",
 		"favoritesBonusHint": "Squadre preferite attive. Le loro partite ricevono un boost di PowerScore!",
 		"toggleAriaLabel": "Attiva/disattiva {label}",
 		"starAriaLabel": "Aggiungi {team} ai preferiti",
@@ -1126,7 +1127,7 @@
 		"bannerAction": "Dai un'occhiata",
 		"bannerDismiss": "Ignora i suggerimenti",
 		"header": "Schede suggerite",
-		"lede": "Deseleziona ciò che abbiamo capito male. Il menu a tendina su ogni scheda della partita ha comunque l'ultima parola.",
+		"lede": "Deseleziona ciò che abbiamo capito male. Il menu a tendina su ogni riquadro della partita ha comunque l'ultima parola.",
 		"empty": "Niente di quello che hai aperto sembra una partita del tuo palinsesto.",
 		"rowLabel": "Abbina {tab} a {away} in casa di {home}",
 		"apply": {
@@ -1154,7 +1155,7 @@
 		"general": {
 			"t0": "Usa l'interruttore in alto a destra per mettere in pausa ArenaSwap senza perdere le tue impostazioni.",
 			"t1": "ArenaSwap funziona al meglio con due o più schede di partite aperte insieme.",
-			"t2": "Clicca su qualsiasi scheda partita per vedere il dettaglio del suo PowerScore.",
+			"t2": "Clicca su qualsiasi riquadro partita per vedere il dettaglio del suo PowerScore.",
 			"t3": "Segui più sport? Attiva altre leghe nelle Impostazioni per cambiare tra tutte insieme.",
 			"t4": "Le giraffe e i ricci sono fantastici. Anche guardare tutte le partite insieme lo è.",
 			"t5": "ArenaSwap funziona meglio più a lungo lo lasci in esecuzione!",
@@ -1163,7 +1164,7 @@
 		"main": {
 			"t0": "Metti una stella sulle tue squadre preferite per fissare le loro partite in cima alla lista.",
 			"t1": "Assegna una scheda dal menu a tendina accanto a ogni partita così ArenaSwap sa dove cambiare.",
-			"t2": "Vince il cambio il PowerScore più alto. Tieni d'occhio la barra su ogni scheda.",
+			"t2": "Vince il cambio il PowerScore più alto. Tieni d'occhio la barra su ogni riquadro.",
 			"t3": "Attiva \"Mostra le partite in arrivo\" nelle Impostazioni per assegnare le schede prima che la partita inizi.",
 			"t4": "Ancora nessuna partita in diretta? La Modalità demo nelle Impostazioni ne mette in scena alcune per vedere ArenaSwap all'opera.",
 			"t5": "Standby Stream tiene attiva una scheda di riserva ogni volta che tutte le partite si calmano — attivalo nelle Impostazioni."
@@ -1228,7 +1229,6 @@
 		"skip": "clicca per saltare",
 		"announce": "LUDICROUS SPEED…",
 		"go": "VIA!",
-		"plaid": "SONO FINITI NELLA ZONA PLAID!",
 		"stop": "STOP!",
 		"emergencyBrake": "⚠ FRENO D'EMERGENZA — NON USARE MAI",
 		"intro": {

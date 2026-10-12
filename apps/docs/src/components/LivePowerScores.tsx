@@ -69,8 +69,7 @@ const parseLiveState = (state?: string): boolean => {
 const buildScoreboardUrl = (leagueId: LeagueId): string => {
 	const config = leagueConfigMap[leagueId];
 	const params = new URLSearchParams();
-	if (leagueId === 'ncaab') params.set('groups', '50');
-	if (leagueId === 'ncaaw') params.set('groups', '49');
+	if (leagueId === 'ncaab' || leagueId === 'ncaaw') params.set('groups', '50');
 	const query = params.toString();
 	const url = `${espnBase}/${config.espnPath}/scoreboard`;
 	return query ? `${url}?${query}` : url;

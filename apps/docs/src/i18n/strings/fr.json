@@ -409,8 +409,8 @@
 			"delay": "EN ATTENTE",
 			"delayFallback": "En attente",
 			"vs": "vs",
-			"topOfInning": "Début de la manche",
-			"bottomOfInning": "Fin de la manche",
+			"topOfInning": "Haut de la manche",
+			"bottomOfInning": "Bas de la manche",
 			"shootout": "TAB {away}–{home}",
 			"periodQuarter": "QT{count}",
 			"periodFirstHalf": "1re MT",
@@ -422,6 +422,7 @@
 			"periodExtraTimeFirst": "PR1",
 			"periodExtraTimeSecond": "PR2",
 			"periodShootout": "TAB",
+			"periodHockeyShootout": "TB",
 			"downDistanceAt": "{downDistance} à {fieldPosition}"
 		},
 		"field": {

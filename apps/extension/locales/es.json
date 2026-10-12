@@ -1,6 +1,6 @@
 {
 	"extName": "ArenaSwap: cambio automático de NFL, NBA, March Madness y MLB en vivo",
-	"extDescription": "Observa cada partido en vivo de 31 ligas y cambia tu pestaña al más emocionante, hasta cada 6 segundos.",
+	"extDescription": "Observa cada partido en vivo de 31 ligas y cambia tu pestaña al más emocionante, incluso cada 6 segundos.",
 	"bossCommandDescription": "Viene el jefe: silencia los partidos y pasa a tu página de tapadera",
 	"app": {
 		"welcomeToast": "¡Bienvenido a ArenaSwap!",
@@ -169,9 +169,9 @@
 		"m106": "Dando dos señales arbitrales contradictorias a la vez…",
 		"m107": "Preguntándose por qué la piscina está verde…",
 		"m108": "Otorgando una segunda medalla de oro, por si acaso…",
-		"m109": "Poniendo el himno nacional equivocado…",
-		"m110": "Destruyendo las cintas…",
-		"m111": "Sosteniendo la última nota del himno…",
+		"m109": "Destruyendo las cintas…",
+		"m110": "Sosteniendo la última nota del himno…",
+		"m111": "Poniendo el himno nacional equivocado…",
 		"m112": "Presentando a los titulares…"
 	},
 	"setup": {
@@ -206,8 +206,7 @@
 		"demoSeasonReal": "La fecha real",
 		"demoSeasonThanksgiving": "Semana de Acción de Gracias",
 		"demoSeasonDecember": "Diciembre",
-		"demoSeasonExplainer": "Solo afecta a la decoración navideña, para que puedas verla fuera de temporada.",
-		"standbySection": "Standby Stream",
+		"demoSeasonExplainer": "Solo afecta a la decoración de temporada, para que puedas verla fuera de temporada.",
 		"enableStandby": "Activar Standby Stream",
 		"standbyBelow": "En espera por debajo de",
 		"morePatient": "Más paciente",
@@ -221,7 +220,7 @@
 		"temperatureUnitRomer": "°Rø",
 		"openReveal": "Animación de apertura",
 		"openRevealExplainer": "Cada partido llega como un póster del enfrentamiento cuando abres ArenaSwap — la versión larga una vez al día, y una más rápida después.",
-		"holidayDecorations": "Decoración navideña",
+		"holidayDecorations": "Decoración de temporada",
 		"holidayDecorationsExplainer": "Nieve cuando nieva en el partido, hojas la semana de Acción de Gracias y luces todo diciembre.",
 		"holidaySnow": "Nieve",
 		"holidayLights": "Luces",
@@ -249,7 +248,7 @@
 		"groupSwitching": "Cambios",
 		"groupSwitchingDesc": "Con cuántas ganas ArenaSwap te cambia de partido y qué pasa con las pestañas que deja atrás.",
 		"groupScoring": "Puntuación",
-		"groupScoringDesc": "Qué señales alimentan el PowerScore y qué gana un impulso.",
+		"groupScoringDesc": "Qué señales alimentan el PowerScore y qué otorga un impulso.",
 		"groupFavorites": "Equipos favoritos",
 		"groupFavoritesDesc": "Los equipos que sigues se quedan arriba en la lista.",
 		"followedTeams": "Equipos que sigues",
@@ -393,6 +392,7 @@
 		"unitSeconds": "s",
 		"halftime": "Descanso",
 		"intermission": "Intermedio",
+		"endOfPeriod": "Fin del {period}",
 		"chartPowerScoreTitle": "PowerScore a lo largo del tiempo",
 		"chartScoreTitle": "Marcador a lo largo del tiempo",
 		"chartWinProbTitle": "Probabilidad de victoria",
@@ -633,8 +633,8 @@
 			"n": "Última actualización hace $1 horas"
 		},
 		"final": "Final",
-		"delay": "SUSPENDIDO",
-		"delayFallback": "Suspendido",
+		"delay": "RETRASO",
+		"delayFallback": "Retraso",
 		"shootout": "PEN {away}–{home}",
 		"downDistanceAt": "{downDistance} en {fieldPosition}",
 		"teamRank": "Puesto #{rank}",
@@ -653,6 +653,7 @@
 		"periodExtraTimeFirst": "TE1",
 		"periodExtraTimeSecond": "TE2",
 		"periodShootout": "PEN",
+		"periodHockeyShootout": "SO",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"preseason": "Pretemporada",
@@ -672,7 +673,7 @@
 		"heading": "Desglose del PowerScore",
 		"signalCloseness": "Igualdad",
 		"signalLateGame": "Recta final",
-		"signalMomentum": "Impulso",
+		"signalMomentum": "Racha",
 		"signalLeadChanges": "Cambios de ventaja",
 		"signalComeback": "Remontada",
 		"volatilityBoost": "Impulso de volatilidad",
@@ -697,7 +698,7 @@
 		"tooltipLateGame": "Combina qué tan avanzado está el partido con qué tan ajustado está el marcador. Sube de forma lineal a lo largo del último período. Los partidos no reñidos puntúan casi nada aquí. Añade puntos extra cuando el marcador está empatado en los últimos segundos, anticipando la prórroga.",
 		"tooltipMomentum": "Mide la diferencia neta de anotaciones de un equipo en la ventana de historial más reciente. Si un equipo ha superado al otro por encima de un umbral, puntúa aquí. Decae hacia cero con el paso del tiempo sin más anotaciones.",
 		"tooltipLeadChanges": "Cuenta cuántas veces ha cambiado el liderato en la ventana de historial. Sin cambios no puntúa; uno o más cambios puntúan progresivamente más alto. Decae si pasa tiempo sin otro cambio.",
-		"tooltipComeback": "Compara el margen en el punto más antiguo de la ventana con el margen actual. Si el equipo que iba perdiendo ha recortado distancias, puntúa según cuánto terreno ha recuperado. Vale más al final del partido; decae si el marcador se detiene.",
+		"tooltipComeback": "Compara el margen en el punto más antiguo de la ventana con el margen actual. Si el equipo que iba perdiendo ha recortado distancias, puntúa según cuánto terreno ha recuperado. Vale más al final del partido; decae si dejan de llegar anotaciones.",
 		"tooltipClockStallPenalty": "Se aplica cuando el reloj del juego apenas ha avanzado en varias lecturas consecutivas. Descuenta una cantidad fija de puntos del subtotal de señales; el descuento se agrava cuanto más tiempo permanezca el reloj congelado.",
 		"tooltipVolatility": "Se basa en qué tan cerca ha permanecido la probabilidad de victoria en vivo del 50% a lo largo del historial reciente. Los partidos donde se mantuvo cerca del 50% — sin que ningún equipo tuviera ventaja clara — reciben un impulso. Los que estuvieron consistentemente alejados del 50% en cualquier dirección son penalizados.",
 		"tooltipFavoriteBoost": "Se añade cuando uno de tus equipos favoritos guardados está en este partido. Tener dos favoritos en el encuentro suma más que uno.",
@@ -725,8 +726,8 @@
 		"reasonInning": "{inning}.ª entrada",
 		"reasonClockLeft": "quedan {clock}",
 		"reasonUnderMinutes": {
-			"1": "menos de 1 minuto",
-			"n": "menos de $1 minutos"
+			"1": "queda menos de 1 minuto",
+			"n": "quedan menos de $1 minutos"
 		},
 		"reasonMinutesIn": {
 			"1": "minuto 1",
@@ -1030,7 +1031,7 @@
 		"detailPreviewTitle": "Desglose del PowerScore",
 		"signalCloseness": "Igualdad",
 		"signalLateGame": "Recta final",
-		"signalMomentum": "Impulso",
+		"signalMomentum": "Racha",
 		"signalLeadChanges": "Cambios de ventaja",
 		"signalComeback": "Remontada",
 		"detailPreviewCaption": "También hay gráficas del marcador e historial completo de señales.",
@@ -1070,7 +1071,7 @@
 		"title": "Standby Stream",
 		"subtitle": "Una alternativa para los momentos lentos.",
 		"quietTitle": "Cuando los partidos se calman",
-		"quietBody": "Cuando todos los partidos que ves caen por debajo de tu umbral, ArenaSwap se queda en tu Standby Stream automáticamente.",
+		"quietBody": "Cuando todos los partidos que ves caen por debajo de tu umbral, ArenaSwap te lleva automáticamente a tu Standby Stream.",
 		"returnTitle": "Vuelve por sí solo",
 		"returnBody": "En cuanto cualquier partido vuelve a superar tu umbral, ArenaSwap te lleva de regreso.",
 		"chooseTitle": "Tú eliges la pestaña de espera",
@@ -1178,7 +1179,7 @@
 			"t6": "Usa la sección Señales de PowerScore para desactivar las que no te interesen — ArenaSwap reescala todo automáticamente."
 		},
 		"detail": {
-			"t0": "El PowerScore combina igualdad, presión de la recta final, impulso, cambios de ventaja y remontadas — luego aplica un impulso o penalización de volatilidad según cuánto oscile la probabilidad de victoria.",
+			"t0": "El PowerScore combina igualdad, presión de la recta final, racha, cambios de ventaja y remontadas — luego aplica un impulso o penalización de volatilidad según cuánto oscile la probabilidad de victoria.",
 			"t1": "Se aplica una penalización cuando el reloj del partido apenas avanza entre actualizaciones.",
 			"t2": "Los partidos 0–0 reciben una pequeña penalización de PowerScore en los deportes donde el 0–0 no es emocionante.",
 			"t3": "Pasa el cursor sobre las gráficas para inspeccionar momentos concretos del partido.",
@@ -1222,19 +1223,18 @@
 	"footer": {
 		"builtWith": "Hecho con",
 		"credit": "en Filadelfia y Boston por Ryan Mullin",
-		"toggleDebug": "Mostrar información de depuración"
+		"toggleDebug": "Mostrar u ocultar información de depuración"
 	},
 	"ludicrousSpeed": {
 		"skip": "haz clic para omitir",
 		"announce": "LUDICROUS SPEED…",
 		"go": "¡VAMOS!",
-		"plaid": "¡HAN IDO A CUADROS!",
 		"stop": "¡ALTO!",
 		"emergencyBrake": "⚠ FRENO DE EMERGENCIA — NUNCA USAR",
 		"intro": {
-			"l1": "Prepare la nave para velocidad de luz.",
-			"l2": "No, no, la velocidad de luz es demasiado lenta.",
-			"l3": "¿Velocidad de luz demasiado lenta?",
+			"l1": "Prepare la nave para la velocidad de la luz.",
+			"l2": "No, no, la velocidad de la luz es demasiado lenta.",
+			"l3": "¿Velocidad de la luz demasiado lenta?",
 			"l4": "Sí. Vamos a tener que ir directamente a",
 			"l5": "Ludicrous Speed.",
 			"l6": "¿Ludicrous Speed?",
@@ -1260,7 +1260,7 @@
 			"l2": "Mi cerebro… se me va a los pies."
 		},
 		"signs": {
-			"light": "VELOCIDAD DE LUZ",
+			"light": "VELOCIDAD DE LA LUZ",
 			"ridiculous": "VELOCIDAD RIDÍCULA",
 			"ludicrous": "LUDICROUS SPEED",
 			"plaid": "CUADROS"

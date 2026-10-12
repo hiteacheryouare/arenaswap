@@ -1,6 +1,6 @@
 {
 	"extName": "ArenaSwap — Mudança automática de NFL, NBA, March Madness e MLB em directo",
-	"extDescription": "Observa todos os jogos em directo em 31 ligas e muda o teu separador automaticamente para o mais emocionante, a cada 6 segundos.",
+	"extDescription": "Observa os jogos em directo de 31 ligas e muda o teu separador para o mais emocionante, a cada 6 segundos se for preciso.",
 	"bossCommandDescription": "Vem aí o chefe: silencia os jogos e passa para a tua página de disfarce",
 	"app": {
 		"welcomeToast": "Bem-vindo ao ArenaSwap!",
@@ -49,7 +49,7 @@
 		},
 		"m5": {
 			"title": "O marcador está parado.",
-			"sub": "As tuas ligas estão sossegadas. Volta quando os jogos recomeçarem."
+			"sub": "As tuas ligas estão sossegadas. Volta quando os jogos começarem."
 		},
 		"m6": {
 			"title": "O tipo das bifanas foi embora. 🌭",
@@ -169,9 +169,9 @@
 		"m106": "A dar dois sinais de arbitragem contraditórios ao mesmo tempo…",
 		"m107": "A questionar-se porque é que a piscina está verde…",
 		"m108": "A atribuir uma segunda medalha de ouro, por precaução…",
-		"m109": "A tocar o hino nacional errado…",
-		"m110": "A destruir as cassetes…",
-		"m111": "A segurar a última nota do hino…",
+		"m109": "A destruir as cassetes…",
+		"m110": "A segurar a última nota do hino…",
+		"m111": "A tocar o hino nacional errado…",
 		"m112": "A apresentar os titulares…"
 	},
 	"setup": {
@@ -207,7 +207,6 @@
 		"demoSeasonThanksgiving": "Semana da Ação de Graças",
 		"demoSeasonDecember": "Dezembro",
 		"demoSeasonExplainer": "Afeta só a decoração de época, para a poderes ver fora de época.",
-		"standbySection": "Standby Stream",
 		"enableStandby": "Activar Standby Stream",
 		"standbyBelow": "Em espera abaixo de",
 		"morePatient": "Mais paciente",
@@ -235,7 +234,7 @@
 		"groupByLeague": "Agrupar jogos por liga",
 		"groupByLeagueExplainer": "Desativado, todas as ligas partilham uma única lista: jogos em direto por PowerScore e próximos jogos por hora de início. As equipas favoritas ficam sempre no topo.",
 		"leagueOrderSection": "Ordem de apresentação",
-		"leagueOrderExplainer": "As secções das ligas aparecem por esta ordem no ecrã principal. Arraste uma liga ou desloque-a com as setas.",
+		"leagueOrderExplainer": "As secções das ligas aparecem por esta ordem no ecrã principal. Arrasta uma liga ou desloca-a com as setas.",
 		"leagueOrderReset": "Repor a ordem predefinida",
 		"leagueMoveUp": "Mover {label} para cima",
 		"leagueMoveDown": "Mover {label} para baixo",
@@ -393,6 +392,7 @@
 		"unitSeconds": "s",
 		"halftime": "Intervalo",
 		"intermission": "Intervalo",
+		"endOfPeriod": "Fim do {period}",
 		"chartPowerScoreTitle": "PowerScore ao longo do tempo",
 		"chartScoreTitle": "Marcador ao longo do tempo",
 		"chartWinProbTitle": "Probabilidade de vitória",
@@ -406,7 +406,7 @@
 		"matchMinute": "{minute}'",
 		"matchMinuteAdded": "{minute}+{added}'",
 		"pitchingLabel": "Lançamentos",
-		"atBatLabel": "A rebater",
+		"atBatLabel": "Ao bastão",
 		"dueUpHeading": "Próximos batedores",
 		"bonus": "Bónus",
 		"foulsBonus": "{team} em bónus",
@@ -637,7 +637,7 @@
 		"delayFallback": "Atraso",
 		"shootout": "GP {away}–{home}",
 		"downDistanceAt": "{downDistance} na {fieldPosition}",
-		"teamRank": "Classificado #{rank}",
+		"teamRank": "N.º {rank} no ranking",
 		"timeoutsRemaining": {
 			"1": "{team}: resta 1 tempo morto",
 			"n": "{team}: restam $1 tempos mortos"
@@ -653,12 +653,13 @@
 		"periodExtraTimeFirst": "PR1",
 		"periodExtraTimeSecond": "PR2",
 		"periodShootout": "GP",
+		"periodHockeyShootout": "SO",
 		"powerScore": "PowerScore",
 		"vs": "vs",
 		"preseason": "Pré-temporada",
 		"springTraining": "Spring Training",
-		"topOfInning": "Início da entrada",
-		"bottomOfInning": "Fim da entrada"
+		"topOfInning": "Parte alta da entrada",
+		"bottomOfInning": "Parte baixa da entrada"
 	},
 	"field": {
 		"possession": "{team} tem a bola",
@@ -702,7 +703,7 @@
 		"tooltipVolatility": "Baseado em quão próxima ficou a probabilidade de vitória em directo dos 50% ao longo do histórico recente. Jogos em que ficou perto dos 50% — sem nenhuma equipa com vantagem clara — recebem um impulso. Os que ficaram consistentemente longe dos 50% em qualquer direcção são penalizados.",
 		"tooltipFavoriteBoost": "Adicionado quando uma das tuas equipas favoritas guardadas está neste jogo. Ter dois favoritos no confronto soma mais do que um.",
 		"tooltipGameBoost": "Pontos que aplicaste manualmente a este jogo utilizando o controlo de impulso do jogo.",
-		"tooltipScoringOpportunity": "Adicionado com base na posição activa de pontuação. No futebol americano é a zona vermelha; no basebol e softbol escala com o número de corredores nas bases; no hóquei é superioridade numérica ou um guarda-redes retirado num jogo equilibrado.",
+		"tooltipScoringOpportunity": "Adicionado com base na posição activa de pontuação. No futebol americano é a red zone; no basebol e softbol escala com o número de corredores nas bases; no hóquei é superioridade numérica ou um guarda-redes retirado num jogo equilibrado.",
 		"tooltipPostseasonBoost": "Um impulso para jogos de pós-temporada: playoffs, finais de conferência e campeonatos.",
 		"reasonJoiner": ", ",
 		"reasonTied": "empate",
@@ -725,8 +726,8 @@
 		"reasonInning": "{inning}.ª entrada",
 		"reasonClockLeft": "faltam {clock}",
 		"reasonUnderMinutes": {
-			"1": "menos de 1 minuto",
-			"n": "menos de $1 minutos"
+			"1": "falta menos de 1 minuto",
+			"n": "faltam menos de $1 minutos"
 		},
 		"reasonMinutesIn": {
 			"1": "1.º minuto",
@@ -761,26 +762,26 @@
 		"tooltipSustained": "Quanto do período recente o líder passou com mais de dois lances de pontuação de vantagem. Uma vantagem construída e mantida vale mais do que uma que acabou de aparecer.",
 		"tooltipTiming": "Uma goleada com muito jogo pela frente dá mais para ver do que uma quase no fim. Máximo no início, zero no fim.",
 		"tooltipPileOn": "O líder ainda a distanciar-se, a marcar mais do que o adversário no período recente. Desvanece quando a pontuação pára.",
-		"tooltipSituation": "Onde estão os teus jogadores neste momento: com a bola, na red zone, ao bastão, no monte. O mais ativo conta mais e os restantes um pouco. No basquetebol e no hóquei, mede quão equilibrado e perto do fim está o jogo.",
+		"tooltipSituation": "Onde estão os teus jogadores neste momento: com a bola, na red zone, ao bastão, no monte. O mais activo conta mais e os restantes um pouco. No basquetebol e no hóquei, mede quão equilibrado e perto do fim está o jogo.",
 		"tooltipProduction": "Pontos de fantasy que os teus jogadores marcaram há pouco, segundo as tuas regras de pontuação. Desvanece à medida que os pontos ficam mais antigos.",
 		"tooltipExposure": "Quantos dos teus jogadores estão neste jogo. Cinco pontos por cada um, até três jogadores.",
 		"blendClassic": "Pontuação Clássico",
 		"tooltipBlendBlowouts": "O modo Goleadas nunca deixa um jogo cair abaixo de 30% da sua pontuação Clássico, por isso uma noite sem goleadas continua a ter algo para ver.",
 		"tooltipBlendFantasy": "O Fantasy parte da pontuação Clássico do jogo e soma por cima a pontuação Fantasy dos teus jogadores, com o peso definido nas Definições. Os teus jogadores podem elevar um jogo, nunca afundá-lo.",
-		"goAheadRun": "Corrida da vitória na base",
+		"goAheadRun": "Corrida da vantagem na base",
 		"twoMinuteDrill": "Ataque de dois minutos",
 		"redCard": "Cartão vermelho",
 		"noHitter": "No-hitter",
 		"upsetWatch": "Atenção à surpresa",
 		"upsetRout": "Surpresa",
 		"stakes": "Em jogo",
-		"tooltipGoAheadRun": "A equipa ao bastão tem a corrida da vitória na base ou, na falta dela, a do empate. Vale mais no fim e mais ainda quando é a última oportunidade.",
+		"tooltipGoAheadRun": "A equipa ao bastão tem a corrida da vantagem na base ou, na falta dela, a do empate. Vale mais no fim e mais ainda quando é a última oportunidade.",
 		"tooltipTwoMinuteDrill": "Uma equipa a perder por um lance de pontuação ou menos, a atacar perto do fim da parte. Atinge o máximo quando entra em alcance. Quem lidera e gasta o relógio não ganha nada.",
 		"tooltipRedCard": "Um cartão vermelho num jogo empatado ou decidido por um golo. Desvanece nos dez minutos seguintes, ou mais cedo se um golo abrir o jogo.",
 		"tooltipNoHitter": "Uma equipa de lançadores que não permitiu nenhuma batida, a partir da 6.ª entrada (a 4.ª no softbol). Cresce a cada out sem batida.",
 		"tooltipUpsetWatch": "O menos cotado antes do jogo a ganhar, empatado ou a um lance de pontuação de distância, já depois do meio do jogo.",
 		"tooltipUpsetRout": "O menos cotado antes do jogo a correr com o favorito do campo.",
-		"tooltipStakes": "O que o resultado decide: uma eliminatória à beira do fim, duas equipas classificadas ou uma corrida no fim da época. Desaparece quando o jogo está decidido.",
+		"tooltipStakes": "O que o resultado decide: uma eliminatória à beira do fim, duas equipas do ranking ou uma corrida no fim da época. Desaparece quando o jogo está decidido.",
 		"reasonBlowoutPoints": {
 			"1": "vantagem de 1 ponto",
 			"n": "vantagem de $1 pontos"
@@ -809,7 +810,7 @@
 			"1": "um dos teus jogadores",
 			"n": "$1 dos teus jogadores"
 		},
-		"reasonGoAheadRun": "corrida da vitória na base (+{points})",
+		"reasonGoAheadRun": "corrida da vantagem na base (+{points})",
 		"reasonTwoMinuteDrill": "ataque de dois minutos (+{points})",
 		"reasonRedCard": "cartão vermelho (+{points})",
 		"reasonNoHitter": "no-hitter (+{points})",
@@ -864,8 +865,8 @@
 		"powerPlayTeamTrailing": "{team} está em superioridade numérica, a perder por {margin}.",
 		"powerPlayTeamLeading": "{team} está em superioridade numérica, a ganhar por {margin}.",
 		"redCard": "{team} joga com {players} desde os {minute}′.",
-		"noHitter": "{team} continua sem um hit após {innings} innings.",
-		"doubleNoHitter": "Nenhuma das equipas tem um hit após {innings} innings.",
+		"noHitter": "{team} continua sem um hit após {innings} entradas.",
+		"doubleNoHitter": "Nenhuma das equipas tem um hit após {innings} entradas.",
 		"underdogLeading": "As nossas fontes davam a {team} {chance}% de hipóteses antes do jogo. Agora ganha por {margin}.",
 		"underdogLevel": "As nossas fontes davam a {team} {chance}% de hipóteses antes do jogo. Agora está tudo empatado.",
 		"underdogClose": "As nossas fontes davam a {team} {chance}% de hipóteses antes do jogo. Agora perde por apenas {margin}.",
@@ -1046,7 +1047,7 @@
 		"tabLeagues": "Ligas",
 		"tabFavorites": "Favoritos",
 		"leaguesExplain": "Activar uma liga indica ao ArenaSwap que procure jogos em directo nessa competição. Só as ligas activas contam para a mudança automática.",
-		"leaguesBody": "Liga todas as ligas que queres seguir nas Definições → Ligas. Quanto mais activares, mais ampla é a rede que ArenaSwap lança à procura de acção emocionante.",
+		"leaguesBody": "Activa todas as ligas que queres seguir nas Definições → Ligas. Quanto mais activares, mais ampla é a rede que ArenaSwap lança à procura de acção emocionante.",
 		"favoritesExplain": "Marcar uma equipa com estrela dá aos seus jogos um impulso de PowerScore sempre que essa equipa estiver a jogar, tornando-os mais prováveis de ganhar a mudança automática.",
 		"favoritesBody": "Marca as tuas equipas favoritas em qualquer cartão de jogo ou nas Definições. Não é um filtro — todos os jogos continuam a aparecer; as tuas equipas recebem apenas um pequeno impulso.",
 		"favoritesBonusHint": "Equipas favoritas activas — os seus jogos recebem um impulso de PowerScore!",
@@ -1228,7 +1229,6 @@
 		"skip": "clica para saltar",
 		"announce": "LUDICROUS SPEED…",
 		"go": "JÁ!",
-		"plaid": "FORAM PARA O XADREZ!",
 		"stop": "PARA!",
 		"emergencyBrake": "⚠ TRAVÃO DE EMERGÊNCIA — NUNCA USAR",
 		"intro": {
@@ -1305,7 +1305,7 @@
 		"coveredBy": "Já incluída em {division}",
 		"nothingPicked": "Nada escolhido, por isso não vai aparecer nenhum jogo de {league}.",
 		"loading": "Os nossos olheiros andam de binóculos à procura da lista de conferências…",
-		"loadFailed": "Os nossos olheiros voltaram de mãos a abanar. As divisões e as classificações continuam a funcionar.",
+		"loadFailed": "Os nossos olheiros voltaram de mãos a abanar. As divisões e os rankings continuam a funcionar.",
 		"retry": "Tentar novamente",
 		"open": "Escolher divisões e conferências para {league}",
 		"summaryNothing": "Nada escolhido",
