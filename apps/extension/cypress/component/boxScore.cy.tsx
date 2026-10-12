@@ -1,7 +1,7 @@
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import BoxScore from '../../entrypoints/popup/components/boxScore';
-import { parseBoxScore } from '../../entrypoints/popup/components/boxScoreParse';
-import type { BoxScore as ParsedBoxScore } from '../../entrypoints/popup/components/boxScoreParse';
+import { parseBoxScore } from '@arenaswap/sideline';
+import type { BoxScore as ParsedBoxScore } from '@arenaswap/sideline';
 import { MockGameSimulator } from '@arenaswap/core';
 import type { Game } from '@arenaswap/core/types';
 import de from '../../locales/de.json';

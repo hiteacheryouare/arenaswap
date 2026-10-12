@@ -6,7 +6,7 @@
 // Writes: scripts/film/data/pregame.json
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { parseScoreboardEvents } from '../../../packages/core/src/apiClient';
+import { parseScoreboardEvents } from '@arenaswap/sideline';
 import { leagueConfigMap } from '../../../packages/powerscore/src/constants';
 import type { Game, LeagueId } from '../../../packages/core/src/types';
 

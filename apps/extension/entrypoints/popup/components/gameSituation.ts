@@ -1,4 +1,4 @@
-import type { BasketballTeamSituation } from '@arenaswap/core';
+import type { BasketballTeamSituation } from '@arenaswap/sideline';
 import { sportTypeConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, RedCardEvent } from '@arenaswap/core/types';
 import { formatGameClock, formatPeriod, isHalftime } from './gameCardShared';

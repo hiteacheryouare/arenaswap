@@ -35,6 +35,7 @@ body:
         - packages/chromatic
         - packages/core
         - packages/powerscore
+        - packages/sideline
         - packages/ui
     validations:
       required: true

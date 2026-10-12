@@ -1,6 +1,6 @@
 import type { FantasyRosterEntry } from '@arenaswap/core';
 import { rosterPlayerLines } from '../entrypoints/popup/components/fantasyPlayerLines';
-import type { BoxScore, BoxScoreAthlete, BoxScoreCategory } from '../entrypoints/popup/components/boxScoreParse';
+import type { BoxScore, BoxScoreAthlete, BoxScoreCategory } from '@arenaswap/sideline';
 
 const athlete = (id: string, stats: string[], extra: Partial<BoxScoreAthlete> = {}): BoxScoreAthlete => ({
 	id,

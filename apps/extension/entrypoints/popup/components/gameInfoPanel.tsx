@@ -4,7 +4,7 @@ import HoverTooltip from '@arenaswap/ui/src/components/hoverTooltip';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import { OddsProvider, oddsSummary } from './gameCardShared';
 import { conditionIcon, formatTemperature } from './weatherUtils';
-import type { TicketLink } from './matchupParse';
+import type { TicketLink } from '@arenaswap/sideline';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 
 interface gameInfoPanelProps {

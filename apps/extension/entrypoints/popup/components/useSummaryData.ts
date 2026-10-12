@@ -1,16 +1,25 @@
 import { useEffect, useRef, useState } from 'react';
 import { leagueConfigMap } from '@arenaswap/core/constants';
-import { logWarn, monoMarksFromLogos, parseGameDurationMins, pollWinProbabilityMs } from '@arenaswap/core';
+import { logWarn, pollWinProbabilityMs } from '@arenaswap/core';
+import {
+	emptyBoxScore,
+	emptyMatchup,
+	emptyStandings,
+	fetchSharedLeagueStandings,
+	fetchSummary,
+	monoMarksFromLogos,
+	parseBoxScore,
+	parseGameDurationMins,
+	parseLeagueStandings,
+	parseMatchup,
+	parseStandings,
+	parseTickets,
+	usesFullLeagueStandings,
+} from '@arenaswap/sideline';
+import type { BoxScore, Matchup, StandingsGroup, TicketLink } from '@arenaswap/sideline';
 import type { Game, LeagueId, TeamMonoMarks } from '@arenaswap/core/types';
-import { emptyBoxScore, parseBoxScore } from './boxScoreParse';
 import { hasBoxScoreContent } from './boxScoreColumns';
-import type { BoxScore } from './boxScoreParse';
-import { emptyStandings, parseLeagueStandings, parseStandings, usesFullLeagueStandings } from './standingsParse';
-import type { StandingsGroup } from './standingsParse';
-import { emptyMatchup, parseMatchup, parseTickets } from './matchupParse';
-import type { Matchup, TicketLink } from './matchupParse';
-import { mockStandingsPayloads } from './mockStandings';
-import { fetchLeagueStandings, fetchSummary } from './summaryFetch';
+import { mockStandingsPayloads } from '@arenaswap/sideline/mockStandings';
 
 export interface SeriesCompetitor {
 	homeAway: string;
@@ -299,7 +308,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 				: parseStandings(canned, gameRef.current.sportType, teamIdsRef.current.home, teamIdsRef.current.away));
 			if (status === 'pre') {
 				let cancelled = false;
-				import('./mockMatchup').then(({ mockMatchupPayloads }) => {
+				import('@arenaswap/sideline/mockMatchup').then(({ mockMatchupPayloads }) => {
 					const payload = mockMatchupPayloads[gameId];
 					if (cancelled || !payload) return;
 					setMatchup(parseMatchup(payload, gameRef.current.sportType, teamIdsRef.current));
@@ -312,7 +321,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 			// The fixtures are ~22KB no real game can reach, so they stay out of the popup chunk.
 			// Every other piece of demo state is already set above; only the box score waits.
 			let cancelled = false;
-			import('./mockBoxScores').then(({ mockBoxScorePayloads }) => {
+			import('@arenaswap/sideline/mockBoxScores').then(({ mockBoxScorePayloads }) => {
 				if (cancelled) return;
 				setBoxScore(parseBoxScore(
 					mockBoxScorePayloads[gameId],
@@ -397,7 +406,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		// this answers, so waiting for a click would mean never offering it for the leagues whose
 		// summary carries no table at all (college hockey, college baseball and softball).
 		if (usesFullLeagueStandings(league)) {
-			fetchLeagueStandings(config.espnPath)
+			fetchSharedLeagueStandings(config.espnPath)
 				.then(data => {
 					if (!cancelled) setStandings(parseLeagueStandings(data, gameRef.current.sportType));
 				})

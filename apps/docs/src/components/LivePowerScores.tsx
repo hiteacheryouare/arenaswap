@@ -4,7 +4,7 @@ import { allLeagueIds, computePowerScore, leagueConfigMap } from 'powerscore';
 import type { Game, LeagueId, ScoreSnapshot } from 'powerscore';
 // The real ones, rather than copies. Both live in dependency-free modules precisely so this
 // island can read them without dragging zod or the card's React tree onto a marketing page.
-import { parseClockToSeconds } from '@arenaswap/core/gameClock';
+import { parseClockToSeconds } from '@arenaswap/sideline/gameClock';
 import { formatGameClock, formatPeriod } from '@arenaswap/ui/src/components/gameFormat';
 import { islandTranslator } from '../i18n/islandStrings';
 
@@ -106,7 +106,7 @@ const parseLiveGames = (leagueId: LeagueId, payload: EspnScoreboardResponse): Ga
 	});
 };
 
-// The extension pools its own fan-outs through `@arenaswap/core`, but importing that here would pull
+// The extension pools its own fan-outs through `@arenaswap/sideline`, but importing that here would pull
 // its whole ESPN client and zod onto a marketing page for a twelve-line helper.
 const mapInPool = async <T, R>(items: T[], run: (item: T) => Promise<R>, size = requestPoolSize): Promise<R[]> => {
 	const results: R[] = [];

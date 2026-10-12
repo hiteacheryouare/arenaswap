@@ -3,7 +3,7 @@ import { resolveTeamColorPair } from '@arenaswap/chromatic';
 import InjuryReport from './injuryReport';
 import RecentForm from './recentForm';
 import SeasonStatsCompare from './seasonStatsCompare';
-import type { Matchup } from './matchupParse';
+import type { Matchup } from '@arenaswap/sideline';
 
 interface matchupPanelProps {
 	game: Game;

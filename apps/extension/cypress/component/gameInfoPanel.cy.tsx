@@ -1,6 +1,6 @@
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import GameInfoPanel from '../../entrypoints/popup/components/gameInfoPanel';
-import { fetchGames } from '@arenaswap/core';
+import { fetchGames } from '@arenaswap/sideline';
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 import de from '../../locales/de.json';
 import en from '../../locales/en.json';

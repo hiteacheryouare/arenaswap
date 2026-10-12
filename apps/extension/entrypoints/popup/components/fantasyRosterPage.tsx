@@ -1,16 +1,16 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { i18n } from '#i18n';
+import { fantasyRosterLimit, logWarn } from '@arenaswap/core';
 import {
 	defenseRosterEntry,
 	fantasyLeagues,
-	fantasyRosterLimit,
 	fetchTeamsForLeagues,
 	foldName,
-	logWarn,
 	resolveRosterEntry,
 	searchPlayers,
-} from '@arenaswap/core';
-import type { EspnTeamEntry, FantasyRosterEntry, PlayerSearchResult } from '@arenaswap/core';
+} from '@arenaswap/sideline';
+import type { FantasyRosterEntry } from '@arenaswap/core';
+import type { EspnTeamEntry, PlayerSearchResult } from '@arenaswap/sideline';
 import type { FantasyPosition } from 'powerscore';
 import CrestDisc from '@arenaswap/ui/src/components/crestDisc';
 import PlayerShot from './playerShot';

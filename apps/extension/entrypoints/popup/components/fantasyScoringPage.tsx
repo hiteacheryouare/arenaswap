@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
 import { defaultFantasyScoring, type FantasySport } from 'powerscore';
-import { fantasyRulesRead } from '@arenaswap/core';
+import { fantasyRulesRead } from '@arenaswap/sideline';
 import type { UserPreferences } from '@arenaswap/core/types';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import FantasyRuleInput from './fantasyRuleInput';

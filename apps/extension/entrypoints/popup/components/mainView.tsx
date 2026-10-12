@@ -28,7 +28,7 @@ import useReorderGlide from '@arenaswap/ui/src/components/useReorderGlide';
 import { buildFinalComparator, buildLeagueRank, buildLiveComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, resolveSelectedDayIndex } from '../popupHelpers';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import useRestoredScroll from '../useRestoredScroll';
-import { prefetchOnIntent } from './summaryFetch';
+import { prefetchOnIntent } from './prefetchIntent';
 import { revealModeForIndex, type cardRevealPlan, type revealMode } from '../cardReveal';
 
 const emptyScoreMap = new Map<string, PowerScoreResult>();

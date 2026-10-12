@@ -2,10 +2,10 @@ import * as echarts from 'echarts/core';
 import GameDetailChartCanvas from '../../entrypoints/popup/components/gameDetailChartCanvas';
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import useSummaryData from '../../entrypoints/popup/components/useSummaryData';
-import { clearSharedRequests } from '../../entrypoints/popup/components/summaryFetch';
+import { clearSharedRequests } from '@arenaswap/sideline';
 import { MockGameSimulator, pollWinProbabilityMs } from '@arenaswap/core';
 import type { Game } from '@arenaswap/core/types';
-import { mockBoxScorePayloads } from '../../entrypoints/popup/components/mockBoxScores';
+import { mockBoxScorePayloads } from '@arenaswap/sideline/mockBoxScores';
 import en from '../../locales/en.json';
 
 const seededGames = new MockGameSimulator().seed();

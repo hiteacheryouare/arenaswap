@@ -17,6 +17,7 @@
 	},
 	"dependencies": {
 		"@arenaswap/core": "*",
+		"@arenaswap/sideline": "*",
 		"powerscore": "*"
 	},
 	"devDependencies": {

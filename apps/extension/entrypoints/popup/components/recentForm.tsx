@@ -3,7 +3,7 @@ import type { Game, Team } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
 import { readableTeamInkOnCard } from '@arenaswap/chromatic';
 import { showsRestDays } from './matchupLabels';
-import type { FormResult, Paired } from './matchupParse';
+import type { FormResult, Paired } from '@arenaswap/sideline';
 
 interface recentFormProps {
 	game: Game;

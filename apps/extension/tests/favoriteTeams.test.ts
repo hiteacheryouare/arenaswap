@@ -1,4 +1,4 @@
-import type { EspnTeamEntry } from '@arenaswap/core';
+import type { EspnTeamEntry } from '@arenaswap/sideline';
 import type { LeagueId } from '@arenaswap/core/types';
 import { favoriteTeamRows, leaguesForFavoritePicker, matchesTeamQuery } from '../utils/favoriteTeams';
 

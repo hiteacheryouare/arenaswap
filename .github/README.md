@@ -105,9 +105,10 @@ apps/
   docs/              → Astro site — docs, PowerScore reference, releases, FAQ, legal, in 12 locales
 packages/
   chromatic/         → Colour science shared by the extension and the site
-  core/              → Extension engine
+  core/              → Game model, scoring, polling cadence and preferences
   powerscore/        → Scoring algorithm, published to npm as powerscore
   powerscore-tools/  → PowerScore calibration: slate recorder, replay, simulator, live validator
+  sideline/          → Fetches and parses game data from our sources: scoreboards, summaries, standings, box scores
   ui/                → Components shared by the extension and the site
 ```
 

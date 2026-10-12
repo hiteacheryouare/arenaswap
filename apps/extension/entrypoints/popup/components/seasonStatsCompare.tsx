@@ -1,7 +1,7 @@
 import { i18n } from '#i18n';
 import type { Game } from '@arenaswap/core/types';
 import { readableTeamInkOnCard } from '@arenaswap/chromatic';
-import type { StatComparison } from './matchupParse';
+import type { StatComparison } from '@arenaswap/sideline';
 
 interface seasonStatsCompareProps {
 	game: Game;

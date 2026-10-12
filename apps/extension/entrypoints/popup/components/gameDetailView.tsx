@@ -21,7 +21,7 @@ import HolidayFall from './holidayFall';
 import HolidayLights from './holidayLights';
 import LatestPlayPanel from './latestPlayPanel';
 import MatchupPanel from './matchupPanel';
-import { hasMatchupContent } from './matchupParse';
+import { hasMatchupContent } from '@arenaswap/sideline';
 import PowerScoreBreakdown from './powerScoreBreakdown';
 import PregameSetup from './pregameSetup';
 import PregameStats from './pregameStats';

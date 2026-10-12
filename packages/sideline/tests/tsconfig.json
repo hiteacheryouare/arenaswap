@@ -1,0 +1,12 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"types": ["jest", "node"],
+		"paths": {
+			"@arenaswap/core": ["../../core/src/index.ts"],
+			"@arenaswap/core/*": ["../../core/src/*"],
+			"powerscore": ["../../powerscore/src/index.ts"]
+		}
+	},
+	"include": ["./**/*.ts", "../jestSetup.ts"]
+}

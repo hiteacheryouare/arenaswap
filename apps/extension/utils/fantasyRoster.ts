@@ -1,5 +1,7 @@
-import { fantasyLeagues, fantasyRosterLimit } from '@arenaswap/core';
-import type { FantasyRosterEntry, PlayerSearchResult } from '@arenaswap/core';
+import { fantasyRosterLimit } from '@arenaswap/core';
+import { fantasyLeagues } from '@arenaswap/sideline';
+import type { FantasyRosterEntry } from '@arenaswap/core';
+import type { PlayerSearchResult } from '@arenaswap/sideline';
 import type { LeagueId } from '@arenaswap/core/types';
 
 export const rosterKey = (entry: Pick<FantasyRosterEntry | PlayerSearchResult, 'league' | 'athleteId'>): string => `${entry.league}:${entry.athleteId}`;

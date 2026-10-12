@@ -2,7 +2,8 @@
 // prints a per-poll table so low-scoring sports can be eyeballed for staying alive via decay.
 //
 // Run: npm run powerscore:validate-live -- <leagueId> [polls]
-import { fetchGamesWithLeagueLogos, historyWindowMs as defaultHistoryWindowMs } from '@arenaswap/core';
+import { historyWindowMs as defaultHistoryWindowMs } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos } from '@arenaswap/sideline';
 import { allLeagueIds, computePowerScore, sportTypeConfigMap, type Game, type ScoreSnapshot, type LeagueId } from 'powerscore';
 
 const pollIntervalMs = 15_000;

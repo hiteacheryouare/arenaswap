@@ -5,7 +5,7 @@ import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
 import { readableTeamInkOnCard, resolveTeamColorPair, teamRowWash } from '@arenaswap/chromatic';
-import type { BoxScore, BoxScoreAthlete, LineScoreRow } from './boxScoreParse';
+import type { BoxScore, BoxScoreAthlete, LineScoreRow } from '@arenaswap/sideline';
 import {
 	buildComparison,
 	buildSections,

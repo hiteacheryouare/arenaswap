@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Game data has its own package — 2026-10-11
+
+The scoreboard client, its schemas and every parser that reads a summary, standings table or box score moved out of `packages/core` and the popup into `packages/sideline` (`@arenaswap/sideline`), a source package that imports core only through its root. Core keeps the game model, scoring, polling cadence and preferences, and never depends on sideline. The popup's league-table fetch is now `fetchSharedLeagueStandings`, so it no longer shares a name with the background's `fetchLeagueStandings`, and the demo payloads stay on their own subpaths so they still load lazily.
+
 ## The PowerScore calibration tools are their own workspace — 2026-10-11
 
 The recorder, replay, simulator and live validator moved from `scripts/powerscore` into `packages/powerscore-tools`, which is now linted, type-checked and bundled like every other package, and the `npm run powerscore:*` commands still take the same arguments. Recordings now live in `packages/powerscore-tools/recordings`, so move any you have out of the old folder. Every bundle now reads the engine and core straight from source (the simulator and live validator used to pick up whatever was last built), so nothing scores with a stale build.

@@ -2,7 +2,8 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { scoreGame } from 'powerscore';
 import type { Game, ScoringContext } from 'powerscore';
-import { createLiveExtras, normalizeScores, scoreLiveGame, toLiveScore } from '@arenaswap/core';
+import { normalizeScores, scoreLiveGame, toLiveScore } from '@arenaswap/core';
+import { createLiveExtras } from '@arenaswap/sideline';
 import type { Game as LiveGame } from '@arenaswap/core/types';
 import { boostDetailKeys, boostTooltip } from '../utils/boostTooltip';
 
@@ -189,7 +190,7 @@ describe('every sentence a boost can say', () => {
 	});
 });
 
-const hockeySituations = JSON.parse(readFileSync(join(__dirname, '../../../packages/core/tests/fixtures/liveExtras/hockeySituations.json'), 'utf8'));
+const hockeySituations = JSON.parse(readFileSync(join(__dirname, '../../../packages/sideline/tests/fixtures/liveExtras/hockeySituations.json'), 'utf8'));
 
 describe('a hockey power play, from the feed to the tooltip', () => {
 	const recorded = hockeySituations.nhlPowerPlay;

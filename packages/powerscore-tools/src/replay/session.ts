@@ -1,6 +1,5 @@
 import {
 	chooseSwitchTarget,
-	createLiveExtras,
 	getHistoryWindowMsForGame,
 	nextClockStall,
 	retainSnapshots,
@@ -12,6 +11,7 @@ import {
 	type LeagueId,
 	type UserPreferences,
 } from '@arenaswap/core';
+import { createLiveExtras } from '@arenaswap/sideline';
 import { leagueConfigMap, sportTypeConfigMap, type ScoreSnapshot } from 'powerscore';
 import type { ReplayEvent } from './recording';
 

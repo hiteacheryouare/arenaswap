@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { i18n } from '#i18n';
-import { fetchTeamsForLeagues } from '@arenaswap/core';
-import type { EspnTeamEntry } from '@arenaswap/core';
+import { fetchTeamsForLeagues } from '@arenaswap/sideline';
+import type { EspnTeamEntry } from '@arenaswap/sideline';
 import type { LeagueId } from '@arenaswap/core/types';
 import TeamPickerList from './teamPickerList';
 import TeamPickerRow from './teamPickerRow';

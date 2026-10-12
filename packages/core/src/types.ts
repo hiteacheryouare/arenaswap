@@ -235,12 +235,12 @@ export interface Game {
 	// Where the current drive began, in the same coordinates as `yardLine`.
 	driveStartYardLine?: number;
 	weather?: GameCondition;
-	// ESPN signals this three different ways — see resolvePostseason in apiClient.ts.
+	// ESPN signals this three different ways — see resolvePostseason in packages/sideline/src/apiClient.ts.
 	isPostseason?: boolean;
 	// Distance from the trophy: 0 the title game, 1 a semifinal, 2 a quarterfinal, 3 anything
 	// earlier. Undefined on a postseason game that deliberately scores nothing — a non-playoff
 	// bowl, the Pro Bowl, a secondary tournament's early round — as well as on every game that is
-	// not postseason at all. See gradePostseason in postseasonRound.ts.
+	// not postseason at all. See gradePostseason in packages/sideline/src/postseasonRound.ts.
 	postseasonRound?: 0 | 1 | 2 | 3;
 	// ESPN's own name for the round, trimmed of the prefix that repeats the league and otherwise
 	// untouched, sponsors included. Passed through untranslated like the venue and broadcast names
@@ -248,7 +248,7 @@ export interface Game {
 	// when the game is not.
 	postseasonLabel?: string;
 	// An exhibition before the regular season: NBA and NHL preseason, NFL preseason, MLB spring
-	// training. Read off `season.slug` alone — see resolvePreseason in apiClient.ts.
+	// training. Read off `season.slug` alone — see resolvePreseason in packages/sideline/src/apiClient.ts.
 	isPreseason?: boolean;
 	delayed?: boolean;
 	delayDescription?: string;
@@ -256,7 +256,7 @@ export interface Game {
 	// game comes back from both.
 	collegeGroups?: string[];
 	// A college postseason game the filter lets through when its title-rounds switch is on. See
-	// readCollegeBracket in college.ts.
+	// readCollegeBracket in packages/sideline/src/collegeBracket.ts.
 	collegeTitleRound?: boolean;
 	// A seeded national bracket, where the rank field carries the seed rather than a poll rank.
 	collegeSeeded?: boolean;

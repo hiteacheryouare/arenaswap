@@ -4,7 +4,7 @@ import type { Game, Team } from '@arenaswap/core/types';
 import { readableTeamInkOnCard, teamRowWash } from '@arenaswap/chromatic';
 import PlayerShot from './playerShot';
 import { injuryStatusLabelKeys } from './matchupLabels';
-import type { InjuryEntry, Paired } from './matchupParse';
+import type { InjuryEntry, Paired } from '@arenaswap/sideline';
 
 interface injuryReportProps {
 	game: Game;

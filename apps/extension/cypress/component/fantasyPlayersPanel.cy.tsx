@@ -1,6 +1,6 @@
 import type { FantasyRosterEntry } from '@arenaswap/core';
 import FantasyPlayersPanel from '../../entrypoints/popup/components/fantasyPlayersPanel';
-import { emptyBoxScore, type BoxScore, type BoxScoreAthlete, type BoxScoreCategory } from '../../entrypoints/popup/components/boxScoreParse';
+import { emptyBoxScore, type BoxScore, type BoxScoreAthlete, type BoxScoreCategory } from '@arenaswap/sideline';
 import { eaglesCowboys } from '../support/fixtures';
 
 const athlete = (id: string, stats: string[], position: string): BoxScoreAthlete => ({

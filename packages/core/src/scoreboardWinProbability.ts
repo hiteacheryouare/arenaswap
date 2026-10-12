@@ -1,4 +1,3 @@
-import type { EspnSituation } from './espnSchemas';
 import { isObjectRecord } from './typeGuards';
 import type { Game, LeagueId } from './types';
 
@@ -13,11 +12,6 @@ export const scoreboardWinProbabilityLeagues: ReadonlySet<LeagueId> = new Set<Le
 // play again, so one reading is kept per play. That keeps the average weighted the way the
 // summary's was. A football game runs to about 200 plays and a basketball game to about 500.
 const maxReadingsPerGame = 600;
-
-export const readHomeWinProbability = (situation: EspnSituation): number | undefined => {
-	const value = situation.lastPlay?.probability?.homeWinPercentage;
-	return typeof value === 'number' && Number.isFinite(value) ? Math.min(Math.max(value, 0), 1) : undefined;
-};
 
 export interface SummaryNeeds {
 	// The scoreboard is giving this game a win probability right now.

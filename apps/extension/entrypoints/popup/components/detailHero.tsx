@@ -1,5 +1,5 @@
 import { i18n } from '#i18n';
-import type { BasketballSituation } from '@arenaswap/core';
+import type { BasketballSituation } from '@arenaswap/sideline';
 import type { Game, Team } from '@arenaswap/core/types';
 import AtBatPanel from './atBatPanel';
 import BaseDiamond from './baseDiamond';

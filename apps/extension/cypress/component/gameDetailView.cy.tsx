@@ -15,7 +15,7 @@ import ptBR from '../../locales/pt_BR.json';
 import ptPT from '../../locales/pt_PT.json';
 import zhCN from '../../locales/zh_CN.json';
 import zhTW from '../../locales/zh_TW.json';
-import basketballSituations from '../../../../packages/core/tests/fixtures/liveExtras/basketballSituations.json';
+import basketballSituations from '../../../../packages/sideline/tests/fixtures/liveExtras/basketballSituations.json';
 
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
 

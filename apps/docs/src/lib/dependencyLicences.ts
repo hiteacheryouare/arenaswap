@@ -21,6 +21,7 @@ const workspaces = [
 	'packages/chromatic/',
 	'packages/core/',
 	'packages/powerscore/',
+	'packages/sideline/',
 	'packages/ui/',
 ];
 
