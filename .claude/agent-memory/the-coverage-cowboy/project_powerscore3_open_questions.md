@@ -5,7 +5,7 @@ metadata:
   type: project
 ---
 
-Verified 2026-10-03 on branch ps3/recorder. Spec: `temporary/powerscore3/analystSpec.md` §0-1. Tests: `packages/powerscore/tests/{boosts,contextBoosts,scoreGame,portability}.test.ts`, `packages/core/tests/{liveExtras,scoring}.test.ts`, real fixtures in `packages/core/tests/fixtures/liveExtras/`.
+Verified 2026-10-03 on branch ps3/recorder. Spec: `temporary/powerscore3/analystSpec.md` §0-1. Tests: `packages/powerscore/tests/{boosts,contextBoosts,scoreGame,portability}.test.ts`, `packages/sideline/tests/liveExtras.test.ts`, `packages/core/tests/scoring.test.ts`, real fixtures in `packages/sideline/tests/fixtures/liveExtras/`.
 
 **Red tests left on purpose (no expected-failure convention in this repo):**
 - core `a red card shown in stoppage time pays in full when it is shown`: scoreboard detail clock.value caps at 5400 in stoppage while the live clock parses 90'+6' as 96 min, so the fade starts 6 min old.

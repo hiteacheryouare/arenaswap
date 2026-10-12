@@ -14,7 +14,7 @@ instantiated at `wght=700`.** At the poster's `font-size: 3.4rem` (54.4px) with
 159.9, `NAVY` 155.6, `MNST` 157.6), 5 letters 177–205px (`UCONN` 204.8). The poster's two tricode
 boxes are `8rem` wide with centres `0.25 × cardWidth` and `0.75 × cardWidth` apart — 148px on a
 296px card — so anything past ~4 letters collides at the seam. `Team.abbreviation` is passed
-through from ESPN with no length cap (`packages/core/src/apiClient.ts:488`), and the repo's own
+through from ESPN with no length cap (`packages/sideline/src/apiClient.ts:488`), and the repo's own
 NCAA fixtures (`apps/docs/src/components/hero/heroGames.ts`) use ARMY/NAVY/MNST.
 **How to apply:** any fixed-size type drawn from `team.abbreviation` needs a length budget, not a
 3-letter assumption. Reach for fontTools rather than estimating; it takes 30 seconds.

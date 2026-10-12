@@ -8,7 +8,7 @@ metadata:
 `apps/docs/src/components/LivePowerScores.tsx` used to reimplement two helpers the project already
 had, and both copies had lost the soccer cases. Fixed 2026-09-21: `formatPeriod` now comes from
 `@arenaswap/ui/src/components/periodFormat` and `parseClockToSeconds` from
-`@arenaswap/core/gameClock`.
+`@arenaswap/sideline/gameClock`.
 
 **Verified 2026-09-21** against a real `astro build` (into a scratch `--outDir`) served through
 `ARENASWAP_SITE_DIR`. `apps/docs/cypress/e2e/liveBoardSoccer.cy.ts` — both previously-red tests —
