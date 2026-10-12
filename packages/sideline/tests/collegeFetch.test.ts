@@ -54,6 +54,22 @@ describe('college division scoreboards', () => {
 		expect(byId).toEqual({ shared: ['80', '81'], fbs: ['80'], fcs: ['81'] });
 	});
 
+	test('a refused division keeps the games the other division answered with', async () => {
+		const fetchMock = jest.fn().mockImplementation(async (url: string) => (
+			new URL(url).searchParams.get('groups') === '81'
+				? ({ ok: false, status: 403, headers: new Headers(), json: async () => ({}) } as Response)
+				: createResponse({ events: [scoreboardEvent('fbs')] })
+		));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { games } = await loadApiClient().fetchGamesWithLeagueLogos(['ncaaf'], {
+			includeUpcoming: false,
+			groupsByLeague: { ncaaf: ['80', '81'] },
+		});
+
+		expect(idsOf(games)).toEqual(['fbs']);
+	});
+
 	test('carries each team\'s conference, whatever type it arrives as', async () => {
 		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [scoreboardEvent('one')] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;

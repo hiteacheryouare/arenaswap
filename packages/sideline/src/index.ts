@@ -1,7 +1,7 @@
 export { fetchCompetitionSituation, fetchGameDurationMins, fetchGames, fetchGamesWithLeagueLogos, fetchLeagueLogos, fetchLeagueStandings, fetchLiveGames, fetchNextScheduledStart,
 	fetchTeamMonoLogos, fetchTeamsForLeagues, fetchWinProbability, monoMarksFromLogos, parseGameDurationMins, parseScoreboardEvents, parseWinProbability, scoreboardRefreshMs } from './apiClient';
 export type { EspnTeamEntry } from './apiClient';
-export { parseClockToSeconds } from './gameClock';
+export { parseClockToSeconds, parseStoppageMinutes } from './gameClock';
 export { createLiveExtras, hasStandingsRaces, readBasketballSituation, readBoxLeadChanges, readHockeySituation, readPregameLine, readStandingsStakes } from './liveExtras';
 export type { BasketballSituation, BasketballTeamSituation, LiveExtras } from './liveExtras';
 export { fantasyRulesRead, readFantasyBoxScore } from './fantasyBoxScore';

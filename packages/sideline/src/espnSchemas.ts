@@ -132,6 +132,7 @@ const EspnCompetitionStatusSchema = z.object({
 		name: z.optional(z.string()),
 		description: z.optional(z.string()),
 		shortDetail: z.optional(z.string()),
+		completed: z.optional(z.boolean()),
 	})),
 });
 

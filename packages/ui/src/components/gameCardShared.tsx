@@ -85,10 +85,11 @@ export const buildGameCardSurface = (game: Game, delayed = false): gameCardSurfa
 
 // The league mark heads the away side, so it takes the logo drawn for that side's ink: the dark-ground
 // one under white ink, and the light-ground one on a gold or a final card's light plate.
+// Only a live card wears the delayed shade, so only a live game reads its ink off it.
 export const leagueMarkOnColor = (game: Game): boolean => {
 	if (game.status === 'post') return false;
 	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, missingTeamColor, missingTeamColor);
-	return matchupSurface(awayColor, homeColor, game.delayed === true).inks.away === '#ffffff';
+	return matchupSurface(awayColor, homeColor, game.status === 'in' && game.delayed === true).inks.away === '#ffffff';
 };
 
 // The card is a group, not a button, so the stars, the odds tooltip and the tab picker stay controls
@@ -125,6 +126,7 @@ export const TeamColumn = ({
 	onToggleFavoriteTeam,
 	side,
 	surface,
+	timeoutsMax,
 	interactive = true,
 }: {
 	team: Team;
@@ -134,6 +136,7 @@ export const TeamColumn = ({
 	side: 'away' | 'home';
 	// The colour this side of the card is painted in, where it is painted in one.
 	surface?: string;
+	timeoutsMax?: number;
 	interactive?: boolean;
 }) => {
 	const t = useT();
@@ -151,7 +154,7 @@ export const TeamColumn = ({
 				{team.abbreviation}
 			</span>
 			{team.timeouts !== undefined && (
-				<TimeoutDots remaining={team.timeouts} teamAbbreviation={team.abbreviation} />
+				<TimeoutDots remaining={team.timeouts} max={timeoutsMax} teamAbbreviation={team.abbreviation} />
 			)}
 			<button
 				type='button'

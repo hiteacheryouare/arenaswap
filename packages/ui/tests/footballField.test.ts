@@ -348,6 +348,12 @@ describe('resolveFieldFrame', () => {
 		expect(resolveFieldFrame(afterScore, frame)).toBeNull();
 	});
 
+	// The Guide drawer reuses one strip across games, and another game can be dead at the same spot.
+	test('never holds one game\'s frame for another game at the same yard line', () => {
+		const otherGame = { ...makeGame({ yardLine: 62, down: 0, distance: 0, fieldPosition: undefined }), id: 'another-game' };
+		expect(resolveFieldFrame(otherGame, frame)).toBeNull();
+	});
+
 	test('holds nothing when there was never a frame to hold', () => {
 		const timeout = makeGame({ yardLine: 62, down: 0, distance: 0, fieldPosition: undefined });
 		expect(resolveFieldFrame(timeout, null)).toBeNull();

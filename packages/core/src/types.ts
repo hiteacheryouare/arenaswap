@@ -15,6 +15,8 @@ import type {
 	ScoredSignal,
 	BlendResult,
 } from 'powerscore';
+import type { PollMode } from './pollModeTracker';
+import type { ClockStallEntry } from './scoring';
 
 export type ScoringModeChoice = BuiltInModeId | 'custom';
 
@@ -181,6 +183,9 @@ export interface Game {
 	finalPeriodSuffix?: string;
 	period: number;
 	clockSeconds: number;
+	// Soccer's added minutes, which `clockSeconds` already includes: 2 for "45'+2'". Kept apart so
+	// the clock can be printed the way a broadcast prints it.
+	clockStoppageMinutes?: number;
 	status: 'pre' | 'in' | 'post';
 	startTime?: string;
 	broadcasts?: string[];
@@ -460,18 +465,8 @@ export interface BackgroundState {
 	leagueLastGoodAt: LeagueLastGoodAt;
 }
 
-export interface ScoresUpdatedMessage {
+export interface ScoresUpdatedMessage extends BackgroundState {
 	type: 'SCORES_UPDATED';
-	scores: PowerScoreResult[];
-	games: Game[];
-	leagueLogos: LeagueLogoMap;
-	scoreHistory: ScoreHistoryMap;
-	powerScoreHistory: PowerScoreHistoryMap;
-	gameBoosts: Record<string, number>;
-	onStandbyStream: boolean;
-	standbyStreamTabId: number | null;
-	slateShedLeagues: LeagueId[];
-	leagueLastGoodAt: LeagueLastGoodAt;
 }
 
 export interface UpdatePrefsMessage {
@@ -542,7 +537,7 @@ export interface GuideSlateUpdatedMessage {
 }
 
 export interface DebugState {
-	pollModes: Record<string, 'eager' | 'dormant' | 'hebetudinous'>;
+	pollModes: Record<string, PollMode>;
 	leagueIntervals: Record<string, number>;
 	demoMode: boolean;
 	lastSwitchTime: number;
@@ -553,7 +548,7 @@ export interface DebugState {
 	tabRegistry: TabRegistration[];
 	onStandbyStream: boolean;
 	standbyStreamTabId: number | null;
-	clockStalls: Record<string, { lastClock: number; stallCount: number }>;
+	clockStalls: Record<string, ClockStallEntry>;
 	scores: PowerScoreResult[];
 	gameLabels: Record<string, string>;
 	enabledLeagues: string[];
@@ -572,4 +567,5 @@ export type ExtensionMessage =
 	| SetStandbyStreamTabMessage
 	| BossButtonMessage
 	| GetDebugStateMessage
-	| GetGuideSlateMessage;
+	| GetGuideSlateMessage
+	| GuideSlateUpdatedMessage;

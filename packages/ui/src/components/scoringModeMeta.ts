@@ -133,7 +133,7 @@ export const modeIcons = {
 	custom: 'bi-sliders2',
 } as const satisfies Record<ScoringModeChoice, string>;
 
-export const isModeSignalId =(id: string): id is ModeSignalId => Object.hasOwn(signalPresentation, id);
+export const isModeSignalId = (id: string): id is ModeSignalId => Object.hasOwn(signalPresentation, id);
 export const isBoostId = (id: string): id is BoostId => Object.hasOwn(boostPresentation, id);
 export const isBuiltInModeId = (id: string | undefined): id is BuiltInModeId => id !== undefined && Object.hasOwn(modePresentation, id);
 

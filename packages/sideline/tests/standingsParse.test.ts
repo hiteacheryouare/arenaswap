@@ -222,6 +222,29 @@ describe('parseLeagueStandings', () => {
 		expect(group?.rows.map(row => row.name)).toEqual(['Florida', 'Montreal', 'Toronto']);
 	});
 
+	// Stat names as our sources sent them for college hockey on 2026-10-12, where a tie is a result.
+	test('shows college hockey ties, and leaves the column off an NHL table that has none', () => {
+		const team = (id: string, location: string, extra: ReturnType<typeof stat>[]) => ({
+			team: { id, location, logos: [] },
+			stats: [stat('wins', '14'), stat('losses', '6'), ...extra, stat('points', '30')],
+		});
+		const college = {
+			name: 'Hockey East',
+			isConference: true,
+			standings: { entries: [team('1', 'Boston College', [stat('tiegames', '3')]), team('2', 'Maine', [stat('tiegames', '1')])] },
+		};
+		const nhl = {
+			name: 'Atlantic Division',
+			isConference: false,
+			standings: { entries: [team('6', 'Montreal', [stat('otLosses', '2')]), team('21', 'Toronto', [stat('otLosses', '1')])] },
+		};
+
+		expect(parseLeagueStandings(college, 'hockey')[0]?.columns.map(column => column.labelKey))
+			.toEqual(['standings.wins', 'standings.losses', 'standings.ties', 'standings.points']);
+		expect(parseLeagueStandings(nhl, 'hockey')[0]?.columns.map(column => column.labelKey))
+			.toEqual(['standings.wins', 'standings.losses', 'standings.otLosses', 'standings.points']);
+	});
+
 	test('orders a soccer table by league position when it arrives alphabetized, which is MLS', () => {
 		const club = (id: string, location: string, points: string, rank: string) => ({
 			team: { id, location, logos: [] },

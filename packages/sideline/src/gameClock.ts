@@ -21,10 +21,13 @@ export const parseClockToSeconds = (clock: string): number => {
 	//
 	// This used to read anything under 1 as decimal *minutes*, which made `0.3` eighteen seconds
 	// and put the clock 0:18 wrong at the one moment the product exists to catch.
+	//
+	// A fraction of a second still on the clock reads as 1, not 0: `0.8` flooring to the buzzer made
+	// PowerScore treat a one-point game with a possession left as decided.
 	if (parts.length === 1) {
 		const n = Number(parts[0]);
 		if (!Number.isFinite(n) || n <= 0) return 0;
-		return Math.floor(n);
+		return Math.max(1, Math.floor(n));
 	}
 	if (parts.length !== 2) return 0;
 	const min = Number(parts[0]);
@@ -33,4 +36,10 @@ export const parseClockToSeconds = (clock: string): number => {
 	// lets straight through. Every other branch here answers unreadable input with 0.
 	if (!Number.isFinite(min) || !Number.isFinite(sec)) return 0;
 	return (min * 60) + Math.floor(sec);
+};
+
+// The added minutes in soccer's "90'+4'", or undefined when the clock is inside the regular half.
+export const parseStoppageMinutes = (clock: string): number | undefined => {
+	const added = /^\d+'\+(\d+)'$/.exec(clock)?.[1];
+	return added ? parseInt(added, 10) || undefined : undefined;
 };

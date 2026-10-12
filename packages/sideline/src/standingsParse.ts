@@ -112,9 +112,11 @@ const numericSpecs = {
 	],
 	// Three results rather than two, and a points column instead of a percentage — a hockey table
 	// cannot be read as W-L-PCT without lying about the overtime column.
+	// College hockey records ties as `tiegames`; the NHL sends no such stat, so the column drops out.
 	hockey: [
 		{ statName: 'wins', labelKey: 'standings.wins' },
 		{ statName: 'losses', labelKey: 'standings.losses' },
+		{ statName: 'tiegames', labelKey: 'standings.ties' },
 		{ statName: 'otLosses', labelKey: 'standings.otLosses' },
 		{ statName: 'points', labelKey: 'standings.points' },
 	],

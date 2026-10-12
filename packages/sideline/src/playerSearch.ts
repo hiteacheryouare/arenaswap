@@ -3,6 +3,7 @@ import { leagueConfigMap } from '@arenaswap/core';
 import type { FantasyRosterEntry, LeagueId } from '@arenaswap/core';
 import type { FantasyPosition } from 'powerscore';
 import { takeRequestSlot } from './apiClient';
+import { coreApiBase, requestSignal } from './endpoints';
 
 // Fantasy's leagues, by the numeric league id our sources put in a player's uid (`s:20~l:28~a:…`).
 const fantasyLeagueByUid: Record<string, LeagueId> = { 28: 'nfl', 46: 'nba', 10: 'mlb', 90: 'nhl', 59: 'wnba' };
@@ -30,7 +31,9 @@ const SearchSchema = z.object({
 	}))),
 });
 
-export const foldName = (text: string): string => text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').trim();
+// Letters and digits from any script survive, so a name typed in kana, hangul or hanzi is still
+// a query rather than an empty string.
+export const foldName = (text: string): string => text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().replace(/[^\p{L}\p{N} ]/gu, ' ').trim();
 
 // One insertion, deletion, substitution or swap of neighbours apart, at most.
 const withinOneEdit = (a: string, b: string): boolean => {
@@ -115,7 +118,7 @@ export const toFantasyPosition = (league: LeagueId, abbreviation: string | undef
 export const resolveRosterEntry = async (result: PlayerSearchResult): Promise<FantasyRosterEntry> => {
 	const [sport, leaguePath] = leagueConfigMap[result.league].espnPath.split('/');
 	await takeRequestSlot();
-	const res = await fetch(`https://sports.core.api.espn.com/v2/sports/${sport}/leagues/${leaguePath}/athletes/${result.athleteId}`, { headers: { Accept: 'application/json' } });
+	const res = await fetch(`${coreApiBase}/${sport}/leagues/${leaguePath}/athletes/${result.athleteId}`, { headers: { Accept: 'application/json' }, signal: requestSignal() });
 	if (!res.ok) throw new Error(`Could not look up ${result.name}: HTTP ${res.status}`);
 	const parsed = AthleteSchema.safeParse(await res.json());
 	const teamId = parsed.success ? /\/teams\/(\d+)/.exec(parsed.data.team?.$ref ?? '')?.[1] : undefined;

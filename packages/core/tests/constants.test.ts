@@ -1,12 +1,6 @@
-import pkg from '../package.json';
 import {
 	allLeagueIds,
-	applyDisabledSignals,
-	appDescription,
-	appName,
-	appVersion,
 	createFavoriteTeamKey,
-	isFavoriteTeamKey,
 	leagueConfigMap,
 	leagueLogoFallbacks,
 	leagueShortLabels,
@@ -14,19 +8,9 @@ import {
 	normalizeUserPreferences,
 	resolveLeagueLogoUrl,
 	teamLogoOnColor,
-	scoreMaxCloseness,
-	scoreMaxComeback,
-	scoreMaxSignalsSubtotal,
-	scoreMaxTotal,
 } from '../src/constants';
 
 describe('constants', () => {
-	test('exports app metadata from package.json', () => {
-		expect(appName).toBe(pkg.name);
-		expect(appVersion).toBe(pkg.version);
-		expect(appDescription).toBe(pkg.description);
-	});
-
 	test('resolves league logo URLs with ESPN value first, then fallback', () => {
 		const fallback = leagueLogoFallbacks.nba;
 		expect(resolveLeagueLogoUrl('nba', 'https://cdn.example/logo.png')).toBe('https://cdn.example/logo.png');
@@ -135,6 +119,12 @@ describe('constants', () => {
 		expect(normalized.postseasonBoostPoints).toBe(0);
 	});
 
+	// The switch thresholds are indexed by step, so a fractional one read as a threshold of 0.
+	test('a sensitivity between steps falls back to the default', () => {
+		expect(normalizeUserPreferences({ sensitivity: 4.5 }).sensitivity).toBe(createDefaultUserPreferences().sensitivity);
+		expect(normalizeUserPreferences({ sensitivity: 6 }).sensitivity).toBe(6);
+	});
+
 	test('normalizes invalid user preference input safely', () => {
 		expect(normalizeUserPreferences(null)).toEqual(createDefaultUserPreferences());
 
@@ -225,14 +215,6 @@ describe('constants', () => {
 		expect(nbaTeam).not.toBe(nflTeam);
 	});
 
-	test('validates favorite team key format', () => {
-		expect(isFavoriteTeamKey('nba:20')).toBe(true);
-		expect(isFavoriteTeamKey('  nfl:21 ')).toBe(true);
-		expect(isFavoriteTeamKey('20')).toBe(false);
-		expect(isFavoriteTeamKey('nba:')).toBe(false);
-		expect(isFavoriteTeamKey('notaleague:20')).toBe(false);
-	});
-
 	test('defaults to all leagues when enabledLeagues field is missing', () => {
 		const normalized = normalizeUserPreferences({ enabled: false });
 		expect(normalized.enabledLeagues).toEqual(allLeagueIds);
@@ -270,53 +252,6 @@ describe('constants', () => {
 		expect(normalizeUserPreferences({ disabledSignals: ['closeness', 'momentum'] }).disabledSignals).toEqual(['closeness', 'momentum']);
 		expect(normalizeUserPreferences({ disabledSignals: ['closeness', 'notASignal', 123] }).disabledSignals).toEqual(['closeness']);
 		expect(normalizeUserPreferences({ disabledSignals: 'bad' }).disabledSignals).toEqual([]);
-	});
-
-	test('applyDisabledSignals returns unchanged result when nothing is disabled', () => {
-		const base = { gameId: 'g1', total: 60, closeness: 30, lateGame: 15, momentum: 10, leadChanges: 5, comeback: 0, reason: 'tied', stalled: false };
-		expect(applyDisabledSignals(base, [])).toBe(base);
-	});
-
-	test('applyDisabledSignals zeros disabled signals and scales total to maintain 0-100 range', () => {
-		// Read from the constant, not hardcoded: a change to scoreMaxCloseness has broken this before.
-		const base = { gameId: 'g1', total: scoreMaxCloseness, closeness: scoreMaxCloseness, lateGame: 0, momentum: 0, leadChanges: 0, comeback: 0, reason: 'tied', stalled: false };
-		const result = applyDisabledSignals(base, ['lateGame', 'momentum', 'leadChanges', 'comeback']);
-		expect(result.closeness).toBe(scoreMaxCloseness);
-		expect(result.lateGame).toBe(0);
-		expect(result.momentum).toBe(0);
-		expect(result.total).toBe(100);
-	});
-
-	test('applyDisabledSignals scales survivors up, not down, when one signal is disabled', () => {
-		// The four-disabled case below happens to cancel a wrong scaling factor out, so this covers
-		// the common case: one signal off. signalsSubtotal is the pre-cap subtotal, so the survivors
-		// scale into scoreMaxSignalsSubtotal — scaling into scoreMaxTotal deflated every score by 26%.
-		const enabledMax = scoreMaxSignalsSubtotal - scoreMaxComeback;
-		const base = { gameId: 'g1', total: 0, closeness: 40, lateGame: 30, momentum: 20, leadChanges: 10, comeback: 0, reason: 'tied', stalled: false };
-		const enabledSum = 40 + 30 + 20 + 10;
-		const result = applyDisabledSignals(base, ['comeback']);
-
-		expect(result.signalsSubtotal).toBe(Math.round(enabledSum * (scoreMaxSignalsSubtotal / enabledMax)));
-		expect(result.signalsSubtotal).toBeGreaterThan(enabledSum);
-		expect(result.comeback).toBe(0);
-		expect(result.closeness).toBe(40);
-	});
-
-	test('applyDisabledSignals lets a maxed-out survivor set reach the cap', () => {
-		// Everything the enabled signals can produce should still be able to saturate the meter.
-		const base = {
-			gameId: 'g1', total: 0,
-			closeness: scoreMaxCloseness, lateGame: 0, momentum: 0, leadChanges: 0, comeback: 0,
-			reason: 'tied', stalled: false,
-		};
-		const result = applyDisabledSignals(base, ['lateGame', 'momentum', 'leadChanges', 'comeback']);
-		expect(result.total).toBe(scoreMaxTotal);
-	});
-
-	test('applyDisabledSignals returns unchanged result when all signals are disabled', () => {
-		const base = { gameId: 'g1', total: 40, closeness: 40, lateGame: 0, momentum: 0, leadChanges: 0, comeback: 0, reason: 'tied', stalled: false };
-		const result = applyDisabledSignals(base, ['closeness', 'lateGame', 'momentum', 'leadChanges', 'comeback']);
-		expect(result).toBe(base);
 	});
 
 	test('postseasonBoostPoints defaults to 8 and normalizes fractional/negative values', () => {

@@ -88,8 +88,8 @@ const baseOption = (
 });
 
 // The website renders these charts without a translator, so English is the default for every name.
-export const englishSignalLabel = (id: string): string => (isModeSignalId(id) ? defaultTranslate(signalPresentation[id].labelKey) : id);
-export const englishBoostLabel = (id: string): string => (isBoostId(id) ? defaultTranslate(boostPresentation[id].labelKey) : id);
+const englishSignalLabel = (id: string): string => (isModeSignalId(id) ? defaultTranslate(signalPresentation[id].labelKey) : id);
+const englishBoostLabel = (id: string): string => (isBoostId(id) ? defaultTranslate(boostPresentation[id].labelKey) : id);
 
 // The moment boost paying most at this reading, named in the tooltip. These last for innings or a
 // whole game, so ranking them by size would bury every short live moment inside them; they only win

@@ -240,10 +240,9 @@ describe('apiClient', () => {
 			'/apis/site/v2/sports/basketball/nba/teams',
 			'/apis/site/v2/sports/basketball/mens-college-basketball/teams',
 		]);
-		expect(requestedUrls[0]?.searchParams.get('limit')).toBe('200');
-		expect(requestedUrls[0]?.searchParams.get('groups')).toBeNull();
-		expect(requestedUrls[1]?.searchParams.get('limit')).toBe('200');
-		expect(requestedUrls[1]?.searchParams.get('groups')).toBe('50');
+		// 200 cut college football to 200 of its 762 teams, Alabama among the missing.
+		expect(requestedUrls.map(url => url.searchParams.get('limit'))).toEqual(['1000', '1000']);
+		expect(requestedUrls.map(url => url.searchParams.get('groups'))).toEqual([null, null]);
 	});
 
 	test('keeps successful team results when one league request fails', async () => {
@@ -433,9 +432,9 @@ describe('apiClient', () => {
 		expect(floatGame?.clockSeconds).toBe(45);
 		// Seconds, not decimal minutes. Checked against ESPN on 2026-09-21: the basketball leagues
 		// drop the colon under a minute and count down 40.8 -> 0.1, so 0.75 is three quarters of a
-		// second and floors to nothing left, not to 45 seconds.
-		expect(dec75Game?.clockSeconds).toBe(0);
-		expect(dec5Game?.clockSeconds).toBe(0);
+		// second — still time left, so it reads as 1 rather than as the buzzer.
+		expect(dec75Game?.clockSeconds).toBe(1);
+		expect(dec5Game?.clockSeconds).toBe(1);
 	});
 
 	test('parses soccer prime-notation clock values (e.g. "85\'", "90\'+8\'")', async () => {

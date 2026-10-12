@@ -228,7 +228,9 @@ export const readStandingsStakes = (standings: unknown, league: LeagueId, sportT
 	const root = standings as StandingsNode;
 	if (sportType === 'soccer') {
 		const tables = tablesOf(root);
-		for (const table of tables) soccerStakes(table, stakes, league, tables.length === 1);
+		// Liga MX's first place wins no trophy; its title is the Liguilla.
+		const hasTitleLine = tables.length === 1 && league !== 'ligamx';
+		for (const table of tables) soccerStakes(table, stakes, league, hasTitleLine);
 		return stakes;
 	}
 	if (league === 'nfl') {

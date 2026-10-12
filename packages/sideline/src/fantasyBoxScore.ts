@@ -112,7 +112,9 @@ const readRow = (category: string | undefined, keys: readonly string[], stats: r
 	} else if (has('goals') && has('assists')) {
 		add(line, 'goals', toNumber(at('goals')));
 		add(line, 'assists', toNumber(at('assists')));
-		add(line, 'shotsOnGoal', toNumber(at('shotsTotal')) - toNumber(at('shotsMissed')));
+		// A skater's `shotsTotal` is already shots on goal: a team's total equals the other goalie's
+		// shots against, and missed shots are counted separately.
+		add(line, 'shotsOnGoal', toNumber(at('shotsTotal')));
 		add(line, 'blockedShots', toNumber(at('blockedShots')));
 		add(line, 'plusMinus', toNumber(at('plusMinus')));
 	}

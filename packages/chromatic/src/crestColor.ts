@@ -17,23 +17,27 @@ export interface crestInk {
 	groups: crestInkGroup[];
 }
 
-interface runningGroup {
+interface runningGroup extends inkBucket {
 	seed: string;
+}
+
+const meanOf = (group: inkBucket): string => rgbToHex(group.red / group.count, group.green / group.count, group.blue / group.count);
+
+export interface inkBucket {
 	count: number;
 	red: number;
 	green: number;
 	blue: number;
 }
 
-const meanOf = (group: runningGroup): string => rgbToHex(group.red / group.count, group.green / group.count, group.blue / group.count);
-
-// `total` counts every opaque pixel, kept or not, so a group's share is a share of the whole crest.
-export const groupCrestInk = (
+// Opaque pixels summed by bucket, in the order each bucket was first seen. `total` counts every
+// opaque pixel, kept or not, so a share of it is a share of the whole crest.
+export const bucketInk = (
 	pixels: Uint8ClampedArray,
 	minAlpha: number,
 	keep: (red: number, green: number, blue: number) => boolean = () => true,
-): crestInk => {
-	const buckets = new Map<number, runningGroup>();
+): { buckets: inkBucket[]; total: number } => {
+	const buckets = new Map<number, inkBucket>();
 	let total = 0;
 	for (let index = 0; index + 3 < pixels.length; index += 4) {
 		if (pixels[index + 3]! < minAlpha) continue;
@@ -50,14 +54,23 @@ export const groupCrestInk = (
 			bucket.green += green;
 			bucket.blue += blue;
 		} else {
-			buckets.set(key, { seed: rgbToHex(red, green, blue), count: 1, red, green, blue });
+			buckets.set(key, { count: 1, red, green, blue });
 		}
 	}
+	return { buckets: [...buckets.values()], total };
+};
+
+export const groupCrestInk = (
+	pixels: Uint8ClampedArray,
+	minAlpha: number,
+	keep: (red: number, green: number, blue: number) => boolean = () => true,
+): crestInk => {
+	const { buckets, total } = bucketInk(pixels, minAlpha, keep);
 
 	// Largest buckets seed the groups, so a group is named after its most common shade rather than
 	// whichever blend happened to be read first.
 	const groups: runningGroup[] = [];
-	for (const bucket of [...buckets.values()].toSorted((a, b) => b.count - a.count)) {
+	for (const bucket of buckets.toSorted((a, b) => b.count - a.count)) {
 		const shade = meanOf(bucket);
 		const group = groups.find(candidate => colorDifference(candidate.seed, shade) < sameColorDifference);
 		if (!group) {

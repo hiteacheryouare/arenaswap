@@ -103,6 +103,11 @@ describe('formatGameClock through stoppage time', () => {
 	test('rounds a soccer clock down, so the 44th minute is not reported as the 45th', () => {
 		expect(formatGameClock(makeGame('epl', { sportType: 'soccer', clockSeconds: 2_699 }))).toBe("44'");
 	});
+
+	test('writes added time the way a broadcast does, when the feed says how much was added', () => {
+		expect(formatGameClock(makeGame('epl', { sportType: 'soccer', clockSeconds: 2_820, clockStoppageMinutes: 2 }))).toBe("45+2'");
+		expect(formatGameClock(makeGame('epl', { sportType: 'soccer', clockSeconds: 5_640, clockStoppageMinutes: 4 }))).toBe("90+4'");
+	});
 });
 
 // Every league ArenaSwap tracks, rather than the handful anyone remembers to add a case for. A

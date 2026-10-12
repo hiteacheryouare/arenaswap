@@ -6,8 +6,8 @@ import applyWordmarkProgress from './wordmarkPose';
 
 // Scroll offsets that start and undo the collapse. The gap between them is deliberate: one
 // threshold means a list resting a pixel either side of it flickers on every wheel nudge.
-export const collapseAt = 40;
-export const expandAt = 16;
+const collapseAt = 40;
+const expandAt = 16;
 const collapseMs = 450;
 
 interface collapsingBar {

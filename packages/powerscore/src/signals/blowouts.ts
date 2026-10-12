@@ -1,6 +1,5 @@
-import { scorerTunables } from '../constants';
 import { ageSince, clamp, decayFactor } from '../math';
-import { lastScoreChangeTimestamp } from './classic';
+import { closenessUnit, lastScoreChangeTimestamp } from './classic';
 import type { Game, SignalDefinition, SignalInput, SignalOutput, SportType } from '../types';
 
 // The margin that earns full credit: four scores in football, a 30-point game in basketball.
@@ -10,10 +9,6 @@ const none: SignalOutput = { points: 0 };
 
 const leader = (game: Game<string>) => (game.homeTeam.score >= game.awayTeam.score ? game.homeTeam : game.awayTeam);
 
-const unit = (game: Game<string>): string => (
-	scorerTunables.reasons.closenessUnitBySportType[game.sportType] ?? scorerTunables.reasons.defaultClosenessUnit
-);
-
 // Closeness turned inside out: nothing until the game is two scores apart, then climbing to full
 // credit at a rout, and surer as the game goes on.
 export const computeBlowoutMargin = ({ game, sport, progress, margin }: SignalInput): SignalOutput => {
@@ -21,9 +16,9 @@ export const computeBlowoutMargin = ({ game, sport, progress, margin }: SignalIn
 	if (margin <= t2) return none;
 	const shape = margin <= t3
 		? 0.3 * (margin - t2) / (t3 - t2)
-		: 0.3 + 0.7 * Math.min(1, (margin - t3) / Math.max(1, fullMargin[game.sportType] - t3));
+		: 0.3 + 0.7 * Math.min(1, (margin - t3) / Math.max(1, fullMargin[sport.id] - t3));
 	const certainty = 0.6 + 0.4 * Math.pow(clamp(progress, 0, 1), 0.55);
-	return { points: Math.round(50 * shape * certainty), reason: { key: 'blowoutMargin', params: { margin, unit: unit(game) } } };
+	return { points: Math.round(50 * shape * certainty), reason: { key: 'blowoutMargin', params: { margin, unit: closenessUnit(game) } } };
 };
 
 // Built and held, not a run that may revert: the share of the window the current leader has been

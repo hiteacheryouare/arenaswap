@@ -1,4 +1,4 @@
-import { boostPoints, scoreGame, scorerTunables, signalPoints } from '../src';
+import { boostPoints, renderReasonsEnglish, scoreGame, scorerTunables, signalPoints } from '../src';
 import type { Game, LeagueId, SportType } from '../src';
 
 // A feed that is not ours: its own league ids, and only the fields it happens to publish.
@@ -110,4 +110,25 @@ describe('a feed that publishes more as it matures', () => {
 		expect(steps[4]!.winProbabilityVariance).toBeGreaterThan(0);
 		for (let i = 1; i < steps.length; i++) expect(steps[i]!.total).toBeGreaterThan(steps[i - 1]!.total);
 	});
+});
+
+// A feed that keeps tenths, as the basketball leagues do under a minute. The extension rounds before
+// it gets here; an npm caller passing the raw value should still read a clock, not "0:5.3".
+test('a fractional clock reads as whole seconds in the reason', () => {
+	const game = feedGame({ league: 'nba', sportType: 'basketball', period: 4, clockSeconds: 5.3, homeTeam: { score: 100 }, awayTeam: { score: 99 } });
+	const reason = renderReasonsEnglish(scoreGame(game).reasons);
+	expect(reason).toContain('0:05');
+	expect(reason).not.toMatch(/\d\.\d/);
+});
+
+// Plain JavaScript can hand over a sport the tables have no row for. The engine reads it as
+// basketball, so the per-sport tables in upset watch and the blowout margin have to as well.
+test('an unknown sport scores like basketball instead of throwing or going NaN', () => {
+	const sportType = 'lacrosse' as SportType;
+	const game = feedGame({ league: 'pll', sportType, period: 4, clockSeconds: 200, homeTeam: { score: 30 }, awayTeam: { score: 10 } });
+	const lined = { pregameLine: { favorite: 'home' as const, favoriteMoneyline: -300, underdogMoneyline: 250 } };
+	expect(() => scoreGame(game, lined)).not.toThrow();
+	const blowout = scoreGame(game, {}, { mode: 'blowouts' });
+	expect(blowout.total).toBeGreaterThan(0);
+	expect(blowout.total).toBe(scoreGame({ ...game, sportType: 'basketball' }, {}, { mode: 'blowouts' }).total);
 });

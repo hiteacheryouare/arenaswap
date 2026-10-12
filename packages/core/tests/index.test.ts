@@ -10,7 +10,6 @@ describe('index barrel exports', () => {
 	});
 
 	test('re-exports selected constants and config collections', () => {
-		expect(indexExports.appName).toBe(constants.appName);
 		expect(indexExports.pollIntervalMs).toBe(constants.pollIntervalMs);
 		expect(indexExports.leagueConfigs).toBe(constants.leagueConfigs);
 		expect(indexExports.sportTypeConfigs).toBe(constants.sportTypeConfigs);

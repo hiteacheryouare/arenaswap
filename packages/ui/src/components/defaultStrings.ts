@@ -41,6 +41,7 @@ export const defaultStrings: Record<string, string> = {
 	'gameCard.periodExtraTimeFirst': 'ET1',
 	'gameCard.periodExtraTimeSecond': 'ET2',
 	'gameCard.periodShootout': 'PENS',
+	'gameCard.periodHockeyShootout': 'SO',
 	'field.possession': '{team} has the ball',
 	'field.noPossession': 'Field position',
 	'main.tourButton': 'Tour',

@@ -60,8 +60,7 @@ const stallPenaltyFor = (stallCount: number | undefined): number | undefined => 
 
 // Disabled signals score nothing and the survivors are rescaled to the mode's full signal ceiling,
 // not to 100: the subtotal is pre-cap and the total is capped at 100 afterwards, so scaling to 100
-// here would cap twice and deflate every score. Disabling everything disables nothing.
-// Switching every signal off switches none of them off.
+// here would cap twice and deflate every score. Switching every signal off switches none of them off.
 const disabledSetFor = (mode: PowerScoreMode, disabledSignals: readonly string[] = []): ReadonlySet<string> => {
 	const disabled = new Set(disabledSignals);
 	return mode.signals.every(signal => disabled.has(signal.id)) ? new Set() : disabled;

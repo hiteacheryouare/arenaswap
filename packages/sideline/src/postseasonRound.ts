@@ -102,6 +102,9 @@ const isChampionshipRoundOfItsOwnBracket = (round: PostseasonRound | undefined):
 // graded "Big East Tournament - Final" and "West Coast Conference Tournament - Final" as conference
 // finals, which is a conference name rather than a conference round.
 const roundRules: { pattern: RegExp; round: PostseasonRound }[] = [
+	// Above the regional rules, because the women's tournament numbers its regionals:
+	// "Regional 1 in Albany - Elite 8" is a regional final, not an opening round.
+	{ pattern: /\belite 8\b/i, round: 2 },
 	// A regional round scopes inside its bracket: an NCAA hockey regional final is the national
 	// tournament's quarterfinal, not its title game.
 	{ pattern: /\bregional final\b/i, round: 2 },
@@ -126,12 +129,15 @@ const roundRules: { pattern: RegExp; round: PostseasonRound }[] = [
 	// Only the geographic qualifiers. "NBA Finals" and "WNBA Finals" are the title series, not a
 	// conference round, and including the league name here graded both of them a rung too low.
 	{ pattern: /^(?:east|west|eastern|western)\s+(?:conference\s+)?finals?\b/i, round: 1 },
+	// The NBA's name for its second round, the same round the NHL calls "East 2nd Round".
+	{ pattern: /^(?:east|west|eastern|western)\s+(?:conference\s+)?semi-?finals?\b/i, round: 2 },
 	{ pattern: /\bsemi-?finals?\b/i, round: 1 },
 
-	{ pattern: /\belite 8\b/i, round: 2 },
 	{ pattern: /\b(?:al|nl)ds\b/i, round: 2 },
 	{ pattern: /\bdivisional\b/i, round: 2 },
 	{ pattern: /\bquarter-?finals?\b/i, round: 2 },
+	// The NCAA tournament's second round is the round of 32, below the Sweet 16 that follows it.
+	{ pattern: /\bregion\b.*\b(?:2nd|second) round\b/i, round: earliestRound },
 	{ pattern: /\b(?:2nd|second) round\b/i, round: 2 },
 
 	{ pattern: /\bsweet 16\b/i, round: earliestRound },
@@ -160,7 +166,7 @@ export const resolveRoundFromHeadline = (headline: string | undefined): Postseas
 // do this job: every CWS string contains the words "World Series", including the opening
 // double-elimination games that are three rounds from the trophy.
 const collegeBaseballRounds: Record<number, PostseasonRound> = { 3: earliestRound, 4: 2, 5: 1, 6: 0 };
-const collegeBaseballLeagues = new Set<LeagueId>(['cbase', 'csoft']);
+export const collegeBaseballLeagues = new Set<LeagueId>(['cbase', 'csoft']);
 
 // The soccer family carries the round in `season.slug`, and its notes are aggregate and penalty
 // results rather than round names, so the slug is the only usable signal there.
@@ -175,7 +181,7 @@ const soccerSlugRounds: { pattern: RegExp; round: PostseasonRound }[] = [
 	{ pattern: /conference.*finals?$/, round: 1 },
 	{ pattern: /semi-?finals?$/, round: 1 },
 	{ pattern: /quarter-?finals?$/, round: 2 },
-	{ pattern: /round-of-16$/, round: 2 },
+	{ pattern: /round-of-16$/, round: earliestRound },
 	{ pattern: /round-of-32$/, round: earliestRound },
 	{ pattern: /gold-medal-match/, round: 0 },
 	{ pattern: /bronze-medal-match|3rd-place/, round: 1 },

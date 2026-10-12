@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
-import { leagueConfigs, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
+import { leagueLabels, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap } from '@arenaswap/core/types';
 import Crest from './crest';
 import useDocumentTheme from './useDocumentTheme';
@@ -50,9 +50,7 @@ const usePopupHeaderCollapse = (scroller?: RefObject<HTMLElement | null>) => {
 	return { headerRef, wordmarkRef };
 };
 
-export const leagueLabels = Object.fromEntries(
-	leagueConfigs.map(config => [config.id, config.label]),
-) as Record<LeagueId, string>;
+export { leagueLabels };
 
 export const PopupHeader = ({
 	scroller,
@@ -123,7 +121,7 @@ export const PopupHeader = ({
 };
 
 export const PopupSectionTitle = ({ children, first }: { children: string; first?: boolean }) => (
-	<div className='popup-section-title' style={first ? { marginTop: '0.25rem' } : undefined}>{children}</div>
+	<div className={`popup-section-title${first ? ' mt-1' : ''}`}>{children}</div>
 );
 
 // No placeholder at all: the label is the next element along, so there is nothing a 20px disc could

@@ -531,6 +531,14 @@ describe('standings races: soccer\'s table lines', () => {
 		expect(flags.TOT).toEqual({ nearLine: 'relegation' });
 	});
 
+	test('Liga MX draws no title line, because first place wins no trophy there', () => {
+		const runIn = clone(eplStandings) as StandingsNode;
+		for (const entry of entriesOf(runIn)) editTeam(runIn, entry.team.abbreviation, { gamesPlayed: 33 });
+		const kinds = [...readStandingsStakes(runIn, 'ligamx', 'soccer').values()].map(flag => flag.nearLine);
+		expect(kinds.length).toBeGreaterThan(0);
+		expect(kinds).not.toContain('title');
+	});
+
 	test('a non-object standings payload marks nobody', () => {
 		expect(readStandingsStakes(undefined, 'epl', 'soccer').size).toBe(0);
 		expect(readStandingsStakes('nope', 'mlb', 'baseball').size).toBe(0);

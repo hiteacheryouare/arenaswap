@@ -554,8 +554,8 @@ export const leagueConfigs: LeagueConfig[] = [
 		regularPeriods: 2,
 		periodDurationSecs: 2700,
 		periodFormat: 'halves',
-		// The Liguilla cannot produce extra time - aggregate ties go to the higher seed - so the tail
-		// stays at a domestic league's rather than blowing out the way the UEFA competitions do.
+		// Only the Liguilla final can go to extra time - earlier aggregate ties go to the higher seed -
+		// so the tail stays at a domestic league's rather than blowing out the way the UEFA competitions do.
 		runMinutes: { bar: 120, p25: 112, p99: 140 },
 	},
 	{

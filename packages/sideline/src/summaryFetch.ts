@@ -1,5 +1,6 @@
 import { leagueConfigMap } from '@arenaswap/core';
 import type { Game, LeagueId } from '@arenaswap/core';
+import { espnBase, requestSignal } from './endpoints';
 import { usesFullLeagueStandings } from './standingsParse';
 
 // Our sources send a `max-age` of five seconds at most, already counted down by their edge, so the
@@ -22,7 +23,7 @@ const isFresh = (request: sharedRequest) => {
 };
 
 export const summaryUrl = (espnPath: string, gameId: string) => (
-	`https://site.api.espn.com/apis/site/v2/sports/${espnPath}/summary?event=${encodeURIComponent(gameId)}`
+	`${espnBase}/${espnPath}/summary?event=${encodeURIComponent(gameId)}`
 );
 
 export const standingsUrl = (espnPath: string) => (
@@ -33,7 +34,7 @@ const fetchSharedJson = (url: string, status: string | null = null): Promise<unk
 	for (const [key, request] of requests) if (!isFresh(request)) requests.delete(key);
 	const existing = requests.get(url);
 	if (existing && existing.status === status) return existing.body;
-	const body = fetch(url, { headers: { Accept: 'application/json' } }).then(r => {
+	const body = fetch(url, { headers: { Accept: 'application/json' }, signal: requestSignal() }).then(r => {
 		if (!r.ok) throw new Error(`HTTP ${r.status}`);
 		return r.json() as Promise<unknown>;
 	});

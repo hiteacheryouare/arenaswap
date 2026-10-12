@@ -1,3 +1,5 @@
+import { leagueConfigMap } from '@arenaswap/core/constants';
+import type { Game } from '@arenaswap/core/types';
 import { useT } from './i18nContext';
 
 interface timeoutDotsProps {
@@ -7,7 +9,17 @@ interface timeoutDotsProps {
 	teamAbbreviation: string;
 }
 
-export const gridironTimeouts = 3;
+const gridironTimeouts = 3;
+
+// Overtime hands out fewer: two a team in NFL regular-season overtime and one per college overtime
+// period. NFL playoff overtime plays halves, so it keeps three.
+export const gridironTimeoutAllotment = (game: Pick<Game, 'league' | 'period' | 'isPostseason'>): number => {
+	const regular = leagueConfigMap[game.league]?.regularPeriods;
+	if (regular === undefined || game.period <= regular) return gridironTimeouts;
+	if (game.league === 'ncaaf') return 1;
+	if (game.league === 'nfl' && !game.isPostseason) return 2;
+	return gridironTimeouts;
+};
 // Past four the dots shrink so the NBA's seven still fit under a team name. Past seven they would
 // not, and the row says the number instead.
 const maxFullSizeDots = 4;

@@ -44,6 +44,12 @@ describe('player search', () => {
 		expect(foldName('Luka Dončić')).toBe('luka doncic');
 	});
 
+	test('keeps names typed in other scripts, so the search still runs', () => {
+		expect(foldName('大谷 翔平')).toBe('大谷 翔平');
+		expect(nameMatchScore('이정', '이정후')).toBeGreaterThan(0);
+		expect(nameMatchScore('大谷', '大谷 翔平')).toBeGreaterThan(0);
+	});
+
 	test('maps positions onto what Fantasy scores', () => {
 		expect(toFantasyPosition('nfl', 'QB')).toBe('QB');
 		expect(toFantasyPosition('nfl', 'PK')).toBe('K');

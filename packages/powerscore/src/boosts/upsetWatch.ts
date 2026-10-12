@@ -58,11 +58,13 @@ const upsetParts = (input: Pick<SignalInput, 'game' | 'context' | 'sport' | 'pro
 	const { game, context, sport, progress } = input;
 	const line = context.pregameLine;
 	if (!line || !isLive(game) || isDecided({ game, sport, league: input.league, margin: input.margin })) return undefined;
-	const p = underdogProbability(line, game.sportType, game.league);
+	// The resolved sport, which falls back to basketball for a sport the tables do not know.
+	const sportId = input.sport.id;
+	const p = underdogProbability(line, sportId, game.league);
 	if (p === undefined) return undefined;
-	const [zero, full] = sizeRange[game.sportType];
+	const [zero, full] = sizeRange[sportId];
 	const size = clamp((zero - p) / (zero - full), 0, 1);
-	const late = lateProgress[game.sportType];
+	const late = lateProgress[sportId];
 	const phase = progress < 0.5 ? 0 : progress < late ? 0.5 : 1;
 	const underdog = otherSide(line.favorite);
 	return {

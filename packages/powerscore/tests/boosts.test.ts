@@ -259,6 +259,12 @@ describe('the two-minute drill', () => {
 		expect(boostPoints(classic(drive({ secs: 30, yards: 20, trailBy: 0, period: 5, league: 'ncaaf' })), 'twoMinuteDrill')).toBe(0);
 	});
 
+	// UFL overtime is a two-point shootout from the five with no game clock, so its tries are no drive.
+	test('pays nothing in UFL overtime, which is an untimed shootout', () => {
+		expect(boostPoints(classic(drive({ secs: 0, yards: 5, trailBy: 0, period: 5, league: 'ufl' })), 'twoMinuteDrill')).toBe(0);
+		expect(boostPoints(classic(drive({ secs: 30, yards: 30, trailBy: 3, league: 'ufl' })), 'twoMinuteDrill')).toBeGreaterThan(0);
+	});
+
 	test('college gives less credit for the same midfield spot, since its kickers need to get closer', () => {
 		expect(boostPoints(classic(drive({ secs: 30, yards: 50, trailBy: 0 })), 'twoMinuteDrill')).toBe(10);
 		expect(boostPoints(classic(drive({ secs: 30, yards: 50, trailBy: 0, league: 'ncaaf' })), 'twoMinuteDrill')).toBe(9);

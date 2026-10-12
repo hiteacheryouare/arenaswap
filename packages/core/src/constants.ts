@@ -1,4 +1,3 @@
-import pkg from '../package.json';
 import { normalizeCollegeFilters } from './college';
 export * from './college';
 import type { BuiltInModeId, FinishedTabAction, Game, LeagueId, ScoringModeChoice, SignalName, SportType, ResolvedTheme, ThemePreference, UserPreferences } from './types';
@@ -40,10 +39,6 @@ export {
 	leagueConfigs,
 	leagueConfigMap,
 };
-
-export const appName = pkg.name;
-export const appVersion = pkg.version;
-export const appDescription = pkg.description;
 
 export const pollIntervalMs = 15_000;
 
@@ -200,6 +195,8 @@ export const leagueLogoFallbacks: Partial<Record<LeagueId, string>> = {
 	fifawwc: 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/60.png',
 };
 
+export const leagueLabels = Object.fromEntries(leagueConfigs.map(config => [config.id, config.label])) as Record<LeagueId, string>;
+
 // What a game card prints beside the league's logo once the list stops grouping by league. The
 // labels from `powerscore` run as long as "Olympic Men's Ice Hockey", which a status row cannot fit.
 export const leagueShortLabels: Record<LeagueId, string> = {
@@ -274,10 +271,6 @@ export const createFavoriteTeamKey = (leagueId: LeagueId, teamId: string): strin
 	`${leagueId}:${teamId.trim()}`
 );
 
-export const isFavoriteTeamKey = (value: unknown): value is string => (
-	typeof value === 'string' && parseFavoriteTeamKey(value) !== null
-);
-
 // Lives here rather than in the popup because the guide asks the same question, and a second
 // favourite-matching path is how the two drift.
 export const isFavoriteTeamGame = (
@@ -290,65 +283,9 @@ export const isFavoriteTeamGame = (
 
 export const allSignalNames: readonly SignalName[] = ['closeness', 'lateGame', 'momentum', 'leadChanges', 'comeback'] as const;
 
-const signalMaxMap: Record<SignalName, number> = {
-	closeness: scoreMaxCloseness,
-	lateGame: scoreMaxLateGame,
-	momentum: scoreMaxMomentum,
-	leadChanges: scoreMaxLeadChanges,
-	comeback: scoreMaxComeback,
-};
-
-export const applyDisabledSignals = (
-	result: import('powerscore').PowerScoreResult,
-	disabledSignals: readonly SignalName[],
-): import('powerscore').PowerScoreResult => {
-	if (disabledSignals.length === 0) return result;
-
-	const disabled = new Set<SignalName>(disabledSignals);
-	const enabledMax = allSignalNames
-		.filter(s => !disabled.has(s))
-		.reduce((sum, s) => sum + signalMaxMap[s], 0);
-
-	if (enabledMax === 0) return result;
-
-	const closeness = disabled.has('closeness') ? 0 : result.closeness;
-	const lateGame = disabled.has('lateGame') ? 0 : result.lateGame;
-	const momentum = disabled.has('momentum') ? 0 : result.momentum;
-	const leadChanges = disabled.has('leadChanges') ? 0 : result.leadChanges;
-	const comeback = disabled.has('comeback') ? 0 : result.comeback;
-
-	// Turning signals off shrinks the reachable ceiling, so the survivors are rescaled to keep the
-	// 0-100 range meaningful — otherwise a closeness-only setup could never exceed 42.
-	//
-	// The scale targets scoreMaxSignalsSubtotal, not scoreMaxTotal: signalsSubtotal is the raw
-	// pre-cap subtotal (see scorer.ts, which clamps it to the signals ceiling deliberately), and
-	// `total` gets capped at 100 downstream. Scaling to 100 here would double-apply that cap and
-	// deflate every score — disabling comeback alone cost 26%.
-	const enabledSum = closeness + lateGame + momentum + leadChanges + comeback;
-	const scalingFactor = scoreMaxSignalsSubtotal / enabledMax;
-	const newSignalsSubtotal = Math.min(Math.round(enabledSum * scalingFactor), scoreMaxSignalsSubtotal);
-
-	// The stall penalty comes off the signals subtotal, so it rescales with them; volatility sits
-	// on top of that subtotal and carries over at full value.
-	const scaledStallPenalty = Math.round((result.stallPenalty ?? 0) * scalingFactor);
-	const variance = result.winProbabilityVariance ?? 0;
-	const newTotal = Math.min(Math.max(newSignalsSubtotal - scaledStallPenalty + variance, 0), scoreMaxTotal);
-
-	return {
-		...result,
-		closeness,
-		lateGame,
-		momentum,
-		leadChanges,
-		comeback,
-		signalsSubtotal: newSignalsSubtotal,
-		total: newTotal,
-		...(result.stallPenalty !== undefined ? { stallPenalty: scaledStallPenalty } : {}),
-	};
-};
-
+// Whole numbers only: the thresholds are indexed by step, and 4.5 read as a threshold of 0.
 const isSensitivityValue = (value: unknown): value is UserPreferences['sensitivity'] => (
-	typeof value === 'number' && value >= 1 && value <= 7
+	typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 7
 );
 
 const normalizeSecondsPreference = (value: unknown, fallback: number): number => (

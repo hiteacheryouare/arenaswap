@@ -66,12 +66,22 @@ const readStored = (): Map<string, string | null> => {
 
 const cache = readStored();
 
+let persistHandle: ReturnType<typeof setTimeout> | undefined;
+
+// Trailing, like the legibility cache in `logoTint`: crests land in separate tasks, and a grid
+// opening would otherwise serialise the whole map once per crest.
+const persistDelayMs = 250;
+
 const persist = (): void => {
-	try {
-		globalThis.localStorage?.setItem(storageKey, JSON.stringify({ calibration, colors: Object.fromEntries(cache) }));
-	} catch {
-		// Storage full or unavailable. The cache still works for this document.
-	}
+	if (persistHandle !== undefined) clearTimeout(persistHandle);
+	persistHandle = setTimeout(() => {
+		persistHandle = undefined;
+		try {
+			globalThis.localStorage?.setItem(storageKey, JSON.stringify({ calibration, colors: Object.fromEntries(cache) }));
+		} catch {
+			// Storage full or unavailable. The cache still works for this document.
+		}
+	}, persistDelayMs);
 };
 
 const cacheKey = (src: string, primary: string): string => `${src}|${primary.toLowerCase()}`;

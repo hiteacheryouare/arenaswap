@@ -1,5 +1,7 @@
 import type { TeamMonoMarks } from '@arenaswap/core/types';
 import { blackInkContrast, contrastBetween, hexLuminance, rgbLuminance, rgbToHex, whiteInkContrast } from './colorMath';
+import { bucketInk } from './crestColor';
+import type { inkBucket } from './crestColor';
 
 // A crest is mostly background — transparent, or a white plate — so the colour worth tinting a disc
 // with is the most common one that is actually a colour. Greys, white and black are rejected by
@@ -7,37 +9,14 @@ import { blackInkContrast, contrastBetween, hexLuminance, rgbLuminance, rgbToHex
 const minChroma = 24;
 // What counts as ink at all, for both the tint below and every legibility verdict in this file.
 const minAlpha = 128;
-// Five bits a channel. Finer, and a gradient splits its own colour across enough buckets to lose to
-// a flat one covering less of the crest.
-const bucketShift = 3;
 
 export const dominantColorFromPixels = (pixels: Uint8ClampedArray): string | null => {
-	const buckets = new Map<number, { count: number; red: number; green: number; blue: number }>();
-
-	for (let index = 0; index + 3 < pixels.length; index += 4) {
-		if (pixels[index + 3]! < minAlpha) continue;
-
-		const red = pixels[index]!;
-		const green = pixels[index + 1]!;
-		const blue = pixels[index + 2]!;
-		if (Math.max(red, green, blue) - Math.min(red, green, blue) < minChroma) continue;
-
-		const key = ((red >> bucketShift) << 10) | ((green >> bucketShift) << 5) | (blue >> bucketShift);
-		const bucket = buckets.get(key);
-		if (bucket) {
-			bucket.count += 1;
-			bucket.red += red;
-			bucket.green += green;
-			bucket.blue += blue;
-		} else {
-			buckets.set(key, { count: 1, red, green, blue });
-		}
-	}
+	const { buckets } = bucketInk(pixels, minAlpha, (red, green, blue) => Math.max(red, green, blue) - Math.min(red, green, blue) >= minChroma);
 
 	// Picked after the loop rather than tracked during it, so a tie goes to the bucket seen first
 	// whatever order the two climbed in.
-	let winner: { count: number; red: number; green: number; blue: number } | null = null;
-	for (const bucket of buckets.values()) {
+	let winner: inkBucket | null = null;
+	for (const bucket of buckets) {
 		if (!winner || bucket.count > winner.count) winner = bucket;
 	}
 	if (!winner) return null;

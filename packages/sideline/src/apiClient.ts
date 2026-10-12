@@ -2,9 +2,9 @@ import { collegeFetchGroups, isWithinFinalRetention, leagueConfigMap, logWarn, p
 import type { AtBat, AtBatPlayer, Game, GameCondition, RedCardEvent, SeriesState, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, LeagueSchedule, LeagueScheduleMap, ProbableStarter, TeamLeader, TeamMonoLogoMap, TeamMonoMarks } from '@arenaswap/core';
 import { deriveBasketballPossession } from './basketballPossession';
 import { readCollegeBracket } from './collegeBracket';
-import { parseClockToSeconds } from './gameClock';
+import { parseClockToSeconds, parseStoppageMinutes } from './gameClock';
 import { toLeagueSchedule } from './leagueCalendar';
-import { gradePostseason, readEventHeadline } from './postseasonRound';
+import { collegeBaseballLeagues, gradePostseason, readEventHeadline } from './postseasonRound';
 import {
 	EspnSummarySchema,
 	parseScoreboard,
@@ -21,16 +21,10 @@ import type {
 	EspnSituationPlayer,
 	EspnVenueAddress,
 } from './espnSchemas';
+import { coreApiBase, espnBase, requestSignal } from './endpoints';
+import { standingsUrl, summaryUrl } from './summaryFetch';
 
-const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
-
-/* A request that never answers would otherwise hold its in-flight dedup entry for good, so every
-   later poll for that league and day would wait on it. `fetchWinProbability` is the exception: it
-   takes its caller's signal, and combining two needs `AbortSignal.any`, which Chrome 110 and
-   Firefox 115 (the manifest minimums) do not have. `AbortSignal.timeout` needs Chrome 103 and
-   Firefox 100. */
-export const requestTimeoutMs = 10_000;
-const requestSignal = (): AbortSignal => AbortSignal.timeout(requestTimeoutMs);
+export { requestTimeoutMs } from './endpoints';
 
 /* ESPN sheds load on this host by recent request volume from an IP and answers 403 to whatever it
    drops. Measured from one machine against the NBA scoreboard: 16 requests at once all came back
@@ -593,7 +587,6 @@ const postseasonHeadlinePattern = /quarterfinal|semifinal|medal game/i;
 // bare `type === 3` check caught only the opening weekend, so the tournament's first games counted
 // as postseason and its championship final did not.
 const collegeBaseballPostseasonTypes = new Set([3, 4, 5, 6]);
-const collegeBaseballLeagues = new Set<LeagueId>(['cbase', 'csoft']);
 
 const resolvePostseason = (event: EspnEvent, comp: EspnCompetition, league: LeagueId): boolean => {
 	if (event.season?.type === 3) return true;
@@ -664,11 +657,16 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 	const away = comp.competitors.find(c => c.homeAway === 'away');
 	if (!home || !away) return null;
 	const status = comp.status;
-	const state = parseStatus(status.type?.state ?? 'post');
 	const isDelayed = /delay|suspend/i.test(status.type?.name ?? '');
 	const delayDescription = isDelayed ? (status.type?.description?.trim() || undefined) : undefined;
 	const leagueConfig = leagueConfigMap[league];
 	const isInningSport = leagueConfig.periodFormat === 'innings';
+	// A suspended match arrives as `post` with `completed: false` and usually resumes within the
+	// hour, so it stays live and delayed. Baseball is the exception: a suspended game resumes on a
+	// later day, and reading it as finished is the closer answer until then.
+	const parsedState = parseStatus(status.type?.state ?? 'post');
+	const isSuspendedMidGame = parsedState === 'post' && status.type?.completed === false && isDelayed && !isInningSport;
+	const state = isSuspendedMidGame ? 'in' : parsedState;
 	const situation = comp.situation;
 	const isGridironSituation = leagueConfig.sportType === 'football' && state === 'in' && situation !== undefined;
 	// The sport-agnostic half of the same gate. ESPN only sends a situation on a live game, but
@@ -717,6 +715,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		finalPeriodSuffix: parseFinalPeriodSuffix(state, status.type?.shortDetail),
 		period: status.period ?? 1,
 		clockSeconds: parseClockToSeconds(status.displayClock ?? '0:00'),
+		clockStoppageMinutes: leagueConfig.sportType === 'soccer' ? parseStoppageMinutes(status.displayClock ?? '') : undefined,
 		status: state,
 		// Every state, not just `pre`. A game's start is a fact about the game rather than about
 		// how far through it is, and the retention window for finished games has nothing else to
@@ -736,8 +735,10 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 			second: situation.onSecond ?? false,
 			third: situation.onThird ?? false,
 		} : undefined,
+		// At "Mid" the bottom half has not started, but the feed sometimes still reports the top's three
+		// outs, which would credit the road staff with a half-inning it has not pitched yet.
 		bso: isInningSport && state === 'in' && situation && typeof situation.balls === 'number'
-			? { balls: situation.balls, strikes: situation.strikes ?? 0, outs: situation.outs ?? 0 }
+			? { balls: situation.balls, strikes: situation.strikes ?? 0, outs: status.type?.shortDetail?.startsWith('Mid') ? 0 : situation.outs ?? 0 }
 			: undefined,
 		downDistance: leagueConfig.sportType === 'football' && state === 'in' && situation
 			? buildDownDistance(situation)
@@ -874,14 +875,6 @@ interface CachedDay {
 const dayCache = new Map<string, CachedDay>();
 const dayRequests = new Map<string, Promise<CachedDay>>();
 
-/* The one seam the tests need. Two readings of the same league and day in one spec file otherwise
-   inherit each other's games, which is as likely to make an assertion pass for the wrong reason as
-   to fail one — `holidayDecorations` hit exactly that and had to reset the module registry. */
-export const clearDayCache = (): void => {
-	dayCache.clear();
-	dayRequests.clear();
-};
-
 /* A past day is settled only once every game on it is final, and a day with anything in progress is
    never settled at all — that is what carries a game which kicked off before Eastern midnight, so it
    stays on the live cadence.
@@ -990,9 +983,12 @@ const fetchDayGames = async (
 };
 
 // One day across several divisions, as one answer. A game two divisions both return keeps both tags.
+// A refused division costs only its own games; the day fails only when no division answered.
 const fetchDayAcrossGroups = async (config: LeagueConfig, dayKey: string, todayKey: string, groups: string[]): Promise<CachedDay> => {
 	if (groups.length <= 1) return await fetchDayGames(config, dayKey, todayKey, groups[0]);
-	const days = await Promise.all(groups.map(group => fetchDayGames(config, dayKey, todayKey, group)));
+	const settled = await Promise.allSettled(groups.map(group => fetchDayGames(config, dayKey, todayKey, group)));
+	const days = settled.flatMap(result => result.status === 'fulfilled' ? [result.value] : []);
+	if (days.length === 0) throw (settled[0] as PromiseRejectedResult).reason;
 	const byId = new Map<string, Game>();
 	for (const day of days) {
 		for (const game of day.games) {
@@ -1199,17 +1195,15 @@ export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, ini
 	const config = leagueConfigMap[game.league];
 	if (!config) return [];
 
-	const url = `${espnBase}/${config.espnPath}/summary?event=${encodeURIComponent(game.id)}`;
+	const url = summaryUrl(config.espnPath, game.id);
 	await takeRequestSlot();
-	const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: init?.signal });
+	const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: init?.signal ?? requestSignal() });
 	if (!res.ok) throw new Error(`Failed to fetch win probability for ${game.id}: HTTP ${res.status}`);
 
 	const summary: unknown = await res.json();
 	init?.onSummary?.(summary);
 	return parseWinProbability(summary);
 };
-
-const coreApiBase = 'https://sports.core.api.espn.com/v2/sports';
 
 // The live situation our sources' core API keeps per competition: hockey's power play and empty net,
 // basketball's fouls and timeouts. Served with open CORS, so it needs no host permission.
@@ -1227,7 +1221,7 @@ export const fetchCompetitionSituation = async (game: Pick<Game, 'id' | 'league'
 export const fetchLeagueStandings = async (league: LeagueId): Promise<unknown> => {
 	const config = leagueConfigMap[league];
 	await takeRequestSlot();
-	const res = await fetch(`https://site.api.espn.com/apis/v2/sports/${config.espnPath}/standings?level=3`, { headers: { Accept: 'application/json' }, signal: requestSignal() });
+	const res = await fetch(standingsUrl(config.espnPath), { headers: { Accept: 'application/json' }, signal: requestSignal() });
 	if (!res.ok) throw new Error(`Failed to fetch ${league} standings: HTTP ${res.status}`);
 	return await res.json();
 };
@@ -1267,7 +1261,7 @@ export const fetchGameDurationMins = async (game: Pick<Game, 'id' | 'league'>): 
 	const config = leagueConfigMap[game.league];
 	if (!config) return null;
 
-	const url = `${espnBase}/${config.espnPath}/summary?event=${encodeURIComponent(game.id)}`;
+	const url = summaryUrl(config.espnPath, game.id);
 	await takeRequestSlot();
 	const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: requestSignal() });
 	if (!res.ok) throw new Error(`Failed to fetch the duration of ${game.id}: HTTP ${res.status}`);
@@ -1348,10 +1342,9 @@ export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnT
 	if (leagueConfigs.length === 0) return [];
 
 	const results = await settledInPool(leagueConfigs, async (config): Promise<EspnTeamEntry[]> => {
-		const params = new URLSearchParams({ limit: '200' });
-		if (config.id === 'ncaab') params.set('groups', '50');
-		if (config.id === 'ncaaw') params.set('groups', '49');
-		const url = `${espnBase}/${config.espnPath}/teams?${params.toString()}`;
+		// College football alone has 762 teams. `/teams` ignores `groups`, so the limit is the only
+		// thing that decides whether a school makes the list.
+		const url = `${espnBase}/${config.espnPath}/teams?limit=1000`;
 		await takeRequestSlot();
 		const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: requestSignal() });
 		if (!res.ok) throw new Error(`Failed to fetch teams for ${config.id}: HTTP ${res.status}`);

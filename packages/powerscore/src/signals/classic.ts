@@ -36,7 +36,7 @@ export const applyProgressFloor = (tierCeiling: number, flatFloor: number, progr
 
 const none: SignalOutput = { points: 0 };
 
-const closenessUnit = (game: Game<string>): string => (
+export const closenessUnit = (game: Game<string>): string => (
 	scorerTunables.reasons.closenessUnitBySportType[game.sportType] ?? scorerTunables.reasons.defaultClosenessUnit
 );
 

@@ -2,7 +2,7 @@ import type { Game } from '@arenaswap/core/types';
 
 // The strip is drawn in yards, so an SVG viewBox of `0 0 120 10` lets every x coordinate below be
 // a real field measurement rather than a pixel derived from one.
-export const fieldYards = 100;
+const fieldYards = 100;
 export const endZoneYards = 10;
 export const stripYards = fieldYards + endZoneYards * 2;
 
@@ -91,6 +91,7 @@ export interface FieldDiagram {
 }
 
 export interface FieldFrame {
+	gameId: string;
 	yardLine: number;
 	diagram: FieldDiagram;
 }
@@ -174,7 +175,8 @@ export const resolveFieldDiagram = (game: Game): FieldDiagram | null => {
 // home/away frame, which is exactly what keeps the direction rule above working.
 export const resolveFieldFrame = (game: Game, held: FieldFrame | null): FieldFrame | null => {
 	const diagram = resolveFieldDiagram(game);
-	if (diagram !== null) return { yardLine: game.yardLine!, diagram };
-	if (held !== null && game.yardLine === held.yardLine) return held;
+	if (diagram !== null) return { gameId: game.id, yardLine: game.yardLine!, diagram };
+	// Keyed on the game as well, because one strip can be handed a different game at the same yard line.
+	if (held !== null && held.gameId === game.id && game.yardLine === held.yardLine) return held;
 	return null;
 };

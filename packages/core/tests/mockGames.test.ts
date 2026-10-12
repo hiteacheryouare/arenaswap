@@ -93,6 +93,49 @@ describe('MockGameSimulator', () => {
 		randomSpy.mockRestore();
 	});
 
+	test('ends a level league match at full time instead of playing extra time', () => {
+		const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.99);
+		const simulator = new MockGameSimulator();
+		const epl = getInternals(simulator).games.find(game => game.league === 'epl')!;
+		epl.status = 'in';
+		epl.period = leagueConfigMap.epl.regularPeriods;
+		epl.clockSeconds = 15;
+		epl.homeTeam.score = 1;
+		epl.awayTeam.score = 1;
+
+		const updated = getGameById(simulator.tick(), epl.id);
+		expect(updated.status).toBe('post');
+		expect(updated.period).toBe(leagueConfigMap.epl.regularPeriods);
+
+		randomSpy.mockRestore();
+	});
+
+	test('a restarted football game leaves the red zone it finished in', () => {
+		const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.99);
+		const simulator = new MockGameSimulator();
+		const internals = getInternals(simulator);
+		const nfl = internals.games.find(game => game.id === 'mock-5')!;
+		Object.assign(nfl, { status: 'post', down: 3, distance: 5, isRedZone: true, isGoalToGo: true });
+		internals.state.get(nfl.id)!.postTicks = 1_000;
+
+		const restarted = getGameById(simulator.tick(), 'mock-5');
+		expect(restarted.status).toBe('in');
+		expect(restarted).toMatchObject({ down: 1, distance: 10, isRedZone: false, isGoalToGo: false });
+
+		randomSpy.mockRestore();
+	});
+
+	test('a third strike is an out', () => {
+		const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.45);
+		const simulator = new MockGameSimulator();
+		const mlb = getInternals(simulator).games.find(game => game.league === 'mlb' && game.status === 'in' && game.bso && !game.dueUp)!;
+		mlb.bso = { balls: 1, strikes: 2, outs: 1 };
+
+		expect(getGameById(simulator.tick(), mlb.id).bso).toEqual({ balls: 0, strikes: 0, outs: 2 });
+
+		randomSpy.mockRestore();
+	});
+
 	test('advances to next period at clock expiry before regulation ends', () => {
 		const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.99);
 		const simulator = new MockGameSimulator();

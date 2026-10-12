@@ -104,6 +104,36 @@ describe('a request that never answers', () => {
 		expect(timeoutSignals).toEqual([10_000]);
 	});
 
+	// The popup-side requests and an unsignalled win-probability sweep. A hung one used to leave the
+	// detail screen loading until the popup closed, and stop the worker's sweep chain for good.
+	test.each([
+		['win probability with no caller signal', () => loadApiClient().fetchWinProbability({ id: '1', league: 'nba' })],
+		['summary', () => {
+			jest.resetModules();
+			return (require('../src/summaryFetch') as typeof import('../src/summaryFetch')).fetchSummary('basketball/nba', '1', 'in');
+		}],
+		['conference directory', () => {
+			jest.resetModules();
+			return (require('../src/collegeConferences') as typeof import('../src/collegeConferences')).fetchConferenceDirectory('ncaaf');
+		}],
+		['roster lookup', () => {
+			jest.resetModules();
+			return (require('../src/playerSearch') as typeof import('../src/playerSearch')).resolveRosterEntry({ league: 'nfl', athleteId: '1', name: 'A Player' });
+		}],
+	])('gives up on the %s request after ten seconds', async (_name, call) => {
+		setFetch(jest.fn(hangsUntilAborted));
+		let settled = false;
+		const outcome = (call() as Promise<unknown>).then(() => undefined, () => undefined).finally(() => { settled = true; });
+
+		await jest.advanceTimersByTimeAsync(requestTimeoutMs - 1);
+		expect(settled).toBe(false);
+
+		await jest.advanceTimersByTimeAsync(1);
+		await outcome;
+		expect(settled).toBe(true);
+		expect(timeoutSignals[0]).toBe(10_000);
+	});
+
 	test('leaves win probability on its caller\'s signal', async () => {
 		const fetchMock = jest.fn(hangsUntilAborted);
 		setFetch(fetchMock);

@@ -13,6 +13,7 @@ import { buildCardShellProps, buildGameCardSurface, CardDetailsButton, CardStatu
 import { useT } from './i18nContext';
 import { StaleLeagueNote } from './staleLeagueNote';
 import useSwitchCrest from './useSwitchCrest';
+import { gridironTimeoutAllotment } from './timeoutDots';
 
 const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, tabSlot, leagueSlot, interactive = true }: GameCardDisplayProps) => {
 	const t = useT();
@@ -45,7 +46,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const psColor = powerScoreColor(totalPowerScore, scoreMaxTotal);
 	const shellProps = buildCardShellProps(game, t, onOpenGameDetail, interactive);
 	const surface = buildGameCardSurface(game, isDelayed);
-
+	const timeoutsMax = game.sportType === 'football' ? gridironTimeoutAllotment(game) : undefined;
 
 	return (
 		<div
@@ -72,7 +73,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 			</CardStatusRow>
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' surface={surface.awayColor} interactive={interactive} />
+				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' surface={surface.awayColor} timeoutsMax={timeoutsMax} interactive={interactive} />
 				<div className='d-flex flex-column align-items-center game-card-center'>
 					<div className='d-flex align-items-center game-score-row'>
 						<FlipScore value={game.awayTeam.score} className='fw-bold lh-1 game-score-value' />
@@ -105,7 +106,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 						<span className='game-period'>{downDistanceLine}</span>
 					)}
 				</div>
-				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' surface={surface.homeColor} interactive={interactive} />
+				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' surface={surface.homeColor} timeoutsMax={timeoutsMax} interactive={interactive} />
 			</div>
 
 			<GameMeta game={game} bettingPrefs={bettingPrefs} dark interactive={interactive} />

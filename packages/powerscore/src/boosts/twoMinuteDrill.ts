@@ -13,10 +13,10 @@ interface FootballLeagueRules {
 	untimedOvertime?: boolean;
 }
 
-// The UFL's 3-point try makes 9 a one-score game.
+// The UFL's 3-point try makes 9 a one-score game, and its overtime is an untimed two-point shootout.
 const footballRules: Record<string, Partial<FootballLeagueRules>> = {
 	ncaaf: { peakYards: 30, untimedOvertime: true },
-	ufl: { oneScore: 9 },
+	ufl: { oneScore: 9, untimedOvertime: true },
 };
 
 const marginFactor = (trailBy: number): number => {

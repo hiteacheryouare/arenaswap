@@ -19,8 +19,8 @@ const periodLabels: Record<LeagueId, string[]> = {
 	nba: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
 	wnba: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
 	ncaab: ['1H', '2H', 'OT', '2OT', '3OT'],
-	nhl: ['P1', 'P2', 'P3', 'OT', 'OT', 'OT'],
-	ncaamh: ['P1', 'P2', 'P3', 'OT', 'OT', 'OT'],
+	nhl: ['P1', 'P2', 'P3', 'OT', 'SO', 'SO'],
+	ncaamh: ['P1', 'P2', 'P3', 'OT', 'SO', 'SO'],
 	mlb: ['Inn 1', 'Inn 2', 'Inn 3', 'Inn 4', 'Inn 5', 'Inn 6', 'Inn 7', 'Inn 8', 'Inn 9', 'Inn 10', 'Inn 11', 'Inn 12'],
 	nfl: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
 	ncaaf: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
@@ -33,8 +33,8 @@ const periodLabels: Record<LeagueId, string[]> = {
 	olybb: ['Inn 1', 'Inn 2', 'Inn 3', 'Inn 4', 'Inn 5', 'Inn 6', 'Inn 7', 'Inn 8', 'Inn 9', 'Inn 10', 'Inn 11', 'Inn 12'],
 	wbbc: ['Inn 1', 'Inn 2', 'Inn 3', 'Inn 4', 'Inn 5', 'Inn 6', 'Inn 7', 'Inn 8', 'Inn 9', 'Inn 10', 'Inn 11', 'Inn 12'],
 	ufl: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
-	olymih: ['P1', 'P2', 'P3', 'OT', 'OT', 'OT'],
-	olywih: ['P1', 'P2', 'P3', 'OT', 'OT', 'OT'],
+	olymih: ['P1', 'P2', 'P3', 'OT', 'SO', 'SO'],
+	olywih: ['P1', 'P2', 'P3', 'OT', 'SO', 'SO'],
 	olybkm: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
 	olybkw: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
 	olysocm: ['1H', '2H', 'ET1', 'ET2', 'PENS'],
@@ -133,6 +133,19 @@ describe('isHalftime finds the break, and only the break', () => {
 		const breakPeriod = halftimePeriod[id];
 		if (breakPeriod === null) return;
 		expect(periodLabels[id]![breakPeriod - 1]).not.toMatch(/^(OT|ET|PENS)/);
+	});
+});
+
+describe('hockey overtime', () => {
+	test('NHL and NCAA playoff overtime is numbered, because it never goes to a shootout', () => {
+		for (const league of ['nhl', 'ncaamh'] as LeagueId[]) {
+			const labels = [4, 5, 6, 7].map(period => formatPeriod({ league, period, sportType: 'hockey', isPostseason: true }));
+			expect(labels).toEqual(['OT', '2OT', '3OT', '4OT']);
+		}
+	});
+
+	test('Olympic playoff hockey still ends in a shootout', () => {
+		expect(formatPeriod({ league: 'olymih', period: 5, sportType: 'hockey', isPostseason: true })).toBe('SO');
 	});
 });
 

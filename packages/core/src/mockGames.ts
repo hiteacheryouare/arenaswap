@@ -478,7 +478,7 @@ export class MockGameSimulator {
 			// A game carrying a due-up list is a held between-innings frame. Ticking its count or
 			// inning would put a live count under a list that only exists while nobody is at the plate.
 			if (game.dueUp) return;
-				if (game.bso) {
+			if (game.bso) {
 				const roll = Math.random();
 				if (roll < 0.3) {
 					// A 4th ball is a walk, which resets the count; ESPN reports 0-3.
@@ -487,11 +487,12 @@ export class MockGameSimulator {
 						? { balls: 0, strikes: 0, outs: game.bso.outs }
 						: { ...game.bso, balls: newBalls };
 				} else if (roll < 0.6) {
-					// A 3rd strike is a strikeout, which resets the count; ESPN reports 0-2.
+					// A 3rd strike is an out, which resets the count; a third out retires the side.
 					const newStrikes = game.bso.strikes + 1;
-					game.bso = newStrikes >= 3
-						? { balls: 0, strikes: 0, outs: game.bso.outs }
-						: { ...game.bso, strikes: newStrikes };
+					const outsAfterStrikeout = game.bso.outs + 1;
+					game.bso = newStrikes < 3
+						? { ...game.bso, strikes: newStrikes }
+						: { balls: 0, strikes: 0, outs: outsAfterStrikeout >= 3 ? 0 : outsAfterStrikeout };
 				} else if (roll < 0.75) {
 					// A 3rd out retires the side and resets outs; ESPN reports 0-2.
 					const newOuts = game.bso.outs + 1;
@@ -499,11 +500,11 @@ export class MockGameSimulator {
 						? { balls: 0, strikes: 0, outs: 0 }
 						: { balls: 0, strikes: 0, outs: newOuts };
 				}
-				}
+			}
 
-				this.scorePoints(game, simState);
+			this.scorePoints(game, simState);
 			if (Math.random() < baseballInningAdvanceChance) {
-					if (game.period >= regularPeriods && game.homeTeam.score !== game.awayTeam.score) {
+				if (game.period >= regularPeriods && game.homeTeam.score !== game.awayTeam.score) {
 					game.status = 'post';
 					simState.postTicks = 0;
 				} else {
@@ -536,8 +537,9 @@ export class MockGameSimulator {
 			if (game.period < regularPeriods) {
 				game.period++;
 				game.clockSeconds = leagueConfigMap[game.league].periodDurationSecs;
-			} else if (game.homeTeam.score === game.awayTeam.score) {
-					game.period++;
+			} else if (game.homeTeam.score === game.awayTeam.score && !(game.sportType === 'soccer' && !game.isPostseason)) {
+				// A league match can end level; only a knockout plays on.
+				game.period++;
 				game.clockSeconds = overtimePeriodSeconds;
 			} else {
 				game.status = 'post';
@@ -601,6 +603,10 @@ export class MockGameSimulator {
 			if (game.downDistance !== undefined) game.downDistance = '1st & 10';
 			if (game.fieldPosition !== undefined) game.fieldPosition = 'PHI 25';
 			if (game.yardLine !== undefined) game.yardLine = footballDriveStartYardLine;
+			if (game.down !== undefined) game.down = 1;
+			if (game.distance !== undefined) game.distance = 10;
+			if (game.isRedZone !== undefined) game.isRedZone = false;
+			if (game.isGoalToGo !== undefined) game.isGoalToGo = false;
 			simState.driveIndex = 0;
 			simState.streak = null;
 			simState.streakTicks = 0;

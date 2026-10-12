@@ -2,8 +2,7 @@ import * as z from 'zod/mini';
 import { collegeDivisions, conferenceCrestSlug, leagueConfigMap } from '@arenaswap/core';
 import type { CollegeLeagueId, ConferenceDirectory, ConferenceEntry } from '@arenaswap/core';
 import { settledInPool, takeRequestSlot } from './apiClient';
-
-const coreApiBase = 'https://sports.core.api.espn.com/v2/sports';
+import { coreApiBase, requestSignal } from './endpoints';
 
 // The core API answers in pages of `$ref`s. These leagues' conferences sit under a division group;
 // hockey, baseball and softball are found by walking down from the top of the tree instead.
@@ -55,7 +54,7 @@ const withLimit = (url: string, limit: number): string => {
 
 const fetchCore = async <T>(url: string, schema: z.ZodMiniType<T>): Promise<T> => {
 	await takeRequestSlot();
-	const res = await fetch(toHttps(url), { headers: { Accept: 'application/json' } });
+	const res = await fetch(toHttps(url), { headers: { Accept: 'application/json' }, signal: requestSignal() });
 	if (!res.ok) throw new Error(`Conference lookup failed: HTTP ${res.status} for ${url}`);
 	const parsed = schema.safeParse(await res.json());
 	if (!parsed.success) throw new Error(`Conference lookup returned an unexpected shape for ${url}`);
