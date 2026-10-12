@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Crest from './crest';
-import { crestBacking } from './colorUtils';
 import type { TeamMonoMarks } from '@arenaswap/core/types';
-import { cachedCrestReadsOn, cachedLogoTint, crestReadsOn, logoTint, pickMonoMark } from './logoTint';
+import { cachedCrestReadsOn, cachedLogoTint, crestBacking, crestReadsOn, logoTint, pickMonoMark } from '@arenaswap/chromatic';
 
 interface teamCrestProps {
 	logo?: string;

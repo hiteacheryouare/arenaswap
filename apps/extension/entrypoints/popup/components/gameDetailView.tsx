@@ -38,7 +38,7 @@ import {
 	darkChartPalette,
 	lightChartPalette,
 } from './gameDetailChartOptions';
-import { resolveChartLineColors, resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
+import { resolveChartLineColors, resolveTeamColorPair } from '@arenaswap/chromatic';
 import { matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared';
 import { boostPresentation, isBoostId, isModeSignalId, signalColorOf, signalPresentation } from '@arenaswap/ui/src/components/scoringModeMeta';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';

@@ -4,6 +4,7 @@
 This document defines the mandatory standards for contributing to the ArenaSwap monorepo, which contains:
 - `apps/extension`: the WXT browser extension for Chrome, Firefox and Edge
 - `apps/docs`: the Astro website (docs, PowerScore reference, releases, FAQ and legal pages, in 12 locales)
+- `packages/chromatic`: the colour science behind team colours, ink contrast and crest reads, shared by the extension and the website
 - `packages/core`: the extension engine (data fetching, polling, tab switching)
 - `packages/powerscore`: the PowerScore live sports excitement algorithm, published to npm as `powerscore`
 - `packages/ui`: React components and styles shared by the extension and the website

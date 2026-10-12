@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 import OnColorCrest from '../../../../packages/ui/src/components/onColorCrest';
-import { resolveTeamColorPair, matchupSurface } from '../../../../packages/ui/src/components/colorUtils';
+import { resolveTeamColorPair, matchupSurface } from '@arenaswap/chromatic';
 import type { Team } from '../../../../packages/core/src/types';
 import { dotOrange } from '../components/overlay';
 import type { Format } from '../cuts/cutTypes';

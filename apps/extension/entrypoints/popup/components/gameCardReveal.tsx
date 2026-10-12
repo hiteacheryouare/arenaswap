@@ -1,7 +1,7 @@
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Game, Team } from '@arenaswap/core/types';
-import { teamDisplayInk } from '@arenaswap/ui/src/components/colorUtils';
+import { teamDisplayInk } from '@arenaswap/chromatic';
 import { buildGameCardSurface } from '@arenaswap/ui/src/components/gameCardShared';
 import OnColorCrest from '@arenaswap/ui/src/components/onColorCrest';
 import RevealNamingScene from './revealNamingScene';

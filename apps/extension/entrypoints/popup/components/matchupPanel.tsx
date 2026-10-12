@@ -1,5 +1,5 @@
 import type { Game } from '@arenaswap/core/types';
-import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
+import { resolveTeamColorPair } from '@arenaswap/chromatic';
 import InjuryReport from './injuryReport';
 import RecentForm from './recentForm';
 import SeasonStatsCompare from './seasonStatsCompare';

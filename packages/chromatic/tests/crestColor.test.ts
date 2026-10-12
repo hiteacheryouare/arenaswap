@@ -1,5 +1,5 @@
-import { crestColorFromPixels } from '../src/components/crestColor';
-import { colorDifference } from '../src/components/colorMath';
+import { crestColorFromPixels } from '../src/crestColor';
+import { colorDifference } from '../src/colorMath';
 
 const crest = (...inks: [string, number][]): Uint8ClampedArray => {
 	const pixels: number[] = [];

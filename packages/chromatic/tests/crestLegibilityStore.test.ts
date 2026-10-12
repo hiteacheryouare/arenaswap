@@ -15,7 +15,7 @@ const withStoredValue = async (raw: string | null) => {
 		},
 	});
 	jest.resetModules();
-	return import('../src/components/logoTint');
+	return import('../src/logoTint');
 };
 
 // The verdict is persisted so a crest seen once is drawn right from the first frame. What has to

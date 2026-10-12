@@ -1,5 +1,5 @@
-import { blackInkContrast, colorDifference, contrastBetween, hexToLab, hexToRgb, hexLuminance, isHex, labChroma, labDifference, rgbLuminance, rgbToHex, whiteInkContrast } from '../src/components/colorMath';
-import type { Lab } from '../src/components/colorMath';
+import { blackInkContrast, colorDifference, contrastBetween, hexToLab, hexToRgb, hexLuminance, isHex, labChroma, labDifference, rgbLuminance, rgbToHex, whiteInkContrast } from '../src/colorMath';
+import type { Lab } from '../src/colorMath';
 
 // The arithmetic every readability decision in the product is built on. Nothing here fails loudly:
 // a transfer function off by a hair still returns a number, and what goes wrong is a crest drawn in

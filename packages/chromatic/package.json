@@ -1,0 +1,28 @@
+{
+	"name": "@arenaswap/chromatic",
+	"version": "3.0.0",
+	"description": "ArenaSwap colour science — contrast and colour difference, team colour pairing, and reading colours off crest pixels",
+	"private": true,
+	"exports": {
+		".": "./src/index.ts",
+		"./colorMath": "./src/colorMath.ts",
+		"./colorUtils": "./src/colorUtils.ts",
+		"./crestColor": "./src/crestColor.ts",
+		"./logoSwitchColor": "./src/logoSwitchColor.ts",
+		"./logoTint": "./src/logoTint.ts"
+	},
+	"scripts": {
+		"test": "npm run test:unit",
+		"test:unit": "jest --passWithNoTests --selectProjects unit",
+		"test:coverage": "jest --passWithNoTests --selectProjects unit --coverage",
+		"typecheck": "tsc --noEmit",
+		"lint": "oxlint ."
+	},
+	"dependencies": {
+		"@arenaswap/core": "*"
+	},
+	"devDependencies": {
+		"@types/jest": "^30.0.0",
+		"jest": "^30.5.2"
+	}
+}

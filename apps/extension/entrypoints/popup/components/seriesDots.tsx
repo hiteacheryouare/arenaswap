@@ -1,6 +1,6 @@
 import type { Game } from '@arenaswap/core/types';
 import type { SeriesInfo } from './useSummaryData';
-import { resolveChartLineColors } from '@arenaswap/ui/src/components/colorUtils';
+import { resolveChartLineColors } from '@arenaswap/chromatic';
 import { seriesSlots } from './seriesSlots';
 
 export const seriesSports = new Set(['baseball', 'basketball', 'hockey', 'softball']);

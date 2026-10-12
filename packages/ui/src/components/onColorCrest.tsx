@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { teamLogoOnColor } from '@arenaswap/core/constants';
 import type { Team } from '@arenaswap/core/types';
 import Crest from './crest';
-import { hexToLab } from './colorMath';
+import { hexToLab } from '@arenaswap/chromatic';
 
 // Tottenham publish white as their colour, and the dark-ground cockerel is white too.
 const lightGroundLightness = 90;

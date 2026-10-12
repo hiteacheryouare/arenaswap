@@ -1,7 +1,7 @@
 import { i18n } from '#i18n';
 import type { Game } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
-import { readableTeamInkOnCard, resolveTeamColorPair, teamRowWash } from '@arenaswap/ui/src/components/colorUtils';
+import { readableTeamInkOnCard, resolveTeamColorPair, teamRowWash } from '@arenaswap/chromatic';
 import type { StandingsGroup, StandingsRow } from './standingsParse';
 
 interface standingsTableProps {

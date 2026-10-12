@@ -18,6 +18,7 @@ const workspaces = [
 	'',
 	'apps/docs/',
 	'apps/extension/',
+	'packages/chromatic/',
 	'packages/core/',
 	'packages/powerscore/',
 	'packages/ui/',

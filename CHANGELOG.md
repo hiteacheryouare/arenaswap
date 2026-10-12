@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Colour science gets its own package — 2026-10-11
+
+The contrast maths, team colour pairing and crest readers moved out of `packages/ui` into `packages/chromatic` (`@arenaswap/chromatic`), a source package with its own tests, so nothing deep-imports `@arenaswap/ui/src/components/colorUtils` any more. Import from the package root anywhere a page renders, but the background service worker takes the `/colorMath` and `/crestColor` subpaths, because the root also loads the two crest readers that touch localStorage at import.
+
 ## Teams without published colours get theirs from the crest — 2026-10-11
 
 Our sources send no colours for any men's college hockey team, the Olympic hockey nations, or about a hundred programmes each in college baseball, softball and football, so those games used to fall back to grey or blue and orange. The background now reads the most common colour off each such crest (black only when the crest has no colour in it) and stores it by logo URL, so every surface paints it on first load and nothing changes colour on screen. Crests download eight at a time, and one that fails gets another try five minutes later.

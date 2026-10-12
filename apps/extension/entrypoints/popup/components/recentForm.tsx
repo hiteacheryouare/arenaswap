@@ -1,7 +1,7 @@
 import { i18n } from '#i18n';
 import type { Game, Team } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
-import { readableTeamInkOnCard } from '@arenaswap/ui/src/components/colorUtils';
+import { readableTeamInkOnCard } from '@arenaswap/chromatic';
 import { showsRestDays } from './matchupLabels';
 import type { FormResult, Paired } from './matchupParse';
 

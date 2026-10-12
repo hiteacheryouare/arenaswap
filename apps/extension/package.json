@@ -27,6 +27,7 @@
 		"lint": "oxlint ."
 	},
 	"dependencies": {
+		"@arenaswap/chromatic": "*",
 		"@arenaswap/core": "*",
 		"@arenaswap/ui": "*",
 		"@porkyproductions/hat": "^1.5.0",

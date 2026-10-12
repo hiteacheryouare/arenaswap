@@ -1,5 +1,5 @@
-import { switchColorFromPixels } from '../src/components/logoSwitchColor';
-import { colorDifference } from '../src/components/colorMath';
+import { switchColorFromPixels } from '../src/logoSwitchColor';
+import { colorDifference } from '../src/colorMath';
 
 // A crest as a bag of opaque pixels: each entry is a colour and how many pixels of it there are.
 const crest = (...inks: [string, number][]): Uint8ClampedArray => {

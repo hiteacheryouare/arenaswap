@@ -1,4 +1,4 @@
-import { dominantColorFromPixels } from '../src/components/logoTint';
+import { dominantColorFromPixels } from '../src/logoTint';
 
 // One RGBA quad per entry, in the order the canvas hands them back.
 const pixels = (quads: [number, number, number, number][]): Uint8ClampedArray => (

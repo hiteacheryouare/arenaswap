@@ -1,4 +1,4 @@
-import { crestColorCalibration } from '@arenaswap/ui/src/components/crestColor';
+import { crestColorCalibration } from '@arenaswap/chromatic/crestColor';
 import type { Game, Team } from '@arenaswap/core/types';
 import { createCrestColors, readStoredCrestColors } from '../utils/crestColors';
 

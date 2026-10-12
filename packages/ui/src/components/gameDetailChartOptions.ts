@@ -1,7 +1,7 @@
 import type { EChartsOption } from 'echarts';
 import { scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, PowerScoreSnapshot, ResolvedTheme, ScoreSnapshot, SignalName } from '@arenaswap/core/types';
-import { resolveChartLineColors } from './colorUtils';
+import { resolveChartLineColors } from '@arenaswap/chromatic';
 import { defaultTranslate } from './defaultStrings';
 import { boostPresentation, isBoostId, isModeSignalId, modeSignalIds, signalColorOf, signalPresentation } from './scoringModeMeta';
 import type { BoostId } from './scoringModeMeta';

@@ -1,7 +1,7 @@
-import { colorDifference } from '../src/components/colorMath';
-import { crestBacking, pendingSwitchCrest, resolveChartLineColors, readableInkOn, readableTeamInkOnCard, resolveTeamColorPair, teamDisplayInk, teamRowWash } from '../src/components/colorUtils';
+import { colorDifference } from '../src/colorMath';
+import { crestBacking, pendingSwitchCrest, resolveChartLineColors, readableInkOn, readableTeamInkOnCard, resolveTeamColorPair, teamDisplayInk, teamRowWash } from '../src/colorUtils';
 
-jest.mock('../src/components/logoSwitchColor', () => ({
+jest.mock('../src/logoSwitchColor', () => ({
 	cachedLogoSwitchColor: (crest: string) => ({
 		'https://a.espncdn.com/i/teamlogos/ncaa/500-dark/120.png': '#F8DB3F',
 		'https://a.espncdn.com/i/teamlogos/ncaa/500-dark/97.png': '#050403',

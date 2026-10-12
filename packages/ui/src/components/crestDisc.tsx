@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react';
 import Crest from './crest';
-import { crestBacking } from './colorUtils';
-import { logoTint } from './logoTint';
+import { crestBacking, logoTint } from '@arenaswap/chromatic';
 
 interface crestDiscProps {
 	logo?: string;

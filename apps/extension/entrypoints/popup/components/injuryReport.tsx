@@ -1,7 +1,7 @@
 import { i18n } from '#i18n';
 import { useState } from 'react';
 import type { Game, Team } from '@arenaswap/core/types';
-import { readableTeamInkOnCard, teamRowWash } from '@arenaswap/ui/src/components/colorUtils';
+import { readableTeamInkOnCard, teamRowWash } from '@arenaswap/chromatic';
 import PlayerShot from './playerShot';
 import { injuryStatusLabelKeys } from './matchupLabels';
 import type { InjuryEntry, Paired } from './matchupParse';
