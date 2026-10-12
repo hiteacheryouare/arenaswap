@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import type { Game, TeamMonoMarks } from '@arenaswap/core/types';
-import { readableInkOn, resolveTeamColorPair } from './colorUtils';
+import { readableInkOn, resolveTeamColorPair } from '@arenaswap/chromatic';
 import TeamCrest from './teamCrest';
 import {
 	awayEndZoneX,

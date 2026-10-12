@@ -1,7 +1,7 @@
 import { i18n } from '#i18n';
 import { leagueConfigMap, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { Game, LeagueLogoMap, Team, TeamMonoLogoMap, TeamMonoMarks } from '@arenaswap/core/types';
-import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
+import { resolveTeamColorPair } from '@arenaswap/chromatic';
 import CrestDisc from '@arenaswap/ui/src/components/crestDisc';
 import InningHalfIcon from '@arenaswap/ui/src/components/inningHalfIcon';
 import TeamCrest from '@arenaswap/ui/src/components/teamCrest';

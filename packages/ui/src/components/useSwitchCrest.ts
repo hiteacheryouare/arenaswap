@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { pendingSwitchCrest } from './colorUtils';
-import { measureLogoSwitchColor } from './logoSwitchColor';
+import { measureLogoSwitchColor, pendingSwitchCrest } from '@arenaswap/chromatic';
 
 interface switchCrestTeam {
 	color?: string;

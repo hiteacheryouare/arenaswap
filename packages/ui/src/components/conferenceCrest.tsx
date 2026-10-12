@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { resolveConferenceCrest } from '@arenaswap/core/constants';
 import Crest from './crest';
-import { crestBacking } from './colorUtils';
-import { cachedCrestReadsOn, cachedLogoTint, crestReadsOn, logoTint } from './logoTint';
+import { cachedCrestReadsOn, cachedLogoTint, crestBacking, crestReadsOn, logoTint } from '@arenaswap/chromatic';
 import useDocumentTheme from './useDocumentTheme';
 
 interface conferenceCrestProps {

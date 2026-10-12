@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { EspnTeamEntry } from '@arenaswap/core';
+import type { EspnTeamEntry } from '@arenaswap/sideline';
 import OnboardingTeamPicker from '../../entrypoints/popup/components/onboardingTeamPicker';
 
 const teams: EspnTeamEntry[] = [

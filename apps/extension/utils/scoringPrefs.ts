@@ -1,6 +1,6 @@
 import { builtInModes, defaultFantasyScoring, type FantasySport } from 'powerscore';
 import { allSignalNames } from '@arenaswap/core/constants';
-import { fantasyLeagues } from '@arenaswap/core';
+import { fantasyLeagues } from '@arenaswap/sideline';
 import type { BuiltInModeId, LeagueId, SignalName, UserPreferences } from '@arenaswap/core/types';
 
 type nonClassicMode = Exclude<BuiltInModeId, 'classic'>;

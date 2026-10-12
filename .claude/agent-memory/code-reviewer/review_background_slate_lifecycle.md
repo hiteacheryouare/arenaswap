@@ -18,7 +18,7 @@ There is no `browser.alarms` anywhere (see [[project-extension-runtime-footguns]
 is torn down and woken by user events instead.
 
 **Since 2026-09-16 a window is a list of Eastern days, one ESPN request each** (`buildDayWindowKeys`
-in `packages/core/src/apiClient.ts`); ESPN now 400s every ranged `dates=` in all 31 leagues. So
+in `packages/sideline/src/apiClient.ts`); ESPN now 400s every ranged `dates=` in all 31 leagues. So
 `refreshSlate` costs `(upcomingGamesDays + 3)` requests per league — ~310 at the defaults, ~530 at
 `upcomingGamesDays: 14` — against 62 for the two-leg version, all paced by the 16-token/10-per-second
 bucket. An in-memory `dayCache` (module scope, keyed `league:day`) pays for it and dies with the

@@ -1,9 +1,9 @@
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import { MockGameSimulator } from '@arenaswap/core';
 import type { Game } from '@arenaswap/core/types';
-import { mockBoxScorePayloads } from '../../entrypoints/popup/components/mockBoxScores';
-import { mockStandingsPayloads } from '../../entrypoints/popup/components/mockStandings';
-import { prefetchGameDetail } from '../../entrypoints/popup/components/summaryFetch';
+import { mockBoxScorePayloads } from '@arenaswap/sideline/mockBoxScores';
+import { mockStandingsPayloads } from '@arenaswap/sideline/mockStandings';
+import { prefetchGameDetail } from '@arenaswap/sideline';
 import de from '../../locales/de.json';
 import en from '../../locales/en.json';
 import es from '../../locales/es.json';

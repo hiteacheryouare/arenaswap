@@ -5,6 +5,22 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The films are their own workspace — 2026-10-11
+
+The ad films moved from `scripts/film` into `apps/film` (`@arenaswap/film`), which is now linted and type-checked with everything else, and `npm run film`, `film:build`, `film:render`, `film:extract` and `film:pregame` still take the same arguments. `film:build` goes through turbo, which builds the extension's popup first and restores both builds from cache when nothing has changed, while a plain `npm run build` still leaves the films alone. Move any soundtrack, crest cache or renders you have from `scripts/film` into `apps/film`.
+
+## Game data has its own package — 2026-10-11
+
+The scoreboard client, its schemas and every parser that reads a summary, standings table or box score moved out of `packages/core` and the popup into `packages/sideline` (`@arenaswap/sideline`), a source package that imports core only through its root. Core keeps the game model, scoring, polling cadence and preferences, and never depends on sideline. The popup's league-table fetch is now `fetchSharedLeagueStandings`, so it no longer shares a name with the background's `fetchLeagueStandings`, and the demo payloads stay on their own subpaths so they still load lazily.
+
+## The PowerScore calibration tools are their own workspace — 2026-10-11
+
+The recorder, replay, simulator and live validator moved from `scripts/powerscore` into `packages/powerscore-tools`, which is now linted, type-checked and bundled like every other package, and the `npm run powerscore:*` commands still take the same arguments. Recordings now live in `packages/powerscore-tools/recordings`, so move any you have out of the old folder. Every bundle now reads the engine and core straight from source (the simulator and live validator used to pick up whatever was last built), so nothing scores with a stale build.
+
+## Colour science gets its own package — 2026-10-11
+
+The contrast maths, team colour pairing and crest readers moved out of `packages/ui` into `packages/chromatic` (`@arenaswap/chromatic`), a source package with its own tests, so nothing deep-imports `@arenaswap/ui/src/components/colorUtils` any more. Import from the package root anywhere a page renders, but the background service worker takes the `/colorMath` and `/crestColor` subpaths, because the root also loads the two crest readers that touch localStorage at import.
+
 ## Teams without published colours get theirs from the crest — 2026-10-11
 
 Our sources send no colours for any men's college hockey team, the Olympic hockey nations, or about a hundred programmes each in college baseball, softball and football, so those games used to fall back to grey or blue and orange. The background now reads the most common colour off each such crest (black only when the crest has no colour in it) and stores it by logo URL, so every surface paints it on first load and nothing changes colour on screen. Crests download eight at a time, and one that fails gets another try five minutes later.

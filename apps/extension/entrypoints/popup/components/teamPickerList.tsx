@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { i18n } from '#i18n';
-import type { EspnTeamEntry } from '@arenaswap/core';
+import type { EspnTeamEntry } from '@arenaswap/sideline';
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
 import type { LeagueId } from '@arenaswap/core/types';
 import TeamPickerRow from './teamPickerRow';

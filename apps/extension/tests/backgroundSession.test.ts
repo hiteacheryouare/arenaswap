@@ -6,8 +6,8 @@ jest.mock('@porkyproductions/hat', () => ({
 	randomInRange: jest.fn().mockImplementation((_min: number, max: number) => max),
 }));
 
-jest.mock('@arenaswap/core', () => ({
-	...jest.requireActual('@arenaswap/core'),
+jest.mock('@arenaswap/sideline', () => ({
+	...jest.requireActual('@arenaswap/sideline'),
 	fetchGamesWithLeagueLogos: jest.fn(),
 	fetchNextScheduledStart: jest.fn().mockResolvedValue(null),
 	fetchWinProbability: jest.fn().mockResolvedValue([]),
@@ -121,7 +121,7 @@ const startWorker = async ({ games, openTabIds, activeTabId, atMs }: StartOption
 		notifications: { create: jest.fn().mockResolvedValue(undefined) },
 	};
 
-	fetchMock = (require('@arenaswap/core') as { fetchGamesWithLeagueLogos: jest.Mock }).fetchGamesWithLeagueLogos;
+	fetchMock = (require('@arenaswap/sideline') as { fetchGamesWithLeagueLogos: jest.Mock }).fetchGamesWithLeagueLogos;
 	fetchMock.mockResolvedValue({ games, leagueLogos: {}, shedLeagues: [] });
 
 	require('../entrypoints/background');

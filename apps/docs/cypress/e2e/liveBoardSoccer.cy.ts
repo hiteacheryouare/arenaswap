@@ -5,14 +5,14 @@
 // The clock copy understood only `MM:SS`, so a `90'+5'` match parsed to 0 and scored as though the
 // half had not started. The period copy printed `H2` for `2H` and a flat `OT` for `ET1`/`ET2`/
 // `PENS`. The display copy printed `95:00` where the extension prints `95'`. All three are gone:
-// the component imports `parseClockToSeconds` from `@arenaswap/core/gameClock`, and `formatPeriod`
+// the component imports `parseClockToSeconds` from `@arenaswap/sideline/gameClock`, and `formatPeriod`
 // and `formatGameClock` from `packages/ui/src/components/gameFormat.ts`. These rows are what keeps
 // the page and the product it is selling reading the same.
 //
 // The fixture is a real ESPN eng.1 scoreboard captured 2026-09-21 — event ids, clubs, abbreviations
 // and the `90'+5'` clock are exactly what ESPN returned. Two things are authored: the state is
 // moved from `post` to `in`, and the second match is put into extra time at `105'`. Both are the
-// notation `packages/core/tests/apiClient.test.ts` already treats as ESPN's, so nothing here is
+// notation `packages/sideline/tests/apiClient.test.ts` already treats as ESPN's, so nothing here is
 // guessed about the wire format.
 
 const anyScoreboard = 'https://site.api.espn.com/apis/site/v2/sports/**/scoreboard*';

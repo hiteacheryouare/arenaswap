@@ -4,7 +4,7 @@ import {
 	lineScoreHeadingKey,
 	periodLabels,
 } from '../entrypoints/popup/components/boxScoreColumns';
-import type { BoxScoreAthlete, BoxScoreCategory, BoxScoreTeam } from '../entrypoints/popup/components/boxScoreParse';
+import type { BoxScoreAthlete, BoxScoreCategory, BoxScoreTeam } from '@arenaswap/sideline';
 
 const athlete = (name: string, stats: string[], extra: Partial<BoxScoreAthlete> = {}): BoxScoreAthlete => ({
 	id: name,

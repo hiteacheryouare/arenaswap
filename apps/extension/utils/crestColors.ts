@@ -1,7 +1,9 @@
 import { logWarn } from '@arenaswap/core';
 import type { Game, Team } from '@arenaswap/core/types';
-import { isHex } from '@arenaswap/ui/src/components/colorMath';
-import { crestColorCalibration, crestColorFromPixels, crestSampleSize } from '@arenaswap/ui/src/components/crestColor';
+// Only colorMath and crestColor stay clear of logoTint and logoSwitchColor, which read localStorage
+// at import; the package root and /colorUtils both pull those into the service worker.
+import { isHex } from '@arenaswap/chromatic/colorMath';
+import { crestColorCalibration, crestColorFromPixels, crestSampleSize } from '@arenaswap/chromatic/crestColor';
 
 /* Our sources publish no colour at all for some teams — every men's college hockey team, the Olympic
    hockey nations, and about a hundred programmes each in college baseball, softball and football —

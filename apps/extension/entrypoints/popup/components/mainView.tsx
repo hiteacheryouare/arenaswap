@@ -10,7 +10,7 @@ import type {
 	TabRegistration,
 	UserPreferences,
 } from '@arenaswap/core/types';
-import { resolveTeamColorPair } from '@arenaswap/ui/src/components/colorUtils';
+import { resolveTeamColorPair } from '@arenaswap/chromatic';
 import { LeagueSectionHeader, PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 import GameCard from './gameCard';
 import GameCardReveal from './gameCardReveal';
@@ -28,7 +28,7 @@ import useReorderGlide from '@arenaswap/ui/src/components/useReorderGlide';
 import { buildFinalComparator, buildLeagueRank, buildLiveComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, resolveSelectedDayIndex } from '../popupHelpers';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import useRestoredScroll from '../useRestoredScroll';
-import { prefetchOnIntent } from './summaryFetch';
+import { prefetchOnIntent } from './prefetchIntent';
 import { revealModeForIndex, type cardRevealPlan, type revealMode } from '../cardReveal';
 
 const emptyScoreMap = new Map<string, PowerScoreResult>();

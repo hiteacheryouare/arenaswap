@@ -1,6 +1,6 @@
 import { createFavoriteTeamKey, leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
-import { hexLuminance, isHex } from '@arenaswap/ui/src/components/colorMath';
+import { hexLuminance, isHex } from '@arenaswap/chromatic';
 
 interface liveGameSnapshot {
 	league: LeagueId;

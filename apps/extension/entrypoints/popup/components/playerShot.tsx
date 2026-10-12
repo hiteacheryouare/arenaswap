@@ -1,5 +1,5 @@
 import Crest from '@arenaswap/ui/src/components/crest';
-import { readableInkOn } from '@arenaswap/ui/src/components/colorUtils';
+import { readableInkOn } from '@arenaswap/chromatic';
 import { playerInitials } from './pregameLabels';
 
 interface playerShotProps {

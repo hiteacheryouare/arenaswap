@@ -3,7 +3,7 @@ import { useState } from 'react';
 import type { CSSProperties, MouseEvent } from 'react';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import type { BettingDisplayPrefs } from './gameCardTypes';
-import { matchupSurface, resolveTeamColorPair } from './colorUtils';
+import { matchupSurface, resolveTeamColorPair } from '@arenaswap/chromatic';
 import OnColorCrest from './onColorCrest';
 import HoverTooltip from './hoverTooltip';
 import { useT } from './i18nContext';

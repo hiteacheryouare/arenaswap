@@ -25,7 +25,8 @@ body:
         - Onboarding or tour
         - Tab switching or background service worker
         - PowerScore (packages/powerscore)
-        - Game data, scores or polling (packages/core)
+        - Game data or scores (packages/sideline)
+        - Polling, scoring or preferences (packages/core)
         - Shared UI (packages/ui)
         - Website (apps/docs)
         - Translations

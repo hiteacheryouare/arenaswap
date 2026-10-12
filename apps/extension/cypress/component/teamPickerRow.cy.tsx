@@ -1,4 +1,4 @@
-import type { EspnTeamEntry } from '@arenaswap/core';
+import type { EspnTeamEntry } from '@arenaswap/sideline';
 import TeamPickerRow from '../../entrypoints/popup/components/teamPickerRow';
 
 // A 4x4 solid #008348 PNG. A data URI so the test needs no network and cannot taint the canvas on

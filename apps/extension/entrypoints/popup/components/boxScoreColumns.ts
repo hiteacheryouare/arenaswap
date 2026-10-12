@@ -1,5 +1,5 @@
 import type { SportType } from '@arenaswap/core/types';
-import type { BoxScore, BoxScoreAthlete, BoxScoreCategory, BoxScoreTeam, TeamComparisonRow } from './boxScoreParse';
+import type { BoxScore, BoxScoreAthlete, BoxScoreCategory, BoxScoreTeam, TeamComparisonRow } from '@arenaswap/sideline';
 
 // Which categories a sport shows, in what order, and which of ESPN's columns each one keeps.
 //

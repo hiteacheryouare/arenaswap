@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { fetchCompetitionSituation, logWarn, readBasketballSituation } from '@arenaswap/core';
-import type { BasketballSituation } from '@arenaswap/core';
+import { logWarn } from '@arenaswap/core';
+import { fetchCompetitionSituation, readBasketballSituation } from '@arenaswap/sideline';
+import type { BasketballSituation } from '@arenaswap/sideline';
 import { pollIntervalMs } from '@arenaswap/core/constants';
 import type { Game } from '@arenaswap/core/types';
 

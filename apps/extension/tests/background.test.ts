@@ -11,8 +11,8 @@ jest.mock('@porkyproductions/hat', () => ({
 	randomInRange: jest.fn().mockImplementation((_min: number, max: number) => max),
 }));
 
-jest.mock('@arenaswap/core', () => ({
-	...jest.requireActual('@arenaswap/core'),
+jest.mock('@arenaswap/sideline', () => ({
+	...jest.requireActual('@arenaswap/sideline'),
 	fetchGamesWithLeagueLogos: jest.fn(),
 	fetchNextScheduledStart: jest.fn().mockResolvedValue(null),
 	fetchWinProbability: jest.fn().mockResolvedValue([]),
@@ -29,15 +29,15 @@ const flushPromises = () => new Promise<void>(r => setImmediate(r));
 // on every load — one captured at spec load is a different function object and would record none of
 // its calls. Read through the registry the same way `fetchMock` is.
 const lookahead = (): jest.Mock => (
-	(require('@arenaswap/core') as { fetchNextScheduledStart: jest.Mock }).fetchNextScheduledStart
+	(require('@arenaswap/sideline') as { fetchNextScheduledStart: jest.Mock }).fetchNextScheduledStart
 );
 
 const monoFetch = (): jest.Mock => (
-	(require('@arenaswap/core') as { fetchTeamMonoLogos: jest.Mock }).fetchTeamMonoLogos
+	(require('@arenaswap/sideline') as { fetchTeamMonoLogos: jest.Mock }).fetchTeamMonoLogos
 );
 
 const durationFetch = (): jest.Mock => (
-	(require('@arenaswap/core') as { fetchGameDurationMins: jest.Mock }).fetchGameDurationMins
+	(require('@arenaswap/sideline') as { fetchGameDurationMins: jest.Mock }).fetchGameDurationMins
 );
 
 const runtimeSendMessage = (): jest.Mock => (
@@ -185,7 +185,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 		i18n: { getUILanguage: () => 'en-US' },
 	};
 
-	fetchMock = (require('@arenaswap/core') as { fetchGamesWithLeagueLogos: jest.Mock }).fetchGamesWithLeagueLogos;
+	fetchMock = (require('@arenaswap/sideline') as { fetchGamesWithLeagueLogos: jest.Mock }).fetchGamesWithLeagueLogos;
 	fetchMock.mockResolvedValue(options.fetchReturnValue ?? { games: [], leagueLogos: {}, shedLeagues: [] });
 
 	require('../entrypoints/background');
@@ -493,7 +493,7 @@ describe('win probability polling', () => {
 			fetchReturnValue: { games: [liveGame], leagueLogos: {}, shedLeagues: [] },
 		});
 		// The startup seed already swept once, so the count starts from here.
-		const winProbMock = (require('@arenaswap/core') as { fetchWinProbability: jest.Mock }).fetchWinProbability;
+		const winProbMock = (require('@arenaswap/sideline') as { fetchWinProbability: jest.Mock }).fetchWinProbability;
 		winProbMock.mockClear();
 		return winProbMock;
 	};
@@ -546,7 +546,7 @@ describe('win probability polling', () => {
 const summaryLine = Array.from({ length: 20 }, () => 0.5);
 
 const summaryMock = () => {
-	const mock = (require('@arenaswap/core') as { fetchWinProbability: jest.Mock }).fetchWinProbability;
+	const mock = (require('@arenaswap/sideline') as { fetchWinProbability: jest.Mock }).fetchWinProbability;
 	mock.mockImplementation(async () => summaryLine);
 	mock.mockClear();
 	return mock;

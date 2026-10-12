@@ -5,7 +5,7 @@ metadata:
   type: reference
 ---
 
-**Recordings:** `scripts/powerscore/recordings/<day>/*.jsonl.gz`. Each line has `t`: meta, scoreboard (`events`, or `unchanged`), summary (`raw.pickcenter/boxscore/...`), situation, or standings. A file that is still being written ends in a torn gzip line. Read it with `zlib.gunzipSync(buf, { finishFlush: Z_SYNC_FLUSH })` and skip lines that don't parse. A scoreboard line holds only some of the events, so find a game by id across lines.
+**Recordings:** `packages/powerscore-tools/recordings/<day>/*.jsonl.gz`. Each line has `t`: meta, scoreboard (`events`, or `unchanged`), summary (`raw.pickcenter/boxscore/...`), situation, or standings. A file that is still being written ends in a torn gzip line. Read it with `zlib.gunzipSync(buf, { finishFlush: Z_SYNC_FLUSH })` and skip lines that don't parse. A scoreboard line holds only some of the events, so find a game by id across lines.
 
 **Payload facts:**
 - Soccer `details[].clock.value` stops at the period end in stoppage time (5400 for 90'+6'), but `displayClock` keeps counting.

@@ -12,7 +12,7 @@ well tested.
 
 **How to apply:**
 
-- **ESPN payload parsing (`packages/core/src/espnSchemas.ts` + `apiClient.ts`) is the top seam.**
+- **ESPN payload parsing (`packages/sideline/src/espnSchemas.ts` + `apiClient.ts`) is the top seam.**
   ESPN varies types per sport *and* per endpoint (numbers vs quoted strings) and sends `null` for
   absent objects — the schema file's own `odds: zod.array(...nullable())` is proof the maintainers hit
   it in production. Any zod field that is `.optional()` but not null-tolerant turns a cosmetic ESPN

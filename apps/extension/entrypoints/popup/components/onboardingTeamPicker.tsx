@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
-import type { EspnTeamEntry } from '@arenaswap/core';
+import type { EspnTeamEntry } from '@arenaswap/sideline';
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
 import TeamPickerList from './teamPickerList';
 import focusStepTitle from './stepTitleFocus';

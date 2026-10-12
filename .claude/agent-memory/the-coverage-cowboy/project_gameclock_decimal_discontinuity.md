@@ -5,7 +5,7 @@ metadata:
   type: project
 ---
 
-`packages/core/src/gameClock.ts` reads a single-part clock two contradictory ways: values below 1
+`packages/sideline/src/gameClock.ts` reads a single-part clock two contradictory ways: values below 1
 are treated as decimal **minutes** (`0.75` -> 45 s), values at or above 1 as **seconds**
 (`24.7` -> 24 s). A countdown clock ticking `1.0` -> `0.9` is therefore read as 1 s -> **54 s**,
 which is impossible for a clock that only decreases.
@@ -24,7 +24,7 @@ tenths of a second left — at the single most dramatic moment the product exist
 actually uses.
 
 Red test (left failing on purpose, matching the repo's `// FAILING ON PURPOSE.` convention):
-`packages/core/tests/liveClock.test.ts` -> `the clock never reads higher as it winds down`.
+`packages/sideline/tests/liveClock.test.ts` -> `the clock never reads higher as it winds down`.
 
 Re-run: `cd packages/core && npx jest --selectProjects unit --testPathPatterns liveClock`
 

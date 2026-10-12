@@ -1,7 +1,7 @@
 import type { FantasyRosterEntry } from '@arenaswap/core';
 import type { SportType } from '@arenaswap/core/types';
 import { buildSections, type BoxColumnLabelKey, type BoxHeadingKey } from './boxScoreColumns';
-import type { BoxScore } from './boxScoreParse';
+import type { BoxScore } from '@arenaswap/sideline';
 
 export interface playerStatGroup {
 	headingKey: BoxHeadingKey;

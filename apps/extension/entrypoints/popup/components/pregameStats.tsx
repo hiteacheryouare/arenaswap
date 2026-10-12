@@ -1,7 +1,7 @@
 import { i18n } from '#i18n';
 import { Fragment } from 'react';
 import type { Game, ProbableStarter, Team, TeamLeader } from '@arenaswap/core/types';
-import { readableTeamInkOnCard, resolveTeamColorPair, teamRowWash } from '@arenaswap/ui/src/components/colorUtils';
+import { readableTeamInkOnCard, resolveTeamColorPair, teamRowWash } from '@arenaswap/chromatic';
 import PlayerShot from './playerShot';
 import { leaderLabelKey, starterHeadingKey } from './pregameLabels';
 

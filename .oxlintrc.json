@@ -17,6 +17,12 @@
 		"jsx-a11y/prefer-tag-over-role": "off",
 		"no-new": "off"
 	},
+	"overrides": [
+		{
+			"files": ["apps/film/**", "packages/powerscore-tools/**"],
+			"rules": { "no-console": "off" }
+		}
+	],
 	"ignorePatterns": [
 		"node_modules",
 		"dist",

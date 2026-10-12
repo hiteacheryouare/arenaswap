@@ -12,7 +12,7 @@ import {
 	signalPresentation,
 } from '../src/components/scoringModeMeta';
 import { signalColors } from '../src/components/signalColors';
-import { colorDifference } from '../src/components/colorMath';
+import { colorDifference } from '@arenaswap/chromatic';
 
 // The engine's ids are plain strings, so nothing at compile time stops it growing one this table
 // has never heard of. That is what these check.

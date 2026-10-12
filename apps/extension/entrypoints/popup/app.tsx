@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
-import { fetchGamesWithLeagueLogos } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos } from '@arenaswap/sideline';
 import { allLeagueIds, createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences, withCollegeFilter } from '@arenaswap/core/constants';
 import type { FantasyRosterEntry } from '@arenaswap/core';
 import type { CollegeFilter, CollegeLeagueId, LeagueId, LeagueLogoMap, LeagueScheduleMap, SignalName, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';

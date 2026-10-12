@@ -285,13 +285,13 @@ const parseThroughFetch = async (event: unknown): Promise<Game> => {
 		json: async () => ({ events: [event] }),
 	})) as unknown as typeof fetch;
 	jest.resetModules();
-	const { fetchGames: freshFetchGames } = require('@arenaswap/core') as typeof import('@arenaswap/core');
+	const { fetchGames: freshFetchGames } = require('@arenaswap/sideline') as typeof import('@arenaswap/sideline');
 	const games = await freshFetchGames(['nfl']);
 	expect(games).toHaveLength(1);
 	return games[0]!;
 };
 
-// Nothing else joins the two halves of the dome rule: the suppression lives in core's parser and
+// Nothing else joins the two halves of the dome rule: the suppression lives in the scoreboard parser and
 // the decoration that acts on it lives here, so a unit test either side of the seam can pass while
 // a snowy dome still buries the screen. This runs a real scoreboard payload through the real fetch.
 describe('a dome game and the snow decoration, end to end', () => {

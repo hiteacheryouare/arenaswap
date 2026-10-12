@@ -32,8 +32,12 @@ body:
       options:
         - apps/extension
         - apps/docs
+        - apps/film
+        - packages/chromatic
         - packages/core
         - packages/powerscore
+        - packages/powerscore-tools
+        - packages/sideline
         - packages/ui
     validations:
       required: true

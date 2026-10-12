@@ -1,5 +1,5 @@
 import { i18n } from '#i18n';
-import type { EspnTeamEntry } from '@arenaswap/core';
+import type { EspnTeamEntry } from '@arenaswap/sideline';
 import CrestDisc from '@arenaswap/ui/src/components/crestDisc';
 
 interface teamPickerRowProps {

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { i18n } from '#i18n';
-import { fetchTeamsForLeagues } from '@arenaswap/core';
-import type { EspnTeamEntry } from '@arenaswap/core';
+import { fetchTeamsForLeagues } from '@arenaswap/sideline';
+import type { EspnTeamEntry } from '@arenaswap/sideline';
 import type { LeagueId, LeagueLogoMap, SportType } from '@arenaswap/core/types';
 import { leaguesBySportType } from '../popupHelpers';
 import OnboardingTabControl from './onboardingTabControl';

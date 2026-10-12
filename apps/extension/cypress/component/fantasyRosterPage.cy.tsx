@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import type { EspnTeamEntry, FantasyRosterEntry, PlayerSearchResult } from '@arenaswap/core';
+import type { FantasyRosterEntry } from '@arenaswap/core';
+import type { EspnTeamEntry, PlayerSearchResult } from '@arenaswap/sideline';
 import FantasyRosterPage, { searchDebounceMs, type fantasyRosterServices } from '../../entrypoints/popup/components/fantasyRosterPage';
 import en from '../../locales/en.json';
 

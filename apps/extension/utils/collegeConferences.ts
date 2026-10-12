@@ -1,4 +1,5 @@
-import { fetchConferenceDirectory, isObjectRecord, logWarn } from '@arenaswap/core';
+import { isObjectRecord, logWarn } from '@arenaswap/core';
+import { fetchConferenceDirectory } from '@arenaswap/sideline';
 import type { CollegeLeagueId, ConferenceDirectory } from '@arenaswap/core/types';
 
 // Conferences realign once a year at most, so a week is plenty and keeps the core API's ~30
