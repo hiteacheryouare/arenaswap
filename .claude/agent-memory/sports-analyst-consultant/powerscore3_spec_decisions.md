@@ -39,7 +39,7 @@ Together: hit@1 0.647 → 0.662, 0 regressions, in-sample. Held back: own-20 fie
 decided-game gate, `inningEnded` → bottom-of-N with 3 outs (core/src/scoring.ts). ESPN `TO a-b` in the
 replay timeline is away-home.
 
-**Why:** Ryan is building PowerScore 3 against recorded slates (`scripts/powerscore/recordSlate.ts`)
+**Why:** Ryan is building PowerScore 3 against recorded slates (`packages/powerscore-tools/src/recordSlate.ts`)
 and wants every number pinned so the replay can test it.
 
 **How to apply:** treat these as the starting calibration; when replay results come back, update

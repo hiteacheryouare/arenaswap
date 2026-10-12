@@ -5,7 +5,7 @@ metadata:
   type: project
 ---
 
-Measured 2026-10-09 (PR #206 review) over every live MLB frame in `scripts/powerscore/recordings/` (2026-10-03..09):
+Measured 2026-10-09 (PR #206 review) over every live MLB frame in `packages/powerscore-tools/recordings/` (2026-10-03..09):
 
 - `situation.dueUp` (always 3 entries) appears at `Mid`/`End` and at the start of a half before the first batter. It is **absent in ~4,150 of ~4,160 frames that have a batter**. `batter`/`pitcher` (so `Game.atBat`) are absent between innings. So the at-bat panel and a due-up list are effectively mutually exclusive; a fixture or test with both is a state the runtime does not produce.
 - Each dueUp entry carries `athlete.team.id`, `batOrder` (wraps: 8, 9, 1), `period`, `summary` ("0-0" at the top of a game).

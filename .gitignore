@@ -41,6 +41,7 @@ coverage/
 temporary/
 # Raw slate recordings from packages/powerscore-tools/src/recordSlate.ts
 packages/powerscore-tools/recordings/
+scripts/powerscore/recordings/
 # The films: build output, downloaded crests, the soundtrack recording and renders (scripts/film/README.md)
 scripts/film/.build/
 scripts/film/.cache/

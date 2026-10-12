@@ -1,6 +1,6 @@
 ---
 name: review-powerscore-replay-harness
-description: Traps in scripts/powerscore (recorder + replay + blind labels) — tie-break luck in hit@1, dist/src engine mix, non-self-contained hourly files, recorder lifecycle, describe.ts inning-break text
+description: Traps in packages/powerscore-tools (recorder + replay + blind labels) — tie-break luck in hit@1, dist/src engine mix, non-self-contained hourly files, recorder lifecycle, describe.ts inning-break text
 metadata:
   type: project
 ---

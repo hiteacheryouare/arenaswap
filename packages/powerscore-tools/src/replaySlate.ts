@@ -42,7 +42,8 @@ const option = (name: string): string | undefined => {
 	const index = args.indexOf(`--${name}`);
 	return index >= 0 ? args[index + 1] : undefined;
 };
-// npm runs the script from the package folder, so relative paths resolve against wherever npm was run.
+// npm runs the script from the package folder, so relative paths resolve against the repo root when
+// run through `npm run powerscore:replay`, or the package folder when run there directly.
 const pathOption = (name: string): string | undefined => {
 	const value = option(name);
 	return value === undefined ? undefined : resolve(process.env.INIT_CWD ?? process.cwd(), value);

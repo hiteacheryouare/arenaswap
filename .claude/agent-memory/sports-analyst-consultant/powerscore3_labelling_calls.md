@@ -5,7 +5,7 @@ metadata:
   type: project
 ---
 
-First slate labelled 2026-10-03: `scripts/powerscore/fixtures/labels/2026-10-03-a.json` (55 moments,
+First slate labelled 2026-10-03: `packages/powerscore-tools/fixtures/labels/2026-10-03-a.json` (55 moments,
 45 at level 3, 10 at level 2), from the blind file `temporary/powerscore3/blind-<slate>.txt`. Only the
 flipTo game's level is recorded, so only the leading candidates each minute need a full read.
 

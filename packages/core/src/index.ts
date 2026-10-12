@@ -25,7 +25,6 @@ export { createPollModeTracker } from './pollModeTracker';
 export { createWinProbabilityTracker, summaryStillNeeded } from './scoreboardWinProbability';
 export type { SummaryNeeds, WinProbabilityTracker } from './scoreboardWinProbability';
 export { computeRetryDelayMs } from './pollBackoff';
-export { collegeDivisions } from './college';
 export { fetchConferenceDirectory } from './collegeConferences';
 export type { PollMode, PollModeTracker } from './pollModeTracker';
 export * from './types';
