@@ -6,7 +6,7 @@
 		// legal strings and browser frame styles, which live outside this package.
 		"build:film": {
 			"dependsOn": ["^build", "@arenaswap/extension#build:film"],
-			"inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/apps/docs/src/i18n/strings/**", "$TURBO_ROOT$/apps/docs/src/styles/**"],
+			"inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/apps/docs/src/i18n/strings/**", "$TURBO_ROOT$/apps/docs/src/styles/**", "$TURBO_ROOT$/apps/extension/cypress/support/fakeBrowser.ts"],
 			"outputs": [".build/**", "audio/*.cjs", "extract/*.cjs", "render/*.cjs"]
 		}
 	}

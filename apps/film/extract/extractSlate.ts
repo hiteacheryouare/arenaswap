@@ -38,8 +38,8 @@ const option = (name: string) => {
 	const index = args.indexOf(`--${name}`);
 	return index >= 0 ? args[index + 1] : undefined;
 };
-// npm runs the script from the package folder, so a relative path resolves against wherever
-// `npm run film:extract` was started.
+// npm runs the script from the package folder, so a relative path resolves against the repo root
+// through `npm run film:extract`, or against wherever `npm run extract -w` was run.
 const pathOption = (name: string) => {
 	const value = option(name);
 	return value === undefined ? undefined : resolve(process.env.INIT_CWD ?? process.cwd(), value);

@@ -1,7 +1,9 @@
 {
 	"extends": ["//"],
 	"tasks": {
+		// The licences page reads every workspace's manifest, and none of them are this package's files.
 		"build": {
+			"inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/package.json", "$TURBO_ROOT$/apps/*/package.json", "$TURBO_ROOT$/packages/*/package.json"],
 			"outputs": ["$TURBO_ROOT$/docs/**"]
 		},
 		"typecheck": {

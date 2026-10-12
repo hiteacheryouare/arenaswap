@@ -11,7 +11,8 @@
 		"types": ["node", "vite/client"],
 		"paths": {
 			"@arenaswap/core": ["../../packages/core/src/index.ts"],
-			"@arenaswap/core/*": ["../../packages/core/src/*"],
+			"@arenaswap/core/constants": ["../../packages/core/src/constants.ts"],
+			"@arenaswap/core/types": ["../../packages/core/src/types.ts"],
 			"powerscore": ["../../packages/powerscore/src/index.ts"]
 		}
 	},
