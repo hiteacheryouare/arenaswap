@@ -1,4 +1,4 @@
-import type { Game } from '../../../packages/core/src/types';
+import type { Game } from '@arenaswap/core';
 
 const clockText = (game: Game): string => {
 	if (game.sportType === 'baseball' || game.sportType === 'softball') {

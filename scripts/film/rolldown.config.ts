@@ -1,9 +1,12 @@
 import { resolve } from 'node:path';
 import { defineConfig } from 'rolldown';
 
-// Same alias as the PowerScore tooling: the films score games with the engine in the working tree,
-// not whatever was last built into packages/powerscore/dist.
-const alias = { powerscore: resolve(import.meta.dirname, '../../packages/powerscore/src/index.ts') };
+// Same aliases as the PowerScore tooling: the films score games with the engine and core in the
+// working tree, not whatever was last built into their dist folders.
+const alias = {
+	powerscore: resolve(import.meta.dirname, '../../packages/powerscore/src/index.ts'),
+	'@arenaswap/core': resolve(import.meta.dirname, '../../packages/core/src/index.ts'),
+};
 const node = { platform: 'node' as const, resolve: { alias }, logLevel: 'silent' as const };
 
 export default defineConfig([

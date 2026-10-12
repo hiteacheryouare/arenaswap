@@ -8,11 +8,8 @@
 // Run: npm run powerscore:simulate -- [ticks]
 //      npm run powerscore:simulate -- --ticks=25000
 //      npm run powerscore:simulate -- --early-game    (stress test only)
-import { MockGameSimulator } from '../../packages/core/src/mockGames';
-import { computePowerScore } from '../../packages/powerscore/src/scorer';
-import { sportTypeConfigMap, leagueConfigMap } from '../../packages/powerscore/src/constants';
-import { historyWindowMs as defaultHistoryWindowMs } from '../../packages/core/src/constants';
-import type { Game, ScoreSnapshot } from '../../packages/powerscore/src/types';
+import { MockGameSimulator, historyWindowMs as defaultHistoryWindowMs } from '@arenaswap/core';
+import { computePowerScore, sportTypeConfigMap, leagueConfigMap, type Game, type ScoreSnapshot } from 'powerscore';
 
 const earlyGameMode = process.argv.includes('--early-game');
 const pollIntervalMs = 15_000;

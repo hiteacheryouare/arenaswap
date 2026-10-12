@@ -14,14 +14,13 @@
 //   --include-cold       also score labels on games seen for less than one history window
 //   --roster <file>      a fantasy roster (JSON array of roster entries) for Fantasy mode
 import { mkdirSync, readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { listRecordingFiles, readRecording, unreadableLines } from './replay/recording';
 import { createReplaySession, type Frame, type Scorer } from './replay/session';
 import { createV3Scorer, replayPrefs, v2Scorer } from './replay/scorers';
 import { describeGame } from './replay/describe';
-import { normalizeFantasyRoster } from '../../packages/core/src/fantasy';
-import { getHistoryWindowMsForGame } from '../../packages/core/src/scoring';
-import type { BuiltInModeId } from '../../packages/powerscore/src/types';
+import { getHistoryWindowMsForGame, normalizeFantasyRoster } from '@arenaswap/core';
+import type { BuiltInModeId } from 'powerscore';
 
 interface LabelledMoment {
 	ts: string | number;
@@ -43,6 +42,11 @@ const option = (name: string): string | undefined => {
 	const index = args.indexOf(`--${name}`);
 	return index >= 0 ? args[index + 1] : undefined;
 };
+// npm runs the script from the package folder, so relative paths resolve against wherever npm was run.
+const pathOption = (name: string): string | undefined => {
+	const value = option(name);
+	return value === undefined ? undefined : resolve(process.env.INIT_CWD ?? process.cwd(), value);
+};
 const flag = (name: string): boolean => args.includes(`--${name}`);
 const toTime = (value: string | number | undefined): number | undefined => {
 	if (value === undefined) return undefined;
@@ -51,14 +55,14 @@ const toTime = (value: string | number | undefined): number | undefined => {
 	return time;
 };
 
-const recordingPath = option('recording') ?? join(__dirname, 'recordings');
+const recordingPath = pathOption('recording') ?? join(__dirname, '..', 'recordings');
 const from = toTime(option('from'));
 const to = toTime(option('to'));
 const modes = (option('modes') ?? 'classic').split(',') as BuiltInModeId[];
-const labelsDir = join(__dirname, 'fixtures', 'labels');
+const labelsDir = join(__dirname, '..', 'fixtures', 'labels');
 
 const readLabels = (): LabelFile[] => {
-	const explicit = option('labels');
+	const explicit = pathOption('labels');
 	const files = explicit ? [explicit] : existsSync(labelsDir) ? readdirSync(labelsDir).filter(name => name.endsWith('.json')).map(name => join(labelsDir, name)) : [];
 	return files.map(file => JSON.parse(readFileSync(file, 'utf8')) as LabelFile);
 };
@@ -71,7 +75,7 @@ const formatTime = (ts: number): string => new Date(ts).toLocaleTimeString('en-U
 
 const main = async () => {
 	const files = listRecordingFiles(recordingPath);
-	const rosterPath = option('roster');
+	const rosterPath = pathOption('roster');
 	const roster = rosterPath ? normalizeFantasyRoster(JSON.parse(readFileSync(rosterPath, 'utf8'))) : [];
 	const session = createReplaySession(scorers, replayPrefs, roster);
 	const frames: Frame[] = [];
@@ -198,7 +202,7 @@ const main = async () => {
 		flush();
 	}
 
-	const timelinePath = option('timeline');
+	const timelinePath = pathOption('timeline');
 	if (timelinePath) {
 		const lines: string[] = [];
 		let lastMinute = -1;
@@ -226,7 +230,7 @@ const main = async () => {
 		console.log(`\nTimeline written to ${timelinePath}`);
 	}
 
-	const jsonPath = option('json');
+	const jsonPath = pathOption('json');
 	if (jsonPath) {
 		mkdirSync(dirname(jsonPath), { recursive: true });
 		writeFileSync(jsonPath, JSON.stringify(scorecard, null, '\t'));

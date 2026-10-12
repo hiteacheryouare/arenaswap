@@ -1,0 +1,14 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"noEmit": true,
+		"declaration": false,
+		"declarationMap": false,
+		"types": ["node"],
+		"paths": {
+			"@arenaswap/core": ["../core/src/index.ts"],
+			"powerscore": ["../powerscore/src/index.ts"]
+		}
+	},
+	"include": ["src/**/*.ts", "rolldown.config.ts"]
+}

@@ -2,8 +2,7 @@ import { createReadStream, existsSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { createInterface } from 'node:readline';
 import { constants as zlibConstants, createGunzip } from 'node:zlib';
-import { parseScoreboardEvents, parseWinProbability } from '../../../packages/core/src/apiClient';
-import type { Game, LeagueId } from '../../../packages/core/src/types';
+import { parseScoreboardEvents, parseWinProbability, type Game, type LeagueId } from '@arenaswap/core';
 
 interface RawEvent {
 	id?: string;

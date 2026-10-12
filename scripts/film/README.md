@@ -7,10 +7,10 @@ code, so every frame can be rebuilt, retimed or translated.
 
 Nothing on screen is mocked up. The popup is the shipped extension, built and running inside the
 frame. The scores, clocks, PowerScores and tab switches are Saturday, October 3, 2026, as
-`scripts/powerscore/recordSlate.ts` recorded it, scored by the PowerScore engine in this repo and
-switched by the shipped rule (sensitivity 4, 45-second cooldown). The one exception is the 60's
-pre-game beat: Saturday's recording kept no pre-game data, so it shows Bears at Packers (Sun., Oct.
-11), fetched before kickoff by `npm run film:pregame` into `data/pregame.json`.
+`packages/powerscore-tools/src/recordSlate.ts` recorded it, scored by the PowerScore engine in this
+repo and switched by the shipped rule (sensitivity 4, 45-second cooldown). The one exception is the
+60's pre-game beat: Saturday's recording kept no pre-game data, so it shows Bears at Packers (Sun.,
+Oct. 11), fetched before kickoff by `npm run film:pregame` into `data/pregame.json`.
 
 The soundtrack is Otis McDonald's "Put It On The Floor", played 1% fast so it sits at 96 BPM. The
 sound effects on top of it are a synthesized drumline, made in `audio/`.
@@ -53,7 +53,7 @@ A full set of six takes roughly 20 minutes on an Apple-silicon Mac with `--jobs 
 ## How it works
 
 ```
-scripts/powerscore/recordings/2026-10-03   (gitignored, 180 MB, made by powerscore:record)
+packages/powerscore-tools/recordings/2026-10-03   (gitignored, 180 MB, made by powerscore:record)
         │  npm run film:extract
         ▼
 data/saturday.json      the night, compacted: every game's frames, PowerScores, box scores

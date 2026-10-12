@@ -1,9 +1,8 @@
-import { scoreGame } from '../../../packages/powerscore/src/compose';
-import { createDefaultUserPreferences } from '../../../packages/core/src/constants';
-import { scoreOptionsFor, scoringContextFor, toScoringGame } from '../../../packages/core/src/scoring';
-import { scoreGameV2 } from '../../../packages/powerscore/tests/legacy/v2/compose';
-import type { Game as V2Game } from '../../../packages/powerscore/tests/legacy/v2/types';
-import type { BuiltInModeId } from '../../../packages/powerscore/src/types';
+import { scoreGame, type BuiltInModeId } from 'powerscore';
+import { createDefaultUserPreferences, scoreOptionsFor, scoringContextFor, toScoringGame } from '@arenaswap/core';
+// The frozen 2.2.0 scorer is powerscore's own test code, outside its published API.
+import { scoreGameV2 } from '../../../powerscore/tests/legacy/v2/compose';
+import type { Game as V2Game } from '../../../powerscore/tests/legacy/v2/types';
 import type { Scorer } from './session';
 
 export const replayPrefs = createDefaultUserPreferences();

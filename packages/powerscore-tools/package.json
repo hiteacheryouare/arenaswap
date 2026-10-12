@@ -1,0 +1,26 @@
+{
+	"name": "@arenaswap/powerscore-tools",
+	"version": "3.0.0",
+	"description": "PowerScore calibration harness: slate recorder, replay, distribution simulator and live validator",
+	"private": true,
+	"exports": {
+		"./recording": "./src/replay/recording.ts"
+	},
+	"scripts": {
+		"build": "rolldown -c",
+		"record": "rolldown -c && node dist/recordSlate.cjs",
+		"replay": "rolldown -c && node --max-old-space-size=6144 dist/replaySlate.cjs",
+		"simulate": "rolldown -c && node dist/simulateDistribution.cjs 100000",
+		"validate-live": "rolldown -c && node dist/validateLive.cjs",
+		"typecheck": "tsc --noEmit",
+		"lint": "oxlint ."
+	},
+	"dependencies": {
+		"@arenaswap/core": "*",
+		"powerscore": "*"
+	},
+	"devDependencies": {
+		"rolldown": "^1.2.9",
+		"typescript": "^7.0.2"
+	}
+}

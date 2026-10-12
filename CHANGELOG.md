@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The PowerScore calibration tools are their own workspace — 2026-10-11
+
+The recorder, replay, simulator and live validator moved from `scripts/powerscore` into `packages/powerscore-tools`, which is now linted, type-checked and bundled like every other package, and the `npm run powerscore:*` commands still take the same arguments. Recordings now live in `packages/powerscore-tools/recordings`, so move any you have out of the old folder. The bundles still read the engine and core straight from source, so a replay never scores with a stale build.
+
 ## Colour science gets its own package — 2026-10-11
 
 The contrast maths, team colour pairing and crest readers moved out of `packages/ui` into `packages/chromatic` (`@arenaswap/chromatic`), a source package with its own tests, so nothing deep-imports `@arenaswap/ui/src/components/colorUtils` any more. Import from the package root anywhere a page renders, but the background service worker takes the `/colorMath` and `/crestColor` subpaths, because the root also loads the two crest readers that touch localStorage at import.

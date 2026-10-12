@@ -1,17 +1,18 @@
 import {
 	chooseSwitchTarget,
+	createLiveExtras,
 	getHistoryWindowMsForGame,
 	nextClockStall,
 	retainSnapshots,
 	toScoreSnapshot,
 	type ClockStallEntry,
 	type LiveScoringInput,
-} from '../../../packages/core/src/scoring';
-import { createLiveExtras } from '../../../packages/core/src/liveExtras';
-import type { FantasyRosterEntry } from '../../../packages/core/src/fantasy';
-import { leagueConfigMap, sportTypeConfigMap } from '../../../packages/powerscore/src/constants';
-import type { Game, LeagueId, UserPreferences } from '../../../packages/core/src/types';
-import type { ScoreSnapshot } from '../../../packages/powerscore/src/types';
+	type FantasyRosterEntry,
+	type Game,
+	type LeagueId,
+	type UserPreferences,
+} from '@arenaswap/core';
+import { leagueConfigMap, sportTypeConfigMap, type ScoreSnapshot } from 'powerscore';
 import type { ReplayEvent } from './recording';
 
 export interface ReplayScore {

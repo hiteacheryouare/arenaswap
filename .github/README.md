@@ -101,13 +101,14 @@ Turborepo monorepo:
 
 ```
 apps/
-  extension/   → WXT browser extension (React + TypeScript)
-  docs/        → Astro site — docs, PowerScore reference, releases, FAQ, legal, in 12 locales
+  extension/         → WXT browser extension (React + TypeScript)
+  docs/              → Astro site — docs, PowerScore reference, releases, FAQ, legal, in 12 locales
 packages/
-  chromatic/   → Colour science shared by the extension and the site
-  core/        → Extension engine
-  powerscore/  → Scoring algorithm, published to npm as powerscore
-  ui/          → Components shared by the extension and the site
+  chromatic/         → Colour science shared by the extension and the site
+  core/              → Extension engine
+  powerscore/        → Scoring algorithm, published to npm as powerscore
+  powerscore-tools/  → PowerScore calibration: slate recorder, replay, simulator, live validator
+  ui/                → Components shared by the extension and the site
 ```
 
 ## License

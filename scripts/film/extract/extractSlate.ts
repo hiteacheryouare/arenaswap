@@ -1,7 +1,7 @@
 // Turns a night of raw recordings into the data file the films are rendered from.
 //
 // Run: npm run film:extract -- [--recording <day folder or file>]
-// Reads: scripts/powerscore/recordings/2026-10-03 (gitignored; made by `npm run powerscore:record`)
+// Reads: packages/powerscore-tools/recordings/2026-10-03 (gitignored; made by `npm run powerscore:record`)
 // Writes: scripts/film/data/saturday.json (committed, so a render never needs the recording)
 //
 // Every poll is played through the same steps background.ts takes, with the same core functions:
@@ -18,7 +18,7 @@ import { leagueConfigMap, sportTypeConfigMap } from '../../../packages/powerscor
 import { resolveLeagueLogoUrl } from '../../../packages/core/src/constants';
 import type { Game, LeagueId, LeagueLogoMap } from '../../../packages/core/src/types';
 import type { ScoreSnapshot } from '../../../packages/powerscore/src/types';
-import { listRecordingFiles } from '../../powerscore/replay/recording';
+import { listRecordingFiles } from '@arenaswap/powerscore-tools/recording';
 import { detailGameIds, guideAt, kentuckyKey, profiles, slateFrom, slateTo, summaryMoments, viewerLeagues, wallAt, type ProfileName } from './slateConfig';
 import trimSummary from './trimSummary';
 import type { FilmSlate, GameTrack, ScoreEntry, WallGame } from '../stage/data/slateTypes';
@@ -43,7 +43,7 @@ const option = (name: string) => {
 };
 
 const root = join(__dirname, '..', '..', '..');
-const recordingPath = option('recording') ?? join(root, 'scripts', 'powerscore', 'recordings', '2026-10-03');
+const recordingPath = option('recording') ?? join(root, 'packages', 'powerscore-tools', 'recordings', '2026-10-03');
 const outFile = option('out') ?? join(root, 'scripts', 'film', 'data', 'saturday.json');
 
 const readLines = async function* (file: string): AsyncGenerator<RecordedLine> {
@@ -231,7 +231,7 @@ const main = async () => {
 
 	const slate: FilmSlate = {
 		source: {
-			recording: 'scripts/powerscore/recordings/2026-10-03',
+			recording: 'packages/powerscore-tools/recordings/2026-10-03',
 			recorderGitSha: recorderSha,
 			from: new Date(slateFrom).toISOString(),
 			to: new Date(slateTo).toISOString(),

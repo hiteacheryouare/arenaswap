@@ -3,22 +3,22 @@
 //
 // Run: npm run powerscore:record -- [--detach] [leagueId ...]   (no leagues = every league)
 //   --detach   keep recording after the terminal or session that started it goes away; logs to
-//              recordings/recorder.log. Stop it with `kill $(cat scripts/powerscore/recordings/recorder.pid)`.
-// Output: scripts/powerscore/recordings/<YYYY-MM-DD>/<HH>-<process start>.jsonl.gz, one hour per
+//              recordings/recorder.log. Stop it with `kill $(cat packages/powerscore-tools/recordings/recorder.pid)`.
+// Output: packages/powerscore-tools/recordings/<YYYY-MM-DD>/<HH>-<process start>.jsonl.gz, one hour per
 // file and a new file per run, so a restart never appends to a file a killed run left unfinished.
 // Every file starts with each live game in full, so any hour replays on its own.
 import { createWriteStream, existsSync, mkdirSync, openSync, readFileSync, rmSync, writeFileSync, type WriteStream } from 'node:fs';
 import { join } from 'node:path';
 import { constants as zlibConstants, createGzip, type Gzip } from 'node:zlib';
 import { execSync, spawn } from 'node:child_process';
-import { allLeagueIds, leagueConfigMap } from '../../packages/powerscore/src/constants';
-import { collegeDivisions } from '../../packages/core/src/college';
-import type { LeagueId } from '../../packages/powerscore/src/types';
+import { allLeagueIds, leagueConfigMap, type LeagueId } from 'powerscore';
+import { collegeDivisions } from '@arenaswap/core';
 
 const siteBase = 'https://site.api.espn.com/apis/site/v2/sports';
 const standingsBase = 'https://site.api.espn.com/apis/v2/sports';
 const coreBase = 'https://sports.core.api.espn.com/v2/sports';
-const recordingsDir = join(__dirname, 'recordings');
+// __dirname is the package's dist/ once bundled, so recordings sit beside it at the package root.
+const recordingsDir = join(__dirname, '..', 'recordings');
 const pidFile = join(recordingsDir, 'recorder.pid');
 const logFile = join(recordingsDir, 'recorder.log');
 
