@@ -4,6 +4,7 @@ import type { Browser } from 'wxt/browser';
 import type { Game, Team } from '@arenaswap/core/types';
 import CrestDisc from '@arenaswap/ui/src/components/crestDisc';
 import { suggestionPairKey, type TabSuggestion } from '../../../utils/tabSuggestions';
+import TabFavicon from './tabFavicon';
 
 interface suggestViewProps {
 	suggestions: TabSuggestion[];
@@ -100,7 +101,10 @@ const suggestView = ({ suggestions, games, openTabs, formatTabLabel, onApply, on
 												<span className='text-body-tertiary'>{i18n.t('guide.at')}</span>
 												<TeamMark team={game.homeTeam} />
 											</span>
-											<span className='d-block text-truncate suggest-tab-label'>{formatTabLabel(tab)}</span>
+											<span className='d-flex align-items-center gap-1 suggest-tab-label'>
+												<TabFavicon url={tab.favIconUrl} />
+												<span className='text-truncate min-w-0'>{formatTabLabel(tab)}</span>
+											</span>
 										</span>
 									</label>
 								);

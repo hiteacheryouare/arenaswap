@@ -1,10 +1,11 @@
 import { Dropdown } from 'bootstrap';
-import { useEffect, useId, useRef } from 'react';
+import { useEffect, useId, useRef, type ReactNode } from 'react';
 
 export interface selectDropdownOption<T extends string> {
 	value: T;
 	label: string;
 	icon?: string;
+	image?: ReactNode;
 	disabled?: boolean;
 }
 
@@ -50,6 +51,7 @@ const selectDropdown = <T extends string>({ value, options, onChange, id, disabl
 				disabled={disabled}
 			>
 				{!labelId && ariaLabel && <span id={hiddenLabelId} className='visually-hidden'>{ariaLabel}</span>}
+				{current?.image && <span className='me-2'>{current.image}</span>}
 				{current?.icon && <i className={`bi ${current.icon} me-2`} aria-hidden='true' />}
 				<span id={valueId}>{current?.label}</span>
 			</button>
@@ -64,6 +66,7 @@ const selectDropdown = <T extends string>({ value, options, onChange, id, disabl
 							disabled={option.disabled}
 							onClick={() => onChange(option.value)}
 						>
+							{option.image}
 							{option.icon && <i className={`bi ${option.icon}`} aria-hidden='true' />}
 							<span className='flex-grow-1 text-truncate'>{option.label}</span>
 							{option.value === value && <i className='bi bi-check2 select-dropdown-check' aria-hidden='true' />}

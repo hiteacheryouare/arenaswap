@@ -25,6 +25,7 @@ import SwitchDelaySlider from './switchDelaySlider';
 import TemperatureUnitToggle from './temperatureUnitToggle';
 import SelectDropdown from './selectDropdown';
 import StandbyStreamGuide from './standbyStreamGuide';
+import TabFavicon from './tabFavicon';
 import { searchSettings, settingsGroups, type settingsGroupId } from './settingsCatalog';
 import type { demoSeason } from '../../../utils/holidayDecorations';
 import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
@@ -535,7 +536,11 @@ const setupView = ({
 							ariaLabel={i18n.t('setup.standbyTab')}
 							options={[
 								{ value: '', label: i18n.t('setup.selectTab') },
-								...openTabs.filter(openTab => openTab.id !== undefined).map(openTab => ({ value: String(openTab.id), label: formatTabLabel(openTab) })),
+								...openTabs.filter(openTab => openTab.id !== undefined).map(openTab => ({
+									value: String(openTab.id),
+									label: formatTabLabel(openTab),
+									image: <TabFavicon url={openTab.favIconUrl} />,
+								})),
 							]}
 						/>
 					</div>

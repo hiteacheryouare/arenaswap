@@ -110,8 +110,9 @@ export default defineConfig({
 			96: 'icon/96.png',
 			128: 'icon/128.png',
 		},
+		// img-src stays open to any https host because the tab pickers show each tab's favicon from its own site.
 		content_security_policy: {
-			extension_pages: "script-src 'self'; object-src 'self'; img-src 'self' https://a.espncdn.com data:;",
+			extension_pages: "script-src 'self'; object-src 'self'; img-src 'self' https: data:;",
 		},
 	}),
 });

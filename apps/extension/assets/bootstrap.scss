@@ -605,6 +605,26 @@
 	color: var(--as-accent-ink);
 }
 
+.tab-favicon {
+	display:        inline-block;
+	flex-shrink:    0;
+	width:          1.15em;
+	height:         1.15em;
+	font-size:      1em;
+	line-height:    1;
+	vertical-align: -0.2em;
+	object-fit:     contain;
+}
+
+i.tab-favicon {
+	color:      var(--as-faint);
+	text-align: center;
+}
+
+.dropdown-item.disabled img.tab-favicon {
+	opacity: 0.5;
+}
+
 // A native select scrolled its own list; a tab picker with thirty tabs open needs the same.
 .select-dropdown-menu {
 	max-height: 14rem;

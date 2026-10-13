@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Tab pickers show each tab's favicon — 2026-10-12
+
+The game card and Standby Stream tab pickers, and the Suggested Tabs rows, now show each tab's favicon beside its title, on the closed picker too. The extension pages' CSP now allows `img-src https:` (it used to allowlist only our sources' image host, which quietly blanked every favicon), and `manifestCsp.test.ts` guards that. A tab without a favicon, or one served over plain http, gets a globe instead.
+
 ## Ryan's calls on the QA sweep — 2026-10-12
 
 Lead changes now fade from the latest flip the play log saw, and a lead built inside overtime or extra innings gives back the overtime premium once it passes the sport's close margin; a nine-day replay moved 50 game-minutes by a few points and changed the top pick in one minute out of 7,195. Basketball clocks under a minute print tenths the way broadcasts do (45.3, 0.8), onboarding saves leagues in the default order, the college division picker turns up in Settings search, and European Portuguese uses the 1990 spelling throughout.

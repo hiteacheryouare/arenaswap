@@ -3,6 +3,7 @@ import type { Browser } from 'wxt/browser';
 import type { TabRegistration } from '@arenaswap/core/types';
 import { assignTabToGame } from '../../../utils/tabSuggestions';
 import SelectDropdown from './selectDropdown';
+import TabFavicon from './tabFavicon';
 
 interface tabAssignSelectProps {
 	gameId: string;
@@ -37,7 +38,12 @@ const tabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel 
 					{ value: '', label: i18n.t('tabAssign.placeholder') },
 					...openTabs.filter(tab => tab.id !== undefined).map(tab => {
 						const inUse = assignedTabIds.has(tab.id!);
-						return { value: String(tab.id), label: `${formatTabLabel(tab)}${inUse ? i18n.t('tabAssign.inUse') : ''}`, disabled: inUse };
+						return {
+							value: String(tab.id),
+							label: `${formatTabLabel(tab)}${inUse ? i18n.t('tabAssign.inUse') : ''}`,
+							image: <TabFavicon url={tab.favIconUrl} />,
+							disabled: inUse,
+						};
 					}),
 				]}
 			/>
