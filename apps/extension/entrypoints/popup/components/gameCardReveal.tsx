@@ -4,6 +4,7 @@ import type { Game, Team } from '@arenaswap/core/types';
 import { teamDisplayInk } from '@arenaswap/chromatic';
 import { buildGameCardSurface } from '@arenaswap/ui/src/components/gameCardShared';
 import OnColorCrest from '@arenaswap/ui/src/components/onColorCrest';
+import RevealName from './revealName';
 import RevealNamingScene from './revealNamingScene';
 import {
 	revealAbbrScale,
@@ -28,6 +29,26 @@ interface gameCardRevealProps {
 	children: ReactNode;
 }
 
+type revealSide = 'away' | 'home';
+
+interface revealSideProps {
+	team: Team;
+	surface: string;
+	side: revealSide;
+	// How long after the graphic started this side was found to have no crest, or undefined if it has
+	// one. A logo can fail two round trips in, and the stand-in's animations start when it mounts.
+	crestlessLate?: number;
+	onCrestFailed: () => void;
+}
+
+interface revealOpeningProps {
+	game: Game;
+	awayColor: string;
+	homeColor: string;
+	crestlessLate: (side: revealSide) => number | undefined;
+	onCrestFailed: (side: revealSide) => () => void;
+}
+
 interface revealLanding {
 	awayDx: number;
 	awayDy: number;
@@ -48,6 +69,10 @@ const crestCentre = (rect: DOMRect, box: DOMRect) => ({
 	y: rect.top - box.top + rect.height / 2,
 });
 
+const timelineNow = () => Number(document.timeline?.currentTime ?? 0);
+
+const lateStyle = (late?: number) => (late ? { '--reveal-late': `${late}ms` } as CSSProperties : undefined);
+
 // Two layers per side, clipped along the same leaning edge from opposite directions: the crest is
 // only drawn where the bar has already been, the tricode only where it has not. They are exact
 // complements, so every pixel of the card is showing one or the other at every instant and the
@@ -60,23 +85,39 @@ const crestCentre = (rect: DOMRect, box: DOMRect) => ({
 // glyph solid in the ink and stroked wider than itself; the front copy is the same glyph in the colour
 // behind it, laid exactly over the back one. What is left showing is the stroke outside the
 // silhouette, which is the outline and nothing else.
-const RevealSide = ({ team, surface, side }: { team: Team; surface: string; side: 'away' | 'home' }) => (
-	<>
-		<span className={`game-card-reveal-wipe is-${side}`}>
-			<span className='game-card-reveal-crest'>
-				<span className='game-card-reveal-crest-plate is-bare'>
-					<OnColorCrest team={team} surface={surface} className='game-card-reveal-crest-logo' fallback='blank' loading='eager' />
+//
+// A club we have no crest for is named in the crest's place instead, over the same placeholder disc
+// the card draws for it. The name is what the bar uncovers, and the disc is what it fades into on the
+// way down, so what lands on the card's crest slot is the card's own crest rather than a word that
+// turns into one at the handoff.
+const RevealSide = ({ team, surface, side, crestlessLate, onCrestFailed }: revealSideProps) => {
+	const crestless = crestlessLate !== undefined;
+	return (
+		<>
+			<span className={`game-card-reveal-wipe is-${side}`}>
+				<span className={`game-card-reveal-crest${crestless ? ' is-named' : ''}`} style={lateStyle(crestlessLate)}>
+					<span className='game-card-reveal-crest-plate is-bare'>
+						<OnColorCrest
+							team={team}
+							surface={surface}
+							className='game-card-reveal-crest-logo'
+							fallback={crestless ? 'abbreviation' : 'blank'}
+							loading='eager'
+							onFailed={onCrestFailed}
+						/>
+					</span>
+					{crestless && <RevealName key={team.name} team={team} className='game-card-reveal-crest-name' inset={0} />}
 				</span>
 			</span>
-		</span>
-		<span className={`game-card-reveal-mask is-${side}`}>
-			<span className='game-card-reveal-abbr'>
-				<span className='game-card-reveal-abbr-edge'>{team.abbreviation}</span>
-				<span className='game-card-reveal-abbr-face'>{team.abbreviation}</span>
+			<span className={`game-card-reveal-mask is-${side}`}>
+				<span className='game-card-reveal-abbr'>
+					<span className='game-card-reveal-abbr-edge'>{team.abbreviation}</span>
+					<span className='game-card-reveal-abbr-face'>{team.abbreviation}</span>
+				</span>
 			</span>
-		</span>
-	</>
-);
+		</>
+	);
+};
 
 // Everything that runs ahead of the poster, which is two scenes on one layer.
 //
@@ -92,11 +133,17 @@ const RevealSide = ({ team, surface, side }: { team: Team; surface: string; side
 // Its own layer rather than the poster's, which is clipped to hide its crests until a bar has passed
 // — these have to be visible from the first frame — and it sits under the poster's colour halves, so
 // the halves growing over it are the whole of the transition out of both scenes.
-const RevealOpening = ({ game, awayColor, homeColor }: { game: Game; awayColor: string; homeColor: string }) => (
+//
+// A club with no crest is named across its half instead, fitted to the part of the field the seam
+// never cuts into rather than overhanging it, because a crest cropped by the card is still a crest
+// and a cropped word is not a word.
+const RevealOpening = ({ game, awayColor, homeColor, crestlessLate, onCrestFailed }: revealOpeningProps) => (
 	<div className='game-card-reveal-opening' aria-hidden='true'>
 		{([['away', game.awayTeam, awayColor], ['home', game.homeTeam, homeColor]] as const).map(([side, team, surface]) => (
-			<span key={side} className={`game-card-reveal-opening-field is-${side} is-bare`}>
-				<OnColorCrest team={team} surface={surface} className='game-card-reveal-opening-logo' fallback='blank' loading='eager' />
+			<span key={side} className={`game-card-reveal-opening-field is-${side} is-bare`} style={lateStyle(crestlessLate(side))}>
+				{crestlessLate(side) !== undefined
+					? <RevealName key={team.name} team={team} className='game-card-reveal-opening-field-name' />
+					: <OnColorCrest team={team} surface={surface} className='game-card-reveal-opening-logo' fallback='blank' loading='eager' onFailed={onCrestFailed(side)} />}
 			</span>
 		))}
 		<RevealNamingScene game={game} />
@@ -108,6 +155,10 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 	const [staged] = useState(() => mode !== 'none');
 	const [landing, setLanding] = useState<revealLanding | null>(null);
 	const [done, setDone] = useState(false);
+	// Logos that failed to load, and how far into the graphic. By URL rather than by side, so a game
+	// whose crest changes under the card asks for the new one. Timed on the clock the animations run on.
+	const [failedLogos, setFailedLogos] = useState<Record<string, number>>({});
+	const [startedAt] = useState(timelineNow);
 	const delay = revealDelayMs(index, mode);
 	const spineStart = revealSpineStartMs(index, mode);
 
@@ -188,11 +239,20 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 	// The pair the card underneath is painted in, down to the fallback, so the colour that retreats
 	// off each side is the colour that side has been all along.
 	const { awayColor, homeColor } = buildGameCardSurface(game);
+	const teamOn = (side: revealSide) => (side === 'away' ? game.awayTeam : game.homeTeam);
+	const crestlessLate = (side: revealSide) => {
+		const { logo } = teamOn(side);
+		return logo ? failedLogos[logo] : 0;
+	};
+	const onCrestFailed = (side: revealSide) => () => {
+		const { logo } = teamOn(side);
+		if (logo) setFailedLogos(held => (logo in held ? held : { ...held, [logo]: Math.round(timelineNow() - startedAt) }));
+	};
 
 	return (
 		<div
 			ref={wrapperRef}
-			className={`game-card-reveal${playing && skipping ? ' is-skipping' : ''}`}
+			className={`game-card-reveal${game.status === 'post' ? ' is-final' : ''}${playing && skipping ? ' is-skipping' : ''}`}
 			style={!playing ? undefined : {
 				'--reveal-away': awayColor,
 				'--reveal-home': homeColor,
@@ -219,12 +279,14 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 			{/* Outside the stage rather than in it: it goes under the crests the stage carries. Square,
 			    like everything else in here — the wrapper holds the one rounded clip. */}
 			{playing && <span className='game-card-reveal-base' aria-hidden='true' />}
-			{playing && mode === 'full' && <RevealOpening game={game} awayColor={awayColor} homeColor={homeColor} />}
+			{playing && mode === 'full' && (
+				<RevealOpening game={game} awayColor={awayColor} homeColor={homeColor} crestlessLate={crestlessLate} onCrestFailed={onCrestFailed} />
+			)}
 			{playing && <div className='game-card-reveal-stage' aria-hidden='true'>
 				<span className='game-card-reveal-half is-away' />
 				<span className='game-card-reveal-half is-home' />
-				<RevealSide team={game.awayTeam} surface={awayColor} side='away' />
-				<RevealSide team={game.homeTeam} surface={homeColor} side='home' />
+				<RevealSide team={game.awayTeam} surface={awayColor} side='away' crestlessLate={crestlessLate('away')} onCrestFailed={onCrestFailed('away')} />
+				<RevealSide team={game.homeTeam} surface={homeColor} side='home' crestlessLate={crestlessLate('home')} onCrestFailed={onCrestFailed('home')} />
 			</div>}
 			{children}
 			{/* Three to a side rather than two. A broadcast wipe is cut as a group travelling one path —

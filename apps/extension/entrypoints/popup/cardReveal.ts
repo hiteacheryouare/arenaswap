@@ -264,9 +264,9 @@ const inkHangEm = () => Math.max(0, revealNameInkBottomEm - revealNameLineHeight
 // bound it was already inside.
 export const revealNameSpread = 1.8;
 
-export const revealNameFit = (ratios: number[], boxWidth: number, boxHeight: number) => {
+export const revealNameFit = (ratios: number[], boxWidth: number, boxHeight: number, inset = revealNameInsetPx) => {
 	if (!ratios.length || ratios.some(ratio => !(ratio > 0))) return ratios.map(() => 0);
-	const width = Math.max(0, boxWidth - revealNameInsetPx * 2);
+	const width = Math.max(0, boxWidth - inset * 2);
 	const height = Math.max(0, boxHeight * revealNameHeightShare);
 	// The ink's height per pixel of block width. A line justified to the block is `block / ratio`
 	// tall, so the stack of boxes is `block` times the sum of the reciprocals — and then the ink

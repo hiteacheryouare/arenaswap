@@ -18,15 +18,19 @@ interface onColorCrestProps {
 	className: string;
 	fallback?: 'abbreviation' | 'blank';
 	loading?: 'eager' | 'lazy';
+	// The published crest itself failing, once the dark-ground variant has already been given up on.
+	onFailed?: () => void;
 }
 
 // The crest drawn for a dark ground on a side painted in the team's colour, which is what Apple
 // Sports puts there for every club: the Red Sox's red B and the Yankees' white NY. The published
 // crest stays on a plain plate and on a side painted near-white, and is the fallback for a crest
 // the CDN has no dark variant of.
-const OnColorCrest = ({ team, surface, className, fallback, loading }: onColorCrestProps) => {
+const OnColorCrest = ({ team, surface, className, fallback, loading, onFailed }: onColorCrestProps) => {
 	const onDarkGround = surface !== undefined && (hexToLab(surface)?.lightness ?? 0) <= lightGroundLightness;
-	const onColorLogo = onDarkGround ? teamLogoOnColor(team.logo) : undefined;
+	// A logo off any other host comes back from `teamLogoOnColor` unchanged, and is not a variant.
+	const darkVariant = onDarkGround ? teamLogoOnColor(team.logo) : undefined;
+	const onColorLogo = darkVariant !== team.logo ? darkVariant : undefined;
 	const [, setFailedLogo] = useState<string>();
 	const logo = onColorLogo && !missingDarkVariants.has(onColorLogo) ? onColorLogo : team.logo;
 	return (
@@ -39,7 +43,7 @@ const OnColorCrest = ({ team, surface, className, fallback, loading }: onColorCr
 			onFailed={onColorLogo && logo === onColorLogo ? () => {
 				missingDarkVariants.add(onColorLogo);
 				setFailedLogo(onColorLogo);
-			} : undefined}
+			} : onFailed}
 		/>
 	);
 };

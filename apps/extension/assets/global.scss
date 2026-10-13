@@ -1194,6 +1194,33 @@ button, input, select, optgroup, textarea {
 	animation: cardRevealOpeningCrest calc((700ms + 1750ms + 1050ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
 }
 
+/* A club with no crest, named across its half instead. The seam reaches a full lean back past the
+   centre line at one corner of the card, and about half of one at the height the type is set, so the
+   box stops half a lean short of the centre.
+
+   `--reveal-late` is how long into the graphic its logo failed, and it is taken off every delay on a
+   stand-in so that one mounted late still runs on the graphic's clock. */
+.game-card-reveal-opening-field-name {
+	position:        absolute;
+	top:             0;
+	bottom:          0;
+	width:           calc(100% - var(--reveal-lean) * 1.5);
+	display:         flex;
+	align-items:     center;
+	justify-content: center;
+	animation:       cardRevealOpeningFieldName calc((700ms + 1750ms + 1050ms) * var(--reveal-rate)) linear calc(var(--reveal-delay) - var(--reveal-late, 0ms)) both;
+}
+
+.game-card-reveal-opening-field.is-away .game-card-reveal-opening-field-name {
+	left:         0;
+	--reveal-ink: var(--reveal-ink-away, #ffffff);
+}
+
+.game-card-reveal-opening-field.is-home .game-card-reveal-opening-field-name {
+	right:        0;
+	--reveal-ink: var(--reveal-ink-home, #ffffff);
+}
+
 /* ── The wipe, and the two layers it trades between ─────────────────────────── */
 
 /* Both span the whole card and are clipped along the same leaning edge as the bar that is crossing
@@ -1289,6 +1316,35 @@ button, input, select, optgroup, textarea {
 .game-card-reveal-crest-logo {
 	width:  100%;
 	height: 100%;
+}
+
+/* The poster's stand-in for a crest we do not have: the club's name, set across the plate a crest
+   would have had, over the placeholder disc the card draws for it. The name gives way to the disc
+   before the descent, so it is the card's disc that lands on the card's.
+
+   The disc is the card's own placeholder, restated because the stage is not inside the card, and
+   made opaque over the side's colour: the card's disc steps in underneath it at the handoff, and two
+   translucent discs stacked would brighten. */
+.game-card-reveal-crest-name {
+	position:        absolute;
+	inset:           calc(-100% / 6);
+	display:         flex;
+	align-items:     center;
+	justify-content: center;
+	animation:       cardRevealCrestName calc(3400ms * var(--reveal-rate)) linear calc(var(--reveal-spine) - var(--reveal-late, 0ms)) both;
+}
+
+.game-card-reveal-crest.is-named .crest-fallback {
+	background: linear-gradient(rgba(255, 255, 255, 0.16) 0 0), var(--reveal-surface);
+	color:      var(--reveal-ink);
+	font-size:  0.7rem;
+	animation:  cardRevealCrestDisc calc(3400ms * var(--reveal-rate)) linear calc(var(--reveal-spine) - var(--reveal-late, 0ms)) both;
+}
+
+/* A finished game lands on the plain plate card, which draws its placeholder light. */
+.game-card-reveal.is-final .game-card-reveal-crest.is-named .crest-fallback {
+	background: #f8f9fa;
+	color:      #495057;
 }
 
 /* The card's own crest waits under the graphic until the overlay has finished walking onto it, and
@@ -1699,6 +1755,28 @@ button, input, select, optgroup, textarea {
 	78%     { transform: translate(0, 0) scale(calc(var(--reveal-hold) * 0.95)); animation-timing-function: cubic-bezier(0.32, 1.28, 0.6, 1); }
 	93%     { opacity: 1; transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(1); }
 	100%    { opacity: 0; transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(1); }
+}
+
+/* In the breath before the descent, which starts at 78%, so it is the disc alone that travels down
+   onto the card's. The disc is fully up before the name starts to go, so the name never fades over
+   the bare colour. */
+@keyframes cardRevealCrestName {
+	0%, 74%   { opacity: 1; }
+	78%, 100% { opacity: 0; }
+}
+
+@keyframes cardRevealCrestDisc {
+	0%, 68%   { opacity: 0; }
+	74%, 100% { opacity: 1; }
+}
+
+/* The crest's own beat without its sideways drift, which would push the outer letters off the card. */
+@keyframes cardRevealOpeningFieldName {
+	0%   { opacity: 1; transform: scale(1.06); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+	20%  { opacity: 1; transform: scale(1); animation-timing-function: linear; }
+	24%  { opacity: 1; transform: scale(0.97); animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.3); }
+	31%  { opacity: 0; transform: scale(0.88); }
+	100% { opacity: 0; transform: scale(0.88); }
 }
 
 @keyframes cardRevealHandoff {

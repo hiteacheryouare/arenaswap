@@ -13,6 +13,10 @@ The game card and Standby Stream tab pickers, and the Suggested Tabs rows, now s
 
 Lead changes now fade from the latest flip the play log saw, and a lead built inside overtime or extra innings gives back the overtime premium once it passes the sport's close margin; a nine-day replay moved 50 game-minutes by a few points and changed the top pick in one minute out of 7,195. Basketball clocks under a minute print tenths the way broadcasts do (45.3, 0.8), onboarding saves leagues in the default order, the college division picker turns up in Settings search, and European Portuguese uses the 1990 spelling throughout.
 
+## Clubs with no crest get named in the opening animation — 2026-10-12
+
+A club our sources send without a logo, or whose logo fails to load (the London Lions in Portland were the first), is now named in full where its crest would be, both in the opening crest scene and on the poster. On the poster the name hands over to the card's own abbreviation disc just before it shrinks onto the card, so nothing pops in when the card takes over. `OnColorCrest` now reports a failed logo through `onFailed`, and stops treating a logo from any other host as its own dark variant.
+
 ## A top-to-bottom QA sweep — 2026-10-12
 
 Code review, coverage, translation and sports-rules passes over the extension and its packages fixed 80 issues and 262 translations. The bigger ones: team pickers were missing 562 college football teams, a game boost marked every live game as stalled, standby ignored the cooldown in one direction and enforced it in the other, and suspended soccer matches read as finished and closed their tabs. Hockey now reads SO for a shootout and 2OT in the playoffs, quarter breaks say "End of Q1" instead of "Intermission", and 262 translation fixes landed across 11 languages.
