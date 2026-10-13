@@ -26,7 +26,7 @@ describe('the stale league note', () => {
 		expect(staleHours.n).not.toBe(staleMinutes.n);
 	});
 
-	test('pt_PT keeps the European spelling the rest of its file uses', () => {
-		expect(gameCardStrings('pt_PT.json').staleMinutes.n).toContain('actualização');
+	test('pt_PT uses the 1990 spelling, like the rest of its file', () => {
+		expect(gameCardStrings('pt_PT.json').staleMinutes.n).toContain('atualização');
 	});
 });

@@ -1,11 +1,11 @@
 {
 	"meta": {
 		"homeTitle": "ArenaSwap — Nunca mais percas o momento.",
-		"homeDescription": "O ArenaSwap observa cada jogo em directo em {leagues} ligas e muda o teu separador do browser para o mais emocionante. Gratuito, sem conta, sem rastreio.",
+		"homeDescription": "O ArenaSwap observa cada jogo em direto em {leagues} ligas e muda o teu separador do browser para o mais emocionante. Gratuito, sem conta, sem rastreio.",
 		"faqTitle": "Perguntas frequentes — ArenaSwap",
 		"faqDescription": "Como o ArenaSwap muda de separador, com que ligas e serviços de streaming funciona, o que o PowerScore mede e o que faz com os teus dados.",
 		"powerscoreTitle": "Pacote PowerScore — ArenaSwap",
-		"powerscoreDescription": "O PowerScore transforma qualquer jogo em directo numa pontuação de emoção de 0 a 100. Instala-o a partir do npm, vê como funcionam os cinco sinais e observa-o a pontuar os jogos de logo à noite, em directo.",
+		"powerscoreDescription": "O PowerScore transforma qualquer jogo em direto numa pontuação de emoção de 0 a 100. Instala-o a partir do npm, vê como funcionam os cinco sinais e observa-o a pontuar os jogos de logo à noite, em direto.",
 		"legalTitle": "Avisos legais — ArenaSwap",
 		"legalDescription": "O aviso de privacidade do ArenaSwap, licenças, créditos das imagens e isenções de responsabilidade.",
 		"privacyTitle": "Privacidade — ArenaSwap",
@@ -103,7 +103,7 @@
 		"hero": {
 			"titleLine1": "Nunca mais percas",
 			"titleLine2": "o momento.",
-			"lede": "O ArenaSwap observa cada jogo em directo em {leagues} ligas e muda automaticamente o teu separador do browser para o mais emocionante, até de 6 em 6 segundos.",
+			"lede": "O ArenaSwap observa cada jogo em direto em {leagues} ligas e muda automaticamente o teu separador do browser para o mais emocionante, até de 6 em 6 segundos.",
 			"teamStrip": "Funciona com todas as equipas em {leagues} ligas. A tua incluída.",
 			"captionSwitched": "O ArenaSwap mudou-te de {from} para {to}.",
 			"captionWatching": "Estás a ver {game}, o melhor jogo do momento.",
@@ -126,7 +126,7 @@
 				},
 				{
 					"title": "O melhor jogo encontra-te.",
-					"copy": "O ArenaSwap pontua cada jogo em directo e muda automaticamente para o mais emocionante. Tu só tens de ver."
+					"copy": "O ArenaSwap pontua cada jogo em direto e muda automaticamente para o mais emocionante. Tu só tens de ver."
 				}
 			]
 		},
@@ -135,9 +135,9 @@
 			"copy": "Cinco sinais somam-se em cada pontuação. Abre qualquer jogo e a repartição está lá, junto com a tendência do PowerScore, o histórico de marcador e o gráfico de diferença."
 		},
 		"leagues": {
-			"titleLine1": "Se é em directo,",
+			"titleLine1": "Se é em direto,",
 			"titleLine2": "está coberto.",
-			"copy": "{sports} desportos. Todos os níveis de jogo. O ArenaSwap monitoriza tudo ao mesmo tempo. Desactiva os que não vês e deixa de os seguir.",
+			"copy": "{sports} desportos. Todos os níveis de jogo. O ArenaSwap monitoriza tudo ao mesmo tempo. Desativa os que não vês e deixa de os seguir.",
 			"numerals": [
 				"Nenhum",
 				"Um",
@@ -154,7 +154,7 @@
 		},
 		"settings": {
 			"title": "Sintonizado contigo.",
-			"copy": "Sensibilidade demasiado alta? Reduz. Adoras a tua equipa mas queres ver o melhor jogo? Adiciona um bónus. Vais dar um salto a comprar cerveja? O Standby Stream mantém algo no ecrã. O ArenaSwap funciona exactamente como precisas.",
+			"copy": "Sensibilidade demasiado alta? Reduz. Adoras a tua equipa mas queres ver o melhor jogo? Adiciona um bónus. Vais dar um salto a comprar cerveja? O Standby Stream mantém algo no ecrã. O ArenaSwap funciona exatamente como precisas.",
 			"items": [
 				{
 					"name": "Sensibilidade (1–{levels})",
@@ -174,7 +174,7 @@
 				},
 				{
 					"name": "Standby Stream",
-					"copy": "Quando todos os jogos em directo arrefecem, o ArenaSwap deixa-te num separador de reserva à tua escolha."
+					"copy": "Quando todos os jogos em direto arrefecem, o ArenaSwap deixa-te num separador de reserva à tua escolha."
 				},
 				{
 					"name": "Impulso do jogo",
@@ -195,7 +195,7 @@
 			},
 			{
 				"q": "Como funciona a mudança de separador?",
-				"a": "Associas cada um dos teus streams abertos a um jogo. O ArenaSwap pontua cada jogo em directo com o PowerScore, e quando um deles ultrapassa suficientemente o jogo que estás a ver, muda o teu separador para esse, tira-lhe o som e silencia os restantes. A sensibilidade define quanta vantagem é suficiente, e um tempo de espera impede que saltes entre dois jogos."
+				"a": "Associas cada um dos teus streams abertos a um jogo. O ArenaSwap pontua cada jogo em direto com o PowerScore, e quando um deles ultrapassa suficientemente o jogo que estás a ver, muda o teu separador para esse, tira-lhe o som e silencia os restantes. A sensibilidade define quanta vantagem é suficiente, e um tempo de espera impede que saltes entre dois jogos."
 			},
 			{
 				"q": "Preciso de conta ou subscrição?",
@@ -211,11 +211,11 @@
 			},
 			{
 				"q": "Posso impedi-lo de mudar de um jogo?",
-				"a": "Sim. Retira a associação do separador e o ArenaSwap deixa-o em paz, ou desactiva a mudança automática com o interruptor no topo do popup. Reduzir a sensibilidade ou aumentar o tempo de espera torna as mudanças mais raras sem as desactivar por completo."
+				"a": "Sim. Retira a associação do separador e o ArenaSwap deixa-o em paz, ou desativa a mudança automática com o interruptor no topo do popup. Reduzir a sensibilidade ou aumentar o tempo de espera torna as mudanças mais raras sem as desativar por completo."
 			},
 			{
 				"q": "O que acontece quando todos os jogos são aborrecidos?",
-				"a": "Activa o Standby Stream e escolhe um separador. Quando nada do que segues ultrapassa o limiar, o ArenaSwap deixa-te lá em vez de te deixar no jogo menos mau."
+				"a": "Ativa o Standby Stream e escolhe um separador. Quando nada do que segues ultrapassa o limiar, o ArenaSwap deixa-te lá em vez de te deixar no jogo menos mau."
 			},
 			{
 				"q": "O código-fonte está disponível?",
@@ -250,8 +250,8 @@
 		"convenienceNoticeLink": "texto em inglês",
 		"privacy": {
 			"title": "Privacidade.",
-			"updated": "Última actualização a {date}",
-			"updatedDate": "19 de Agosto de 2026",
+			"updated": "Última atualização a {date}",
+			"updatedDate": "19 de agosto de 2026",
 			"retainsHeading": "Informações que a extensão conserva",
 			"retains1": "A extensão conserva as preferências que defines. Isto inclui as ligas que segues, as equipas que marcaste como favoritas, as tuas definições de sensibilidade, tempo de espera e atraso de mudança, o teu limiar de Standby Stream, e a forma como a pontuação é composta. O teu browser guarda estas preferências como guarda os teus marcadores, podendo por isso disponibilizá-las em qualquer outro computador em que estejas ligado com o mesmo perfil de browser.",
 			"retains2": "Todas as outras informações pertencem à sessão de navegação em que surgem e são eliminadas quando essa sessão termina. Isto inclui os separadores que associaste a jogos específicos, o separador que designaste como o teu Standby Stream, qualquer ajuste manual que tenhas aplicado a um jogo, e o histórico recente de pontuações a partir do qual os gráficos são desenhados.",
@@ -260,35 +260,35 @@
 			"transmits1": "A extensão comunica com dois hosts, ambos operados pela ESPN, e não é capaz de alcançar mais nenhum:",
 			"transmitsHost1": "para marcadores, calendários, relógios de jogo, odds e probabilidades de vitória.",
 			"transmitsHost2": "para emblemas de equipas e marcas de ligas.",
-			"transmits2": "Estes são pedidos comuns de informação que a ESPN publica abertamente. A ESPN recebe, por isso, o teu endereço de rede e um registo dos marcadores de liga solicitados, exactamente como aconteceria se visitasses tu próprio o seu site. A extensão não anexa a estes pedidos qualquer identificador, conta ou informação pessoal. Se desactivares uma liga nas Definições, a extensão deixa de a solicitar por completo.",
+			"transmits2": "Estes são pedidos comuns de informação que a ESPN publica abertamente. A ESPN recebe, por isso, o teu endereço de rede e um registo dos marcadores de liga solicitados, exatamente como aconteceria se visitasses tu próprio o seu site. A extensão não anexa a estes pedidos qualquer identificador, conta ou informação pessoal. Se desativares uma liga nas Definições, a extensão deixa de a solicitar por completo.",
 			"permissionsHeading": "Permissões do browser",
 			"permissions1": "A extensão solicita três permissões ao teu browser, cada uma utilizada apenas para o fim indicado:",
 			"permissionTabsName": "Separadores.",
-			"permissionTabs": "Para apresentar os separadores que tens abertos, para que lhes possas associar jogos, e para mudar, silenciar e reactivar o som desses separadores. Esta permissão transmite apenas a lista de separadores e nada mais. Nenhuma parte da extensão é executada dentro das páginas que visitas.",
+			"permissionTabs": "Para apresentar os separadores que tens abertos, para que lhes possas associar jogos, e para mudar, silenciar e reativar o som desses separadores. Esta permissão transmite apenas a lista de separadores e nada mais. Nenhuma parte da extensão é executada dentro das páginas que visitas.",
 			"permissionStorageName": "Armazenamento.",
 			"permissionStorage": "Para conservar as preferências descritas acima.",
 			"permissionNotificationsName": "Notificações.",
 			"permissionNotifications": "Para te informar de que ocorreu uma mudança. O teu browser compõe e apresenta cada notificação, e nada sai do teu computador nesse processo.",
 			"websiteHeading": "Este site",
 			"website1": "Este site não define cookies, não utiliza análise e não contém qualquer tipo de rastreio, e não pede o teu consentimento porque não há nada a consentir. É alojado pelo GitHub Pages, e o GitHub regista os pedidos feitos aos seus servidores no âmbito normal desse alojamento. Os tipos de letra são servidos a partir deste site e não de terceiros.",
-			"website2": "Duas funcionalidades deste site comunicam mesmo com a ESPN a partir do teu browser. Os ecrãs de demonstração solicitam emblemas de equipas a {host}, e a {link} pontua jogos em curso e por isso solicita marcadores em directo enquanto a deixares aberta.",
+			"website2": "Duas funcionalidades deste site comunicam mesmo com a ESPN a partir do teu browser. Os ecrãs de demonstração solicitam emblemas de equipas a {host}, e a {link} pontua jogos em curso e por isso solicita marcadores em direto enquanto a deixares aberta.",
 			"website2Link": "página do PowerScore",
 			"childrenHeading": "Crianças",
 			"children1": "A extensão não recolhe informação pessoal de nenhuma pessoa de qualquer idade, incluindo crianças com menos de treze anos.",
 			"modificationsHeading": "Alterações a este aviso",
 			"modifications1": "Este aviso pode ser revisto de tempos a tempos. Uma revisão produz efeitos a partir da publicação, e a data indicada acima regista quando este aviso foi revisto pela última vez. O uso continuado da extensão após a publicação constitui a tua aceitação do aviso revisto.",
 			"questionsHeading": "Perguntas",
-			"questions1": "As perguntas sobre este aviso podem ser dirigidas ao {link} do projecto.",
+			"questions1": "As perguntas sobre este aviso podem ser dirigidas ao {link} do projeto.",
 			"questionsLink": "issue tracker no GitHub"
 		},
 		"terms": {
 			"title": "Isenções de responsabilidade.",
 			"affiliationHeading": "Sem afiliação",
-			"affiliation1": "O ArenaSwap não é afiliado, patrocinado, apoiado ou de qualquer outra forma ligado à ESPN, à NFL, à NBA, à WNBA, à NHL, à MLB, à MLS, à NWSL, à NCAA, à UFL, à FIFA, à UEFA, ao Comité Olímpico Internacional, ou a qualquer outra liga, clube, emissora ou serviço de streaming. Os nomes, marcas e emblemas de ligas e equipas são propriedade dos respectivos titulares e aparecem aqui apenas para identificar jogos.",
+			"affiliation1": "O ArenaSwap não é afiliado, patrocinado, apoiado ou de qualquer outra forma ligado à ESPN, à NFL, à NBA, à WNBA, à NHL, à MLB, à MLS, à NWSL, à NCAA, à UFL, à FIFA, à UEFA, ao Comité Olímpico Internacional, ou a qualquer outra liga, clube, emissora ou serviço de streaming. Os nomes, marcas e emblemas de ligas e equipas são propriedade dos respetivos titulares e aparecem aqui apenas para identificar jogos.",
 			"notStreamingHeading": "Não é um serviço de streaming",
 			"notStreaming1": "O ArenaSwap não aloja, retransmite, desencripta, desbloqueia nem fornece de qualquer outra forma acesso a nenhum jogo. Move-se entre separadores de browser que tu próprio abriste, em serviços aos quais já tens direito de acesso. Se tens direito de ver um determinado jogo é uma questão entre ti e quem to vende.",
 			"thirdPartyHeading": "Dados obtidos de terceiros",
-			"thirdParty1": "Marcadores, relógios de jogo, calendários, odds e probabilidades de vitória são obtidos da ESPN. O ArenaSwap não controla esses dados, não pode garantir que sejam exactos, completos, actuais ou disponíveis, e não tem influência sobre quando mudam. Esses dados podem chegar atrasados, errados ou ausentes, e um stream normalmente fica atrás da fonte de dados. Nada do que é apresentado na extensão deve ser tratado como um marcador oficial, e nenhuma aposta deve basear-se nisso.",
+			"thirdParty1": "Marcadores, relógios de jogo, calendários, odds e probabilidades de vitória são obtidos da ESPN. O ArenaSwap não controla esses dados, não pode garantir que sejam exatos, completos, atuais ou disponíveis, e não tem influência sobre quando mudam. Esses dados podem chegar atrasados, errados ou ausentes, e um stream normalmente fica atrás da fonte de dados. Nada do que é apresentado na extensão deve ser tratado como um marcador oficial, e nenhuma aposta deve basear-se nisso.",
 			"estimateHeading": "O PowerScore é uma estimativa",
 			"estimate1": "O PowerScore estima, a partir de números disponíveis publicamente, quão envolvente um jogo parece neste momento. Não é uma previsão, uma probabilidade, um modelo de apostas ou uma afirmação de facto, e vai, por vezes, afastar-te do jogo que querias ver. As {link} existem para isso.",
 			"estimateLink": "definições de sensibilidade, tempo de espera e equipa favorita",
@@ -306,9 +306,9 @@
 			"sourceLink": "Fonte",
 			"publicDomain": "Domínio público",
 			"scoresHeading": "Marcadores",
-			"scores1": "Marcadores em directo, calendários, cores de equipa, emblemas e probabilidades de vitória são obtidos da ESPN. O ArenaSwap não é afiliado nem apoiado pela ESPN, e nenhuma liga mencionada neste site é afiliada ao ArenaSwap ou o apoia.",
+			"scores1": "Marcadores em direto, calendários, cores de equipa, emblemas e probabilidades de vitória são obtidos da ESPN. O ArenaSwap não é afiliado nem apoiado pela ESPN, e nenhuma liga mencionada neste site é afiliada ao ArenaSwap ou o apoia.",
 			"marksHeading": "Marcas",
-			"marks1": "As marcas de ligas e equipas são propriedade das respectivas ligas e clubes. Aparecem aqui apenas para identificar jogos."
+			"marks1": "As marcas de ligas e equipas são propriedade das respetivas ligas e clubes. Aparecem aqui apenas para identificar jogos."
 		},
 		"licenses": {
 			"title": "Licenças.",
@@ -331,14 +331,14 @@
 		"heroTaglineSuffix": ".",
 		"heroRestingToken": "partida",
 		"heroRestingSuffix": ".",
-		"heroSub": "O PowerScore transforma qualquer jogo em directo numa pontuação de emoção de 0 a 100, actualizada à medida que o jogo avança. É o mesmo motor que o ArenaSwap utiliza para escolher o que vês a seguir, e instala-se sozinho.",
+		"heroSub": "O PowerScore transforma qualquer jogo em direto numa pontuação de emoção de 0 a 100, atualizada à medida que o jogo avança. É o mesmo motor que o ArenaSwap utiliza para escolher o que vês a seguir, e instala-se sozinho.",
 		"viewOnNpm": "Ver no npm",
 		"sourceOnGithub": "Código-fonte no GitHub",
 		"installHeading": "Instala com um comando",
 		"copy": "Copiar",
 		"copied": "Copiado",
 		"signalsHeading": "O que compõe o número",
-		"signalsSub": "Cinco sinais somam-se numa pontuação de 0 a {max}. Os seus limites somam propositadamente mais do que {max}, e o total tem um tecto, pelo que um jogo equilibrado sobe muito e uma goleada fica baixa. Uma pontuação mais alta significa mais drama neste preciso momento.",
+		"signalsSub": "Cinco sinais somam-se numa pontuação de 0 a {max}. Os seus limites somam propositadamente mais do que {max}, e o total tem um teto, pelo que um jogo equilibrado sobe muito e uma goleada fica baixa. Uma pontuação mais alta significa mais drama neste preciso momento.",
 		"signalMax": "{max} máx.",
 		"signals": [
 			{
@@ -362,29 +362,29 @@
 				"copy": "Uma equipa que está a perder e recupera terreno faz subir a pontuação."
 			}
 		],
-		"liveHeading": "PowerScores em directo",
-		"liveLoading": "A carregar PowerScores em directo",
-		"liveError": "Não é possível carregar dados de jogos em directo neste momento.",
-		"liveNow": "Em directo",
+		"liveHeading": "PowerScores em direto",
+		"liveLoading": "A carregar PowerScores em direto",
+		"liveError": "Não é possível carregar dados de jogos em direto neste momento.",
+		"liveNow": "Em direto",
 		"machineHeading": "Vê como funciona.",
-		"machineSub": "O ArenaSwap pontua cada jogo em directo à medida que acontece — e depois coloca o teu separador no melhor. É assim que funciona.",
+		"machineSub": "O ArenaSwap pontua cada jogo em direto à medida que acontece — e depois coloca o teu separador no melhor. É assim que funciona.",
 		"machineWatch": "Observar",
-		"machineWatchCopy": "Todos os jogos em directo de todas as ligas que segues, ao mesmo tempo.",
+		"machineWatchCopy": "Todos os jogos em direto de todas as ligas que segues, ao mesmo tempo.",
 		"machineScore": "Pontuar",
-		"machineScoreCopy": "O PowerScore avalia em directo quão emocionante é cada jogo.",
+		"machineScoreCopy": "O PowerScore avalia em direto quão emocionante é cada jogo.",
 		"machineSwitch": "Mudar",
 		"machineSwitchCopy": "O teu separador salta automaticamente para o melhor jogo.",
-		"liveLoadingCopy": "A obter jogos em directo e a calcular o PowerScore agora.",
-		"liveEmptyTitle": "Sem jogos em directo neste momento",
-		"liveEmptyCopy": "Quando os jogos entrarem em directo, esta secção actualiza-se automaticamente e mostra PowerScores em tempo real de todas as ligas suportadas.",
+		"liveLoadingCopy": "A obter jogos em direto e a calcular o PowerScore agora.",
+		"liveEmptyTitle": "Sem jogos em direto neste momento",
+		"liveEmptyCopy": "Quando os jogos entrarem em direto, esta secção atualiza-se automaticamente e mostra PowerScores em tempo real de todas as ligas suportadas.",
 		"liveScoreBadge": "PowerScore {score} / 100",
-		"machineAlt": "O ArenaSwap a observar e a pontuar cada jogo em directo",
+		"machineAlt": "O ArenaSwap a observar e a pontuar cada jogo em direto",
 		"machineNowWatching": "A ver agora",
 		"machineNowOn": "em {service}",
 		"machineCaptions": [
-			"Observa todos os jogos em directo nas tuas ligas",
-			"E pontua cada um pelo quão emocionante é, em directo",
-			"Abre um jogo para ver exactamente porquê",
+			"Observa todos os jogos em direto nas tuas ligas",
+			"E pontua cada um pelo quão emocionante é, em direto",
+			"Abre um jogo para ver exatamente porquê",
 			"Depois o teu separador pousa no melhor"
 		],
 		"machineSignals": [
@@ -397,7 +397,7 @@
 	},
 	"ui": {
 		"gameCard": {
-			"live": "EM DIRECTO",
+			"live": "EM DIRETO",
 			"powerScore": "PowerScore",
 			"watchLabel": "Ver em:",
 			"oddsProvidedBy": "Odds fornecidas por:",
@@ -432,10 +432,10 @@
 		"main": {
 			"tourButton": "Visita guiada",
 			"settingsButton": "Definições",
-			"sectionActiveLiveTabs": "Separadores activos",
-			"sectionOtherLiveGames": "Jogos em directo",
+			"sectionActiveLiveTabs": "Separadores ativos",
+			"sectionOtherLiveGames": "Jogos em direto",
 			"sectionUpNext": "A seguir",
-			"enableToggleLabel": "Activar mudança automática",
+			"enableToggleLabel": "Ativar mudança automática",
 			"onStandbyStream": "No Standby Stream até algo aquecer"
 		},
 		"tabAssign": {
@@ -470,7 +470,7 @@
 		},
 		"switchDelay": {
 			"label": "Atraso de mudança",
-			"off": "Desactivado"
+			"off": "Desativado"
 		},
 		"favoriteTeamBonus": {
 			"label": "Impulso de equipa favorita"

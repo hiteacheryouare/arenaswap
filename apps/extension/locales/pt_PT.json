@@ -1,6 +1,6 @@
 {
-	"extName": "ArenaSwap — Mudança automática de NFL, NBA, March Madness e MLB em directo",
-	"extDescription": "Observa os jogos em directo de 31 ligas e muda o teu separador para o mais emocionante, a cada 6 segundos se for preciso.",
+	"extName": "ArenaSwap — Mudança automática de NFL, NBA, March Madness e MLB em direto",
+	"extDescription": "Observa os jogos em direto de 31 ligas e muda o teu separador para o mais emocionante, a cada 6 segundos se for preciso.",
 	"bossCommandDescription": "Vem aí o chefe: silencia os jogos e passa para a tua página de disfarce",
 	"app": {
 		"welcomeToast": "Bem-vindo ao ArenaSwap!",
@@ -33,19 +33,19 @@
 	"noGames": {
 		"m1": {
 			"title": "Ainda ninguém entrou em campo. 🕐",
-			"sub": "Sem jogos em directo nas ligas seleccionadas."
+			"sub": "Sem jogos em direto nas ligas selecionadas."
 		},
 		"m2": {
 			"title": "A arena está às escuras.",
-			"sub": "Sem acção em directo nas tuas ligas. Volta quando os jogos começarem."
+			"sub": "Sem ação em direto nas tuas ligas. Volta quando os jogos começarem."
 		},
 		"m3": {
 			"title": "É um dia calmo no desporto.",
-			"sub": "Nada em directo por agora."
+			"sub": "Nada em direto por agora."
 		},
 		"m4": {
 			"title": "Até os árbitros foram descansar.",
-			"sub": "As nossas fontes já pegaram nos binóculos. Ainda nada em directo nas tuas ligas."
+			"sub": "As nossas fontes já pegaram nos binóculos. Ainda nada em direto nas tuas ligas."
 		},
 		"m5": {
 			"title": "O marcador está parado.",
@@ -53,15 +53,15 @@
 		},
 		"m6": {
 			"title": "O tipo das bifanas foi embora. 🌭",
-			"sub": "Sem acção em directo nas tuas ligas. Ele volta quando houver."
+			"sub": "Sem ação em direto nas tuas ligas. Ele volta quando houver."
 		},
 		"m7": {
 			"title": "A procurar debaixo das bancadas…",
-			"sub": "Ainda sem jogos em directo nas tuas ligas seleccionadas."
+			"sub": "Ainda sem jogos em direto nas tuas ligas selecionadas."
 		}
 	},
 	"loading": {
-		"m1": "A rever a táctica…",
+		"m1": "A rever a tática…",
 		"m2": "A estudar o vídeo do jogo…",
 		"m3": "A improvisar uma jogada…",
 		"m4": "A aquecer no banco…",
@@ -74,11 +74,11 @@
 		"m11": "A abrir o regulamento…",
 		"m12": "A afinar as colunas do estádio…",
 		"m13": "A encher as garrafas de água…",
-		"m14": "A ajustar os projectores…",
+		"m14": "A ajustar os projetores…",
 		"m15": "A subornar os árbitros…",
 		"m16": "A consultar o almanaque desportivo…",
 		"m17": "A ponderar se vale a pena arriscar no quarto down…",
-		"m18": "A actualizar o debate do maior de sempre…",
+		"m18": "A atualizar o debate do maior de sempre…",
 		"m19": "A encher a cabine de imprensa…",
 		"m20": "A desenrolar as faixas…",
 		"m21": "A ajustar os binóculos…",
@@ -113,7 +113,7 @@
 		"m50": "A lançar os fogos de artifício…",
 		"m51": "A preparar o espectáculo de luzes…",
 		"m52": "A verificar o tempo para o dia do jogo…",
-		"m53": "A actualizar o onze da liga de fantasia…",
+		"m53": "A atualizar o onze da liga de fantasia…",
 		"m54": "A gritar para a televisão…",
 		"m55": "A gritar para os árbitros…",
 		"m56": "go birds",
@@ -207,12 +207,12 @@
 		"demoSeasonThanksgiving": "Semana da Ação de Graças",
 		"demoSeasonDecember": "Dezembro",
 		"demoSeasonExplainer": "Afeta só a decoração de época, para a poderes ver fora de época.",
-		"enableStandby": "Activar Standby Stream",
+		"enableStandby": "Ativar Standby Stream",
 		"standbyBelow": "Em espera abaixo de",
 		"morePatient": "Mais paciente",
 		"switchesSooner": "Muda mais cedo",
 		"standbyTab": "Separador de espera",
-		"selectTab": "— Selecciona um separador —",
+		"selectTab": "— Seleciona um separador —",
 		"showBetting": "Mostrar apostas e odds",
 		"temperatureUnit": "Unidade de temperatura",
 		"temperatureUnitF": "°F",
@@ -229,7 +229,7 @@
 		"signalsExplainer": "Desliga um sinal e ele fica no banco. Os outros são reescalados para a pontuação continuar entre 0 e 100.",
 		"signalLastActive": "Pelo menos um sinal tem de continuar em jogo.",
 		"selectNone": "Limpar",
-		"selectAll": "Seleccionar todas",
+		"selectAll": "Selecionar todas",
 		"noLeaguesWarning": "Nenhuma liga escolhida, por isso o ArenaSwap não tem nada para ver.",
 		"groupByLeague": "Agrupar jogos por liga",
 		"groupByLeagueExplainer": "Desativado, todas as ligas partilham uma única lista: jogos em direto por PowerScore e próximos jogos por hora de início. As equipas favoritas ficam sempre no topo.",
@@ -255,7 +255,7 @@
 		"groupLeagues": "Ligas",
 		"groupLeaguesDesc": "Apenas as ligas que escolheres são monitorizadas e consideradas para a mudança.",
 		"groupDisplay": "Apresentação",
-		"groupDisplayDesc": "O que a lista de jogos mostra e o aspecto do ArenaSwap.",
+		"groupDisplayDesc": "O que a lista de jogos mostra e o aspeto do ArenaSwap.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Onde ficar quando todos os jogos arrefecem.",
 		"bonusesSection": "Impulsos",
@@ -263,7 +263,7 @@
 		"tabsSection": "Separadores",
 		"demoSection": "Demo",
 		"gameListSection": "Lista de jogos",
-		"lookAndFeelSection": "Aspecto",
+		"lookAndFeelSection": "Aspeto",
 		"searchPlaceholder": "Procurar definições",
 		"searchNoResults": "Nenhuma definição corresponde a \"{query}\"",
 		"keywordsSensitivity": "diferenca, limiar, ansioso, agressivo, gatilho, ludicrous",
@@ -291,7 +291,7 @@
 		"keywordsTemperature": "celsius, fahrenheit, graus, meteorologia, unidades",
 		"keywordsOpenReveal": "animacao, introducao, revelacao, cartaz, movimento, abertura, splash",
 		"keywordsHoliday": "natal, neve, luzes, folhas, epoca, festivo, clima, acao de gracas",
-		"keywordsStandby": "reserva, backup, inactivo, alternativa, parado",
+		"keywordsStandby": "reserva, backup, inativo, alternativa, parado",
 		"keywordsStandbyThreshold": "pontuacao, corte, limite, abaixo, parado",
 		"keywordsStandbyTab": "separador, janela, pagina, destino",
 		"keywordsBossDecoy": "chefe, esconder, panico, trabalho, aula, folha de calculo, disfarce, silenciar, atalho, fugir",
@@ -354,14 +354,14 @@
 		"bossButton": "Vem aí o chefe",
 		"bossButtonShortcut": "Vem aí o chefe ({shortcut})",
 		"onStandbyStream": "No Standby Stream até algo aquecer",
-		"sectionActiveLiveTabs": "Separadores activos",
-		"sectionOtherLiveGames": "Jogos em directo",
+		"sectionActiveLiveTabs": "Separadores ativos",
+		"sectionOtherLiveGames": "Jogos em direto",
 		"sectionUpNext": "A seguir",
 		"sectionFinal": "Terminados",
 		"upcomingDayNavLabel": "Próximos jogos por dia",
 		"upcomingPreviousDay": "Dia anterior",
 		"upcomingNextDay": "Dia seguinte",
-		"enableToggleLabel": "Activar mudança automática"
+		"enableToggleLabel": "Ativar mudança automática"
 	},
 	"guide": {
 		"bestWindow": "Melhor horário para ver",
@@ -623,14 +623,14 @@
 		"watchLabel": "Ver em:",
 		"oddsProvidedBy": "Odds fornecidas por:",
 		"openDetails": "Abrir detalhes de {away} vs {home}",
-		"live": "EM DIRECTO",
+		"live": "EM DIRETO",
 		"staleMinutes": {
-			"1": "Última actualização há 1 minuto",
-			"n": "Última actualização há $1 minutos"
+			"1": "Última atualização há 1 minuto",
+			"n": "Última atualização há $1 minutos"
 		},
 		"staleHours": {
-			"1": "Última actualização há 1 hora",
-			"n": "Última actualização há $1 horas"
+			"1": "Última atualização há 1 hora",
+			"n": "Última atualização há $1 horas"
 		},
 		"final": "Final",
 		"delay": "ATRASO",
@@ -681,8 +681,8 @@
 		"volatility": "Volatilidade",
 		"signalsTotal": "Total de sinais",
 		"cappedAt": "(limitado a {max})",
-		"signalsNormalizedNote": "Reescalado para manter o intervalo 0–100 com sinais desactivados",
-		"tooltipSignalsNormalized": "Quando os sinais são desactivados, os sinais restantes são escalonados proporcionalmente para que a pontuação mantenha o seu intervalo completo de 0–100.",
+		"signalsNormalizedNote": "Reescalado para manter o intervalo 0–100 com sinais desativados",
+		"tooltipSignalsNormalized": "Quando os sinais são desativados, os sinais restantes são escalonados proporcionalmente para que a pontuação mantenha o seu intervalo completo de 0–100.",
 		"clockStallPenalty": "Penalização por relógio parado",
 		"favoriteBoost": "Impulso de favorito",
 		"favoriteTeamsInMatchup": {
@@ -692,18 +692,18 @@
 		"gameBoost": "Impulso do jogo",
 		"scoringOpportunity": "Oportunidade de marcar",
 		"postseasonBoost": "Impulso de pós-temporada",
-		"signalOff": "Desactivado",
+		"signalOff": "Desativado",
 		"finalPowerScore": "PowerScore final",
-		"tooltipCloseness": "Calculado a partir da diferença de pontos actual. Um empate vale o máximo; margens maiores pontuam progressivamente menos. O tecto escala com o progresso do jogo, pelo que a mesma margem vale mais no final do que no início.",
+		"tooltipCloseness": "Calculado a partir da diferença de pontos atual. Um empate vale o máximo; margens maiores pontuam progressivamente menos. O teto escala com o progresso do jogo, pelo que a mesma margem vale mais no final do que no início.",
 		"tooltipLateGame": "Combina o avanço do jogo com a proximidade do marcador. Sobe linearmente ao longo do período final. Jogos desequilibrados pontuam quase nada aqui, independentemente do tempo. Acrescenta pontos extra quando o jogo está empatado nos segundos finais, antecipando o prolongamento.",
 		"tooltipMomentum": "Mede a diferença líquida de pontuação de uma equipa na janela de histórico mais recente. Se uma equipa superou a outra acima de um limiar nesse período, pontua aqui. Decai para zero com o passar do tempo sem mais pontuação.",
 		"tooltipLeadChanges": "Conta quantas vezes a liderança mudou na janela de histórico. Sem mudanças não pontua; uma ou mais inversões pontuam progressivamente mais alto. Decai se o tempo passa sem outra mudança.",
-		"tooltipComeback": "Compara a margem no ponto mais antigo da janela com a margem actual. Se a equipa que perdia recuperou terreno, pontua com base em quanto recuperou. Vale mais no final do jogo; decai se a pontuação parar.",
+		"tooltipComeback": "Compara a margem no ponto mais antigo da janela com a margem atual. Se a equipa que perdia recuperou terreno, pontua com base em quanto recuperou. Vale mais no final do jogo; decai se a pontuação parar.",
 		"tooltipClockStallPenalty": "Aplicado quando o relógio do jogo mal avançou em várias leituras consecutivas. Desconta uma quantidade fixa de pontos do subtotal dos sinais, desconto que se aprofunda quanto mais tempo o relógio ficar parado.",
-		"tooltipVolatility": "Baseado em quão próxima ficou a probabilidade de vitória em directo dos 50% ao longo do histórico recente. Jogos em que ficou perto dos 50% — sem nenhuma equipa com vantagem clara — recebem um impulso. Os que ficaram consistentemente longe dos 50% em qualquer direcção são penalizados.",
+		"tooltipVolatility": "Baseado em quão próxima ficou a probabilidade de vitória em direto dos 50% ao longo do histórico recente. Jogos em que ficou perto dos 50% — sem nenhuma equipa com vantagem clara — recebem um impulso. Os que ficaram consistentemente longe dos 50% em qualquer direção são penalizados.",
 		"tooltipFavoriteBoost": "Adicionado quando uma das tuas equipas favoritas guardadas está neste jogo. Ter dois favoritos no confronto soma mais do que um.",
 		"tooltipGameBoost": "Pontos que aplicaste manualmente a este jogo utilizando o controlo de impulso do jogo.",
-		"tooltipScoringOpportunity": "Adicionado com base na posição activa de pontuação. No futebol americano é a red zone; no basebol e softbol escala com o número de corredores nas bases; no hóquei é superioridade numérica ou um guarda-redes retirado num jogo equilibrado.",
+		"tooltipScoringOpportunity": "Adicionado com base na posição ativa de pontuação. No futebol americano é a red zone; no basebol e softbol escala com o número de corredores nas bases; no hóquei é superioridade numérica ou um guarda-redes retirado num jogo equilibrado.",
 		"tooltipPostseasonBoost": "Um impulso para jogos de pós-temporada: playoffs, finais de conferência e campeonatos.",
 		"reasonJoiner": ", ",
 		"reasonTied": "empate",
@@ -761,8 +761,8 @@
 		"tooltipBlowoutMargin": "Calculado a partir da vantagem de quem lidera. Nada até o jogo estar a dois lances de pontuação de distância; depois sobe até à goleada total e vale mais quanto mais tarde for.",
 		"tooltipSustained": "Quanto do período recente o líder passou com mais de dois lances de pontuação de vantagem. Uma vantagem construída e mantida vale mais do que uma que acabou de aparecer.",
 		"tooltipTiming": "Uma goleada com muito jogo pela frente dá mais para ver do que uma quase no fim. Máximo no início, zero no fim.",
-		"tooltipPileOn": "O líder ainda a distanciar-se, a marcar mais do que o adversário no período recente. Desvanece quando a pontuação pára.",
-		"tooltipSituation": "Onde estão os teus jogadores neste momento: com a bola, na red zone, ao bastão, no monte. O mais activo conta mais e os restantes um pouco. No basquetebol e no hóquei, mede quão equilibrado e perto do fim está o jogo.",
+		"tooltipPileOn": "O líder ainda a distanciar-se, a marcar mais do que o adversário no período recente. Desvanece quando a pontuação para.",
+		"tooltipSituation": "Onde estão os teus jogadores neste momento: com a bola, na red zone, ao bastão, no monte. O mais ativo conta mais e os restantes um pouco. No basquetebol e no hóquei, mede quão equilibrado e perto do fim está o jogo.",
 		"tooltipProduction": "Pontos de fantasy que os teus jogadores marcaram há pouco, segundo as tuas regras de pontuação. Desvanece à medida que os pontos ficam mais antigos.",
 		"tooltipExposure": "Quantos dos teus jogadores estão neste jogo. Cinco pontos por cada um, até três jogadores.",
 		"blendClassic": "Pontuação Clássico",
@@ -959,7 +959,7 @@
 		"statusPaused": "ArenaSwap está em pausa",
 		"bodyBeforeOn": "Quando está ",
 		"bodyOn": "ligado",
-		"bodyAfterOn": ", ArenaSwap muda automaticamente os teus separadores para o jogo em directo mais emocionante. Desliga quando quiseres para retomar o controlo.",
+		"bodyAfterOn": ", ArenaSwap muda automaticamente os teus separadores para o jogo em direto mais emocionante. Desliga quando quiseres para retomar o controlo.",
 		"next": "Seguinte"
 	},
 	"stepPowerScore": {
@@ -970,7 +970,7 @@
 		"introDotLabel": "Introdução ao PowerScore",
 		"signalAriaLabel": "Sinal: {signal}",
 		"progressAriaLabel": "Progresso da visita",
-		"introBody": "O PowerScore avalia dinamicamente cada jogo em directo para encontrar a acção mais emocionante. Vamos ver o que entra na fórmula!",
+		"introBody": "O PowerScore avalia dinamicamente cada jogo em direto para encontrar a ação mais emocionante. Vamos ver o que entra na fórmula!",
 		"introButton": "Explorar fórmula",
 		"boostsHeading": "Impulsos e penalizações",
 		"boostsSubtitle": "Ajustes que afinam a pontuação",
@@ -996,10 +996,10 @@
 	},
 	"stepAutoSwitch": {
 		"step": "Passo $1 de $2",
-		"title": "Vê-o em acção",
+		"title": "Vê-o em ação",
 		"watchingCaption": "a ver o jogo dos Eagles…",
 		"reveal": "Viste isso? 👀",
-		"revealBody": "O jogo dos 76ers aqueceu (PowerScore 89). ArenaSwap detectou-o e mudou automaticamente. Sem um clique sequer.",
+		"revealBody": "O jogo dos 76ers aqueceu (PowerScore 89). ArenaSwap detetou-o e mudou automaticamente. Sem um clique sequer.",
 		"back": "Voltar",
 		"next": "Seguinte",
 		"watchingBadge": "A VER"
@@ -1008,7 +1008,7 @@
 		"step": "Passo $1 de $2",
 		"title": "Ajusta ao teu gosto",
 		"subtitle": "Abre as Definições quando quiseres para modificar.",
-		"sensitivity1": "Quase inactivo",
+		"sensitivity1": "Quase inativo",
 		"sensitivity2": "Passivo",
 		"sensitivity3": "Conservador",
 		"sensitivity4": "Equilibrado",
@@ -1035,7 +1035,7 @@
 		"signalLeadChanges": "Mudanças de liderança",
 		"signalComeback": "Remontada",
 		"detailPreviewCaption": "Também estão disponíveis gráficos do marcador e o histórico completo dos sinais.",
-		"body": "Clica em qualquer cartão de jogo em directo para abrir a vista de detalhe. Verás uma análise completa de cada sinal que contribui para o PowerScore, mais um gráfico de como a pontuação evoluiu ao longo do tempo.",
+		"body": "Clica em qualquer cartão de jogo em direto para abrir a vista de detalhe. Verás uma análise completa de cada sinal que contribui para o PowerScore, mais um gráfico de como a pontuação evoluiu ao longo do tempo.",
 		"bodyAfterTap": "Encontras também um campo de Impulso do jogo para subir qualquer jogo na ordem.",
 		"back": "Voltar",
 		"next": "Seguinte"
@@ -1046,11 +1046,11 @@
 		"subtitle": "Duas formas diferentes de moldar o que ArenaSwap monitoriza.",
 		"tabLeagues": "Ligas",
 		"tabFavorites": "Favoritos",
-		"leaguesExplain": "Activar uma liga indica ao ArenaSwap que procure jogos em directo nessa competição. Só as ligas activas contam para a mudança automática.",
-		"leaguesBody": "Activa todas as ligas que queres seguir nas Definições → Ligas. Quanto mais activares, mais ampla é a rede que ArenaSwap lança à procura de acção emocionante.",
+		"leaguesExplain": "Ativar uma liga indica ao ArenaSwap que procure jogos em direto nessa competição. Só as ligas ativas contam para a mudança automática.",
+		"leaguesBody": "Ativa todas as ligas que queres seguir nas Definições → Ligas. Quanto mais ativares, mais ampla é a rede que ArenaSwap lança à procura de ação emocionante.",
 		"favoritesExplain": "Marcar uma equipa com estrela dá aos seus jogos um impulso de PowerScore sempre que essa equipa estiver a jogar, tornando-os mais prováveis de ganhar a mudança automática.",
 		"favoritesBody": "Marca as tuas equipas favoritas em qualquer cartão de jogo ou nas Definições. Não é um filtro — todos os jogos continuam a aparecer; as tuas equipas recebem apenas um pequeno impulso.",
-		"favoritesBonusHint": "Equipas favoritas activas — os seus jogos recebem um impulso de PowerScore!",
+		"favoritesBonusHint": "Equipas favoritas ativas — os seus jogos recebem um impulso de PowerScore!",
 		"toggleAriaLabel": "Alternar {label}",
 		"starAriaLabel": "Adicionar {team} aos favoritos",
 		"unstarAriaLabel": "Remover {team} dos favoritos",
@@ -1080,9 +1080,9 @@
 		"setupTitle": "Como configurar",
 		"setupSubtitle": "Duas coisas a configurar abaixo.",
 		"thresholdTitle": "Define o teu limiar",
-		"thresholdBody": "Escolhe quão baixas as pontuações têm de descer antes de a espera ser activada. Mais baixo é mais paciente; mais alto activa mais cedo.",
+		"thresholdBody": "Escolhe quão baixas as pontuações têm de descer antes de a espera ser ativada. Mais baixo é mais paciente; mais alto ativa mais cedo.",
 		"designateTitle": "Designa um separador de espera",
-		"designateBody": "Abre o teu Standby Stream num separador, volta aqui e selecciona-o no menu pendente.",
+		"designateBody": "Abre o teu Standby Stream num separador, volta aqui e seleciona-o no menu pendente.",
 		"back": "Voltar",
 		"gotIt": "Percebido"
 	},
@@ -1090,7 +1090,7 @@
 		"leaguesTitle": "Escolhe ligas para começar",
 		"leaguesCopy": "Escolhe pelo menos uma liga e o ArenaSwap começa à caça de jogos.",
 		"selectLeagues": "Escolher ligas nas Definições",
-		"refresh": "Actualizar",
+		"refresh": "Atualizar",
 		"settings": "Definições →"
 	},
 	"gameListHeader": {
@@ -1156,18 +1156,18 @@
 			"t0": "Usa o interruptor no canto superior direito para pausar o ArenaSwap sem perderes as tuas definições.",
 			"t1": "ArenaSwap funciona melhor com dois ou mais separadores de jogos abertos ao mesmo tempo.",
 			"t2": "Clica em qualquer cartão de jogo para ver a análise do PowerScore.",
-			"t3": "Misturas desportos? Activa ligas extra nas Definições para mudar entre todas de uma vez.",
+			"t3": "Misturas desportos? Ativa ligas extra nas Definições para mudar entre todas de uma vez.",
 			"t4": "Girafas e ouriços são fixes. Ver todos os jogos ao mesmo tempo também.",
 			"t5": "ArenaSwap melhora quanto mais tempo o deixares a correr!",
-			"t6": "Activa as notificações de mudança nas Definições para receberes um alerta sempre que o ArenaSwap mudar de separador."
+			"t6": "Ativa as notificações de mudança nas Definições para receberes um alerta sempre que o ArenaSwap mudar de separador."
 		},
 		"main": {
 			"t0": "Marca as tuas equipas favoritas para fixar os seus jogos no topo da lista.",
 			"t1": "Associa um separador no menu pendente junto a cada jogo para que ArenaSwap saiba para onde mudar.",
 			"t2": "O PowerScore mais alto ganha a mudança. Fica de olho na barra de cada cartão.",
-			"t3": "Activa \"Mostrar jogos futuros\" nas Definições para pré-associar separadores antes de o jogo começar.",
-			"t4": "Ainda sem jogos em directo? O Modo de demonstração nas Definições prepara alguns para veres o ArenaSwap a funcionar.",
-			"t5": "O Standby Stream mantém um separador de reserva a reproduzir quando todos os jogos abrandam — activa-o nas Definições."
+			"t3": "Ativa \"Mostrar jogos futuros\" nas Definições para pré-associar separadores antes de o jogo começar.",
+			"t4": "Ainda sem jogos em direto? O Modo de demonstração nas Definições prepara alguns para veres o ArenaSwap a funcionar.",
+			"t5": "O Standby Stream mantém um separador de reserva a reproduzir quando todos os jogos abrandam — ativa-o nas Definições."
 		},
 		"setup": {
 			"t0": "Reduz o tempo de espera entre mudanças para mudar mais depressa num final caótico.",
@@ -1176,17 +1176,17 @@
 			"t3": "O Modo de demonstração corre jogos com guião, para ajustares as definições sem esperar por um jogo a sério.",
 			"t4": "A sensibilidade de mudança define quanta vantagem de PowerScore é precisa antes de ArenaSwap mudar.",
 			"t5": "O impulso de pós-temporada dá mais peso a playoffs e finais, para que os grandes momentos ganhem mais mudanças.",
-			"t6": "Usa a secção Sinais PowerScore para desactivar os que não te interessam — o ArenaSwap reescala tudo automaticamente."
+			"t6": "Usa a secção Sinais PowerScore para desativar os que não te interessam — o ArenaSwap reescala tudo automaticamente."
 		},
 		"detail": {
 			"t0": "O PowerScore combina equilíbrio, pressão da fase final, dinâmica, mudanças de liderança e remontadas. Depois aplica um impulso ou penalização de volatilidade com base em quanto a probabilidade de vitória oscila.",
-			"t1": "Uma penalização por relógio parado entra em jogo quando o relógio mal avança entre actualizações.",
+			"t1": "Uma penalização por relógio parado entra em jogo quando o relógio mal avança entre atualizações.",
 			"t2": "Jogos 0–0 sofrem uma pequena penalização de PowerScore nos desportos em que o 0–0 não é emocionante.",
-			"t3": "Passa o cursor sobre os gráficos para inspeccionar momentos específicos do jogo.",
+			"t3": "Passa o cursor sobre os gráficos para inspecionar momentos específicos do jogo.",
 			"t4": "Uma equipa favorita no confronto adiciona pontos bónus ao PowerScore.",
-			"t5": "O PowerScore cresce à medida que o jogo avança. Um jogo equilibrado no início dispara em direcção ao apito final.",
+			"t5": "O PowerScore cresce à medida que o jogo avança. Um jogo equilibrado no início dispara em direção ao apito final.",
 			"t6": "Empate no último minuto? O PowerScore antecipa um provável prolongamento para nunca perderes o apito final.",
-			"t7": "Activa as odds de apostas nas Definições para ver as linhas em directo ao lado do PowerScore de cada jogo."
+			"t7": "Ativa as odds de apostas nas Definições para ver as linhas em direto ao lado do PowerScore de cada jogo."
 		}
 	},
 	"reviewPrompt": {
@@ -1198,12 +1198,12 @@
 	"cooldown": {
 		"label": "Tempo de espera entre mudanças",
 		"explainer": "Define o tempo mínimo entre mudanças automáticas para evitar a troca rápida de separadores.",
-		"off": "Desactivado"
+		"off": "Desativado"
 	},
 	"switchDelay": {
 		"label": "Atraso de mudança",
-		"explainer": "Aguarda este tempo antes de executar uma mudança, o que ajuda quando as transmissões ficam atrás dos dados em directo.",
-		"off": "Desactivado"
+		"explainer": "Aguarda este tempo antes de executar uma mudança, o que ajuda quando as transmissões ficam atrás dos dados em direto.",
+		"off": "Desativado"
 	},
 	"sensitivity": {
 		"label": "Sensibilidade de mudança",
@@ -1211,7 +1211,7 @@
 		"explainer": "Controla quão grande deve ser a diferença de PowerScore antes de ArenaSwap mudar de separador.",
 		"hyperdriveTitle": "Aciona o hiperpropulsor…",
 		"level": {
-			"l1": "Quase inactivo",
+			"l1": "Quase inativo",
 			"l2": "Passivo",
 			"l3": "Conservador",
 			"l4": "Equilibrado",
@@ -1235,7 +1235,7 @@
 			"l1": "Prepare a nave para a velocidade da luz.",
 			"l2": "Não, não, a velocidade da luz é demasiado lenta.",
 			"l3": "A velocidade da luz é demasiado lenta?",
-			"l4": "Sim. Vamos ter de ir directamente para a",
+			"l4": "Sim. Vamos ter de ir diretamente para a",
 			"l5": "Ludicrous Speed.",
 			"l6": "Ludicrous Speed?",
 			"l7": "Nunca fomos tão depressa.",
