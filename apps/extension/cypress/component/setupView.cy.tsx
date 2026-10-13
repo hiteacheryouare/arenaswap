@@ -229,6 +229,13 @@ describe('setupView search', () => {
 		cy.get('.settings-index-row').should('have.length.lessThan', 6);
 	});
 
+	it('finds the college divisions under march madness and lands on the first college league', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		cy.get('#settingsSearch').type('march madness');
+		cy.contains('.settings-index-row', 'College divisions and conferences').click();
+		cy.focused().should('have.id', 'college-league-ncaab');
+	});
+
 	it('matches a setting by a synonym that is not in its label', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('celsius');

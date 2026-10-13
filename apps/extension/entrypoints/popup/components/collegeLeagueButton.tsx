@@ -28,6 +28,7 @@ const CollegeLeagueButton = ({ leagueId, leagueLabel, filter, children, onOpen }
 	return (
 		<button
 			type='button'
+			id={`college-league-${leagueId}`}
 			className='college-league-open league-toggle-label'
 			onClick={onOpen}
 			title={i18n.t('collegeFilter.open', { league: leagueLabel })}
