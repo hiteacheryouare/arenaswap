@@ -131,7 +131,7 @@ describe('onboardingView', () => {
 		cy.contains("You're all set!").should('exist');
 		cy.contains('button', 'Jump right in').click();
 
-		cy.get('@onComplete').should('have.been.calledOnceWith', ['nba', 'nfl', 'nhl'], ['nba:20']);
+		cy.get('@onComplete').should('have.been.calledOnceWith', ['nba', 'nhl', 'nfl'], ['nba:20']);
 	});
 
 	it('drops the favorites that were starred before Skip', () => {
@@ -146,7 +146,21 @@ describe('onboardingView', () => {
 		cy.contains("You're all set!").should('exist');
 		cy.contains('button', 'Jump right in').click();
 
-		cy.get('@onComplete').should('have.been.calledOnceWith', ['nba', 'nfl', 'nhl', 'mlb'], []);
+		cy.get('@onComplete').should('have.been.calledOnceWith', ['nba', 'nhl', 'mlb', 'nfl'], []);
+	});
+
+	it('saves the picked leagues in the default order, not the order they were tapped', () => {
+		cy.mount(<OnboardingView {...defaultProps} onComplete={cy.spy().as('onComplete')} />);
+
+		goToLeaguePicker();
+		cy.get('#onb-league-ncaaf').click().should('be.checked');
+		cy.get('#onb-league-wnba').click().should('be.checked');
+		goToTeamPicker();
+
+		cy.contains('button', 'Skip').click();
+		cy.contains('button', 'Jump right in').click();
+
+		cy.get('@onComplete').should('have.been.calledOnceWith', ['nba', 'wnba', 'nhl', 'mlb', 'nfl', 'ncaaf'], []);
 	});
 
 	it('hands the same selection to the walkthrough', () => {
@@ -157,6 +171,6 @@ describe('onboardingView', () => {
 		cy.contains('button', 'Done').click();
 		cy.contains('button', 'Take the tour').click();
 
-		cy.get('@onStartWalkthrough').should('have.been.calledOnceWith', ['nba', 'nfl', 'nhl', 'mlb'], []);
+		cy.get('@onStartWalkthrough').should('have.been.calledOnceWith', ['nba', 'nhl', 'mlb', 'nfl'], []);
 	});
 });

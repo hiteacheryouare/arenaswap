@@ -3,7 +3,7 @@ import { i18n } from '#i18n';
 import { fetchTeamsForLeagues } from '@arenaswap/sideline';
 import type { EspnTeamEntry } from '@arenaswap/sideline';
 import type { LeagueId, LeagueLogoMap, SportType } from '@arenaswap/core/types';
-import { leaguesBySportType } from '../popupHelpers';
+import { leagueOrder, leaguesBySportType } from '../popupHelpers';
 import OnboardingTabControl from './onboardingTabControl';
 import OnboardingLeaguePicker from './onboardingLeaguePicker';
 import OnboardingTeamPicker from './onboardingTeamPicker';
@@ -78,7 +78,7 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 	};
 
 	const finish = (withFavorites: boolean) => {
-		setPendingLeagues([...selectedLeagues]);
+		setPendingLeagues([...selectedLeagues].toSorted((a, b) => leagueOrder[a] - leagueOrder[b]));
 		setPendingFavorites(withFavorites ? [...selectedFavorites] : []);
 		setStep(4);
 	};
