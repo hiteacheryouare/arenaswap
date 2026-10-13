@@ -38,5 +38,10 @@ components, but each app still keeps its own copy of the things around it. Every
 - **`.astro` files are not covered by `.gitattributes`**, so the whole website is LF while every
   `.ts/.tsx/.scss` is CRLF. Consistent within the file type — do not report individual `.astro`
   files as EOL slips.
+- **The licences page (`apps/docs/src/lib/dependencyLicences.ts`) reads outside the package**: every
+  workspace manifest from a hand-kept list, plus each dep's *installed* `package.json` for its version.
+  As of #220, docs `build` inputs add the manifests by glob but not `package-lock.json`, so a
+  lockfile-only bump of a non-docs dep can still restore a stale licences page from cache. A new
+  workspace has to be added to that list by hand.
 
 Related: [[reference-review-targets]], [[project-review-false-positives]]

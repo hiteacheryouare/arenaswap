@@ -40,3 +40,11 @@ storage, even though `packages/core/tests/persistedState.test.ts` frames its rou
 restart. A worker restart loses all three together and the startup fan-out rebuilds them, so they stay
 consistent with each other. Don't credit a schema round-trip test as proof something survives a
 restart; grep for the `storage.session.set` that would write it.
+
+**Worker-safe colour imports (PR #217, 2026-10-12).** Colour code lives in `packages/chromatic`
+(source package, exports map, no build — same JIT shape as ui). The worker graph reaches it only
+through `apps/extension/utils/crestColors.ts`, which must use the `/colorMath` and `/crestColor`
+subpaths: the root and `/colorUtils` pull in `logoTint` + `logoSwitchColor`, which read localStorage
+at import. Those reads are `globalThis.localStorage?.` inside try/catch, so a slip costs bundle weight,
+not a crash. Nothing enforces it but a comment. Other worker-reachable ui imports: `weatherUtils`
+(holidayDecorations), `useDocumentTheme` (theme), a type-only `scoringModeMeta` (powerScoreReason).

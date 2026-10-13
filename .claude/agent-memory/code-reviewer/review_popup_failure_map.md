@@ -45,3 +45,10 @@ top), not 320. Cypress specs that mount a card in a 320px wrapper give text ~30p
 real popup, so their "fits on one line in every locale" checks overstate the margin. Measured
 2026-10-09 at the real width: the Filipino stale line (0.6rem DM Sans) is 260px of 263. Re-measure at
 289px outer before trusting a fit test.
+
+**Guide-tab specifics (QA sweep 2026-10-12; verify before citing):**
+- The Guide reads prefs once (`guide/app.tsx` load effect) and nothing in `entrypoints/`/`utils/` listens to `storage.onChanged`, so popup-side setting changes never reach an open Guide. Any new pref the Guide reads inherits that staleness.
+- The Guide's drawer `GameDetailView` has no `key`, so switching games reuses the instance: refs like `previousScoreline`, the scroll offset and Bootstrap's active tab carry over. Props the popup passes but the Guide omits fall back to no-op defaults (`onToggleFavoriteTeam`), leaving live-looking dead buttons.
+- The drawer's `onAnimationEnd` sees bubbled child animations — check `target === currentTarget` on any new exit-animation gate.
+- Detail charts init ECharts at mount size; a chart mounted inside a non-active (display:none) tab pane gets 0x0 and only a window resize repairs it.
+- `useBasketballSituation` polls without the `document.hidden` skip that `useSummaryData` has.

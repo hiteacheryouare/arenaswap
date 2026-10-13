@@ -1,21 +1,15 @@
 ---
 name: cooldown-restart-bug
-description: One Jest test in apps/extension is red on purpose — a lastSwitchTime from the future freezes auto-switching for the whole clock skew
+description: FIXED — the future-dated lastSwitchTime freeze; readStoredSwitchTime now clamps it and the once-red test is green
 metadata:
   type: project
 ---
 
-`apps/extension/tests/backgroundSession.test.ts` carries one test that is **red on purpose**:
-`does not freeze switching when the stored switch time is in the future` (around line 230).
+The cooldown-across-restart bug and its successor (a future-dated `lastSwitchTime` freezing switching)
+are both fixed: `readStoredSwitchTime` in `background.ts` rejects anything negative or later than now.
+`backgroundSession.test.ts` -> `does not freeze switching when the stored switch time is in the future`
+was green on 2026-10-12, and the whole extension unit suite was green at the qa-sweep baseline.
 
-The original form of this bug — `lastSwitchTime` living only in the worker closure, so an MV3
-teardown handed back a free switch — **has been fixed**: the value is now written to
-`browser.storage.session` alongside the rest of the switching state. The fix opened the successor
-bug this test proves. `Number.isFinite` rejects a string and lets a number through, but a timestamp
-from the future is a finite number, and session storage now carries it across every worker restart
-instead of losing it on the next teardown. A clock that ran fast when a switch was recorded refuses
-every switch for the whole hour of skew, and nothing in the UI says why.
+**How to apply:** a red test in that file is now a real regression, not the known bug.
 
-**How to apply:** if a run reports "1 failed" in the extension unit suite, check whether it is this
-test before treating it as a regression. Observed still red on 2026-09-21. Ryan fixes source bugs;
-the agent proves them — do not soften it.
+Related: [[qa-sweep-20261012-bugs]]

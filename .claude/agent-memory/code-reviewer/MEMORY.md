@@ -1,10 +1,10 @@
 # ArenaSwap — code-reviewer memory
 
-- [CI and enforcement](project_ci_and_enforcement.md) — ci.yml runs lint/typecheck/test/e2e/zip on workspaces only; scripts/ is never checked; no react-hooks lint
+- [CI and enforcement](project_ci_and_enforcement.md) — ci.yml runs lint/typecheck/test/e2e/zip on workspaces only; scripts/ is never checked; no react-hooks lint; the oxlint-vs-rolldown temp file flake
 - [Platform floor](project_platform_floor.md) — Chrome 110 / FF 115; ES built-ins, CSS `:has()` (FF 121), storage.session 1MB <Chrome 112, resizeQuality FF 149
 - [Repo failure map](project_review_failure_map.md) — Firefox-only DnD, the walkthrough overlay that blocks its own nav, the empty-merge gate, defaultStrings, team-colour card seams (hero grid inherit, direct team.color readers, walkthrough card copies)
 - [Popup failure map](review_popup_failure_map.md) — 320x560 geometry, JS/SCSS duration coupling, scroll container, tab strip trap, detail view also lives in the guide tab, viewer-tz day math
-- [Extension runtime footguns](project_extension_runtime_footguns.md) — MV3 worker teardown, unbounded session history, the muted-tab ledger, the three paths prefs.enabled arrives by, what is in-memory only
+- [Extension runtime footguns](project_extension_runtime_footguns.md) — MV3 worker teardown, unbounded session history, muted-tab ledger, prefs.enabled paths, in-memory state, worker-safe chromatic subpaths
 - [i18n review contract](review_i18n_contract.md) — how to verify keys against locales/en.json and where the key check is blind
 - [Known false positives](project_review_false_positives.md) — i18n substitution, lowercase JSX helpers, packages/ui "duplication", the stale gc2TeamLogo finding
 - [PowerScore reason strings](project_powerscore_reason_strings.md) — English-only by design inside the npm package; not an i18n miss
@@ -19,3 +19,4 @@
 - [Win probability sources](review_win_probability_sources.md) — scoreboard tracker vs summary line: `??` shadowing, demo-toggle stale flags, "ever had" gates
 - [Baseball situation timing](review_baseball_situation_timing.md) — dueUp only between half-innings, never beside atBat; End → topOfInning undefined; check ESPN shapes in recordings
 - [Film stage map](review_film_stage_map.md) — ad-film renders: one page per cut+format, card close vs next-shot seam, zoom scales Desk transforms
+- [Package boundaries](review_package_boundaries.md) — core↔sideline resolution per env, turbo NONEXISTENT-task hashing, worktree recipe proving a move duplicated no module state
