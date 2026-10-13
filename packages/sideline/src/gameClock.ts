@@ -38,6 +38,13 @@ export const parseClockToSeconds = (clock: string): number => {
 	return (min * 60) + Math.floor(sec);
 };
 
+// A colon-free clock in tenths, so a card can print 45.3 or 0.8 the way a broadcast does. Undefined
+// for every other format, which already reads exactly as a broadcast writes it.
+export const parseClockTenths = (clock: string): number | undefined => {
+	if (!/^\d+(?:\.\d+)?$/.test(clock)) return undefined;
+	return Math.round(Number(clock) * 10);
+};
+
 // The added minutes in soccer's "90'+4'", or undefined when the clock is inside the regular half.
 export const parseStoppageMinutes = (clock: string): number | undefined => {
 	const added = /^\d+'\+(\d+)'$/.exec(clock)?.[1];

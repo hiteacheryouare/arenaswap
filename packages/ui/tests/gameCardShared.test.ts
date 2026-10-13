@@ -73,6 +73,12 @@ describe('formatGameClock', () => {
 	test('renders clock sports as mm:ss', () => {
 		expect(formatGameClock(makeGame('nba', { clockSeconds: 402 }))).toBe('6:42');
 	});
+
+	test('prints tenths under a minute, the way a basketball broadcast does', () => {
+		expect(formatGameClock(makeGame('nba', { clockSeconds: 45, clockTenths: 453 }))).toBe('45.3');
+		expect(formatGameClock(makeGame('nba', { clockSeconds: 1, clockTenths: 8 }))).toBe('0.8');
+		expect(formatGameClock(makeGame('nba', { clockSeconds: 0, clockTenths: 0 }))).toBe('0.0');
+	});
 });
 
 describe('powerScoreColor', () => {

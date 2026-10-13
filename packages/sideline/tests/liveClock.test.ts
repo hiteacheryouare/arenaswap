@@ -1,5 +1,5 @@
 import type { LeagueId } from '@arenaswap/core';
-import { parseClockToSeconds, parseStoppageMinutes } from '../src/gameClock';
+import { parseClockTenths, parseClockToSeconds, parseStoppageMinutes } from '../src/gameClock';
 
 /* Why this suite is thorough about a string parser: `clockSeconds` is not decoration. It feeds the
    lateGame signal, which is worth up to a quarter of a PowerScore, and it is what the popup renders
@@ -174,4 +174,13 @@ test('reads the added minutes off a stoppage-time clock, and nothing off any oth
 	expect(parseStoppageMinutes("85'")).toBeUndefined();
 	expect(parseStoppageMinutes("90'+0'")).toBeUndefined();
 	expect(parseStoppageMinutes('5:30')).toBeUndefined();
+});
+
+test('keeps the tenths of a basketball clock under a minute, and nothing else', () => {
+	expect(parseClockTenths('45.3')).toBe(453);
+	expect(parseClockTenths('0.8')).toBe(8);
+	expect(parseClockTenths('0.0')).toBe(0);
+	expect(parseClockTenths('0:22')).toBeUndefined();
+	expect(parseClockTenths("90'+8'")).toBeUndefined();
+	expect(parseClockTenths('')).toBeUndefined();
 });

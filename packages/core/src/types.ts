@@ -186,6 +186,8 @@ export interface Game {
 	// Soccer's added minutes, which `clockSeconds` already includes: 2 for "45'+2'". Kept apart so
 	// the clock can be printed the way a broadcast prints it.
 	clockStoppageMinutes?: number;
+	// Basketball under a minute, where the feed sends `45.3`: 453. Display only; scoring reads clockSeconds.
+	clockTenths?: number;
 	status: 'pre' | 'in' | 'post';
 	startTime?: string;
 	broadcasts?: string[];

@@ -2,7 +2,7 @@ import { collegeFetchGroups, isWithinFinalRetention, leagueConfigMap, logWarn, p
 import type { AtBat, AtBatPlayer, Game, GameCondition, RedCardEvent, SeriesState, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, LeagueSchedule, LeagueScheduleMap, ProbableStarter, TeamLeader, TeamMonoLogoMap, TeamMonoMarks } from '@arenaswap/core';
 import { deriveBasketballPossession } from './basketballPossession';
 import { readCollegeBracket } from './collegeBracket';
-import { parseClockToSeconds, parseStoppageMinutes } from './gameClock';
+import { parseClockTenths, parseClockToSeconds, parseStoppageMinutes } from './gameClock';
 import { toLeagueSchedule } from './leagueCalendar';
 import { collegeBaseballLeagues, gradePostseason, readEventHeadline } from './postseasonRound';
 import {
@@ -716,6 +716,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		period: status.period ?? 1,
 		clockSeconds: parseClockToSeconds(status.displayClock ?? '0:00'),
 		clockStoppageMinutes: leagueConfig.sportType === 'soccer' ? parseStoppageMinutes(status.displayClock ?? '') : undefined,
+		clockTenths: parseClockTenths(status.displayClock ?? ''),
 		status: state,
 		// Every state, not just `pre`. A game's start is a fact about the game rather than about
 		// how far through it is, and the retention window for finished games has nothing else to

@@ -64,6 +64,7 @@ interface ClockSource {
 	sportType: SportType;
 	clockSeconds?: number;
 	clockStoppageMinutes?: number;
+	clockTenths?: number;
 }
 
 export const formatClock = (seconds: number): string => {
@@ -82,5 +83,6 @@ export const formatGameClock = (game: ClockSource): string => {
 		const added = game.clockStoppageMinutes ?? 0;
 		return added > 0 && added <= minutes ? `${minutes - added}+${added}'` : `${minutes}'`;
 	}
+	if (game.clockTenths !== undefined) return (game.clockTenths / 10).toFixed(1);
 	return formatClock(game.clockSeconds);
 };
