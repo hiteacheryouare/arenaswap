@@ -141,10 +141,11 @@ export const computeLateGame = ({ game, sport, league, margin }: SignalInput): S
 	if (game.period == null) return none;
 	const regularPeriods = league.regularPeriods;
 
-	// Overtime and extra innings only happen from a tie, so they take the top of the range.
+	// Overtime and extra innings start from a tie and take the top of the range, until a lead built
+	// inside them (five runs in the top of the 10th) is past the sport's close margin.
 	if (game.period > regularPeriods)
 		return {
-			points: scores.lateGame.overtime,
+			points: margin <= sport.closenessMargins[1] ? scores.lateGame.overtime : getLateGameCeiling(margin, sport),
 			reason: sport.clockBased ? getOvertimeReason(game, regularPeriods) : { key: 'extraInnings' },
 		};
 
@@ -264,8 +265,8 @@ export const computeLeadChanges = ({ context, sport, now }: SignalInput): Signal
 	const logged = context.recentLeadChanges;
 	const fromLog = logged !== undefined && logged.count > seen.count;
 	const count = fromLog ? logged.count : seen.count;
-	// A change the snapshots saw keeps their timestamp; the log only dates the ones they missed.
-	const lastTimestamp = fromLog ? (seen.lastTimestamp ?? logged.lastAt ?? now) : seen.lastTimestamp;
+	// The newer of the two: a flip the snapshots missed can be later than the last one they saw.
+	const lastTimestamp = fromLog ? Math.max(seen.lastTimestamp ?? 0, logged.lastAt ?? seen.lastTimestamp ?? now) : seen.lastTimestamp;
 	let tier: number;
 	let reason: ReasonFragment;
 	if (count >= 2) {

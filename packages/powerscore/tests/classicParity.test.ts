@@ -2,6 +2,8 @@ import { scoreGame, signalPoints, boostPoints } from '../src/compose';
 import { classicMode } from '../src/modes';
 import { scoringOpportunityBoost } from '../src/boosts/scoringOpportunity';
 import { leagueConfigs } from '../src/constants';
+import { resolveLeagueConfig, resolveSportConfig } from '../src/config';
+import { scoreMargin } from '../src/progress';
 import type { Game, ScoreSnapshot } from '../src/types';
 import { scoreGameV2, type V2PostseasonRound, type V2SignalName } from './legacy/v2/compose';
 import type { Game as V2Game } from './legacy/v2/types';
@@ -128,9 +130,13 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 				gameBoost,
 			});
 
+			// Deliberate: a lead built inside overtime past the close margin no longer pays the
+			// full overtime late-game value, so those games leave late-game and everything summed from it out.
+			const overtimeLead = (game.period ?? 0) > resolveLeagueConfig(game).regularPeriods
+				&& scoreMargin(game) > resolveSportConfig(game.sportType).closenessMargins[1];
 			const fields: [string, unknown, unknown][] = [
-				...signalNames.map((name): [string, unknown, unknown] => [name, v2[name], signalPoints(v3, name)]),
-				['signalsSubtotal', v2.signalsSubtotal ?? 0, v3.scaledSubtotal],
+				...signalNames.filter(name => !overtimeLead || name !== 'lateGame').map((name): [string, unknown, unknown] => [name, v2[name], signalPoints(v3, name)]),
+				...(overtimeLead ? [] : [['signalsSubtotal', v2.signalsSubtotal ?? 0, v3.scaledSubtotal] as [string, unknown, unknown]]),
 				['stallPenalty', v2.stallPenalty ?? 0, v3.stallPenalty],
 				['winProbabilityVariance', v2.winProbabilityVariance, v3.winProbabilityVariance],
 				['favoriteBonus', v2.favoriteBonus, boostPoints(v3, 'favoriteBoost')],
@@ -143,7 +149,7 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 			// disabled path floored after adding win probability instead of before.
 			if (disabledSignals.length === 0) fields.push(['reason', v2.reason, v3.reason]);
 			const subtotalUnderStall = v3.scaledSubtotal < v3.stallPenalty && (v3.winProbabilityVariance ?? 0) > 0;
-			if (disabledSignals.length === 0 || !subtotalUnderStall) fields.push(['total', v2.total, v3.total]);
+			if (!overtimeLead && (disabledSignals.length === 0 || !subtotalUnderStall)) fields.push(['total', v2.total, v3.total]);
 
 			if (v3.total >= 70) seen.highTotal++;
 			if (v3.total > 100) seen.overflow++;

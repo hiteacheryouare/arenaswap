@@ -72,7 +72,7 @@ Ramps near-linearly across the entire final period of a close game, rather than 
 | Fringe | 22 |
 | Out of reach | 15 |
 
-Tied games ramp past 36 in the final minute, toward an overtime pre-boost that tops out at 38. It separates a game heading for extra basketball from one that's merely close. Overtime and extra innings pay the full 38 outright.
+Tied games ramp past 36 in the final minute, toward an overtime pre-boost that tops out at 38. It separates a game heading for extra basketball from one that's merely close. Overtime and extra innings pay the full 38 outright, until a lead built inside them passes the sport's close margin. Then they pay the same ceiling a regulation game with that margin would, so a five-run top of the 10th is capped where a five-run 9th is.
 
 Baseball and softball have no clock, so the same closeness-gated ramp runs across innings instead. It starts in the 6th inning for baseball, or the 5th for softball, and reaches its ceiling by the end of regulation.
 

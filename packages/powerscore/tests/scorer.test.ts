@@ -895,6 +895,29 @@ describe('PowerScore v2 — live-action decay & overtime anticipation', () => {
 		expect(tied1.lateGame).toBeGreaterThan(nonTiedBuzzer.lateGame);
 	});
 
+	test('a lead built inside extra innings or overtime gives back the overtime premium past the close margin', () => {
+		const tenth = (home: number, away: number) => computePowerScore(makeGame({
+			league: 'mlb',
+			sportType: 'baseball',
+			period: 10,
+			clockSeconds: 0,
+			homeTeam: { abbreviation: 'HOM', score: home },
+			awayTeam: { abbreviation: 'AWY', score: away },
+		}), []).lateGame;
+		expect(tenth(4, 7)).toBe(scorerTunables.scores.lateGame.overtime);
+		expect(tenth(4, 9)).toBe(scorerTunables.scores.lateGame.fringeCeiling);
+		expect(tenth(4, 10)).toBe(scorerTunables.scores.lateGame.blowoutCeiling);
+
+		const overtimeBy = (margin: number) => computePowerScore(makeGame({
+			period: 5,
+			clockSeconds: 30,
+			homeTeam: { ...makeGame().homeTeam, score: 110 + margin },
+			awayTeam: { ...makeGame().awayTeam, score: 110 },
+		}), []).lateGame;
+		expect(overtimeBy(10)).toBe(scorerTunables.scores.lateGame.overtime);
+		expect(overtimeBy(12)).toBe(scorerTunables.scores.lateGame.fringeCeiling);
+	});
+
 	test('no OT pre-boost for clockless baseball extra innings (jumps straight to overtime)', () => {
 		const extraInnings = computePowerScore(makeGame({
 			league: 'mlb',

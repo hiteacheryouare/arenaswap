@@ -258,6 +258,14 @@ describe('lead changes from the play log', () => {
 		expect(signalPoints(withLog, 'leadChanges')).toBe(12);
 	});
 
+	test('a flip the log saw after the last one the snapshots saw fades from the later one', () => {
+		const oldFlip = history([[97, 99], [99, 99], [101, 99], [101, 99], [101, 99], [101, 99], [101, 99]]);
+		const now = oldFlip[6]!.timestamp;
+		const fromSnapshots = classic(late, { history: oldFlip, recentLeadChanges: { count: 2, lastAt: pollStart } });
+		const fromLog = classic(late, { history: oldFlip, recentLeadChanges: { count: 2, lastAt: now - 10_000 } });
+		expect(signalPoints(fromLog, 'leadChanges')).toBeGreaterThan(signalPoints(fromSnapshots, 'leadChanges'));
+	});
+
 	test('a flip the snapshots saw keeps its own timestamp when the log counts one more', () => {
 		const flipJustNow = history([[97, 99], [99, 99], [101, 99]]);
 		const now = flipJustNow[2]!.timestamp;
