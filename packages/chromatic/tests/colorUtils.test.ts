@@ -1,17 +1,26 @@
 import { colorDifference } from '../src/colorMath';
 import { crestBacking, pendingSwitchCrest, resolveChartLineColors, readableInkOn, readableTeamInkOnCard, resolveTeamColorPair, teamDisplayInk, teamRowWash } from '../src/colorUtils';
 
-jest.mock('../src/logoSwitchColor', () => ({
-	cachedLogoSwitchColor: (crest: string) => ({
+// What `switchColorFromPixels` reads off each crest: a colour, or null for a crest with nothing in it
+// but its primary and white. A crest missing from here has not been read yet.
+jest.mock('../src/logoSwitchColor', () => {
+	const read: Record<string, string | null> = {
 		'https://a.espncdn.com/i/teamlogos/ncaa/500-dark/120.png': '#F8DB3F',
 		'https://a.espncdn.com/i/teamlogos/ncaa/500-dark/97.png': '#050403',
-	} as Record<string, string>)[crest],
-}));
+		'https://a.espncdn.com/i/teamlogos/ncaa/500-dark/213.png': null,
+		'https://a.espncdn.com/i/teamlogos/ncaa/500-dark/164.png': null,
+		'https://a.espncdn.com/i/teamlogos/soccer/500-dark/364.png': null,
+		'https://a.espncdn.com/i/teamlogos/nhl/500-dark/scoreboard/tb.png': null,
+		'https://a.espncdn.com/i/teamlogos/nhl/500-dark/scoreboard/tor.png': null,
+	};
+	return { cachedLogoSwitchColor: (crest: string) => (crest in read ? read[crest] : undefined) };
+});
 
 // Every matchup Apple Sports was checked against, with the colours ESPN publishes for each team
-// and the colour Apple painted each side. Two are left out on purpose: Lakers @ Kings, where Apple
-// has the Kings in black against ESPN's purple, and Red Sox @ Yankees, a finished game where Apple
-// switched nobody and the rule switches the Red Sox.
+// and the colour Apple painted each side. Left out on purpose: Lakers @ Kings, where Apple has the
+// Kings in black against ESPN's purple; Tulsa @ Rice, where Apple's Tulsa alternate is red against
+// ESPN's gold; Hull @ Fulham, where Apple's Fulham is black against ESPN's red alternate; and Red
+// Sox @ Yankees, where Apple switched nobody and the rule switches the Red Sox.
 const appleMatchups: [string, { color: string; alternateColor: string; logo?: string }, { color: string; alternateColor: string }, string, string][] = [
 	['PHI @ ATL', { color: '#E81828', alternateColor: '#003278' }, { color: '#0C2340', alternateColor: '#BA0C2F' }, '#E81828', '#0C2340'],
 	['PIT @ PHI', { color: '#000000', alternateColor: '#FDB71A' }, { color: '#FE5823', alternateColor: '#000000' }, '#000000', '#FE5823'],
@@ -33,6 +42,22 @@ const appleMatchups: [string, { color: string; alternateColor: string; logo?: st
 	['BUF @ CBJ', { color: '#00468B', alternateColor: '#FDB71A' }, { color: '#002D62', alternateColor: '#E31937' }, '#FDB71A', '#002D62'],
 	['NE @ BUF', { color: '#002A5C', alternateColor: '#C60C30' }, { color: '#00338D', alternateColor: '#D50A0A' }, '#C60C30', '#00338D'],
 	['ALA @ MSST', { color: '#9E1B32', alternateColor: '#FFFFFF' }, { color: '#5D1725', alternateColor: '#C1C6C8' }, '#9E1B32', '#5D1725'],
+	// Round five and six, 2026-10-13 to 10-20
+	['CLE @ TB', { color: '#002B5C', alternateColor: '#E31937' }, { color: '#092C5C', alternateColor: '#8FBCE6' }, '#E31937', '#092C5C'],
+	['TB @ CLE', { color: '#092C5C', alternateColor: '#8FBCE6' }, { color: '#002B5C', alternateColor: '#E31937' }, '#8FBCE6', '#002B5C'],
+	['NJ @ DET', { color: '#E30B2B', alternateColor: '#000000' }, { color: '#E30526', alternateColor: '#FFFFFF' }, '#000000', '#E30526'],
+	['WSH @ CAR', { color: '#D71830', alternateColor: '#0B1F41' }, { color: '#E30426', alternateColor: '#000000' }, '#0B1F41', '#E30426'],
+	['DET @ MIN', { color: '#1D428A', alternateColor: '#C8102E' }, { color: '#266092', alternateColor: '#79BC43' }, '#C8102E', '#266092'],
+	['OSU @ IU', { color: '#BA0C2F', alternateColor: '#A8ADB4' }, { color: '#970310', alternateColor: '#FFFFFF' }, '#A8ADB4', '#970310'],
+	['NAVY @ UTSA', { color: '#00225B', alternateColor: '#B5A67C' }, { color: '#0C2340', alternateColor: '#F15A22' }, '#B5A67C', '#0C2340'],
+	['PSU @ MICH', { color: '#061440', alternateColor: '#FFFFFF', logo: 'https://a.espncdn.com/i/teamlogos/ncaa/500/213.png' }, { color: '#00274C', alternateColor: '#FFCB05' }, '#000000', '#00274C'],
+	['RUTG @ MD', { color: '#CE0E2D', alternateColor: '#FFFFFF', logo: 'https://a.espncdn.com/i/teamlogos/ncaa/500/164.png' }, { color: '#CE1126', alternateColor: '#FFFFFF' }, '#ffffff', '#CE1126'],
+	['LIV @ BRE', { color: '#D11317', alternateColor: '#FFFFFF', logo: 'https://a.espncdn.com/i/teamlogos/soccer/500/364.png' }, { color: '#F42727', alternateColor: '#0F1C3F' }, '#ffffff', '#F42727'],
+	['TB @ NYR', { color: '#003E7E', alternateColor: '#FFFFFF', logo: 'https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/tb.png' }, { color: '#0056AE', alternateColor: '#E51937' }, '#003E7E', '#0056AE'],
+	['TOR @ CBJ', { color: '#003E7E', alternateColor: '#FFFFFF', logo: 'https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/tor.png' }, { color: '#002D62', alternateColor: '#E31937' }, '#003E7E', '#002D62'],
+	['VAN @ STL', { color: '#FFFFFF', alternateColor: '#12284C' }, { color: '#EC1458', alternateColor: '#001544' }, '#12284C', '#EC1458'],
+	['COV @ TOT', { color: '#87CCED', alternateColor: '#FFFFFF' }, { color: '#FFFFFF', alternateColor: '#0B1426' }, '#87CCED', '#0B1426'],
+	['MAN @ LEE', { color: '#DA020E', alternateColor: '#4169E1' }, { color: '#FFFFFF', alternateColor: '#FFCD00' }, '#DA020E', '#FFCD00'],
 ];
 
 describe('resolveTeamColorPair paints a matchup the way Apple Sports does', () => {
@@ -101,10 +126,24 @@ describe('resolveTeamColorPair', () => {
 		expect(resolveTeamColorPair(alabama, redHome)).toEqual(['#9E1B32', '#A6192E']);
 	});
 
-	test('switches the home team only when the away team has nothing to switch to', () => {
+	test('never switches the home team, even when the away team has nothing to give', () => {
 		const alabama = { color: '#9E1B32', alternateColor: '#FFFFFF' };
 		const redHome = { color: '#A6192E', alternateColor: '#000000' };
-		expect(resolveTeamColorPair(alabama, redHome)).toEqual(['#9E1B32', '#000000']);
+		expect(resolveTeamColorPair(alabama, redHome)).toEqual(['#9E1B32', '#A6192E']);
+	});
+
+	// No colour in the crest and a white alternate: the darkest go black and the light reds go white,
+	// and the mid blues in between hold.
+	test('picks black, white or nothing by how dark the away team is', () => {
+		const navyHome = { color: '#0A1A4A' };
+		expect(resolveTeamColorPair({ color: '#061440' }, navyHome)[0]).toBe('#000000');
+		expect(resolveTeamColorPair({ color: '#003E7E' }, { color: '#002D62' })[0]).toBe('#003E7E');
+		expect(resolveTeamColorPair({ color: '#CE0E2D' }, { color: '#CE1126' })[0]).toBe('#ffffff');
+	});
+
+	test('draws a club that publishes white in its alternate', () => {
+		expect(resolveTeamColorPair({ color: '#FFFFFF', alternateColor: '#12284C' }, { color: '#EC1458' })).toEqual(['#12284C', '#EC1458']);
+		expect(resolveTeamColorPair({ color: '#DA020E' }, { color: '#FFFFFF', alternateColor: '#FFCD00' })).toEqual(['#DA020E', '#FFCD00']);
 	});
 
 	test('returns well-separated primaries unchanged', () => {
@@ -505,7 +544,7 @@ describe('every chart colour it returns clears 3:1', () => {
 // The light theme draws its charts on #ffffff, where the rule turns over: a line has to be dark
 // enough rather than bright enough, and it is the pale golds that fail instead of the navies.
 const onLight = (color: string): string => (
-	resolveChartLineColors({ color }, { color: '#002D72' }, 'light')[0]
+	resolveChartLineColors({ color }, { color: '#00A651' }, 'light')[0]
 );
 const contrastOnWhite = (hex: string): number => {
 	const parsed = hex.replace('#', '');

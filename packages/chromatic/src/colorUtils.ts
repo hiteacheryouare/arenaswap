@@ -76,12 +76,18 @@ const resolveReadableCardTextColor = (
 // So the light side is the card-text rule with a looser ceiling: gold goes bronze, navy is left alone.
 const seriesOnLightLuminanceCeiling = 0.3;
 
-// What Apple Sports does when two teams look alike, worked out from 44 of its matchups: the away
-// team changes and the home team never does. "Alike" is CIEDE2000 under 11 — Sabres navy against
-// Blue Jackets navy at 8.9 switched, Alabama crimson against Mississippi State maroon at 13.4
-// did not. A team that switches takes its alternate, unless that is white: Apple never paints a
-// side white, and goes to a colour out of the crest instead (Maryland's gold, Louisville's black).
+// What Apple Sports does when two teams look alike, worked out from 39 of its matchups: the away
+// team changes and the home team never does. "Alike" is CIEDE2000 under 11 — Pistons navy against
+// Timberwolves blue at 10.7 switched, Alabama crimson against Mississippi State maroon at 13.4 did
+// not. A team that switches takes its alternate. Where that is white it takes a colour out of its
+// crest (Maryland's gold, Louisville's black), and where the crest has none it goes by how dark the
+// team is: Penn State's navy to black, Rutgers' and Liverpool's reds to white, and the Leafs' and
+// Lightning's mid blues stay put.
 const clashDifference = 11;
+// L*, proven between 8.2 (Penn State, black) and 26.6 (Leafs, held), and between 26.6 and 43.7
+// (Rutgers, white).
+const blackSwitchBelow = 17;
+const whiteSwitchFrom = 35;
 
 const isNearWhite = (hex: string): boolean => {
 	const lab = hexToLab(hex);
@@ -94,20 +100,31 @@ interface matchupTeam {
 	logo?: string;
 }
 
-const primaryOf = (team: matchupTeam): string | undefined => (
-	isHex(team.color) ? team.color : isHex(team.alternateColor) ? team.alternateColor : undefined
-);
-
 const usableAlternate = (team: matchupTeam): string | undefined => (
 	isHex(team.alternateColor) && !isNearWhite(team.alternateColor) ? team.alternateColor : undefined
 );
 
-// Undefined where the switch colour is still to be read off a crest, or the crest has none to give.
+// A club that publishes white as its colour is drawn in its alternate: the Whitecaps, Spurs and
+// Leeds all come out in theirs.
+const primaryOf = (team: matchupTeam): string | undefined => {
+	if (isHex(team.color) && isNearWhite(team.color)) return usableAlternate(team) ?? team.color;
+	return isHex(team.color) ? team.color : isHex(team.alternateColor) ? team.alternateColor : undefined;
+};
+
+const neutralSwitch = (primary: string): string | undefined => {
+	const lightness = hexToLab(primary)?.lightness ?? 0;
+	if (lightness < blackSwitchBelow) return '#000000';
+	return lightness >= whiteSwitchFrom ? '#ffffff' : undefined;
+};
+
+// Undefined where there is nothing to switch to, or the crest is still to be read.
 const switchColor = (team: matchupTeam, primary: string): string | undefined => {
 	const alternate = usableAlternate(team);
-	if (alternate) return alternate;
+	if (alternate && alternate !== primary) return alternate;
 	const crest = teamLogoOnColor(team.logo);
-	return crest ? cachedLogoSwitchColor(crest, primary) ?? undefined : undefined;
+	const crestColor = crest ? cachedLogoSwitchColor(crest, primary) : null;
+	if (crestColor === undefined) return undefined;
+	return crestColor ?? neutralSwitch(primary);
 };
 
 // The crest a card has to read before it can paint the away side, if any. Lets a component ask for
@@ -116,7 +133,8 @@ export const pendingSwitchCrest = (away: matchupTeam, home: matchupTeam): { cres
 	const awayPrimary = primaryOf(away);
 	const homePrimary = primaryOf(home);
 	if (!awayPrimary || !homePrimary || colorDifference(awayPrimary, homePrimary) >= clashDifference) return null;
-	if (usableAlternate(away)) return null;
+	const alternate = usableAlternate(away);
+	if (alternate && alternate !== awayPrimary) return null;
 	const crest = teamLogoOnColor(away.logo);
 	if (!crest || cachedLogoSwitchColor(crest, awayPrimary) !== undefined) return null;
 	return { crest, primary: awayPrimary };
@@ -124,12 +142,11 @@ export const pendingSwitchCrest = (away: matchupTeam, home: matchupTeam): { cres
 
 const pickPair = (away: matchupTeam, home: matchupTeam, awayPrimary: string, homePrimary: string): [string, string] => {
 	if (colorDifference(awayPrimary, homePrimary) >= clashDifference) return [awayPrimary, homePrimary];
-	// A switch that still looks like the home side has not fixed anything.
+	// A switch that still looks like the home side has not fixed anything, and the home side never
+	// moves: Michigan, Brentford and the Rangers all held when the away team had nothing to give.
 	const awaySwitch = switchColor(away, awayPrimary);
 	if (awaySwitch && colorDifference(awaySwitch, homePrimary) >= clashDifference) return [awaySwitch, homePrimary];
-	// Apple's own data always has an away colour to give. Ours sometimes does not, and two identical
-	// sides is worse than the home team stepping aside.
-	return [awayPrimary, usableAlternate(home) ?? homePrimary];
+	return [awayPrimary, homePrimary];
 };
 
 // White on a team colour is fine for the navies and reds and unreadable on a gold. Neither ink

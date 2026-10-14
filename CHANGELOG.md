@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Team colours match Apple Sports on 73 of 78 sides — 2026-10-14
+
+A club whose colour is white is now drawn in its alternate, the home team never switches, and an away team with a white alternate and no second colour in its crest goes black if its colour is very dark, white if it is a lighter red, and keeps its colour in between. The table of Apple matchups in `chromatic`'s tests now holds 35 games; the five sides it still gets wrong are the Kings, Tulsa and Fulham, where Apple's own colours differ from our sources', and Red Sox @ Yankees.
+
 ## Commercial breaks replace the clock stall — 2026-10-13
 
 PowerScore now takes 15 points off a game while it is on a commercial break, spotted per sport by `nextCommercialBreak` in `packages/core/src/commercialBreaks.ts`: baseball's Mid and End innings and mid-inning pitching changes (which nothing penalized before), the TV timeouts the NFL and basketball feeds log, college football's period ends, kicks after scores and team timeouts, and the NHL's TV timeout marks, with the frozen clock kept only for leagues whose feed has no plays and soccer left alone. `npm run powerscore:breaks` replays the recordings against cached play-by-play and fails if any league raises more than 5% false alarms; every league sits at or under it. The engine takes the break as a new optional `onBreak` context field, and `stallCount` still works for anyone who counts frozen clocks themselves.
