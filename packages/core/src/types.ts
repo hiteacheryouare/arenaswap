@@ -61,6 +61,7 @@ export interface ProbableStarter {
 // categories behind it turn into a box line at first pitch — this is that box line, for the two
 // players the game is currently waiting on.
 export interface AtBatPlayer {
+	id?: string;
 	name: string;
 	// Absent often enough that the panel needs an initials fallback rather than a broken image.
 	headshot?: string;
@@ -198,6 +199,9 @@ export interface Game {
 	// "End 6th": both halves are done and the next inning hasn't started. Reported live, for a couple
 	// of minutes at a time, with no half-inning to read.
 	inningEnded?: boolean;
+	// "Mid 6th" or "End 6th": the teams are changing sides, which ESPN reports while the game is
+	// still marked in progress. Every one of these is a commercial break on TV.
+	inningBreak?: boolean;
 	baseRunners?: { first: boolean; second: boolean; third: boolean };
 	bso?: { balls: number; strikes: number; outs: number };
 	// Inning sports only. Dropped between innings, which is what makes the panel come and go.
@@ -217,6 +221,9 @@ export interface Game {
 	homeWinProbability?: number;
 	// Which play that probability follows, so a poll that lands between plays isn't counted twice.
 	lastPlayId?: string;
+	// ESPN's name for that play's type: "Official Timeout", "Full Timeout", "Stoppage", "Extra Point
+	// Good". The commercial-break detector reads it; see packages/core/src/commercialBreaks.ts.
+	lastPlayType?: string;
 	// Whose play it was, as ESPN attributes it — the offense in football, the shooting side in
 	// hockey, the fielding side in baseball. Matches `homeTeam.id` or `awayTeam.id`, and is
 	// undefined when ESPN names a team we do not recognise. Colours the play's accent bar.

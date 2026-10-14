@@ -180,6 +180,7 @@ const EspnSituationAthleteSchema = z.object({
 // Baseball and softball only. `summary` is ESPN's own pre-formatted line for the player's day —
 // "1.1 IP, 0 ER, H, BB" for the pitcher, "0-2, K" for the batter.
 const EspnSituationPlayerSchema = z.object({
+	playerId: z.catch(z.optional(espnNumericText), undefined),
 	athlete: z.optional(EspnSituationAthleteSchema),
 	summary: z.optional(z.string()),
 });

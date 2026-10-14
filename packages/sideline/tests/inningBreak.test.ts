@@ -22,6 +22,14 @@ test('the break between halves starts the bottom half with no outs', () => {
 	expect(game.bso?.outs).toBe(0);
 });
 
+// Both arrive while the game is still marked in progress, which is why nothing else flags them.
+test('Mid and End are the teams changing sides; Top and Bot are play', () => {
+	expect(mlbAt('Mid 7th', 3).inningBreak).toBe(true);
+	expect(mlbAt('End 7th', 3).inningBreak).toBe(true);
+	expect(mlbAt('Top 7th', 1).inningBreak).toBe(false);
+	expect(mlbAt('Bot 7th', 2).inningBreak).toBe(false);
+});
+
 test('outs inside a half are read as sent', () => {
 	expect(mlbAt('Bot 7th', 2).bso?.outs).toBe(2);
 	expect(mlbAt('Top 7th', 1).bso?.outs).toBe(1);

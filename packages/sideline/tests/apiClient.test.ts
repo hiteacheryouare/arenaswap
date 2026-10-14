@@ -3278,6 +3278,12 @@ describe('rank, timeouts and the last play', () => {
 			expect(game?.lastPlayTeamId).toBeUndefined();
 		});
 
+		test('names the play\'s type the way our sources do, for the break detector', async () => {
+			const game = await parseOne('nfl', { situation: { lastPlay: { id: '4018729793513', text: 'Official Timeout at 13:00.', type: { text: ' Official Timeout ' } } } });
+			expect(game?.lastPlayType).toBe('Official Timeout');
+			expect((await parseOne('nfl', { situation: { lastPlay: { text: 'Rush.' } } }))?.lastPlayType).toBeUndefined();
+		});
+
 		test('keeps the play but names nobody when ESPN attributes it to nobody', async () => {
 			const game = await parseOne('nfl', { situation: { lastPlay: { text: 'Two-Minute Warning' } } });
 			expect(game?.lastPlay).toBe('Two-Minute Warning');
@@ -3304,6 +3310,13 @@ describe('rank, timeouts and the last play', () => {
 			});
 			expect(game?.atBat?.batter.name).toBe('Nathan Church');
 			expect(game?.atBat?.batter.headshot).toBeUndefined();
+		});
+
+		// A new id with the same half still going is a pitching change, which is a commercial on TV.
+		test('keeps each player\'s id', async () => {
+			const game = await parseOne('mlb', { situation: { pitcher: { ...pair.pitcher, playerId: 4991171 }, batter: { ...pair.batter, playerId: '5194333' } } });
+			expect(game?.atBat?.pitcher.id).toBe('4991171');
+			expect(game?.atBat?.batter.id).toBe('5194333');
 		});
 
 		// ESPN drops the pair between innings. Half a panel reads as a fault rather than a gap.

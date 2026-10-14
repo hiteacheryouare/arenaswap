@@ -499,6 +499,7 @@ const parseAtBatPlayer = (player: EspnSituationPlayer | undefined): AtBatPlayer 
 	const name = athlete?.displayName?.trim() || athlete?.shortName?.trim();
 	if (!name) return undefined;
 	return {
+		id: player?.playerId,
 		name,
 		headshot: athlete?.headshot?.trim() || undefined,
 		jersey: athlete?.jersey?.trim() || undefined,
@@ -731,6 +732,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		intermission: /HALFTIME|END_PERIOD|INTERMISSION/i.test(status.type?.name ?? ''),
 		topOfInning: isInningSport ? parseTopOfInning(status.type?.shortDetail) : undefined,
 		inningEnded: isInningSport && status.type?.shortDetail?.startsWith('End') ? true : undefined,
+		inningBreak: isInningSport && state === 'in' ? /^(Mid|End)\b/.test(status.type?.shortDetail ?? '') : undefined,
 		baseRunners: isInningSport && situation ? {
 			first: situation.onFirst ?? false,
 			second: situation.onSecond ?? false,
@@ -764,6 +766,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		lastPlayTeamId: liveSituation ? parseLastPlayTeam(situation, home.id, away.id) : undefined,
 		homeWinProbability: liveSituation ? readHomeWinProbability(situation) : undefined,
 		lastPlayId: liveSituation ? situation.lastPlay?.id : undefined,
+		lastPlayType: liveSituation ? situation.lastPlay?.type?.text?.trim() || undefined : undefined,
 		lastPlayDrive: isGridironSituation ? situation.lastPlay?.drive?.description?.trim() || undefined : undefined,
 		weather: parseWeather(event, comp.venue?.indoor),
 		isPostseason: postseason,
