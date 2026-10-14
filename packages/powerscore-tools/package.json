@@ -12,6 +12,7 @@
 		"replay": "rolldown -c && node --max-old-space-size=6144 dist/replaySlate.cjs",
 		"simulate": "rolldown -c && node dist/simulateDistribution.cjs 100000",
 		"validate-live": "rolldown -c && node dist/validateLive.cjs",
+		"breaks": "rolldown -c && node --max-old-space-size=6144 dist/evaluateBreaks.cjs",
 		"typecheck": "tsc --noEmit",
 		"lint": "oxlint ."
 	},

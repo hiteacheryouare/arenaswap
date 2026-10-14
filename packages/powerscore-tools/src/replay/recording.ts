@@ -52,7 +52,8 @@ const readLines = async function* (file: string): AsyncGenerator<RecordedLine> {
 	}
 };
 
-export const readRecording = async function* (files: string[], until?: number): AsyncGenerator<ReplayEvent> {
+// `leagues` skips everything else before it is parsed, for a run that only needs a few.
+export const readRecording = async function* (files: string[], until?: number, leagues?: ReadonlySet<LeagueId>): AsyncGenerator<ReplayEvent> {
 	const lastRawById = new Map<string, { raw: RawEvent; parsed: Game | null }>();
 	let lastTs = 0;
 	for (const file of files) {
@@ -62,6 +63,7 @@ export const readRecording = async function* (files: string[], until?: number): 
 			// it would be wrong, so stop rather than replay it.
 			if (line.ts < lastTs - 5_000) throw new Error(`${file} goes back in time at ${new Date(line.ts).toISOString()}: were two recorders running?`);
 			lastTs = Math.max(lastTs, line.ts);
+			if (leagues && line.t !== 'meta' && !leagues.has(line.league)) continue;
 			if (line.t === 'scoreboard') {
 				for (const raw of line.events) {
 					if (!raw.id) continue;

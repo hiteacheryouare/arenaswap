@@ -22,4 +22,5 @@ export default defineConfig([
 	cli('replaySlate'),
 	cli('simulateDistribution'),
 	cli('validateLive'),
+	cli('evaluateBreaks'),
 ]);

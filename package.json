@@ -23,6 +23,7 @@
 		"powerscore:simulate": "npm run simulate -w @arenaswap/powerscore-tools --",
 		"powerscore:record": "npm run record -w @arenaswap/powerscore-tools --",
 		"powerscore:validate-live": "npm run validate-live -w @arenaswap/powerscore-tools --",
+		"powerscore:breaks": "npm run breaks -w @arenaswap/powerscore-tools --",
 		"ui:wordmark-shapes": "node scripts/ui/buildWordmarkShapes.mjs",
 		"film": "npm run film:build && npm run film:render --",
 		"film:build": "turbo run build:film --filter=@arenaswap/film",
