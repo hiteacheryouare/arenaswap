@@ -7,6 +7,8 @@ export { resolveModeForGame, modesInUse, isScoringModeChoice } from './scoringMo
 export { fantasyRosterLimit, fantasyRosterStorageKey, normalizeFantasyRoster, rosterInGame } from './fantasy';
 export type { FantasyRosterEntry, FantasyScoringOverrides } from './fantasy';
 export { chooseSwitchTarget, getFavoriteTeamCount, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, recentSnapshots, retainSnapshots, scoreLiveGame, scoreOptionsFor, scoringContextFor, toLegacyPowerScoreResult, toLiveScore, toScoreSnapshot, toScoringGame } from './scoring';
+export { hasCommercialBreaks, nextCommercialBreak } from './commercialBreaks';
+export type { CommercialBreakEntry, CommercialBreakInput, CommercialBreakKind } from './commercialBreaks';
 export type { ClockStallEntry, LiveScoringInput, ScoringPrefs, SwitchCandidateTab, SwitchPolicyInput, SwitchTarget } from './scoring';
 export { offseasonGraceMs, resolveOffseason } from './leagueSchedule';
 export type { LeagueOffseason } from './leagueSchedule';
