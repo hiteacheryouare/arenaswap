@@ -24,7 +24,7 @@ Bawat live game ay nakakakuha ng 0–100 PowerScore na binubuo ng limang signal:
 
 Nagtutulak-tulakan ang mga signal at may 100 na cap ang score, kaya ang isang totoong exciting na laro ay umaakyat sa 80s at 90s, habang ang isang blowout ay nananatiling mababa. Tumataas ang score kasabay ng laro sa halip na nakatigil lang sa isang flat na baseline: ang isang maaga o malaking agwat na laro ay mababa ang score at tumataas ang tensyon papunta sa final buzzer. Ang mga scoring run kamakailan ay nagpapalaki ng live signals bago humina, kaya kahit ang mga sport na mababa ang score ay may gumagalaw na graph sa halip na flat na linya.
 
-Ang mga larong nakatigil ang orasan (halftimes, timeouts, stoppages) ay may penalty para hindi ka ma-switch papunta sa isang commercial break.
+Ang mga larong pumupunta sa commercial (inning breaks, pitching changes, TV timeouts) ay may penalty, at walang puntos ang halftimes, para hindi ka ma-switch papunta sa isang ad.
 
 Ipinapakita ng bawat card sa popup ang color-coded PowerScore bar para makita mo agad ang excitement level. I-open ang kahit anong laro para sa buong breakdown: live signal values, PowerScore sa paglipas ng panahon, team scores sa paglipas ng panahon, win probability, at mga component contribution chart.
 

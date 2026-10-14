@@ -24,7 +24,7 @@ Cada partido en vivo recibe un PowerScore de 0 a 100 construido a partir de cinc
 
 Las señales se suman y el puntaje tiene un tope de 100, así que un partido realmente emocionante sube a los 80 o 90, mientras que una goleada se mantiene bajo. El puntaje crece con el partido en lugar de quedarse en una base plana: un partido temprano o desigual puntúa bajo, y la tensión aumenta hacia el pitido final. Las rachas de anotación recientes disparan las señales en vivo y luego se apagan, así que hasta los deportes de pocos puntos mantienen una gráfica en movimiento en lugar de una línea plana.
 
-Los partidos con el reloj detenido (entretiempos, tiempos fuera, pausas) reciben una penalización para que nunca te cambien a un corte comercial.
+Los partidos que se van a comerciales (pausas entre entradas, cambios de pitcher, tiempos fuera de TV) reciben una penalización y los entretiempos no puntúan, para que nunca te cambien a un corte comercial.
 
 Cada tarjeta en el popup muestra una barra de PowerScore codificada por color para que veas el nivel de emoción de un vistazo. Abre cualquier partido para ver el desglose completo: valores de señales en vivo, PowerScore a lo largo del tiempo, marcadores a lo largo del tiempo, probabilidad de victoria y gráficos de contribución de cada componente.
 

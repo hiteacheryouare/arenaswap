@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
-import { createFavoriteTeamKey, leagueConfigMap, scoreMaxTotal, sportTypeConfigMap } from '@arenaswap/core/constants';
+import { createFavoriteTeamKey, leagueConfigMap, scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, LeagueId, LiveScore, PowerScoreSnapshot, ScoreSnapshot, SignalName, TabRegistration } from '@arenaswap/core/types';
-import type { FantasyRosterEntry } from '@arenaswap/core';
+import { hasCommercialBreaks, type FantasyRosterEntry } from '@arenaswap/core';
 import DetailHero from './detailHero';
 import DetailPosterHero from './detailPosterHero';
 import DetailStickyBar from './detailStickyBar';
@@ -140,13 +140,10 @@ const gameDetailView = ({
 	const leadChanges = activePowerScore?.leadChanges ?? 0;
 	const comeback = activePowerScore?.comeback ?? 0;
 	const rawSubtotal = closeness + lateGame + momentum + leadChanges + comeback;
-	// When stalled this is the pre-stall signals sum stored by the scorer, which may exceed 100.
+	// On a break this is the signals sum before the penalty came off, which may exceed 100.
 	const signalsSubtotal = activePowerScore?.signalsSubtotal ?? rawSubtotal;
-	const stallPenalty = activePowerScore?.stallPenalty ?? 0;
-	// Baseball/softball never accumulate a stall count (background.ts only tracks clock-based
-	// sports), so the breakdown hides the row entirely rather than pinning it at zero. Falls back to
-	// basketball for an unrecognized sportType, mirroring computePowerScore's own fallback.
-	const clockBased = (sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball).clockBased;
+	const breakPenalty = activePowerScore?.breakPenalty ?? 0;
+	const hasBreaks = hasCommercialBreaks(game);
 	const favoriteBonus = activePowerScore?.favoriteBonus ?? 0;
 	const favoriteTeamCount = activePowerScore?.favoriteTeamCount ?? 0;
 	const favoriteTeams = [game.awayTeam, game.homeTeam]
@@ -311,8 +308,8 @@ const gameDetailView = ({
 					comeback={comeback}
 					winProbabilityVariance={winProbabilityVariance}
 					signalsSubtotal={signalsSubtotal}
-					stallPenalty={stallPenalty}
-					clockBased={clockBased}
+					breakPenalty={breakPenalty}
+					hasBreaks={hasBreaks}
 					favoriteBonus={favoriteBonus}
 					favoriteTeamCount={favoriteTeamCount}
 					favoriteTeams={favoriteTeams}

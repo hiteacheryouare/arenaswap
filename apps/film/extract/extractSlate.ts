@@ -5,14 +5,14 @@
 // Writes: apps/film/data/saturday.json (committed, so a render never needs the recording)
 //
 // Every poll is played through the same steps background.ts takes, with the same core functions:
-// clock stalls, `scoreLiveGame` against the history so far, then the score and PowerScore history.
+// commercial breaks, `scoreLiveGame` against the history so far, then the score and PowerScore history.
 // Nothing here scores a game any other way.
 import { createReadStream, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { createInterface } from 'node:readline';
 import { constants as zlibConstants, createGunzip } from 'node:zlib';
 import { createLiveExtras, parseScoreboardEvents, parseWinProbability } from '@arenaswap/sideline';
-import { getHistoryWindowMsForGame, nextClockStall, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot, type ClockStallEntry } from '@arenaswap/core';
+import { getHistoryWindowMsForGame, nextCommercialBreak, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot, type CommercialBreakEntry } from '@arenaswap/core';
 import { leagueConfigMap, sportTypeConfigMap, type ScoreSnapshot } from 'powerscore';
 import { createFavoriteTeamKey, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { Game, LeagueId, LeagueLogoMap } from '@arenaswap/core/types';
@@ -92,7 +92,7 @@ const main = async () => {
 	const leagueOf = new Map<string, LeagueId>();
 	const liveIdsByLeague = new Map<LeagueId, Set<string>>();
 	const history = new Map<string, ScoreSnapshot[]>();
-	const stalls = new Map<string, ClockStallEntry>();
+	const commercialBreaks = new Map<string, CommercialBreakEntry>();
 	const winProbability = new Map<string, number[]>();
 	const liveExtras = createLiveExtras();
 	const leagueLogos: LeagueLogoMap = Object.fromEntries(viewerLeagues.map(league => [league, resolveLeagueLogoUrl(league)]));
@@ -165,8 +165,7 @@ const main = async () => {
 
 			const fresh = [...liveIds].map(id => gameById.get(id)).filter((game): game is Game => game?.status === 'in');
 			for (const game of fresh) {
-				const stall = nextClockStall(game, stalls.get(game.id));
-				if (stall) stalls.set(game.id, stall);
+				commercialBreaks.set(game.id, nextCommercialBreak(game, commercialBreaks.get(game.id), { now: ts, powerPlay: liveExtras.contextFor(game, ts).powerPlay }));
 			}
 
 			const allLive = [...liveIdsByLeague.values()].flatMap(ids => [...ids])
@@ -184,7 +183,7 @@ const main = async () => {
 						const score = toLiveScore(scoreLiveGame({
 							game,
 							history: history.get(game.id) ?? [],
-							stallCount: stalls.get(game.id)?.stallCount ?? 0,
+							onBreak: commercialBreaks.get(game.id)?.kind !== undefined,
 							winProbability: winProbability.get(game.id) ?? [],
 							now: ts,
 							extras: liveExtras.contextFor(game, ts),
@@ -197,8 +196,8 @@ const main = async () => {
 							series.push([ts, lastScoreKey[profile].get(game.id) === key ? null : score]);
 							lastScoreKey[profile].set(game.id, key);
 						} else {
-							const key = `${score.total}|${score.reason}|${score.stalled}`;
-							if (lastScoreKey[profile].get(game.id) !== key) series.push([ts, { total: score.total, reason: score.reason, stalled: score.stalled }]);
+							const key = `${score.total}|${score.reason}|${score.onBreak}`;
+							if (lastScoreKey[profile].get(game.id) !== key) series.push([ts, { total: score.total, reason: score.reason, onBreak: score.onBreak }]);
 							lastScoreKey[profile].set(game.id, key);
 						}
 					}

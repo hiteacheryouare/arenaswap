@@ -68,7 +68,7 @@ export interface BoostPresentation extends FactorTone {
 
 export interface ModePresentation {
 	nameKey: string;
-	// The engine pays no stall penalty in this mode, so the breakdown leaves the row out.
+	// The engine pays no commercial-break penalty in this mode, so the breakdown leaves the row out.
 	usesStallPenalty: boolean;
 	// Present when the mode blends with Classic, to say how.
 	blendTooltipKey?: string;
@@ -107,9 +107,9 @@ export const boostPresentation = {
 	postseasonBoost: { labelKey: 'powerScore.postseasonBoost', tooltipKey: 'powerScore.tooltipPostseasonBoost', icon: 'trophy-fill', moment: false, ...factorTones.blue },
 } as const satisfies Record<BoostId, BoostPresentation>;
 
-// The two adjustments that are not boosts: they come from the clock and the win-probability line.
+// The two adjustments that are not boosts: they come from a commercial break and the win-probability line.
 export const penaltyPresentation = {
-	clockStall: { icon: 'pause-circle-fill', ...factorTones.pink },
+	commercialBreak: { icon: 'tv-fill', ...factorTones.pink },
 	volatility: { icon: 'activity', ...factorTones.purple },
 } as const;
 

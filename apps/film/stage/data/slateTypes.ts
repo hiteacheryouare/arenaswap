@@ -3,7 +3,7 @@ import type { Game, GuideSlate, LeagueId, LeagueLogoMap, LiveScore } from '@aren
 export interface ScoreTotal {
 	total: number;
 	reason: string;
-	stalled?: boolean;
+	onBreak?: boolean;
 }
 
 export type ScoreEntry = [number, LiveScore | ScoreTotal | null];

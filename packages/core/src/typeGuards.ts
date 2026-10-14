@@ -48,6 +48,8 @@ export const isPowerScoreSnapshotLike = (value: unknown): value is PowerScoreSna
 	&& (value.scoringOpportunityBoost === undefined || isFiniteNumber(value.scoringOpportunityBoost))
 	&& (value.postseasonBoost === undefined || isFiniteNumber(value.postseasonBoost))
 	&& (value.stallPenalty === undefined || isFiniteNumber(value.stallPenalty))
+	&& (value.onBreak === undefined || typeof value.onBreak === 'boolean')
+	&& (value.breakPenalty === undefined || isFiniteNumber(value.breakPenalty))
 	&& (value.winProbabilityVariance === undefined || isFiniteNumber(value.winProbabilityVariance))
 	&& (value.modeId === undefined || typeof value.modeId === 'string')
 	&& (value.signals === undefined || isNumberRecord(value.signals))

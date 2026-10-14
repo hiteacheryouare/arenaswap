@@ -24,8 +24,8 @@ const defaultProps = {
 	leadChanges: 3,
 	comeback: 0,
 	signalsSubtotal: 28,
-	stallPenalty: 0,
-	clockBased: true,
+	breakPenalty: 0,
+	hasBreaks: true,
 	favoriteBonus: 0,
 	favoriteTeamCount: 0,
 	currentBoost: 0,
@@ -55,28 +55,27 @@ describe('PowerScoreBreakdown signals', () => {
 	});
 });
 
-describe('PowerScoreBreakdown stall penalty', () => {
-	it('shows zero when no stall penalty', () => {
+describe('PowerScoreBreakdown commercial break penalty', () => {
+	it('shows zero when the game is not on a break', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} />);
-		cy.contains('Clock stall penalty').parent().contains('0').should('exist');
+		cy.contains('Commercial break penalty').parent().contains('0').should('exist');
 	});
 
-	// Scoped to its own row: an unscoped match is satisfied by a -5 anywhere on the card, including
-	// the volatility row directly above it.
+	// Scoped to its own row: an unscoped match is satisfied by a -15 anywhere on the card.
 	// A real minus sign, which is the width of the plus it sits under, not a hyphen.
-	it('shows the penalty as a negative on the stall row', () => {
-		cy.mount(<PowerScoreBreakdown {...defaultProps} stallPenalty={5} signalsSubtotal={28} />);
-		cy.contains('Clock stall penalty').parent().contains('\u22125').should('exist');
+	it('shows the penalty as a negative on the break row', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} breakPenalty={15} signalsSubtotal={28} />);
+		cy.contains('Commercial break penalty').parent().contains('\u221215').should('exist');
 	});
 
-	it('shows the clock stall penalty row for clock-based sports', () => {
-		cy.mount(<PowerScoreBreakdown {...defaultProps} clockBased />);
+	it('shows the row for a sport that goes to commercial', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} hasBreaks />);
 		cy.get('.powerscore-breakdown-row-penalty').should('exist');
 	});
 
-	it('hides the clock stall penalty row entirely for sports with no clock', () => {
-		cy.mount(<PowerScoreBreakdown {...defaultProps} clockBased={false} stallPenalty={5} signalsSubtotal={28} />);
-		cy.contains('Clock stall penalty').should('not.exist');
+	it('hides the row entirely for soccer, which never goes to commercial during play', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} hasBreaks={false} breakPenalty={15} signalsSubtotal={28} />);
+		cy.contains('Commercial break penalty').should('not.exist');
 		cy.get('.powerscore-breakdown-row-penalty').should('not.exist');
 	});
 });
@@ -172,7 +171,7 @@ const luminance = (rgb: string) => {
 // colours started as the icon colours, where the gold reached 1.6:1 and the green 2.2:1.
 describe('PowerScoreBreakdown legibility', () => {
 	it('writes every boost and penalty value at 4.5:1 or better on the card', () => {
-		cy.mount(<PowerScoreBreakdown {...defaultProps} stallPenalty={4} winProbabilityVariance={6} favoriteBonus={10} favoriteTeamCount={1} currentBoost={15} scoringOpportunityBoost={3} postseasonBoost={5} />);
+		cy.mount(<PowerScoreBreakdown {...defaultProps} breakPenalty={15} winProbabilityVariance={6} favoriteBonus={10} favoriteTeamCount={1} currentBoost={15} scoringOpportunityBoost={3} postseasonBoost={5} />);
 		cy.get('.powerscore-breakdown').then(([card]: JQuery<HTMLElement>) => {
 			const ground = luminance(getComputedStyle(card).backgroundColor);
 			cy.get('.powerscore-breakdown-value').should('have.length', 6).each(([value]: JQuery<HTMLElement>) => {
@@ -226,6 +225,22 @@ describe('PowerScoreBreakdown in every language', () => {
 		cy.get('.powerscore-signal-progress').then($bars => {
 			const starts = [...$bars].map(bar => bar.getBoundingClientRect().left);
 			expect(new Set(starts).size, 'every bar starts on the same line').to.equal(1);
+		});
+	});
+
+	it('keeps the commercial break label on one line beside its value', () => {
+		cy.viewport(320, 500);
+		cy.mount(<div style={{ width: '276px' }}><PowerScoreBreakdown {...defaultProps} breakPenalty={15} /></div>);
+		cy.get('.powerscore-breakdown-row-penalty').first().then(([row]: JQuery<HTMLElement>) => {
+			const baseline = row.getBoundingClientRect().height;
+			const label = [...row.querySelector('span')!.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.textContent?.trim())!;
+			const original = label.textContent;
+			for (const [code, bundle] of Object.entries(locales)) {
+				label.textContent = (bundle as typeof en).powerScore.breakPenalty;
+				expect(row.getBoundingClientRect().height, `${code} break penalty row height`).to.be.at.most(baseline + 0.5);
+				expect(row.scrollWidth, `${code} break penalty row fits the card`).to.be.at.most(row.clientWidth + 0.5);
+			}
+			label.textContent = original;
 		});
 	});
 });
@@ -329,10 +344,11 @@ describe('PowerScoreBreakdown from a PowerScore 3 breakdown', () => {
 
 	it('shows a Classic boost only while it pays, alongside the four that always show', () => {
 		const goAhead = { ...classicBreakdown, boosts: classicBreakdown.boosts.map(boost => boost.id === 'goAheadRun' ? { ...boost, points: 8 } : boost) };
-		atPopupWidth({ breakdown: goAhead, clockBased: false });
+		atPopupWidth({ breakdown: goAhead, hasBreaks: true });
 		cy.contains('Go-ahead run on base').parent().contains('+8').should('exist');
 		cy.contains('Two-minute drill').should('not.exist');
-		cy.get('.powerscore-breakdown-row .powerscore-factor-icon').should('have.length', 5);
+		// The five boosts, and the commercial break row a baseball game now has too.
+		cy.get('.powerscore-breakdown-row .powerscore-factor-icon').should('have.length', 6);
 	});
 
 	it('draws a Blowouts game in its own four signals, at Classic\'s row height', () => {
@@ -358,17 +374,17 @@ describe('PowerScoreBreakdown from a PowerScore 3 breakdown', () => {
 		cy.contains('No-hitter').should('not.exist');
 		cy.contains('Scoring opportunity').should('not.exist');
 		cy.contains('Classic score').parent().contains('31').should('exist');
-		cy.contains('Clock stall penalty').should('exist');
+		cy.contains('Commercial break penalty').should('exist');
 	});
 
-	it('draws a Fantasy game in its three signals, with no stall row', () => {
-		atPopupWidth({ breakdown: fantasyBreakdown, clockBased: true });
+	it('draws a Fantasy game in its three signals, with no commercial break row', () => {
+		atPopupWidth({ breakdown: fantasyBreakdown, hasBreaks: true });
 		cy.get('.powerscore-breakdown-heading').should('have.text', 'Fantasy Breakdown');
 		cy.get('[role="progressbar"]').should('have.length', 3);
 		cy.get('.powerscore-signal-name').then($names => {
 			expect([...$names].map(name => name.textContent)).to.deep.equal(['In the action', 'Fantasy points', 'Your players']);
 		});
-		cy.contains('Clock stall penalty').should('not.exist');
+		cy.contains('Commercial break penalty').should('not.exist');
 		cy.contains('Classic score').parent().contains('70').should('exist');
 		cy.get('.powerscore-breakdown-row-subtotal').should('contain', '68');
 	});

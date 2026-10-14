@@ -401,7 +401,7 @@ describe('walkthroughView PowerScore signals by scoring mode', () => {
 		cy.get('.ps-bloom-overlay').click();
 		cy.tick(400);
 		cy.get('.powerscore-progress-dot').eq(5).click();
-		cy.contains('Clock Stall Penalty').should('exist');
+		cy.contains('Commercial Break Penalty').should('exist');
 	});
 
 	it('spaces Fantasy\'s three signals a third of a turn apart', () => {

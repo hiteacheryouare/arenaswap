@@ -126,27 +126,51 @@ const seed = (prefs: Partial<UserPreferences>, session: Record<string, unknown> 
 afterEach(() => jest.useRealTimers());
 
 describe('re-scoring games already in hand is not another poll', () => {
-	test('a fresh worker does not count its own startup re-score as a stalled clock', async () => {
-		seed({ enabledLeagues: ['nba'], enabled: true });
-		currentGames = [mkGame('g1', 'nba', 'basketball', 'in', 0)];
+	// College hockey sends no plays, so its breaks come from a frozen clock: the one rule a re-score
+	// counted as a poll could trip.
+	test('a fresh worker does not count its own startup re-score as a frozen clock', async () => {
+		seed({ enabledLeagues: ['ncaamh'], enabled: true });
+		currentGames = [mkGame('g1', 'ncaamh', 'hockey', 'in', 0)];
 		await startWorker(1_000_000);
 
-		const debug = await sendMessage({ type: 'GET_DEBUG_STATE' }) as { clockStalls: Record<string, { stallCount: number }> };
-		expect(debug.clockStalls.g1?.stallCount ?? 0).toBe(0);
+		const debug = await sendMessage({ type: 'GET_DEBUG_STATE' }) as { commercialBreaks: Record<string, { kind?: string; clockStall?: { stallCount: number } }> };
+		expect(debug.commercialBreaks.g1?.clockStall?.stallCount ?? 0).toBe(0);
+		expect(debug.commercialBreaks.g1?.kind).toBeUndefined();
 	});
 
-	test('nudging a game boost up sixteen times leaves every clock unstalled', async () => {
-		seed({ enabledLeagues: ['nba'], enabled: true });
-		currentGames = [mkGame('g1', 'nba', 'basketball', 'in', 0), mkGame('g2', 'nba', 'basketball', 'in', 0)];
+	test('nudging a game boost up sixteen times puts no game on a break', async () => {
+		seed({ enabledLeagues: ['ncaamh'], enabled: true });
+		currentGames = [mkGame('g1', 'ncaamh', 'hockey', 'in', 0), mkGame('g2', 'ncaamh', 'hockey', 'in', 0)];
 		await startWorker(1_000_000);
 
 		for (let boost = 1; boost <= 16; boost++) await sendMessage({ type: 'SET_GAME_BOOST', gameId: 'g1', boost });
 
-		const debug = await sendMessage({ type: 'GET_DEBUG_STATE' }) as { clockStalls: Record<string, { stallCount: number }>; scores: { gameId: string; stalled?: boolean; gameBoost?: number }[] };
-		expect(debug.clockStalls.g2?.stallCount ?? 0).toBe(0);
-		expect(debug.scores.find(score => score.gameId === 'g1')?.stalled).toBeFalsy();
-		expect(debug.scores.find(score => score.gameId === 'g2')?.stalled).toBeFalsy();
+		const debug = await sendMessage({ type: 'GET_DEBUG_STATE' }) as { commercialBreaks: Record<string, { kind?: string; clockStall?: { stallCount: number } }>; scores: { gameId: string; onBreak?: boolean; gameBoost?: number }[] };
+		expect(debug.commercialBreaks.g2?.clockStall?.stallCount ?? 0).toBe(0);
+		expect(debug.scores.find(score => score.gameId === 'g1')?.onBreak).toBeFalsy();
+		expect(debug.scores.find(score => score.gameId === 'g2')?.onBreak).toBeFalsy();
 		expect(debug.scores.find(score => score.gameId === 'g1')?.gameBoost).toBe(16);
+	});
+
+	test('eight real polls on one college hockey clock are a break, and the score carries it', async () => {
+		seed({ enabledLeagues: ['ncaamh'], enabled: true });
+		currentGames = [mkGame('g1', 'ncaamh', 'hockey', 'in', 0)];
+		await startWorker(1_000_000);
+		for (let i = 0; i < 8; i++) await poll();
+
+		const debug = await sendMessage({ type: 'GET_DEBUG_STATE' }) as { commercialBreaks: Record<string, { kind?: string }>; scores: { gameId: string; onBreak?: boolean; breakPenalty?: number }[] };
+		expect(debug.commercialBreaks.g1?.kind).toBe('clockStall');
+		expect(debug.scores.find(score => score.gameId === 'g1')).toMatchObject({ onBreak: true, breakPenalty: 15 });
+	});
+
+	test('an NFL TV timeout is a break from the first poll that shows it', async () => {
+		seed({ enabledLeagues: ['nfl'], enabled: true });
+		currentGames = [{ ...mkGame('g1', 'nfl', 'football', 'in', 0), lastPlayId: '4018729793513', lastPlayType: 'Official Timeout' }];
+		await startWorker(1_000_000);
+
+		const debug = await sendMessage({ type: 'GET_DEBUG_STATE' }) as { commercialBreaks: Record<string, { kind?: string }>; scores: { gameId: string; onBreak?: boolean }[] };
+		expect(debug.commercialBreaks.g1?.kind).toBe('tvTimeout');
+		expect(debug.scores.find(score => score.gameId === 'g1')?.onBreak).toBe(true);
 	});
 
 	test('a boost edit adds no score snapshot of its own', async () => {

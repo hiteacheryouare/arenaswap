@@ -3,13 +3,6 @@ import { sensitivityThresholds } from '@arenaswap/core/constants';
 import { i18n } from '#i18n';
 import { powerScoreColor } from './gameCardShared';
 
-const fmtClock = (secs) => {
-	if (secs === undefined || secs === null) return '—';
-	const m = Math.floor(secs / 60);
-	const s = secs % 60;
-	return `${m}:${String(s).padStart(2, '0')}`;
-};
-
 const fmtAgo = (ms) => {
 	if (!ms) return 'never';
 	const secs = Math.floor((Date.now() - ms) / 1000);
@@ -169,17 +162,14 @@ const popupFooter = () => {
 							</Section>
 
 							{(() => {
-								const stalls = Object.entries(bg.clockStalls ?? {}).filter(([, v]) => v.stallCount > 0);
-								if (stalls.length === 0) return null;
+								const breaks = Object.entries(bg.commercialBreaks ?? {}).filter(([, entry]) => entry.kind);
+								if (breaks.length === 0) return null;
 								return (
-									<Section title='Clock Stalls' icon='stopwatch'>
-										{stalls.map(([gameId, { stallCount, lastClock }]) => (
+									<Section title='Commercial Breaks' icon='tv'>
+										{breaks.map(([gameId, { kind }]) => (
 											<div key={gameId} className='debug-row'>
 												<span className='debug-label'>{bg.gameLabels?.[gameId] ?? gameId}</span>
-												<span className='debug-value'>
-													<span className='debug-stall'>×{stallCount}</span>
-													{` · ${fmtClock(lastClock)}`}
-												</span>
+												<span className='debug-value debug-break'>{kind}</span>
 											</div>
 										))}
 									</Section>
@@ -199,7 +189,7 @@ const popupFooter = () => {
 												</span>
 												<ScoreBar value={s.total} />
 												<span className='debug-score-total'>{Math.round(s.total)}</span>
-												<span className='debug-score-flag'>{s.stalled && <i className='bi bi-pause-circle-fill debug-stall' title='Clock stalled' />}</span>
+												<span className='debug-score-flag'>{s.onBreak && <i className='bi bi-tv-fill debug-break' title='On a commercial break' />}</span>
 											</div>
 										))}
 								</Section>

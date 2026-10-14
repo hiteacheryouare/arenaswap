@@ -24,7 +24,7 @@ Chaque match en direct reçoit un PowerScore de 0 à 100 construit à partir de 
 
 Les signaux s'additionnent et le score plafonne à 100, donc un match vraiment captivant grimpe dans les 80 et 90, tandis qu'un match à sens unique reste bas. Le score grandit avec le match plutôt que de stagner sur une base plate : un match précoce ou déséquilibré marque bas, et la tension monte vers la sirène finale. Les séries de points récentes font grimper les signaux en direct puis retombent, si bien que même les sports peu prolifiques gardent une courbe qui bouge plutôt qu'une ligne plate.
 
-Les matchs à l'horloge arrêtée (mi-temps, temps morts, interruptions) reçoivent une pénalité pour que tu ne sois jamais basculé en pleine pause pub.
+Les matchs qui passent à la pub (pauses entre manches, changements de lanceur, temps morts TV) reçoivent une pénalité, et les mi-temps ne rapportent rien, pour que tu ne sois jamais basculé en pleine pub.
 
 Chaque carte du popup affiche une barre de PowerScore avec un code couleur pour que tu voies le niveau d'intensité en un coup d'œil. Ouvre n'importe quel match pour voir le détail complet : valeurs des signaux en direct, PowerScore dans le temps, scores dans le temps, probabilité de victoire et graphiques de contribution de chaque composant.
 

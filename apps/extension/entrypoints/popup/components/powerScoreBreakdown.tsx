@@ -32,9 +32,9 @@ interface powerScoreBreakdownProps {
 	// Already folded into the total by the background scorer; absent when ESPN gave no line.
 	winProbabilityVariance?: number;
 	signalsSubtotal: number;
-	stallPenalty: number;
-	// Baseball/softball never accumulate a stall count, so the row is hidden rather than pinned at 0.
-	clockBased: boolean;
+	breakPenalty: number;
+	// Soccer has no commercials during play, so the row is hidden rather than pinned at 0.
+	hasBreaks: boolean;
 	favoriteBonus: number;
 	favoriteTeamCount: number;
 	// Abbreviations of the favorited teams in this game, for the favorite boost's tooltip.
@@ -98,8 +98,8 @@ const PowerScoreBreakdown = ({
 	comeback,
 	winProbabilityVariance,
 	signalsSubtotal,
-	stallPenalty,
-	clockBased,
+	breakPenalty,
+	hasBreaks,
 	favoriteBonus,
 	favoriteTeamCount,
 	favoriteTeams = [],
@@ -128,7 +128,7 @@ const PowerScoreBreakdown = ({
 		];
 	const modeId = breakdown?.modeId;
 	const mode = isBuiltInModeId(modeId) ? modePresentation[modeId] : undefined;
-	const showsStall = clockBased && (mode?.usesStallPenalty ?? true);
+	const showsBreak = hasBreaks && (mode?.usesStallPenalty ?? true);
 	const blendTooltipKey = mode && 'blendTooltipKey' in mode ? mode.blendTooltipKey : undefined;
 	const classicTotal = breakdown?.classicTotal;
 	const blend = breakdown?.blend;
@@ -206,15 +206,15 @@ const PowerScoreBreakdown = ({
 					{i18n.t('powerScore.signalsNormalizedNote')}
 				</div>
 			)}
-			{showsStall && (
+			{showsBreak && (
 				<div className='powerscore-breakdown-row powerscore-breakdown-row-penalty'>
 					<span className='d-flex align-items-center gap-1'>
-						<FactorIcon icon={penaltyPresentation.clockStall.icon} color={penaltyPresentation.clockStall.color} />
-						{i18n.t('powerScore.clockStallPenalty')}
-						<SettingTooltipIcon text={i18n.t('powerScore.tooltipClockStallPenalty')} label={i18n.t('powerScore.clockStallPenalty')} />
+						<FactorIcon icon={penaltyPresentation.commercialBreak.icon} color={penaltyPresentation.commercialBreak.color} />
+						{i18n.t('powerScore.breakPenalty')}
+						<SettingTooltipIcon text={i18n.t('powerScore.tooltipBreakPenalty')} label={i18n.t('powerScore.breakPenalty')} />
 					</span>
-					<span className='powerscore-breakdown-value' style={{ color: stallPenalty > 0 ? penaltyPresentation.clockStall.ink : undefined }}>
-						{stallPenalty > 0 ? `${minus}${stallPenalty}` : '0'}
+					<span className='powerscore-breakdown-value' style={{ color: breakPenalty > 0 ? penaltyPresentation.commercialBreak.ink : undefined }}>
+						{breakPenalty > 0 ? `${minus}${breakPenalty}` : '0'}
 					</span>
 				</div>
 			)}

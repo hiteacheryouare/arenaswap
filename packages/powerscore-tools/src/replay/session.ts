@@ -2,9 +2,11 @@ import {
 	chooseSwitchTarget,
 	getHistoryWindowMsForGame,
 	nextClockStall,
+	nextCommercialBreak,
 	retainSnapshots,
 	toScoreSnapshot,
 	type ClockStallEntry,
+	type CommercialBreakEntry,
 	type LiveScoringInput,
 	type FantasyRosterEntry,
 	type Game,
@@ -23,9 +25,14 @@ export interface ReplayScore {
 	boosts?: Record<string, number>;
 }
 
+// The 2.2.0 baseline still penalizes a frozen clock, so it gets the stall count the extension used to keep.
+export interface ReplayScoringInput extends LiveScoringInput {
+	stallCount: number;
+}
+
 export interface Scorer {
 	name: string;
-	score: (input: LiveScoringInput) => ReplayScore;
+	score: (input: ReplayScoringInput) => ReplayScore;
 }
 
 export interface Frame {
@@ -41,6 +48,7 @@ export interface Frame {
 	switchedAway: Map<string, boolean>;
 	// When each live game was first seen, so a scorecard can leave out games with no history yet.
 	firstSeen: ReadonlyMap<string, number>;
+	commercialBreaks: ReadonlyMap<string, CommercialBreakEntry>;
 }
 
 interface Viewer {
@@ -51,14 +59,15 @@ interface Viewer {
 	voluntarySwitches: number;
 }
 
-// Plays a recording through the same steps background.ts takes after each league poll: count clock
-// stalls for that league, score every live game against the history so far, then record the poll.
+// Plays a recording through the same steps background.ts takes after each league poll: look for
+// commercial breaks in that league, score every live game against the history so far, then record the poll.
 const sportOf = (league: LeagueId) => leagueConfigMap[league]?.sportType ?? 'basketball';
 
 export const createReplaySession = (scorers: Scorer[], prefs: Pick<UserPreferences, 'sensitivity' | 'cooldownSeconds'>, roster: FantasyRosterEntry[] = []) => {
 	const liveByLeague = new Map<LeagueId, Game[]>();
 	const history = new Map<string, ScoreSnapshot[]>();
 	const stalls = new Map<string, ClockStallEntry>();
+	const commercialBreaks = new Map<string, CommercialBreakEntry>();
 	const firstSeen = new Map<string, number>();
 	const winProbability = new Map<string, number[]>();
 	const liveExtras = createLiveExtras();
@@ -92,6 +101,7 @@ export const createReplaySession = (scorers: Scorer[], prefs: Pick<UserPreferenc
 		for (const game of live) {
 			const stall = nextClockStall(game, stalls.get(game.id));
 			if (stall) stalls.set(game.id, stall);
+			commercialBreaks.set(game.id, nextCommercialBreak(game, commercialBreaks.get(game.id), { now: ts, powerPlay: liveExtras.contextFor(game, ts).powerPlay }));
 		}
 
 		const allLive = [...liveByLeague.values()].flat();
@@ -106,6 +116,7 @@ export const createReplaySession = (scorers: Scorer[], prefs: Pick<UserPreferenc
 				game,
 				history: history.get(game.id) ?? [],
 				stallCount: stalls.get(game.id)?.stallCount ?? 0,
+				onBreak: commercialBreaks.get(game.id)?.kind !== undefined,
 				winProbability: winProbability.get(game.id) ?? [],
 				now: ts,
 				extras: liveExtras.contextFor(game, ts),
@@ -134,7 +145,7 @@ export const createReplaySession = (scorers: Scorer[], prefs: Pick<UserPreferenc
 			history.set(game.id, retainSnapshots(snapshots, ts - getHistoryWindowMsForGame(game), false));
 		}
 
-		return { ts, league, games, rankings, watching, switched, switchedAway, firstSeen };
+		return { ts, league, games, rankings, watching, switched, switchedAway, firstSeen, commercialBreaks };
 	};
 
 	return { handle, viewers };

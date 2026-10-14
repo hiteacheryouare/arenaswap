@@ -152,19 +152,19 @@ export interface LiveScoringInput {
 	game: Game;
 	// The whole retained history; windowed here, so the scorer sees exactly the last few minutes.
 	history: readonly ScoreSnapshot[];
-	stallCount: number;
+	onBreak: boolean;
 	winProbability: number[];
 	now: number;
-	extras?: Omit<ScoringContext, 'history' | 'stallCount' | 'winProbability'>;
+	extras?: Omit<ScoringContext, 'history' | 'stallCount' | 'onBreak' | 'winProbability'>;
 }
 
-export const scoringContextFor = ({ game, history, stallCount, winProbability, now, extras }: LiveScoringInput): ScoringContext => ({
+export const scoringContextFor = ({ game, history, onBreak, winProbability, now, extras }: LiveScoringInput): ScoringContext => ({
 	...extras,
 	// The window, not the whole retained series: the thinned tail below it exists for the wrap
 	// screen's charts, and feeding three hours of a game to a scorer tuned to the last few minutes
 	// would change every signal it computes.
 	history: recentSnapshots(history, now - getHistoryWindowMsForGame(game)),
-	stallCount,
+	onBreak,
 	winProbability,
 });
 
@@ -219,6 +219,8 @@ export const toLegacyPowerScoreResult = (score: PowerScore): PowerScoreResult =>
 	reason: score.reason,
 	stalled: score.stalled,
 	...(score.frozen ? {} : { stallPenalty: score.stallPenalty }),
+	onBreak: score.onBreak,
+	...(score.frozen ? {} : { breakPenalty: score.breakPenalty }),
 	signalsSubtotal: score.scaledSubtotal,
 	favoriteBonus: boostPoints(score, 'favoriteBoost'),
 	favoriteTeamCount: score.boosts.find(boost => boost.id === 'favoriteBoost')?.meta?.teams ?? 0,

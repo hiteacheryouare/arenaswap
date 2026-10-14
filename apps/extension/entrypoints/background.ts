@@ -1,8 +1,8 @@
 import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { createWinProbabilityTracker, summaryStillNeeded, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, computeRetryDelayMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
+import { createWinProbabilityTracker, summaryStillNeeded, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, computeRetryDelayMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextCommercialBreak, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
 import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, fetchNextScheduledStart, scoreboardRefreshMs, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces } from '@arenaswap/sideline';
-import type { ClockStallEntry } from '@arenaswap/core';
+import type { CommercialBreakEntry } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { gameEndRetentionMs, gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
 import type { gameEndRecords } from '../utils/gameEndTimes';
@@ -268,7 +268,7 @@ export default defineBackground(() => {
 
 	const history = new Map<string, ScoreSnapshot[]>();
 	const powerScoreHistory = new Map<string, PowerScoreSnapshot[]>();
-	const clockStallMap = new Map<string, ClockStallEntry>();
+	const commercialBreaks = new Map<string, CommercialBreakEntry>();
 	let tabRegistry: TabRegistration[] = [];
 	let gameBoosts: Record<string, number> = {};
 	let demoMode = false;
@@ -401,6 +401,7 @@ export default defineBackground(() => {
 				scoringOpportunityBoost: score.scoringOpportunityBoost ?? 0,
 				postseasonBoost: score.postseasonBoost ?? 0,
 				stalled: score.stalled ?? false,
+				onBreak: score.onBreak ?? false,
 				reason: score.reason,
 				// Classic's signals are already the flat fields above, and only the newest snapshot keeps its
 				// reasons: session storage holds every live game's history and is small on older Chrome.
@@ -914,29 +915,31 @@ export default defineBackground(() => {
 		retainedFinalGames = [...byId.values()].filter(game => isWithinFinalRetention(game));
 	};
 
-	// A changedLeagueId scopes stall tracking and history to just that league; null processes
+	// A changedLeagueId scopes break tracking and history to just that league; null processes
 	// every live game. `finishedGames` is what the fetch saw go final on this pass, which is not
 	// the same as what is in `games` — with Keep finished games off they are dropped on the way in.
 	// `observed` is false for a re-score of games already in hand, which must not read as another
-	// poll: a clock that has not moved since the last real one would count as stalled.
+	// poll: a clock that has not moved since the last real one would count as stalled, and a last
+	// play would look older than it is.
 	const afterFetch = async (changedLeagueId: LeagueId | null, allowTabSwitch: boolean, finishedGames: Game[] = [], observed = true) => {
 		const liveGames = games.filter(g => g.status === 'in');
 		const freshGames = !observed ? [] : changedLeagueId ? liveGames.filter(g => g.league === changedLeagueId) : liveGames;
 
-		for (const game of freshGames) {
-			const stall = nextClockStall(game, clockStallMap.get(game.id));
-			if (stall) clockStallMap.set(game.id, stall);
-		}
-
 		const favoriteTeamIds = new Set(prefs.favoriteTeamIds);
 		const now = Date.now();
+		for (const game of freshGames) {
+			commercialBreaks.set(game.id, nextCommercialBreak(game, commercialBreaks.get(game.id), { now, powerPlay: liveExtras.contextFor(game, now).powerPlay }));
+		}
+		const liveIds = new Set(liveGames.map(g => g.id));
+		for (const gameId of commercialBreaks.keys()) if (!liveIds.has(gameId)) commercialBreaks.delete(gameId);
+
 		liveExtras.setFantasyScoring(prefs.fantasyScoring);
 		winProbTracker.record(freshGames);
 		const scores = liveGames.map(g => toLiveScore(scoreLiveGame(
 			{
 				game: g,
 				history: history.get(g.id) ?? [],
-				stallCount: clockStallMap.get(g.id)?.stallCount ?? 0,
+				onBreak: commercialBreaks.get(g.id)?.kind !== undefined,
 				winProbability: winProbTracker.historyOf(g.id) ?? winProbHistory.get(g.id) ?? [],
 				now,
 				extras: liveExtras.contextFor(g, now),
@@ -1509,7 +1512,7 @@ export default defineBackground(() => {
 					tabRegistry,
 					onStandbyStream,
 					standbyStreamTabId,
-					clockStalls: Object.fromEntries(clockStallMap.entries()),
+					commercialBreaks: Object.fromEntries(commercialBreaks.entries()),
 					scores: currentScores,
 					gameLabels,
 					enabledLeagues: prefs.enabledLeagues,

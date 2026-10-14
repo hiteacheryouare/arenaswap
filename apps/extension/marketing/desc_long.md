@@ -24,7 +24,7 @@ Every live game gets a 0–100 PowerScore built from five signals:
 
 The signals stack and the score is capped at 100, so a genuinely exciting game climbs into the 80s and 90s, while a blowout stays low. The score builds with the game instead of sitting at a flat baseline: an early or lopsided game scores low and tension ramps toward the final buzzer. Recent scoring spikes the live signals and then fades, so even low-scoring sports keep a moving graph instead of a flat line.
 
-Games with frozen clocks (halftimes, timeouts, stoppages) get a penalty so you're never switched into a commercial break.
+Games that cut to commercial (inning breaks, pitching changes, TV timeouts) take a penalty, and halftimes score nothing, so you're never switched into an ad.
 
 Every card in the popup shows a color-coded PowerScore bar so you can see the excitement level at a glance. Open any game for the full breakdown: live signal values, PowerScore over time, team scores over time, win probability, and component contribution charts.
 

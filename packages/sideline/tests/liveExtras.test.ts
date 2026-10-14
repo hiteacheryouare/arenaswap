@@ -308,7 +308,7 @@ describe('box-score lead changes', () => {
 		const flip = ([[40, 42], [42, 42], [44, 42]] as const).map(([homeScore, awayScore], index) => ({ gameId: nbaGame.id, timestamp: now - 40_000 + index * 20_000, homeScore, awayScore }));
 		const game = { ...nbaGame, homeTeam: { ...nbaGame.homeTeam, score: 44 }, awayTeam: { ...nbaGame.awayTeam, score: 42 } };
 		const score = scoreLiveGame(
-			{ game, history: flip, stallCount: 0, winProbability: [], now, extras: extras.contextFor(game, now) },
+			{ game, history: flip, onBreak: false, winProbability: [], now, extras: extras.contextFor(game, now) },
 			{ favoriteTeamIds: [], favoriteTeamBonusPoints: 0, postseasonBoostPoints: 0, disabledSignals: [] },
 			0,
 		);

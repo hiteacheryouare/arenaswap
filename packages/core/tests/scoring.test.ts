@@ -13,7 +13,8 @@ import {
 } from '../src/scoring';
 import { sensitivityThresholds } from '../src/constants';
 import { normalizeScores } from '../src/typeGuards';
-import type { ClockStallEntry, ScoringPrefs, SwitchCandidateTab } from '../src/scoring';
+import { nextCommercialBreak, type CommercialBreakEntry } from '../src/commercialBreaks';
+import type { ScoringPrefs, SwitchCandidateTab } from '../src/scoring';
 import type { Game, PowerScoreResult, ScoreSnapshot, Team } from '../src/types';
 
 const team = (id: string, abbreviation: string, name: string, score: number, extra: Partial<Team> = {}): Team => ({
@@ -49,18 +50,15 @@ const noPrefs: ScoringPrefs = { favoriteTeamIds: [], favoriteTeamBonusPoints: 10
 const kickoff = Date.UTC(2026, 9, 4, 20, 25);
 const pollMs = 15_000;
 
-// What the background worker does on every poll, in its order: stall tracking, then scoring
+// What the background worker does on every poll, in its order: break tracking, then scoring
 // against the history gathered so far, then this poll's snapshot is added and the window trimmed.
 const createPoller = (prefs: ScoringPrefs, keepWholeGame = false) => {
 	const history = new Map<string, ScoreSnapshot[]>();
-	const stalls = new Map<string, ClockStallEntry>();
+	const breaks = new Map<string, CommercialBreakEntry>();
 	const poll = (games: Game[], now: number, gameBoosts: Record<string, number> = {}): PowerScoreResult[] => {
-		for (const game of games) {
-			const stall = nextClockStall(game, stalls.get(game.id));
-			if (stall) stalls.set(game.id, stall);
-		}
+		for (const game of games) breaks.set(game.id, nextCommercialBreak(game, breaks.get(game.id), { now }));
 		const scores = games.map(game => toLegacyPowerScoreResult(scoreLiveGame(
-			{ game, history: history.get(game.id) ?? [], stallCount: stalls.get(game.id)?.stallCount ?? 0, winProbability: [], now },
+			{ game, history: history.get(game.id) ?? [], onBreak: breaks.get(game.id)?.kind !== undefined, winProbability: [], now },
 			prefs,
 			gameBoosts[game.id] ?? 0,
 		)));
@@ -133,16 +131,17 @@ describe('translating our sources\' game into the engine\'s', () => {
 });
 
 describe('a fourth quarter in Kansas City, poll by poll', () => {
-	// Buffalo leads by seven with five minutes left; Kansas City ties it at 3:30, the clock sits at
-	// the two-minute warning through a long TV break, then the Chiefs drive into the red zone.
+	// Buffalo leads by seven with five minutes left; Kansas City ties it at 3:30, the feed logs the
+	// two-minute warning and sits on it through a long TV break, then the Chiefs drive into the red zone.
 	const chiefsAtPoll = (poll: number): Game => {
-		if (poll <= 5) return chiefsBills({ clockSeconds: 300 - poll * 15, possessionTeamId: '2', yardLine: 60, down: 1, distance: 10 });
+		const play = { lastPlayId: `play-${poll}`, lastPlayType: 'Rush' };
+		if (poll <= 5) return chiefsBills({ ...play, clockSeconds: 300 - poll * 15, possessionTeamId: '2', yardLine: 60, down: 1, distance: 10 });
 		const tied = { homeTeam: team('12', 'KC', 'Kansas City Chiefs', 24, { timeouts: 2 }), awayTeam: team('2', 'BUF', 'Buffalo Bills', 24, { timeouts: 3 }) };
-		if (poll <= 12) return chiefsBills({ ...tied, clockSeconds: 210 - (poll - 6) * 15, possessionTeamId: '2', yardLine: 70, down: 2, distance: 6 });
-		if (poll <= 23) return chiefsBills({ ...tied, clockSeconds: 120, possessionTeamId: '2', yardLine: 55, down: 3, distance: 4 });
+		if (poll <= 12) return chiefsBills({ ...tied, ...play, clockSeconds: 210 - (poll - 6) * 15, possessionTeamId: '2', yardLine: 70, down: 2, distance: 6 });
+		if (poll <= 23) return chiefsBills({ ...tied, lastPlayId: 'two-minute-warning', lastPlayType: 'Two-minute warning', clockSeconds: 120, possessionTeamId: '2', yardLine: 55, down: 3, distance: 4 });
 		const clockSeconds = 115 - (poll - 24) * 12.5;
-		if (poll < 30) return chiefsBills({ ...tied, clockSeconds, possessionTeamId: '12', yardLine: 50 + (poll - 24) * 6, down: 1, distance: 10 });
-		return chiefsBills({ ...tied, clockSeconds: 40, possessionTeamId: '12', yardLine: 88, down: 3, distance: 2, isRedZone: true });
+		if (poll < 30) return chiefsBills({ ...tied, ...play, clockSeconds, possessionTeamId: '12', yardLine: 50 + (poll - 24) * 6, down: 1, distance: 10 });
+		return chiefsBills({ ...tied, ...play, clockSeconds: 40, possessionTeamId: '12', yardLine: 88, down: 3, distance: 2, isRedZone: true });
 	};
 	const cowboysAtPoll = (poll: number): Game => cowboysEagles({ clockSeconds: Math.max(0, 360 - poll * 15) });
 
@@ -186,14 +185,14 @@ describe('a fourth quarter in Kansas City, poll by poll', () => {
 		expect(chiefs[6]!.closeness).toBeGreaterThan(chiefs[5]!.closeness);
 	});
 
-	test('docks the game through a long break at the two-minute warning and restores it when play resumes', () => {
+	test('docks the game the moment the two-minute warning is logged and restores it when play resumes', () => {
 		const { chiefs } = watch();
-		expect(chiefs[19]!.stalled).toBe(false);
-		expect(chiefs[20]!.stalled).toBe(true);
-		expect(chiefs[20]!.stallPenalty).toBe(15);
-		expect(chiefs[20]!.total).toBeLessThanOrEqual(chiefs[19]!.total - 10);
-		expect(chiefs[24]!.stalled).toBe(false);
-		expect(chiefs[24]!.stallPenalty).toBe(0);
+		expect(chiefs[12]!.onBreak).toBe(false);
+		expect(chiefs.slice(13, 24).every(score => score.onBreak && score.breakPenalty === 15)).toBe(true);
+		expect(chiefs[13]!.total).toBeLessThanOrEqual(chiefs[12]!.total - 10);
+		expect(chiefs[24]!.onBreak).toBe(false);
+		expect(chiefs[24]!.breakPenalty).toBe(0);
+		expect(chiefs.every(score => !score.stalled)).toBe(true);
 	});
 
 	test('pays the red-zone boost on third and short with the game tied in the final minute', () => {
@@ -320,7 +319,7 @@ describe('favorite teams', () => {
 	test('reach the score the popup reads as a bonus with its team count', () => {
 		const prefs: ScoringPrefs = { ...noPrefs, favoriteTeamIds: ['nfl:12', 'nba:2'], favoriteTeamBonusPoints: 8 };
 		const result = toLegacyPowerScoreResult(scoreLiveGame(
-			{ game: chiefsBills({ period: 2, clockSeconds: 600 }), history: [], stallCount: 0, winProbability: [], now: kickoff },
+			{ game: chiefsBills({ period: 2, clockSeconds: 600 }), history: [], onBreak: false, winProbability: [], now: kickoff },
 			prefs,
 			0,
 		));
@@ -345,7 +344,7 @@ describe('the flat score the popup reads', () => {
 
 	test('matches the full score field for field', () => {
 		const prefs: ScoringPrefs = { ...noPrefs, favoriteTeamIds: ['nfl:2'], favoriteTeamBonusPoints: 10 };
-		const input = { game: tiedRedZone, history: [], stallCount: 0, winProbability: [], now: kickoff };
+		const input = { game: tiedRedZone, history: [], onBreak: false, winProbability: [], now: kickoff };
 		const full = scoreLiveGame(input, prefs, 25);
 		const flat = toLegacyPowerScoreResult(full);
 		expect(flat.total).toBe(full.total);
@@ -360,14 +359,17 @@ describe('the flat score the popup reads', () => {
 
 	test('survives the trip to the popup unchanged, boosted past 100 or frozen at halftime', () => {
 		const prefs: ScoringPrefs = { ...noPrefs, favoriteTeamIds: ['nfl:2'] };
-		const live = toLegacyPowerScoreResult(scoreLiveGame({ game: tiedRedZone, history: [], stallCount: 9, winProbability: [], now: kickoff }, prefs, 25));
+		const live = toLegacyPowerScoreResult(scoreLiveGame({ game: tiedRedZone, history: [], onBreak: true, winProbability: [], now: kickoff }, prefs, 25));
 		const halftime = toLegacyPowerScoreResult(scoreLiveGame(
-			{ game: chiefsBills({ period: 2, clockSeconds: 0, intermission: true }), history: [], stallCount: 30, winProbability: [], now: kickoff },
+			{ game: chiefsBills({ period: 2, clockSeconds: 0, intermission: true }), history: [], onBreak: true, winProbability: [], now: kickoff },
 			prefs,
 			25,
 		));
 		expect(halftime.total).toBe(0);
 		expect(halftime).not.toHaveProperty('stallPenalty');
+		expect(halftime).not.toHaveProperty('breakPenalty');
+		expect(live.onBreak).toBe(true);
+		expect(live.breakPenalty).toBe(15);
 		expect(halftime.favoriteTeamCount).toBe(1);
 
 		const received = normalizeScores(JSON.parse(JSON.stringify([live, halftime])));
@@ -376,7 +378,7 @@ describe('the flat score the popup reads', () => {
 
 	test('a switched-off signal reads as zero while the subtotal carries the rescale', () => {
 		const prefs: ScoringPrefs = { ...noPrefs, disabledSignals: ['closeness'] };
-		const flat = toLegacyPowerScoreResult(scoreLiveGame({ game: tiedRedZone, history: [], stallCount: 0, winProbability: [], now: kickoff }, prefs, 0));
+		const flat = toLegacyPowerScoreResult(scoreLiveGame({ game: tiedRedZone, history: [], onBreak: false, winProbability: [], now: kickoff }, prefs, 0));
 		const rawSum = flat.closeness + flat.lateGame + flat.momentum + flat.leadChanges + flat.comeback;
 		expect(flat.closeness).toBe(0);
 		expect(flat.signalsSubtotal).toBeGreaterThan(rawSum);

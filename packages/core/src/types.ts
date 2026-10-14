@@ -16,7 +16,7 @@ import type {
 	BlendResult,
 } from 'powerscore';
 import type { PollMode } from './pollModeTracker';
-import type { ClockStallEntry } from './scoring';
+import type { CommercialBreakEntry } from './commercialBreaks';
 
 export type ScoringModeChoice = BuiltInModeId | 'custom';
 
@@ -424,6 +424,9 @@ export interface PowerScoreSnapshot {
 	postseasonBoost?: number;
 	stalled: boolean;
 	stallPenalty?: number;
+	// Absent on a snapshot from before commercial breaks were detected.
+	onBreak?: boolean;
+	breakPenalty?: number;
 	reason: string;
 	// PowerScore 3. Absent on a snapshot from before modes, which is then Classic.
 	modeId?: string;
@@ -557,7 +560,7 @@ export interface DebugState {
 	tabRegistry: TabRegistration[];
 	onStandbyStream: boolean;
 	standbyStreamTabId: number | null;
-	clockStalls: Record<string, ClockStallEntry>;
+	commercialBreaks: Record<string, CommercialBreakEntry>;
 	scores: PowerScoreResult[];
 	gameLabels: Record<string, string>;
 	enabledLeagues: string[];

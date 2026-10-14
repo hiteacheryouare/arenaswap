@@ -24,7 +24,7 @@ Cada jogo em direto recebe um PowerScore de 0 a 100 construído a partir de cinc
 
 Os sinais somam-se e a pontuação tem um teto de 100, por isso um jogo verdadeiramente emocionante sobe para os 80 e 90, enquanto uma goleada fica baixa. A pontuação cresce com o jogo em vez de ficar numa base fixa: um jogo no início ou desequilibrado pontua baixo, e a tensão aumenta em direção ao apito final. As sequências de pontuação recentes disparam os sinais em direto e depois desaparecem, por isso até desportos de baixa pontuação mantêm um gráfico em movimento em vez de uma linha reta.
 
-Jogos com o relógio parado (intervalos, descontos de tempo, interrupções) recebem uma penalização para nunca seres mudado para um intervalo publicitário.
+Jogos que passam para publicidade (pausas entre entradas, trocas de lançador, descontos de tempo para a TV) recebem uma penalização, e o intervalo a meio do jogo não pontua, para nunca seres mudado para um intervalo publicitário.
 
 Cada cartão no popup mostra uma barra de PowerScore com código de cores para veres o nível de emoção rapidamente. Abre qualquer jogo para veres a análise completa: valores dos sinais em direto, PowerScore ao longo do tempo, marcadores ao longo do tempo, probabilidade de vitória e gráficos de contribuição de cada componente.
 

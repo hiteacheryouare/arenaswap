@@ -34,7 +34,8 @@ const expandScore = (gameId: string, value: LiveScore | ScoreTotal): LiveScore =
 	leadChanges: 0,
 	comeback: 0,
 	reason: value.reason,
-	stalled: value.stalled ?? false,
+	stalled: false,
+	onBreak: value.onBreak ?? false,
 	signalsSubtotal: value.total,
 	favoriteBonus: 0,
 	favoriteTeamCount: 0,
@@ -58,6 +59,7 @@ const toPowerScoreSnapshot = (score: LiveScore, timestamp: number, newest: boole
 	scoringOpportunityBoost: score.scoringOpportunityBoost ?? 0,
 	postseasonBoost: score.postseasonBoost ?? 0,
 	stalled: score.stalled ?? false,
+	onBreak: score.onBreak ?? false,
 	reason: score.reason,
 	...(score.breakdown ? {
 		modeId: score.breakdown.modeId,

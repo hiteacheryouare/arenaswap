@@ -24,7 +24,7 @@ Todo jogo ao vivo recebe um PowerScore de 0 a 100 construído a partir de cinco 
 
 Os sinais se somam e a pontuação tem um teto de 100, então um jogo verdadeiramente emocionante sobe para os 80 e 90, enquanto uma goleada fica baixa. A pontuação cresce com o jogo em vez de ficar em uma base fixa: um jogo no início ou desequilibrado pontua baixo, e a tensão aumenta em direção ao apito final. As sequências de pontuação recentes disparam os sinais ao vivo e depois desaparecem, então até esportes de baixa pontuação mantêm um gráfico em movimento em vez de uma linha reta.
 
-Jogos com o relógio parado (intervalos, pedidos de tempo, interrupções) recebem uma penalidade para que você nunca seja trocado para um intervalo comercial.
+Jogos que vão para o intervalo comercial (pausas entre entradas, trocas de arremessador, pausas para a TV) recebem uma penalidade, e o intervalo entre os tempos vale zero, para que você nunca seja trocado para um anúncio.
 
 Cada card no popup mostra uma barra de PowerScore colorida para você ver o nível de empolgação rapidamente. Abra qualquer jogo para ver a análise completa: valores dos sinais ao vivo, PowerScore ao longo do tempo, placares ao longo do tempo, probabilidade de vitória e gráficos de contribuição de cada componente.
 

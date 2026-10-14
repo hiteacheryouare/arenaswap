@@ -558,14 +558,20 @@ describe('gameDetailView hero', () => {
 		cy.get('.powerscore-breakdown-reason').should('contain.text', 'Close game, lead changes');
 	});
 
-	it('shows the clock stall penalty row for a clock-based sport', () => {
+	it('shows the commercial break row for a sport that goes to commercial', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
-		cy.contains('Clock stall penalty').should('exist');
+		cy.contains('Commercial break penalty').should('exist');
 	});
 
-	it('hides the clock stall penalty row for a sport with no clock', () => {
+	// Baseball has no clock to stall, but its inning breaks are commercials all the same.
+	it('shows the row for baseball too', () => {
 		mountDetail(makeInningGame(), { excitementResult: excitement });
-		cy.contains('Clock stall penalty').should('not.exist');
+		cy.contains('Commercial break penalty').should('exist');
+	});
+
+	it('hides the row for soccer, which never goes to commercial during play', () => {
+		mountDetail(makeLiveGame({ league: 'epl', sportType: 'soccer', period: 2, clockSeconds: 3900 }), { excitementResult: excitement });
+		cy.contains('Commercial break penalty').should('not.exist');
 	});
 
 	it('says what is happening when the clock is frozen', () => {

@@ -25,7 +25,7 @@ const mlbTied = game('mlb', 'baseball', 3, 3, 8, 0);
 const scoringPrefs = (prefs: Partial<UserPreferences>): UserPreferences => normalizeUserPreferences({ ...createDefaultUserPreferences(), ...prefs });
 
 const score = (target: Game, prefs: ScoringPrefs, extras: LiveScoringInput['extras'] = {}) => (
-	scoreLiveGame({ game: target, history: [], stallCount: 0, winProbability: [], now, extras }, prefs, 0)
+	scoreLiveGame({ game: target, history: [], onBreak: false, winProbability: [], now, extras }, prefs, 0)
 );
 
 describe('Custom scoring, one mode per league', () => {

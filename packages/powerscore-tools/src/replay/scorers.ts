@@ -14,7 +14,7 @@ export const v2Scorer: Scorer = {
 	name: 'v2',
 	score: input => {
 		const context = scoringContextFor(input);
-		const result = scoreGameV2(input.game as unknown as V2Game, context.history ?? [], context.stallCount ?? 0, context.winProbability ?? [], {
+		const result = scoreGameV2(input.game as unknown as V2Game, context.history ?? [], input.stallCount, context.winProbability ?? [], {
 			disabledSignals: replayPrefs.disabledSignals,
 			favoriteTeamCount: 0,
 			favoriteBonusPoints: replayPrefs.favoriteTeamBonusPoints,

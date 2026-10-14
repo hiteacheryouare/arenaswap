@@ -24,7 +24,7 @@ Jedes Live-Spiel erhält einen PowerScore von 0–100, der sich aus fünf Signal
 
 Die Signale addieren sich, und der Score ist bei 100 gedeckelt, sodass ein wirklich spannendes Spiel in die 80er und 90er klettert, während ein einseitiges Spiel niedrig bleibt. Der Score wächst mit dem Spielverlauf, statt auf einem flachen Grundwert zu verharren: Ein frühes oder einseitiges Spiel erhält einen niedrigen Wert, und die Spannung steigt Richtung Schlusspfiff. Aktuelle Punkteserien lassen die Live-Signale kurz ausschlagen und dann wieder abklingen, sodass selbst punktearme Sportarten eine bewegte Kurve statt einer Geraden behalten.
 
-Spiele mit angehaltener Uhr (Halbzeitpausen, Auszeiten, Unterbrechungen) erhalten einen Abzug, damit du nie mitten in eine Werbepause wechselst.
+Spiele, die zur Werbung schalten (Inning-Pausen, Pitcherwechsel, TV-Auszeiten), bekommen einen Abzug, und Halbzeiten bringen null Punkte, damit du nie mitten in eine Werbepause wechselst.
 
 Jede Karte im Popup zeigt einen farbcodierten PowerScore-Balken, damit du das Spannungsniveau auf einen Blick siehst. Öffne ein beliebiges Spiel für die vollständige Aufschlüsselung: Live-Signalwerte, PowerScore-Verlauf, Spielstand-Verlauf, Siegwahrscheinlichkeit und Diagramme zum Beitrag jedes einzelnen Signals.
 

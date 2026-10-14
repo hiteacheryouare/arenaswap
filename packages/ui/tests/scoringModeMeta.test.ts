@@ -28,7 +28,7 @@ describe('scoringModeMeta keeps up with the engine', () => {
 		}
 	});
 
-	test('knows whether each mode pays the stall penalty', () => {
+	test('knows whether each mode pays the commercial-break penalty', () => {
 		for (const mode of modes) expect(modePresentation[mode].usesStallPenalty).toBe(builtInModes[mode].usesStallPenalty);
 	});
 
@@ -85,7 +85,7 @@ describe('scoringModeMeta colours', () => {
 
 	test('keeps any two factors that can share a card at least 11 apart in ΔE00', () => {
 		const tooClose = modes.flatMap(mode => ['baseball', 'football', 'soccer', 'hockey'].flatMap(sport => {
-			const ids = ['favoriteBoost', 'gameBoost', 'postseasonBoost', ...builtInModes[mode].boosts.map(boost => boost.id), 'clockStall', 'volatility']
+			const ids = ['favoriteBoost', 'gameBoost', 'postseasonBoost', ...builtInModes[mode].boosts.map(boost => boost.id), 'commercialBreak', 'volatility']
 				.filter(id => !sportOnly[id] || sportOnly[id] === sport);
 			return ids.flatMap((one, index) => ids.slice(index + 1)
 				.filter(two => colorDifference(colorOf(one), colorOf(two)) < 11)

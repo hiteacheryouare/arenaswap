@@ -18,11 +18,11 @@ type walkthroughSignal = ReturnType<typeof signalMetaFor>[number];
 
 const boostPenaltyMeta = [
 	{
-		name: 'clockStall',
-		labelKey: 'stepPowerScore.clockStallPenaltyName',
-		descriptionKey: 'powerScore.tooltipClockStallPenalty',
-		color: penaltyPresentation.clockStall.color,
-		icon: penaltyPresentation.clockStall.icon,
+		name: 'commercialBreak',
+		labelKey: 'stepPowerScore.breakPenaltyName',
+		descriptionKey: 'powerScore.tooltipBreakPenalty',
+		color: penaltyPresentation.commercialBreak.color,
+		icon: penaltyPresentation.commercialBreak.icon,
 	},
 	{
 		name: 'volatility',

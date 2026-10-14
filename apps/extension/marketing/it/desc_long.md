@@ -24,7 +24,7 @@ Ogni partita dal vivo riceve un PowerScore da 0 a 100 costruito da cinque segnal
 
 I segnali si sommano e il punteggio ha un tetto di 100, quindi una partita davvero avvincente sale verso l'80-90, mentre una partita a senso unico resta bassa. Il punteggio cresce con la partita invece di restare su una base piatta: una partita iniziale o squilibrata segna basso, e la tensione sale verso la sirena finale. Le serie di punti recenti fanno impennare i segnali dal vivo per poi spegnersi, così anche gli sport a basso punteggio mantengono un grafico in movimento invece di una linea piatta.
 
-Le partite con l'orologio fermo (intervalli, timeout, interruzioni) ricevono una penalità, così non vieni mai spostato in una pausa pubblicitaria.
+Le partite che vanno in pubblicità (pause tra gli inning, cambi di lanciatore, timeout TV) ricevono una penalità e l'intervallo di metà partita vale zero punti, così non vieni mai spostato in una pausa pubblicitaria.
 
 Ogni scheda nel popup mostra una barra PowerScore con codice colore, così vedi il livello di tensione a colpo d'occhio. Apri qualsiasi partita per il dettaglio completo: valori dei segnali dal vivo, PowerScore nel tempo, punteggi nel tempo, probabilità di vittoria e grafici del contributo di ogni componente.
 

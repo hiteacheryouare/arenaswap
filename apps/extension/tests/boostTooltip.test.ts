@@ -209,7 +209,7 @@ describe('a hockey power play, from the feed to the tooltip', () => {
 	const liveScore = (game: LiveGame, situations: unknown[]) => {
 		const extras = createLiveExtras();
 		situations.forEach(situation => extras.ingestSituation(game.id, situation));
-		return toLiveScore(scoreLiveGame({ game, history: [], stallCount: 0, winProbability: [], now: recorded.ts, extras: extras.contextFor(game, recorded.ts) }, prefs, 0));
+		return toLiveScore(scoreLiveGame({ game, history: [], onBreak: false, winProbability: [], now: recorded.ts, extras: extras.contextFor(game, recorded.ts) }, prefs, 0));
 	};
 
 	// The popup reads scores back out of storage, so they go through the same JSON and guard it does.
