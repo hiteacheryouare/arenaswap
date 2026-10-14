@@ -17,3 +17,4 @@
 - [live_moment_signals_audit.md](live_moment_signals_audit.md) — 2026-10-01 missed live moments per sport, verified Core situation/lastPlay fields, no WP for NHL/soccer, new-sport order
 - [powerscore3_spec_decisions.md](powerscore3_spec_decisions.md) — PowerScore 3 spec numbers: boost caps 20/16/70, per-boost values, Blowouts floor 0.3, Fantasy blend 0.6
 - [powerscore3_labelling_calls.md](powerscore3_labelling_calls.md) — Slate-labelling judgement calls (possessor, punts, garbled OT, 2-pt tries, onside, L1/L2 floor) for slates a-d
+- [commercial_break_signals.md](commercial_break_signals.md) — Commercial-break feed signatures per sport, measured break lengths, MLB breaks invisible to intermission, stall misfires
