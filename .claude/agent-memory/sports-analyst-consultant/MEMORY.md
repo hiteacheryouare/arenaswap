@@ -18,3 +18,4 @@
 - [powerscore3_spec_decisions.md](powerscore3_spec_decisions.md) — PowerScore 3 spec numbers: boost caps 20/16/70, per-boost values, Blowouts floor 0.3, Fantasy blend 0.6
 - [powerscore3_labelling_calls.md](powerscore3_labelling_calls.md) — Slate-labelling judgement calls (possessor, punts, garbled OT, 2-pt tries, onside, L1/L2 floor) for slates a-d
 - [commercial_break_signals.md](commercial_break_signals.md) — Commercial-break feed signatures per sport, measured break lengths, MLB breaks invisible to intermission, stall misfires
+- [Matchup order conventions](reference_matchup_order_conventions.md) — home-left vs away-left by league, with sources; NPB and KBO use opposite orders
