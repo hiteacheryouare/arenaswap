@@ -6,7 +6,7 @@ import BonusMark from './bonusMark';
 
 interface detailTeamPillProps {
 	team: Team;
-	side: 'away' | 'home';
+	position: 'left' | 'right';
 	record?: string | null;
 	color: string;
 	timeoutMax?: number;
@@ -19,13 +19,13 @@ interface detailTeamPillProps {
 // Crest, name and record are emitted as separate grid children via `display: contents`, which
 // is what holds the two sides level: a name that wraps to two lines pushes its own row taller
 // without shifting the logo or the record beside it.
-const detailTeamPill = ({ team, side, record, color, timeoutMax, bonus, bonusSlot = false }: detailTeamPillProps) => (
-	<div className={`game-detail-team-wrap is-${side}`}>
+const detailTeamPill = ({ team, position, record, color, timeoutMax, bonus, bonusSlot = false }: detailTeamPillProps) => (
+	<div className={`game-detail-team-wrap is-${position}`}>
 		{/* Blank rather than lettered — the abbreviation is directly below it. */}
-		<span className={`game-detail-team-logo-shell is-bare gd-area-${side}-crest`}>
+		<span className={`game-detail-team-logo-shell is-bare gd-area-${position}-crest`}>
 			<OnColorCrest team={team} surface={color} className='game-detail-team-logo' fallback='blank' />
 		</span>
-		<div className={`game-detail-team-name gd-area-${side}-label`}>
+		<div className={`game-detail-team-name gd-area-${position}-label`}>
 			{/* Reads as "#2 Alabama Crimson Tide". The rank is a separate span rather than part of
 			    the string so it can recede — the name is what identifies the team. */}
 			{team.rank !== undefined && (
@@ -37,7 +37,7 @@ const detailTeamPill = ({ team, side, record, color, timeoutMax, bonus, bonusSlo
 		</div>
 		{record && (
 			<div
-				className={`game-detail-team-record gd-area-${side}-record`}
+				className={`game-detail-team-record gd-area-${position}-record`}
 				title={i18n.t('detail.teamRecord', { record })}
 			>
 				{record}
@@ -46,7 +46,7 @@ const detailTeamPill = ({ team, side, record, color, timeoutMax, bonus, bonusSlo
 		{/* Its own grid row rather than tucked beside the record, so the two sides stay level when
 		    one team's name wraps and the other's does not — the same reason the record has one. */}
 		{(team.timeouts !== undefined || bonusSlot) && (
-			<div className={`gd-area-${side}-timeouts${bonusSlot ? ' text-center' : ''}`}>
+			<div className={`gd-area-${position}-timeouts${bonusSlot ? ' text-center' : ''}`}>
 				{team.timeouts !== undefined && (
 					<TimeoutDots remaining={team.timeouts} max={timeoutMax} teamAbbreviation={team.abbreviation} />
 				)}

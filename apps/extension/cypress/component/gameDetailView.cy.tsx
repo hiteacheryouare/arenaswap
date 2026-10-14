@@ -374,8 +374,8 @@ describe('gameDetailView hero', () => {
 		cy.get('.game-detail-team-record').first().should('have.text', '33-38');
 		cy.get('.game-detail-team-record').last().should('have.text', '41-30');
 		cy.get('.gd-hero').should(([hero]: JQuery<HTMLElement>) => {
-			const name = hero.querySelector('.gd-area-away-label')!.getBoundingClientRect();
-			const record = hero.querySelector('.gd-area-away-record')!.getBoundingClientRect();
+			const name = hero.querySelector('.gd-area-left-label')!.getBoundingClientRect();
+			const record = hero.querySelector('.gd-area-left-record')!.getBoundingClientRect();
 			expect(record.top, 'record sits below its name').to.be.at.least(name.bottom - 1);
 			expect(record.top - name.bottom, 'record hugs the name').to.be.at.most(4);
 		});
@@ -1081,8 +1081,8 @@ describe('gameDetailView hero timeouts', () => {
 	it('draws each side its own row under the record', () => {
 		mountDetail(gridiron, { excitementResult: excitement });
 		cy.get('.gd-hero-live .timeout-dots').should('have.length', 2);
-		cy.get('.gd-area-away-timeouts .timeout-dot').not('.is-empty').should('have.length', 3);
-		cy.get('.gd-area-home-timeouts .timeout-dot').not('.is-empty').should('have.length', 1);
+		cy.get('.gd-area-left-timeouts .timeout-dot').not('.is-empty').should('have.length', 3);
+		cy.get('.gd-area-right-timeouts .timeout-dot').not('.is-empty').should('have.length', 1);
 	});
 
 	// The card's rule for these is a light-surface grey, and it has to lose to the hero's — the
@@ -1200,15 +1200,15 @@ describe('gameDetailView basketball situation', () => {
 	it('marks the team in the bonus under its own timeouts, centred under the name', () => {
 		answer(basketballSituations.homeInBonus.raw);
 		mountDetail(liveBasketball(), { excitementResult: excitement });
-		cy.get('.gd-area-home-timeouts .gd-bonus').should('not.have.class', 'invisible').should(([bonus]: JQuery<HTMLElement>) => {
+		cy.get('.gd-area-right-timeouts .gd-bonus').should('not.have.class', 'invisible').should(([bonus]: JQuery<HTMLElement>) => {
 			expect(getComputedStyle(bonus).textTransform).to.equal('uppercase');
 			expect(bonus.querySelector('[aria-hidden="true"]')!.textContent).to.equal('Bonus');
 			expect(bonus.querySelector('.visually-hidden')!.textContent).to.equal('BOS in the bonus');
 		});
-		cy.get('.gd-area-away-timeouts .gd-bonus').should('have.class', 'invisible').and('have.attr', 'aria-hidden', 'true');
-		cy.get('.gd-area-home-label').then(([name]: JQuery<HTMLElement>) => {
-			cy.get('.gd-area-home-timeouts .timeout-dots').then(([dots]: JQuery<HTMLElement>) => {
-				cy.get('.gd-area-home-timeouts .gd-bonus').then(([bonus]: JQuery<HTMLElement>) => {
+		cy.get('.gd-area-left-timeouts .gd-bonus').should('have.class', 'invisible').and('have.attr', 'aria-hidden', 'true');
+		cy.get('.gd-area-right-label').then(([name]: JQuery<HTMLElement>) => {
+			cy.get('.gd-area-right-timeouts .timeout-dots').then(([dots]: JQuery<HTMLElement>) => {
+				cy.get('.gd-area-right-timeouts .gd-bonus').then(([bonus]: JQuery<HTMLElement>) => {
 					expect(centreX(bonus), 'under the dots').to.be.closeTo(centreX(dots), 0.5);
 					expect(centreX(bonus), 'under the name').to.be.closeTo(centreX(name), 1);
 					expect(bonus.getBoundingClientRect().top, 'below the dots').to.be.at.least(dots.getBoundingClientRect().bottom);
@@ -1227,8 +1227,8 @@ describe('gameDetailView basketball situation', () => {
 	it('says double bonus to a screen reader in men\'s college basketball', () => {
 		answer(basketballSituations.homeInBonus.raw);
 		mountDetail(liveBasketball({ league: 'ncaab' }), { excitementResult: excitement });
-		cy.get('.gd-area-home-timeouts .gd-bonus .visually-hidden').should('have.text', 'BOS in the double bonus');
-		cy.get('.gd-area-home-timeouts .gd-bonus [aria-hidden="true"]').should('have.text', 'Bonus');
+		cy.get('.gd-area-right-timeouts .gd-bonus .visually-hidden').should('have.text', 'BOS in the double bonus');
+		cy.get('.gd-area-right-timeouts .gd-bonus [aria-hidden="true"]').should('have.text', 'Bonus');
 	});
 
 	it('keeps the hero the same height whether anyone is in the bonus or not', () => {
@@ -1251,11 +1251,11 @@ describe('gameDetailView basketball situation', () => {
 		mountDetail(liveBasketball(), { excitementResult: excitement });
 		cy.get('.gd-bonus:not(.invisible)').should('have.length', 2);
 		Object.entries(locales).forEach(([name, locale]) => {
-			cy.get('.gd-area-home-timeouts .gd-bonus [aria-hidden="true"]').then(([text]: JQuery<HTMLElement>) => {
+			cy.get('.gd-area-right-timeouts .gd-bonus [aria-hidden="true"]').then(([text]: JQuery<HTMLElement>) => {
 				text.textContent = locale.detail.bonus;
 			});
-			cy.get('.gd-area-home-label').then(([label]: JQuery<HTMLElement>) => {
-				cy.get('.gd-area-home-timeouts .gd-bonus').should(([bonus]: JQuery<HTMLElement>) => {
+			cy.get('.gd-area-right-label').then(([label]: JQuery<HTMLElement>) => {
+				cy.get('.gd-area-right-timeouts .gd-bonus').should(([bonus]: JQuery<HTMLElement>) => {
 					const rect = bonus.getBoundingClientRect();
 					expect(rect.width, `${name} fits the 80px column`).to.be.at.most(80);
 					expect(centreX(bonus), `${name} centred`).to.be.closeTo(centreX(label), 1);
@@ -1272,17 +1272,17 @@ describe('gameDetailView basketball situation', () => {
 	it('draws the NBA\'s seven timeouts as dots, level on both sides and under each name', () => {
 		answer(basketballSituations.homeInBonus.raw);
 		mountDetail(liveBasketball(), { excitementResult: excitement });
-		cy.get('.gd-area-away-timeouts .timeout-dots').should('have.class', 'is-compact').find('.timeout-dot').should('have.length', 7);
-		cy.get('.gd-area-away-timeouts .timeout-dot:not(.is-empty)').should('have.length', 7);
-		cy.get('.gd-area-home-timeouts .timeout-dot:not(.is-empty)').should('have.length', 6);
-		cy.get('.gd-area-home-timeouts .timeout-dot.is-empty').should('have.length', 1);
+		cy.get('.gd-area-left-timeouts .timeout-dots').should('have.class', 'is-compact').find('.timeout-dot').should('have.length', 7);
+		cy.get('.gd-area-left-timeouts .timeout-dot:not(.is-empty)').should('have.length', 7);
+		cy.get('.gd-area-right-timeouts .timeout-dot:not(.is-empty)').should('have.length', 6);
+		cy.get('.gd-area-right-timeouts .timeout-dot.is-empty').should('have.length', 1);
 		cy.get('.timeout-dots-numeric').should('not.exist');
-		cy.get('.gd-area-away-timeouts .timeout-dots').should('have.attr', 'aria-label', 'OKC: 7 timeouts left');
-		cy.get('.gd-area-away-timeouts, .gd-area-home-timeouts').then(($rows: JQuery<HTMLElement>) => {
+		cy.get('.gd-area-left-timeouts .timeout-dots').should('have.attr', 'aria-label', 'OKC: 7 timeouts left');
+		cy.get('.gd-area-left-timeouts, .gd-area-right-timeouts').then(($rows: JQuery<HTMLElement>) => {
 			const [away, home] = [...$rows].map(el => el.getBoundingClientRect());
 			expect(away!.top, 'level').to.be.closeTo(home!.top, 0.5);
 		});
-		(['away', 'home'] as const).forEach(side => {
+		(['left', 'right'] as const).forEach(side => {
 			cy.get(`.gd-area-${side}-label`).then(([name]: JQuery<HTMLElement>) => {
 				cy.get(`.gd-area-${side}-timeouts .timeout-dots`).then(([dots]: JQuery<HTMLElement>) => {
 					const rect = dots.getBoundingClientRect();
@@ -1300,17 +1300,17 @@ describe('gameDetailView basketball situation', () => {
 	it('draws a smaller allotment at gridiron\'s size', () => {
 		answer(basketballSituations.lastMinutes.raw);
 		mountDetail(liveBasketball({ league: 'ncaab' }), { excitementResult: excitement });
-		cy.get('.gd-area-away-timeouts .timeout-dots').should('not.have.class', 'is-compact');
-		cy.get('.gd-area-away-timeouts .timeout-dot').should('have.length', 4);
-		cy.get('.gd-area-away-timeouts .timeout-dot:not(.is-empty)').should('have.length', 2);
-		cy.get('.gd-area-home-timeouts .timeout-dot:not(.is-empty)').should('have.length', 1);
+		cy.get('.gd-area-left-timeouts .timeout-dots').should('not.have.class', 'is-compact');
+		cy.get('.gd-area-left-timeouts .timeout-dot').should('have.length', 4);
+		cy.get('.gd-area-left-timeouts .timeout-dot:not(.is-empty)').should('have.length', 2);
+		cy.get('.gd-area-right-timeouts .timeout-dot:not(.is-empty)').should('have.length', 1);
 	});
 
 	it('draws the WNBA\'s five timeouts, so a spent one still shows', () => {
 		answer(basketballSituations.lastMinutes.raw);
 		mountDetail(liveBasketball({ league: 'wnba' }), { excitementResult: excitement });
-		cy.get('.gd-area-away-timeouts .timeout-dot').should('have.length', 5);
-		cy.get('.gd-area-away-timeouts .timeout-dot:not(.is-empty)').should('have.length', 2);
+		cy.get('.gd-area-left-timeouts .timeout-dot').should('have.length', 5);
+		cy.get('.gd-area-left-timeouts .timeout-dot:not(.is-empty)').should('have.length', 2);
 	});
 
 	// A timeout row and a bonus line under it. The fouls sentence that used to sit under the period
@@ -1341,7 +1341,7 @@ describe('gameDetailView basketball situation', () => {
 	it('clears the bonus between periods and keeps the timeouts', () => {
 		answer(basketballSituations.homeInBonus.raw);
 		mountDetail(liveBasketball({ intermission: true, period: 2 }), { excitementResult: excitement });
-		cy.get('.gd-area-home-timeouts .timeout-dot:not(.is-empty)').should('have.length', 6);
+		cy.get('.gd-area-right-timeouts .timeout-dot:not(.is-empty)').should('have.length', 6);
 		cy.get('.gd-bonus.invisible').should('have.length', 2);
 	});
 
@@ -1354,7 +1354,7 @@ describe('gameDetailView basketball situation', () => {
 		cy.intercept({ url: situationUrl }, { body: basketballSituations.homeInBonus.raw }).as('again');
 		cy.tick(15_000);
 		cy.wait('@again');
-		cy.get('.gd-area-home-timeouts .gd-bonus').should('not.have.class', 'invisible');
+		cy.get('.gd-area-right-timeouts .gd-bonus').should('not.have.class', 'invisible');
 	});
 
 	it('never asks for a game that is not live basketball', () => {

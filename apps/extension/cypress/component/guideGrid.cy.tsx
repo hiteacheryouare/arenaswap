@@ -236,12 +236,23 @@ describe('the guide grid', () => {
 	});
 
 	// The edges stand for the two teams, so they carry the colours the teams publish, navies and all.
-	it('draws each edge in the team\'s published colour', () => {
-		mountGrid([bar('a', 'nfl', '2026-09-13T17:00:00Z')]);
+	// The two fixture navies clash and would switch, so this pairs the home navy with an orange visitor.
+	it('draws each edge in the team\'s published colour, visitor on the left', () => {
+		const orange = { id: 'a-a', name: 'Away', abbreviation: 'AWY', score: 0, color: '#FB4F14' };
+		mountGrid([bar('a', 'nfl', '2026-09-13T17:00:00Z', { awayTeam: orange })]);
 		cy.get('.guide-bar-shape').first().then(([element]: JQuery<HTMLElement>) => {
-			const colors = ['::before', '::after'].map(pseudo => getComputedStyle(element, pseudo).backgroundColor);
-			expect(colors).to.have.members(['rgb(11, 22, 42)', 'rgb(0, 34, 68)']);
+			expect(getComputedStyle(element, '::before').backgroundColor).to.equal('rgb(251, 79, 20)');
+			expect(getComputedStyle(element, '::after').backgroundColor).to.equal('rgb(0, 34, 68)');
 		});
+	});
+
+	it('puts the host on the left edge for soccer', () => {
+		const orange = { id: 'a-a', name: 'Away', abbreviation: 'AWY', score: 0, color: '#FB4F14' };
+		mountGrid([bar('a', 'epl', '2026-09-13T17:00:00Z', { sportType: 'soccer', awayTeam: orange })]);
+		cy.get('.guide-bar-shape').first().then(([element]: JQuery<HTMLElement>) => {
+			expect(getComputedStyle(element, '::before').backgroundColor).to.equal('rgb(0, 34, 68)');
+		});
+		cy.get('.guide-bar-team').first().should('have.text', 'HOM');
 	});
 
 	// A navy or black crest straight on #0d1117 is an empty box beside an abbreviation doing all the

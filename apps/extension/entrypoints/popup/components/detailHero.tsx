@@ -1,5 +1,6 @@
 import { i18n } from '#i18n';
 import type { BasketballSituation } from '@arenaswap/sideline';
+import { isHomeFirst } from '@arenaswap/core/constants';
 import type { Game, Team } from '@arenaswap/core/types';
 import { gridironTimeoutAllotment } from '@arenaswap/ui/src/components/timeoutDots';
 import AtBatPanel from './atBatPanel';
@@ -64,6 +65,15 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 			: 'lh-1 game-detail-score-value fw-bold'
 	);
 
+	const homeFirst = isHomeFirst(game);
+	const [awayAt, homeAt] = homeFirst ? ['right', 'left'] as const : ['left', 'right'] as const;
+	const awayPill = <DetailTeamPill team={awayTeam} position={awayAt} record={records.away} color={awayColor} timeoutMax={timeoutMax} bonus={bonusOf('away')} bonusSlot={Boolean(situation)} />;
+	const homePill = <DetailTeamPill team={homeTeam} position={homeAt} record={records.home} color={homeColor} timeoutMax={timeoutMax} bonus={bonusOf('home')} bonusSlot={Boolean(situation)} />;
+	const awayScore = <FlipScore value={game.awayTeam.score} className={scoreClass(game.awayTeam.score, game.homeTeam.score)} />;
+	const homeScore = <FlipScore value={game.homeTeam.score} className={scoreClass(game.homeTeam.score, game.awayTeam.score)} />;
+	const awayArrow = liveBasketball && <PossessionArrow side='away' position={awayAt} possession={possession} team={game.awayTeam} />;
+	const homeArrow = liveBasketball && <PossessionArrow side='home' position={homeAt} possession={possession} team={game.homeTeam} />;
+
 	return (
 		// `gd-poster` is the surface rather than the pre-game screen: the same scrimmed band of team
 		// colour carries the live and final heroes now, so the three states read as one screen. The
@@ -71,20 +81,20 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 		// the re-toning on — every child of this hero was drawn for near-black ink on white.
 		<div className={`gd-poster game-detail-matchup gd-hero gd-hero-live${isDelayed ? ' is-delayed' : ''}`} style={heroStyle}>
 			<div className='game-detail-teams-row'>
-				<DetailTeamPill team={awayTeam} side='away' record={records.away} color={awayColor} timeoutMax={timeoutMax} bonus={bonusOf('away')} bonusSlot={Boolean(situation)} />
+				{homeFirst ? homePill : awayPill}
 				<div className='game-detail-center'>
 					<div className='d-flex align-items-center game-detail-score-row'>
-						<FlipScore value={game.awayTeam.score} className={scoreClass(game.awayTeam.score, game.homeTeam.score)} />
-						{liveBasketball && <PossessionArrow side='away' possession={possession} team={game.awayTeam} />}
+						{homeFirst ? homeScore : awayScore}
+						{homeFirst ? homeArrow : awayArrow}
 						{isInningSport && game.baseRunners
 							? <BaseDiamond {...game.baseRunners} />
 							// Without a divider two three-digit scores read as one number: "112108".
 							: <span className='game-score-sep' aria-hidden='true' />}
-						{liveBasketball && <PossessionArrow side='home' possession={possession} team={game.homeTeam} />}
-						<FlipScore value={game.homeTeam.score} className={scoreClass(game.homeTeam.score, game.awayTeam.score)} />
+						{homeFirst ? awayArrow : homeArrow}
+						{homeFirst ? awayScore : homeScore}
 					</div>
 				</div>
-				<DetailTeamPill team={homeTeam} side='home' record={records.home} color={homeColor} timeoutMax={timeoutMax} bonus={bonusOf('home')} bonusSlot={Boolean(situation)} />
+				{homeFirst ? awayPill : homePill}
 				{status.text && (
 					<div className='game-detail-period'>
 						{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}<GameStatusText status={status} />

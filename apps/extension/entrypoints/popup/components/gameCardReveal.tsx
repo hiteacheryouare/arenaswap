@@ -1,5 +1,6 @@
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
+import { isHomeFirst } from '@arenaswap/core/constants';
 import type { Game, Team } from '@arenaswap/core/types';
 import { teamDisplayInk } from '@arenaswap/chromatic';
 import { buildGameCardSurface } from '@arenaswap/ui/src/components/gameCardShared';
@@ -150,7 +151,15 @@ const RevealOpening = ({ game, awayColor, homeColor, crestlessLate, onCrestFaile
 	</div>
 );
 
-const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevealProps) => {
+// The graphic's halves are named away and home but mean left and right: the crests it lands on are
+// read off the card in page order. A league that draws its host on the left hands the graphic its
+// teams the same way round.
+const inDrawnOrder = (game: Game): Game => (
+	isHomeFirst(game) ? { ...game, awayTeam: game.homeTeam, homeTeam: game.awayTeam } : game
+);
+
+const gameCardReveal = ({ game: listedGame, mode, index, skipping, children }: gameCardRevealProps) => {
+	const game = useMemo(() => inDrawnOrder(listedGame), [listedGame]);
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const [staged] = useState(() => mode !== 'none');
 	const [landing, setLanding] = useState<revealLanding | null>(null);
@@ -238,7 +247,7 @@ const gameCardReveal = ({ game, mode, index, skipping, children }: gameCardRevea
 
 	// The pair the card underneath is painted in, down to the fallback, so the colour that retreats
 	// off each side is the colour that side has been all along.
-	const { awayColor, homeColor } = buildGameCardSurface(game);
+	const { leftColor: awayColor, rightColor: homeColor } = buildGameCardSurface(listedGame);
 	const teamOn = (side: revealSide) => (side === 'away' ? game.awayTeam : game.homeTeam);
 	const crestlessLate = (side: revealSide) => {
 		const { logo } = teamOn(side);

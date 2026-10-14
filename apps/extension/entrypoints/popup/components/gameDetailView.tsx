@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
-import { createFavoriteTeamKey, leagueConfigMap, scoreMaxTotal } from '@arenaswap/core/constants';
+import { createFavoriteTeamKey, isHomeFirst, leagueConfigMap, scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, LeagueId, LiveScore, PowerScoreSnapshot, ScoreSnapshot, SignalName, TabRegistration } from '@arenaswap/core/types';
 import { hasCommercialBreaks, type FantasyRosterEntry } from '@arenaswap/core';
 import DetailHero from './detailHero';
@@ -227,7 +227,9 @@ const gameDetailView = ({
 	const [awayAccent, homeAccent] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#2274A5', '#F75C03');
 	// One hero surface for all three states, and the same one the list card is painted with: the two
 	// teams' colours under a shade, with each side written in whichever ink reads on its colour.
-	const heroStyle = matchupSurfaceStyle(awayAccent, homeAccent, isDelayed);
+	const heroStyle = isHomeFirst(game)
+		? matchupSurfaceStyle(homeAccent, awayAccent, isDelayed)
+		: matchupSurfaceStyle(awayAccent, homeAccent, isDelayed);
 	const isInningSport = leagueConfigMap[game.league]?.periodFormat === 'innings';
 	const status = resolveStatus(game, isInningSport, i18n.t);
 	const totalLabel = total > scoreMaxTotal

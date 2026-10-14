@@ -1,5 +1,6 @@
 import {
 	createFavoriteTeamKey,
+	isHomeFirst,
 	leagueConfigMap,
 	scoreMaxTotal,
 	sportTypeConfigMap,
@@ -33,8 +34,10 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	// A shootout freezes the main score at the 120-minute scoreline, so without this the card sits
 	// on "1 – 1" while the tie is being decided. Secondary rather than replacing the score, which
 	// everywhere else means goals scored in the match. Shows nothing until both tallies arrive.
-	const shootout = game.awayTeam.shootoutScore !== undefined && game.homeTeam.shootoutScore !== undefined
-		? t('gameCard.shootout', { away: game.awayTeam.shootoutScore, home: game.homeTeam.shootoutScore })
+	const homeFirst = isHomeFirst(game);
+	const [leftTeam, rightTeam] = homeFirst ? [game.homeTeam, game.awayTeam] : [game.awayTeam, game.homeTeam];
+	const shootout = leftTeam.shootoutScore !== undefined && rightTeam.shootoutScore !== undefined
+		? t('gameCard.shootout', { away: leftTeam.shootoutScore, home: rightTeam.shootoutScore })
 		: null;
 	// The yard line is what tells you whether the down matters. Falls back to the down and distance
 	// alone when ESPN omits the field position, as it does at halftime and between drives.
@@ -47,6 +50,9 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const shellProps = buildCardShellProps(game, t, onOpenGameDetail, interactive);
 	const surface = buildGameCardSurface(game, isDelayed);
 	const timeoutsMax = game.sportType === 'football' ? gridironTimeoutAllotment(game) : undefined;
+
+	const awayColumn = <TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' surface={surface.awayColor} timeoutsMax={timeoutsMax} interactive={interactive} />;
+	const homeColumn = <TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' surface={surface.homeColor} timeoutsMax={timeoutsMax} interactive={interactive} />;
 
 	return (
 		<div
@@ -73,10 +79,10 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 			</CardStatusRow>
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' surface={surface.awayColor} timeoutsMax={timeoutsMax} interactive={interactive} />
+				{homeFirst ? homeColumn : awayColumn}
 				<div className='d-flex flex-column align-items-center game-card-center'>
 					<div className='d-flex align-items-center game-score-row'>
-						<FlipScore value={game.awayTeam.score} className='fw-bold lh-1 game-score-value' />
+						<FlipScore value={leftTeam.score} className='fw-bold lh-1 game-score-value' />
 						{isInningSport
 							? <BaseDiamond
 									first={game.baseRunners?.first ?? false}
@@ -85,7 +91,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 								/>
 							: <span className='game-score-sep' aria-hidden='true' />
 						}
-						<FlipScore value={game.homeTeam.score} className='fw-bold lh-1 game-score-value' />
+						<FlipScore value={rightTeam.score} className='fw-bold lh-1 game-score-value' />
 					</div>
 					{!isInningSport && hasClock && (
 						<span className='game-clock'>{formatGameClock(game)}</span>
@@ -106,7 +112,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 						<span className='game-period'>{downDistanceLine}</span>
 					)}
 				</div>
-				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' surface={surface.homeColor} timeoutsMax={timeoutsMax} interactive={interactive} />
+				{homeFirst ? awayColumn : homeColumn}
 			</div>
 
 			<GameMeta game={game} bettingPrefs={bettingPrefs} dark interactive={interactive} />

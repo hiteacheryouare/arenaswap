@@ -1,4 +1,4 @@
-import { createFavoriteTeamKey } from '@arenaswap/core/constants';
+import { createFavoriteTeamKey, isHomeFirst } from '@arenaswap/core/constants';
 import type { GameCardDisplayProps } from './gameCardTypes';
 import { CardStatusRow, GameMeta, SeasonLabel, TeamColumn, CardDetailsButton, buildCardShellProps, buildGameCardSurface, formatStartDateTime, formatStartTime } from './gameCardShared';
 import { conditionIcon, formatTemperature } from './weatherUtils';
@@ -17,6 +17,10 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 	const homeFavorited = favoriteTeamIds.has(homeFavoriteTeamKey);
 	const shellProps = buildCardShellProps(game, t, onOpenGameDetail, interactive);
 	const surface = buildGameCardSurface(game);
+	const homeFirst = isHomeFirst(game);
+
+	const awayColumn = <TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' surface={surface.awayColor} interactive={interactive} />;
+	const homeColumn = <TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' surface={surface.homeColor} interactive={interactive} />;
 
 	return (
 		<div
@@ -32,7 +36,7 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 			)}
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' surface={surface.awayColor} interactive={interactive} />
+				{homeFirst ? homeColumn : awayColumn}
 				<div className='d-flex flex-column align-items-center game-card-center'>
 					<span className='pre-game-vs'>{t('gameCard.vs')}</span>
 					{game.startTime && (
@@ -47,7 +51,7 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 						</div>
 					)}
 				</div>
-				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' surface={surface.homeColor} interactive={interactive} />
+				{homeFirst ? awayColumn : homeColumn}
 			</div>
 			<GameMeta game={game} bettingPrefs={bettingPrefs} hideBroadcasts dark interactive={interactive} />
 			<div className='game-card-footer'>{tabSlot}</div>

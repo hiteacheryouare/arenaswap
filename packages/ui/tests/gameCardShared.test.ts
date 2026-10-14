@@ -239,7 +239,7 @@ describe('buildGameCardSurface', () => {
 	test('falls back to the raised grey for a team with no published colour', () => {
 		const surface = buildGameCardSurface(makeGame('nba'));
 		expect([surface.awayColor, surface.homeColor]).toEqual(['#30363d', '#30363d']);
-		expect(style(makeGame('nba'))['--matchup-ink-away']).toBe('#ffffff');
+		expect(style(makeGame('nba'))['--matchup-ink-left']).toBe('#ffffff');
 	});
 
 	test('keeps the two sides distinguishable when both clubs publish the same navy', () => {
@@ -251,10 +251,22 @@ describe('buildGameCardSurface', () => {
 	// Sabres gold, Lions silver and Carolina blue all take the near-black; the navies and reds keep white.
 	test('writes in near-black on a light team and in white on a dark one', () => {
 		const inks = style(makeGame('nhl', { awayTeam: team('BUF', '#FDB71A'), homeTeam: team('PHI', '#0C2340') }));
-		expect(inks['--matchup-ink-away']).toBe('#111827');
-		expect(inks['--matchup-ink-home']).toBe('#ffffff');
-		expect(inks['--matchup-shadow-away']).toBe('none');
-		expect(inks['--matchup-shadow-home']).not.toBe('none');
+		expect(inks['--matchup-ink-left']).toBe('#111827');
+		expect(inks['--matchup-ink-right']).toBe('#ffffff');
+		expect(inks['--matchup-shadow-left']).toBe('none');
+		expect(inks['--matchup-shadow-right']).not.toBe('none');
+	});
+
+	// Soccer lists the host first, so the home colour runs from the left.
+	test('puts the home side on the left for soccer and the away side everywhere else', () => {
+		const teams = { awayTeam: team('AWY', '#FF0000'), homeTeam: team('HOM', '#00FF00') };
+		const soccer = buildGameCardSurface(makeGame('epl', { sportType: 'soccer', ...teams }));
+		expect([soccer.leftColor, soccer.rightColor]).toEqual(['#00FF00', '#FF0000']);
+		expect(soccer.style.backgroundImage).toContain('linear-gradient(to right, #00FF00 0%');
+		const hockey = buildGameCardSurface(makeGame('nhl', { sportType: 'hockey', ...teams }));
+		expect([hockey.leftColor, hockey.rightColor]).toEqual(['#FF0000', '#00FF00']);
+		const olympic = buildGameCardSurface(makeGame('olymih', { sportType: 'hockey', ...teams }));
+		expect(olympic.leftColor).toBe('#00FF00');
 	});
 
 	test('turns the shade yellow for a delayed game', () => {

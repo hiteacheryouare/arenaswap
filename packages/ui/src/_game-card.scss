@@ -600,19 +600,19 @@ button.game-meta-attribution {
 	}
 
 	.game-card-status-row > :first-child,
-	.team-column.is-away,
+	.game-card-matchup > .team-column:first-child,
 	.game-score-row > .game-score-value:first-child,
 	.game-card-ps-label {
-		color: var(--matchup-ink-away);
-		text-shadow: var(--matchup-shadow-away);
+		color: var(--matchup-ink-left);
+		text-shadow: var(--matchup-shadow-left);
 	}
 
 	.game-card-status-row > :last-child:not(:first-child),
-	.team-column.is-home,
+	.game-card-matchup > .team-column:last-child,
 	.game-score-row > .game-score-value:last-child,
 	.game-card-ps-score {
-		color: var(--matchup-ink-home);
-		text-shadow: var(--matchup-shadow-home);
+		color: var(--matchup-ink-right);
+		text-shadow: var(--matchup-shadow-right);
 	}
 
 	.game-card-center {

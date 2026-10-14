@@ -1,4 +1,4 @@
-import { createFavoriteTeamKey } from '@arenaswap/core/constants';
+import { createFavoriteTeamKey, isHomeFirst } from '@arenaswap/core/constants';
 import FlipScore from './flipScore';
 import type { GameCardDisplayProps } from './gameCardTypes';
 import { buildCardShellProps, CardDetailsButton, CardStatusRow, GameMeta, SeasonLabel, TeamColumn } from './gameCardShared';
@@ -15,12 +15,14 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 	const homeFavorited = favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.homeTeam.id));
 	const shellProps = buildCardShellProps(game, t, onOpenGameDetail, interactive);
 
-	const awayScore = game.awayTeam.score;
-	const homeScore = game.homeTeam.score;
+	const homeFirst = isHomeFirst(game);
+	const [leftTeam, rightTeam] = homeFirst ? [game.homeTeam, game.awayTeam] : [game.awayTeam, game.homeTeam];
+	const leftScore = leftTeam.score;
+	const rightScore = rightTeam.score;
 	// A shootout leaves the match level, so neither side wins the scoreline and the penalties line
 	// below decides it instead.
-	const shootout = game.awayTeam.shootoutScore !== undefined && game.homeTeam.shootoutScore !== undefined
-		? t('gameCard.shootout', { away: game.awayTeam.shootoutScore, home: game.homeTeam.shootoutScore })
+	const shootout = leftTeam.shootoutScore !== undefined && rightTeam.shootoutScore !== undefined
+		? t('gameCard.shootout', { away: leftTeam.shootoutScore, home: rightTeam.shootoutScore })
 		: null;
 
 	// Team colour on the scores was tried and rejected: on a plate this light it reads as two
@@ -39,6 +41,9 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 		? `${t('gameCard.final')}/${game.finalPeriodSuffix}`
 		: t('gameCard.final');
 
+	const awayColumn = <TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' interactive={interactive} />;
+	const homeColumn = <TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' interactive={interactive} />;
+
 	return (
 		<div
 			className={`game-card${interactive ? ' game-card-clickable' : ' game-card-lift'} is-final`}
@@ -50,16 +55,16 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 			</CardStatusRow>
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
-				<TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' interactive={interactive} />
+				{homeFirst ? homeColumn : awayColumn}
 				<div className='d-flex flex-column align-items-center game-card-center'>
 					<div className='d-flex align-items-center game-score-row'>
-						<FlipScore value={awayScore} className={scoreClass(awayScore, homeScore)} />
+						<FlipScore value={leftScore} className={scoreClass(leftScore, rightScore)} />
 						<span className='game-score-sep' aria-hidden='true' />
-						<FlipScore value={homeScore} className={scoreClass(homeScore, awayScore)} />
+						<FlipScore value={rightScore} className={scoreClass(rightScore, leftScore)} />
 					</div>
 					{shootout && <span className='game-shootout-score'>{shootout}</span>}
 				</div>
-				<TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' interactive={interactive} />
+				{homeFirst ? awayColumn : homeColumn}
 			</div>
 
 			{/* The broadcast and the line are gone: a game you cannot watch any more has no channel

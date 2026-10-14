@@ -8,7 +8,8 @@ const team = (abbreviation: string, color: string, alternateColor: string, logo:
 
 const sabres = team('BUF', '#FDB71A', '#00468B', 'https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/buf.png');
 const flyers = team('PHI', '#0C2340', '#FE5823', 'https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/phi.png');
-const spurs = team('TOT', '#FFFFFF', '#132257', 'https://a.espncdn.com/i/teamlogos/soccer/500/367.png');
+// A club with white and nothing else: one that publishes an alternate is drawn in that instead.
+const whiteOnly = team('TOT', '#FFFFFF', '', 'https://a.espncdn.com/i/teamlogos/soccer/500/367.png');
 
 const game = (awayTeam: Team, homeTeam: Team, status: Game['status'] = 'in'): Game => ({
 	id: 'g1', league: 'nhl', sportType: 'hockey', status, period: 2, clockSeconds: 300, awayTeam, homeTeam,
@@ -50,8 +51,8 @@ describe('a live card painted in the two teams\' colours', () => {
 
 	// The dark-ground cockerel is white, and so is the side it would be drawn on.
 	it('keeps the published crest on a side painted near-white', () => {
-		cy.mount(<LiveGameCard {...props} game={game(spurs, flyers)} />);
-		cy.get('.team-column.is-away .team-crest img').should('have.attr', 'src', spurs.logo);
+		cy.mount(<LiveGameCard {...props} game={game(whiteOnly, flyers)} />);
+		cy.get('.team-column.is-away .team-crest img').should('have.attr', 'src', whiteOnly.logo);
 	});
 
 	it('falls back to the published crest when there is no dark-ground variant', () => {
@@ -81,5 +82,32 @@ describe('a final card', () => {
 		cy.mount(<FinalGameCard {...props} game={game(sabres, flyers, 'post')} />);
 		cy.get('.game-card').should('not.have.class', 'is-team-colored');
 		cy.get('.team-column.is-away .team-crest img').should('have.attr', 'src', sabres.logo);
+	});
+});
+
+// Soccer lists the host first, so a Premier League card draws Brentford on the left and Liverpool on
+// the right, in Brentford's ink and colour, while a hockey card keeps the visitor on the left.
+describe('the order the two teams are drawn in', () => {
+	const brentford = team('BRE', '#F42727', '#0F1C3F', 'https://a.espncdn.com/i/teamlogos/soccer/500/337.png');
+	const liverpool = team('LIV', '#00A398', '#FFFFFF', 'https://a.espncdn.com/i/teamlogos/soccer/500/364.png');
+	const soccer = (status: Game['status'] = 'in'): Game => ({ ...game(liverpool, brentford, status), league: 'epl', sportType: 'soccer' });
+
+	it('puts the home side on the left for soccer, on every card', () => {
+		for (const [Card, status] of [[LiveGameCard, 'in'], [FinalGameCard, 'post']] as const) {
+			cy.mount(<Card {...props} game={{ ...soccer(status), homeTeam: { ...brentford, score: 2 }, awayTeam: { ...liverpool, score: 1 } }} />);
+			cy.get('.game-card-matchup > .team-column').first().should('have.class', 'is-home').find('.team-abbreviation').should('have.text', 'BRE');
+			cy.get('.game-card-matchup > .team-column').last().should('have.class', 'is-away');
+			cy.get('.game-score-row .game-score-value').first().should('contain.text', '2');
+		}
+	});
+
+	it('runs the home colour from the left edge for soccer', () => {
+		cy.mount(<LiveGameCard {...props} game={soccer()} />);
+		cy.get('.game-card').should('have.css', 'background-image').and('contain', 'linear-gradient(to right, rgb(244, 39, 39) 0%');
+	});
+
+	it('keeps the visitor on the left everywhere else', () => {
+		cy.mount(<LiveGameCard {...props} game={game(sabres, flyers)} />);
+		cy.get('.game-card-matchup > .team-column').first().should('have.class', 'is-away');
 	});
 });

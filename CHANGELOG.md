@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Soccer cards put the home team on the left — 2026-10-14
+
+Every soccer competition, MLS and the NWSL included, now draws its host on the left of the card, the detail header, the sticky bar, the opening graphic, the Guide's bars and the season-stats comparison, and Olympic basketball and hockey do the same under FIBA and IIHF rules. The order comes from `isHomeFirst` in core, set by sport and league rather than by language, and every other league keeps the visitor on the left; the colour rule still switches the away team wherever it is drawn.
+
 ## Team colours match Apple Sports on 73 of 78 sides — 2026-10-14
 
 A club whose colour is white is now drawn in its alternate, the home team never switches, and an away team with a white alternate and no second colour in its crest goes black if its colour is very dark, white if it is a lighter red, and keeps its colour in between. The table of Apple matchups in `chromatic`'s tests now holds 35 games; the five sides it still gets wrong are the Kings, Tulsa and Fulham, where Apple's own colours differ from our sources', and Red Sox @ Yankees.

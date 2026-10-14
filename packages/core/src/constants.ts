@@ -197,6 +197,15 @@ export const leagueLogoFallbacks: Partial<Record<LeagueId, string>> = {
 
 export const leagueLabels = Object.fromEntries(leagueConfigs.map(config => [config.id, config.label])) as Record<LeagueId, string>;
 
+// Which team is drawn on the left. North American leagues list the visitor first, "Away @ Home",
+// and every soccer competition lists the host first, MLS and the NWSL included. Olympic basketball
+// and hockey follow FIBA and the IIHF, which seat the designated home team on the left.
+const homeFirstLeagues: ReadonlySet<LeagueId> = new Set<LeagueId>(['olybkm', 'olybkw', 'olymih', 'olywih']);
+
+export const isHomeFirst = (game: Pick<Game, 'league' | 'sportType'>): boolean => (
+	game.sportType === 'soccer' || homeFirstLeagues.has(game.league)
+);
+
 // What a game card prints beside the league's logo once the list stops grouping by league. The
 // labels from `powerscore` run as long as "Olympic Men's Ice Hockey", which a status row cannot fit.
 export const leagueShortLabels: Record<LeagueId, string> = {

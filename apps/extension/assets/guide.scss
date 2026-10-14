@@ -467,12 +467,12 @@ $guide-ruler-height: 2.5rem;
 
 .guide-bar-shape::before {
 	left: 0;
-	background: var(--guide-away);
+	background: var(--guide-left);
 }
 
 .guide-bar-shape::after {
 	right: 0;
-	background: var(--guide-home);
+	background: var(--guide-right);
 }
 
 // A game that is on right now is the answer to the question this whole page asks, so it is the one

@@ -1,5 +1,5 @@
 import { i18n } from '#i18n';
-import { createFavoriteTeamKey } from '@arenaswap/core/constants';
+import { createFavoriteTeamKey, isHomeFirst } from '@arenaswap/core/constants';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import OnColorCrest from '@arenaswap/ui/src/components/onColorCrest';
 import SeriesDots from './seriesDots';
@@ -67,26 +67,16 @@ const detailPosterHero = ({ game, seriesInfo, records, statusText, heroStyle, aw
 	const awayFavorited = favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.awayTeam.id));
 	const homeFavorited = favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.homeTeam.id));
 
+	const awayPoster = <PosterTeam team={game.awayTeam} color={awayColor} record={records.away} leagueId={game.league} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />;
+	const homePoster = <PosterTeam team={game.homeTeam} color={homeColor} record={records.home} leagueId={game.league} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} />;
+	const homeFirst = isHomeFirst(game);
+
 	return (
 		<div className='gd-poster' style={heroStyle}>
 			<div className='gd-poster-teams'>
-				<PosterTeam
-					team={game.awayTeam}
-					color={awayColor}
-					record={records.away}
-					leagueId={game.league}
-					isFavorited={awayFavorited}
-					onToggleFavoriteTeam={onToggleFavoriteTeam}
-				/>
+				{homeFirst ? homePoster : awayPoster}
 				<div className='gd-poster-vs'>{i18n.t('gameCard.vs')}</div>
-				<PosterTeam
-					team={game.homeTeam}
-					color={homeColor}
-					record={records.home}
-					leagueId={game.league}
-					isFavorited={homeFavorited}
-					onToggleFavoriteTeam={onToggleFavoriteTeam}
-				/>
+				{homeFirst ? awayPoster : homePoster}
 			</div>
 
 			{statusText && <div className='gd-poster-status'>{statusText}</div>}

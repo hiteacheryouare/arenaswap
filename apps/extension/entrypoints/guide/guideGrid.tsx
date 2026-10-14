@@ -1,5 +1,5 @@
 import { i18n } from '#i18n';
-import { leagueConfigMap, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
+import { isHomeFirst, leagueConfigMap, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { Game, LeagueLogoMap, Team, TeamMonoLogoMap, TeamMonoMarks } from '@arenaswap/core/types';
 import { resolveTeamColorPair } from '@arenaswap/chromatic';
 import CrestDisc from '@arenaswap/ui/src/components/crestDisc';
@@ -24,7 +24,8 @@ const useFormatTime = () => {
 // The teams' published colours, as on every other surface that stands for a team.
 const railStyle = (game: Game): CSSProperties => {
 	const [away, home] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#30363d', '#30363d');
-	return { '--guide-away': away, '--guide-home': home } as CSSProperties;
+	const [left, right] = isHomeFirst(game) ? [home, away] : [away, home];
+	return { '--guide-left': left, '--guide-right': right } as CSSProperties;
 };
 
 const bandBox = (band: guideBand, fromMs: number): CSSProperties => {
@@ -95,6 +96,9 @@ const GuideBar = ({ bar, fromMs, selected, onOpen, mono, theme }: guideBarProps)
 	// A shootout leaves the scoreline level, so neither side is dimmed; the suffix says how it ended.
 	const decided = game.status === 'post' && away.score !== home.score;
 	const network = game.status === 'pre' ? game.broadcasts?.[0] : undefined;
+	const homeFirst = isHomeFirst(game);
+	const awayTeam = <BarTeam team={away} mono={mono?.[away.id]} score={scored ? away.score : undefined} lost={decided && away.score < home.score} theme={theme} />;
+	const homeTeam = <BarTeam team={home} mono={mono?.[home.id]} score={scored ? home.score : undefined} lost={decided && home.score < away.score} theme={theme} />;
 	return (
 		<button
 			type='button'
@@ -112,9 +116,10 @@ const GuideBar = ({ bar, fromMs, selected, onOpen, mono, theme }: guideBarProps)
 				    heartbeat; thirty of them down a grid is a flashing screen. */}
 				{game.status === 'in' && <span className='guide-bar-live' aria-label={i18n.t('gameCard.live')} role='img' />}
 				{game.status === 'pre' && <BarStatus game={game} startMs={bar.startMs} />}
-				<BarTeam team={away} mono={mono?.[away.id]} score={scored ? away.score : undefined} lost={decided && away.score < home.score} theme={theme} />
-				{!scored && <span className='guide-bar-at'>{i18n.t('guide.at')}</span>}
-				<BarTeam team={home} mono={mono?.[home.id]} score={scored ? home.score : undefined} lost={decided && home.score < away.score} theme={theme} />
+				{homeFirst ? homeTeam : awayTeam}
+				{/* "At" only reads right with the visitor first. A league that lists its host first gets "vs". */}
+				{!scored && <span className='guide-bar-at'>{i18n.t(homeFirst ? 'gameCard.vs' : 'guide.at')}</span>}
+				{homeFirst ? awayTeam : homeTeam}
 				{bar.isFavorite && <i className='bi bi-star-fill guide-bar-star' aria-label={i18n.t('guide.favoriteGame')} role='img' />}
 				{scored && <BarStatus game={game} startMs={bar.startMs} />}
 				{network && <span className='guide-bar-network'>{network}</span>}

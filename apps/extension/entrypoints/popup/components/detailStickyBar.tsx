@@ -1,4 +1,5 @@
 import { i18n } from '#i18n';
+import { isHomeFirst } from '@arenaswap/core/constants';
 import type { Game, ResolvedTheme, Team, TeamMonoMarks } from '@arenaswap/core/types';
 import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
 import type { GameStatus } from './gameSituation';
@@ -71,6 +72,9 @@ const detailStickyBar = ({ game, status, compact, monoLogos, dismiss = 'back', o
 	// job on their own and the figures are noise. The rule between them stays either way: it is
 	// what makes the pair read as one matchup rather than two adjacent teams.
 	const showScores = game.status !== 'pre';
+	const away = { team: game.awayTeam, marks: monoLogos.away };
+	const home = { team: game.homeTeam, marks: monoLogos.home };
+	const [left, right] = isHomeFirst(game) ? [home, away] : [away, home];
 
 	return (
 		<div className='game-detail-header'>
@@ -79,13 +83,13 @@ const detailStickyBar = ({ game, status, compact, monoLogos, dismiss = 'back', o
 				<span>{i18n.t(dismiss === 'close' ? 'detail.close' : 'detail.back')}</span>
 			</button>
 			<div className={`gd-bar-compact${compact ? ' is-visible' : ''}`} aria-hidden={!compact}>
-				<BarCrest team={game.awayTeam} monoMarks={monoLogos.away} theme={theme} />
-				<span className='gd-bar-abbrev'>{game.awayTeam.abbreviation}</span>
-				{showScores && <span className='gd-bar-score'>{game.awayTeam.score}</span>}
+				<BarCrest team={left.team} monoMarks={left.marks} theme={theme} />
+				<span className='gd-bar-abbrev'>{left.team.abbreviation}</span>
+				{showScores && <span className='gd-bar-score'>{left.team.score}</span>}
 				<span className='gd-bar-sep' aria-hidden='true' />
-				{showScores && <span className='gd-bar-score'>{game.homeTeam.score}</span>}
-				<span className='gd-bar-abbrev'>{game.homeTeam.abbreviation}</span>
-				<BarCrest team={game.homeTeam} monoMarks={monoLogos.home} theme={theme} />
+				{showScores && <span className='gd-bar-score'>{right.team.score}</span>}
+				<span className='gd-bar-abbrev'>{right.team.abbreviation}</span>
+				<BarCrest team={right.team} monoMarks={right.marks} theme={theme} />
 			</div>
 			<BarSlot game={game} status={status} compact={compact} />
 		</div>

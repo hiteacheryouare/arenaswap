@@ -240,23 +240,22 @@ describe('the clubs named over the opening beat', () => {
 			.and($edge => expect(parseFloat(getComputedStyle($edge[0]).webkitTextStrokeWidth)).to.be.greaterThan(1));
 	});
 
-	// Penn State is the club this was written for. Their navy is too dark for the rest of the product,
-	// so `apiClient` promotes the white they publish alongside it — which reaches the graphic as the
-	// colour of their half, and used to carry their name in white as well. On a band like that the ink
-	// is the club's own other colour, which is the navy that was moved out of the way.
-	it('names a club on a white band in the colour that club also owns', () => {
+	// A club with white and nothing else is the one band the graphic still paints white. A club with
+	// an alternate is drawn in that instead, the way Apple Sports draws the Whitecaps and the Spurs.
+	// On a white band the ink is near-black, since the club has no other colour to name itself in.
+	it('names a club on a white band in a dark ink', () => {
 		cy.mount(<Harness
 			away={club('Penn State Nittany Lions', 'Nittany Lions')}
-			colors={{ away: { color: '#FFFFFF', alternateColor: '#061440' }, home: { color: '#0C2340' } }}
+			colors={{ away: { color: '#FFFFFF' }, home: { color: '#0C2340' } }}
 		/>);
 		scrubTo(sceneMs(nameScene));
-		linesOf('away').first().should('have.css', 'color', 'rgb(6, 20, 64)');
+		linesOf('away').first().should('have.css', 'color', 'rgb(17, 24, 39)');
 		linesOf('home').first().should('have.css', 'color', 'rgb(255, 255, 255)');
 		// And the tricode the poster draws on that same white, which had the identical problem: two
 		// copies of a white glyph on a white half is nothing on screen at all.
 		cy.get('.game-card-reveal-mask.is-away .game-card-reveal-abbr-edge')
-			.should('have.css', 'color', 'rgb(6, 20, 64)')
-			.and('have.css', '-webkit-text-stroke-color', 'rgb(6, 20, 64)');
+			.should('have.css', 'color', 'rgb(17, 24, 39)')
+			.and('have.css', '-webkit-text-stroke-color', 'rgb(17, 24, 39)');
 	});
 
 	// The fit, which is the point of the whole pass. Every line of a club is justified to one width and

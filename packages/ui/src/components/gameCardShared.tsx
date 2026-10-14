@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 import type { CSSProperties, MouseEvent } from 'react';
+import { isHomeFirst } from '@arenaswap/core/constants';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import type { BettingDisplayPrefs } from './gameCardTypes';
 import { matchupSurface, resolveTeamColorPair } from '@arenaswap/chromatic';
@@ -57,7 +58,14 @@ export interface gameCardSurface {
 	style: CSSProperties;
 	awayColor: string;
 	homeColor: string;
+	leftColor: string;
+	rightColor: string;
 }
+
+// The two teams in the order a card draws them, left to right.
+export const teamsInOrder = (game: Pick<Game, 'league' | 'sportType' | 'awayTeam' | 'homeTeam'>): [Team, Team] => (
+	isHomeFirst(game) ? [game.homeTeam, game.awayTeam] : [game.awayTeam, game.homeTeam]
+);
 
 // White ink on a mid-tone — Carolina blue, a bright orange — is the case neither ink wins outright,
 // and a soft shadow is what keeps its edges.
@@ -65,31 +73,32 @@ const inkShadow = (ink: string): string => (ink === '#ffffff' ? '0 1px 2px rgba(
 
 // The card's and the detail hero's surface as an inline style: the painted background, and the ink
 // and shadow for each side as variables the stylesheet hangs every piece of text on.
-export const matchupSurfaceStyle = (awayColor: string, homeColor: string, delayed = false): CSSProperties => {
-	const { backgroundImage, inks } = matchupSurface(awayColor, homeColor, delayed);
+export const matchupSurfaceStyle = (leftColor: string, rightColor: string, delayed = false): CSSProperties => {
+	const { backgroundImage, inks } = matchupSurface(leftColor, rightColor, delayed);
 	return {
 		backgroundImage,
-		'--matchup-ink-away': inks.away,
-		'--matchup-ink-home': inks.home,
+		'--matchup-ink-left': inks.left,
+		'--matchup-ink-right': inks.right,
 		'--matchup-ink-center': inks.center,
-		'--matchup-shadow-away': inkShadow(inks.away),
-		'--matchup-shadow-home': inkShadow(inks.home),
+		'--matchup-shadow-left': inkShadow(inks.left),
+		'--matchup-shadow-right': inkShadow(inks.right),
 		'--matchup-shadow-center': inkShadow(inks.center),
 	} as CSSProperties;
 };
 
 export const buildGameCardSurface = (game: Game, delayed = false): gameCardSurface => {
 	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, missingTeamColor, missingTeamColor);
-	return { style: matchupSurfaceStyle(awayColor, homeColor, delayed), awayColor, homeColor };
+	const [leftColor, rightColor] = isHomeFirst(game) ? [homeColor, awayColor] : [awayColor, homeColor];
+	return { style: matchupSurfaceStyle(leftColor, rightColor, delayed), awayColor, homeColor, leftColor, rightColor };
 };
 
-// The league mark heads the away side, so it takes the logo drawn for that side's ink: the dark-ground
+// The league mark heads the left side, so it takes the logo drawn for that side's ink: the dark-ground
 // one under white ink, and the light-ground one on a gold or a final card's light plate.
 // Only a live card wears the delayed shade, so only a live game reads its ink off it.
 export const leagueMarkOnColor = (game: Game): boolean => {
 	if (game.status === 'post') return false;
-	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, missingTeamColor, missingTeamColor);
-	return matchupSurface(awayColor, homeColor, game.status === 'in' && game.delayed === true).inks.away === '#ffffff';
+	const { leftColor, rightColor } = buildGameCardSurface(game);
+	return matchupSurface(leftColor, rightColor, game.status === 'in' && game.delayed === true).inks.left === '#ffffff';
 };
 
 // The card is a group, not a button, so the stars, the odds tooltip and the tab picker stay controls

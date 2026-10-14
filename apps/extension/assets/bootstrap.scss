@@ -1055,13 +1055,13 @@ i.tab-favicon {
 // Each side in the ink its own colour takes, from `matchupSurfaceStyle`: near-black on a gold or a
 // silver, white with a soft shadow everywhere else. The same variables the list card reads.
 .gd-poster-team:first-child {
-	color: var(--matchup-ink-away, #ffffff);
-	text-shadow: var(--matchup-shadow-away, none);
+	color: var(--matchup-ink-left, #ffffff);
+	text-shadow: var(--matchup-shadow-left, none);
 }
 
 .gd-poster-team:last-child {
-	color: var(--matchup-ink-home, #ffffff);
-	text-shadow: var(--matchup-shadow-home, none);
+	color: var(--matchup-ink-right, #ffffff);
+	text-shadow: var(--matchup-shadow-right, none);
 }
 
 // White disc, tinted with the team's own colour — the same wash the matchup card uses, so a
@@ -2199,24 +2199,24 @@ button.game-info-attribution {
 	display: grid;
 	grid-template-columns: 80px minmax(0, 1fr) 80px;
 	grid-template-areas:
-		"awayCrest  score  homeCrest"
-		"awayLabel  status homeLabel"
-		"awayRecord .      homeRecord"
-		"awayTimeouts .    homeTimeouts";
+		"leftCrest  score  rightCrest"
+		"leftLabel  status rightLabel"
+		"leftRecord .      rightRecord"
+		"leftTimeouts .    rightTimeouts";
 	align-items: center;
 	justify-items: center;
 	column-gap: 0.25rem;
 	row-gap: 0.05rem;
 }
 
-.gd-area-away-crest { grid-area: awayCrest; }
-.gd-area-home-crest { grid-area: homeCrest; }
-.gd-area-away-label { grid-area: awayLabel; }
-.gd-area-home-label { grid-area: homeLabel; }
-.gd-area-away-record { grid-area: awayRecord; }
-.gd-area-home-record { grid-area: homeRecord; }
-.gd-area-away-timeouts { grid-area: awayTimeouts; }
-.gd-area-home-timeouts { grid-area: homeTimeouts; }
+.gd-area-left-crest { grid-area: leftCrest; }
+.gd-area-right-crest { grid-area: rightCrest; }
+.gd-area-left-label { grid-area: leftLabel; }
+.gd-area-right-label { grid-area: rightLabel; }
+.gd-area-left-record { grid-area: leftRecord; }
+.gd-area-right-record { grid-area: rightRecord; }
+.gd-area-left-timeouts { grid-area: leftTimeouts; }
+.gd-area-right-timeouts { grid-area: rightTimeouts; }
 
 .game-detail-team-wrap {
 	display: contents;
@@ -2462,16 +2462,16 @@ button.game-info-attribution {
 
 	// The team row takes each side's ink, as the poster does. Everything below it — the count, the
 	// at-bat panel, the field, the series — sits under the deepest part of the shade and stays white.
-	.game-detail-team-wrap.is-away,
+	.game-detail-team-wrap.is-left,
 	.game-detail-score-row > :first-child {
-		color: var(--matchup-ink-away, #ffffff);
-		text-shadow: var(--matchup-shadow-away, none);
+		color: var(--matchup-ink-left, #ffffff);
+		text-shadow: var(--matchup-shadow-left, none);
 	}
 
-	.game-detail-team-wrap.is-home,
+	.game-detail-team-wrap.is-right,
 	.game-detail-score-row > :last-child {
-		color: var(--matchup-ink-home, #ffffff);
-		text-shadow: var(--matchup-shadow-home, none);
+		color: var(--matchup-ink-right, #ffffff);
+		text-shadow: var(--matchup-shadow-right, none);
 	}
 
 	.game-detail-center,

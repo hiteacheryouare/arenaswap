@@ -305,22 +305,23 @@ const inkAcross = (surfaces: string[]): string => {
 	return worst(darkInk) > worst('#ffffff') ? darkInk : '#ffffff';
 };
 
+// By position rather than by team: soccer draws the home side on the left, everything else the away.
 export interface matchupInks {
-	away: string;
-	home: string;
+	left: string;
+	right: string;
 	center: string;
 }
 
-export const matchupSurface = (awayColor: string, homeColor: string, delayed = false): { backgroundImage: string; inks: matchupInks } => {
+export const matchupSurface = (leftColor: string, rightColor: string, delayed = false): { backgroundImage: string; inks: matchupInks } => {
 	const scrim = delayed ? delayedScrim : liveScrim;
 	const shade = `${scrim.rgb.red}, ${scrim.rgb.green}, ${scrim.rgb.blue}`;
 	return {
 		backgroundImage: `linear-gradient(180deg, rgba(${shade}, ${scrim.top}) 0%, rgba(${shade}, ${scrim.bottom}) 100%), `
-			+ `linear-gradient(to right, ${awayColor} 0%, ${awayColor} ${blendFrom}%, ${homeColor} ${blendTo}%, ${homeColor} 100%)`,
+			+ `linear-gradient(to right, ${leftColor} 0%, ${leftColor} ${blendFrom}%, ${rightColor} ${blendTo}%, ${rightColor} 100%)`,
 		inks: {
-			away: inkAcross(inkSurfaces(awayColor, homeColor, scrim, 0)),
-			home: inkAcross(inkSurfaces(homeColor, awayColor, scrim, 0)),
-			center: inkAcross(inkSurfaces(awayColor, homeColor, scrim, 0.5)),
+			left: inkAcross(inkSurfaces(leftColor, rightColor, scrim, 0)),
+			right: inkAcross(inkSurfaces(rightColor, leftColor, scrim, 0)),
+			center: inkAcross(inkSurfaces(leftColor, rightColor, scrim, 0.5)),
 		},
 	};
 };
