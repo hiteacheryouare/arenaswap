@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Commercial breaks replace the clock stall — 2026-10-13
+
+PowerScore now takes 15 points off a game while it is on a commercial break, spotted per sport by `nextCommercialBreak` in `packages/core/src/commercialBreaks.ts`: baseball's Mid and End innings and mid-inning pitching changes (which nothing penalized before), the TV timeouts the NFL and basketball feeds log, college football's period ends, kicks after scores and team timeouts, and the NHL's TV timeout marks, with the frozen clock kept only for leagues whose feed has no plays and soccer left alone. `npm run powerscore:breaks` replays the recordings against cached play-by-play and fails if any league raises more than 5% false alarms; every league sits at or under it. The engine takes the break as a new optional `onBreak` context field, and `stallCount` still works for anyone who counts frozen clocks themselves.
+
 ## Tab pickers show each tab's favicon — 2026-10-12
 
 The game card and Standby Stream tab pickers, and the Suggested Tabs rows, now show each tab's favicon beside its title, on the closed picker too. The extension pages' CSP now allows `img-src https:` (it used to allowlist only our sources' image host, which quietly blanked every favicon), and `manifestCsp.test.ts` guards that. A tab without a favicon, or one served over plain http, gets a globe instead.
