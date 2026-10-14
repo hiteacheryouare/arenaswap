@@ -94,6 +94,9 @@ export interface PowerScoreResult {
 	stalled?: boolean;
 	// Points removed, always ≥ 0.
 	stallPenalty?: number;
+	onBreak?: boolean;
+	// Points removed for a commercial break, always ≥ 0.
+	breakPenalty?: number;
 	// The pre-stall signals subtotal, so a breakdown can show what the penalty removed.
 	signalsSubtotal?: number;
 	favoriteBonus?: number;
@@ -306,8 +309,10 @@ export interface ScoringContext {
 	// Score snapshots, oldest first, ending at or before this poll. Event ages are measured from the
 	// newest one, so a replay scores exactly like the live run did.
 	history?: ScoreSnapshot[];
-	// Consecutive polls with an unchanged clock (clock sports only).
+	// Consecutive polls with an unchanged clock (clock sports only). Ignored when `onBreak` is set.
 	stallCount?: number;
+	// The game is in a commercial break, as the caller detected it. Replaces `stallCount` when set.
+	onBreak?: boolean;
 	// Home win probability over the whole game, 0–1.
 	winProbability?: number[];
 	pregameLine?: PregameLine;
@@ -396,6 +401,7 @@ export interface PowerScoreMode {
 	// Signal ids in the order their reasons are worth reading.
 	reasonPriority: readonly string[];
 	reasonLimit: number;
+	// Covers the break penalty too.
 	usesStallPenalty: boolean;
 	usesWinProbability: boolean;
 	classicBlend?: ClassicBlend;
@@ -459,9 +465,11 @@ export interface PowerScore {
 	frozen: boolean;
 	stalled: boolean;
 	stallPenalty: number;
+	onBreak: boolean;
+	breakPenalty: number;
 	// −5 to +5; absent without enough win-probability data.
 	winProbabilityVariance?: number;
-	// Signals less stall plus variance, 0–100, before any boost.
+	// Signals less the stall or break penalty plus variance, 0–100, before any boost.
 	baseTotal: number;
 	// Classic's own total when the mode blends with it or uses it as a floor.
 	classicTotal?: number;

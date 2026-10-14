@@ -1,4 +1,4 @@
-import { scoreMaxTotal, stallPenaltySteps } from './constants';
+import { breakPenalty, scoreMaxTotal, stallPenaltySteps } from './constants';
 import { resolveLeagueConfig, resolveSportConfig } from './config';
 import { clamp, isFiniteNumber, sum, toFiniteNumber } from './math';
 import { classicMode, getMode } from './modes';
@@ -27,6 +27,8 @@ interface ModeRun {
 	signalCeiling: number;
 	stalled: boolean;
 	stallPenalty: number;
+	onBreak: boolean;
+	breakPenalty: number;
 	winProbabilityVariance?: number;
 	baseTotal: number;
 	reasons: ReasonFragment[];
@@ -84,13 +86,16 @@ const runMode = (mode: PowerScoreMode, input: SignalInput, disabledSignals?: rea
 	const scale = enabledCeiling === signalCeiling ? 1 : signalCeiling / enabledCeiling;
 	const scaledSubtotal = scale === 1 ? signalsSubtotal : Math.min(Math.round(signalsSubtotal * scale), signalCeiling);
 
-	const deduction = mode.usesStallPenalty ? stallPenaltyFor(input.context.stallCount) : undefined;
-	const stalled = deduction !== undefined;
-	const stallPenalty = stalled ? Math.round(deduction * scale) : 0;
+	const { onBreak: reportedBreak, stallCount } = input.context;
+	const onBreak = mode.usesStallPenalty && reportedBreak === true;
+	const stallDeduction = mode.usesStallPenalty && reportedBreak === undefined ? stallPenaltyFor(stallCount) : undefined;
+	const stalled = stallDeduction !== undefined;
+	const stallPenalty = stalled ? Math.round(stallDeduction * scale) : 0;
+	const scaledBreakPenalty = onBreak ? Math.round(breakPenalty * scale) : 0;
 	const winProbabilityVariance = mode.usesWinProbability
 		? computeWinProbVarianceScore(input.context.winProbability ?? [])
 		: undefined;
-	const baseTotal = clamp(Math.max(0, scaledSubtotal - stallPenalty) + (winProbabilityVariance ?? 0), 0, scoreMaxTotal);
+	const baseTotal = clamp(Math.max(0, scaledSubtotal - stallPenalty - scaledBreakPenalty) + (winProbabilityVariance ?? 0), 0, scoreMaxTotal);
 
 	const reasonById = new Map(outputs.map(({ signal, output }) => [signal.id, output.reason]));
 	const reasons = mode.reasonPriority
@@ -123,6 +128,8 @@ const runMode = (mode: PowerScoreMode, input: SignalInput, disabledSignals?: rea
 		signalCeiling,
 		stalled,
 		stallPenalty,
+		onBreak,
+		breakPenalty: scaledBreakPenalty,
 		...(winProbabilityVariance !== undefined ? { winProbabilityVariance } : {}),
 		baseTotal,
 		reasons,
@@ -162,6 +169,8 @@ const frozenScore = (game: Game<string>, mode: PowerScoreMode, options: ScoreOpt
 	frozen: true,
 	stalled: false,
 	stallPenalty: 0,
+	onBreak: false,
+	breakPenalty: 0,
 	baseTotal: 0,
 	boosts: [
 		...(options.favoriteTeamCount !== undefined ? [{ id: 'favoriteBoost', points: 0, meta: { teams: nonNegative(options.favoriteTeamCount) } }] : []),
@@ -174,7 +183,7 @@ const frozenScore = (game: Game<string>, mode: PowerScoreMode, options: ScoreOpt
 });
 
 /*
-	Scores one game. The order is fixed: signals → disabled-signal rescale → stall penalty → win
+	Scores one game. The order is fixed: signals → disabled-signal rescale → stall or break penalty → win
 	probability (clamped 0–100) → the mode's own boosts (capped at 100) → blend with Classic →
 	favorite and postseason boosts (capped at 100) → the manual game boost, the only thing allowed
 	past 100.
@@ -225,6 +234,8 @@ export const scoreGame = (game: Game<string>, context: ScoringContext = {}, opti
 		frozen: false,
 		stalled: run.stalled,
 		stallPenalty: run.stallPenalty,
+		onBreak: run.onBreak,
+		breakPenalty: run.breakPenalty,
 		...(run.winProbabilityVariance !== undefined ? { winProbabilityVariance: run.winProbabilityVariance } : {}),
 		baseTotal: run.baseTotal,
 		...(classicRun ? { classicTotal: classicRun.automaticTotal } : {}),

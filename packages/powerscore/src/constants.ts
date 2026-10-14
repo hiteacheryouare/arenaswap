@@ -1,7 +1,10 @@
 import type { LeagueId, SportType, SportTypeConfig, ScorerTunables, LeagueConfig } from './types';
 
-// Sorted descending so the first matching step wins. Poll intervals are dynamic (6-25s live, 40s at
-// intermission), so 8 frozen polls is roughly a commercial break and 15 an extended one.
+// Taken off the signals subtotal while the caller reports the game is in a commercial break.
+export const breakPenalty = 15;
+
+// For callers that count frozen-clock polls themselves instead of reporting a break. Sorted
+// descending so the first matching step wins; 8 frozen polls is roughly a commercial break.
 export const stallPenaltySteps: { minPolls: number; deduction: number }[] = [
 	{ minPolls: 15, deduction: 25 },
 	{ minPolls: 8,  deduction: 15 },

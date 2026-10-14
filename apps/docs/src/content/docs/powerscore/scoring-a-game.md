@@ -57,7 +57,8 @@ Each optional field turns on the part of the engine that needs it. Leave one out
 |---|---|---|
 | Score snapshots, oldest first | `context.history` | Momentum, Lead Changes, Comeback Factor. Needs at least 3 snapshots. |
 | Win probability, 0 to 1 per poll | `context.winProbability` | The ±5 win probability modifier. Needs at least 5 values. |
-| Consecutive polls with a frozen clock | `context.stallCount` | The stall deduction. |
+| Whether the game is in a commercial break | `context.onBreak` | The break deduction. Replaces `stallCount` when set. |
+| Consecutive polls with a frozen clock | `context.stallCount` | The stall deduction, when `onBreak` isn't set. |
 | `possession`, `yardsToEndZone`, `down`, `distance`, and `timeouts` on the team | `game`, `game.homeTeam` | The two-minute drill, the red zone boost, and Fantasy's football situation. |
 | `baseRunners`, `outs`, `topOfInning` | `game` | Runners on base and the go-ahead run. |
 | `hits` on each team | `game.homeTeam`, `game.awayTeam` | The no-hitter. |
@@ -108,9 +109,17 @@ score.reason; // 'BOS outscoring LAL 13-2, just took the lead'
 
 Trim snapshots older than the sport's `historyWindowMs` so the array doesn't grow forever. That window, and the rest of the sport-specific tuning, is in [Sport and league configuration](/arenaswap/docs/powerscore/configuration/).
 
-## Track stalls and win probability, if you have them
+## Track breaks, stalls and win probability, if you have them
 
-Both go in the context. `stallCount` is however many consecutive polls the clock hasn't moved, which you track yourself by comparing `clockSeconds` between polls:
+They all go in the context. If you can tell when a game is in a commercial break, pass `onBreak`. It's a better signal than a frozen clock, which also stops for incompletions, free throws and reviews, and baseball has no clock at all:
+
+```ts
+const score = scoreGame(game, { history, onBreak: isInBreak(game), winProbability });
+```
+
+`isInBreak` is yours to write, from whatever your feed says about inning breaks, pitching changes and timeouts. While `onBreak` is `true`, the score loses a flat 15 points. Once you set it, `true` or `false`, `stallCount` is ignored.
+
+If you can't spot breaks, fall back to `stallCount`. It's however many consecutive polls the clock hasn't moved, which you track yourself by comparing `clockSeconds` between polls:
 
 ```ts
 const stallCount = game.clockSeconds === previousClockSeconds ? previousStallCount + 1 : 0;

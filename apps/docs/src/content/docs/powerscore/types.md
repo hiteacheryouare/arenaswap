@@ -91,7 +91,8 @@ Everything the game itself doesn't carry. Every field is optional, and `scoreGam
 | Field | Type | Missing means |
 |---|---|---|
 | `history?` | [`ScoreSnapshot[]`](#scoresnapshot) | Momentum, Lead Changes, and Comeback Factor stay at 0 until it holds 3 entries. Oldest first. |
-| `stallCount?` | `number` | Consecutive polls with an unchanged clock. No stall deduction. |
+| `onBreak?` | `boolean` | The caller has detected a commercial break. `true` takes `breakPenalty` (15) off the signals subtotal. When it's set, `true` or `false`, `stallCount` is ignored. No break deduction when absent. |
+| `stallCount?` | `number` | Consecutive polls with an unchanged clock. No stall deduction. Ignored when `onBreak` is set. |
 | `winProbability?` | `number[]` | Home win probability over the game, 0 to 1. Needs 5 finite values to matter. No modifier otherwise. |
 | `pregameLine?` | [`PregameLine`](#pregameline) | Upset watch and Upset Rout pay 0. |
 | `stakes?` | `Partial<Record<'home' \| 'away', TeamStakes>>` | No race stakes. See [`TeamStakes`](#teamstakes). |
@@ -197,6 +198,8 @@ interface PowerScore {
 	frozen: boolean;
 	stalled: boolean;
 	stallPenalty: number;
+	onBreak: boolean;
+	breakPenalty: number;
 	winProbabilityVariance?: number;
 	baseTotal: number;
 	classicTotal?: number;
@@ -216,8 +219,9 @@ interface PowerScore {
 | `signalCeiling` | The sum of the mode's ceilings: 156 for Classic. |
 | `frozen` | `true` at halftime, in an intermission, or in a delay. Everything scores 0 and `reason` is empty. |
 | `stalled`, `stallPenalty` | Whether a stall deduction applied, and how many points it took (always ≥ 0). |
+| `onBreak`, `breakPenalty` | Whether a commercial break deduction applied, and how many points it took (always ≥ 0). `stalled` fires only through `stallCount`. Both are `false` and `0` on a frozen score. |
 | `winProbabilityVariance?` | −5 to +5. Absent, not `0`, without enough win-probability data. |
-| `baseTotal` | Signals less the stall deduction plus the modifier, 0 to 100, before any boost. |
+| `baseTotal` | Signals less the stall or break deduction plus the modifier, 0 to 100, before any boost. |
 | `classicTotal?` | Classic's own total, when the mode blends with it. |
 | `blend?` | How a blended mode reached its total. See [`BlendResult`](#blendresult). |
 | `boosts` | Every boost the mode pays, at 0 when it isn't paying. Plus `favoriteBoost`, `postseasonBoost`, and `gameBoost` once you've asked for them. |
@@ -309,7 +313,7 @@ interface PowerScoreMode {
 | `signals`, `boosts` | In display order. |
 | `bucketCaps` | The most a bucket of boosts may add together. Earlier boosts in the list are paid first. |
 | `reasonPriority`, `reasonLimit` | Signal ids in the order their reasons are worth reading, and how many reach `reason`. |
-| `usesStallPenalty`, `usesWinProbability` | Whether the stall deduction and the ±5 modifier apply. |
+| `usesStallPenalty`, `usesWinProbability` | Whether the stall and break deductions and the ±5 modifier apply. One flag covers both deductions. |
 | `classicBlend` | How the mode combines with Classic. |
 | `paysPostseason?` | `false` withholds the postseason boost in this mode. Defaults to `true`. Blowouts sets it to `false`, since a playoff blowout has settled its result. |
 | `appliesTo` | Returns `false` for a game the mode has nothing to say about, and the game is scored as Classic. |
@@ -451,7 +455,9 @@ Deprecated, still exported, still working. The flat output of `computePowerScore
 | `reason` | `string` | Falls back to `scorerTunables.reasons.fallback` ("best game available") when absent or not a string. |
 | `stalled?` | `boolean` | Absent reads as `false`. `normalizePowerScoreResult` always sets it explicitly. |
 | `stallPenalty?` | `number` | Points removed, always ≥ 0. Absent, not `0`, when no stall count was supplied. |
-| `signalsSubtotal?` | `number` | The five signals' sum before the stall penalty, 0 to `scoreMaxSignalsSubtotal` (156). |
+| `onBreak?` | `boolean` | Absent reads as `false`. `normalizePowerScoreResult` always sets it explicitly. |
+| `breakPenalty?` | `number` | Points removed, always ≥ 0. Absent, not `0`, when none was supplied. `computePowerScore` doesn't set it. |
+| `signalsSubtotal?` | `number` | The five signals' sum before the stall or break penalty, 0 to `scoreMaxSignalsSubtotal` (156). |
 | `favoriteBonus?`, `favoriteTeamCount?`, `gameBoost?`, `scoringOpportunityBoost?`, `postseasonBoost?` | `number` | Not computed by `computePowerScore`. Absent unless a caller supplies them. |
 
 `scoreGame` folds the favorite, postseason, and game boosts in for you, so you never need to build a `PowerScoreResult` by hand with it. Everything 2.x still exports is listed in [the API reference](/arenaswap/docs/powerscore/api-reference/#the-2x-api).

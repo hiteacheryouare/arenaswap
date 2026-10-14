@@ -82,10 +82,12 @@ export const normalizePowerScoreResult = (
 		: undefined;
 	const hasStallPenalty = typeof score.stallPenalty === 'number' && Number.isFinite(score.stallPenalty);
 	const stallPenalty = hasStallPenalty ? Math.max(0, Math.round(toFiniteNumber(score.stallPenalty))) : undefined;
+	const hasBreakPenalty = typeof score.breakPenalty === 'number' && Number.isFinite(score.breakPenalty);
+	const breakPenalty = hasBreakPenalty ? Math.max(0, Math.round(toFiniteNumber(score.breakPenalty))) : undefined;
 	const clampedSignalsSum = closeness + lateGame + momentum + leadChanges + comeback;
-	// The fallback subtracts the penalty. Falling back to the bare signal sum handed a stalled game
+	// The fallback subtracts the penalties. Falling back to the bare signal sum handed a stalled game
 	// back every point the penalty had removed, any time `total` arrived non-finite.
-	const totalFallback = Math.max(0, clampedSignalsSum - (stallPenalty ?? 0));
+	const totalFallback = Math.max(0, clampedSignalsSum - (stallPenalty ?? 0) - (breakPenalty ?? 0));
 	const total = options.allowTotalOverflow
 		? Math.max(0, toFiniteNumber(score.total, totalFallback))
 		: clamp(toFiniteNumber(score.total, totalFallback), 0, scoreMaxTotal);
@@ -116,6 +118,8 @@ export const normalizePowerScoreResult = (
 		reason: typeof score.reason === 'string' ? score.reason : scorerTunables.reasons.fallback,
 		stalled: score.stalled === true,
 		...(hasStallPenalty ? { stallPenalty } : {}),
+		...(typeof score.onBreak === 'boolean' ? { onBreak: score.onBreak } : {}),
+		...(hasBreakPenalty ? { breakPenalty } : {}),
 		...(hasSignalsSubtotal ? { signalsSubtotal } : {}),
 		...(hasFavoriteBonus ? { favoriteBonus } : {}),
 		...(hasFavoriteTeamCount ? { favoriteTeamCount } : {}),

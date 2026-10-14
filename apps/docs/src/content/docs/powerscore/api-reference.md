@@ -35,7 +35,7 @@ A frozen game (`intermission` or `delayed`) scores 0 across the board, including
 The total is built in a fixed order:
 
 1. Signals score. Disabled ones are rescaled out.
-2. The stall deduction comes off.
+2. The stall or break deduction comes off.
 3. The win probability modifier is added (Classic only). The result is clamped to 0 to 100.
 4. The mode's own boosts are added, within their bucket caps, and the total is capped at 100.
 5. If the mode blends with Classic (floor, mix, or boost), that happens here.
@@ -205,6 +205,7 @@ resolveFantasyScoring('football', { receptions: 5 }).receptions;   // 2, held to
 | `scoreMaxComeback` | 20 |
 | `scoreMaxSignalsSubtotal` | 156 (the sum of Classic's five ceilings) |
 | `scoreMaxTotal` | 100 |
+| `breakPenalty` | 15, the flat deduction while `context.onBreak` is `true` |
 | `scoreWinProbVarianceMax` | 5 |
 | `boostBucketCaps` | `{ moment: 20, noHitter: 70, context: 16 }` |
 
@@ -285,7 +286,7 @@ function normalizePowerScoreResult(
 
 Deprecated. Takes a partial, possibly untrusted `PowerScoreResult` (only `gameId` is required) and returns a fully clamped, valid one. `computePowerScore` calls this internally on every result it produces.
 
-Each of the five signal fields is clamped to its own ceiling. `total` is clamped to `scoreMaxTotal` unless `options.allowTotalOverflow` is `true`. With that option, it's only clamped to a minimum of `0`, letting a manual boost push it past 100 on purpose. A missing or non-finite `total` falls back to the five signals' sum minus `stallPenalty`, not the raw sum. `reason` falls back to `scorerTunables.reasons.fallback` ("best game available") when it isn't a string. `favoriteBonus`, `favoriteTeamCount`, `gameBoost`, `scoringOpportunityBoost`, and `postseasonBoost` are rounded and floored at `0` when supplied. When they aren't, they're left off the result entirely, not defaulted to `0`. Never throws.
+Each of the five signal fields is clamped to its own ceiling. `total` is clamped to `scoreMaxTotal` unless `options.allowTotalOverflow` is `true`. With that option, it's only clamped to a minimum of `0`, letting a manual boost push it past 100 on purpose. A missing or non-finite `total` falls back to the five signals' sum minus `stallPenalty` and `breakPenalty`, not the raw sum. `reason` falls back to `scorerTunables.reasons.fallback` ("best game available") when it isn't a string. `favoriteBonus`, `favoriteTeamCount`, `gameBoost`, `scoringOpportunityBoost`, and `postseasonBoost` are rounded and floored at `0` when supplied. When they aren't, they're left off the result entirely, not defaulted to `0`. Never throws.
 
 ### What changes if you move
 
