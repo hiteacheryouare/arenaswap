@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The offseason wrap test stops depending on your scrollbars — 2026-10-16
+
+The setupView spec that checks "Back Nov 30 (410 days)" drops its count to a new line only failed on macOS overlay scrollbars, which give the card back the 15px a classic scrollbar takes, just enough for the whole label to fit. The test now narrows the line to the date's own width so the count has to wrap whatever the system's scrollbar setting is.
+
 ## Boost tooltips say what, the line underneath says why — 2026-10-16
 
 Every boost and penalty tooltip is now one "Applies when…" sentence describing the rule, and the game-specific reason ("CLE is one of your favorites.", "A win and CHW takes the series.") moved out of the tooltip into a line under the row, built by `boostReason` in `utils/boostReason.ts`. The walkthrough reads the same tooltip strings, and the reasons that only described an idle boost (play stopped, no favorite playing, no manual boost) were deleted along with the favorite-count note.
