@@ -5,6 +5,18 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Boost tooltips say what, the line underneath says why — 2026-10-16
+
+Every boost and penalty tooltip is now one "Applies when…" sentence describing the rule, and the game-specific reason ("CLE is one of your favorites.", "A win and CHW takes the series.") moved out of the tooltip into a line under the row, built by `boostReason` in `utils/boostReason.ts`. The walkthrough reads the same tooltip strings, and the reasons that only described an idle boost (play stopped, no favorite playing, no manual boost) were deleted along with the favorite-count note.
+
+## Breakdown sections fold away — 2026-10-16
+
+Each section of the PowerScore Breakdown now folds under its heading with Bootstrap's own collapse plugin, leaving its total in view, and the card remembers what you folded across games and popup opens. The folds live in `localStorage` under `arenaswap.breakdownCollapsed` so a section can mount already closed instead of snapping shut a frame late.
+
+## The breakdown card splits into three sections — 2026-10-16
+
+The PowerScore Breakdown now groups its rows under Signals, Boosts & Penalties, and the game's own sport (Football Boosts & Penalties and so on), and each group ends in its own total above the unchanged final line. Every signal stays on the card, but a boost or penalty only appears while it is moving the score, and a section with nothing moving is left out; which boosts belong to which sports lives in `boostSports` in `scoringModeMeta.ts`.
+
 ## Soccer cards put the home team on the left — 2026-10-14
 
 Every soccer competition, MLS and the NWSL included, now draws its host on the left of the card, the detail header, the sticky bar, the opening graphic, the Guide's bars and the season-stats comparison, and Olympic basketball and hockey do the same under FIBA and IIHF rules. The order comes from `isHomeFirst` in core, set by sport and league rather than by language, and every other league keeps the visitor on the left; the colour rule still switches the away team wherever it is drawn.
