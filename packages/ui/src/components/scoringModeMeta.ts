@@ -1,4 +1,4 @@
-import type { BuiltInModeId, ScoringModeChoice } from '@arenaswap/core/types';
+import type { BuiltInModeId, ScoringModeChoice, SportType } from '@arenaswap/core/types';
 import { signalColors } from './signalColors';
 
 // How each PowerScore 3 engine id is drawn and named: the breakdown card, the charts, the
@@ -106,6 +106,15 @@ export const boostPresentation = {
 	stakes: { labelKey: 'powerScore.stakes', tooltipKey: 'powerScore.tooltipStakes', icon: 'flag-fill', moment: true, ...factorTones.teal },
 	postseasonBoost: { labelKey: 'powerScore.postseasonBoost', tooltipKey: 'powerScore.tooltipPostseasonBoost', icon: 'trophy-fill', moment: false, ...factorTones.blue },
 } as const satisfies Record<BoostId, BoostPresentation>;
+
+// The boosts only some sports can pay. Every other boost is open to every sport.
+export const boostSports: Partial<Record<BoostId, readonly SportType[]>> = {
+	scoringOpportunity: ['football', 'baseball', 'softball', 'hockey'],
+	goAheadRun: ['baseball', 'softball'],
+	twoMinuteDrill: ['football'],
+	redCard: ['soccer'],
+	noHitter: ['baseball', 'softball'],
+};
 
 // The two adjustments that are not boosts: they come from a commercial break and the win-probability line.
 export const penaltyPresentation = {

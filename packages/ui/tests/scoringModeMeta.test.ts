@@ -2,9 +2,11 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { builtInModes, scorerTunables, scoreGame } from 'powerscore';
 import type { BuiltInModeId } from 'powerscore';
+import type { SportType } from '@arenaswap/core/types';
 import {
 	boostIds,
 	boostPresentation,
+	boostSports,
 	factorTones,
 	modePresentation,
 	modeSignalIds,
@@ -19,6 +21,8 @@ import { colorDifference } from '@arenaswap/chromatic';
 
 const modes = Object.keys(builtInModes) as BuiltInModeId[];
 const colorOf = (id: string) => (id in boostPresentation ? boostPresentation[id as keyof typeof boostPresentation] : penaltyPresentation[id as keyof typeof penaltyPresentation]).color;
+// The boosts only some sports can pay never land on the same card as another sport's.
+const paysIn = (id: string, sport: SportType) => !(id in boostSports) || boostSports[id as keyof typeof boostSports]!.includes(sport);
 
 describe('scoringModeMeta keeps up with the engine', () => {
 	test('lists every built-in mode, with its signals in the engine\'s display order', () => {
@@ -80,13 +84,10 @@ describe('scoringModeMeta colours', () => {
 		expect(new Set(factors.map(entry => entry.ink)).size).toBe(factors.length);
 	});
 
-	// The boosts that only one sport can pay never land on the same card as another sport's.
-	const sportOnly: Record<string, string> = { goAheadRun: 'baseball', noHitter: 'baseball', twoMinuteDrill: 'football', redCard: 'soccer' };
-
 	test('keeps any two factors that can share a card at least 11 apart in ΔE00', () => {
-		const tooClose = modes.flatMap(mode => ['baseball', 'football', 'soccer', 'hockey'].flatMap(sport => {
+		const tooClose = modes.flatMap(mode => (['baseball', 'football', 'soccer', 'hockey'] as const).flatMap(sport => {
 			const ids = ['favoriteBoost', 'gameBoost', 'postseasonBoost', ...builtInModes[mode].boosts.map(boost => boost.id), 'commercialBreak', 'volatility']
-				.filter(id => !sportOnly[id] || sportOnly[id] === sport);
+				.filter(id => paysIn(id, sport));
 			return ids.flatMap((one, index) => ids.slice(index + 1)
 				.filter(two => colorDifference(colorOf(one), colorOf(two)) < 11)
 				.map(two => `${mode} ${sport}: ${one} / ${two}`));
