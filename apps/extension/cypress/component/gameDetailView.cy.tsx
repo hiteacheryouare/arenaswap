@@ -559,18 +559,18 @@ describe('gameDetailView hero', () => {
 	});
 
 	it('shows the commercial break row for a sport that goes to commercial', () => {
-		mountDetail(makeLiveGame(), { excitementResult: excitement });
+		mountDetail(makeLiveGame(), { excitementResult: { ...excitement, breakPenalty: 15 } });
 		cy.contains('Commercial break penalty').should('exist');
 	});
 
 	// Baseball has no clock to stall, but its inning breaks are commercials all the same.
 	it('shows the row for baseball too', () => {
-		mountDetail(makeInningGame(), { excitementResult: excitement });
+		mountDetail(makeInningGame(), { excitementResult: { ...excitement, breakPenalty: 15 } });
 		cy.contains('Commercial break penalty').should('exist');
 	});
 
 	it('hides the row for soccer, which never goes to commercial during play', () => {
-		mountDetail(makeLiveGame({ league: 'epl', sportType: 'soccer', period: 2, clockSeconds: 3900 }), { excitementResult: excitement });
+		mountDetail(makeLiveGame({ league: 'epl', sportType: 'soccer', period: 2, clockSeconds: 3900 }), { excitementResult: { ...excitement, breakPenalty: 15 } });
 		cy.contains('Commercial break penalty').should('not.exist');
 	});
 
@@ -1175,9 +1175,12 @@ const centreX = (el: HTMLElement) => {
 	return (rect.left + rect.right) / 2;
 };
 
-const scoreLefts = () => cy.get('.game-detail-score-row').then(([row]: JQuery<HTMLElement>) => (
-	[...row.querySelectorAll('.game-detail-score-value, .game-score-sep')].map(el => el.getBoundingClientRect().left)
-));
+// Measured from the row's own edge: the screen grows a scrollbar a beat after it mounts, which slides
+// the whole centred row over by half its width and is nothing to do with the ball.
+const scoreLefts = () => cy.get('.game-detail-score-row').then(([row]: JQuery<HTMLElement>) => {
+	const rowLeft = row.getBoundingClientRect().left;
+	return [...row.querySelectorAll('.game-detail-score-value, .game-score-sep')].map(el => el.getBoundingClientRect().left - rowLeft);
+});
 
 // The bonus and timeouts, read from the situation resource while the screen is open. A real game
 // id rather than a `mock-` one, so the fetch actually runs; every request it makes is answered

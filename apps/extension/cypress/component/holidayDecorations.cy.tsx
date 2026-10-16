@@ -1,7 +1,7 @@
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import HolidayLights from '../../entrypoints/popup/components/holidayLights';
 import SetupView from '../../entrypoints/popup/components/setupView';
-import type { Game, UserPreferences } from '@arenaswap/core/types';
+import type { Game, PowerScoreSnapshot, UserPreferences } from '@arenaswap/core/types';
 import { resolveDecorationDate } from '../../utils/holidayDecorations';
 import { createDefaultUserPreferences } from '@arenaswap/core/constants';
 import de from '../../locales/de.json';
@@ -47,6 +47,24 @@ const game = (over: Partial<Game> = {}): Game => ({
 });
 
 const snowing = game({ weather: { temperatureF: 24, conditionLabel: 'Snow' } });
+
+// The charts only draw once there is history, and they are what makes the screen tall enough to
+// scroll: the pile and the string are measured against a page that moves.
+const powerScoreHistory: PowerScoreSnapshot[] = Array.from({ length: 6 }, (_, i) => ({
+	gameId: 'g1',
+	timestamp: Date.now() - (6 - i) * 60_000,
+	total: 60 + i * 2,
+	closeness: 20 + i,
+	lateGame: 16 + i,
+	momentum: 14 + i,
+	leadChanges: 8,
+	comeback: 6,
+	signalsSubtotal: 60 + i * 2,
+	favoriteBonus: 0,
+	favoriteTeamCount: 0,
+	stalled: false,
+	reason: 'close game, lead changes',
+}));
 const clear = game({ weather: { temperatureF: 52, conditionLabel: 'Partly Cloudy' } });
 
 // The date is passed as a prop rather than mocked with cy.clock. A second cy.clock in the same test
@@ -58,7 +76,7 @@ const mountDetail = (subject: Game, now: Date, prefs = allOn) => {
 			game={subject}
 			excitementResult={undefined}
 			scoreHistory={[]}
-			powerScoreHistory={[]}
+			powerScoreHistory={powerScoreHistory}
 			proTipsEnabled={false}
 			gameBoosts={{}}
 			bettingPrefs={{ bettingEnabled: false }}
