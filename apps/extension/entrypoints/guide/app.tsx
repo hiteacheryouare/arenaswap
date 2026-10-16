@@ -379,7 +379,6 @@ const App = () => {
 						decorationDate={resolveDecorationDate(new Date(), 'real')}
 						disabledSignals={prefs.disabledSignals}
 						favoriteTeamIds={favoriteTeamIds}
-						favoriteBoostSetting={prefs.favoriteTeamBonusPoints}
 						onToggleFavoriteTeam={toggleFavoriteTeam}
 						tabAssignEnabled={false}
 						dismiss='close'

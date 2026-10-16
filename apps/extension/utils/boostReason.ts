@@ -1,21 +1,16 @@
 import type { ReasonFragment } from '@arenaswap/core/types';
 
-// A boost's tooltip says what is happening in this game. The engine sends the boosts it scores as
-// keyed sentences; the favorite and manual boosts are built here from what the popup already knows.
-// Anything without a sentence falls back to the boost's general rule.
+// Why a boost is paying in this game, written under its row; the tooltip keeps the general rule. The
+// engine sends the boosts it scores as keyed sentences; the favorite and manual boosts are built here
+// from what the popup already knows.
 
 type translate = (key: string, subs?: Record<string, string | number>) => string;
 
-export interface boostTooltipInput {
+export interface boostReasonInput {
 	id: string;
-	points: number;
 	details?: readonly ReasonFragment[];
 	// Abbreviations of the favorited teams playing in this game.
 	favoriteTeams: readonly string[];
-	// The favorite boost from Settings. Read over the points, which lag a fresh favorite by a poll.
-	favoriteSetting?: number;
-	// Play is stopped and every boost scores nothing.
-	frozen: boolean;
 }
 
 export const boostDetailKeys: ReadonlySet<string> = new Set([
@@ -41,19 +36,17 @@ const translateDetail = ({ key, params }: ReasonFragment, t: translate): string 
 	return boostDetailKeys.has(key) ? t(`boostDetail.${key}`, params) : undefined;
 };
 
-const favoriteSentence = (setting: number, teams: readonly string[], t: translate): string => {
-	if (teams.length === 0) return t('boostDetail.favoriteNone');
-	if (setting === 0) return t('boostDetail.favoriteOff');
+const favoriteSentence = (teams: readonly string[], t: translate): string | undefined => {
+	if (teams.length === 0) return undefined;
 	return teams.length === 1
 		? t('boostDetail.favoriteOne', { team: teams[0]! })
 		: t('boostDetail.favoriteBoth', { team: teams[0]!, other: teams[1]! });
 };
 
 // One line a translator wrote whole beats a line half in English: an unknown key drops them all.
-export const boostTooltip = ({ id, points, details, favoriteTeams, favoriteSetting, frozen }: boostTooltipInput, t: translate): string | undefined => {
-	if (frozen) return t('boostDetail.playStopped');
-	if (id === 'favoriteBoost') return favoriteSentence(favoriteSetting ?? points, favoriteTeams, t);
-	if (id === 'gameBoost') return t(points > 0 ? 'boostDetail.gameBoostSet' : 'boostDetail.gameBoostNone');
+export const boostReason = ({ id, details, favoriteTeams }: boostReasonInput, t: translate): string | undefined => {
+	if (id === 'favoriteBoost') return favoriteSentence(favoriteTeams, t);
+	if (id === 'gameBoost') return t('boostDetail.gameBoostSet');
 	if (!details?.length) return undefined;
 	const sentences = details.map(detail => translateDetail(detail, t));
 	if (sentences.some(sentence => sentence === undefined)) return undefined;

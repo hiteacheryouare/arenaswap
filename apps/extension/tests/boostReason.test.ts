@@ -5,7 +5,7 @@ import type { Game, ScoringContext } from 'powerscore';
 import { normalizeScores, scoreLiveGame, toLiveScore } from '@arenaswap/core';
 import { createLiveExtras } from '@arenaswap/sideline';
 import type { Game as LiveGame } from '@arenaswap/core/types';
-import { boostDetailKeys, boostTooltip } from '../utils/boostTooltip';
+import { boostDetailKeys, boostReason } from '../utils/boostReason';
 
 const localesDir = join(__dirname, '../locales');
 const readLocale = (file: string) => JSON.parse(readFileSync(join(localesDir, file), 'utf8')) as Record<string, Record<string, string>>;
@@ -34,44 +34,35 @@ const chwSeries: Game<string> = {
 	series: { homeWins: 2, awayWins: 0, bestOf: 5 },
 };
 
-const tooltipFor = (id: string, favoriteTeams: string[] = []) => {
-	const score = scoreGame(chwSeries, {}, { mode: 'classic', postseasonBoostPoints: 10, favoriteTeamCount: favoriteTeams.length, favoriteBoostPoints: 10, gameBoost: 0 });
+const reasonFor = (id: string, favoriteTeams: string[] = []) => {
+	const score = scoreGame(chwSeries, {}, { mode: 'classic', postseasonBoostPoints: 10, favoriteTeamCount: favoriteTeams.length, favoriteBoostPoints: 10, gameBoost: 4 });
 	const boost = score.boosts.find(entry => entry.id === id)!;
-	return boostTooltip({ ...boost, favoriteTeams, frozen: score.frozen }, english);
+	return boostReason({ ...boost, favoriteTeams }, english);
 };
 
-describe('a boost tooltip in a live playoff game', () => {
+describe('a boost reason in a live playoff game', () => {
 	test('stakes names the team one win from the series', () => {
-		expect(tooltipFor('stakes')).toBe('A win and CHW takes the series.');
+		expect(reasonFor('stakes')).toBe('A win and CHW takes the series.');
 	});
 
-	test('the always-shown rows say why they are where they are', () => {
-		expect(tooltipFor('scoringOpportunity')).toBe('Bases empty, so there\'s nobody to bring home.');
-		expect(tooltipFor('postseasonBoost')).toBe('A quarterfinal, worth half the full boost.');
-		expect(tooltipFor('gameBoost')).toBe('You haven\'t boosted this game. The control below adds points.');
-		expect(tooltipFor('favoriteBoost')).toBe('Neither team is one of your favorites.');
-		expect(tooltipFor('favoriteBoost', ['CLE'])).toBe('CLE is one of your favorites.');
+	test('the postseason, favorite and manual boosts say why they pay', () => {
+		expect(reasonFor('postseasonBoost')).toBe('A quarterfinal, worth half the full boost.');
+		expect(reasonFor('gameBoost')).toBe('You added these yourself with the control below.');
+		expect(reasonFor('favoriteBoost', ['CLE'])).toBe('CLE is one of your favorites.');
+		expect(reasonFor('favoriteBoost', ['CLE', 'CHW'])).toBe('You\'ve favorited both CLE and CHW. No wrong answers tonight.');
 	});
 });
 
-describe('boostTooltip', () => {
-	test('stopped play overrides every row', () => {
-		expect(boostTooltip({ id: 'stakes', points: 0, favoriteTeams: [], frozen: true }, english)).toBe(english('boostDetail.playStopped'));
+describe('boostReason', () => {
+	test('has nothing to say when it doesn\'t know the favorite, has nothing specific, or meets a key it doesn\'t know', () => {
+		expect(boostReason({ id: 'favoriteBoost', favoriteTeams: [] }, english)).toBeUndefined();
+		expect(boostReason({ id: 'stakes', favoriteTeams: [] }, english)).toBeUndefined();
+		expect(boostReason({ id: 'stakes', details: [{ key: 'raceHunt', params: { team: 'X' } }, { key: 'somethingNew' }], favoriteTeams: [] }, english)).toBeUndefined();
 	});
 
-	test('a freshly favorited team reads the setting, not the last poll\'s points', () => {
-		expect(boostTooltip({ id: 'favoriteBoost', points: 0, favoriteTeams: ['CLE'], favoriteSetting: 10, frozen: false }, english)).toBe('CLE is one of your favorites.');
-		expect(boostTooltip({ id: 'favoriteBoost', points: 0, favoriteTeams: ['CLE'], favoriteSetting: 0, frozen: false }, english)).toBe(english('boostDetail.favoriteOff'));
-	});
-
-	test('falls back to the general rule when there is nothing specific, or a key it doesn\'t know', () => {
-		expect(boostTooltip({ id: 'stakes', points: 4, favoriteTeams: [], frozen: false }, english)).toBeUndefined();
-		expect(boostTooltip({ id: 'stakes', points: 4, details: [{ key: 'raceHunt', params: { team: 'X' } }, { key: 'somethingNew' }], favoriteTeams: [], frozen: false }, english)).toBeUndefined();
-	});
-
-	test('joins several sentences into one tooltip', () => {
+	test('joins several sentences into one line', () => {
 		const details = [{ key: 'tyingRun', params: { team: 'CLE' } }, { key: 'lastChance' }];
-		expect(boostTooltip({ id: 'goAheadRun', points: 6, details, favoriteTeams: [], frozen: false }, english))
+		expect(boostReason({ id: 'goAheadRun', details, favoriteTeams: [] }, english))
 			.toBe('CLE has the tying run on base. It could be their last chance.');
 	});
 });
@@ -79,7 +70,7 @@ describe('boostTooltip', () => {
 const substitutions = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map(match => match[1]).toSorted();
 
 describe('boost detail strings', () => {
-	const needed = [...boostDetailKeys, 'joiner', 'playStopped', 'favoriteNone', 'favoriteOne', 'favoriteBoth', 'favoriteOff', 'gameBoostNone', 'gameBoostSet',
+	const needed = [...boostDetailKeys, 'joiner', 'favoriteOne', 'favoriteBoth', 'gameBoostSet',
 		'postseasonFinal', 'postseasonSemifinal', 'postseasonQuarterfinal', 'postseasonEarlyRound'];
 
 	test.each(readdirSync(localesDir).filter(file => file.endsWith('.json')))('%s has every one, with the same substitutions as English', file => {
@@ -89,18 +80,6 @@ describe('boost detail strings', () => {
 			expect(typeof message).toBe('string');
 			expect([key, substitutions(message!)]).toEqual([key, substitutions(en.boostDetail![key]!)]);
 		}
-	});
-});
-
-describe('a game at halftime', () => {
-	test('every row says play has stopped, the favorite and manual boosts included', () => {
-		const halftime: Game<string> = {
-			id: 'den-okc', league: 'nba', sportType: 'basketball', status: 'in', period: 2, clockSeconds: 0, intermission: true,
-			homeTeam: { abbreviation: 'OKC', score: 50 }, awayTeam: { abbreviation: 'DEN', score: 48 },
-		};
-		const score = scoreGame(halftime, {}, { mode: 'classic', favoriteTeamCount: 1, favoriteBoostPoints: 10, gameBoost: 5, postseasonBoostPoints: 8 });
-		const tooltips = new Set(score.boosts.map(boost => boostTooltip({ ...boost, favoriteTeams: ['OKC'], frozen: score.frozen }, english)));
-		expect([...tooltips]).toEqual([english('boostDetail.playStopped')]);
 	});
 });
 
@@ -137,7 +116,7 @@ const court = (extra: Partial<Game<string>>) => live('basketball', 'nba', 'OKC',
 const underdogLine = { pregameLine: { favorite: 'home' as const, spread: 10 } };
 
 // One game for every sentence a boost can say, so a key the engine gains or the allowlist loses
-// shows up here rather than as a tooltip that quietly falls back to the general rule.
+// shows up here rather than as a row that quietly loses its reason.
 const everySituation: [Game<string>, ScoringContext][] = [
 	[bases(true, false, false), {}], [bases(false, true, false), {}], [bases(false, false, true), {}], [bases(true, true, false), {}],
 	[bases(true, false, true), {}], [bases(false, true, true), {}], [bases(true, true, true), {}], [bases(false, false, false), {}],
@@ -172,11 +151,11 @@ const everySituation: [Game<string>, ScoringContext][] = [
 
 const scoredWithDetails = everySituation.flatMap(([game, context]) => [8, 0].flatMap(postseasonBoostPoints => {
 	const score = scoreGame(game, context, { mode: 'classic', postseasonBoostPoints });
-	return score.boosts.filter(boost => boost.details).map(boost => ({ ...boost, frozen: score.frozen }));
+	return score.boosts.filter(boost => boost.details);
 }));
 
 describe('every sentence a boost can say', () => {
-	test('is one the tooltip knows, and the tooltip knows nothing the engine never says', () => {
+	test('is one the reason knows, and the reason knows nothing the engine never says', () => {
 		const said = new Set(scoredWithDetails.flatMap(boost => boost.details!.map(detail => detail.key)));
 		expect([...said].toSorted()).toEqual([...boostDetailKeys, 'postseasonRound'].toSorted());
 	});
@@ -184,15 +163,15 @@ describe('every sentence a boost can say', () => {
 	test.each(readdirSync(localesDir).filter(file => file.endsWith('.json')))('reads whole in %s, with every blank filled', file => {
 		const t = wxtTranslator(readLocale(file));
 		for (const boost of scoredWithDetails) {
-			const tooltip = boostTooltip({ ...boost, favoriteTeams: [] }, t);
-			expect([boost.details, tooltip]).toEqual([boost.details, expect.stringMatching(/^(?!.*(undefined|NaN))[^{}]+$/)]);
+			const reason = boostReason({ ...boost, favoriteTeams: [] }, t);
+			expect([boost.details, reason]).toEqual([boost.details, expect.stringMatching(/^(?!.*(undefined|NaN))[^{}]+$/)]);
 		}
 	});
 });
 
 const hockeySituations = JSON.parse(readFileSync(join(__dirname, '../../../packages/sideline/tests/fixtures/liveExtras/hockeySituations.json'), 'utf8'));
 
-describe('a hockey power play, from the feed to the tooltip', () => {
+describe('a hockey power play, from the feed to the reason', () => {
 	const recorded = hockeySituations.nhlPowerPlay;
 	const bruinsLeafs: LiveGame = {
 		id: recorded.gameId,
@@ -213,29 +192,29 @@ describe('a hockey power play, from the feed to the tooltip', () => {
 	};
 
 	// The popup reads scores back out of storage, so they go through the same JSON and guard it does.
-	const scoringOpportunityTooltip = (score: unknown) => {
+	const scoringOpportunityReason = (score: unknown) => {
 		const breakdown = normalizeScores(JSON.parse(JSON.stringify([score])))[0]!.breakdown!;
 		const boost = breakdown.boosts.find(entry => entry.id === 'scoringOpportunity')!;
-		return { points: boost.points, tooltip: boostTooltip({ ...boost, favoriteTeams: [], frozen: breakdown.frozen }, english) };
+		return { points: boost.points, reason: boostReason({ ...boost, favoriteTeams: [] }, english) };
 	};
 
 	test('says a power play is on in a one-goal game', () => {
-		expect(scoringOpportunityTooltip(liveScore(bruinsLeafs, [recorded.raw]))).toEqual({ points: 7, tooltip: 'A power play, and only 1 in it.' });
+		expect(scoringOpportunityReason(liveScore(bruinsLeafs, [recorded.raw]))).toEqual({ points: 7, reason: 'A power play, and only 1 in it.' });
 	});
 
 	test('names the team that pulled its goalie once two polls agree, and the power play beside it', () => {
 		const pulled = { ...recorded.raw, emptyNet: true };
-		expect(scoringOpportunityTooltip(liveScore({ ...bruinsLeafs, clockSeconds: 80 }, [pulled, pulled])).tooltip)
+		expect(scoringOpportunityReason(liveScore({ ...bruinsLeafs, clockSeconds: 80 }, [pulled, pulled])).reason)
 			.toBe('TOR pulled the goalie, down 1 with 1:20 left. A power play, and only 1 in it.');
 	});
 
-	test('falls back to the general rule for a score stored before boosts carried details', () => {
+	test('has nothing to add for a score stored before boosts carried details', () => {
 		const score = liveScore(bruinsLeafs, [recorded.raw]);
 		const older = { ...score, breakdown: { ...score.breakdown!, boosts: score.breakdown!.boosts.map(({ id, points }) => ({ id, points })) } };
-		expect(scoringOpportunityTooltip(older)).toEqual({ points: 7, tooltip: undefined });
+		expect(scoringOpportunityReason(older)).toEqual({ points: 7, reason: undefined });
 	});
 
-	test('drops a stored breakdown whose details are not a list, rather than crash the tooltip', () => {
+	test('drops a stored breakdown whose details are not a list, rather than crash the reason', () => {
 		const score = liveScore(bruinsLeafs, [recorded.raw]);
 		const corrupt = { ...score, breakdown: { ...score.breakdown!, boosts: score.breakdown!.boosts.map(boost => ({ ...boost, details: 'power play' })) } };
 		expect(normalizeScores(JSON.parse(JSON.stringify([corrupt])))[0]!.breakdown).toBeUndefined();

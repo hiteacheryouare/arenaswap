@@ -1,6 +1,7 @@
 import type { ScoreBreakdown } from '@arenaswap/core/types';
 import { scoreMaxCloseness, scoreMaxComeback, scoreMaxLateGame, scoreMaxLeadChanges, scoreMaxMomentum } from '@arenaswap/core/constants';
 import PowerScoreBreakdown from '../../entrypoints/popup/components/powerScoreBreakdown';
+import { breakdownFoldsKey } from '../../utils/breakdownFolds';
 import de from '../../locales/de.json';
 import en from '../../locales/en.json';
 import es from '../../locales/es.json';
@@ -27,12 +28,15 @@ const defaultProps = {
 	breakPenalty: 0,
 	hasBreaks: true,
 	favoriteBonus: 0,
-	favoriteTeamCount: 0,
 	currentBoost: 0,
 	scoringOpportunityBoost: 0,
 	postseasonBoost: 0,
 	totalLabel: '28 / 100',
-};
+	sportType: 'football',
+} as const;
+
+// Every factor paying at once, so each row is on the card.
+const everyFactor = { breakPenalty: 15, winProbabilityVariance: 3, favoriteBonus: 10, currentBoost: 5, scoringOpportunityBoost: 3, postseasonBoost: 5 } as const;
 
 describe('PowerScoreBreakdown signals', () => {
 	it('renders all 5 signal progress bars', () => {
@@ -48,6 +52,12 @@ describe('PowerScoreBreakdown signals', () => {
 		});
 	});
 
+	// A signal is part of the score's make-up, so it stays on the card at 0 where a boost would not.
+	it('keeps an idle signal on the card at zero', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} />);
+		cy.contains('.powerscore-signal-row', 'Comeback').should('contain', '0/');
+	});
+
 	it('carries the total label it was handed through to the reader', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} totalLabel='41 / 100' />);
 		cy.contains('41 / 100').should('exist');
@@ -56,9 +66,9 @@ describe('PowerScoreBreakdown signals', () => {
 });
 
 describe('PowerScoreBreakdown commercial break penalty', () => {
-	it('shows zero when the game is not on a break', () => {
+	it('leaves the row out while the game is not on a break', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} />);
-		cy.contains('Commercial break penalty').parent().contains('0').should('exist');
+		cy.contains('Commercial break penalty').should('not.exist');
 	});
 
 	// Scoped to its own row: an unscoped match is satisfied by a -15 anywhere on the card.
@@ -69,7 +79,7 @@ describe('PowerScoreBreakdown commercial break penalty', () => {
 	});
 
 	it('shows the row for a sport that goes to commercial', () => {
-		cy.mount(<PowerScoreBreakdown {...defaultProps} hasBreaks />);
+		cy.mount(<PowerScoreBreakdown {...defaultProps} hasBreaks breakPenalty={15} />);
 		cy.get('.powerscore-breakdown-row-penalty').should('exist');
 	});
 
@@ -98,13 +108,9 @@ describe('PowerScoreBreakdown win probability variance', () => {
 		cy.contains('\u22125').should('exist');
 	});
 
-	// 'Volatility' is a prefix of both the boost and the penalty label, so a substring match on it
-	// cannot tell a neutral line from one that swung the score either way.
-	it('calls a flat line neither a boost nor a penalty, and scores it at zero', () => {
+	it('leaves out a line that measured flat, since it moved nothing', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} winProbabilityVariance={0} />);
-		cy.contains('Volatility boost').should('not.exist');
-		cy.contains('Volatility penalty').should('not.exist');
-		cy.contains(/^Volatility$/).parent().contains('0').should('exist');
+		cy.contains(/volatility/i).should('not.exist');
 	});
 });
 
@@ -112,7 +118,7 @@ describe('PowerScoreBreakdown factor icons', () => {
 	// The rule, not the table: every factor row carries exactly one icon and no two rows share one.
 	// Pinning the six class names in source order made choosing a nicer icon a test edit.
 	it('gives every factor row an icon of its own', () => {
-		cy.mount(<PowerScoreBreakdown {...defaultProps} winProbabilityVariance={3} />);
+		cy.mount(<PowerScoreBreakdown {...defaultProps} {...everyFactor} />);
 		cy.get('.powerscore-factor-icon').then(($icons: JQuery<HTMLElement>) => {
 			const rows = [...$icons].map(icon => icon.closest('.powerscore-breakdown-row'));
 			expect(new Set(rows).size, 'no row carries two icons').to.equal(rows.length);
@@ -121,14 +127,15 @@ describe('PowerScoreBreakdown factor icons', () => {
 		});
 	});
 
-	it('omits the volatility icon when there is no win-probability line', () => {
+	it('draws no factor rows, and no section for them, when nothing is paying', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} />);
-		cy.get('.powerscore-factor-icon').should('have.length', 5);
-		cy.get('.bi-activity').should('not.exist');
+		cy.get('.powerscore-factor-icon').should('not.exist');
+		cy.get('.powerscore-breakdown-section-heading').should('have.length', 1).and('have.text', 'Signals');
+		cy.get('.powerscore-breakdown-row-total').should('contain', '28 / 100');
 	});
 
 	it('hides the icons from assistive tech, leaving the label text to carry the meaning', () => {
-		cy.mount(<PowerScoreBreakdown {...defaultProps} />);
+		cy.mount(<PowerScoreBreakdown {...defaultProps} {...everyFactor} />);
 		cy.get('.powerscore-factor-icon').each($icon => {
 			cy.wrap($icon).should('have.attr', 'aria-hidden', 'true');
 		});
@@ -137,13 +144,13 @@ describe('PowerScoreBreakdown factor icons', () => {
 
 describe('PowerScoreBreakdown boosts', () => {
 	it('shows "+N" for favorite bonus when > 0', () => {
-		cy.mount(<PowerScoreBreakdown {...defaultProps} favoriteBonus={10} favoriteTeamCount={1} />);
+		cy.mount(<PowerScoreBreakdown {...defaultProps} favoriteBonus={10} />);
 		cy.contains('Favorite boost').parent().contains('+10').should('exist');
 	});
 
-	it('shows the favorite team count note when favoriteBonus > 0', () => {
-		cy.mount(<PowerScoreBreakdown {...defaultProps} favoriteBonus={10} favoriteTeamCount={1} />);
-		cy.get('.powerscore-breakdown-note').should('contain', 'favorite team');
+	it('says under the favorite boost which favorite is playing', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} favoriteBonus={10} favoriteTeams={['CLE']} />);
+		cy.contains('.powerscore-breakdown-row', 'Favorite boost').next('.powerscore-breakdown-note').should('have.text', 'CLE is one of your favorites.');
 	});
 
 	it('shows "+N" for game boost when > 0', () => {
@@ -171,7 +178,7 @@ const luminance = (rgb: string) => {
 // colours started as the icon colours, where the gold reached 1.6:1 and the green 2.2:1.
 describe('PowerScoreBreakdown legibility', () => {
 	it('writes every boost and penalty value at 4.5:1 or better on the card', () => {
-		cy.mount(<PowerScoreBreakdown {...defaultProps} breakPenalty={15} winProbabilityVariance={6} favoriteBonus={10} favoriteTeamCount={1} currentBoost={15} scoringOpportunityBoost={3} postseasonBoost={5} />);
+		cy.mount(<PowerScoreBreakdown {...defaultProps} {...everyFactor} />);
 		cy.get('.powerscore-breakdown').then(([card]: JQuery<HTMLElement>) => {
 			const ground = luminance(getComputedStyle(card).backgroundColor);
 			cy.get('.powerscore-breakdown-value').should('have.length', 6).each(([value]: JQuery<HTMLElement>) => {
@@ -267,6 +274,8 @@ const classicBreakdown: ScoreBreakdown = {
 	signalCeiling: 156,
 };
 
+const payingBreakdown: ScoreBreakdown = { ...classicBreakdown, boosts: classicBreakdown.boosts.map(boost => ({ ...boost, points: 4 })) };
+
 const blowoutsBreakdown: ScoreBreakdown = {
 	modeId: 'blowouts',
 	signals: [
@@ -310,12 +319,16 @@ interface cardShape {
 	factorRows: number[];
 }
 
+const factorRowSelector = '.powerscore-breakdown-row:not(.powerscore-breakdown-row-subtotal):not(.powerscore-breakdown-row-total)';
+
 const shapeOf = (): Cypress.Chainable<cardShape> => cy.get('.powerscore-breakdown').then(([card]: JQuery<HTMLElement>) => ({
 	text: card.innerText,
 	height: card.getBoundingClientRect().height,
 	signalRows: [...card.querySelectorAll('.powerscore-signal-row')].map(row => row.getBoundingClientRect().height),
-	factorRows: [...card.querySelectorAll('.powerscore-breakdown-row')].map(row => row.getBoundingClientRect().height),
+	factorRows: [...card.querySelectorAll(factorRowSelector)].map(row => row.getBoundingClientRect().height),
 }));
+
+const sectionTotal = (label: string) => cy.contains('.powerscore-breakdown-row-subtotal', label).find('span').last();
 
 const atPopupWidth = (props: Partial<Parameters<typeof PowerScoreBreakdown>[0]>) => {
 	cy.viewport(320, 700);
@@ -342,19 +355,55 @@ describe('PowerScoreBreakdown from a PowerScore 3 breakdown', () => {
 		});
 	});
 
-	it('shows a Classic boost only while it pays, alongside the four that always show', () => {
+	it('shows only the boosts paying right now, under the game\'s sport', () => {
 		const goAhead = { ...classicBreakdown, boosts: classicBreakdown.boosts.map(boost => boost.id === 'goAheadRun' ? { ...boost, points: 8 } : boost) };
-		atPopupWidth({ breakdown: goAhead, hasBreaks: true });
+		atPopupWidth({ breakdown: goAhead, hasBreaks: true, sportType: 'baseball' });
 		cy.contains('Go-ahead run on base').parent().contains('+8').should('exist');
+		cy.get('.powerscore-breakdown-row .powerscore-factor-icon').should('have.length', 1);
+		cy.get('.powerscore-breakdown-section-heading').then($headings => {
+			expect([...$headings].map(heading => heading.textContent)).to.deep.equal(['Signals', 'Baseball Boosts & Penalties']);
+		});
+	});
+
+	it('never shows another sport\'s boost, even one the breakdown says is paying', () => {
+		atPopupWidth({ breakdown: payingBreakdown, sportType: 'baseball' });
+		cy.contains('No-hitter').should('exist');
 		cy.contains('Two-minute drill').should('not.exist');
-		// The five boosts, and the commercial break row a baseball game now has too.
-		cy.get('.powerscore-breakdown-row .powerscore-factor-icon').should('have.length', 6);
+		cy.contains('Red card').should('not.exist');
+	});
+
+	it('files general and sport boosts under their own headings, each with its own total', () => {
+		const paying = {
+			...classicBreakdown,
+			boosts: classicBreakdown.boosts.map(boost => ({ ...boost, points: ({ gameBoost: 6, stakes: 4, scoringOpportunity: 5, twoMinuteDrill: 7, redCard: 9 } as Record<string, number>)[boost.id] ?? 0 })),
+		};
+		atPopupWidth({ breakdown: paying, breakPenalty: 3, winProbabilityVariance: -2, totalLabel: '45 / 100' });
+		cy.get('.powerscore-breakdown-section-heading').then($headings => {
+			expect([...$headings].map(heading => heading.textContent)).to.deep.equal(['Signals', 'Boosts & Penalties', 'Football Boosts & Penalties']);
+		});
+		sectionTotal('Signals total').should('have.text', '28');
+		sectionTotal('Boosts & penalties total').should('have.text', '+5');
+		sectionTotal('Football total').should('have.text', '+12');
+		cy.contains('Red card').should('not.exist');
+		cy.get('.powerscore-breakdown-row-total').should('contain', '45 / 100');
+	});
+
+	it('writes a section total that the penalties pull under zero with a real minus', () => {
+		atPopupWidth({ breakdown: classicBreakdown, breakPenalty: 6 });
+		sectionTotal('Boosts & penalties total').should('have.text', '\u22126');
+	});
+
+	it('leaves the sport section out for a sport with no boosts of its own', () => {
+		atPopupWidth({ breakdown: payingBreakdown, sportType: 'basketball' });
+		cy.get('.powerscore-breakdown-section-heading').should('have.length', 2);
+		cy.contains('Scoring opportunity').should('not.exist');
+		cy.contains('Basketball total').should('not.exist');
 	});
 
 	it('draws a Blowouts game in its own four signals, at Classic\'s row height', () => {
-		atPopupWidth({});
+		atPopupWidth({ breakPenalty: 15 });
 		shapeOf().then(classic => {
-			atPopupWidth({ breakdown: blowoutsBreakdown });
+			atPopupWidth({ breakdown: blowoutsBreakdown, breakPenalty: 15 });
 			cy.get('.powerscore-breakdown-heading').should('have.text', 'Blowouts Breakdown');
 			cy.get('[role="progressbar"]').should('have.length', 4);
 			cy.get('[role="progressbar"]').then($bars => {
@@ -367,10 +416,11 @@ describe('PowerScoreBreakdown from a PowerScore 3 breakdown', () => {
 			shapeOf().then(blowouts => {
 				// The first row has no rule above it, in every mode.
 				blowouts.signalRows.forEach((height, index) => expect(Math.abs(height - classic.signalRows[index]!), `signal row ${index}`).to.be.at.most(0.5));
-				for (const height of blowouts.factorRows.slice(1, -1)) expect(Math.abs(height - classic.factorRows[1]!)).to.be.at.most(0.5);
+				for (const height of blowouts.factorRows) expect(Math.abs(height - classic.factorRows[0]!)).to.be.at.most(0.5);
 			});
 		});
 		cy.contains('Upset').parent().contains('+8').should('exist');
+		cy.contains(/^Volatility$/).should('not.exist');
 		cy.contains('No-hitter').should('not.exist');
 		cy.contains('Scoring opportunity').should('not.exist');
 		cy.contains('Classic score').parent().contains('31').should('exist');
@@ -378,7 +428,7 @@ describe('PowerScoreBreakdown from a PowerScore 3 breakdown', () => {
 	});
 
 	it('draws a Fantasy game in its three signals, with no commercial break row', () => {
-		atPopupWidth({ breakdown: fantasyBreakdown, hasBreaks: true });
+		atPopupWidth({ breakdown: fantasyBreakdown, hasBreaks: true, breakPenalty: 15 });
 		cy.get('.powerscore-breakdown-heading').should('have.text', 'Fantasy Breakdown');
 		cy.get('[role="progressbar"]').should('have.length', 3);
 		cy.get('.powerscore-signal-name').then($names => {
@@ -397,11 +447,10 @@ describe('PowerScoreBreakdown from a PowerScore 3 breakdown', () => {
 	});
 
 	it('writes every new boost value at 4.5:1 or better on the card', () => {
-		const paying = { ...classicBreakdown, boosts: classicBreakdown.boosts.map(boost => ({ ...boost, points: 4 })) };
-		atPopupWidth({ breakdown: paying });
+		atPopupWidth({ breakdown: payingBreakdown });
 		cy.get('.powerscore-breakdown').then(([card]: JQuery<HTMLElement>) => {
 			const ground = luminance(getComputedStyle(card).backgroundColor);
-			cy.get('.powerscore-breakdown-value').should('have.length', 11).each(([value]: JQuery<HTMLElement>) => {
+			cy.get('.powerscore-breakdown-value').should('have.length', 7).each(([value]: JQuery<HTMLElement>) => {
 				const ratio = (ground + 0.05) / (luminance(getComputedStyle(value).color) + 0.05);
 				expect(ratio, value.textContent ?? '').to.be.at.least(4.5);
 			});
@@ -436,23 +485,56 @@ describe('PowerScoreBreakdown from a PowerScore 3 breakdown', () => {
 		});
 	}
 
-	it('keeps every new boost row on one line in each language', () => {
-		const paying = { ...classicBreakdown, boosts: classicBreakdown.boosts.map(boost => ({ ...boost, points: 4 })) };
-		const labelKeys = ['goAheadRun', 'twoMinuteDrill', 'redCard', 'noHitter', 'upsetWatch', 'stakes'] as const;
-		atPopupWidth({ breakdown: paying });
-		cy.get('.powerscore-breakdown-row').eq(1).then(([reference]: JQuery<HTMLElement>) => {
-			const oneLine = reference.getBoundingClientRect().height;
-			for (const [code, bundle] of Object.entries(locales)) {
-				for (const key of labelKeys) {
-					const english = en.powerScore[key];
-					cy.contains('.powerscore-breakdown-row', english).then(([row]: JQuery<HTMLElement>) => {
-						const label = [...row.querySelector('span')!.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.textContent === english)!;
-						label.textContent = localeString(bundle, key) ?? english;
-						expect(row.getBoundingClientRect().height, `${code} ${key}`).to.be.at.most(oneLine + 0.5);
-						expect(row.scrollWidth, `${code} ${key} overflow`).to.be.at.most(row.clientWidth + 0.5);
-						label.textContent = english;
-					});
+	const sportLabelCases = [
+		{ sportType: 'football', keys: ['twoMinuteDrill', 'upsetWatch', 'stakes'] },
+		{ sportType: 'baseball', keys: ['goAheadRun', 'noHitter'] },
+		{ sportType: 'soccer', keys: ['redCard'] },
+	] as const;
+
+	for (const { sportType, keys } of sportLabelCases) {
+		it(`keeps every ${sportType} boost row on one line in each language`, () => {
+			atPopupWidth({ breakdown: payingBreakdown, sportType });
+			cy.get('.powerscore-breakdown-row').eq(1).then(([reference]: JQuery<HTMLElement>) => {
+				const oneLine = reference.getBoundingClientRect().height;
+				for (const [code, bundle] of Object.entries(locales)) {
+					for (const key of keys) {
+						const english = en.powerScore[key];
+						cy.contains('.powerscore-breakdown-row', english).then(([row]: JQuery<HTMLElement>) => {
+							const label = [...row.querySelector('span')!.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.textContent === english)!;
+							label.textContent = localeString(bundle, key) ?? english;
+							expect(row.getBoundingClientRect().height, `${code} ${key}`).to.be.at.most(oneLine + 0.5);
+							expect(row.scrollWidth, `${code} ${key} overflow`).to.be.at.most(row.clientWidth + 0.5);
+							label.textContent = english;
+						});
+					}
 				}
+			});
+		});
+	}
+
+	// "American football" is the longest sport name in most languages, so it is the one measured.
+	it('keeps every section heading and total on one line in each language', () => {
+		atPopupWidth({ breakdown: payingBreakdown });
+		cy.get('.powerscore-breakdown-section-heading').last().then(([heading]: JQuery<HTMLElement>) => {
+			const oneLine = heading.getBoundingClientRect().height;
+			const label = [...heading.childNodes].find(node => node.nodeType === Node.TEXT_NODE)!;
+			for (const [code, bundle] of Object.entries(locales)) {
+				const strings = (bundle as typeof en);
+				label.textContent = strings.powerScore.sportHeading.replace('{sport}', strings.sport.football);
+				expect(heading.getBoundingClientRect().height, `${code} sport heading`).to.be.at.most(oneLine + 0.5);
+				expect(heading.scrollWidth, `${code} sport heading overflow`).to.be.at.most(heading.clientWidth + 0.5);
+			}
+		});
+		cy.get('.powerscore-breakdown-row-subtotal').then($rows => {
+			const oneLine = $rows[0]!.getBoundingClientRect().height;
+			for (const [code, bundle] of Object.entries(locales)) {
+				const strings = (bundle as typeof en);
+				const labels = [strings.powerScore.signalsTotal, strings.powerScore.generalTotal, strings.powerScore.sportTotal.replace('{sport}', strings.sport.football)];
+				[...$rows].forEach((row, index) => {
+					row.querySelector('span')!.textContent = labels[index]!;
+					expect(row.getBoundingClientRect().height, `${code} total ${index}`).to.be.at.most(oneLine + 0.5);
+					expect(row.scrollWidth, `${code} total ${index} overflow`).to.be.at.most(row.clientWidth + 0.5);
+				});
 			}
 		});
 	});
@@ -466,15 +548,97 @@ describe('PowerScoreBreakdown tooltips', () => {
 			: boost)),
 	};
 
-	it('says what this game decides, not the general rule', () => {
+	it('describes the boost in its tooltip and says what this game decides underneath', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} breakdown={seriesBreakdown} />);
+		cy.contains('.powerscore-breakdown-row', 'Stakes').next('.powerscore-breakdown-note').should('have.text', 'A win and CHW takes the series.');
 		cy.contains('.powerscore-breakdown-row', 'Stakes').find('.setting-tooltip-btn').focus();
-		cy.get('.tooltip').should('contain', 'A win and CHW takes the series.');
+		cy.get('.tooltip').should('contain', en.powerScore.tooltipStakes).and('not.contain', 'CHW');
 	});
 
-	it('names a favorite playing in the game', () => {
-		cy.mount(<PowerScoreBreakdown {...defaultProps} favoriteBonus={10} favoriteTeamCount={1} favoriteTeams={['CLE']} />);
+	it('gives the favorite boost the general rule, and names the favorite underneath', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} favoriteBonus={10} favoriteTeams={['CLE']} />);
 		cy.contains('.powerscore-breakdown-row', 'Favorite boost').find('.setting-tooltip-btn').focus();
-		cy.get('.tooltip').should('contain', 'CLE is one of your favorites.');
+		cy.get('.tooltip').should('have.text', 'Applies when one or more of your favorite teams are in the matchup.');
+		cy.contains('.powerscore-breakdown-note', 'CLE is one of your favorites.').should('exist');
+	});
+
+	it('writes no line underneath a boost it has no reason for', () => {
+		atPopupWidth({ breakdown: payingBreakdown });
+		cy.contains('.powerscore-breakdown-row', 'Upset watch').next().should('not.have.class', 'powerscore-breakdown-note');
+	});
+});
+
+const heading = (label: string) => cy.contains('.powerscore-breakdown-section-heading', label);
+
+describe('PowerScoreBreakdown folding sections', () => {
+	beforeEach(() => {
+		localStorage.removeItem(breakdownFoldsKey);
+	});
+
+	it('opens every section the first time', () => {
+		atPopupWidth({ breakdown: payingBreakdown });
+		cy.get('.powerscore-breakdown-section-heading').should('have.length', 3).each($heading => {
+			cy.wrap($heading).should('have.attr', 'aria-expanded', 'true');
+		});
+		cy.get('.powerscore-signal-row').should('have.length', 5).first().should('be.visible');
+	});
+
+	it('folds a section\'s rows away and keeps its total in sight', () => {
+		atPopupWidth({ breakdown: payingBreakdown });
+		heading('Boosts & Penalties').click();
+		heading('Boosts & Penalties').should('have.attr', 'aria-expanded', 'false').and('have.class', 'collapsed');
+		cy.contains('Stakes').should('not.be.visible');
+		cy.contains('.powerscore-breakdown-row-subtotal', 'Boosts & penalties total').should('be.visible');
+		cy.contains('Two-minute drill').should('be.visible');
+		cy.get('.powerscore-signal-row').first().should('be.visible');
+	});
+
+	it('opens a folded section again', () => {
+		atPopupWidth({ breakdown: payingBreakdown });
+		heading('Signals').click();
+		cy.get('.powerscore-signal-row').first().should('not.be.visible');
+		heading('Signals').click();
+		heading('Signals').should('have.attr', 'aria-expanded', 'true');
+		cy.get('.powerscore-signal-row').first().should('be.visible');
+	});
+
+	it('remembers a fold the next time the card opens, on another game', () => {
+		atPopupWidth({ breakdown: payingBreakdown });
+		heading('Football Boosts & Penalties').click();
+		cy.contains('Two-minute drill').should('not.be.visible');
+		atPopupWidth({ breakdown: payingBreakdown, sportType: 'baseball', totalLabel: '61 / 100' });
+		heading('Baseball Boosts & Penalties').should('have.attr', 'aria-expanded', 'false');
+		cy.contains('No-hitter').should('not.be.visible');
+		cy.contains('.powerscore-breakdown-row-subtotal', 'Baseball total').should('be.visible');
+		heading('Signals').should('have.attr', 'aria-expanded', 'true');
+	});
+
+	it('keeps a fold through the next poll\'s re-render', () => {
+		cy.viewport(320, 700);
+		cy.mount(<div style={{ width: '276px' }}><PowerScoreBreakdown {...defaultProps} breakdown={classicBreakdown} /></div>).then(({ rerender }) => {
+			heading('Signals').click();
+			cy.get('.powerscore-signal-row').first().should('not.be.visible').then(() => {
+				rerender(<div style={{ width: '276px' }}><PowerScoreBreakdown {...defaultProps} breakdown={{ ...classicBreakdown, scaledSubtotal: 31 }} totalLabel='31 / 100' /></div>);
+			});
+		});
+		cy.get('.powerscore-breakdown-row-total').should('contain', '31 / 100');
+		heading('Signals').should('have.attr', 'aria-expanded', 'false');
+		cy.get('.powerscore-signal-row').first().should('not.be.visible');
+	});
+
+	// The plugin finishes a fold on its own timer, which outlives a card unmounted in the middle of it.
+	it('lets the reader leave the game in the middle of a fold', () => {
+		atPopupWidth({ breakdown: payingBreakdown });
+		heading('Signals').click();
+		cy.get('.powerscore-breakdown-section-body.collapsing').should('exist');
+		cy.mount(<div />);
+		cy.wait(600);
+		cy.then(() => expect(JSON.parse(localStorage.getItem(breakdownFoldsKey)!)).to.deep.equal(['signals']));
+	});
+
+	it('folds from the keyboard', () => {
+		atPopupWidth({ breakdown: payingBreakdown });
+		heading('Signals').focus().type('{enter}');
+		heading('Signals').should('have.attr', 'aria-expanded', 'false');
 	});
 });

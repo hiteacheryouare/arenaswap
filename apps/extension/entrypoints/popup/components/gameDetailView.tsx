@@ -70,7 +70,6 @@ interface gameDetailViewProps {
 	// Pre-game only: the setup card and the poster's favourite stars need these. They are
 	// optional so the live screen, and anything mounting it, is unaffected.
 	favoriteTeamIds?: ReadonlySet<string>;
-	favoriteBoostSetting?: number;
 	openTabs?: Browser.tabs.Tab[];
 	registry?: TabRegistration[];
 	onToggleFavoriteTeam?: (leagueId: LeagueId, teamId: string) => void;
@@ -111,7 +110,6 @@ const gameDetailView = ({
 	disabledSignals = [],
 	fantasyRoster = noRoster,
 	favoriteTeamIds = noFavorites,
-	favoriteBoostSetting,
 	openTabs = [],
 	registry = [],
 	onToggleFavoriteTeam = () => {},
@@ -145,7 +143,6 @@ const gameDetailView = ({
 	const breakPenalty = activePowerScore?.breakPenalty ?? 0;
 	const hasBreaks = hasCommercialBreaks(game);
 	const favoriteBonus = activePowerScore?.favoriteBonus ?? 0;
-	const favoriteTeamCount = activePowerScore?.favoriteTeamCount ?? 0;
 	const favoriteTeams = [game.awayTeam, game.homeTeam]
 		.filter(team => favoriteTeamIds.has(createFavoriteTeamKey(game.league, team.id)))
 		.map(team => team.abbreviation);
@@ -313,9 +310,7 @@ const gameDetailView = ({
 					breakPenalty={breakPenalty}
 					hasBreaks={hasBreaks}
 					favoriteBonus={favoriteBonus}
-					favoriteTeamCount={favoriteTeamCount}
 					favoriteTeams={favoriteTeams}
-					favoriteSetting={favoriteBoostSetting}
 					currentBoost={appliedBoost}
 					scoringOpportunityBoost={scoringOpportunityBoost}
 					postseasonBoost={postseasonBoost}
@@ -324,6 +319,7 @@ const gameDetailView = ({
 					reason={reason}
 					disabledSignals={disabledSignals}
 					breakdown={excitementResult?.breakdown}
+					sportType={game.sportType}
 				/>
 
 				<GameBoostInput gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />

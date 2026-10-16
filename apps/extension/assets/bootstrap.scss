@@ -179,6 +179,47 @@
 	padding-bottom: 0.16rem;
 }
 
+.powerscore-breakdown-section-heading {
+	display:         flex;
+	justify-content: space-between;
+	align-items:     center;
+	width:           100%;
+	margin-top:      0.3rem;
+	padding:         0;
+	border:          0;
+	background:      none;
+	font-size:       0.6rem;
+	font-weight:     700;
+	text-align:      start;
+	color:           #4b5563;
+	transition:      color m.$motion-snap m.$motion-ease;
+
+	&:hover { color: #111827; }
+	&:focus-visible {
+		outline:        1px solid bs.$primary;
+		outline-offset: 1px;
+		border-radius:  0.15rem;
+	}
+}
+
+.powerscore-section-chevron {
+	font-size:  0.5rem;
+	transition: transform m.$motion-quick m.$motion-ease;
+
+	.collapsed > & { transform: rotate(-90deg); }
+}
+
+// The first row's top margin would otherwise collapse through the body once it is open, and the
+// section would jump by that much as the plugin's height animation hands back to `auto`.
+.powerscore-breakdown-section-body { display: flow-root; }
+
+@include m.reduced-motion {
+	.powerscore-breakdown-section-heading,
+	.powerscore-section-chevron {
+		@include m.motion-still;
+	}
+}
+
 .powerscore-breakdown-row {
 	display:         flex;
 	justify-content: space-between;
@@ -205,6 +246,8 @@
 	display:               grid;
 	grid-template-columns: auto max-content auto minmax(0, 1fr) auto;
 	column-gap:            0.28rem;
+	margin-top:            0.1rem;
+	border-top:            1px solid #d1d5db;
 }
 
 .powerscore-signal-row {
