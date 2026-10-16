@@ -118,6 +118,17 @@ const openGroup = (id: string) => cy.get(`#settingsGroup-${id}`).click();
 // College tiles carry a button where the other leagues carry a label, so a tile is found by its switch.
 const leagueLabel = (id: string) => cy.get(`#league-${id}`).closest('.league-toggle-row').find('.league-toggle-label');
 
+const measureOffseasonLine = (line: HTMLElement) => {
+	const text = line.firstChild!;
+	const at = (start: number, end: number) => {
+		const range = document.createRange();
+		range.setStart(text, start);
+		range.setEnd(text, end);
+		return range.getBoundingClientRect();
+	};
+	return { at, open: text.textContent!.indexOf('('), end: text.textContent!.length };
+};
+
 // React tracks an input's last value on the element itself and swallows a change event whose value
 // it thinks it already has, so the value goes in through the native setter the tracker patched.
 const dragRangeTo = (selector: string, index: number) => cy.get(selector).then(([el]: JQuery<HTMLElement>) => {
@@ -997,17 +1008,16 @@ describe('setupView leagues group', () => {
 		const tipOff = Date.UTC(new Date().getFullYear() + 1, 10, 30, 7);
 		cy.mount(<SetupView {...defaultProps} leagueSchedules={{ ncaab: { startsAt: tipOff, endsAt: tipOff + 1 } }} />);
 		openGroup('leagues');
+		// The whole label misses the card by about 5px, and an overlay scrollbar hands the card back the
+		// 15px a classic one takes, so the line is narrowed to the date alone rather than left to the system.
+		leagueLabel('ncaab').find('.league-offseason').then(([line]: JQuery<HTMLElement>) => {
+			const { at, open } = measureOffseasonLine(line);
+			line.style.width = `${Math.ceil(at(0, open).width) + 1}px`;
+		});
 		leagueLabel('ncaab').find('.league-offseason').should(([line]: JQuery<HTMLElement>) => {
-			const text = line.firstChild!;
-			const at = (start: number, end: number) => {
-				const range = document.createRange();
-				range.setStart(text, start);
-				range.setEnd(text, end);
-				return range.getBoundingClientRect();
-			};
-			const open = text.textContent!.indexOf('(');
+			const { at, open, end } = measureOffseasonLine(line);
 			expect(at(open, open + 1).top, 'the count starts a new line').to.be.greaterThan(at(0, 1).top);
-			expect(at(open, text.textContent!.length).height, 'the count stays on one line').to.be.lessThan(at(0, 1).height * 1.5);
+			expect(at(open, end).height, 'the count stays on one line').to.be.lessThan(at(0, 1).height * 1.5);
 			expect(at(0, open).height, 'the date stays on one line').to.be.lessThan(at(0, 1).height * 1.5);
 		});
 	});
