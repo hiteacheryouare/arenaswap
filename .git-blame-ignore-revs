@@ -1,0 +1,5 @@
+# Formatting-only commits, skipped by `git blame` (GitHub reads this file; locally run
+# `git config blame.ignoreRevsFile .git-blame-ignore-revs` once).
+
+# Indent the stylesheets one level for a layer wrapper
+99104f81942bddec6fe9026ca15621bd7dbc5e2a
