@@ -8,211 +8,213 @@
 @use '@arenaswap/ui/src/game-card';
 @use '@arenaswap/ui/src/motion' as m;
 @use '@arenaswap/ui/src/fonts' with ($font-base-url: '/src/fonts');
+@at-root {
 
-@font-face {
-	font-family: 'bootstrap-icons';
-	src: url('/src/fonts/bootstrap-icons.woff2') format('woff2'),
-	     url('/src/fonts/bootstrap-icons.woff') format('woff');
-	font-display: block;
-}
+	@font-face {
+		font-family: 'bootstrap-icons';
+		src: url('/src/fonts/bootstrap-icons.woff2') format('woff2'),
+		     url('/src/fonts/bootstrap-icons.woff') format('woff');
+		font-display: block;
+	}
 
-* {
-	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
-}
+	* {
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
+	}
 
-html, body {
-	width: 1280px;
-	height: 800px;
-	overflow: hidden;
-	background: #000;
-	color: #fff;
-	font-family: 'DM Sans', system-ui, sans-serif;
-	-webkit-font-smoothing: antialiased;
-}
+	html, body {
+		width: 1280px;
+		height: 800px;
+		overflow: hidden;
+		background: #000;
+		color: #fff;
+		font-family: 'DM Sans', system-ui, sans-serif;
+		-webkit-font-smoothing: antialiased;
+	}
 
-.bi {
-	font-family: 'bootstrap-icons' !important;
-	font-style: normal;
-	font-weight: normal;
-	font-variant: normal;
-	text-transform: none;
-	line-height: 1;
-	display: inline-block;
-}
+	.bi {
+		font-family: 'bootstrap-icons' !important;
+		font-style: normal;
+		font-weight: normal;
+		font-variant: normal;
+		text-transform: none;
+		line-height: 1;
+		display: inline-block;
+	}
 
-.canvas {
-	position: relative;
-	width: 1280px;
-	height: 800px;
-	overflow: hidden;
-	isolation: isolate;
-	background: #000;
-}
+	.canvas {
+		position: relative;
+		width: 1280px;
+		height: 800px;
+		overflow: hidden;
+		isolation: isolate;
+		background: #000;
+	}
 
-// Glow is centred at the bottom of the device frames (devices sit at
-// bottom: 60-80px), so the warmest light emanates from right behind the
-// device's bottom edge — making it look like the laptop is sitting on
-// glowing ground rather than floating in front of an unrelated halo.
-.canvas::before {
-	content: '';
-	position: absolute;
-	left: 50%;
-	bottom: -120px;
-	transform: translateX(-50%);
-	width: 1500px;
-	height: 360px;
-	background: radial-gradient(ellipse at center, #ff8c2a 0%, rgba(247,92,3,0.85) 18%, rgba(247,92,3,0.45) 36%, rgba(247,92,3,0.18) 55%, transparent 72%);
-	z-index: 0;
-	pointer-events: none;
-	filter: blur(8px);
-}
+	// Glow is centred at the bottom of the device frames (devices sit at
+	// bottom: 60-80px), so the warmest light emanates from right behind the
+	// device's bottom edge — making it look like the laptop is sitting on
+	// glowing ground rather than floating in front of an unrelated halo.
+	.canvas::before {
+		content: '';
+		position: absolute;
+		left: 50%;
+		bottom: -120px;
+		transform: translateX(-50%);
+		width: 1500px;
+		height: 360px;
+		background: radial-gradient(ellipse at center, #ff8c2a 0%, rgba(247,92,3,0.85) 18%, rgba(247,92,3,0.45) 36%, rgba(247,92,3,0.18) 55%, transparent 72%);
+		z-index: 0;
+		pointer-events: none;
+		filter: blur(8px);
+	}
 
-// Soft secondary halo at the very bottom — adds the warm "ground" wash
-// you see in Apple-style product shots.
-.canvas::after {
-	content: '';
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	height: 220px;
-	background: linear-gradient(to top, rgba(247,92,3,0.35) 0%, rgba(247,92,3,0.12) 50%, transparent 100%);
-	z-index: 0;
-	pointer-events: none;
-}
+	// Soft secondary halo at the very bottom — adds the warm "ground" wash
+	// you see in Apple-style product shots.
+	.canvas::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 220px;
+		background: linear-gradient(to top, rgba(247,92,3,0.35) 0%, rgba(247,92,3,0.12) 50%, transparent 100%);
+		z-index: 0;
+		pointer-events: none;
+	}
 
-// Bottom-glow is now baked into the .canvas background gradient.
-// The element is kept (no-op) so existing markup stays valid.
-.bottom-glow,
-.over-glow {
-	display: none;
-}
+	// Bottom-glow is now baked into the .canvas background gradient.
+	// The element is kept (no-op) so existing markup stays valid.
+	.bottom-glow,
+	.over-glow {
+		display: none;
+	}
 
-.headline {
-	position: relative;
-	z-index: 2;
-	width: 100%;
-	text-align: center;
-	padding-top: 60px;
-	font-size: 92px;
-	font-weight: 700;
-	letter-spacing: -0.045em;
-	line-height: 1;
-	color: #fff;
-}
+	.headline {
+		position: relative;
+		z-index: 2;
+		width: 100%;
+		text-align: center;
+		padding-top: 60px;
+		font-size: 92px;
+		font-weight: 700;
+		letter-spacing: -0.045em;
+		line-height: 1;
+		color: #fff;
+	}
 
-.headline .dot {
-	color: #F75C03;
-}
+	.headline .dot {
+		color: #F75C03;
+	}
 
-.stage {
-	position: absolute;
-	left: 50%;
-	bottom: 0;
-	transform: translateX(-50%);
-	z-index: 1;
-}
+	.stage {
+		position: absolute;
+		left: 50%;
+		bottom: 0;
+		transform: translateX(-50%);
+		z-index: 1;
+	}
 
-// ─── Extension popup (shared across screenshots) ─────────────────────────────
-.popup {
-	width: 320px;
-	background: #0d1117;
-	border-radius: 14px;
-	overflow: hidden;
-	color: #e6edf3;
-	box-shadow:
-		0 0 0 1px rgba(255,255,255,0.08),
-		0 32px 80px rgba(0, 0, 0, 0.7),
-		0 0 80px rgba(247, 92, 3, 0.15);
-	font-family: 'DM Sans', system-ui, sans-serif;
-}
+	// ─── Extension popup (shared across screenshots) ─────────────────────────────
+	.popup {
+		width: 320px;
+		background: #0d1117;
+		border-radius: 14px;
+		overflow: hidden;
+		color: #e6edf3;
+		box-shadow:
+			0 0 0 1px rgba(255,255,255,0.08),
+			0 32px 80px rgba(0, 0, 0, 0.7),
+			0 0 80px rgba(247, 92, 3, 0.15);
+		font-family: 'DM Sans', system-ui, sans-serif;
+	}
 
-.popup-inner {
-	padding: 12px;
-}
+	.popup-inner {
+		padding: 12px;
+	}
 
-.popup-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 8px;
-	padding-bottom: 8px;
-	border-bottom: 1px solid #30363d;
-}
+	.popup-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 8px;
+		padding-bottom: 8px;
+		border-bottom: 1px solid #30363d;
+	}
 
-.popup-logo {
-	height: 32px;
-	width: auto;
-	object-fit: contain;
-}
+	.popup-logo {
+		height: 32px;
+		width: auto;
+		object-fit: contain;
+	}
 
-.popup-header-right {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-}
+	.popup-header-right {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
 
-.popup-switch {
-	width: 32px;
-	height: 18px;
-	background: #F75C03;
-	border-radius: 999px;
-	position: relative;
-	flex-shrink: 0;
-}
+	.popup-switch {
+		width: 32px;
+		height: 18px;
+		background: #F75C03;
+		border-radius: 999px;
+		position: relative;
+		flex-shrink: 0;
+	}
 
-.popup-switch-thumb {
-	position: absolute;
-	right: 2px;
-	top: 2px;
-	width: 14px;
-	height: 14px;
-	background: #fff;
-	border-radius: 50%;
-}
+	.popup-switch-thumb {
+		position: absolute;
+		right: 2px;
+		top: 2px;
+		width: 14px;
+		height: 14px;
+		background: #fff;
+		border-radius: 50%;
+	}
 
-.popup-section-title {
-	font-size: 1.2rem;
-	font-weight: 700;
-	text-align: center;
-	letter-spacing: -0.01em;
-	color: #e6edf3;
-	margin: 4px 0 8px;
-}
+	.popup-section-title {
+		font-size: 1.2rem;
+		font-weight: 700;
+		text-align: center;
+		letter-spacing: -0.01em;
+		color: #e6edf3;
+		margin: 4px 0 8px;
+	}
 
-.popup-league-label {
-	font-size: 0.7rem;
-	font-weight: 700;
-	text-transform: uppercase;
-	letter-spacing: 0.1em;
-	color: #8b949e;
-	margin: 6px 0 4px;
-}
+	.popup-league-label {
+		font-size: 0.7rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: #8b949e;
+		margin: 6px 0 4px;
+	}
 
-@keyframes popup-live-pulse {
-	0%, 100% { opacity: 1; }
-	50% { opacity: 0.3; }
-}
+	@keyframes popup-live-pulse {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.3; }
+	}
 
-.popup-live-dot {
-	width: 6px;
-	height: 6px;
-	border-radius: 50%;
-	background: #e53935;
-	animation: popup-live-pulse m.$motion-pulse m.$motion-ease-in-out infinite;
-	flex-shrink: 0;
-}
+	.popup-live-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: #e53935;
+		animation: popup-live-pulse m.$motion-pulse m.$motion-ease-in-out infinite;
+		flex-shrink: 0;
+	}
 
-// Real game cards are taller than the old hand-coded mockups.
-// Scale the popup down so it fits within the 1280×800 canvas.
-.popup-overlay .popup {
-	transform: scale(0.82);
-	transform-origin: top right;
-}
+	// Real game cards are taller than the old hand-coded mockups.
+	// Scale the popup down so it fits within the 1280×800 canvas.
+	.popup-overlay .popup {
+		transform: scale(0.82);
+		transform-origin: top right;
+	}
 
-.popup-float .popup {
-	transform: scale(0.82);
-	transform-origin: bottom right;
+	.popup-float .popup {
+		transform: scale(0.82);
+		transform-origin: bottom right;
+	}
 }

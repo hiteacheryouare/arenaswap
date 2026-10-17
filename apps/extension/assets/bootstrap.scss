@@ -100,2845 +100,2847 @@
 @use '@arenaswap/ui/src/theme';
 @use 'collegeFilter';
 @use 'scoringSettings';
+@at-root {
 
-// After the Bootstrap load above, so this beats its `:root, [data-bs-theme=light]` block on source
-// order. Dark needs no block of its own: it is what :root already carries.
-[data-bs-theme='light'] {
-	@include theme.color-mode(light);
-}
+	// After the Bootstrap load above, so this beats its `:root, [data-bs-theme=light]` block on source
+	// order. Dark needs no block of its own: it is what :root already carries.
+	[data-bs-theme='light'] {
+		@include theme.color-mode(light);
+	}
 
-// #3E9BD1 is 3.0:1 on white, short of what the button's own label needs as text. The deeper blue
-// is the one the PowerScore signals already use on the light cards.
-[data-bs-theme='light'] .btn-outline-secondary {
-	@include bs.button-outline-variant(bs.$secondary-on-light);
-}
+	// #3E9BD1 is 3.0:1 on white, short of what the button's own label needs as text. The deeper blue
+	// is the one the PowerScore signals already use on the light cards.
+	[data-bs-theme='light'] .btn-outline-secondary {
+		@include bs.button-outline-variant(bs.$secondary-on-light);
+	}
 
-// The toast's check. #00CC66 is under 2:1 on the light toast; an icon needs 3:1.
-[data-bs-theme='light'] .toast .text-success {
-	color: #00854a !important;
-}
+	// The toast's check. #00CC66 is under 2:1 on the light toast; an icon needs 3:1.
+	[data-bs-theme='light'] .toast .text-success {
+		color: #00854a !important;
+	}
 
-@keyframes onbLogoRise {
-	from { transform: translateY(200px); }
-	to   { transform: translateY(0);     }
-}
+	@keyframes onbLogoRise {
+		from { transform: translateY(200px); }
+		to   { transform: translateY(0);     }
+	}
 
-@keyframes onbFadeSlideUp {
-	from { opacity: 0; transform: translateY(10px); }
-	to   { opacity: 1; transform: translateY(0);    }
-}
+	@keyframes onbFadeSlideUp {
+		from { opacity: 0; transform: translateY(10px); }
+		to   { opacity: 1; transform: translateY(0);    }
+	}
 
-.onb-logo-wrap {
-	animation: onbLogoRise 0.72s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
+	.onb-logo-wrap {
+		animation: onbLogoRise 0.72s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+	}
 
-.onb-content-wrap {
-	animation: onbFadeSlideUp 0.45s ease 0.58s both;
-}
+	.onb-content-wrap {
+		animation: onbFadeSlideUp 0.45s ease 0.58s both;
+	}
 
-// Step titles take focus when a step opens so screen readers announce it. Focus put there by the
-// code, not by the reader, shouldn't draw a ring around a heading.
-.popup-step-title:focus { outline: none; }
+	// Step titles take focus when a step opens so screen readers announce it. Focus put there by the
+	// code, not by the reader, shouldn't draw a ring around a heading.
+	.popup-step-title:focus { outline: none; }
 
-// The Standby Stream guide has no logo to wait for, so it fades straight in, and again per step.
-.standby-guide-content {
-	animation: onbFadeSlideUp m.$motion-base m.$motion-ease both;
-}
-
-@include m.reduced-motion {
-	.onb-logo-wrap,
-	.onb-content-wrap,
+	// The Standby Stream guide has no logo to wait for, so it fades straight in, and again per step.
 	.standby-guide-content {
-		animation: none;
+		animation: onbFadeSlideUp m.$motion-base m.$motion-ease both;
 	}
-}
 
-.powerscore {
-	font-size:      0.55rem;
-	font-weight:    700;
-	color:          #ffffff;
-	padding:        0.1rem 0.4rem;
-	border-radius:  0.25rem;
-	white-space:    nowrap;
-	letter-spacing: 0.03em;
-}
-
-.powerscore-breakdown {
-	margin-top:    0.4rem;
-	background:    #f8fafc;
-	border:        1px solid #d1d5db;
-	border-radius: 0.35rem;
-	padding:       0.4rem 0.5rem;
-	color:         #111827;
-}
-
-.powerscore-breakdown-heading {
-	font-size:      0.62rem;
-	font-weight:    700;
-	border-bottom:  1px solid #d1d5db;
-	padding-bottom: 0.16rem;
-}
-
-.powerscore-breakdown-section-heading {
-	display:         flex;
-	justify-content: space-between;
-	align-items:     center;
-	width:           100%;
-	margin-top:      0.3rem;
-	padding:         0;
-	border:          0;
-	background:      none;
-	font-size:       0.6rem;
-	font-weight:     700;
-	text-align:      start;
-	color:           #4b5563;
-	transition:      color m.$motion-snap m.$motion-ease;
-
-	&:hover { color: #111827; }
-	&:focus-visible {
-		outline:        1px solid bs.$primary;
-		outline-offset: 1px;
-		border-radius:  0.15rem;
+	@include m.reduced-motion {
+		.onb-logo-wrap,
+		.onb-content-wrap,
+		.standby-guide-content {
+			animation: none;
+		}
 	}
-}
 
-.powerscore-section-chevron {
-	font-size:  0.5rem;
-	transition: transform m.$motion-quick m.$motion-ease;
-
-	.collapsed > & { transform: rotate(-90deg); }
-}
-
-// The first row's top margin would otherwise collapse through the body once it is open, and the
-// section would jump by that much as the plugin's height animation hands back to `auto`.
-.powerscore-breakdown-section-body { display: flow-root; }
-
-@include m.reduced-motion {
-	.powerscore-breakdown-section-heading,
-	.powerscore-section-chevron {
-		@include m.motion-still;
-	}
-}
-
-.powerscore-breakdown-row {
-	display:         flex;
-	justify-content: space-between;
-	align-items:     baseline;
-	gap:             0.5rem;
-	font-size:       0.6rem;
-	margin-top:      0.1rem;
-	padding-top:     0.1rem;
-	border-top:      1px solid #d1d5db;
-
-	span:last-child {
+	.powerscore {
+		font-size:      0.55rem;
 		font-weight:    700;
-		letter-spacing: 0.01em;
+		color:          #ffffff;
+		padding:        0.1rem 0.4rem;
+		border-radius:  0.25rem;
+		white-space:    nowrap;
+		letter-spacing: 0.03em;
 	}
-}
 
-// The numbers down the right edge change every poll, so they take the tabular face and stay put.
-.powerscore-breakdown-value { @include gc.scoreboard-figures; }
+	.powerscore-breakdown {
+		margin-top:    0.4rem;
+		background:    #f8fafc;
+		border:        1px solid #d1d5db;
+		border-radius: 0.35rem;
+		padding:       0.4rem 0.5rem;
+		color:         #111827;
+	}
 
-// The five rows share one set of columns, so the name column is as wide as the widest name in the
-// reader's language and the bars still start on one line. A fixed 4.7rem held English but broke
-// "Ausgeglichenheit" mid-word and wrapped "Mudanças de liderança" onto two lines.
-.powerscore-signal-list {
-	display:               grid;
-	grid-template-columns: auto max-content auto minmax(0, 1fr) auto;
-	column-gap:            0.28rem;
-	margin-top:            0.1rem;
-	border-top:            1px solid #d1d5db;
-}
+	.powerscore-breakdown-heading {
+		font-size:      0.62rem;
+		font-weight:    700;
+		border-bottom:  1px solid #d1d5db;
+		padding-bottom: 0.16rem;
+	}
 
-.powerscore-signal-row {
-	display:               grid;
-	grid-column:           1 / -1;
-	grid-template-columns: subgrid;
-	align-items:           center;
-	font-size:             0.6rem;
-	padding:               0.12rem 0;
-}
+	.powerscore-breakdown-section-heading {
+		display:         flex;
+		justify-content: space-between;
+		align-items:     center;
+		width:           100%;
+		margin-top:      0.3rem;
+		padding:         0;
+		border:          0;
+		background:      none;
+		font-size:       0.6rem;
+		font-weight:     700;
+		text-align:      start;
+		color:           #4b5563;
+		transition:      color m.$motion-snap m.$motion-ease;
 
-// Chrome 110–116 has no subgrid. Each row keeps its own copy of the columns there, so the bars
-// lose their shared start line but every row stays on one line.
-@supports not (grid-template-columns: subgrid) {
-	.powerscore-signal-row {
+		&:hover { color: #111827; }
+		&:focus-visible {
+			outline:        1px solid bs.$primary;
+			outline-offset: 1px;
+			border-radius:  0.15rem;
+		}
+	}
+
+	.powerscore-section-chevron {
+		font-size:  0.5rem;
+		transition: transform m.$motion-quick m.$motion-ease;
+
+		.collapsed > & { transform: rotate(-90deg); }
+	}
+
+	// The first row's top margin would otherwise collapse through the body once it is open, and the
+	// section would jump by that much as the plugin's height animation hands back to `auto`.
+	.powerscore-breakdown-section-body { display: flow-root; }
+
+	@include m.reduced-motion {
+		.powerscore-breakdown-section-heading,
+		.powerscore-section-chevron {
+			@include m.motion-still;
+		}
+	}
+
+	.powerscore-breakdown-row {
+		display:         flex;
+		justify-content: space-between;
+		align-items:     baseline;
+		gap:             0.5rem;
+		font-size:       0.6rem;
+		margin-top:      0.1rem;
+		padding-top:     0.1rem;
+		border-top:      1px solid #d1d5db;
+
+		span:last-child {
+			font-weight:    700;
+			letter-spacing: 0.01em;
+		}
+	}
+
+	// The numbers down the right edge change every poll, so they take the tabular face and stay put.
+	.powerscore-breakdown-value { @include gc.scoreboard-figures; }
+
+	// The five rows share one set of columns, so the name column is as wide as the widest name in the
+	// reader's language and the bars still start on one line. A fixed 4.7rem held English but broke
+	// "Ausgeglichenheit" mid-word and wrapped "Mudanças de liderança" onto two lines.
+	.powerscore-signal-list {
+		display:               grid;
 		grid-template-columns: auto max-content auto minmax(0, 1fr) auto;
+		column-gap:            0.28rem;
+		margin-top:            0.1rem;
+		border-top:            1px solid #d1d5db;
 	}
-}
 
-.powerscore-signal-row + .powerscore-signal-row {
-	border-top: 1px solid #d1d5db;
-}
-
-.powerscore-signal-dot {
-	width:        6px;
-	height:       6px;
-	border-radius: 999px;
-	flex-shrink:  0;
-}
-
-// Boost/penalty rows' leading icon — the counterpart to .powerscore-signal-dot on signal rows.
-.powerscore-factor-icon {
-	display:     inline-flex;
-	width:       0.68rem;
-	font-size:   0.62rem;
-	line-height: 1;
-	flex-shrink: 0;
-}
-
-.powerscore-signal-name {
-	white-space: nowrap;
-	color:       #374151;
-}
-
-.powerscore-signal-progress {
-	height: 5px;
-}
-
-.powerscore-signal-value {
-	@include gc.scoreboard-figures;
-	font-weight:          700;
-	text-align:           right;
-	flex-shrink:          0;
-	width:                2.5rem;
-	color:                #111827;
-}
-
-.powerscore-signal-max {
-	font-weight: 400;
-	color:       #6b7280;
-}
-
-.powerscore-signal-off-badge {
-	font-size:        0.55rem;
-	font-weight:      600;
-	color:            #6b7280;
-	letter-spacing:   0.03em;
-	text-transform:   uppercase;
-	flex-shrink:      0;
-}
-
-.setting-tooltip-btn {
-	display:     inline-flex;
-	align-items: center;
-	// A 10px glyph is a 24px target: the padding is the hit area and the margin hands the space back,
-	// so nothing around it moves.
-	justify-content: center;
-	min-width:   24px;
-	min-height:  24px;
-	padding:     7px;
-	margin:      -7px;
-	border:      none;
-	background:  transparent;
-	color:       var(--as-faint);
-	font-size:   0.62rem;
-	line-height: 1;
-	cursor:      pointer;
-	flex-shrink: 0;
-
-	&:hover  { color: var(--as-body-color); }
-	&:focus-visible {
-		outline:        1px solid bs.$primary;
-		outline-offset: -6px;
-		border-radius:  50%;
+	.powerscore-signal-row {
+		display:               grid;
+		grid-column:           1 / -1;
+		grid-template-columns: subgrid;
+		align-items:           center;
+		font-size:             0.6rem;
+		padding:               0.12rem 0;
 	}
-}
 
-// The breakdown is the popup's one light card, so the icon re-tones for it: #9ca3af was 2.4:1 on
-// the card, under the 3:1 an icon needs. Focus keeps the brand ring every other control draws.
-.powerscore-breakdown .setting-tooltip-btn {
-	color:     #6b7280;
-	font-size: 0.55rem;
-
-	&:hover { color: #374151; }
-}
-
-.powerscore-breakdown-row-subtotal {
-	margin-top:  0.16rem;
-	padding-top: 0.14rem;
-	border-top:  2px solid #111827;
-	font-size:   0.64rem;
-	font-weight: 700;
-	color:       #111827;
-}
-
-.powerscore-subtotal-raw {
-	font-weight:     400;
-	letter-spacing:  0;
-	color:           #6b7280;
-	text-decoration: line-through;
-}
-
-.powerscore-breakdown-row-penalty span:last-child {
-	color: #991b1b;
-}
-
-// ESPN's round name riding the label it explains, so the row still reads as one line rather than
-// two competing halves. Measured at 169.5px against the row's 276px in the widest locale pairing.
-.powerscore-breakdown-qualifier {
-	color:       #6c757d;
-	font-weight: 400;
-}
-
-.powerscore-breakdown-note {
-	margin-top:  0.08rem;
-	font-size:   0.54rem;
-	line-height: 1.3;
-	color:       #4b5563;
-}
-
-.powerscore-breakdown-row-total {
-	margin-top:     0.22rem;
-	padding-top:    0.18rem;
-	border-top:     2px solid #111827;
-	font-size:      0.65rem;
-	font-weight: 700;
-	text-transform: uppercase;
-}
-
-.powerscore-breakdown-reason {
-	margin-top:  0.2rem;
-	padding-top: 0.13rem;
-	border-top:  1px solid #d1d5db;
-	font-size:   0.55rem;
-	line-height: 1.3;
-	color:       #4b5563;
-}
-
-.powerscore-boost-input {
-	width:         3.5rem;
-	font-size:     0.6rem;
-	padding:       0.1rem 0.25rem;
-	border:        1px solid #d1d5db;
-	border-radius: 0.2rem;
-	text-align:    right;
-	background:    #fff;
-	color:         #111827;
-	font-weight:   700;
-
-	// The same ring the tab picker beside it draws, rather than an indigo one at 12% alpha that
-	// barely showed.
-	&:focus {
-		outline:      none;
-		border-color: #F75C03;
-		box-shadow:   0 0 0 0.15rem rgba(#F75C03, 0.2);
+	// Chrome 110–116 has no subgrid. Each row keeps its own copy of the columns there, so the bars
+	// lose their shared start line but every row stays on one line.
+	@supports not (grid-template-columns: subgrid) {
+		.powerscore-signal-row {
+			grid-template-columns: auto max-content auto minmax(0, 1fr) auto;
+		}
 	}
-}
 
-.game-detail-boost-section {
-	background:    #f8fafc;
-	border:        1px solid #d1d5db;
-	border-radius: 0.35rem;
-	padding:       0.4rem 0.5rem;
-	margin-top:    0.5rem;
-	color:         #111827;
-}
+	.powerscore-signal-row + .powerscore-signal-row {
+		border-top: 1px solid #d1d5db;
+	}
 
-.game-detail-boost-heading {
-	font-size:      0.62rem;
-	font-weight:    700;
-	border-bottom:  1px solid #d1d5db;
-	padding-bottom: 0.16rem;
-	margin-bottom:  0.25rem;
-}
+	.powerscore-signal-dot {
+		width:        6px;
+		height:       6px;
+		border-radius: 999px;
+		flex-shrink:  0;
+	}
 
-.game-detail-boost-row {
-	display:         flex;
-	justify-content: space-between;
-	align-items:     center;
-	gap:             0.5rem;
-}
+	// Boost/penalty rows' leading icon — the counterpart to .powerscore-signal-dot on signal rows.
+	.powerscore-factor-icon {
+		display:     inline-flex;
+		width:       0.68rem;
+		font-size:   0.62rem;
+		line-height: 1;
+		flex-shrink: 0;
+	}
 
-.game-detail-boost-explainer {
-	font-size:   0.58rem;
-	color:       #4b5563;
-	line-height: 1.3;
-	flex:        1;
-}
+	.powerscore-signal-name {
+		white-space: nowrap;
+		color:       #374151;
+	}
 
-.game-card-tab-assign {
-	margin-top: 0.4rem;
+	.powerscore-signal-progress {
+		height: 5px;
+	}
 
-	.form-select {
-		background-color: #f8f9fa;
-		color:            #374151;
-		border-color:     #dee2e6;
-		font-size:        0.6rem;
-		padding:          0.15rem 1.5rem 0.15rem 0.4rem;
-		height:           auto;
-		line-height:      1.4;
+	.powerscore-signal-value {
+		@include gc.scoreboard-figures;
+		font-weight:          700;
+		text-align:           right;
+		flex-shrink:          0;
+		width:                2.5rem;
+		color:                #111827;
+	}
 
+	.powerscore-signal-max {
+		font-weight: 400;
+		color:       #6b7280;
+	}
+
+	.powerscore-signal-off-badge {
+		font-size:        0.55rem;
+		font-weight:      600;
+		color:            #6b7280;
+		letter-spacing:   0.03em;
+		text-transform:   uppercase;
+		flex-shrink:      0;
+	}
+
+	.setting-tooltip-btn {
+		display:     inline-flex;
+		align-items: center;
+		// A 10px glyph is a 24px target: the padding is the hit area and the margin hands the space back,
+		// so nothing around it moves.
+		justify-content: center;
+		min-width:   24px;
+		min-height:  24px;
+		padding:     7px;
+		margin:      -7px;
+		border:      none;
+		background:  transparent;
+		color:       var(--as-faint);
+		font-size:   0.62rem;
+		line-height: 1;
+		cursor:      pointer;
+		flex-shrink: 0;
+
+		&:hover  { color: var(--as-body-color); }
+		&:focus-visible {
+			outline:        1px solid bs.$primary;
+			outline-offset: -6px;
+			border-radius:  50%;
+		}
+	}
+
+	// The breakdown is the popup's one light card, so the icon re-tones for it: #9ca3af was 2.4:1 on
+	// the card, under the 3:1 an icon needs. Focus keeps the brand ring every other control draws.
+	.powerscore-breakdown .setting-tooltip-btn {
+		color:     #6b7280;
+		font-size: 0.55rem;
+
+		&:hover { color: #374151; }
+	}
+
+	.powerscore-breakdown-row-subtotal {
+		margin-top:  0.16rem;
+		padding-top: 0.14rem;
+		border-top:  2px solid #111827;
+		font-size:   0.64rem;
+		font-weight: 700;
+		color:       #111827;
+	}
+
+	.powerscore-subtotal-raw {
+		font-weight:     400;
+		letter-spacing:  0;
+		color:           #6b7280;
+		text-decoration: line-through;
+	}
+
+	.powerscore-breakdown-row-penalty span:last-child {
+		color: #991b1b;
+	}
+
+	// ESPN's round name riding the label it explains, so the row still reads as one line rather than
+	// two competing halves. Measured at 169.5px against the row's 276px in the widest locale pairing.
+	.powerscore-breakdown-qualifier {
+		color:       #6c757d;
+		font-weight: 400;
+	}
+
+	.powerscore-breakdown-note {
+		margin-top:  0.08rem;
+		font-size:   0.54rem;
+		line-height: 1.3;
+		color:       #4b5563;
+	}
+
+	.powerscore-breakdown-row-total {
+		margin-top:     0.22rem;
+		padding-top:    0.18rem;
+		border-top:     2px solid #111827;
+		font-size:      0.65rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.powerscore-breakdown-reason {
+		margin-top:  0.2rem;
+		padding-top: 0.13rem;
+		border-top:  1px solid #d1d5db;
+		font-size:   0.55rem;
+		line-height: 1.3;
+		color:       #4b5563;
+	}
+
+	.powerscore-boost-input {
+		width:         3.5rem;
+		font-size:     0.6rem;
+		padding:       0.1rem 0.25rem;
+		border:        1px solid #d1d5db;
+		border-radius: 0.2rem;
+		text-align:    right;
+		background:    #fff;
+		color:         #111827;
+		font-weight:   700;
+
+		// The same ring the tab picker beside it draws, rather than an indigo one at 12% alpha that
+		// barely showed.
 		&:focus {
+			outline:      none;
 			border-color: #F75C03;
 			box-shadow:   0 0 0 0.15rem rgba(#F75C03, 0.2);
 		}
 	}
 
-	// Scaled to the card's own small picker rather than to the settings pickers the menu defaults to.
-	.dropdown-menu {
-		--as-dropdown-font-size:      0.68rem;
-		--as-dropdown-item-padding-y: 0.2rem;
-		--as-dropdown-item-padding-x: 0.5rem;
+	.game-detail-boost-section {
+		background:    #f8fafc;
+		border:        1px solid #d1d5db;
+		border-radius: 0.35rem;
+		padding:       0.4rem 0.5rem;
+		margin-top:    0.5rem;
+		color:         #111827;
 	}
-}
 
-// A hovered card is lifted with a transform, and a transform makes the card a stacking context of
-// its own: the menu's z-index then only counts inside the card, and the next card in the list paints
-// over it. While a card holds an open menu, the card itself is what climbs.
-// It climbs past 3, where Bootstrap holds the active page of the Up Next day pager.
-.game-card:has(.dropdown-menu.show) {
-	position: relative;
-	z-index:  4;
-}
-
-.settings-search {
-	position:      relative;
-	margin-bottom: 0.75rem;
-}
-
-.settings-search-icon {
-	position:      absolute;
-	left:          0.55rem;
-	top:           50%;
-	transform:     translateY(-50%);
-	font-size:     0.72rem;
-	color:         var(--as-faint);
-	pointer-events: none;
-}
-
-.settings-search-input {
-	padding-left: 1.75rem;
-	font-size:    0.72rem;
-
-	&::placeholder { color: var(--as-faint); }
-
-	// Safari draws its own clear affordance that collides with the 320px layout.
-	&::-webkit-search-cancel-button { appearance: none; }
-}
-
-.settings-search-empty {
-	font-size:  0.7rem;
-	color:      var(--as-faint);
-	padding:    1.25rem 0.25rem;
-	text-align: center;
-}
-
-.settings-index {
-	display:        flex;
-	flex-direction: column;
-	border-top:     1px solid var(--as-secondary-bg);
-}
-
-.settings-index-row {
-	display:       flex;
-	align-items:   center;
-	gap:           0.6rem;
-	width:         100%;
-	padding:       0.72rem 0.15rem;
-	background:    none;
-	border:        none;
-	border-bottom: 1px solid var(--as-secondary-bg);
-	color:         inherit;
-	text-align:    left;
-	cursor:        pointer;
-
-	&:hover { background: rgba(var(--as-body-color-rgb), 0.035); }
-
-	&:focus-visible {
-		outline:        1px solid bs.$primary;
-		outline-offset: -1px;
-		border-radius:  0.25rem;
+	.game-detail-boost-heading {
+		font-size:      0.62rem;
+		font-weight:    700;
+		border-bottom:  1px solid #d1d5db;
+		padding-bottom: 0.16rem;
+		margin-bottom:  0.25rem;
 	}
-}
 
-.suggest-list {
-	display:        flex;
-	flex-direction: column;
-}
-
-.suggest-row {
-	display:       flex;
-	align-items:   center;
-	gap:           0.6rem;
-	padding:       0.6rem 0.15rem;
-	border-bottom: 1px solid var(--as-secondary-bg);
-	cursor:        pointer;
-
-	&:hover { background: rgba(var(--as-body-color-rgb), 0.035); }
-}
-
-// The same white disc the team picker uses, at row size. The two crests here sit on the popup's
-// #0d1117, where a navy or black mark is a silhouette. The disc grows around the crest rather than
-// squeezing it, so the mark stays the size it has always been.
-.suggest-crest-disc {
-	display:         inline-flex;
-	align-items:     center;
-	justify-content: center;
-	flex-shrink:     0;
-	width:           1.27rem;
-	height:          1.27rem;
-	border-radius:   999px;
-	overflow:        hidden;
-	box-shadow:      0 0 0 1px rgba(var(--as-overlay-rgb), 0.28);
-}
-
-.suggest-crest {
-	width:  0.95rem;
-	height: 0.95rem;
-}
-
-// The disc already carries the wash, so the shared grey placeholder inside it would read as a hole.
-.suggest-crest .crest-fallback { background: transparent; }
-
-.suggest-matchup {
-	font-size: 0.72rem;
-}
-
-.suggest-tab-label {
-	margin-top: 0.1rem;
-	font-size:  0.62rem;
-	color:      var(--as-faint);
-}
-
-.settings-index-icon {
-	width:       1.15rem;
-	flex-shrink: 0;
-	font-size:   0.92rem;
-	line-height: 1;
-	text-align:  center;
-	color:       bs.$primary;
-}
-
-.settings-index-text {
-	flex:      1 1 auto;
-	min-width: 0;
-}
-
-.settings-index-name {
-	display:     block;
-	font-size:   0.78rem;
-	font-weight: 600;
-	line-height: 1.25;
-	color:       var(--as-body-color);
-}
-
-.settings-index-desc {
-	display:     block;
-	margin-top:  0.05rem;
-	font-size:   0.6rem;
-	line-height: 1.35;
-	color:       var(--as-faint);
-	text-wrap:   pretty;
-}
-
-.settings-index-caret {
-	flex-shrink: 0;
-	font-size:   0.7rem;
-	color:       var(--as-faint);
-}
-
-.settings-index-warn {
-	flex-shrink: 0;
-	font-size:   0.72rem;
-	color:       var(--as-warning-ink);
-}
-
-.select-dropdown-check {
-	color: var(--as-accent-ink);
-}
-
-.tab-favicon {
-	display:        inline-block;
-	flex-shrink:    0;
-	width:          1.15em;
-	height:         1.15em;
-	font-size:      1em;
-	line-height:    1;
-	vertical-align: -0.2em;
-	object-fit:     contain;
-}
-
-i.tab-favicon {
-	color:      var(--as-faint);
-	text-align: center;
-}
-
-.dropdown-item.disabled img.tab-favicon {
-	opacity: 0.5;
-}
-
-// A native select scrolled its own list; a tab picker with thirty tabs open needs the same.
-.select-dropdown-menu {
-	max-height: 14rem;
-	overflow-y: auto;
-}
-
-.settings-page-lede {
-	margin:      -0.35rem 0 0.9rem;
-	font-size:   0.62rem;
-	line-height: 1.4;
-	color:       var(--as-faint);
-}
-
-// One rhythm for stacked controls, replacing the ad-hoc mt-3 wrappers the flat column used.
-.settings-stack > * + * {
-	margin-top:  0.7rem;
-	padding-top: 0.7rem;
-	border-top:  1px solid var(--as-tertiary-bg);
-}
-
-.setup-header {
-	display:       flex;
-	align-items:   center;
-	gap:           0.5rem;
-	margin-bottom: 0.75rem;
-	padding-bottom: 0.6rem;
-	border-bottom: 1px solid var(--as-border-color);
-	font-size:     0.8rem;
-	font-weight:   700;
-	color:         var(--as-body-color);
-	cursor:        pointer;
-	background:    none;
-	border-top:    none;
-	border-left:   none;
-	border-right:  none;
-	width:         100%;
-	text-align:    left;
-	padding-top:   0;
-	padding-left:  0;
-	padding-right: 0;
-
-	i { color: var(--as-secondary-color); }
-
-	&:hover i { color: var(--as-body-color); }
-}
-
-.league-toggle-group + .league-toggle-group {
-	margin-top: 0.45rem;
-}
-
-.league-toggle-logo {
-	width:         36px;
-	height:        36px;
-	border-radius: 0.3rem;
-}
-
-// League marks are rounded rects, not discs, so the placeholder cannot inherit the shared circle.
-.league-toggle-logo .crest-fallback {
-	border-radius:  0.3rem;
-	background:     var(--as-border-color);
-	color:          var(--as-body-color);
-	font-size:      0.5rem;
-	letter-spacing: 0.04em;
-}
-
-.popup-root {
-	position: relative;
-	width: 320px;
-	height: 560px;
-}
-
-.popup-confetti-canvas {
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-	pointer-events: none;
-	z-index: 3;
-}
-
-.popup-empty-leagues {
-	border: 1px solid rgba(247, 92, 3, 0.45);
-	background: rgba(247, 92, 3, 0.08);
-}
-
-.popup-empty-leagues-copy {
-	font-size: 0.78rem;
-	color: var(--as-body-color);
-}
-
-.popup-loading-wrap {
-	min-height: 100px;
-}
-
-.popup-loading-text {
-	font-size: 0.78rem;
-	color: var(--as-body-color);
-}
-
-// Every notice above the list shares one surface. Bootstrap's alert variants read the
-// *-bg-subtle tokens, which this theme never sets, so they rendered as pale slabs on the dark popup.
-.alert.popup-notice {
-	--as-alert-bg:            var(--as-tertiary-bg);
-	--as-alert-color:         var(--as-body-color);
-	--as-alert-border-color:  var(--as-border-color);
-	--as-alert-padding-x:     0.6rem;
-	--as-alert-padding-y:     0.5rem;
-	--as-alert-margin-bottom: 0.5rem;
-	font-size: 0.72rem;
-	line-height: 1.35;
-
-	.btn-close {
-		font-size: 0.55rem;
+	.game-detail-boost-row {
+		display:         flex;
+		justify-content: space-between;
+		align-items:     center;
+		gap:             0.5rem;
 	}
-}
 
-// Bootstrap draws the close X in black and only inverts it under its own dark mode, which this
-// theme leaves off, so the dark default needs the inversion stated.
-:root {
-	--as-btn-close-filter: #{bs.$btn-close-filter-dark};
-}
-
-[data-bs-theme='light'] {
-	--as-btn-close-filter: none;
-}
-
-.popup-notice-title {
-	font-size: 0.78rem;
-}
-
-.popup-notice-icon {
-	color: var(--as-accent-ink);
-	line-height: 1.35;
-}
-
-.popup-notice-icon-danger {
-	color: bs.$danger;
-}
-
-.refresh-button {
-	position: relative;
-}
-
-.refresh-button-spinner {
-	position: absolute;
-	inset: 0;
-	width: 0.7rem;
-	height: 0.7rem;
-	margin: auto;
-	border-width: 0.12em;
-}
-
-.popup-notice-action {
-	font-size: 0.68rem;
-	white-space: nowrap;
-	flex-shrink: 0;
-}
-
-.popup-no-games-wrap {
-	padding: 1rem 0.5rem;
-}
-
-.popup-no-games-title {
-	font-size: 1rem;
-}
-
-.popup-no-games-sub {
-	font-size: 0.72rem;
-	color: var(--as-faint);
-}
-
-.popup-settings-link {
-	font-size: 0.85rem;
-	color: var(--as-secondary-ink);
-}
-
-.setting-toggle-label {
-	font-size: 0.65rem;
-}
-
-.setting-value-label {
-	font-size: 0.6rem;
-	font-family: 'Geist Figures', 'DM Sans', system-ui, sans-serif;
-	font-variant-numeric: tabular-nums;
-}
-
-.temperature-unit-toggle {
-	font-size: 0.65rem;
-	padding:   0.1rem 0.5rem;
-}
-
-.setting-explainer {
-	font-size: 0.55rem;
-	line-height: 1.3;
-	color: var(--as-faint);
-}
-
-.popup-empty-leagues-title {
-	font-size: 1.2rem;
-	letter-spacing: -0.015em;
-}
-
-.popup-loading-spinner {
-	color: #F75C03;
-	width: 1.5rem;
-	height: 1.5rem;
-	border-width: 0.2em;
-}
-
-
-.setup-no-leagues-warn {
-	font-size: 0.65rem;
-	color: var(--as-warning-ink);
-	padding: 0.35rem 0.5rem;
-	border: 1px solid rgba(var(--as-warning-rgb), 0.3);
-	border-radius: 0.35rem;
-	background: rgba(var(--as-warning-rgb), 0.07);
-}
-
-.sensitivity-ticks {
-	height: 0.85rem;
-	margin: 0.15rem 0.5rem 0;
-}
-
-.sensitivity-tick {
-	font-size: 0.5rem;
-	white-space: nowrap;
-}
-
-@for $i from 0 through 6 {
-	.sensitivity-tick-#{$i} { left: calc($i / 6 * 100%); }
-}
-
-.onb-league-logo {
-	width:         28px;
-	height:        28px;
-	border-radius: 50%;
-}
-
-.team-pick-row {
-	width:         100%;
-	padding-inline: 0;
-	border:        0;
-	background:    transparent;
-	color:         inherit;
-	text-align:    start;
-
-	&:focus-visible {
-		outline:        1px solid bs.$primary;
-		outline-offset: 2px;
-		border-radius:  0.25rem;
+	.game-detail-boost-explainer {
+		font-size:   0.58rem;
+		color:       #4b5563;
+		line-height: 1.3;
+		flex:        1;
 	}
-}
 
-// Hovering an unstarred row previews the gold it would take.
-.team-pick-star {
-	color:      var(--as-secondary-color);
-	transition: color m.$motion-snap m.$motion-ease;
+	.game-card-tab-assign {
+		margin-top: 0.4rem;
 
-	.team-pick-row:hover &,
-	&[data-favorited='true'] { color: rgb(var(--as-warning-rgb)); }
-}
+		.form-select {
+			background-color: #f8f9fa;
+			color:            #374151;
+			border-color:     #dee2e6;
+			font-size:        0.6rem;
+			padding:          0.15rem 1.5rem 0.15rem 0.4rem;
+			height:           auto;
+			line-height:      1.4;
 
-// The same white disc the pre-game poster puts its crests on, at list size, tinted with a colour
-// sampled from the crest itself. A navy or black logo on the dark popup is otherwise a silhouette.
-.team-pick-crest {
-	display:         inline-flex;
-	align-items:     center;
-	justify-content: center;
-	width:           28px;
-	height:          28px;
-	border-radius:   999px;
-	overflow:        hidden;
-	box-shadow:      0 0 0 1px rgba(var(--as-overlay-rgb), 0.28);
-}
+			&:focus {
+				border-color: #F75C03;
+				box-shadow:   0 0 0 0.15rem rgba(#F75C03, 0.2);
+			}
+		}
 
-.team-pick-crest-logo {
-	width:  21px;
-	height: 21px;
-}
+		// Scaled to the card's own small picker rather than to the settings pickers the menu defaults to.
+		.dropdown-menu {
+			--as-dropdown-font-size:      0.68rem;
+			--as-dropdown-item-padding-y: 0.2rem;
+			--as-dropdown-item-padding-x: 0.5rem;
+		}
+	}
 
-// The disc already carries the wash, so a second grey disc inside it would read as a hole. The
-// disc under a crest that never loaded is plain white, so the initials take a dark ink.
-.team-pick-crest-logo .crest-fallback {
-	background:  transparent;
-	color:       #111827;
-	font-size:   0.46rem;
-}
+	// A hovered card is lifted with a transform, and a transform makes the card a stacking context of
+	// its own: the menu's z-index then only counts inside the card, and the next card in the list paints
+	// over it. While a card holds an open menu, the card itself is what climbs.
+	// It climbs past 3, where Bootstrap holds the active page of the Up Next day pager.
+	.game-card:has(.dropdown-menu.show) {
+		position: relative;
+		z-index:  4;
+	}
 
-.onb-league-logo .crest-fallback {
-	background:     var(--as-border-color);
-	color:          var(--as-body-color);
-	font-size:      0.5rem;
-	letter-spacing: 0.04em;
-}
+	.settings-search {
+		position:      relative;
+		margin-bottom: 0.75rem;
+	}
 
-.league-toggle-grid {
-	display:               grid;
-	grid-template-columns: 1fr 1fr;
-	gap:                   0.35rem;
-	margin-top:            0.4rem;
-}
+	.settings-search-icon {
+		position:      absolute;
+		left:          0.55rem;
+		top:           50%;
+		transform:     translateY(-50%);
+		font-size:     0.72rem;
+		color:         var(--as-faint);
+		pointer-events: none;
+	}
 
-.league-toggle-row {
-	display:        flex;
-	flex-direction: column;
-	gap:            0.3rem;
-	padding:        0.4rem 0.5rem;
-	border-radius:  0.35rem;
-	background:     var(--as-tertiary-bg);
-	border:         1px solid var(--as-secondary-bg);
-}
+	.settings-search-input {
+		padding-left: 1.75rem;
+		font-size:    0.72rem;
 
-.league-toggle-row-top {
-	display:         flex;
-	align-items:     center;
-	justify-content: space-between;
-}
+		&::placeholder { color: var(--as-faint); }
 
-.league-toggle-label {
-	font-size:   0.72rem;
-	line-height: 1.25;
-}
+		// Safari draws its own clear affordance that collides with the 320px layout.
+		&::-webkit-search-cancel-button { appearance: none; }
+	}
 
-// CJK can break between any two characters; this holds it to the one break left before the count.
-.league-offseason {
-	word-break: keep-all;
-}
+	.settings-search-empty {
+		font-size:  0.7rem;
+		color:      var(--as-faint);
+		padding:    1.25rem 0.25rem;
+		text-align: center;
+	}
 
-.league-order-list {
-	display:        flex;
-	flex-direction: column;
-	gap:            0.25rem;
-}
+	.settings-index {
+		display:        flex;
+		flex-direction: column;
+		border-top:     1px solid var(--as-secondary-bg);
+	}
 
-.league-order-row {
-	display:       flex;
-	align-items:   center;
-	gap:           0.4rem;
-	padding:       0.25rem 0.4rem;
-	border-radius: 0.35rem;
-	background:    var(--as-tertiary-bg);
-	border:        1px solid var(--as-secondary-bg);
-	border-top:    2px solid transparent;
+	.settings-index-row {
+		display:       flex;
+		align-items:   center;
+		gap:           0.6rem;
+		width:         100%;
+		padding:       0.72rem 0.15rem;
+		background:    none;
+		border:        none;
+		border-bottom: 1px solid var(--as-secondary-bg);
+		color:         inherit;
+		text-align:    left;
+		cursor:        pointer;
 
-	// The shared LeagueLogo is sized for the toggle grid; shrink it for these compact rows.
+		&:hover { background: rgba(var(--as-body-color-rgb), 0.035); }
+
+		&:focus-visible {
+			outline:        1px solid bs.$primary;
+			outline-offset: -1px;
+			border-radius:  0.25rem;
+		}
+	}
+
+	.suggest-list {
+		display:        flex;
+		flex-direction: column;
+	}
+
+	.suggest-row {
+		display:       flex;
+		align-items:   center;
+		gap:           0.6rem;
+		padding:       0.6rem 0.15rem;
+		border-bottom: 1px solid var(--as-secondary-bg);
+		cursor:        pointer;
+
+		&:hover { background: rgba(var(--as-body-color-rgb), 0.035); }
+	}
+
+	// The same white disc the team picker uses, at row size. The two crests here sit on the popup's
+	// #0d1117, where a navy or black mark is a silhouette. The disc grows around the crest rather than
+	// squeezing it, so the mark stays the size it has always been.
+	.suggest-crest-disc {
+		display:         inline-flex;
+		align-items:     center;
+		justify-content: center;
+		flex-shrink:     0;
+		width:           1.27rem;
+		height:          1.27rem;
+		border-radius:   999px;
+		overflow:        hidden;
+		box-shadow:      0 0 0 1px rgba(var(--as-overlay-rgb), 0.28);
+	}
+
+	.suggest-crest {
+		width:  0.95rem;
+		height: 0.95rem;
+	}
+
+	// The disc already carries the wash, so the shared grey placeholder inside it would read as a hole.
+	.suggest-crest .crest-fallback { background: transparent; }
+
+	.suggest-matchup {
+		font-size: 0.72rem;
+	}
+
+	.suggest-tab-label {
+		margin-top: 0.1rem;
+		font-size:  0.62rem;
+		color:      var(--as-faint);
+	}
+
+	.settings-index-icon {
+		width:       1.15rem;
+		flex-shrink: 0;
+		font-size:   0.92rem;
+		line-height: 1;
+		text-align:  center;
+		color:       bs.$primary;
+	}
+
+	.settings-index-text {
+		flex:      1 1 auto;
+		min-width: 0;
+	}
+
+	.settings-index-name {
+		display:     block;
+		font-size:   0.78rem;
+		font-weight: 600;
+		line-height: 1.25;
+		color:       var(--as-body-color);
+	}
+
+	.settings-index-desc {
+		display:     block;
+		margin-top:  0.05rem;
+		font-size:   0.6rem;
+		line-height: 1.35;
+		color:       var(--as-faint);
+		text-wrap:   pretty;
+	}
+
+	.settings-index-caret {
+		flex-shrink: 0;
+		font-size:   0.7rem;
+		color:       var(--as-faint);
+	}
+
+	.settings-index-warn {
+		flex-shrink: 0;
+		font-size:   0.72rem;
+		color:       var(--as-warning-ink);
+	}
+
+	.select-dropdown-check {
+		color: var(--as-accent-ink);
+	}
+
+	.tab-favicon {
+		display:        inline-block;
+		flex-shrink:    0;
+		width:          1.15em;
+		height:         1.15em;
+		font-size:      1em;
+		line-height:    1;
+		vertical-align: -0.2em;
+		object-fit:     contain;
+	}
+
+	i.tab-favicon {
+		color:      var(--as-faint);
+		text-align: center;
+	}
+
+	.dropdown-item.disabled img.tab-favicon {
+		opacity: 0.5;
+	}
+
+	// A native select scrolled its own list; a tab picker with thirty tabs open needs the same.
+	.select-dropdown-menu {
+		max-height: 14rem;
+		overflow-y: auto;
+	}
+
+	.settings-page-lede {
+		margin:      -0.35rem 0 0.9rem;
+		font-size:   0.62rem;
+		line-height: 1.4;
+		color:       var(--as-faint);
+	}
+
+	// One rhythm for stacked controls, replacing the ad-hoc mt-3 wrappers the flat column used.
+	.settings-stack > * + * {
+		margin-top:  0.7rem;
+		padding-top: 0.7rem;
+		border-top:  1px solid var(--as-tertiary-bg);
+	}
+
+	.setup-header {
+		display:       flex;
+		align-items:   center;
+		gap:           0.5rem;
+		margin-bottom: 0.75rem;
+		padding-bottom: 0.6rem;
+		border-bottom: 1px solid var(--as-border-color);
+		font-size:     0.8rem;
+		font-weight:   700;
+		color:         var(--as-body-color);
+		cursor:        pointer;
+		background:    none;
+		border-top:    none;
+		border-left:   none;
+		border-right:  none;
+		width:         100%;
+		text-align:    left;
+		padding-top:   0;
+		padding-left:  0;
+		padding-right: 0;
+
+		i { color: var(--as-secondary-color); }
+
+		&:hover i { color: var(--as-body-color); }
+	}
+
+	.league-toggle-group + .league-toggle-group {
+		margin-top: 0.45rem;
+	}
+
 	.league-toggle-logo {
-		width:  22px;
-		height: 22px;
-
-		.crest-fallback { font-size: 0.4rem; }
+		width:         36px;
+		height:        36px;
+		border-radius: 0.3rem;
 	}
 
-	&.is-dragging {
-		opacity: 0.45;
-	}
-
-	&.is-drag-over {
-		border-top-color: #f75c03;
-	}
-}
-
-.league-order-handle {
-	color:       var(--as-secondary-color);
-	cursor:      grab;
-	flex-shrink: 0;
-
-	&:active { cursor: grabbing; }
-}
-
-.league-order-label {
-	flex:        1 1 auto;
-	font-size:   0.72rem;
-	line-height: 1.25;
-	min-width:   0;
-	overflow:    hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-
-.league-order-move-btn {
-	padding:     0 0.2rem;
-	color:       var(--as-secondary-color);
-	line-height: 1;
-	flex-shrink: 0;
-
-	&:hover:not(:disabled) { color: var(--as-body-color); }
-	&:disabled             { opacity: 0.3; }
-}
-
-.league-order-reset {
-	align-self:      flex-start;
-	padding:         0.1rem 0;
-	font-size:       0.7rem;
-	color:           var(--as-secondary-color);
-	text-decoration: none;
-
-	&:hover:not(:disabled) { color: var(--as-body-color); }
-}
-
-// ── Pre-game poster ──────────────────────────────────────────────────────────
-// A card on the same geometry as .game-card, so it sits in the column with the setup card and
-// the breakdown rather than cutting across it. Live games keep the light matchup card; this is
-// the 'pre' hero only.
-.gd-poster {
-	border-radius: 0.5rem;
-	margin-bottom: 0.5rem;
-	padding: 1.05rem 0.75rem 0.95rem;
-	position: relative;
-	overflow: hidden;
-}
-
-.gd-poster-teams {
-	display: grid;
-	grid-template-columns: 1fr auto 1fr;
-	align-items: start;
-	gap: 0.3rem;
-}
-
-.gd-poster-team {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 0.22rem;
-	min-width: 0;
-}
-
-// Each side in the ink its own colour takes, from `matchupSurfaceStyle`: near-black on a gold or a
-// silver, white with a soft shadow everywhere else. The same variables the list card reads.
-.gd-poster-team:first-child {
-	color: var(--matchup-ink-left, #ffffff);
-	text-shadow: var(--matchup-shadow-left, none);
-}
-
-.gd-poster-team:last-child {
-	color: var(--matchup-ink-right, #ffffff);
-	text-shadow: var(--matchup-shadow-right, none);
-}
-
-// White disc, tinted with the team's own colour — the same wash the matchup card uses, so a
-// dark crest never disappears into a dark half of the poster.
-// The plate is a repair, not a decoration: it exists so a crest that would otherwise disappear into
-// a dark surface still reads. A crest that reads on its own — which is most of them — and ESPN's
-// white mark, which reads on anything, are both drawn bare. The box keeps its size either way so a
-// row carrying one of each stays level.
-.gd-poster-crest.is-bare,
-.game-detail-team-logo-shell.is-bare {
-	background: none;
-	box-shadow: none;
-}
-
-.gd-poster-crest {
-	width: 80px;
-	height: 80px;
-	border-radius: 999px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-shrink: 0;
-	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35), 0 6px 16px -8px rgba(3, 7, 12, 0.85);
-}
-
-.gd-poster-crest-logo {
-	width: 64px;
-	height: 64px;
-}
-
-// The disc behind it already carries the team's colour wash, so a second grey disc inside it would
-// read as a hole. The letter colour is set per-team from the component.
-.gd-poster-crest-logo .crest-fallback {
-	@include gc.scoreboard-figures;
-	background: transparent;
-	font-size: 1.25rem;
-	letter-spacing: 0.02em;
-}
-
-.gd-poster-name {
-	font-size: 0.72rem;
-	font-weight: 700;
-	line-height: 1.2;
-	color: inherit;
-	text-align: center;
-	text-wrap: balance;
-}
-
-.gd-poster-meta {
-	display: flex;
-	align-items: center;
-	gap: 0.3rem;
-}
-
-.gd-poster-record {
-	font-size: 0.58rem;
-	font-weight: 600;
-	letter-spacing: 0.02em;
-	color: inherit;
-}
-
-// The fill says favourited, not a gold: on the Sabres' or the Packers' own colour a gold star is
-// not there at all.
-.gd-poster-star {
-	--as-btn-color:        currentColor;
-	--as-btn-hover-color:  currentColor;
-	--as-btn-active-color: currentColor;
-	position: relative;
-	font-size: 0.72rem;
-	color: inherit;
-	text-decoration: none;
-	opacity: 0.75;
-	transition: opacity m.$motion-snap m.$motion-ease;
-
-	// The same 24px target and the same rest-then-brighten hover as the list card's star.
-	&::after {
-		content: '';
-		position: absolute;
-		inset: -6px;
-	}
-
-	&:hover,
-	&:focus-visible,
-	&[data-favorited='true'] { opacity: 1; }
-}
-
-.gd-poster-status {
-	margin-top: 0.5rem;
-	text-align: center;
-	font-size: 0.62rem;
-	font-weight: 700;
-	letter-spacing: 0.04em;
-	text-transform: uppercase;
-	color: var(--matchup-ink-center, #ffffff);
-	text-shadow: var(--matchup-shadow-center, none);
-}
-
-.gd-poster-vs {
-	align-self: center;
-	font-size: 0.72rem;
-	font-weight: 600;
-	letter-spacing: 0.04em;
-	color: var(--matchup-ink-center, #ffffff);
-	text-shadow: var(--matchup-shadow-center, none);
-}
-
-// The countdown and series dots are shared with the light hero, so they are re-toned here
-// rather than forked into poster-only components.
-.gd-poster {
-	.gd-countdown { margin-top: 0.7rem; gap: 0.28rem; }
-
-	.gd-countdown-when {
-		font-size: 0.74rem;
-		color: rgba(255, 255, 255, 0.86);
-	}
-
-	.gd-countdown-value,
-	.gd-countdown-zero {
-		font-size: 2.3rem;
-		font-weight: 700;
-		color: #ffffff;
-		text-shadow: 0 2px 12px rgba(3, 7, 12, 0.6);
-	}
-
-	.gd-countdown-unit {
-		font-size: 0.78rem;
-		color: rgba(255, 255, 255, 0.62);
-		margin-left: 0.12rem;
-	}
-
-	.gd-countdown-soon {
-		font-size: 1.5rem;
-		font-weight: 700;
-		color: #ffffff;
-		text-align: center;
-		margin-top: 0.7rem;
-		text-shadow: 0 2px 12px rgba(3, 7, 12, 0.6);
-	}
-
-	.series-dots-wrap { margin-top: 0.5rem; }
-	.series-dots-summary { color: rgba(255, 255, 255, 0.75); box-shadow: none; }
-	.series-dot-empty,
-	.series-dot-not-needed { color: rgba(255, 255, 255, 0.45); }
-}
-
-// ── Pre-game setup card ──────────────────────────────────────────────────────
-// Same light card as the game-boost section, so the two read as one family.
-.gd-setup {
-	background: #f8fafc;
-	border: 1px solid #d1d5db;
-	border-radius: 0.35rem;
-	padding: 0.4rem 0.5rem;
-	margin-top: 0.5rem;
-	color: #111827;
-}
-
-.gd-setup-heading {
-	font-size: 0.62rem;
-	font-weight: 700;
-	border-bottom: 1px solid #d1d5db;
-	padding-bottom: 0.16rem;
-	margin-bottom: 0.25rem;
-}
-
-// The boost row arrives from GameBoostInput's bare mode already laid out, so both row types
-// share one rule rather than the boost row being nested inside a second flex row.
-.gd-setup-row,
-.gd-setup > .game-detail-boost-row {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	gap: 0.5rem;
-	padding: 0.24rem 0;
-}
-
-.gd-setup > * + * { border-top: 1px solid #e5e7eb; }
-// The heading already draws its own rule; the first row must not double it.
-.gd-setup > .gd-setup-heading + * { border-top: 0; }
-
-.gd-setup-row {
-	// The shared tab-assign control carries a top margin for its place on a game card.
-	.game-card-tab-assign { margin-top: 0; flex-shrink: 0; max-width: 9.5rem; }
-}
-
-.gd-setup-explainer {
-	font-size: 0.58rem;
-	color: #4b5563;
-	line-height: 1.3;
-	flex: 1;
-	min-width: 0;
-}
-
-// Who is starting and who leads the two teams, in the same light card family as the setup block
-// above it.
-//
-// The starters mirror the poster: two short names side by side, each under the crest it belongs to.
-// The leaders do not, and cannot. A football value runs to 21 characters — "14/23, 141 YDS, 1 INT"
-// — against four for baseball's ".276", and no half-width column fits both, so every leader gets
-// the full width of the card and the team is carried by colour instead of by position.
-.gd-pregame-starters {
-	display:               grid;
-	grid-template-columns: 1fr 1fr;
-	column-gap:            0.4rem;
-	padding:               0.3rem 0 0.24rem;
-}
-
-.gd-pregame-starter {
-	display:        flex;
-	flex-direction: column;
-	align-items:    center;
-	text-align:     center;
-	min-width:      0;
-	gap:            0.12rem;
-}
-
-// The disc is the team's colour, which is the only thing distinguishing two headshots on a card
-// that has no crests of its own. The hairline keeps a pale team colour from dissolving into the
-// card behind it. Grey underneath for a team whose colour ESPN sent as something unparseable.
-.gd-pregame-disc {
-	display:       inline-flex;
-	border-radius: 50%;
-	overflow:      hidden;
-	flex-shrink:   0;
-	background:    #e5e7eb;
-	box-shadow:    0 0 0 1px rgba(17, 24, 39, 0.14);
-}
-
-.gd-pregame-starter-shot {
-	width:  38px;
-	height: 38px;
-}
-
-// `cover` rather than the crest's own `contain`: a headshot is a 350x254 crop of a person, and
-// letterboxing one inside a circle leaves bands above and below the head.
-//
-// Nothing here restates `.crest-fallback`. _crest.scss lays the placeholder out and hides it with
-// `[data-crest-state='loaded'] > .crest-fallback`, which is the same specificity as a nested rule
-// here would be — so re-declaring `display: flex` wins on source order and pins the placeholder up
-// for good. Team logos never showed it because they are opaque; these headshots are transparent
-// PNGs, so the disc reads as a white halo around the player's head.
-.gd-pregame-disc-crest {
-	width:  100%;
-	height: 100%;
-
-	img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
-}
-
-.gd-pregame-starter-name {
-	font-size:     0.66rem;
-	font-weight:   600;
-	line-height:   1.2;
-	overflow-wrap: anywhere;
-}
-
-// The unlabelled fallback, for a sport that sends a pre-formatted line and no separate stats.
-.gd-pregame-starter-line {
-	font-size: 0.6rem;
-	color:     #4b5563;
-}
-
-.gd-pregame-starter-stats {
-	display:         flex;
-	justify-content: center;
-	gap:             0.6rem;
-	margin-top:      0.06rem;
-}
-
-.gd-pregame-stat {
-	display:        flex;
-	flex-direction: column;
-	align-items:    center;
-	line-height:    1.15;
-}
-
-.gd-pregame-stat-value {
-	font-size:   0.68rem;
-	font-weight: 600;
-	color:       #111827;
-}
-
-// Quiet enough that the number stays the thing being read, and uppercase so a two-letter label
-// does not read as an initial.
-.gd-pregame-stat-label {
-	font-size:      0.5rem;
-	font-weight:    600;
-	color:          #6b7280;
-	text-transform: uppercase;
-	letter-spacing: 0.04em;
-}
-
-.gd-pregame-starter-status {
-	font-size:      0.54rem;
-	color:          #6b7280;
-	text-transform: uppercase;
-	letter-spacing: 0.02em;
-}
-
-.gd-pregame-leaders {
-	padding-top: 0.16rem;
-}
-
-.gd-pregame-category {
-	font-size:      0.54rem;
-	font-weight:    700;
-	color:          #6b7280;
-	text-transform: uppercase;
-	letter-spacing: 0.04em;
-	margin:         0.24rem 0 0.1rem;
-
-	&:first-child { margin-top: 0; }
-}
-
-// `1fr` on the name and `auto` on the value, deliberately: a truncated name is still readable and
-// a truncated stat is not, so the name is what gives way when a row runs out of room.
-.gd-pregame-leader-row {
-	display:               grid;
-	grid-template-columns: 20px 1.6rem 1fr auto;
-	align-items:           center;
-	column-gap:            0.3rem;
-	padding:               0.11rem 0.24rem 0.11rem 0.14rem;
-	border-radius:         0.2rem;
-
-	& + & { margin-top: 0.08rem; }
-}
-
-.gd-pregame-leader-shot {
-	width:  20px;
-	height: 20px;
-
-	// Only the size, so the hide rule in _crest.scss keeps its say.
-	.crest-fallback { font-size: 0.44rem; }
-}
-
-.gd-pregame-leader-team {
-	font-size:      0.56rem;
-	font-weight:    700;
-	letter-spacing: 0.02em;
-}
-
-.gd-pregame-leader-player {
-	font-size:     0.62rem;
-	color:         #374151;
-	overflow:      hidden;
-	text-overflow: ellipsis;
-	white-space:   nowrap;
-}
-
-.gd-pregame-leader-value {
-	font-size:   0.62rem;
-	font-weight: 600;
-	text-align:  right;
-	white-space: nowrap;
-}
-
-// ── Matchup ──────────────────────────────────────────────────────────────────
-// Recent form, the season stats side by side, and the injury report, in the same light card the
-// starters and leaders sit on.
-
-.gd-form {
-	padding: 0.14rem 0 0.2rem;
-}
-
-// The team column is wide enough for "Back-to-back" under a three-letter abbreviation, so both
-// rows start their five results on the same edge.
-.gd-form-row {
-	display:               grid;
-	grid-template-columns: 3.4rem 1fr;
-	align-items:           center;
-	column-gap:            0.3rem;
-
-	& + & { margin-top: 0.22rem; }
-}
-
-.gd-form-team {
-	display:        flex;
-	flex-direction: column;
-	min-width:      0;
-	line-height:    1.2;
-}
-
-.gd-form-abbreviation {
-	font-size:      0.62rem;
-	font-weight:    700;
-	letter-spacing: 0.02em;
-}
-
-.gd-form-rest {
-	font-size: 0.5rem;
-	color:     #6b7280;
-}
-
-.gd-form-results {
-	display:               grid;
-	grid-template-columns: repeat(5, 1fr);
-	column-gap:            0.14rem;
-}
-
-// The quiet weight is the loss. A win reads in full ink and a draw sits between them, so the row
-// scans as a run of results without a colour having to say which.
-.gd-form-cell {
-	display:        flex;
-	flex-direction: column;
-	align-items:    center;
-	gap:            0.04rem;
-	padding:        0.12rem 0 0.1rem;
-	line-height:    1.1;
-	color:          #6b7280;
-
-	&[data-result='W'] { color: #111827; }
-	&[data-result='D'],
-	&[data-result='T'] { color: #4b5563; }
-}
-
-.gd-form-crest {
-	width:  14px;
-	height: 14px;
-}
-
-.gd-form-letter {
-	font-size:   0.62rem;
-	font-weight: 700;
-}
-
-.gd-form-score {
-	font-size:            0.52rem;
-	font-variant-numeric: tabular-nums;
-	white-space:          nowrap;
-}
-
-// The two abbreviations sit over the columns they head, which is the whole legend the bars need.
-.gd-compare-heading {
-	display:         flex;
-	justify-content: space-between;
-}
-
-.gd-compare {
-	padding: 0.06rem 0 0.2rem;
-}
-
-// Value, label, value, and the bar on a line of its own under all three.
-.gd-compare-row {
-	display:               grid;
-	grid-template-columns: 1fr auto 1fr;
-	align-items:           baseline;
-	column-gap:            0.3rem;
-	padding:               0.14rem 0;
-
-	& + & { border-top: 1px solid #e5e7eb; }
-}
-
-.gd-compare-value {
-	display:              flex;
-	align-items:          baseline;
-	gap:                  0.2rem;
-	font-size:            0.64rem;
-	color:                #4b5563;
-	font-variant-numeric: tabular-nums;
-
-	&[data-better='true'] {
-		font-weight: 700;
-		color:       #111827;
-	}
-}
-
-// The home value is the row's third child. Its rank goes on the inside too, so both ranks sit
-// against the label.
-.gd-compare-row > .gd-compare-value:nth-child(3) {
-	justify-content: flex-end;
-
-	.gd-compare-rank { order: -1; }
-}
-
-.gd-compare-rank {
-	font-size:   0.5rem;
-	font-weight: 600;
-	color:       #6b7280;
-}
-
-.gd-compare-label {
-	font-size:      0.54rem;
-	font-weight:    600;
-	color:          #6b7280;
-	text-transform: uppercase;
-	letter-spacing: 0.04em;
-	text-align:     center;
-}
-
-.gd-compare-bar {
-	grid-column:   1 / -1;
-	display:       flex;
-	gap:           2px;
-	height:        3px;
-	margin-top:    0.14rem;
-	border-radius: 2px;
-	overflow:      hidden;
-}
-
-.gd-injuries {
-	padding-bottom: 0.14rem;
-}
-
-.gd-injury-team + .gd-injury-team { margin-top: 0.2rem; }
-
-.gd-injury-row {
-	display:               grid;
-	grid-template-columns: 20px 1fr auto;
-	align-items:           center;
-	column-gap:            0.3rem;
-	padding:               0.11rem 0.24rem 0.11rem 0.14rem;
-	border-radius:         0.2rem;
-
-	& + & { margin-top: 0.08rem; }
-}
-
-.gd-injury-player {
-	display:        flex;
-	flex-direction: column;
-	min-width:      0;
-	line-height:    1.2;
-}
-
-.gd-injury-name,
-.gd-injury-detail {
-	overflow:      hidden;
-	text-overflow: ellipsis;
-	white-space:   nowrap;
-}
-
-.gd-injury-name {
-	font-size:   0.62rem;
-	font-weight: 600;
-	color:       #111827;
-}
-
-.gd-injury-detail {
-	font-size: 0.52rem;
-	color:     #6b7280;
-}
-
-.gd-injury-status {
-	font-size:   0.58rem;
-	font-weight: 600;
-	color:       #4b5563;
-	white-space: nowrap;
-
-	&[data-status='out'] {
-		font-weight: 700;
-		color:       #111827;
-	}
-}
-
-.gd-injury-none {
-	font-size: 0.58rem;
-	color:     #6b7280;
-	padding:   0.06rem 0.14rem;
-}
-
-// ── Box score ────────────────────────────────────────────────────────────────
-// The line score, the team comparison and one team's player tables, in the same light card family
-// as the blocks above. Everything below is Bootstrap's .table doing the work; these rules only
-// re-skin properties Bootstrap already sets on the same elements, plus the two column behaviours a
-// 263px card needs that no utility expresses.
-
-.gd-box-subheading {
-	font-size:      0.55rem;
-	font-weight:    700;
-	color:          #6b7280;
-	text-transform: uppercase;
-	letter-spacing: 0.04em;
-	margin:         0.3rem 0 0.14rem;
-}
-
-.gd-box > .gd-box-line .gd-box-subheading:first-child,
-.gd-box > .gd-box-compare .gd-box-subheading:first-child {
-	margin-top: 0.14rem;
-}
-
-.gd-box-table {
-	font-size:     0.6rem;
-	margin-bottom: 0.2rem;
-
-	// Numbers are read down a column, which is what the monospace face is for in this project.
-	// The name column opts back out below.
-	td,
-	th:not(.gd-box-name) {
-		font-variant-numeric: tabular-nums;
-		text-align:           center;
-		white-space:          nowrap;
-	}
-
-	thead th {
+	// League marks are rounded rects, not discs, so the placeholder cannot inherit the shared circle.
+	.league-toggle-logo .crest-fallback {
+		border-radius:  0.3rem;
+		background:     var(--as-border-color);
+		color:          var(--as-body-color);
 		font-size:      0.5rem;
-		color:          #4b5563;
-		letter-spacing: 0.02em;
+		letter-spacing: 0.04em;
 	}
 
-	tfoot th,
-	tfoot td { font-weight: 700; }
-}
-
-// The player tables and the standings are read down a column, so their stats sit flush right in
-// Geist's tabular figures, where ".276" lands under ".301" digit for digit. DM Sans has no tabular
-// figures, so the `tabular-nums` above did nothing on it. The line score and the team comparison
-// stay centred under their headings.
-.gd-box-table:not(.gd-box-line-table, .gd-box-compare-table) {
-	td:not(.gd-box-name, .gd-box-dnp) {
-		@include gc.scoreboard-figures;
-		text-align: right;
+	.popup-root {
+		position: relative;
+		width: 320px;
+		height: 560px;
 	}
 
-	th:not(.gd-box-name) { text-align: right; }
-}
-
-// A truncated name is still readable and a truncated stat is not, so the name column takes all the
-// slack and gives way first. `max-width: 0` is what lets a percentage-width table cell actually
-// ellipsize — without it the cell grows to its content instead.
-.gd-box-name {
-	width:         100%;
-	max-width:     0;
-	overflow:      hidden;
-	text-overflow: ellipsis;
-	white-space:   nowrap;
-	text-align:    left;
-	font-weight:   600;
-}
-
-.gd-box-name-sub { padding-left: 0.7rem !important; }
-
-.gd-box-position {
-	font-size:   0.5rem;
-	font-weight: 400;
-	color:       #6b7280;
-	margin-left: 0.2rem;
-}
-
-.gd-box-dnp {
-	font-size:  0.52rem;
-	color:      #6b7280;
-	font-style: italic;
-}
-
-.gd-box-line-team {
-	font-weight: 700;
-	text-align:  left;
-	white-space: nowrap;
-}
-
-// A flex span inside the cell rather than `display: flex` on the cell itself: a table cell that
-// stops being one drops out of the fixed layout that keeps the innings even.
-.gd-box-line-id {
-	display:     flex;
-	align-items: center;
-	gap:         0.2rem;
-}
-
-.gd-box-line-crest {
-	width:  13px;
-	height: 13px;
-}
-
-.gd-box-line-abbr {
-	font-size:      0.58rem;
-	font-weight:    700;
-	letter-spacing: 0.02em;
-}
-
-.gd-box-line-total { font-weight: 700; }
-
-// Nine innings plus R-H-E is thirteen columns. Fixed layout divides the width evenly instead of
-// letting a two-digit inning steal room from the ones beside it.
-.gd-box-line-table {
-	table-layout: fixed;
-	// Fixed layout divides the table's width evenly however many columns there are, which is what
-	// keeps a two-digit inning from stealing room from the ones beside it. It also means a 13th
-	// inning would squeeze all sixteen columns to 14px and clip their digits, so the min-width is
-	// what makes the table overflow its wrapper and scroll instead. Nine innings plus R-H-E lands
-	// under the card's width and never scrolls.
-	min-width:    calc(3.5rem + var(--gd-box-line-columns) * 1.05rem);
-
-	// Wide enough for a 13px crest and a three-letter abbreviation. Every rem spent here comes
-	// out of the innings, which is why the nine-inning fit is a test rather than a calculation.
-	.gd-box-line-team { width: 3.5rem; }
-}
-
-// The label takes the middle and the two values sit under the abbreviations that own them.
-.gd-box-compare-table {
-	td:first-child,
-	td:last-child,
-	thead th:first-child,
-	thead th:last-child { width: 3.4rem; font-weight: 600; }
-}
-
-.gd-box-compare-team {
-	font-size:      0.58rem;
-	letter-spacing: 0.02em;
-}
-
-.gd-box-compare-label {
-	width:       100%;
-	text-align:  center !important;
-	font-weight: 400 !important;
-	color:       #4b5563;
-	font-size:   0.55rem;
-}
-
-.gd-box-tabs {
-	margin-top: 0.3rem;
-
-	.nav-link {
-		display:     flex;
-		align-items: center;
-		gap:         0.22rem;
+	.popup-confetti-canvas {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+		z-index: 3;
 	}
-}
 
-.gd-box-tab-crest {
-	width:  13px;
-	height: 13px;
-}
-
-// ── Detail screen tab strip ──────────────────────────────────────────────────
-// The strip that files the whole screen, sitting on the shell rather than on a light card. That is
-// why it is `.nav-underline` and not the lifted `.nav-tabs` the box score's away/home switcher uses:
-// `$nav-tabs-link-active-bg` is #f8fafc for that card, and would be a slab across the dark screen.
-//
-// Bootstrap exposes the whole component through custom properties, so every line below sets one
-// rather than overriding a rule. The labels it is not on take the muted ink and the one it is on
-// takes the accent ink, which is the brand orange on dark and the deeper one on light.
-.gd-tabs {
-	--as-nav-link-color:                  var(--as-secondary-color);
-	--as-nav-link-hover-color:            var(--as-body-color);
-	--as-nav-underline-link-active-color: var(--as-accent-ink);
-	--as-nav-underline-border-width:      0.14rem;
-	--as-nav-underline-gap:               0;
-
-	// Tighter than the 0.5rem the cards below take. This is chrome rather than content, and every
-	// pixel it spends here comes off the PowerScore breakdown's head start down the screen.
-	margin-top:    0.34rem;
-	margin-bottom: 0.05rem;
-	// The rule the underline is drawn against, so an unselected tab reads as sitting on the same
-	// line rather than floating above nothing.
-	border-bottom: 1px solid var(--as-border-color);
-
-	// Three labels across 320px read as one control when they divide the width evenly, and the
-	// underline then measures the tab rather than the word inside it.
-	.nav-item { flex: 1 1 0; }
-
-	.nav-link {
-		width:      100%;
-		padding:    0.26rem 0.2rem;
-		text-align: center;
-		// Onto the strip's own rule rather than a pixel above it.
-		margin-bottom: -1px;
+	.popup-empty-leagues {
+		border: 1px solid rgba(247, 92, 3, 0.45);
+		background: rgba(247, 92, 3, 0.08);
 	}
-}
 
-// ── Standings ────────────────────────────────────────────────────────────────
-// The same light card and the same table skin as the box score, because it is the same kind of
-// thing: rows of numbers read down a column. Only the team column differs, and only because a
-// standings row is named rather than abbreviated — ESPN sends no abbreviation in this block at
-// all, so the name column has to hold "Brighton & Hove Albion" as well as "Miami".
-.gd-standings > .gd-standings-block:first-child > :first-child { margin-top: 0.14rem; }
-
-.gd-standings-block + .gd-standings-block { margin-top: 0.45rem; }
-
-// The conference over its divisions. Darker and a step larger than the division subheadings
-// under it, and carrying the card's own rule, so two levels of heading read as two levels rather
-// than as one list of eight. Absent entirely for a flat league — a Premier League table has
-// nothing above it to name.
-.gd-standings-conference {
-	font-size:      0.62rem;
-	font-weight:    700;
-	color:          #111827;
-	border-bottom:  1px solid #d1d5db;
-	padding-bottom: 0.16rem;
-	margin-bottom:  0.1rem;
-}
-
-.gd-standings-rank {
-	width:       1.15rem;
-	font-weight: 600;
-	color:       #6b7280;
-}
-
-// A flex span inside the cell rather than `display: flex` on the cell itself, the same way the
-// line score's team cell does it: a table cell that stops being one drops out of the layout
-// keeping the number columns aligned.
-.gd-standings-id {
-	display:     flex;
-	align-items: center;
-	gap:         0.24rem;
-	min-width:   0;
-}
-
-.gd-standings-crest {
-	width:       13px;
-	height:      13px;
-	flex-shrink: 0;
-}
-
-// The name gives way first. `.gd-box-name` truncates the cell; a flex child inside it needs its
-// own `min-width: 0` before it will shrink far enough to let that happen.
-.gd-standings-name {
-	min-width:     0;
-	overflow:      hidden;
-	text-overflow: ellipsis;
-	white-space:   nowrap;
-}
-
-// The wash is doing the work of saying which two rows these are. The weight is what carries it
-// for a team whose colour is too pale to register as a 16% tint.
-.gd-standings-matchup { font-weight: 700; }
-
-// btn-link is the right component and its colour is the link orange, which only reaches 3.0:1 on
-// this card.
-.gd-box-more {
-	font-size:       0.55rem;
-	font-weight:     700;
-	color:           #4b5563;
-	text-decoration: underline;
-	padding:         0.05rem 0;
-
-	&:hover,
-	&:focus { color: #111827; }
-}
-
-// What just happened, in ESPN's own sentence. Same dark treatment as the info panel below — it is
-// part of the same column of sections — but it sits first in the live stack, directly under the
-// hero, so it is read as live state rather than as reference information.
-.gd-play-panel {
-	margin-top:  0.45rem;
-	padding-top: 0.34rem;
-	border-top:  1px solid var(--as-border-color);
-}
-
-.gd-play-heading {
-	font-size:     0.62rem;
-	font-weight:   700;
-	color:         var(--as-body-color);
-	margin-bottom: 0.24rem;
-}
-
-// The same 3px rule and 0.6rem indent the game list's section titles carry, in the colour of
-// whoever made the play rather than the product orange. Without a team the indent stays and the
-// rule goes, so the block does not shift when ESPN attributes a play to nobody.
-.gd-play-body {
-	padding-left: 0.6rem;
-	border-left:  3px solid transparent;
-}
-
-.gd-play-body.has-accent {
-	border-left-style: solid;
-}
-
-// `pre-line` rather than `normal`: a penalty arrives as two sentences joined by a newline, and
-// flattening them produces one run-on sentence that reads as a single play.
-.gd-play-text {
-	font-size:      0.62rem;
-	line-height:    1.35;
-	color:          var(--as-ink-soft);
-	white-space:    pre-line;
-	overflow-wrap:  anywhere;
-}
-
-.gd-play-drive {
-	margin-top: 0.14rem;
-	font-size:  0.58rem;
-	color:      var(--as-secondary-color);
-}
-
-// One line per card, each under its own team's rule, with a gap so two bars from the same side
-// still read as two cards.
-.gd-red-card + .gd-red-card {
-	margin-top: 0.2rem;
-}
-
-.gd-play-body + .gd-play-heading {
-	margin-top: 0.34rem;
-}
-
-// The due-up block borrows the section skin above and the Your Players text (`fantasy-player-*`),
-// and only adds its own row: that list's 20px portrait (`gd-pregame-leader-shot`), then the name, then
-// the line pushed to the right edge.
-.gd-dueup-row {
-	padding: 0.18rem 0;
-
-	& + & { border-top: 1px solid var(--as-secondary-bg); }
-}
-
-// The position is a sibling of the name here, not nested in it as in Your Players, so it needs the
-// name's size handed down or it falls back to the body's.
-.gd-dueup-who {
-	font-size:   0.62rem;
-	line-height: 1.35;
-}
-
-// Quiet and on one line: "0-1, BB" is a footnote to the name. The cap stops a long line squeezing
-// the name to nothing, and the tabular figures keep the digits down the edge in step.
-.gd-dueup-line {
-	max-width:            45%;
-	white-space:          nowrap;
-	text-align:           right;
-	font-variant-numeric: tabular-nums;
-}
-
-// Venue / broadcast / odds / weather, as one titled section rather than four stacked centred
-// lines. Takes the chart cards' treatment, not the breakdown's white card: everything below the
-// PowerScore math reads as one dark column of sections.
-.game-info-panel {
-	margin-top:  0.45rem;
-	padding-top: 0.34rem;
-	border-top:  1px solid var(--as-border-color);
-}
-
-// Opening a tab pane, either section sits right under the strip's own rule, and its top rule drew a
-// second hairline a few pixels below it. The strip's rule does the job there, at the same distance
-// above the heading a section rule keeps everywhere else.
-.tab-pane > :is(.gd-play-panel, .game-info-panel):first-child {
-	margin-top: 0;
-	border-top: 0;
-}
-
-.game-info-heading {
-	font-size:     0.62rem;
-	font-weight:   700;
-	color:         var(--as-body-color);
-	margin-bottom: 0.24rem;
-}
-
-.game-info-row {
-	display:     flex;
-	align-items: baseline;
-	gap:         0.3rem;
-	padding:     0.14rem 0;
-
-	& + & { border-top: 1px solid var(--as-secondary-bg); }
-}
-
-// For a label that reads as a sentence: it takes the full line, and the value drops beneath it,
-// indented past the icon so both start at the same edge.
-.game-info-row-stacked {
-	flex-wrap: wrap;
-	row-gap:   0.06rem;
-
-	.game-info-label { width: auto; }
-
-	.game-info-value {
-		flex-basis:   100%;
-		padding-left: calc(0.68rem + 0.3rem);
+	.popup-empty-leagues-copy {
+		font-size: 0.78rem;
+		color: var(--as-body-color);
 	}
-}
 
-// Same marker column as the breakdown's factor icons, so the two sections share a left edge.
-.game-info-icon {
-	display:     inline-flex;
-	width:       0.68rem;
-	font-size:   0.62rem;
-	line-height: 1;
-	flex-shrink: 0;
-	color:       var(--as-faint);
-}
-
-.game-info-label {
-	flex-shrink: 0;
-	// Sized for Attendance, which is the longest label this panel carries in every language it
-	// ships in — 2.9rem was set when Watch, Venue and Line were the whole list, and it wraps
-	// anything over about ten characters. The value column loses 11px and clips nothing.
-	width:       3.6rem;
-	font-size:   0.58rem;
-	color:       var(--as-secondary-color);
-}
-
-.game-info-value {
-	flex:        1 1 auto;
-	min-width:   0;
-	font-size:   0.62rem;
-	line-height: 1.25;
-	color:       var(--as-ink-soft);
-	overflow-wrap: anywhere;
-}
-
-// The one line that answers "which tab do I open", so it carries the section's only bright text.
-.game-info-value-strong {
-	font-size:   0.66rem;
-	font-weight: 600;
-	color:       var(--as-body-color);
-}
-
-// The building carries the weight; the city sits under it at the same size the weather sub-line
-// uses, so the value column keeps a single sub-line idiom rather than growing a second one.
-.game-info-venue-name {
-	font-weight: 600;
-}
-
-.game-info-venue-location {
-	margin-top: 0.04rem;
-	font-size:  0.58rem;
-	color:      var(--as-secondary-color);
-}
-
-.game-info-weather {
-	display:     flex;
-	align-items: center;
-	gap:         0.25rem;
-	margin-top:  0.08rem;
-	font-size:   0.58rem;
-	color:       var(--as-secondary-color);
-}
-
-.game-info-link {
-	font-weight: 600;
-	color:       var(--as-accent-ink);
-}
-
-// Matches the shape of Reboot's `[type="button"]:not(:disabled)` so the help cursor survives it.
-button.game-info-attribution {
-	&:not(:disabled) { cursor: help; }
-
-	display:       inline-flex;
-	align-items:   center;
-	margin-left:   0.35rem;
-	font-size:     0.54rem;
-	color:         var(--as-faint);
-	opacity:       0.8;
-	white-space:   nowrap;
-	padding:       0;
-	background:    transparent;
-	border:        none;
-	border-bottom: 1px dotted currentColor;
-
-	&:hover { opacity: 1; }
-	&:focus-visible {
-		opacity:        1;
-		outline:        1px solid bs.$primary;
-		outline-offset: 1px;
-		border-radius:  2px;
+	.popup-loading-wrap {
+		min-height: 100px;
 	}
-}
 
-.series-dots-wrap {
-	padding: 0;
-	margin-top: 0.3rem;
-}
-
-.series-dots-summary {
-	font-size:   0.66rem;
-	font-weight: 500;
-	color:       #6b7280;
-	line-height: 1;
-}
-
-.series-dot {
-	font-size: 0.72rem;
-}
-
-.series-dot-empty,
-.series-dot-not-needed {
-	color: #374151;
-}
-
-.series-dot-empty.is-if-necessary {
-	opacity: 0.45;
-}
-
-.game-detail-shell {
-	// The shell's own padding, and the amount the sticky bar has to bleed back out to reach the
-	// popup edge. One variable so the light frame can push both inwards together.
-	--gd-inset: 0.75rem;
-	padding: var(--gd-inset);
-	background: var(--as-body-bg);
-
-	.game-meta-venue,
-	.game-meta-networks,
-	.game-meta-odds {
-		color: var(--as-ink-soft);
+	.popup-loading-text {
+		font-size: 0.78rem;
+		color: var(--as-body-color);
 	}
-}
 
-.game-detail-header {
-	position: sticky;
-	// Sticky offsets resolve against the scroll container's *padding* box, so top:0 would
-	// park the bar 0.75rem down. Pulling it back by that padding pins it flush to the top.
-	top: calc(var(--gd-inset) * -1);
-	z-index: 5;
-	display: flex;
-	align-items: center;
-	// Fixed height in both states so the compact matchup fading in never shifts the layout.
-	height: 2.5rem;
-	// The shell's padding scrolls away with the content. Bleed the bar back out to the popup edge
-	// and re-add that padding inside, so rows sliding under it are covered edge to edge.
-	margin: calc(var(--gd-inset) * -1) calc(var(--gd-inset) * -1) 0.5rem;
-	padding: 0 var(--gd-inset);
-	background: var(--as-body-bg);
-	border-bottom: 1px solid var(--as-border-color);
-}
+	// Every notice above the list shares one surface. Bootstrap's alert variants read the
+	// *-bg-subtle tokens, which this theme never sets, so they rendered as pale slabs on the dark popup.
+	.alert.popup-notice {
+		--as-alert-bg:            var(--as-tertiary-bg);
+		--as-alert-color:         var(--as-body-color);
+		--as-alert-border-color:  var(--as-border-color);
+		--as-alert-padding-x:     0.6rem;
+		--as-alert-padding-y:     0.5rem;
+		--as-alert-margin-bottom: 0.5rem;
+		font-size: 0.72rem;
+		line-height: 1.35;
 
-// Through Bootstrap's own variables rather than raw `background` and `:hover`. Its `:active` and
-// `:focus-visible` rules read these too, and with them undefined a press drew no fill and a
-// keyboard focus drew no ring.
-.game-detail-back-button {
-	--as-btn-color:               var(--as-body-color);
-	--as-btn-bg:                  var(--as-control-bg);
-	--as-btn-border-color:        var(--as-border-color);
-	--as-btn-hover-color:         var(--as-control-hover-color);
-	--as-btn-hover-bg:            var(--as-control-hover-bg);
-	--as-btn-hover-border-color:  var(--as-border-color);
-	--as-btn-active-color:        var(--as-control-hover-color);
-	--as-btn-active-bg:           var(--as-control-hover-bg);
-	--as-btn-active-border-color: var(--as-border-color);
-	display: inline-flex;
-	align-items: center;
-	flex-shrink: 0;
-	gap: 0.35rem;
-	font-size: 0.68rem;
-
-	&:focus-visible {
-		outline: 2px solid bs.$primary;
-		outline-offset: 2px;
-		box-shadow: none;
-	}
-}
-
-.game-detail-matchup {
-	display:        flex;
-	flex-direction: column;
-	align-items:    stretch;
-	gap:            0;
-	padding:        0.45rem 0.3rem 0.5rem;
-	margin-bottom:  0.45rem;
-}
-
-// A two-row grid rather than a flex row: crests share row 1 and labels row 2, so a name that
-// wraps to two lines grows its own row without knocking the logos out of level.
-.game-detail-teams-row {
-	display: grid;
-	grid-template-columns: 80px minmax(0, 1fr) 80px;
-	grid-template-areas:
-		"leftCrest  score  rightCrest"
-		"leftLabel  status rightLabel"
-		"leftRecord .      rightRecord"
-		"leftTimeouts .    rightTimeouts";
-	align-items: center;
-	justify-items: center;
-	column-gap: 0.25rem;
-	row-gap: 0.05rem;
-}
-
-.gd-area-left-crest { grid-area: leftCrest; }
-.gd-area-right-crest { grid-area: rightCrest; }
-.gd-area-left-label { grid-area: leftLabel; }
-.gd-area-right-label { grid-area: rightLabel; }
-.gd-area-left-record { grid-area: leftRecord; }
-.gd-area-right-record { grid-area: rightRecord; }
-.gd-area-left-timeouts { grid-area: leftTimeouts; }
-.gd-area-right-timeouts { grid-area: rightTimeouts; }
-
-.game-detail-team-wrap {
-	display: contents;
-}
-
-// Records get their own grid row so the two sides line up even when one name wraps and the
-// other does not.
-.game-detail-team-record {
-	align-self: start;
-	min-width: 0;
-	font-size: 0.58rem;
-	font-weight: 600;
-	line-height: 1.2;
-	letter-spacing: 0.02em;
-	color: #6b7280;
-	text-align: center;
-	white-space: nowrap;
-}
-
-// A qualifier in front of the name, not part of it — so "Alabama Crimson Tide" still reads as the
-// team and "#2" as a fact about it. Re-toned for the live hero further down.
-.game-detail-team-rank {
-	font-weight:  700;
-	color:        #6b7280;
-	margin-right: 0.22em;
-}
-
-.game-detail-team-name {
-	align-self: start;
-	min-width: 0;
-	font-size: 0.66rem;
-	font-weight: 700;
-	line-height: 1.2;
-	color: #111827;
-	text-align: center;
-	text-wrap: balance;
-}
-
-.game-detail-team-logo-shell {
-	width: 64px;
-	height: 64px;
-	border-radius: 999px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: transparent;
-}
-
-.game-detail-team-logo {
-	width: 52px;
-	height: 52px;
-}
-
-// Inset rather than sized, so the placeholder disc stays centred in the box: 46px inside 52px.
-.game-detail-team-logo .crest-fallback {
-	inset: 3px;
-	background: rgba(255, 255, 255, 0.16);
-	color: rgba(255, 255, 255, 0.85);
-}
-
-.game-detail-center {
-	grid-area: score;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 0.18rem;
-	min-width: 0;
-}
-
-// Each score takes an equal half of the row and hugs the divider, the way the list card's do. A
-// score centred in its own box left "7 | 14" with a wider gap on the 7's side. A three-digit score
-// is wider than half the row at this size, so it keeps its width rather than clipping, and only a
-// lopsided "7 | 114" moves the divider off the axis.
-.game-detail-score-row {
-	gap: 0.4rem;
-	justify-content: center;
-	width: 100%;
-
-	> .game-detail-score-value {
-		flex: 1 1 0;
-		min-width: max-content;
-
-		&:first-child {
-			justify-content: flex-end;
-			text-align: right;
-		}
-
-		&:last-child {
-			justify-content: flex-start;
-			text-align: left;
+		.btn-close {
+			font-size: 0.55rem;
 		}
 	}
-}
 
-.game-detail-score-value {
-	@include gc.scoreboard-figures;
-	font-size: 1.68rem;
-	color: #111827;
-	letter-spacing: -0.02em;
-	display: inline-flex;
-	justify-content: center;
-	min-width: 2.4ch;
-
-	// Final games only — see detailHero. The weight lives on the element as a Bootstrap utility,
-	// since `.fw-bold` is `!important` and would beat a font-weight set here.
-	&.is-loser { color: bs.$score-loser-color; }
-}
-
-.game-detail-period {
-	grid-area: status;
-	align-self: start;
-	font-size: 0.68rem;
-	color: #6c757d;
-	text-align: center;
-	white-space: nowrap;
-}
-
-// The popup's stylesheet also loads on the Guide, which uses this for its bars.
-.game-status-clock {
-	font-family: 'Lekton', monospace;
-	font-variant-numeric: tabular-nums;
-}
-
-.game-detail-formula-card {
-	margin-top: 0.45rem;
-	margin-bottom: 0.6rem;
-	padding: 0.4rem 0.5rem;
-}
-
-.gd-bar-compact {
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	display: flex;
-	align-items: center;
-	gap: 0.3rem;
-	opacity: 0;
-	pointer-events: none;
-	// Centred on the bar rather than laid out in the flex row, so the matchup stays on the
-	// card's axis no matter how wide the back button's label runs in a given locale.
-	transform: translate(-50%, calc(-50% + 4px));
-	transition: opacity m.$motion-base m.$motion-ease, transform m.$motion-base m.$motion-ease;
-
-	&.is-visible {
-		opacity: 1;
-		transform: translate(-50%, -50%);
-	}
-}
-
-.gd-bar-logo {
-	width: 18px;
-	height: 18px;
-}
-
-// The shell the crest sits in. Bare unless the artwork was measured as unreadable and the team has
-// no monochrome mark to fall back on, which at this size is the one state worth a plate.
-//
-// Only the plate clips. The crest used to be drawn at the full 18px inside an 18px circle, which
-// took 25px of ink off the Giants' 'ny' — a mark that runs the whole width of its own box, as most
-// wordmarks do — every time this bar was on screen, plate or no plate. Where a plate is drawn the
-// crest is inset to three quarters of it: measured over 264 crests, the furthest ink reaches 65% of
-// the way to the corner of its own box, and it is the share the guide rows and the team picker
-// already use.
-.gd-bar-logo-shell {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	flex-shrink: 0;
-	width: 18px;
-	height: 18px;
-	border-radius: 999px;
-
-	&:not(.is-bare) {
-		overflow: hidden;
-
-		.gd-bar-logo { width: 75%; height: 75%; }
+	// Bootstrap draws the close X in black and only inverts it under its own dark mode, which this
+	// theme leaves off, so the dark default needs the inversion stated.
+	:root {
+		--as-btn-close-filter: #{bs.$btn-close-filter-dark};
 	}
 
-	&.is-bare { background: none; box-shadow: none; }
-}
-
-.gd-bar-logo .crest-fallback { background: rgba(var(--as-body-color-rgb), 0.14); }
-
-.gd-bar-abbrev {
-	font-size: 0.66rem;
-	font-weight: 700;
-	color: var(--as-ink-soft);
-	letter-spacing: 0.03em;
-}
-
-.gd-bar-score {
-	@include gc.scoreboard-figures;
-	font-size: 0.95rem;
-	font-weight: 600;
-	line-height: 1;
-	color: var(--as-body-color);
-}
-
-.gd-bar-sep {
-	width: 1px;
-	height: 0.85em;
-	background: var(--as-border-color);
-}
-
-.gd-bar-status {
-	position: absolute;
-	right: 0.75rem;
-	top: 50%;
-	transform: translateY(-50%);
-	max-width: 5.5rem;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	font-size: 0.6rem;
-	color: var(--as-secondary-color);
-	opacity: 0;
-	pointer-events: none;
-	transition: opacity m.$motion-base m.$motion-ease;
-
-	&.is-visible {
-		opacity: 1;
+	[data-bs-theme='light'] {
+		--as-btn-close-filter: none;
 	}
 
-	&.is-ticking {
-		font-family: 'Lekton', monospace;
+	.popup-notice-title {
+		font-size: 0.78rem;
+	}
+
+	.popup-notice-icon {
+		color: var(--as-accent-ink);
+		line-height: 1.35;
+	}
+
+	.popup-notice-icon-danger {
+		color: bs.$danger;
+	}
+
+	.refresh-button {
+		position: relative;
+	}
+
+	.refresh-button-spinner {
+		position: absolute;
+		inset: 0;
+		width: 0.7rem;
+		height: 0.7rem;
+		margin: auto;
+		border-width: 0.12em;
+	}
+
+	.popup-notice-action {
+		font-size: 0.68rem;
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+
+	.popup-no-games-wrap {
+		padding: 1rem 0.5rem;
+	}
+
+	.popup-no-games-title {
+		font-size: 1rem;
+	}
+
+	.popup-no-games-sub {
+		font-size: 0.72rem;
+		color: var(--as-faint);
+	}
+
+	.popup-settings-link {
+		font-size: 0.85rem;
+		color: var(--as-secondary-ink);
+	}
+
+	.setting-toggle-label {
+		font-size: 0.65rem;
+	}
+
+	.setting-value-label {
+		font-size: 0.6rem;
+		font-family: 'Geist Figures', 'DM Sans', system-ui, sans-serif;
 		font-variant-numeric: tabular-nums;
 	}
-}
 
-@include m.reduced-motion {
-	.gd-bar-compact,
-	.gd-bar-status {
-		@include m.motion-still;
+	.temperature-unit-toggle {
+		font-size: 0.65rem;
+		padding:   0.1rem 0.5rem;
 	}
-}
 
-// ── The live and final hero, on the same scrim ───────────────────────────────
-// Every one of these children was drawn for near-black ink on a white card. The surface changed, so
-// each is re-toned here rather than forked into a second set of components — the same approach the
-// poster already took for the countdown and the series dots.
-.gd-hero-live {
-	border: 0;
+	.setting-explainer {
+		font-size: 0.55rem;
+		line-height: 1.3;
+		color: var(--as-faint);
+	}
 
-	// The team row takes each side's ink, as the poster does. Everything below it — the count, the
-	// at-bat panel, the field, the series — sits under the deepest part of the shade and stays white.
-	.game-detail-team-wrap.is-left,
-	.game-detail-score-row > :first-child {
+	.popup-empty-leagues-title {
+		font-size: 1.2rem;
+		letter-spacing: -0.015em;
+	}
+
+	.popup-loading-spinner {
+		color: #F75C03;
+		width: 1.5rem;
+		height: 1.5rem;
+		border-width: 0.2em;
+	}
+
+
+	.setup-no-leagues-warn {
+		font-size: 0.65rem;
+		color: var(--as-warning-ink);
+		padding: 0.35rem 0.5rem;
+		border: 1px solid rgba(var(--as-warning-rgb), 0.3);
+		border-radius: 0.35rem;
+		background: rgba(var(--as-warning-rgb), 0.07);
+	}
+
+	.sensitivity-ticks {
+		height: 0.85rem;
+		margin: 0.15rem 0.5rem 0;
+	}
+
+	.sensitivity-tick {
+		font-size: 0.5rem;
+		white-space: nowrap;
+	}
+
+	@for $i from 0 through 6 {
+		.sensitivity-tick-#{$i} { left: calc($i / 6 * 100%); }
+	}
+
+	.onb-league-logo {
+		width:         28px;
+		height:        28px;
+		border-radius: 50%;
+	}
+
+	.team-pick-row {
+		width:         100%;
+		padding-inline: 0;
+		border:        0;
+		background:    transparent;
+		color:         inherit;
+		text-align:    start;
+
+		&:focus-visible {
+			outline:        1px solid bs.$primary;
+			outline-offset: 2px;
+			border-radius:  0.25rem;
+		}
+	}
+
+	// Hovering an unstarred row previews the gold it would take.
+	.team-pick-star {
+		color:      var(--as-secondary-color);
+		transition: color m.$motion-snap m.$motion-ease;
+
+		.team-pick-row:hover &,
+		&[data-favorited='true'] { color: rgb(var(--as-warning-rgb)); }
+	}
+
+	// The same white disc the pre-game poster puts its crests on, at list size, tinted with a colour
+	// sampled from the crest itself. A navy or black logo on the dark popup is otherwise a silhouette.
+	.team-pick-crest {
+		display:         inline-flex;
+		align-items:     center;
+		justify-content: center;
+		width:           28px;
+		height:          28px;
+		border-radius:   999px;
+		overflow:        hidden;
+		box-shadow:      0 0 0 1px rgba(var(--as-overlay-rgb), 0.28);
+	}
+
+	.team-pick-crest-logo {
+		width:  21px;
+		height: 21px;
+	}
+
+	// The disc already carries the wash, so a second grey disc inside it would read as a hole. The
+	// disc under a crest that never loaded is plain white, so the initials take a dark ink.
+	.team-pick-crest-logo .crest-fallback {
+		background:  transparent;
+		color:       #111827;
+		font-size:   0.46rem;
+	}
+
+	.onb-league-logo .crest-fallback {
+		background:     var(--as-border-color);
+		color:          var(--as-body-color);
+		font-size:      0.5rem;
+		letter-spacing: 0.04em;
+	}
+
+	.league-toggle-grid {
+		display:               grid;
+		grid-template-columns: 1fr 1fr;
+		gap:                   0.35rem;
+		margin-top:            0.4rem;
+	}
+
+	.league-toggle-row {
+		display:        flex;
+		flex-direction: column;
+		gap:            0.3rem;
+		padding:        0.4rem 0.5rem;
+		border-radius:  0.35rem;
+		background:     var(--as-tertiary-bg);
+		border:         1px solid var(--as-secondary-bg);
+	}
+
+	.league-toggle-row-top {
+		display:         flex;
+		align-items:     center;
+		justify-content: space-between;
+	}
+
+	.league-toggle-label {
+		font-size:   0.72rem;
+		line-height: 1.25;
+	}
+
+	// CJK can break between any two characters; this holds it to the one break left before the count.
+	.league-offseason {
+		word-break: keep-all;
+	}
+
+	.league-order-list {
+		display:        flex;
+		flex-direction: column;
+		gap:            0.25rem;
+	}
+
+	.league-order-row {
+		display:       flex;
+		align-items:   center;
+		gap:           0.4rem;
+		padding:       0.25rem 0.4rem;
+		border-radius: 0.35rem;
+		background:    var(--as-tertiary-bg);
+		border:        1px solid var(--as-secondary-bg);
+		border-top:    2px solid transparent;
+
+		// The shared LeagueLogo is sized for the toggle grid; shrink it for these compact rows.
+		.league-toggle-logo {
+			width:  22px;
+			height: 22px;
+
+			.crest-fallback { font-size: 0.4rem; }
+		}
+
+		&.is-dragging {
+			opacity: 0.45;
+		}
+
+		&.is-drag-over {
+			border-top-color: #f75c03;
+		}
+	}
+
+	.league-order-handle {
+		color:       var(--as-secondary-color);
+		cursor:      grab;
+		flex-shrink: 0;
+
+		&:active { cursor: grabbing; }
+	}
+
+	.league-order-label {
+		flex:        1 1 auto;
+		font-size:   0.72rem;
+		line-height: 1.25;
+		min-width:   0;
+		overflow:    hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+	.league-order-move-btn {
+		padding:     0 0.2rem;
+		color:       var(--as-secondary-color);
+		line-height: 1;
+		flex-shrink: 0;
+
+		&:hover:not(:disabled) { color: var(--as-body-color); }
+		&:disabled             { opacity: 0.3; }
+	}
+
+	.league-order-reset {
+		align-self:      flex-start;
+		padding:         0.1rem 0;
+		font-size:       0.7rem;
+		color:           var(--as-secondary-color);
+		text-decoration: none;
+
+		&:hover:not(:disabled) { color: var(--as-body-color); }
+	}
+
+	// ── Pre-game poster ──────────────────────────────────────────────────────────
+	// A card on the same geometry as .game-card, so it sits in the column with the setup card and
+	// the breakdown rather than cutting across it. Live games keep the light matchup card; this is
+	// the 'pre' hero only.
+	.gd-poster {
+		border-radius: 0.5rem;
+		margin-bottom: 0.5rem;
+		padding: 1.05rem 0.75rem 0.95rem;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.gd-poster-teams {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: start;
+		gap: 0.3rem;
+	}
+
+	.gd-poster-team {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.22rem;
+		min-width: 0;
+	}
+
+	// Each side in the ink its own colour takes, from `matchupSurfaceStyle`: near-black on a gold or a
+	// silver, white with a soft shadow everywhere else. The same variables the list card reads.
+	.gd-poster-team:first-child {
 		color: var(--matchup-ink-left, #ffffff);
 		text-shadow: var(--matchup-shadow-left, none);
 	}
 
-	.game-detail-team-wrap.is-right,
-	.game-detail-score-row > :last-child {
+	.gd-poster-team:last-child {
 		color: var(--matchup-ink-right, #ffffff);
 		text-shadow: var(--matchup-shadow-right, none);
 	}
 
-	.game-detail-center,
-	.game-detail-period {
+	// White disc, tinted with the team's own colour — the same wash the matchup card uses, so a
+	// dark crest never disappears into a dark half of the poster.
+	// The plate is a repair, not a decoration: it exists so a crest that would otherwise disappear into
+	// a dark surface still reads. A crest that reads on its own — which is most of them — and ESPN's
+	// white mark, which reads on anything, are both drawn bare. The box keeps its size either way so a
+	// row carrying one of each stays level.
+	.gd-poster-crest.is-bare,
+	.game-detail-team-logo-shell.is-bare {
+		background: none;
+		box-shadow: none;
+	}
+
+	.gd-poster-crest {
+		width: 80px;
+		height: 80px;
+		border-radius: 999px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35), 0 6px 16px -8px rgba(3, 7, 12, 0.85);
+	}
+
+	.gd-poster-crest-logo {
+		width: 64px;
+		height: 64px;
+	}
+
+	// The disc behind it already carries the team's colour wash, so a second grey disc inside it would
+	// read as a hole. The letter colour is set per-team from the component.
+	.gd-poster-crest-logo .crest-fallback {
+		@include gc.scoreboard-figures;
+		background: transparent;
+		font-size: 1.25rem;
+		letter-spacing: 0.02em;
+	}
+
+	.gd-poster-name {
+		font-size: 0.72rem;
+		font-weight: 700;
+		line-height: 1.2;
+		color: inherit;
+		text-align: center;
+		text-wrap: balance;
+	}
+
+	.gd-poster-meta {
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+
+	.gd-poster-record {
+		font-size: 0.58rem;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+		color: inherit;
+	}
+
+	// The fill says favourited, not a gold: on the Sabres' or the Packers' own colour a gold star is
+	// not there at all.
+	.gd-poster-star {
+		--as-btn-color:        currentColor;
+		--as-btn-hover-color:  currentColor;
+		--as-btn-active-color: currentColor;
+		position: relative;
+		font-size: 0.72rem;
+		color: inherit;
+		text-decoration: none;
+		opacity: 0.75;
+		transition: opacity m.$motion-snap m.$motion-ease;
+
+		// The same 24px target and the same rest-then-brighten hover as the list card's star.
+		&::after {
+			content: '';
+			position: absolute;
+			inset: -6px;
+		}
+
+		&:hover,
+		&:focus-visible,
+		&[data-favorited='true'] { opacity: 1; }
+	}
+
+	.gd-poster-status {
+		margin-top: 0.5rem;
+		text-align: center;
+		font-size: 0.62rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
 		color: var(--matchup-ink-center, #ffffff);
 		text-shadow: var(--matchup-shadow-center, none);
 	}
 
-	.game-detail-team-name,
-	.game-detail-team-record,
-	.game-detail-team-rank { color: inherit; }
-
-	.game-detail-score-value {
-		color: inherit;
-
-		// The losing side of a finished game, pulled back from whichever ink its side is written in.
-		&.is-loser { color: inherit; opacity: 0.6; }
+	.gd-poster-vs {
+		align-self: center;
+		font-size: 0.72rem;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		color: var(--matchup-ink-center, #ffffff);
+		text-shadow: var(--matchup-shadow-center, none);
 	}
 
-	.game-score-sep { background: currentColor; opacity: 0.4; }
-	.gd-field-caption { color: rgba(255, 255, 255, 0.86); }
+	// The countdown and series dots are shared with the light hero, so they are re-toned here
+	// rather than forked into poster-only components.
+	.gd-poster {
+		.gd-countdown { margin-top: 0.7rem; gap: 0.28rem; }
 
-	// The empty half of each indicator. Both were mid-greys chosen against white and neither
-	// survives a scrim: an unlit base and an unfilled count are the half that carries the reading.
-	.base-marker { color: inherit; opacity: 0.35; }
-	.base-marker.occupied { color: inherit; opacity: 1; }
-	.bso-dot { color: #ffffff; }
-	// The unfilled half carries as much of the count as the filled half, and `bi-circle` is a
-	// hairline ring — at 45% on a scrim it reads as nothing at all.
-	.bso-dot.is-empty { color: rgba(255, 255, 255, 0.72); }
-
-	// Same argument for the timeouts: both halves of the row are the reading, and the card's own
-	// rule for these is a light-surface grey that has to lose to this one.
-	.timeout-dot,
-	.timeout-dots-numeric { color: inherit; }
-	.timeout-dot.is-empty { color: inherit; opacity: 0.6; }
-	.bso-label { color: rgba(255, 255, 255, 0.72); }
-
-	.series-dots-summary { color: rgba(255, 255, 255, 0.75); box-shadow: none; }
-	.series-dot-empty,
-	.series-dot-not-needed { color: rgba(255, 255, 255, 0.45); }
-
-	// A delayed game keeps its hero rather than being dimmed to 40% opacity, which on a dark surface
-	// is a disappearance rather than a dim. The status line carries it, the way the poster's does.
-	&.is-delayed {
-		box-shadow: inset 0 0 0 1px rgba(241, 196, 15, 0.45);
-
-		.game-detail-period {
-			color: #f1c40f;
-			font-weight: 700;
-			letter-spacing: 0.04em;
-			text-transform: uppercase;
+		.gd-countdown-when {
+			font-size: 0.74rem;
+			color: rgba(255, 255, 255, 0.86);
 		}
-	}
-}
 
-.gd-hero {
-	padding: 0.4rem 0.4rem 0.35rem;
-}
+		.gd-countdown-value,
+		.gd-countdown-zero {
+			font-size: 2.3rem;
+			font-weight: 700;
+			color: #ffffff;
+			text-shadow: 0 2px 12px rgba(3, 7, 12, 0.6);
+		}
 
-.gd-bso-row {
-	display: flex;
-	justify-content: center;
-	margin-top: 0.15rem;
+		.gd-countdown-unit {
+			font-size: 0.78rem;
+			color: rgba(255, 255, 255, 0.62);
+			margin-left: 0.12rem;
+		}
 
-	.bso-indicator {
-		margin-top: 0;
-	}
-}
+		.gd-countdown-soon {
+			font-size: 1.5rem;
+			font-weight: 700;
+			color: #ffffff;
+			text-align: center;
+			margin-top: 0.7rem;
+			text-shadow: 0 2px 12px rgba(3, 7, 12, 0.6);
+		}
 
-// Pitcher against batter, on the hero rather than in a section below it — the count directly
-// above poses the question and this answers it. A translucent plate rather than a solid one, so
-// the team colour the hero is painted in still carries through.
-.gd-atbat-panel {
-	display:               grid;
-	grid-template-columns: 1fr auto 1fr;
-	align-items:           center;
-	gap:                   0.4rem;
-	margin-top:            0.5rem;
-	padding:               0.45rem 0.4rem;
-	border-radius:         0.4rem;
-	background:            rgba(3, 7, 12, 0.34);
-	box-shadow:            inset 0 0 0 1px rgba(255, 255, 255, 0.09);
-}
-
-.gd-atbat-side {
-	display:     flex;
-	align-items: center;
-	gap:         0.42rem;
-	min-width:   0;
-}
-
-// Mirrored so the two portraits bracket the panel and the "vs" sits between the names rather than
-// between a name and a face. Keyed on the side of the hero rather than on the role, because the
-// two roles swap ends at the half-inning and the mirroring must not swap with them.
-.gd-atbat-side.gd-atbat-home {
-	flex-direction: row-reverse;
-	text-align:     right;
-}
-
-.gd-atbat-face {
-	width:         32px;
-	height:        32px;
-	border-radius: 999px;
-	flex-shrink:   0;
-	overflow:      hidden;
-	background:    rgba(255, 255, 255, 0.14);
-	box-shadow:    0 0 0 1px rgba(255, 255, 255, 0.28);
-}
-
-.gd-atbat-face-crest {
-	width:  100%;
-	height: 100%;
-
-	// ESPN headshots are cut-outs framed at the shoulders, so they are anchored to the top of the
-	// disc rather than centred in it — centring crops the face.
-	img {
-		object-fit:      cover;
-		object-position: top center;
-	}
-}
-
-.gd-atbat-face-crest .crest-fallback {
-	background:  transparent;
-	color:       rgba(255, 255, 255, 0.85);
-	font-size:   0.56rem;
-}
-
-.gd-atbat-text {
-	display:       flex;
-	flex-direction: column;
-	min-width:     0;
-}
-
-.gd-atbat-role {
-	font-size:      0.5rem;
-	font-weight:    700;
-	letter-spacing: 0.09em;
-	text-transform: uppercase;
-	color:          rgba(255, 255, 255, 0.62);
-	line-height:    1;
-}
-
-.gd-atbat-name,
-.gd-atbat-line {
-	min-width:     0;
-	overflow:      hidden;
-	text-overflow: ellipsis;
-	white-space:   nowrap;
-}
-
-.gd-atbat-name {
-	font-size:   0.68rem;
-	font-weight: 700;
-	color:       #ffffff;
-	line-height: 1.25;
-	text-shadow: 0 1px 5px rgba(3, 7, 12, 0.5);
-}
-
-.gd-atbat-line {
-	font-size:   0.58rem;
-	color:       rgba(255, 255, 255, 0.76);
-	line-height: 1.3;
-}
-
-.gd-atbat-versus {
-	font-size:      0.55rem;
-	letter-spacing: 0.08em;
-	color:          rgba(255, 255, 255, 0.5);
-	padding:        0 0.1rem;
-}
-
-.gd-field-row {
-	margin-top: 0.4rem;
-	padding: 0 0.15rem;
-}
-
-.gd-field-caption {
-	font-size: 0.66rem;
-	font-weight: 700;
-	color: #495057;
-	letter-spacing: 0.01em;
-	text-align: center;
-	white-space: nowrap;
-	margin-bottom: 0.22rem;
-}
-
-// Under the team's timeouts, in the same small bold caps as the count's B S O.
-.gd-bonus {
-	margin-top: 0.1rem;
-	font-size: 0.5rem;
-	font-weight: 700;
-	line-height: 1;
-	letter-spacing: 0.04em;
-	text-align: center;
-	text-transform: uppercase;
-	white-space: nowrap;
-}
-
-// Fixed width whether lit or not, pulled in toward the divider so the pair reads as part of it.
-.gd-possession {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	flex-shrink: 0;
-	width: 0.7rem;
-	margin-inline: -0.2rem;
-	font-size: 0.7rem;
-	line-height: 1;
-}
-
-.gd-countdown {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 0.2rem;
-	margin-top: 0.45rem;
-}
-
-.gd-countdown-when {
-	font-size: 0.68rem;
-	font-weight: 600;
-	color: #374151;
-}
-
-.gd-countdown-clock {
-	display: flex;
-	align-items: baseline;
-	gap: 0.5rem;
-}
-
-.gd-countdown-seg {
-	display: inline-flex;
-	align-items: baseline;
-}
-
-.gd-countdown-value,
-.gd-countdown-zero {
-	@include gc.scoreboard-figures;
-	font-size: 1.15rem;
-	font-weight: 600;
-	line-height: 1;
-	color: #111827;
-	letter-spacing: -0.02em;
-}
-
-.gd-countdown-unit {
-	font-size: 0.58rem;
-	font-weight: 600;
-	color: #6c757d;
-	margin-left: 0.1rem;
-}
-
-.gd-countdown-soon {
-	font-size: 0.72rem;
-	color: #495057;
-	text-align: center;
-	margin-top: 0.45rem;
-}
-
-
-.toast {
-	--as-toast-bg: var(--as-secondary-bg);
-	--as-toast-border-color: var(--as-border-color);
-	--as-toast-color: var(--as-body-color);
-	--as-toast-header-bg: var(--as-tertiary-bg);
-	--as-toast-header-color: var(--as-body-color);
-	min-width: 240px;
-	max-width: 288px;
-}
-
-.toast-header {
-	padding: 0.45rem 0.65rem;
-	font-size: 0.78rem;
-	border-bottom-color: var(--as-border-color);
-}
-
-.toast-body {
-	padding: 0.5rem 0.65rem;
-	font-size: 0.78rem;
-	color: var(--as-body-color);
-}
-
-.toast-container {
-	z-index: 9999;
-}
-
-@keyframes toastSlideUp {
-	from { opacity: 0; transform: translateY(6px); }
-	to   { opacity: 1; transform: translateY(0); }
-}
-
-.toast-slide-up {
-	animation: toastSlideUp m.$motion-base m.$motion-ease forwards;
-}
-
-@include m.reduced-motion {
-	.toast-slide-up { animation: none; }
-}
-
-.popup-debug-panel {
-	margin-top: 1rem;
-
-	.debug-section + .debug-section {
-		margin-top: 1rem;
+		.series-dots-wrap { margin-top: 0.5rem; }
+		.series-dots-summary { color: rgba(255, 255, 255, 0.75); box-shadow: none; }
+		.series-dot-empty,
+		.series-dot-not-needed { color: rgba(255, 255, 255, 0.45); }
 	}
 
-	.debug-row {
+	// ── Pre-game setup card ──────────────────────────────────────────────────────
+	// Same light card as the game-boost section, so the two read as one family.
+	.gd-setup {
+		background: #f8fafc;
+		border: 1px solid #d1d5db;
+		border-radius: 0.35rem;
+		padding: 0.4rem 0.5rem;
+		margin-top: 0.5rem;
+		color: #111827;
+	}
+
+	.gd-setup-heading {
+		font-size: 0.62rem;
+		font-weight: 700;
+		border-bottom: 1px solid #d1d5db;
+		padding-bottom: 0.16rem;
+		margin-bottom: 0.25rem;
+	}
+
+	// The boost row arrives from GameBoostInput's bare mode already laid out, so both row types
+	// share one rule rather than the boost row being nested inside a second flex row.
+	.gd-setup-row,
+	.gd-setup > .game-detail-boost-row {
 		display: flex;
 		justify-content: space-between;
-		align-items: baseline;
-		gap: 0.75rem;
-		margin-top: 0.3rem;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.24rem 0;
 	}
 
-	.debug-row-wide {
-		flex-direction: column;
-		gap: 0.1rem;
+	.gd-setup > * + * { border-top: 1px solid #e5e7eb; }
+	// The heading already draws its own rule; the first row must not double it.
+	.gd-setup > .gd-setup-heading + * { border-top: 0; }
 
-		.debug-value {
-			text-align: left;
-		}
+	.gd-setup-row {
+		// The shared tab-assign control carries a top margin for its place on a game card.
+		.game-card-tab-assign { margin-top: 0; flex-shrink: 0; max-width: 9.5rem; }
 	}
 
-	.debug-label {
-		flex-shrink: 0;
-		font-size: 0.65rem;
-		color: var(--as-secondary-color);
-	}
-
-	.debug-value {
+	.gd-setup-explainer {
+		font-size: 0.58rem;
+		color: #4b5563;
+		line-height: 1.3;
+		flex: 1;
 		min-width: 0;
-		font-size: 0.65rem;
-		font-weight: 600;
-		font-variant-numeric: tabular-nums;
-		text-align: right;
+	}
+
+	// Who is starting and who leads the two teams, in the same light card family as the setup block
+	// above it.
+	//
+	// The starters mirror the poster: two short names side by side, each under the crest it belongs to.
+	// The leaders do not, and cannot. A football value runs to 21 characters — "14/23, 141 YDS, 1 INT"
+	// — against four for baseball's ".276", and no half-width column fits both, so every leader gets
+	// the full width of the card and the team is carried by colour instead of by position.
+	.gd-pregame-starters {
+		display:               grid;
+		grid-template-columns: 1fr 1fr;
+		column-gap:            0.4rem;
+		padding:               0.3rem 0 0.24rem;
+	}
+
+	.gd-pregame-starter {
+		display:        flex;
+		flex-direction: column;
+		align-items:    center;
+		text-align:     center;
+		min-width:      0;
+		gap:            0.12rem;
+	}
+
+	// The disc is the team's colour, which is the only thing distinguishing two headshots on a card
+	// that has no crests of its own. The hairline keeps a pale team colour from dissolving into the
+	// card behind it. Grey underneath for a team whose colour ESPN sent as something unparseable.
+	.gd-pregame-disc {
+		display:       inline-flex;
+		border-radius: 50%;
+		overflow:      hidden;
+		flex-shrink:   0;
+		background:    #e5e7eb;
+		box-shadow:    0 0 0 1px rgba(17, 24, 39, 0.14);
+	}
+
+	.gd-pregame-starter-shot {
+		width:  38px;
+		height: 38px;
+	}
+
+	// `cover` rather than the crest's own `contain`: a headshot is a 350x254 crop of a person, and
+	// letterboxing one inside a circle leaves bands above and below the head.
+	//
+	// Nothing here restates `.crest-fallback`. _crest.scss lays the placeholder out and hides it with
+	// `[data-crest-state='loaded'] > .crest-fallback`, which is the same specificity as a nested rule
+	// here would be — so re-declaring `display: flex` wins on source order and pins the placeholder up
+	// for good. Team logos never showed it because they are opaque; these headshots are transparent
+	// PNGs, so the disc reads as a white halo around the player's head.
+	.gd-pregame-disc-crest {
+		width:  100%;
+		height: 100%;
+
+		img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+	}
+
+	.gd-pregame-starter-name {
+		font-size:     0.66rem;
+		font-weight:   600;
+		line-height:   1.2;
 		overflow-wrap: anywhere;
 	}
 
-	.debug-mode {
-		text-transform: capitalize;
+	// The unlabelled fallback, for a sport that sends a pre-formatted line and no separate stats.
+	.gd-pregame-starter-line {
+		font-size: 0.6rem;
+		color:     #4b5563;
 	}
 
-	.debug-mode-eager,
-	.debug-mode-live {
-		color: var(--as-accent-ink);
+	.gd-pregame-starter-stats {
+		display:         flex;
+		justify-content: center;
+		gap:             0.6rem;
+		margin-top:      0.06rem;
 	}
 
-	.debug-mode-dormant {
-		color: var(--as-faint);
+	.gd-pregame-stat {
+		display:        flex;
+		flex-direction: column;
+		align-items:    center;
+		line-height:    1.15;
 	}
 
-	.debug-mode-demo {
-		color: var(--as-secondary-ink);
+	.gd-pregame-stat-value {
+		font-size:   0.68rem;
+		font-weight: 600;
+		color:       #111827;
 	}
 
-	.debug-break {
-		color: var(--as-warning-ink);
+	// Quiet enough that the number stays the thing being read, and uppercase so a two-letter label
+	// does not read as an initial.
+	.gd-pregame-stat-label {
+		font-size:      0.5rem;
+		font-weight:    600;
+		color:          #6b7280;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
 	}
 
-	.debug-score-row {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		margin-top: 0.35rem;
-		font-size: 0.65rem;
-		font-variant-numeric: tabular-nums;
+	.gd-pregame-starter-status {
+		font-size:      0.54rem;
+		color:          #6b7280;
+		text-transform: uppercase;
+		letter-spacing: 0.02em;
 	}
 
-	.debug-score-rank {
-		flex-shrink: 0;
-		width: 0.6rem;
-		text-align: right;
-		color: var(--as-faint);
+	.gd-pregame-leaders {
+		padding-top: 0.16rem;
 	}
 
-	.debug-score-label {
-		flex-shrink: 0;
-		width: 5rem;
-		color: var(--as-secondary-color);
+	.gd-pregame-category {
+		font-size:      0.54rem;
+		font-weight:    700;
+		color:          #6b7280;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		margin:         0.24rem 0 0.1rem;
+
+		&:first-child { margin-top: 0; }
 	}
 
-	// Bootstrap's track is the light plate grey the game card sits on; this one sits on the page.
-	.debug-score-progress {
-		--as-progress-bg: var(--as-secondary-bg);
-		height: 5px;
+	// `1fr` on the name and `auto` on the value, deliberately: a truncated name is still readable and
+	// a truncated stat is not, so the name is what gives way when a row runs out of room.
+	.gd-pregame-leader-row {
+		display:               grid;
+		grid-template-columns: 20px 1.6rem 1fr auto;
+		align-items:           center;
+		column-gap:            0.3rem;
+		padding:               0.11rem 0.24rem 0.11rem 0.14rem;
+		border-radius:         0.2rem;
+
+		& + & { margin-top: 0.08rem; }
 	}
 
-	.debug-score-total {
-		flex-shrink: 0;
-		width: 1.4rem;
-		text-align: right;
+	.gd-pregame-leader-shot {
+		width:  20px;
+		height: 20px;
+
+		// Only the size, so the hide rule in _crest.scss keeps its say.
+		.crest-fallback { font-size: 0.44rem; }
+	}
+
+	.gd-pregame-leader-team {
+		font-size:      0.56rem;
+		font-weight:    700;
+		letter-spacing: 0.02em;
+	}
+
+	.gd-pregame-leader-player {
+		font-size:     0.62rem;
+		color:         #374151;
+		overflow:      hidden;
+		text-overflow: ellipsis;
+		white-space:   nowrap;
+	}
+
+	.gd-pregame-leader-value {
+		font-size:   0.62rem;
+		font-weight: 600;
+		text-align:  right;
+		white-space: nowrap;
+	}
+
+	// ── Matchup ──────────────────────────────────────────────────────────────────
+	// Recent form, the season stats side by side, and the injury report, in the same light card the
+	// starters and leaders sit on.
+
+	.gd-form {
+		padding: 0.14rem 0 0.2rem;
+	}
+
+	// The team column is wide enough for "Back-to-back" under a three-letter abbreviation, so both
+	// rows start their five results on the same edge.
+	.gd-form-row {
+		display:               grid;
+		grid-template-columns: 3.4rem 1fr;
+		align-items:           center;
+		column-gap:            0.3rem;
+
+		& + & { margin-top: 0.22rem; }
+	}
+
+	.gd-form-team {
+		display:        flex;
+		flex-direction: column;
+		min-width:      0;
+		line-height:    1.2;
+	}
+
+	.gd-form-abbreviation {
+		font-size:      0.62rem;
+		font-weight:    700;
+		letter-spacing: 0.02em;
+	}
+
+	.gd-form-rest {
+		font-size: 0.5rem;
+		color:     #6b7280;
+	}
+
+	.gd-form-results {
+		display:               grid;
+		grid-template-columns: repeat(5, 1fr);
+		column-gap:            0.14rem;
+	}
+
+	// The quiet weight is the loss. A win reads in full ink and a draw sits between them, so the row
+	// scans as a run of results without a colour having to say which.
+	.gd-form-cell {
+		display:        flex;
+		flex-direction: column;
+		align-items:    center;
+		gap:            0.04rem;
+		padding:        0.12rem 0 0.1rem;
+		line-height:    1.1;
+		color:          #6b7280;
+
+		&[data-result='W'] { color: #111827; }
+		&[data-result='D'],
+		&[data-result='T'] { color: #4b5563; }
+	}
+
+	.gd-form-crest {
+		width:  14px;
+		height: 14px;
+	}
+
+	.gd-form-letter {
+		font-size:   0.62rem;
 		font-weight: 700;
 	}
 
-	.debug-score-flag {
-		flex-shrink: 0;
-		width: 0.65rem;
+	.gd-form-score {
+		font-size:            0.52rem;
+		font-variant-numeric: tabular-nums;
+		white-space:          nowrap;
 	}
-}
 
-.popup-signature-bar {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	margin-top: 0.3rem;
-	margin-left: -0.75rem;
-	margin-right: -0.75rem;
-	margin-bottom: -0.75rem;
-	padding: 0.3rem 0.5rem;
-	background: linear-gradient(to right, #fdb913, #f36f21, #c9234a, #645faa, #0089cf, #0db14b);
-	color: white;
-	font-size: 0.6rem;
-	letter-spacing: 0.02em;
+	// The two abbreviations sit over the columns they head, which is the whole legend the bars need.
+	.gd-compare-heading {
+		display:         flex;
+		justify-content: space-between;
+	}
 
-	// The debug panel hides behind this heart, and a pointer cursor would give the secret away.
-	// Nested to outrank Reboot's button:not(:disabled) pointer.
-	.popup-signature-heart {
-		margin: 0 1px;
-		padding: 0;
-		border: 0;
-		background: transparent;
-		color: inherit;
+	.gd-compare {
+		padding: 0.06rem 0 0.2rem;
+	}
+
+	// Value, label, value, and the bar on a line of its own under all three.
+	.gd-compare-row {
+		display:               grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items:           baseline;
+		column-gap:            0.3rem;
+		padding:               0.14rem 0;
+
+		& + & { border-top: 1px solid #e5e7eb; }
+	}
+
+	.gd-compare-value {
+		display:              flex;
+		align-items:          baseline;
+		gap:                  0.2rem;
+		font-size:            0.64rem;
+		color:                #4b5563;
+		font-variant-numeric: tabular-nums;
+
+		&[data-better='true'] {
+			font-weight: 700;
+			color:       #111827;
+		}
+	}
+
+	// The home value is the row's third child. Its rank goes on the inside too, so both ranks sit
+	// against the label.
+	.gd-compare-row > .gd-compare-value:nth-child(3) {
+		justify-content: flex-end;
+
+		.gd-compare-rank { order: -1; }
+	}
+
+	.gd-compare-rank {
+		font-size:   0.5rem;
+		font-weight: 600;
+		color:       #6b7280;
+	}
+
+	.gd-compare-label {
+		font-size:      0.54rem;
+		font-weight:    600;
+		color:          #6b7280;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		text-align:     center;
+	}
+
+	.gd-compare-bar {
+		grid-column:   1 / -1;
+		display:       flex;
+		gap:           2px;
+		height:        3px;
+		margin-top:    0.14rem;
+		border-radius: 2px;
+		overflow:      hidden;
+	}
+
+	.gd-injuries {
+		padding-bottom: 0.14rem;
+	}
+
+	.gd-injury-team + .gd-injury-team { margin-top: 0.2rem; }
+
+	.gd-injury-row {
+		display:               grid;
+		grid-template-columns: 20px 1fr auto;
+		align-items:           center;
+		column-gap:            0.3rem;
+		padding:               0.11rem 0.24rem 0.11rem 0.14rem;
+		border-radius:         0.2rem;
+
+		& + & { margin-top: 0.08rem; }
+	}
+
+	.gd-injury-player {
+		display:        flex;
+		flex-direction: column;
+		min-width:      0;
+		line-height:    1.2;
+	}
+
+	.gd-injury-name,
+	.gd-injury-detail {
+		overflow:      hidden;
+		text-overflow: ellipsis;
+		white-space:   nowrap;
+	}
+
+	.gd-injury-name {
+		font-size:   0.62rem;
+		font-weight: 600;
+		color:       #111827;
+	}
+
+	.gd-injury-detail {
+		font-size: 0.52rem;
+		color:     #6b7280;
+	}
+
+	.gd-injury-status {
+		font-size:   0.58rem;
+		font-weight: 600;
+		color:       #4b5563;
+		white-space: nowrap;
+
+		&[data-status='out'] {
+			font-weight: 700;
+			color:       #111827;
+		}
+	}
+
+	.gd-injury-none {
+		font-size: 0.58rem;
+		color:     #6b7280;
+		padding:   0.06rem 0.14rem;
+	}
+
+	// ── Box score ────────────────────────────────────────────────────────────────
+	// The line score, the team comparison and one team's player tables, in the same light card family
+	// as the blocks above. Everything below is Bootstrap's .table doing the work; these rules only
+	// re-skin properties Bootstrap already sets on the same elements, plus the two column behaviours a
+	// 263px card needs that no utility expresses.
+
+	.gd-box-subheading {
+		font-size:      0.55rem;
+		font-weight:    700;
+		color:          #6b7280;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		margin:         0.3rem 0 0.14rem;
+	}
+
+	.gd-box > .gd-box-line .gd-box-subheading:first-child,
+	.gd-box > .gd-box-compare .gd-box-subheading:first-child {
+		margin-top: 0.14rem;
+	}
+
+	.gd-box-table {
+		font-size:     0.6rem;
+		margin-bottom: 0.2rem;
+
+		// Numbers are read down a column, which is what the monospace face is for in this project.
+		// The name column opts back out below.
+		td,
+		th:not(.gd-box-name) {
+			font-variant-numeric: tabular-nums;
+			text-align:           center;
+			white-space:          nowrap;
+		}
+
+		thead th {
+			font-size:      0.5rem;
+			color:          #4b5563;
+			letter-spacing: 0.02em;
+		}
+
+		tfoot th,
+		tfoot td { font-weight: 700; }
+	}
+
+	// The player tables and the standings are read down a column, so their stats sit flush right in
+	// Geist's tabular figures, where ".276" lands under ".301" digit for digit. DM Sans has no tabular
+	// figures, so the `tabular-nums` above did nothing on it. The line score and the team comparison
+	// stay centred under their headings.
+	.gd-box-table:not(.gd-box-line-table, .gd-box-compare-table) {
+		td:not(.gd-box-name, .gd-box-dnp) {
+			@include gc.scoreboard-figures;
+			text-align: right;
+		}
+
+		th:not(.gd-box-name) { text-align: right; }
+	}
+
+	// A truncated name is still readable and a truncated stat is not, so the name column takes all the
+	// slack and gives way first. `max-width: 0` is what lets a percentage-width table cell actually
+	// ellipsize — without it the cell grows to its content instead.
+	.gd-box-name {
+		width:         100%;
+		max-width:     0;
+		overflow:      hidden;
+		text-overflow: ellipsis;
+		white-space:   nowrap;
+		text-align:    left;
+		font-weight:   600;
+	}
+
+	.gd-box-name-sub { padding-left: 0.7rem !important; }
+
+	.gd-box-position {
+		font-size:   0.5rem;
+		font-weight: 400;
+		color:       #6b7280;
+		margin-left: 0.2rem;
+	}
+
+	.gd-box-dnp {
+		font-size:  0.52rem;
+		color:      #6b7280;
+		font-style: italic;
+	}
+
+	.gd-box-line-team {
+		font-weight: 700;
+		text-align:  left;
+		white-space: nowrap;
+	}
+
+	// A flex span inside the cell rather than `display: flex` on the cell itself: a table cell that
+	// stops being one drops out of the fixed layout that keeps the innings even.
+	.gd-box-line-id {
+		display:     flex;
+		align-items: center;
+		gap:         0.2rem;
+	}
+
+	.gd-box-line-crest {
+		width:  13px;
+		height: 13px;
+	}
+
+	.gd-box-line-abbr {
+		font-size:      0.58rem;
+		font-weight:    700;
+		letter-spacing: 0.02em;
+	}
+
+	.gd-box-line-total { font-weight: 700; }
+
+	// Nine innings plus R-H-E is thirteen columns. Fixed layout divides the width evenly instead of
+	// letting a two-digit inning steal room from the ones beside it.
+	.gd-box-line-table {
+		table-layout: fixed;
+		// Fixed layout divides the table's width evenly however many columns there are, which is what
+		// keeps a two-digit inning from stealing room from the ones beside it. It also means a 13th
+		// inning would squeeze all sixteen columns to 14px and clip their digits, so the min-width is
+		// what makes the table overflow its wrapper and scroll instead. Nine innings plus R-H-E lands
+		// under the card's width and never scrolls.
+		min-width:    calc(3.5rem + var(--gd-box-line-columns) * 1.05rem);
+
+		// Wide enough for a 13px crest and a three-letter abbreviation. Every rem spent here comes
+		// out of the innings, which is why the nine-inning fit is a test rather than a calculation.
+		.gd-box-line-team { width: 3.5rem; }
+	}
+
+	// The label takes the middle and the two values sit under the abbreviations that own them.
+	.gd-box-compare-table {
+		td:first-child,
+		td:last-child,
+		thead th:first-child,
+		thead th:last-child { width: 3.4rem; font-weight: 600; }
+	}
+
+	.gd-box-compare-team {
+		font-size:      0.58rem;
+		letter-spacing: 0.02em;
+	}
+
+	.gd-box-compare-label {
+		width:       100%;
+		text-align:  center !important;
+		font-weight: 400 !important;
+		color:       #4b5563;
+		font-size:   0.55rem;
+	}
+
+	.gd-box-tabs {
+		margin-top: 0.3rem;
+
+		.nav-link {
+			display:     flex;
+			align-items: center;
+			gap:         0.22rem;
+		}
+	}
+
+	.gd-box-tab-crest {
+		width:  13px;
+		height: 13px;
+	}
+
+	// ── Detail screen tab strip ──────────────────────────────────────────────────
+	// The strip that files the whole screen, sitting on the shell rather than on a light card. That is
+	// why it is `.nav-underline` and not the lifted `.nav-tabs` the box score's away/home switcher uses:
+	// `$nav-tabs-link-active-bg` is #f8fafc for that card, and would be a slab across the dark screen.
+	//
+	// Bootstrap exposes the whole component through custom properties, so every line below sets one
+	// rather than overriding a rule. The labels it is not on take the muted ink and the one it is on
+	// takes the accent ink, which is the brand orange on dark and the deeper one on light.
+	.gd-tabs {
+		--as-nav-link-color:                  var(--as-secondary-color);
+		--as-nav-link-hover-color:            var(--as-body-color);
+		--as-nav-underline-link-active-color: var(--as-accent-ink);
+		--as-nav-underline-border-width:      0.14rem;
+		--as-nav-underline-gap:               0;
+
+		// Tighter than the 0.5rem the cards below take. This is chrome rather than content, and every
+		// pixel it spends here comes off the PowerScore breakdown's head start down the screen.
+		margin-top:    0.34rem;
+		margin-bottom: 0.05rem;
+		// The rule the underline is drawn against, so an unselected tab reads as sitting on the same
+		// line rather than floating above nothing.
+		border-bottom: 1px solid var(--as-border-color);
+
+		// Three labels across 320px read as one control when they divide the width evenly, and the
+		// underline then measures the tab rather than the word inside it.
+		.nav-item { flex: 1 1 0; }
+
+		.nav-link {
+			width:      100%;
+			padding:    0.26rem 0.2rem;
+			text-align: center;
+			// Onto the strip's own rule rather than a pixel above it.
+			margin-bottom: -1px;
+		}
+	}
+
+	// ── Standings ────────────────────────────────────────────────────────────────
+	// The same light card and the same table skin as the box score, because it is the same kind of
+	// thing: rows of numbers read down a column. Only the team column differs, and only because a
+	// standings row is named rather than abbreviated — ESPN sends no abbreviation in this block at
+	// all, so the name column has to hold "Brighton & Hove Albion" as well as "Miami".
+	.gd-standings > .gd-standings-block:first-child > :first-child { margin-top: 0.14rem; }
+
+	.gd-standings-block + .gd-standings-block { margin-top: 0.45rem; }
+
+	// The conference over its divisions. Darker and a step larger than the division subheadings
+	// under it, and carrying the card's own rule, so two levels of heading read as two levels rather
+	// than as one list of eight. Absent entirely for a flat league — a Premier League table has
+	// nothing above it to name.
+	.gd-standings-conference {
+		font-size:      0.62rem;
+		font-weight:    700;
+		color:          #111827;
+		border-bottom:  1px solid #d1d5db;
+		padding-bottom: 0.16rem;
+		margin-bottom:  0.1rem;
+	}
+
+	.gd-standings-rank {
+		width:       1.15rem;
+		font-weight: 600;
+		color:       #6b7280;
+	}
+
+	// A flex span inside the cell rather than `display: flex` on the cell itself, the same way the
+	// line score's team cell does it: a table cell that stops being one drops out of the layout
+	// keeping the number columns aligned.
+	.gd-standings-id {
+		display:     flex;
+		align-items: center;
+		gap:         0.24rem;
+		min-width:   0;
+	}
+
+	.gd-standings-crest {
+		width:       13px;
+		height:      13px;
+		flex-shrink: 0;
+	}
+
+	// The name gives way first. `.gd-box-name` truncates the cell; a flex child inside it needs its
+	// own `min-width: 0` before it will shrink far enough to let that happen.
+	.gd-standings-name {
+		min-width:     0;
+		overflow:      hidden;
+		text-overflow: ellipsis;
+		white-space:   nowrap;
+	}
+
+	// The wash is doing the work of saying which two rows these are. The weight is what carries it
+	// for a team whose colour is too pale to register as a 16% tint.
+	.gd-standings-matchup { font-weight: 700; }
+
+	// btn-link is the right component and its colour is the link orange, which only reaches 3.0:1 on
+	// this card.
+	.gd-box-more {
+		font-size:       0.55rem;
+		font-weight:     700;
+		color:           #4b5563;
+		text-decoration: underline;
+		padding:         0.05rem 0;
+
+		&:hover,
+		&:focus { color: #111827; }
+	}
+
+	// What just happened, in ESPN's own sentence. Same dark treatment as the info panel below — it is
+	// part of the same column of sections — but it sits first in the live stack, directly under the
+	// hero, so it is read as live state rather than as reference information.
+	.gd-play-panel {
+		margin-top:  0.45rem;
+		padding-top: 0.34rem;
+		border-top:  1px solid var(--as-border-color);
+	}
+
+	.gd-play-heading {
+		font-size:     0.62rem;
+		font-weight:   700;
+		color:         var(--as-body-color);
+		margin-bottom: 0.24rem;
+	}
+
+	// The same 3px rule and 0.6rem indent the game list's section titles carry, in the colour of
+	// whoever made the play rather than the product orange. Without a team the indent stays and the
+	// rule goes, so the block does not shift when ESPN attributes a play to nobody.
+	.gd-play-body {
+		padding-left: 0.6rem;
+		border-left:  3px solid transparent;
+	}
+
+	.gd-play-body.has-accent {
+		border-left-style: solid;
+	}
+
+	// `pre-line` rather than `normal`: a penalty arrives as two sentences joined by a newline, and
+	// flattening them produces one run-on sentence that reads as a single play.
+	.gd-play-text {
+		font-size:      0.62rem;
+		line-height:    1.35;
+		color:          var(--as-ink-soft);
+		white-space:    pre-line;
+		overflow-wrap:  anywhere;
+	}
+
+	.gd-play-drive {
+		margin-top: 0.14rem;
+		font-size:  0.58rem;
+		color:      var(--as-secondary-color);
+	}
+
+	// One line per card, each under its own team's rule, with a gap so two bars from the same side
+	// still read as two cards.
+	.gd-red-card + .gd-red-card {
+		margin-top: 0.2rem;
+	}
+
+	.gd-play-body + .gd-play-heading {
+		margin-top: 0.34rem;
+	}
+
+	// The due-up block borrows the section skin above and the Your Players text (`fantasy-player-*`),
+	// and only adds its own row: that list's 20px portrait (`gd-pregame-leader-shot`), then the name, then
+	// the line pushed to the right edge.
+	.gd-dueup-row {
+		padding: 0.18rem 0;
+
+		& + & { border-top: 1px solid var(--as-secondary-bg); }
+	}
+
+	// The position is a sibling of the name here, not nested in it as in Your Players, so it needs the
+	// name's size handed down or it falls back to the body's.
+	.gd-dueup-who {
+		font-size:   0.62rem;
+		line-height: 1.35;
+	}
+
+	// Quiet and on one line: "0-1, BB" is a footnote to the name. The cap stops a long line squeezing
+	// the name to nothing, and the tabular figures keep the digits down the edge in step.
+	.gd-dueup-line {
+		max-width:            45%;
+		white-space:          nowrap;
+		text-align:           right;
+		font-variant-numeric: tabular-nums;
+	}
+
+	// Venue / broadcast / odds / weather, as one titled section rather than four stacked centred
+	// lines. Takes the chart cards' treatment, not the breakdown's white card: everything below the
+	// PowerScore math reads as one dark column of sections.
+	.game-info-panel {
+		margin-top:  0.45rem;
+		padding-top: 0.34rem;
+		border-top:  1px solid var(--as-border-color);
+	}
+
+	// Opening a tab pane, either section sits right under the strip's own rule, and its top rule drew a
+	// second hairline a few pixels below it. The strip's rule does the job there, at the same distance
+	// above the heading a section rule keeps everywhere else.
+	.tab-pane > :is(.gd-play-panel, .game-info-panel):first-child {
+		margin-top: 0;
+		border-top: 0;
+	}
+
+	.game-info-heading {
+		font-size:     0.62rem;
+		font-weight:   700;
+		color:         var(--as-body-color);
+		margin-bottom: 0.24rem;
+	}
+
+	.game-info-row {
+		display:     flex;
+		align-items: baseline;
+		gap:         0.3rem;
+		padding:     0.14rem 0;
+
+		& + & { border-top: 1px solid var(--as-secondary-bg); }
+	}
+
+	// For a label that reads as a sentence: it takes the full line, and the value drops beneath it,
+	// indented past the icon so both start at the same edge.
+	.game-info-row-stacked {
+		flex-wrap: wrap;
+		row-gap:   0.06rem;
+
+		.game-info-label { width: auto; }
+
+		.game-info-value {
+			flex-basis:   100%;
+			padding-left: calc(0.68rem + 0.3rem);
+		}
+	}
+
+	// Same marker column as the breakdown's factor icons, so the two sections share a left edge.
+	.game-info-icon {
+		display:     inline-flex;
+		width:       0.68rem;
+		font-size:   0.62rem;
 		line-height: 1;
-		cursor: default;
+		flex-shrink: 0;
+		color:       var(--as-faint);
+	}
+
+	.game-info-label {
+		flex-shrink: 0;
+		// Sized for Attendance, which is the longest label this panel carries in every language it
+		// ships in — 2.9rem was set when Watch, Venue and Line were the whole list, and it wraps
+		// anything over about ten characters. The value column loses 11px and clips nothing.
+		width:       3.6rem;
+		font-size:   0.58rem;
+		color:       var(--as-secondary-color);
+	}
+
+	.game-info-value {
+		flex:        1 1 auto;
+		min-width:   0;
+		font-size:   0.62rem;
+		line-height: 1.25;
+		color:       var(--as-ink-soft);
+		overflow-wrap: anywhere;
+	}
+
+	// The one line that answers "which tab do I open", so it carries the section's only bright text.
+	.game-info-value-strong {
+		font-size:   0.66rem;
+		font-weight: 600;
+		color:       var(--as-body-color);
+	}
+
+	// The building carries the weight; the city sits under it at the same size the weather sub-line
+	// uses, so the value column keeps a single sub-line idiom rather than growing a second one.
+	.game-info-venue-name {
+		font-weight: 600;
+	}
+
+	.game-info-venue-location {
+		margin-top: 0.04rem;
+		font-size:  0.58rem;
+		color:      var(--as-secondary-color);
+	}
+
+	.game-info-weather {
+		display:     flex;
+		align-items: center;
+		gap:         0.25rem;
+		margin-top:  0.08rem;
+		font-size:   0.58rem;
+		color:       var(--as-secondary-color);
+	}
+
+	.game-info-link {
+		font-weight: 600;
+		color:       var(--as-accent-ink);
+	}
+
+	// Matches the shape of Reboot's `[type="button"]:not(:disabled)` so the help cursor survives it.
+	button.game-info-attribution {
+		&:not(:disabled) { cursor: help; }
+
+		display:       inline-flex;
+		align-items:   center;
+		margin-left:   0.35rem;
+		font-size:     0.54rem;
+		color:         var(--as-faint);
+		opacity:       0.8;
+		white-space:   nowrap;
+		padding:       0;
+		background:    transparent;
+		border:        none;
+		border-bottom: 1px dotted currentColor;
+
+		&:hover { opacity: 1; }
+		&:focus-visible {
+			opacity:        1;
+			outline:        1px solid bs.$primary;
+			outline-offset: 1px;
+			border-radius:  2px;
+		}
+	}
+
+	.series-dots-wrap {
+		padding: 0;
+		margin-top: 0.3rem;
+	}
+
+	.series-dots-summary {
+		font-size:   0.66rem;
+		font-weight: 500;
+		color:       #6b7280;
+		line-height: 1;
+	}
+
+	.series-dot {
+		font-size: 0.72rem;
+	}
+
+	.series-dot-empty,
+	.series-dot-not-needed {
+		color: #374151;
+	}
+
+	.series-dot-empty.is-if-necessary {
+		opacity: 0.45;
+	}
+
+	.game-detail-shell {
+		// The shell's own padding, and the amount the sticky bar has to bleed back out to reach the
+		// popup edge. One variable so the light frame can push both inwards together.
+		--gd-inset: 0.75rem;
+		padding: var(--gd-inset);
+		background: var(--as-body-bg);
+
+		.game-meta-venue,
+		.game-meta-networks,
+		.game-meta-odds {
+			color: var(--as-ink-soft);
+		}
+	}
+
+	.game-detail-header {
+		position: sticky;
+		// Sticky offsets resolve against the scroll container's *padding* box, so top:0 would
+		// park the bar 0.75rem down. Pulling it back by that padding pins it flush to the top.
+		top: calc(var(--gd-inset) * -1);
+		z-index: 5;
+		display: flex;
+		align-items: center;
+		// Fixed height in both states so the compact matchup fading in never shifts the layout.
+		height: 2.5rem;
+		// The shell's padding scrolls away with the content. Bleed the bar back out to the popup edge
+		// and re-add that padding inside, so rows sliding under it are covered edge to edge.
+		margin: calc(var(--gd-inset) * -1) calc(var(--gd-inset) * -1) 0.5rem;
+		padding: 0 var(--gd-inset);
+		background: var(--as-body-bg);
+		border-bottom: 1px solid var(--as-border-color);
+	}
+
+	// Through Bootstrap's own variables rather than raw `background` and `:hover`. Its `:active` and
+	// `:focus-visible` rules read these too, and with them undefined a press drew no fill and a
+	// keyboard focus drew no ring.
+	.game-detail-back-button {
+		--as-btn-color:               var(--as-body-color);
+		--as-btn-bg:                  var(--as-control-bg);
+		--as-btn-border-color:        var(--as-border-color);
+		--as-btn-hover-color:         var(--as-control-hover-color);
+		--as-btn-hover-bg:            var(--as-control-hover-bg);
+		--as-btn-hover-border-color:  var(--as-border-color);
+		--as-btn-active-color:        var(--as-control-hover-color);
+		--as-btn-active-bg:           var(--as-control-hover-bg);
+		--as-btn-active-border-color: var(--as-border-color);
+		display: inline-flex;
+		align-items: center;
+		flex-shrink: 0;
+		gap: 0.35rem;
+		font-size: 0.68rem;
+
+		&:focus-visible {
+			outline: 2px solid bs.$primary;
+			outline-offset: 2px;
+			box-shadow: none;
+		}
+	}
+
+	.game-detail-matchup {
+		display:        flex;
+		flex-direction: column;
+		align-items:    stretch;
+		gap:            0;
+		padding:        0.45rem 0.3rem 0.5rem;
+		margin-bottom:  0.45rem;
+	}
+
+	// A two-row grid rather than a flex row: crests share row 1 and labels row 2, so a name that
+	// wraps to two lines grows its own row without knocking the logos out of level.
+	.game-detail-teams-row {
+		display: grid;
+		grid-template-columns: 80px minmax(0, 1fr) 80px;
+		grid-template-areas:
+			"leftCrest  score  rightCrest"
+			"leftLabel  status rightLabel"
+			"leftRecord .      rightRecord"
+			"leftTimeouts .    rightTimeouts";
+		align-items: center;
+		justify-items: center;
+		column-gap: 0.25rem;
+		row-gap: 0.05rem;
+	}
+
+	.gd-area-left-crest { grid-area: leftCrest; }
+	.gd-area-right-crest { grid-area: rightCrest; }
+	.gd-area-left-label { grid-area: leftLabel; }
+	.gd-area-right-label { grid-area: rightLabel; }
+	.gd-area-left-record { grid-area: leftRecord; }
+	.gd-area-right-record { grid-area: rightRecord; }
+	.gd-area-left-timeouts { grid-area: leftTimeouts; }
+	.gd-area-right-timeouts { grid-area: rightTimeouts; }
+
+	.game-detail-team-wrap {
+		display: contents;
+	}
+
+	// Records get their own grid row so the two sides line up even when one name wraps and the
+	// other does not.
+	.game-detail-team-record {
+		align-self: start;
+		min-width: 0;
+		font-size: 0.58rem;
+		font-weight: 600;
+		line-height: 1.2;
+		letter-spacing: 0.02em;
+		color: #6b7280;
+		text-align: center;
+		white-space: nowrap;
+	}
+
+	// A qualifier in front of the name, not part of it — so "Alabama Crimson Tide" still reads as the
+	// team and "#2" as a fact about it. Re-toned for the live hero further down.
+	.game-detail-team-rank {
+		font-weight:  700;
+		color:        #6b7280;
+		margin-right: 0.22em;
+	}
+
+	.game-detail-team-name {
+		align-self: start;
+		min-width: 0;
+		font-size: 0.66rem;
+		font-weight: 700;
+		line-height: 1.2;
+		color: #111827;
+		text-align: center;
+		text-wrap: balance;
+	}
+
+	.game-detail-team-logo-shell {
+		width: 64px;
+		height: 64px;
+		border-radius: 999px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: transparent;
+	}
+
+	.game-detail-team-logo {
+		width: 52px;
+		height: 52px;
+	}
+
+	// Inset rather than sized, so the placeholder disc stays centred in the box: 46px inside 52px.
+	.game-detail-team-logo .crest-fallback {
+		inset: 3px;
+		background: rgba(255, 255, 255, 0.16);
+		color: rgba(255, 255, 255, 0.85);
+	}
+
+	.game-detail-center {
+		grid-area: score;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.18rem;
+		min-width: 0;
+	}
+
+	// Each score takes an equal half of the row and hugs the divider, the way the list card's do. A
+	// score centred in its own box left "7 | 14" with a wider gap on the 7's side. A three-digit score
+	// is wider than half the row at this size, so it keeps its width rather than clipping, and only a
+	// lopsided "7 | 114" moves the divider off the axis.
+	.game-detail-score-row {
+		gap: 0.4rem;
+		justify-content: center;
+		width: 100%;
+
+		> .game-detail-score-value {
+			flex: 1 1 0;
+			min-width: max-content;
+
+			&:first-child {
+				justify-content: flex-end;
+				text-align: right;
+			}
+
+			&:last-child {
+				justify-content: flex-start;
+				text-align: left;
+			}
+		}
+	}
+
+	.game-detail-score-value {
+		@include gc.scoreboard-figures;
+		font-size: 1.68rem;
+		color: #111827;
+		letter-spacing: -0.02em;
+		display: inline-flex;
+		justify-content: center;
+		min-width: 2.4ch;
+
+		// Final games only — see detailHero. The weight lives on the element as a Bootstrap utility,
+		// since `.fw-bold` is `!important` and would beat a font-weight set here.
+		&.is-loser { color: bs.$score-loser-color; }
+	}
+
+	.game-detail-period {
+		grid-area: status;
+		align-self: start;
+		font-size: 0.68rem;
+		color: #6c757d;
+		text-align: center;
+		white-space: nowrap;
+	}
+
+	// The popup's stylesheet also loads on the Guide, which uses this for its bars.
+	.game-status-clock {
+		font-family: 'Lekton', monospace;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.game-detail-formula-card {
+		margin-top: 0.45rem;
+		margin-bottom: 0.6rem;
+		padding: 0.4rem 0.5rem;
+	}
+
+	.gd-bar-compact {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+		opacity: 0;
+		pointer-events: none;
+		// Centred on the bar rather than laid out in the flex row, so the matchup stays on the
+		// card's axis no matter how wide the back button's label runs in a given locale.
+		transform: translate(-50%, calc(-50% + 4px));
+		transition: opacity m.$motion-base m.$motion-ease, transform m.$motion-base m.$motion-ease;
+
+		&.is-visible {
+			opacity: 1;
+			transform: translate(-50%, -50%);
+		}
+	}
+
+	.gd-bar-logo {
+		width: 18px;
+		height: 18px;
+	}
+
+	// The shell the crest sits in. Bare unless the artwork was measured as unreadable and the team has
+	// no monochrome mark to fall back on, which at this size is the one state worth a plate.
+	//
+	// Only the plate clips. The crest used to be drawn at the full 18px inside an 18px circle, which
+	// took 25px of ink off the Giants' 'ny' — a mark that runs the whole width of its own box, as most
+	// wordmarks do — every time this bar was on screen, plate or no plate. Where a plate is drawn the
+	// crest is inset to three quarters of it: measured over 264 crests, the furthest ink reaches 65% of
+	// the way to the corner of its own box, and it is the share the guide rows and the team picker
+	// already use.
+	.gd-bar-logo-shell {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: 18px;
+		height: 18px;
+		border-radius: 999px;
+
+		&:not(.is-bare) {
+			overflow: hidden;
+
+			.gd-bar-logo { width: 75%; height: 75%; }
+		}
+
+		&.is-bare { background: none; box-shadow: none; }
+	}
+
+	.gd-bar-logo .crest-fallback { background: rgba(var(--as-body-color-rgb), 0.14); }
+
+	.gd-bar-abbrev {
+		font-size: 0.66rem;
+		font-weight: 700;
+		color: var(--as-ink-soft);
+		letter-spacing: 0.03em;
+	}
+
+	.gd-bar-score {
+		@include gc.scoreboard-figures;
+		font-size: 0.95rem;
+		font-weight: 600;
+		line-height: 1;
+		color: var(--as-body-color);
+	}
+
+	.gd-bar-sep {
+		width: 1px;
+		height: 0.85em;
+		background: var(--as-border-color);
+	}
+
+	.gd-bar-status {
+		position: absolute;
+		right: 0.75rem;
+		top: 50%;
+		transform: translateY(-50%);
+		max-width: 5.5rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: 0.6rem;
+		color: var(--as-secondary-color);
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity m.$motion-base m.$motion-ease;
+
+		&.is-visible {
+			opacity: 1;
+		}
+
+		&.is-ticking {
+			font-family: 'Lekton', monospace;
+			font-variant-numeric: tabular-nums;
+		}
+	}
+
+	@include m.reduced-motion {
+		.gd-bar-compact,
+		.gd-bar-status {
+			@include m.motion-still;
+		}
+	}
+
+	// ── The live and final hero, on the same scrim ───────────────────────────────
+	// Every one of these children was drawn for near-black ink on a white card. The surface changed, so
+	// each is re-toned here rather than forked into a second set of components — the same approach the
+	// poster already took for the countdown and the series dots.
+	.gd-hero-live {
+		border: 0;
+
+		// The team row takes each side's ink, as the poster does. Everything below it — the count, the
+		// at-bat panel, the field, the series — sits under the deepest part of the shade and stays white.
+		.game-detail-team-wrap.is-left,
+		.game-detail-score-row > :first-child {
+			color: var(--matchup-ink-left, #ffffff);
+			text-shadow: var(--matchup-shadow-left, none);
+		}
+
+		.game-detail-team-wrap.is-right,
+		.game-detail-score-row > :last-child {
+			color: var(--matchup-ink-right, #ffffff);
+			text-shadow: var(--matchup-shadow-right, none);
+		}
+
+		.game-detail-center,
+		.game-detail-period {
+			color: var(--matchup-ink-center, #ffffff);
+			text-shadow: var(--matchup-shadow-center, none);
+		}
+
+		.game-detail-team-name,
+		.game-detail-team-record,
+		.game-detail-team-rank { color: inherit; }
+
+		.game-detail-score-value {
+			color: inherit;
+
+			// The losing side of a finished game, pulled back from whichever ink its side is written in.
+			&.is-loser { color: inherit; opacity: 0.6; }
+		}
+
+		.game-score-sep { background: currentColor; opacity: 0.4; }
+		.gd-field-caption { color: rgba(255, 255, 255, 0.86); }
+
+		// The empty half of each indicator. Both were mid-greys chosen against white and neither
+		// survives a scrim: an unlit base and an unfilled count are the half that carries the reading.
+		.base-marker { color: inherit; opacity: 0.35; }
+		.base-marker.occupied { color: inherit; opacity: 1; }
+		.bso-dot { color: #ffffff; }
+		// The unfilled half carries as much of the count as the filled half, and `bi-circle` is a
+		// hairline ring — at 45% on a scrim it reads as nothing at all.
+		.bso-dot.is-empty { color: rgba(255, 255, 255, 0.72); }
+
+		// Same argument for the timeouts: both halves of the row are the reading, and the card's own
+		// rule for these is a light-surface grey that has to lose to this one.
+		.timeout-dot,
+		.timeout-dots-numeric { color: inherit; }
+		.timeout-dot.is-empty { color: inherit; opacity: 0.6; }
+		.bso-label { color: rgba(255, 255, 255, 0.72); }
+
+		.series-dots-summary { color: rgba(255, 255, 255, 0.75); box-shadow: none; }
+		.series-dot-empty,
+		.series-dot-not-needed { color: rgba(255, 255, 255, 0.45); }
+
+		// A delayed game keeps its hero rather than being dimmed to 40% opacity, which on a dark surface
+		// is a disappearance rather than a dim. The status line carries it, the way the poster's does.
+		&.is-delayed {
+			box-shadow: inset 0 0 0 1px rgba(241, 196, 15, 0.45);
+
+			.game-detail-period {
+				color: #f1c40f;
+				font-weight: 700;
+				letter-spacing: 0.04em;
+				text-transform: uppercase;
+			}
+		}
+	}
+
+	.gd-hero {
+		padding: 0.4rem 0.4rem 0.35rem;
+	}
+
+	.gd-bso-row {
+		display: flex;
+		justify-content: center;
+		margin-top: 0.15rem;
+
+		.bso-indicator {
+			margin-top: 0;
+		}
+	}
+
+	// Pitcher against batter, on the hero rather than in a section below it — the count directly
+	// above poses the question and this answers it. A translucent plate rather than a solid one, so
+	// the team colour the hero is painted in still carries through.
+	.gd-atbat-panel {
+		display:               grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items:           center;
+		gap:                   0.4rem;
+		margin-top:            0.5rem;
+		padding:               0.45rem 0.4rem;
+		border-radius:         0.4rem;
+		background:            rgba(3, 7, 12, 0.34);
+		box-shadow:            inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+	}
+
+	.gd-atbat-side {
+		display:     flex;
+		align-items: center;
+		gap:         0.42rem;
+		min-width:   0;
+	}
+
+	// Mirrored so the two portraits bracket the panel and the "vs" sits between the names rather than
+	// between a name and a face. Keyed on the side of the hero rather than on the role, because the
+	// two roles swap ends at the half-inning and the mirroring must not swap with them.
+	.gd-atbat-side.gd-atbat-home {
+		flex-direction: row-reverse;
+		text-align:     right;
+	}
+
+	.gd-atbat-face {
+		width:         32px;
+		height:        32px;
+		border-radius: 999px;
+		flex-shrink:   0;
+		overflow:      hidden;
+		background:    rgba(255, 255, 255, 0.14);
+		box-shadow:    0 0 0 1px rgba(255, 255, 255, 0.28);
+	}
+
+	.gd-atbat-face-crest {
+		width:  100%;
+		height: 100%;
+
+		// ESPN headshots are cut-outs framed at the shoulders, so they are anchored to the top of the
+		// disc rather than centred in it — centring crops the face.
+		img {
+			object-fit:      cover;
+			object-position: top center;
+		}
+	}
+
+	.gd-atbat-face-crest .crest-fallback {
+		background:  transparent;
+		color:       rgba(255, 255, 255, 0.85);
+		font-size:   0.56rem;
+	}
+
+	.gd-atbat-text {
+		display:       flex;
+		flex-direction: column;
+		min-width:     0;
+	}
+
+	.gd-atbat-role {
+		font-size:      0.5rem;
+		font-weight:    700;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
+		color:          rgba(255, 255, 255, 0.62);
+		line-height:    1;
+	}
+
+	.gd-atbat-name,
+	.gd-atbat-line {
+		min-width:     0;
+		overflow:      hidden;
+		text-overflow: ellipsis;
+		white-space:   nowrap;
+	}
+
+	.gd-atbat-name {
+		font-size:   0.68rem;
+		font-weight: 700;
+		color:       #ffffff;
+		line-height: 1.25;
+		text-shadow: 0 1px 5px rgba(3, 7, 12, 0.5);
+	}
+
+	.gd-atbat-line {
+		font-size:   0.58rem;
+		color:       rgba(255, 255, 255, 0.76);
+		line-height: 1.3;
+	}
+
+	.gd-atbat-versus {
+		font-size:      0.55rem;
+		letter-spacing: 0.08em;
+		color:          rgba(255, 255, 255, 0.5);
+		padding:        0 0.1rem;
+	}
+
+	.gd-field-row {
+		margin-top: 0.4rem;
+		padding: 0 0.15rem;
+	}
+
+	.gd-field-caption {
+		font-size: 0.66rem;
+		font-weight: 700;
+		color: #495057;
+		letter-spacing: 0.01em;
+		text-align: center;
+		white-space: nowrap;
+		margin-bottom: 0.22rem;
+	}
+
+	// Under the team's timeouts, in the same small bold caps as the count's B S O.
+	.gd-bonus {
+		margin-top: 0.1rem;
+		font-size: 0.5rem;
+		font-weight: 700;
+		line-height: 1;
+		letter-spacing: 0.04em;
+		text-align: center;
+		text-transform: uppercase;
+		white-space: nowrap;
+	}
+
+	// Fixed width whether lit or not, pulled in toward the divider so the pair reads as part of it.
+	.gd-possession {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: 0.7rem;
+		margin-inline: -0.2rem;
+		font-size: 0.7rem;
+		line-height: 1;
+	}
+
+	.gd-countdown {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.2rem;
+		margin-top: 0.45rem;
+	}
+
+	.gd-countdown-when {
+		font-size: 0.68rem;
+		font-weight: 600;
+		color: #374151;
+	}
+
+	.gd-countdown-clock {
+		display: flex;
+		align-items: baseline;
+		gap: 0.5rem;
+	}
+
+	.gd-countdown-seg {
+		display: inline-flex;
+		align-items: baseline;
+	}
+
+	.gd-countdown-value,
+	.gd-countdown-zero {
+		@include gc.scoreboard-figures;
+		font-size: 1.15rem;
+		font-weight: 600;
+		line-height: 1;
+		color: #111827;
+		letter-spacing: -0.02em;
+	}
+
+	.gd-countdown-unit {
+		font-size: 0.58rem;
+		font-weight: 600;
+		color: #6c757d;
+		margin-left: 0.1rem;
+	}
+
+	.gd-countdown-soon {
+		font-size: 0.72rem;
+		color: #495057;
+		text-align: center;
+		margin-top: 0.45rem;
+	}
+
+
+	.toast {
+		--as-toast-bg: var(--as-secondary-bg);
+		--as-toast-border-color: var(--as-border-color);
+		--as-toast-color: var(--as-body-color);
+		--as-toast-header-bg: var(--as-tertiary-bg);
+		--as-toast-header-color: var(--as-body-color);
+		min-width: 240px;
+		max-width: 288px;
+	}
+
+	.toast-header {
+		padding: 0.45rem 0.65rem;
+		font-size: 0.78rem;
+		border-bottom-color: var(--as-border-color);
+	}
+
+	.toast-body {
+		padding: 0.5rem 0.65rem;
+		font-size: 0.78rem;
+		color: var(--as-body-color);
+	}
+
+	.toast-container {
+		z-index: 9999;
+	}
+
+	@keyframes toastSlideUp {
+		from { opacity: 0; transform: translateY(6px); }
+		to   { opacity: 1; transform: translateY(0); }
+	}
+
+	.toast-slide-up {
+		animation: toastSlideUp m.$motion-base m.$motion-ease forwards;
+	}
+
+	@include m.reduced-motion {
+		.toast-slide-up { animation: none; }
+	}
+
+	.popup-debug-panel {
+		margin-top: 1rem;
+
+		.debug-section + .debug-section {
+			margin-top: 1rem;
+		}
+
+		.debug-row {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			gap: 0.75rem;
+			margin-top: 0.3rem;
+		}
+
+		.debug-row-wide {
+			flex-direction: column;
+			gap: 0.1rem;
+
+			.debug-value {
+				text-align: left;
+			}
+		}
+
+		.debug-label {
+			flex-shrink: 0;
+			font-size: 0.65rem;
+			color: var(--as-secondary-color);
+		}
+
+		.debug-value {
+			min-width: 0;
+			font-size: 0.65rem;
+			font-weight: 600;
+			font-variant-numeric: tabular-nums;
+			text-align: right;
+			overflow-wrap: anywhere;
+		}
+
+		.debug-mode {
+			text-transform: capitalize;
+		}
+
+		.debug-mode-eager,
+		.debug-mode-live {
+			color: var(--as-accent-ink);
+		}
+
+		.debug-mode-dormant {
+			color: var(--as-faint);
+		}
+
+		.debug-mode-demo {
+			color: var(--as-secondary-ink);
+		}
+
+		.debug-break {
+			color: var(--as-warning-ink);
+		}
+
+		.debug-score-row {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			margin-top: 0.35rem;
+			font-size: 0.65rem;
+			font-variant-numeric: tabular-nums;
+		}
+
+		.debug-score-rank {
+			flex-shrink: 0;
+			width: 0.6rem;
+			text-align: right;
+			color: var(--as-faint);
+		}
+
+		.debug-score-label {
+			flex-shrink: 0;
+			width: 5rem;
+			color: var(--as-secondary-color);
+		}
+
+		// Bootstrap's track is the light plate grey the game card sits on; this one sits on the page.
+		.debug-score-progress {
+			--as-progress-bg: var(--as-secondary-bg);
+			height: 5px;
+		}
+
+		.debug-score-total {
+			flex-shrink: 0;
+			width: 1.4rem;
+			text-align: right;
+			font-weight: 700;
+		}
+
+		.debug-score-flag {
+			flex-shrink: 0;
+			width: 0.65rem;
+		}
+	}
+
+	.popup-signature-bar {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-top: 0.3rem;
+		margin-left: -0.75rem;
+		margin-right: -0.75rem;
+		margin-bottom: -0.75rem;
+		padding: 0.3rem 0.5rem;
+		background: linear-gradient(to right, #fdb913, #f36f21, #c9234a, #645faa, #0089cf, #0db14b);
+		color: white;
+		font-size: 0.6rem;
+		letter-spacing: 0.02em;
+
+		// The debug panel hides behind this heart, and a pointer cursor would give the secret away.
+		// Nested to outrank Reboot's button:not(:disabled) pointer.
+		.popup-signature-heart {
+			margin: 0 1px;
+			padding: 0;
+			border: 0;
+			background: transparent;
+			color: inherit;
+			line-height: 1;
+			cursor: default;
+		}
 	}
 }

@@ -2,73 +2,99 @@
 // FAQ, credits. Only the homepage carries the visual idea; these pages carry text, and the job
 // here is a comfortable measure and a side-nav that stays out of the way.
 @use '@arenaswap/ui/src/motion' as m;
+@at-root {
 
-// For dates, outlines and other small secondary text. #6e7681 sat at 4.1:1 on the page, just under
-// the 4.5:1 small text needs; this clears it at 5.1:1 and still reads a step quieter than muted.
-$text-subtle: #7d8590;
+	// For dates, outlines and other small secondary text. #6e7681 sat at 4.1:1 on the page, just under
+	// the 4.5:1 small text needs; this clears it at 5.1:1 and still reads a step quieter than muted.
+	$text-subtle: #7d8590;
 
-.page-head {
-	// Clears the fixed header with room to breathe, on a page whose first element is a heading.
-	padding: 7rem 0 0;
-}
-
-.page-title {
-	font-size: clamp(2.1rem, 4.6vw, 3rem);
-	font-weight: 700;
-	letter-spacing: -0.045em;
-	line-height: 1.02;
-	margin: 0;
-}
-
-.page-lede {
-	font-size: 1.05rem;
-	color: var(--color-muted);
-	line-height: 1.7;
-	margin: 0.9rem 0 0;
-	max-width: 62ch;
-}
-
-.reading-shell {
-	display: grid;
-	grid-template-columns: 13rem minmax(0, 1fr);
-	gap: 3rem;
-	padding: 2.5rem 0 5rem;
-	align-items: start;
-}
-
-.reading-shell.reading-shell-plain {
-	grid-template-columns: minmax(0, 1fr);
-	gap: 0;
-}
-
-.reading-nav {
-	position: sticky;
-	top: 5.5rem;
-
-	// Kept flat rather than collapsible: with this few links, a disclosure control would be one
-	// more thing to operate for no less scrolling.
-	h2 {
-		font-size: 0.95rem;
-		font-weight: 600;
-		color: var(--color-text);
-		margin: 1.75rem 0 0.5rem;
-
-		&:first-child {
-			margin-top: 0;
-		}
+	.page-head {
+		// Clears the fixed header with room to breathe, on a page whose first element is a heading.
+		padding: 7rem 0 0;
 	}
 
-	ul {
-		list-style: none;
+	.page-title {
+		font-size: clamp(2.1rem, 4.6vw, 3rem);
+		font-weight: 700;
+		letter-spacing: -0.045em;
+		line-height: 1.02;
 		margin: 0;
-		padding: 0;
 	}
 
-	a {
-		display: block;
-		font-size: 0.85rem;
+	.page-lede {
+		font-size: 1.05rem;
 		color: var(--color-muted);
-		padding: 0.28rem 0;
+		line-height: 1.7;
+		margin: 0.9rem 0 0;
+		max-width: 62ch;
+	}
+
+	.reading-shell {
+		display: grid;
+		grid-template-columns: 13rem minmax(0, 1fr);
+		gap: 3rem;
+		padding: 2.5rem 0 5rem;
+		align-items: start;
+	}
+
+	.reading-shell.reading-shell-plain {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0;
+	}
+
+	.reading-nav {
+		position: sticky;
+		top: 5.5rem;
+
+		// Kept flat rather than collapsible: with this few links, a disclosure control would be one
+		// more thing to operate for no less scrolling.
+		h2 {
+			font-size: 0.95rem;
+			font-weight: 600;
+			color: var(--color-text);
+			margin: 1.75rem 0 0.5rem;
+
+			&:first-child {
+				margin-top: 0;
+			}
+		}
+
+		ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
+
+		a {
+			display: block;
+			font-size: 0.85rem;
+			color: var(--color-muted);
+			padding: 0.28rem 0;
+			text-decoration: none;
+
+			&:hover {
+				color: var(--color-text);
+			}
+
+			&[aria-current='page'] {
+				color: var(--color-primary);
+			}
+		}
+
+	}
+
+	// ─── Documentation ───────────────────────────────────────────────────────────
+	// The hub at /docs/, the two section indexes, and one article per page. Everything here shares the
+	// reading shell with the release notes; only the pieces the docs add need styles of their own.
+
+	// Both trees are listed in the side nav, so the section names became links. `font: inherit` keeps
+	// them reading as the headings they are; the generic `.reading-nav a` rule would otherwise shrink
+	// them to the size of the articles underneath.
+	.docs-nav h2 a {
+		display: inline;
+		font: inherit;
+		color: inherit;
+		padding: 0;
 		text-decoration: none;
 
 		&:hover {
@@ -80,474 +106,218 @@ $text-subtle: #7d8590;
 		}
 	}
 
-}
-
-// ─── Documentation ───────────────────────────────────────────────────────────
-// The hub at /docs/, the two section indexes, and one article per page. Everything here shares the
-// reading shell with the release notes; only the pieces the docs add need styles of their own.
-
-// Both trees are listed in the side nav, so the section names became links. `font: inherit` keeps
-// them reading as the headings they are; the generic `.reading-nav a` rule would otherwise shrink
-// them to the size of the articles underneath.
-.docs-nav h2 a {
-	display: inline;
-	font: inherit;
-	color: inherit;
-	padding: 0;
-	text-decoration: none;
-
-	&:hover {
-		color: var(--color-text);
+	// An article title is a sentence, not a word. At the size the section headings use, "How to watch
+	// several games at once" would take three lines and shout while doing it.
+	.docs-title {
+		font-size: clamp(1.9rem, 3.6vw, 2.5rem);
+		letter-spacing: -0.038em;
+		line-height: 1.1;
+		max-width: 30ch;
 	}
 
-	&[aria-current='page'] {
-		color: var(--color-primary);
-	}
-}
-
-// An article title is a sentence, not a word. At the size the section headings use, "How to watch
-// several games at once" would take three lines and shout while doing it.
-.docs-title {
-	font-size: clamp(1.9rem, 3.6vw, 2.5rem);
-	letter-spacing: -0.038em;
-	line-height: 1.1;
-	max-width: 30ch;
-}
-
-.docs-index {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	max-width: 68ch;
-
-	li {
-		padding: 1.5rem 0;
-		border-top: 1px solid #21262d;
-
-		&:last-child {
-			border-bottom: 1px solid #21262d;
-		}
-	}
-
-	h2 {
-		font-size: 1.15rem;
-		font-weight: 600;
-		letter-spacing: -0.025em;
-		margin: 0;
-
-		a {
-			color: inherit;
-			text-decoration: none;
-
-			&:hover {
-				color: var(--color-primary);
-			}
-		}
-	}
-
-	p {
-		font-size: 0.925rem;
-		color: var(--color-muted);
-		line-height: 1.65;
-		margin: 0.4rem 0 0;
-	}
-}
-
-// Questions a reader arrives with, kept below the article rather than woven into it. Same
-// disclosure widget as the FAQ page.
-//
-// No rule of its own: every .faq-item already draws one above itself and the last draws one below,
-// so a section border lands a second identical line a couple of rem from the first, and the band
-// between them reads as a question with nothing in it.
-.docs-faq {
-	max-width: 68ch;
-	margin: 3.5rem 0 0;
-}
-
-.docs-adjacent {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 1.5rem;
-	max-width: 68ch;
-	margin: 3.5rem 0 0;
-	padding-top: 1.5rem;
-	border-top: 1px solid #21262d;
-
-	a {
-		font-size: 0.9rem;
-		font-weight: 600;
-		color: var(--color-text);
-		text-decoration: none;
-
-		&:hover {
-			color: var(--color-primary);
-		}
-	}
-
-	// Sits second in the source so a single "Next" still lands on the right.
-	.docs-adjacent-next {
-		grid-column: 2;
-		text-align: right;
-	}
-}
-
-// The FAQ list closes with a rule of its own, so the nav borrows it rather than drawing a second.
-.docs-faq + .docs-adjacent {
-	margin-top: 1.5rem;
-	padding-top: 0;
-	border-top: 0;
-}
-
-.docs-hub {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: clamp(2rem, 5vw, 4rem);
-	padding: 3rem 0 5rem;
-	align-items: start;
-}
-
-.docs-hub-tree {
-	h2 {
-		font-size: 1.35rem;
-		font-weight: 700;
-		letter-spacing: -0.03em;
-		margin: 0;
-
-		a {
-			color: inherit;
-			text-decoration: none;
-
-			&:hover {
-				color: var(--color-primary);
-			}
-		}
-	}
-}
-
-.docs-hub-lede {
-	font-size: 0.925rem;
-	color: var(--color-muted);
-	line-height: 1.65;
-	margin: 0.5rem 0 0;
-	max-width: 48ch;
-}
-
-.docs-hub-list {
-	list-style: none;
-	margin: 1.5rem 0 0;
-	padding: 0;
-
-	li {
-		border-top: 1px solid #21262d;
-
-		&:last-child {
-			border-bottom: 1px solid #21262d;
-		}
-	}
-
-	a {
-		display: block;
-		padding: 0.8rem 0;
-		font-size: 0.95rem;
-		color: var(--color-text);
-		text-decoration: none;
-
-		&:hover {
-			color: var(--color-primary);
-		}
-	}
-}
-
-.docs-hub-empty {
-	font-size: 0.9rem;
-	color: $text-subtle;
-	margin: 1.5rem 0 0;
-}
-
-@media (max-width: 767.98px) {
-	.docs-hub {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.docs-adjacent {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.docs-adjacent .docs-adjacent-next {
-		grid-column: 1;
-		text-align: left;
-	}
-}
-
-// ─── Release notes: index ────────────────────────────────────────────────────
-// The newest release carries the page; everything before it is a line in a list.
-.release-index {
-	padding: 2.75rem 0 5rem;
-	max-width: 70ch;
-	margin: 0 auto;
-}
-
-.release-index-page {
-	.page-head,
-	.untranslated-notice {
-		max-width: 70ch;
-		margin-inline: auto;
-	}
-}
-
-.release-feed a {
-	color: inherit;
-	text-decoration: none;
-	transition: color m.$motion-quick m.$motion-ease;
-
-	&:hover {
-		color: var(--color-primary);
-	}
-}
-
-.release-meta {
-	font-size: 0.85rem;
-	color: $text-subtle;
-	margin: 0;
-}
-
-.release-latest-title {
-	font-size: clamp(1.85rem, 3.6vw, 2.5rem);
-	font-weight: 700;
-	letter-spacing: -0.04em;
-	line-height: 1.08;
-	margin: 0.7rem 0 0;
-
-	a {
-		color: inherit;
-		text-decoration: none;
-
-		&:hover {
-			color: var(--color-primary);
-		}
-	}
-}
-
-.release-latest-summary {
-	font-size: 1.05rem;
-	color: var(--color-muted);
-	line-height: 1.7;
-	margin: 1rem 0 0;
-}
-
-.release-list {
-	list-style: none;
-	margin: 4.5rem 0 0;
-	padding: 0;
-
-	li {
-		padding: 1.6rem 0;
-		border-top: 1px solid #21262d;
-	}
-
-	h3 {
-		font-size: 1.2rem;
-		font-weight: 600;
-		letter-spacing: -0.025em;
-		margin: 0.55rem 0 0;
-
-		a {
-			color: inherit;
-			text-decoration: none;
-
-			&:hover {
-				color: var(--color-primary);
-			}
-		}
-	}
-}
-
-.release-list-summary {
-	font-size: 0.925rem;
-	color: var(--color-muted);
-	line-height: 1.65;
-	margin: 0.5rem 0 0;
-}
-
-// ─── Release notes: one release ──────────────────────────────────────────────
-.release-page {
-	padding: 6rem 0 5rem;
-}
-
-.release-back {
-	display: inline-block;
-	font-size: 0.85rem;
-	color: $text-subtle;
-	text-decoration: none;
-
-	&:hover {
-		color: var(--color-text);
-	}
-}
-
-.release-masthead {
-	text-align: center;
-	padding: 3.25rem 0 0;
-
-	.release-meta {
-		// Centred by the block, not by the flow: the separator dots would otherwise sit ragged.
-		display: block;
-	}
-}
-
-.release-title {
-	font-size: clamp(2.1rem, 5vw, 3.35rem);
-	font-weight: 700;
-	letter-spacing: -0.045em;
-	line-height: 1.04;
-	margin: 1.1rem auto 0;
-	max-width: 24ch;
-}
-
-.release-summary {
-	font-size: 1.05rem;
-	color: var(--color-muted);
-	line-height: 1.7;
-	margin: 1.2rem auto 0;
-	max-width: 62ch;
-}
-
-.release-figure {
-	margin: 3rem 0 0;
-
-	img {
-		width: 100%;
-		height: auto;
-		border: 1px solid #21262d;
-		border-radius: 0.75rem;
-	}
-}
-
-.release-body {
-	display: grid;
-	grid-template-columns: minmax(0, 14rem) minmax(0, 68ch) minmax(0, 14rem);
-	justify-content: center;
-	gap: clamp(1.75rem, 4vw, 3.5rem);
-	align-items: start;
-	padding: 3.5rem 0 0;
-
-	.prose {
-		grid-column: 2;
-	}
-}
-
-// The note's own section headings, pinned beside it. The bar on the left of each row is the
-// reading position.
-.release-toc {
-	position: sticky;
-	top: 6rem;
-	grid-column: 3;
-	// 2.0.0 has fifteen sections, which on a laptop screen runs past the bottom of a sticky aside.
-	max-height: calc(100vh - 7rem);
-	overflow-y: auto;
-	overscroll-behavior: contain;
-
-	ul {
+	.docs-index {
 		list-style: none;
 		margin: 0;
 		padding: 0;
-	}
+		max-width: 68ch;
 
-	a {
-		display: block;
-		font-size: 0.8rem;
-		line-height: 1.5;
-		color: $text-subtle;
-		padding: 0.35rem 0 0.35rem 0.8rem;
-		border-left: 1px solid var(--color-border);
-		text-decoration: none;
-		transition: color m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease;
+		li {
+			padding: 1.5rem 0;
+			border-top: 1px solid #21262d;
 
-		&:hover {
-			color: var(--color-text);
+			&:last-child {
+				border-bottom: 1px solid #21262d;
+			}
 		}
 
-		&.is-current {
-			color: var(--color-text);
-			border-left-color: var(--color-primary);
+		h2 {
+			font-size: 1.15rem;
+			font-weight: 600;
+			letter-spacing: -0.025em;
+			margin: 0;
+
+			a {
+				color: inherit;
+				text-decoration: none;
+
+				&:hover {
+					color: var(--color-primary);
+				}
+			}
+		}
+
+		p {
+			font-size: 0.925rem;
+			color: var(--color-muted);
+			line-height: 1.65;
+			margin: 0.4rem 0 0;
 		}
 	}
-}
 
-.release-adjacent {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 1.5rem;
-	max-width: 68ch;
-	margin: 4.5rem auto 0;
-	padding-top: 1.5rem;
-	border-top: 1px solid #21262d;
+	// Questions a reader arrives with, kept below the article rather than woven into it. Same
+	// disclosure widget as the FAQ page.
+	//
+	// No rule of its own: every .faq-item already draws one above itself and the last draws one below,
+	// so a section border lands a second identical line a couple of rem from the first, and the band
+	// between them reads as a question with nothing in it.
+	.docs-faq {
+		max-width: 68ch;
+		margin: 3.5rem 0 0;
+	}
 
-	a {
+	.docs-adjacent {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1.5rem;
+		max-width: 68ch;
+		margin: 3.5rem 0 0;
+		padding-top: 1.5rem;
+		border-top: 1px solid #21262d;
+
+		a {
+			font-size: 0.9rem;
+			font-weight: 600;
+			color: var(--color-text);
+			text-decoration: none;
+
+			&:hover {
+				color: var(--color-primary);
+			}
+		}
+
+		// Sits second in the source so a single "Next" still lands on the right.
+		.docs-adjacent-next {
+			grid-column: 2;
+			text-align: right;
+		}
+	}
+
+	// The FAQ list closes with a rule of its own, so the nav borrows it rather than drawing a second.
+	.docs-faq + .docs-adjacent {
+		margin-top: 1.5rem;
+		padding-top: 0;
+		border-top: 0;
+	}
+
+	.docs-hub {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: clamp(2rem, 5vw, 4rem);
+		padding: 3rem 0 5rem;
+		align-items: start;
+	}
+
+	.docs-hub-tree {
+		h2 {
+			font-size: 1.35rem;
+			font-weight: 700;
+			letter-spacing: -0.03em;
+			margin: 0;
+
+			a {
+				color: inherit;
+				text-decoration: none;
+
+				&:hover {
+					color: var(--color-primary);
+				}
+			}
+		}
+	}
+
+	.docs-hub-lede {
+		font-size: 0.925rem;
+		color: var(--color-muted);
+		line-height: 1.65;
+		margin: 0.5rem 0 0;
+		max-width: 48ch;
+	}
+
+	.docs-hub-list {
+		list-style: none;
+		margin: 1.5rem 0 0;
+		padding: 0;
+
+		li {
+			border-top: 1px solid #21262d;
+
+			&:last-child {
+				border-bottom: 1px solid #21262d;
+			}
+		}
+
+		a {
+			display: block;
+			padding: 0.8rem 0;
+			font-size: 0.95rem;
+			color: var(--color-text);
+			text-decoration: none;
+
+			&:hover {
+				color: var(--color-primary);
+			}
+		}
+	}
+
+	.docs-hub-empty {
 		font-size: 0.9rem;
-		font-weight: 600;
-		color: var(--color-text);
+		color: $text-subtle;
+		margin: 1.5rem 0 0;
+	}
+
+	@media (max-width: 767.98px) {
+		.docs-hub {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.docs-adjacent {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.docs-adjacent .docs-adjacent-next {
+			grid-column: 1;
+			text-align: left;
+		}
+	}
+
+	// ─── Release notes: index ────────────────────────────────────────────────────
+	// The newest release carries the page; everything before it is a line in a list.
+	.release-index {
+		padding: 2.75rem 0 5rem;
+		max-width: 70ch;
+		margin: 0 auto;
+	}
+
+	.release-index-page {
+		.page-head,
+		.untranslated-notice {
+			max-width: 70ch;
+			margin-inline: auto;
+		}
+	}
+
+	.release-feed a {
+		color: inherit;
 		text-decoration: none;
+		transition: color m.$motion-quick m.$motion-ease;
 
 		&:hover {
 			color: var(--color-primary);
 		}
 	}
 
-	// Sits second in the source so a single "Next" still lands on the right.
-	.release-adjacent-next {
-		grid-column: 2;
-		text-align: right;
-	}
-}
-
-@media (max-width: 991.98px) {
-	.release-body {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 0;
-
-		.prose {
-			grid-column: 1;
-			margin: 0 auto;
-		}
-	}
-
-	// An outline stacked above the article it outlines is two lists to scroll past.
-	.release-toc {
-		display: none;
-	}
-
-	.release-adjacent {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.release-adjacent .release-adjacent-next {
-		grid-column: 1;
-		text-align: left;
-	}
-}
-
-// ─── Legal notices ───────────────────────────────────────────────────────────
-.legal-index {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	max-width: 72ch;
-
-	li {
-		padding: 1.5rem 0;
-		border-top: 1px solid #21262d;
-
-		&:last-child {
-			border-bottom: 1px solid #21262d;
-		}
-	}
-
-	h2 {
-		font-size: 1.15rem;
-		font-weight: 600;
-		letter-spacing: -0.025em;
+	.release-meta {
+		font-size: 0.85rem;
+		color: $text-subtle;
 		margin: 0;
+	}
+
+	.release-latest-title {
+		font-size: clamp(1.85rem, 3.6vw, 2.5rem);
+		font-weight: 700;
+		letter-spacing: -0.04em;
+		line-height: 1.08;
+		margin: 0.7rem 0 0;
 
 		a {
 			color: inherit;
@@ -559,152 +329,384 @@ $text-subtle: #7d8590;
 		}
 	}
 
-	p {
+	.release-latest-summary {
+		font-size: 1.05rem;
+		color: var(--color-muted);
+		line-height: 1.7;
+		margin: 1rem 0 0;
+	}
+
+	.release-list {
+		list-style: none;
+		margin: 4.5rem 0 0;
+		padding: 0;
+
+		li {
+			padding: 1.6rem 0;
+			border-top: 1px solid #21262d;
+		}
+
+		h3 {
+			font-size: 1.2rem;
+			font-weight: 600;
+			letter-spacing: -0.025em;
+			margin: 0.55rem 0 0;
+
+			a {
+				color: inherit;
+				text-decoration: none;
+
+				&:hover {
+					color: var(--color-primary);
+				}
+			}
+		}
+	}
+
+	.release-list-summary {
 		font-size: 0.925rem;
 		color: var(--color-muted);
 		line-height: 1.65;
-		margin: 0.4rem 0 0;
-		max-width: 70ch;
-	}
-}
-
-// Bootstrap's alert, doing the work. Only the measure and the two type sizes are set here: an alert
-// is styled for a full-width form, and this one heads a reading column.
-.untranslated-notice {
-	margin: 1.5rem 0 2rem;
-	max-width: 70ch;
-}
-
-.untranslated-notice-heading {
-	font-size: 0.925rem;
-	font-weight: 600;
-	margin: 0;
-}
-
-.untranslated-notice-body {
-	font-size: 0.875rem;
-	line-height: 1.65;
-	// Bootstrap's .alert sets a bottom margin on its own children; the body is the last thing in
-	// the box and does not need one.
-	margin: 0.3rem 0 0;
-	opacity: 0.85;
-}
-
-.legal-measure {
-	max-width: 72ch;
-}
-
-.legal-updated {
-	font-size: 0.85rem;
-	color: $text-subtle;
-}
-
-// ─── Credits ─────────────────────────────────────────────────────────────────
-.credit-list {
-	list-style: none;
-	margin: 1.5rem 0 0;
-	padding: 0;
-}
-
-.credit-item {
-	padding: 1.1rem 0;
-	border-top: 1px solid #21262d;
-
-	h3 {
-		font-size: 1rem;
-		font-weight: 600;
-		letter-spacing: -0.02em;
-		margin: 0;
+		margin: 0.5rem 0 0;
 	}
 
-	p {
-		font-size: 0.875rem;
-		color: var(--color-muted);
-		line-height: 1.65;
-		margin: 0.35rem 0 0;
-		max-width: 74ch;
+	// ─── Release notes: one release ──────────────────────────────────────────────
+	.release-page {
+		padding: 6rem 0 5rem;
 	}
 
-	.credit-licence {
+	.release-back {
+		display: inline-block;
+		font-size: 0.85rem;
 		color: $text-subtle;
-	}
-}
+		text-decoration: none;
 
-@media (max-width: 991.98px) {
-	.reading-shell {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 1.75rem;
+		&:hover {
+			color: var(--color-text);
+		}
 	}
 
-	.reading-nav {
-		position: static;
-		padding-bottom: 1.25rem;
-		border-bottom: 1px solid #21262d;
-	}
-}
+	.release-masthead {
+		text-align: center;
+		padding: 3.25rem 0 0;
 
-// ─── FAQ ─────────────────────────────────────────────────────────────────────
-.faq-list {
-	margin-top: 0.5rem;
-	// Without the side nav the list would run the width of the container, leaving each rule about
-	// twice as long as the answer it sits under.
-	max-width: 76ch;
-}
-
-// Native disclosure widgets. The marker is replaced with a caret that rotates, which is the one
-// piece of motion here; everything else about a <details> already works.
-
-.faq-item {
-	border-top: 1px solid #21262d;
-
-	&:last-of-type {
-		border-bottom: 1px solid #21262d;
+		.release-meta {
+			// Centred by the block, not by the flow: the separator dots would otherwise sit ragged.
+			display: block;
+		}
 	}
 
-	> summary {
-		display: flex;
-		align-items: baseline;
-		gap: 0.75rem;
-		padding: 1rem 0;
-		font-size: 1rem;
-		font-weight: 600;
-		letter-spacing: -0.015em;
-		color: var(--color-text);
-		cursor: pointer;
-		list-style: none;
+	.release-title {
+		font-size: clamp(2.1rem, 5vw, 3.35rem);
+		font-weight: 700;
+		letter-spacing: -0.045em;
+		line-height: 1.04;
+		margin: 1.1rem auto 0;
+		max-width: 24ch;
+	}
 
-		&::-webkit-details-marker {
+	.release-summary {
+		font-size: 1.05rem;
+		color: var(--color-muted);
+		line-height: 1.7;
+		margin: 1.2rem auto 0;
+		max-width: 62ch;
+	}
+
+	.release-figure {
+		margin: 3rem 0 0;
+
+		img {
+			width: 100%;
+			height: auto;
+			border: 1px solid #21262d;
+			border-radius: 0.75rem;
+		}
+	}
+
+	.release-body {
+		display: grid;
+		grid-template-columns: minmax(0, 14rem) minmax(0, 68ch) minmax(0, 14rem);
+		justify-content: center;
+		gap: clamp(1.75rem, 4vw, 3.5rem);
+		align-items: start;
+		padding: 3.5rem 0 0;
+
+		.prose {
+			grid-column: 2;
+		}
+	}
+
+	// The note's own section headings, pinned beside it. The bar on the left of each row is the
+	// reading position.
+	.release-toc {
+		position: sticky;
+		top: 6rem;
+		grid-column: 3;
+		// 2.0.0 has fifteen sections, which on a laptop screen runs past the bottom of a sticky aside.
+		max-height: calc(100vh - 7rem);
+		overflow-y: auto;
+		overscroll-behavior: contain;
+
+		ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
+
+		a {
+			display: block;
+			font-size: 0.8rem;
+			line-height: 1.5;
+			color: $text-subtle;
+			padding: 0.35rem 0 0.35rem 0.8rem;
+			border-left: 1px solid var(--color-border);
+			text-decoration: none;
+			transition: color m.$motion-quick m.$motion-ease, border-color m.$motion-quick m.$motion-ease;
+
+			&:hover {
+				color: var(--color-text);
+			}
+
+			&.is-current {
+				color: var(--color-text);
+				border-left-color: var(--color-primary);
+			}
+		}
+	}
+
+	.release-adjacent {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1.5rem;
+		max-width: 68ch;
+		margin: 4.5rem auto 0;
+		padding-top: 1.5rem;
+		border-top: 1px solid #21262d;
+
+		a {
+			font-size: 0.9rem;
+			font-weight: 600;
+			color: var(--color-text);
+			text-decoration: none;
+
+			&:hover {
+				color: var(--color-primary);
+			}
+		}
+
+		// Sits second in the source so a single "Next" still lands on the right.
+		.release-adjacent-next {
+			grid-column: 2;
+			text-align: right;
+		}
+	}
+
+	@media (max-width: 991.98px) {
+		.release-body {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0;
+
+			.prose {
+				grid-column: 1;
+				margin: 0 auto;
+			}
+		}
+
+		// An outline stacked above the article it outlines is two lists to scroll past.
+		.release-toc {
 			display: none;
 		}
 
-		&::after {
-			content: '';
-			margin-left: auto;
-			flex-shrink: 0;
-			width: 0.5rem;
-			height: 0.5rem;
-			border-right: 1.5px solid var(--color-primary);
-			border-bottom: 1.5px solid var(--color-primary);
-			transform: rotate(45deg) translateY(-0.15rem);
-			transition: transform m.$motion-quick m.$motion-ease;
+		.release-adjacent {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.release-adjacent .release-adjacent-next {
+			grid-column: 1;
+			text-align: left;
 		}
 	}
 
-	&[open] > summary::after {
-		transform: rotate(-135deg) translateY(-0.15rem);
+	// ─── Legal notices ───────────────────────────────────────────────────────────
+	.legal-index {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		max-width: 72ch;
+
+		li {
+			padding: 1.5rem 0;
+			border-top: 1px solid #21262d;
+
+			&:last-child {
+				border-bottom: 1px solid #21262d;
+			}
+		}
+
+		h2 {
+			font-size: 1.15rem;
+			font-weight: 600;
+			letter-spacing: -0.025em;
+			margin: 0;
+
+			a {
+				color: inherit;
+				text-decoration: none;
+
+				&:hover {
+					color: var(--color-primary);
+				}
+			}
+		}
+
+		p {
+			font-size: 0.925rem;
+			color: var(--color-muted);
+			line-height: 1.65;
+			margin: 0.4rem 0 0;
+			max-width: 70ch;
+		}
 	}
 
-	> p {
+	// Bootstrap's alert, doing the work. Only the measure and the two type sizes are set here: an alert
+	// is styled for a full-width form, and this one heads a reading column.
+	.untranslated-notice {
+		margin: 1.5rem 0 2rem;
+		max-width: 70ch;
+	}
+
+	.untranslated-notice-heading {
 		font-size: 0.925rem;
-		color: var(--color-muted);
-		line-height: 1.7;
-		margin: 0 0 1.15rem;
-		max-width: 74ch;
+		font-weight: 600;
+		margin: 0;
 	}
-}
 
-@include m.reduced-motion {
-	.faq-item > summary::after {
-		transition: none;
+	.untranslated-notice-body {
+		font-size: 0.875rem;
+		line-height: 1.65;
+		// Bootstrap's .alert sets a bottom margin on its own children; the body is the last thing in
+		// the box and does not need one.
+		margin: 0.3rem 0 0;
+		opacity: 0.85;
+	}
+
+	.legal-measure {
+		max-width: 72ch;
+	}
+
+	.legal-updated {
+		font-size: 0.85rem;
+		color: $text-subtle;
+	}
+
+	// ─── Credits ─────────────────────────────────────────────────────────────────
+	.credit-list {
+		list-style: none;
+		margin: 1.5rem 0 0;
+		padding: 0;
+	}
+
+	.credit-item {
+		padding: 1.1rem 0;
+		border-top: 1px solid #21262d;
+
+		h3 {
+			font-size: 1rem;
+			font-weight: 600;
+			letter-spacing: -0.02em;
+			margin: 0;
+		}
+
+		p {
+			font-size: 0.875rem;
+			color: var(--color-muted);
+			line-height: 1.65;
+			margin: 0.35rem 0 0;
+			max-width: 74ch;
+		}
+
+		.credit-licence {
+			color: $text-subtle;
+		}
+	}
+
+	@media (max-width: 991.98px) {
+		.reading-shell {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 1.75rem;
+		}
+
+		.reading-nav {
+			position: static;
+			padding-bottom: 1.25rem;
+			border-bottom: 1px solid #21262d;
+		}
+	}
+
+	// ─── FAQ ─────────────────────────────────────────────────────────────────────
+	.faq-list {
+		margin-top: 0.5rem;
+		// Without the side nav the list would run the width of the container, leaving each rule about
+		// twice as long as the answer it sits under.
+		max-width: 76ch;
+	}
+
+	// Native disclosure widgets. The marker is replaced with a caret that rotates, which is the one
+	// piece of motion here; everything else about a <details> already works.
+
+	.faq-item {
+		border-top: 1px solid #21262d;
+
+		&:last-of-type {
+			border-bottom: 1px solid #21262d;
+		}
+
+		> summary {
+			display: flex;
+			align-items: baseline;
+			gap: 0.75rem;
+			padding: 1rem 0;
+			font-size: 1rem;
+			font-weight: 600;
+			letter-spacing: -0.015em;
+			color: var(--color-text);
+			cursor: pointer;
+			list-style: none;
+
+			&::-webkit-details-marker {
+				display: none;
+			}
+
+			&::after {
+				content: '';
+				margin-left: auto;
+				flex-shrink: 0;
+				width: 0.5rem;
+				height: 0.5rem;
+				border-right: 1.5px solid var(--color-primary);
+				border-bottom: 1.5px solid var(--color-primary);
+				transform: rotate(45deg) translateY(-0.15rem);
+				transition: transform m.$motion-quick m.$motion-ease;
+			}
+		}
+
+		&[open] > summary::after {
+			transform: rotate(-135deg) translateY(-0.15rem);
+		}
+
+		> p {
+			font-size: 0.925rem;
+			color: var(--color-muted);
+			line-height: 1.7;
+			margin: 0 0 1.15rem;
+			max-width: 74ch;
+		}
+	}
+
+	@include m.reduced-motion {
+		.faq-item > summary::after {
+			transition: none;
+		}
 	}
 }
