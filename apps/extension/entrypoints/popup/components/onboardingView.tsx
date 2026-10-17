@@ -3,7 +3,9 @@ import { i18n } from '#i18n';
 import { fetchTeamsForLeagues } from '@arenaswap/sideline';
 import type { EspnTeamEntry } from '@arenaswap/sideline';
 import type { LeagueId, LeagueLogoMap, SportType } from '@arenaswap/core/types';
+import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
 import { leagueOrder, leaguesBySportType } from '../popupHelpers';
+import { fullLogoSrc } from '../../../utils/theme';
 import OnboardingTabControl from './onboardingTabControl';
 import OnboardingLeaguePicker from './onboardingLeaguePicker';
 import OnboardingTeamPicker from './onboardingTeamPicker';
@@ -19,6 +21,7 @@ const defaultLeagues: LeagueId[] = ['nba', 'nfl', 'nhl', 'mlb'];
 
 const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboardingViewProps) => {
 	const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+	const theme = useDocumentTheme();
 	const [selectedLeagues, setSelectedLeagues] = useState<Set<LeagueId>>(() => new Set(defaultLeagues));
 	const [selectedFavorites, setSelectedFavorites] = useState<Set<string>>(new Set());
 	const [teams, setTeams] = useState<EspnTeamEntry[]>([]);
@@ -117,7 +120,7 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 					<div className='popup-container d-flex flex-column'>
 						<div className='onb-logo-wrap d-flex justify-content-center pt-7 pb-5'>
 							<img
-								src='/images/full_logo_white_on_transparent.svg'
+								src={fullLogoSrc(theme)}
 								alt='ArenaSwap'
 								className='arenaswap-logo'
 							/>

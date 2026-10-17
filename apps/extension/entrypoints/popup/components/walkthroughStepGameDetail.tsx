@@ -50,7 +50,7 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 					style={{
 						...matchupSurfaceStyle(eaglesColor, giantsColor),
 						cursor: 'pointer',
-						outline: tapped ? `2px solid ${mockPsColor}` : '2px dashed rgba(255,255,255,0.2)',
+						outline: tapped ? `2px solid ${mockPsColor}` : '2px dashed color-mix(in srgb, var(--as-overlay) 20%, transparent)',
 					}}
 					onClick={() => setTapped(true)}
 					onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setTapped(true); }}
@@ -147,7 +147,7 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 										style={{ width: `${(val / 30) * 100}%`, backgroundColor: color }}
 									/>
 								</div>
-								<span style={{ color, minWidth: '2rem', textAlign: 'right' }}>{val}</span>
+								<span style={{ color: `light-dark(var(--as-fg-body), ${color})`, minWidth: '2rem', textAlign: 'right' }}>{val}</span>
 							</div>
 						))}
 					</div>

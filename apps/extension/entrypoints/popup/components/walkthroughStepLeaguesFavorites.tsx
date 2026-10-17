@@ -21,7 +21,7 @@ const LeagueRow = ({ label, color, enabled, onToggle }: LeagueRowProps) => (
 		<div className='d-flex align-items-center gap-3'>
 			<span
 				className='badge fw-bold motion-tint'
-				style={{ backgroundColor: enabled ? color : 'transparent', color: enabled ? '#fff' : '#6c757d', border: `1px solid ${enabled ? color : '#6c757d'}`, minWidth: '3rem' }}
+				style={{ backgroundColor: enabled ? color : 'transparent', color: enabled ? '#fff' : 'var(--as-fg-3)', border: `1px solid ${enabled ? color : 'var(--as-fg-3)'}`, minWidth: '3rem' }}
 			>
 				{label}
 			</span>
@@ -56,7 +56,7 @@ const TeamRow = ({ name, abbr, color, starred, onStar }: TeamRowProps) => (
 		<button
 			type='button'
 			className='btn btn-sm p-0 motion-tint'
-			style={{ background: 'none', border: 'none', color: starred ? '#f1c40f' : '#6c757d', fontSize: '1rem', lineHeight: 1 }}
+			style={{ background: 'none', border: 'none', color: starred ? 'var(--as-warning-ink)' : 'var(--as-fg-3)', fontSize: '1rem', lineHeight: 1 }}
 			onClick={onStar}
 			aria-label={starred ? i18n.t('stepLeaguesFavorites.unstarAriaLabel', { team: name }) : i18n.t('stepLeaguesFavorites.starAriaLabel', { team: name })}
 		>
@@ -125,7 +125,7 @@ const walkthroughStepLeaguesFavorites = ({ onNext, onBack }: walkthroughStepLeag
 						{(starred.eagles || starred.chiefs || starred.bucks) && (
 							<div
 								className='mt-3 rounded px-3 py-1 small'
-								style={{ backgroundColor: 'rgba(241,196,15,0.12)', color: '#f1c40f', fontSize: '0.68rem' }}
+								style={{ backgroundColor: 'color-mix(in srgb, var(--as-warning-base) 12%, transparent)', color: 'var(--as-warning-ink)', fontSize: '0.68rem' }}
 							>
 								<i className='bi bi-star-fill me-1' />
 								{i18n.t('stepLeaguesFavorites.favoritesBonusHint')}

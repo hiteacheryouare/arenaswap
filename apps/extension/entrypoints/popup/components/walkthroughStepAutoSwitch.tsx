@@ -55,7 +55,7 @@ const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, 
 			style={{
 				pointerEvents: 'none',
 				...matchupSurfaceStyle(color1, color2),
-				outline: watching ? '2px solid var(--bs-primary)' : '2px solid transparent',
+				outline: watching ? '2px solid var(--as-primary-bg)' : '2px solid transparent',
 			}}
 		>
 			<div className='d-flex align-items-center justify-content-between mb-1'>

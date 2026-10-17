@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
 import ToggleSwitch from '@arenaswap/ui/src/components/toggleSwitch';
+import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
+import { fullLogoSrc } from '../../../utils/theme';
 import FlowStepper from './flowStepper';
 import focusStepTitle from './stepTitleFocus';
 
@@ -10,6 +12,7 @@ interface walkthroughStepToggleProps {
 
 const walkthroughStepToggle = ({ onNext }: walkthroughStepToggleProps) => {
 	const [enabled, setEnabled] = useState(true);
+	const theme = useDocumentTheme();
 
 	return (
 		<div className='popup-container d-flex flex-column'>
@@ -23,7 +26,7 @@ const walkthroughStepToggle = ({ onNext }: walkthroughStepToggleProps) => {
 			<div className='border border-subtle-accent rounded p-3 mb-5'>
 				<div className='d-flex justify-content-between align-items-center mb-1'>
 					<img
-						src='/images/full_logo_white_on_transparent.svg'
+						src={fullLogoSrc(theme)}
 						alt='ArenaSwap'
 						className='arenaswap-logo'
 					/>
@@ -43,8 +46,8 @@ const walkthroughStepToggle = ({ onNext }: walkthroughStepToggleProps) => {
 				<div
 					className='small text-center lh-md mt-1 rounded px-3 py-1 motion-tint'
 					style={{
-						backgroundColor: enabled ? 'rgba(0,204,102,0.12)' : 'rgba(255,255,255,0.06)',
-						color: enabled ? '#00CC66' : '#8b949e',
+						backgroundColor: enabled ? 'color-mix(in srgb, var(--as-success-base) 12%, transparent)' : 'color-mix(in srgb, var(--as-overlay) 6%, transparent)',
+						color: enabled ? 'var(--as-success-fg)' : 'var(--as-fg-3)',
 						fontSize: '0.72rem',
 					}}
 				>

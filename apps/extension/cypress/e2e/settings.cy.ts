@@ -210,12 +210,22 @@ describe('the theme setting', () => {
 		cy.then(() => expect(seen).to.not.be.empty.and.not.include('dark'));
 	});
 
+	// First-run only happens with nothing stored, so it takes the default rather than the stale copy.
 	it('keeps first-run dark even when a light copy is stored', () => {
 		cy.on('window:before:load', win => win.localStorage.setItem('arenaswap.theme', 'light'));
 		cy.openPopup({ state: liveState() });
 
-		cy.get('.onb-logo-wrap').should('exist');
+		cy.get('.onb-logo-wrap img').should('have.attr', 'src', '/images/full_logo_white_on_transparent.svg');
 		html().should('have.attr', 'data-bs-theme', 'dark');
+	});
+
+	it('takes the tour in light when the setting says so', () => {
+		cy.openPopup({ ...onboarded, sync: { prefs: onboardedPrefs({ theme: 'light' }) }, state: liveState() });
+		cy.get('button.popup-settings-button[aria-label="Tour"]').click();
+
+		cy.get('.walkthrough-skip').should('be.visible');
+		cy.get('img.arenaswap-logo').should('have.attr', 'src', '/images/full_logo_black.svg');
+		html().should('have.attr', 'data-bs-theme', 'light');
 	});
 
 	it('stops listening to the system once a fixed theme is picked', () => {

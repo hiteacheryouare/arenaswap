@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { BuiltInModeId } from '@arenaswap/core/types';
 import { i18n } from '#i18n';
 import { boostPresentation, modeSignalIds, penaltyPresentation, signalPresentation } from '@arenaswap/ui/src/components/scoringModeMeta';
+import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
+import { iconSrc } from '../../../utils/theme';
 import FlowStepper from './flowStepper';
 import focusStepTitle from './stepTitleFocus';
 
@@ -23,6 +25,7 @@ const boostPenaltyMeta = [
 		labelKey: 'stepPowerScore.breakPenaltyName',
 		descriptionKey: 'powerScore.tooltipBreakPenalty',
 		color: penaltyPresentation.commercialBreak.color,
+		ink: penaltyPresentation.commercialBreak.ink,
 		icon: penaltyPresentation.commercialBreak.icon,
 	},
 	{
@@ -30,6 +33,7 @@ const boostPenaltyMeta = [
 		labelKey: 'stepPowerScore.volatilityName',
 		descriptionKey: 'powerScore.tooltipVolatility',
 		color: penaltyPresentation.volatility.color,
+		ink: penaltyPresentation.volatility.ink,
 		icon: penaltyPresentation.volatility.icon,
 	},
 	{
@@ -37,6 +41,7 @@ const boostPenaltyMeta = [
 		labelKey: 'stepPowerScore.favoriteBoostName',
 		descriptionKey: 'powerScore.tooltipFavoriteBoost',
 		color: boostPresentation.favoriteBoost.color,
+		ink: boostPresentation.favoriteBoost.ink,
 		icon: boostPresentation.favoriteBoost.icon,
 	},
 	{
@@ -44,6 +49,7 @@ const boostPenaltyMeta = [
 		labelKey: 'stepPowerScore.gameBoostName',
 		descriptionKey: 'powerScore.tooltipGameBoost',
 		color: boostPresentation.gameBoost.color,
+		ink: boostPresentation.gameBoost.ink,
 		icon: boostPresentation.gameBoost.icon,
 	},
 	{
@@ -51,6 +57,7 @@ const boostPenaltyMeta = [
 		labelKey: 'stepPowerScore.scoringOpportunityName',
 		descriptionKey: 'powerScore.tooltipScoringOpportunity',
 		color: boostPresentation.scoringOpportunity.color,
+		ink: boostPresentation.scoringOpportunity.ink,
 		icon: boostPresentation.scoringOpportunity.icon,
 	},
 	{
@@ -58,9 +65,13 @@ const boostPenaltyMeta = [
 		labelKey: 'stepPowerScore.postseasonBoostName',
 		descriptionKey: 'powerScore.tooltipPostseasonBoost',
 		color: boostPresentation.postseasonBoost.color,
+		ink: boostPresentation.postseasonBoost.ink,
 		icon: boostPresentation.postseasonBoost.icon,
 	},
 ] as const;
+
+// The bright tone reads on dark; light mode needs the darkened ink to stay legible on white.
+const boostTone = ({ ink, color }: { ink: string; color: string }) => `light-dark(${ink}, ${color})`;
 
 // The last sub-step: the intro, one per signal, then the boosts and penalties.
 export const lastPowerScoreSubStep = (modeId: BuiltInModeId = 'classic'): number => modeSignalIds[modeId].length + boostPenaltyMeta.length;
@@ -162,6 +173,7 @@ const BLOOM_IN_DURATION = 450;
 const BLOOM_OUT_DURATION = 400;
 
 const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0, modeId = 'classic' }: walkthroughStepPowerScoreProps) => {
+	const theme = useDocumentTheme();
 	const signalMeta = useMemo(() => signalMetaFor(modeId), [modeId]);
 	const dots = useMemo(() => buildDots(signalMeta), [signalMeta]);
 	const signalCount = signalMeta.length;
@@ -250,7 +262,7 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0, modeId 
 					</div>
 					<div className='powerscore-orbit-center'>
 						<img
-							src='/images/icon_white_on_transparent.svg'
+							src={iconSrc(theme)}
 							alt='ArenaSwap'
 							style={{ width: '28px', height: '28px' }}
 						/>
@@ -278,7 +290,7 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0, modeId 
 					</div>
 					<div className='powerscore-orbit-center'>
 						<img
-							src='/images/icon_white_on_transparent.svg'
+							src={iconSrc(theme)}
 							alt='ArenaSwap'
 							style={{ width: '28px', height: '28px' }}
 						/>
@@ -292,9 +304,9 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0, modeId 
 			<div className='powerscore-orbit-container'>
 				<div
 					className='powerscore-boost-icon-container'
-					style={{ color: activeBoost.color, borderColor: `${activeBoost.color}40` }}
+					style={{ color: boostTone(activeBoost), borderColor: `${activeBoost.color}40` }}
 				>
-					<i className={`bi bi-${activeBoost.icon}`} style={{ fontSize: '2.2rem', color: activeBoost.color }} />
+					<i className={`bi bi-${activeBoost.icon}`} style={{ fontSize: '2.2rem', color: boostTone(activeBoost) }} />
 				</div>
 			</div>
 		);
@@ -348,7 +360,7 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0, modeId 
 				</div>
 				{renderVisual()}
 				<div className='text-center px-5 mt-3'>
-					<div className='fw-semibold small mb-1' style={{ color: activeBoost.color }}>
+					<div className='fw-semibold small mb-1' style={{ color: boostTone(activeBoost) }}>
 						{i18n.t(activeBoost.labelKey)}
 					</div>
 					<p className='fg-secondary small lh-md mb-0'>
@@ -367,7 +379,7 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0, modeId 
 
 			<ul className='powerscore-progress-dots' aria-label={i18n.t('stepPowerScore.progressAriaLabel')}>
 				{Array.from({ length: lastSubStep + 1 }).map((_, idx) => {
-					let dotColor = '#8b949e';
+					let dotColor = 'var(--as-fg-3)';
 					let label = i18n.t('stepPowerScore.introDotLabel');
 					if (isSignalSubStep(idx)) {
 						const sig = signalMeta[idx - 1]!;

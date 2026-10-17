@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Onboarding and the tour follow the Theme setting — 2026-10-17
+
+The dark pin is gone from `useTheme`, so the tour comes up light for anyone who picked Light (first-run still opens dark, since nothing is stored yet), and its logos, washes and boost inks switch with the theme; light mode uses each boost's darker `ink` so it stays legible on white. The tour's last step and its watching ring had gone blank in both themes because they still read `--bs-primary`, which Bootstrap 6 no longer declares.
+
 ## Bootstrap 6 — 2026-10-16
 
 Everything moves to `bootstrap@6.0.0-alpha.1`, pinned exactly so each beta is a deliberate bump: the theme is `light-dark()` token pairs, our CSS sits in Bootstrap's `custom` cascade layer, and a PostCSS pass (`tokenPrefix.ts`) keeps the `--as-` prefix that v6 dropped; v6 compiles without Sass deprecation warnings, so the `quietDeps` silencer is gone. Crests and headshots are now avatars that fall back to team colour and initials, and selects, switches, sliders, the breakdown, the guide and site drawers, the detail tabs, the onboarding steps and the docs prose all run on v6's own components. `tokenNames.test.ts` fails on any `--as-` token nobody declares, which is where a renamed token in the next prerelease will show up.

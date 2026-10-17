@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import type { ThemePreference } from '@arenaswap/core/types';
-import { fullLogoSrc, resolveTheme, themeStorageKey } from '../utils/theme';
+import { fullLogoSrc, iconSrc, resolveTheme, themeStorageKey } from '../utils/theme';
 
 const bootScript = readFileSync(path.join(__dirname, '../public/themeBoot.js'), 'utf8');
 
@@ -56,5 +56,16 @@ describe('fullLogoSrc', () => {
 
 	test.each(['dark', 'light'] as const)('the %s mark ships', theme => {
 		expect(() => readFileSync(path.join(__dirname, '../public', fullLogoSrc(theme)))).not.toThrow();
+	});
+});
+
+describe('iconSrc', () => {
+	test('the white icon on dark and the black icon on light', () => {
+		expect(iconSrc('dark')).toBe('/images/icon_white_on_transparent.svg');
+		expect(iconSrc('light')).toBe('/images/icon_black_on_transparent.svg');
+	});
+
+	test.each(['dark', 'light'] as const)('the %s icon ships', theme => {
+		expect(() => readFileSync(path.join(__dirname, '../public', iconSrc(theme)))).not.toThrow();
 	});
 });
