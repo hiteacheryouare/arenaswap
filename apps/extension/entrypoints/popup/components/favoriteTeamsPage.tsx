@@ -50,7 +50,7 @@ const favoriteTeamsPage = ({
 
 	const pinned = pinnedRows.length > 0 ? (
 		<div>
-			<div className='fw-bold text-uppercase popup-section-label mt-2'>{i18n.t('teamPicker.yourFavorites')}</div>
+			<div className='fw-bold text-uppercase popup-section-label mt-3'>{i18n.t('teamPicker.yourFavorites')}</div>
 			{pinnedRows.map(row => (
 				<TeamPickerRow
 					key={row.key}

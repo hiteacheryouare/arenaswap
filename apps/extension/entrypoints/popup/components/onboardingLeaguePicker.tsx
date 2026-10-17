@@ -4,6 +4,7 @@ import type { LeagueId, LeagueLogoMap, SportType } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
 import { toLeagueInitials, type leagueConfig } from './leagueLogo';
 import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
+import FlowStepper from './flowStepper';
 import focusStepTitle from './stepTitleFocus';
 
 interface onboardingLeaguePickerProps {
@@ -43,12 +44,12 @@ const onboardingLeaguePicker = ({
 }: onboardingLeaguePickerProps) => (
 	<div className='popup-container'>
 		<div className='d-flex align-items-center mb-1'>
-			<button className='btn btn-link btn-sm p-0 text-body-secondary small' onClick={onBack}>
+			<button className='btn btn-link btn-sm p-0 fg-secondary small' onClick={onBack}>
 				<i className='bi bi-arrow-left me-1' />{i18n.t('leaguePicker.back')}
 			</button>
-			<span className='small text-body-secondary text-uppercase ms-auto'>{i18n.t('leaguePicker.step', [2, 3])}</span>
+			<FlowStepper step={2} total={3} className='ms-auto' />
 		</div>
-		<div className='fw-bold lh-sm mb-3 fs-5 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('leaguePicker.title')}</div>
+		<div className='fw-bold lh-xs mb-5 fs-lg popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('leaguePicker.title')}</div>
 
 		<div>
 			{(Object.keys(sportTypeOrder) as SportType[])
@@ -59,36 +60,34 @@ const onboardingLeaguePicker = ({
 					return (
 						<div key={sportType} className='league-toggle-group'>
 							<div className='d-flex align-items-center justify-content-between'>
-								<div className='fw-semibold text-body-secondary setting-toggle-label'>
+								<div className='fw-semibold fg-secondary setting-toggle-label'>
 									{sportEmojis[sportType]} {sportTypeLabels[sportType]}
 								</div>
-								<div className='form-check mb-0'>
+								<div className='form-field'>
 									<input
-										className='form-check-input'
+										className='check'
 										type='checkbox'
 										id={`sport-all-${sportType}`}
 										checked={allSelected}
 										onChange={() => onToggleSport(sportType, !allSelected)}
 									/>
-									<label className='form-check-label small text-body-secondary' htmlFor={`sport-all-${sportType}`}>
+									<label className='small fg-secondary align-self-center' htmlFor={`sport-all-${sportType}`}>
 										{i18n.t('leaguePicker.all')}
 									</label>
 								</div>
 							</div>
 							{leagues.map(league => (
-								<div key={league.id} className='d-flex align-items-center gap-2 mt-1 ps-3 py-1'>
-									<div className='form-check mb-0'>
-										<input
-											className='form-check-input'
-											type='checkbox'
-											id={`onb-league-${league.id}`}
-											checked={selectedLeagues.has(league.id)}
-											onChange={() => onToggleLeague(league.id)}
-										/>
-									</div>
-									<label className='d-flex align-items-center gap-2 min-w-0 mb-0' htmlFor={`onb-league-${league.id}`}>
+								<div key={league.id} className='d-flex align-items-center gap-5 mt-1 ps-5 py-1'>
+									<input
+										className='check'
+										type='checkbox'
+										id={`onb-league-${league.id}`}
+										checked={selectedLeagues.has(league.id)}
+										onChange={() => onToggleLeague(league.id)}
+									/>
+									<label className='d-flex align-items-center gap-3 min-w-0 mb-0' htmlFor={`onb-league-${league.id}`}>
 										<LeagueLogo league={league} logos={leagueLogos} />
-										<span className='fw-semibold text-body lh-sm league-toggle-label'>{league.label}</span>
+										<span className='fw-semibold fg-body lh-xs league-toggle-label'>{league.label}</span>
 									</label>
 								</div>
 							))}
@@ -98,7 +97,7 @@ const onboardingLeaguePicker = ({
 		</div>
 
 		<button
-			className='btn btn-primary w-100 mt-4'
+			className='btn btn-solid theme-primary w-100 mt-7'
 			onClick={onNext}
 			disabled={selectedLeagues.size === 0}
 		>

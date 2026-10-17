@@ -5,6 +5,9 @@ import type { GameCardDisplayProps } from '@arenaswap/ui/src/components/gameCard
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 import ExtLiveGameCard from '../../entrypoints/popup/components/liveGameCard';
 
+// Every rule sits inside an @layer block, so a walk over the stylesheets has to open grouping rules.
+const flatten = (rules: CSSRuleList): CSSRule[] => Array.from(rules).flatMap(rule => (rule instanceof CSSGroupingRule ? flatten(rule.cssRules) : [rule]));
+
 const popupWidth = 320;
 
 const game = (status: Game['status']): Game => ({
@@ -117,7 +120,7 @@ describe('the details button', () => {
 		cy.press(Cypress.Keyboard.Keys.TAB);
 		cy.focused().should('have.class', 'game-meta-attribution');
 		cy.press(Cypress.Keyboard.Keys.TAB);
-		cy.focused().should('have.class', 'form-select');
+		cy.focused().should('have.class', 'form-control-caret');
 	});
 
 	it('still opens details when the card is clicked anywhere that is not a control', () => {
@@ -168,15 +171,15 @@ describe('controls inside the card', () => {
 			cy.wrap($star).focus().should('have.focus');
 		});
 		cy.get('.game-meta-attribution').focus().should('have.focus');
-		cy.get('.game-card-tab-assign button.form-select').focus().should('have.focus');
+		cy.get('.game-card-tab-assign button.form-control-caret').focus().should('have.focus');
 	});
 
 	it('do not open details when clicked', () => {
 		mountExtensionCard();
 		cy.get('[data-team-star]').first().click();
 		cy.get('@toggleFavorite').should('have.been.calledOnceWith', 'nba', 'a');
-		cy.get('.game-card-tab-assign button.form-select').click();
-		cy.contains('.dropdown-item', 'Game on the big screen').click();
+		cy.get('.game-card-tab-assign button.form-control-caret').click();
+		cy.contains('.menu-item', 'Game on the big screen').click();
 		cy.get('@registryChange').should('have.been.calledOnce');
 		cy.get('.game-meta-attribution').click();
 		cy.get('@openDetail').should('not.have.been.called');
@@ -223,7 +226,7 @@ describe('interactive={false}', () => {
 		cy.get('.game-card').should('have.css', 'transition-property').and('contain', 'transform');
 		cy.get('.game-card').should('not.have.css', 'cursor', 'pointer');
 		cy.get('.game-card').then($card => {
-			const lift = Array.from(document.styleSheets).flatMap(sheet => Array.from(sheet.cssRules))
+			const lift = Array.from(document.styleSheets).flatMap(sheet => flatten(sheet.cssRules))
 				.filter((rule): rule is CSSStyleRule => rule instanceof CSSStyleRule && rule.selectorText.includes('.game-card-lift:hover'));
 			expect(lift.length, 'a hover rule for .game-card-lift').to.be.greaterThan(0);
 			expect(lift[0]!.style.transform).to.equal('translateY(-1px)');

@@ -29,7 +29,7 @@ const HoverTooltip = ({ text, className, inert, children }: hoverTooltipProps) =
 			if (unmounted) return;
 			// The tip is parented to <body>, so it outlives this subtree and has to be torn down by
 			// hand. Without `animation: false` that teardown is deferred behind a CSS transition and
-			// lands on an element React has already removed, which throws from inside Popper.
+			// lands on an element React has already removed.
 			instance = new Tooltip(element, { title: text, placement: 'auto', trigger: 'hover focus', container: 'body', animation: false });
 		});
 

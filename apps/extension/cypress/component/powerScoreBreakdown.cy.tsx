@@ -569,6 +569,7 @@ describe('PowerScoreBreakdown tooltips', () => {
 });
 
 const heading = (label: string) => cy.contains('.powerscore-breakdown-section-heading', label);
+const section = (label: string) => heading(label).parent('details');
 
 describe('PowerScoreBreakdown folding sections', () => {
 	beforeEach(() => {
@@ -577,8 +578,8 @@ describe('PowerScoreBreakdown folding sections', () => {
 
 	it('opens every section the first time', () => {
 		atPopupWidth({ breakdown: payingBreakdown });
-		cy.get('.powerscore-breakdown-section-heading').should('have.length', 3).each($heading => {
-			cy.wrap($heading).should('have.attr', 'aria-expanded', 'true');
+		cy.get('details.powerscore-breakdown-section').should('have.length', 3).each($section => {
+			cy.wrap($section).should('have.attr', 'open');
 		});
 		cy.get('.powerscore-signal-row').should('have.length', 5).first().should('be.visible');
 	});
@@ -586,7 +587,7 @@ describe('PowerScoreBreakdown folding sections', () => {
 	it('folds a section\'s rows away and keeps its total in sight', () => {
 		atPopupWidth({ breakdown: payingBreakdown });
 		heading('Boosts & Penalties').click();
-		heading('Boosts & Penalties').should('have.attr', 'aria-expanded', 'false').and('have.class', 'collapsed');
+		section('Boosts & Penalties').should('not.have.attr', 'open');
 		cy.contains('Stakes').should('not.be.visible');
 		cy.contains('.powerscore-breakdown-row-subtotal', 'Boosts & penalties total').should('be.visible');
 		cy.contains('Two-minute drill').should('be.visible');
@@ -598,7 +599,7 @@ describe('PowerScoreBreakdown folding sections', () => {
 		heading('Signals').click();
 		cy.get('.powerscore-signal-row').first().should('not.be.visible');
 		heading('Signals').click();
-		heading('Signals').should('have.attr', 'aria-expanded', 'true');
+		section('Signals').should('have.attr', 'open');
 		cy.get('.powerscore-signal-row').first().should('be.visible');
 	});
 
@@ -607,10 +608,10 @@ describe('PowerScoreBreakdown folding sections', () => {
 		heading('Football Boosts & Penalties').click();
 		cy.contains('Two-minute drill').should('not.be.visible');
 		atPopupWidth({ breakdown: payingBreakdown, sportType: 'baseball', totalLabel: '61 / 100' });
-		heading('Baseball Boosts & Penalties').should('have.attr', 'aria-expanded', 'false');
+		section('Baseball Boosts & Penalties').should('not.have.attr', 'open');
 		cy.contains('No-hitter').should('not.be.visible');
 		cy.contains('.powerscore-breakdown-row-subtotal', 'Baseball total').should('be.visible');
-		heading('Signals').should('have.attr', 'aria-expanded', 'true');
+		section('Signals').should('have.attr', 'open');
 	});
 
 	it('keeps a fold through the next poll\'s re-render', () => {
@@ -622,23 +623,24 @@ describe('PowerScoreBreakdown folding sections', () => {
 			});
 		});
 		cy.get('.powerscore-breakdown-row-total').should('contain', '31 / 100');
-		heading('Signals').should('have.attr', 'aria-expanded', 'false');
+		section('Signals').should('not.have.attr', 'open');
 		cy.get('.powerscore-signal-row').first().should('not.be.visible');
 	});
 
-	// The plugin finishes a fold on its own timer, which outlives a card unmounted in the middle of it.
-	it('lets the reader leave the game in the middle of a fold', () => {
-		atPopupWidth({ breakdown: payingBreakdown });
-		heading('Signals').click();
-		cy.get('.powerscore-breakdown-section-body.collapsing').should('exist');
-		cy.mount(<div />);
-		cy.wait(600);
-		cy.then(() => expect(JSON.parse(localStorage.getItem(breakdownFoldsKey)!)).to.deep.equal(['signals']));
-	});
-
+	// A real key press through Chrome, because Cypress's synthetic Enter only clicks buttons and
+	// inputs, and a summary's toggle is the browser's own default action.
 	it('folds from the keyboard', () => {
 		atPopupWidth({ breakdown: payingBreakdown });
-		heading('Signals').focus().type('{enter}');
-		heading('Signals').should('have.attr', 'aria-expanded', 'false');
+		// Cypress's .focus() turns a <summary> down, though browsers focus one natively.
+		heading('Signals').then($summary => $summary[0]!.focus());
+		cy.then(() => Cypress.automation('remote:debugger:protocol', {
+			command: 'Input.dispatchKeyEvent',
+			params: { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, text: '\r' },
+		}));
+		cy.then(() => Cypress.automation('remote:debugger:protocol', {
+			command: 'Input.dispatchKeyEvent',
+			params: { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 },
+		}));
+		section('Signals').should('not.have.attr', 'open');
 	});
 });

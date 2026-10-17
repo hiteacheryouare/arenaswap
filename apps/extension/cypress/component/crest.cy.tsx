@@ -124,6 +124,37 @@ describe('Crest', () => {
 		});
 	});
 
+	it('is a Bootstrap avatar, with the logo as its image', () => {
+		cy.mount(<Crest logo={loadableLogo} abbreviation='PHI' className='team-crest' />);
+		cy.get('.crest').should('have.class', 'avatar');
+		cy.get('.crest img').should('have.class', 'avatar-img').and('have.css', 'object-fit', 'contain');
+	});
+
+	it('fills the placeholder with a team colour, in an ink that reads on it', () => {
+		cy.mount(
+			<>
+				<Crest abbreviation='NAV' className='team-crest' teamColor='#0C2340' />
+				<Crest abbreviation='GLD' className='team-crest' teamColor='#FFB81C' />
+			</>,
+		);
+		cy.contains('.crest-fallback', 'NAV')
+			.should('have.css', 'background-color', 'rgb(12, 35, 64)')
+			.and('have.css', 'color', 'rgb(255, 255, 255)');
+		cy.contains('.crest-fallback', 'GLD')
+			.should('have.css', 'background-color', 'rgb(255, 184, 28)')
+			.and('have.css', 'color', 'rgb(17, 24, 39)');
+	});
+
+	it('keeps the call site\'s own neutral disc without a usable team colour', () => {
+		cy.mount(<Crest abbreviation='PHI' className='team-crest' teamColor='navy' />);
+		cy.get('.crest-fallback').should('have.css', 'background-color', 'rgb(248, 249, 250)');
+	});
+
+	it('draws an icon in place of the abbreviation when given one', () => {
+		cy.mount(<Crest abbreviation='' icon='bi-globe2' className='tab-favicon' />);
+		cy.get('.crest-fallback .bi-globe2').should('be.visible');
+	});
+
 	it('names itself only when nothing else does', () => {
 		cy.mount(<Crest logo={loadableLogo} abbreviation='PHI' label='Philadelphia Eagles' className='team-crest' />);
 		cy.get('.crest').should('have.attr', 'role', 'img').and('have.attr', 'aria-label', 'Philadelphia Eagles');

@@ -4,6 +4,7 @@ import Crest from '@arenaswap/ui/src/components/crest';
 import { teamLogoOnColor } from '@arenaswap/core/constants';
 import { matchupSurfaceStyle, powerScoreColor } from './gameCardShared';
 import { signalColors } from '@arenaswap/ui/src/components/signalColors';
+import FlowStepper from './flowStepper';
 import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepGameDetailProps {
@@ -25,7 +26,7 @@ const TeamLogo = ({ abbr, color, logoUrl }: { abbr: string; color: string; logoU
 		logo={teamLogoOnColor(logoUrl)}
 		abbreviation={abbr}
 		className='team-crest-28'
-		fallbackStyle={{ backgroundColor: color, color: '#fff' }}
+		teamColor={color}
 	/>
 );
 
@@ -34,16 +35,14 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>
-				{i18n.t('stepGameDetail.step', [6, 8])}
-			</div>
+			<FlowStepper step={6} total={8} className='pt-5 pb-3' />
 
-			<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepGameDetail.title')}</div>
-			<div className='text-body-secondary small text-center mb-3 lh-base'>
+			<div className='fw-bold fs-lg text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepGameDetail.title')}</div>
+			<div className='fg-secondary small text-center mb-5 lh-md'>
 				{i18n.t('stepGameDetail.subtitle')}
 			</div>
 
-			<div className='position-relative mb-3'>
+			<div className='position-relative mb-5'>
 				<div
 					role='button'
 					tabIndex={0}
@@ -81,7 +80,7 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 						</div>
 					</div>
 
-					<div className='d-flex align-items-center gap-2 game-card-ps-bar-row'>
+					<div className='d-flex align-items-center gap-3 game-card-ps-bar-row'>
 						<span className='game-card-ps-label'>PowerScore</span>
 						<div className='progress flex-grow-1 game-card-ps-progress'>
 							<div
@@ -107,7 +106,7 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 						style={{ zIndex: 2 }}
 					>
 						<span
-							className='badge rounded-pill fw-semibold px-3 py-2'
+							className='badge rounded-pill fw-semibold px-5 py-3'
 							style={{
 								backgroundColor: 'rgba(0,0,0,0.75)',
 								color: '#fff',
@@ -125,11 +124,11 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 
 			{tapped ? (
 				<div
-					className='border border-secondary-subtle rounded p-2 mb-3'
+					className='border border-subtle-accent rounded p-3 mb-5'
 					style={{ fontSize: '0.72rem' }}
 				>
-					<div className='fw-semibold text-body mb-2' style={{ fontSize: '0.8rem' }}>
-						<i className='bi bi-bar-chart-line text-primary me-1' />
+					<div className='fw-semibold fg-body mb-3' style={{ fontSize: '0.8rem' }}>
+						<i className='bi bi-bar-chart-line fg-primary me-1' />
 						{i18n.t('stepGameDetail.detailPreviewTitle')}
 					</div>
 					<div className='d-flex flex-column gap-1'>
@@ -140,8 +139,8 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 							{ label: i18n.t('stepGameDetail.signalLeadChanges'), val: 9, color: signalColors.leadChanges },
 							{ label: i18n.t('stepGameDetail.signalComeback'), val: 8, color: signalColors.comeback },
 						].map(({ label, val, color }) => (
-							<div key={label} className='d-flex align-items-center gap-2'>
-								<span className='text-body-secondary' style={{ minWidth: '5.5rem' }}>{label}</span>
+							<div key={label} className='d-flex align-items-center gap-3'>
+								<span className='fg-secondary' style={{ minWidth: '5.5rem' }}>{label}</span>
 								<div className='flex-grow-1 progress' style={{ height: '6px' }}>
 									<div
 										className='progress-bar'
@@ -152,27 +151,27 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 							</div>
 						))}
 					</div>
-					<p className='text-body-secondary mt-2 mb-0' style={{ fontSize: '0.68rem' }}>
+					<p className='fg-secondary mt-3 mb-0' style={{ fontSize: '0.68rem' }}>
 						{i18n.t('stepGameDetail.detailPreviewCaption')}
 					</p>
 				</div>
 			) : (
-				<p className='text-body-secondary small lh-base'>
+				<p className='fg-secondary small lh-md'>
 					{i18n.t('stepGameDetail.body')}
 				</p>
 			)}
 
 			{tapped && (
-				<p className='text-body-secondary small lh-base'>
+				<p className='fg-secondary small lh-md'>
 					{i18n.t('stepGameDetail.bodyAfterTap')}
 				</p>
 			)}
 
-			<div className='d-flex gap-2 mt-auto'>
-				<button type='button' className='btn btn-secondary flex-grow-1' onClick={onBack}>
+			<div className='d-flex gap-3 mt-auto'>
+				<button type='button' className='btn btn-solid theme-accent flex-grow-1' onClick={onBack}>
 					<i className='bi bi-arrow-left' /> {i18n.t('stepGameDetail.back')}
 				</button>
-				<button type='button' className='btn btn-primary flex-grow-1' onClick={onNext}>
+				<button type='button' className='btn btn-solid theme-primary flex-grow-1' onClick={onNext}>
 					{i18n.t('stepGameDetail.next')} <i className='bi bi-arrow-right' />
 				</button>
 			</div>

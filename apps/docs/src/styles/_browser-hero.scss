@@ -1,7 +1,7 @@
 // Reads $secondary-on-light off the theme.
 @use '@arenaswap/ui/src/bootstrap' as bs;
 @use '@arenaswap/ui/src/motion' as m;
-@at-root {
+@layer custom {
 
 	// The hero: a Chrome window on macOS with three streams open and the popup running inside it.
 	//
@@ -159,11 +159,16 @@
 		}
 	}
 
+	// Sized directly rather than through the avatar token: the film's channel tab puts this class on a
+	// plain icon.
 	.browser-tab-favicon {
+		--as-avatar-bg: transparent;
 		width: 1rem;
 		height: 1rem;
-		object-fit: contain;
-		flex-shrink: 0;
+	}
+
+	.browser-tab-favicon .crest-fallback {
+		font-size: 0.75rem;
 	}
 
 	.browser-tab-title {

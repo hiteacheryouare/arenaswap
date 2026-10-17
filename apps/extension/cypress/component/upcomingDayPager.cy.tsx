@@ -55,7 +55,7 @@ describe('upcomingDayPager', () => {
 		});
 	});
 
-	// Pagination is the first component in the popup to reach for --as-secondary-bg, which this theme
+	// Pagination is the first component in the popup to reach for --as-bg-2, which this theme
 	// never overrode and which is therefore still Bootstrap's light default. Unfixed, an arrow at the
 	// end of the range is an #e9ecef slab on a #0d1117 popup.
 	it('keeps a disabled arrow on the popup background rather than a light default', () => {
@@ -63,7 +63,7 @@ describe('upcomingDayPager', () => {
 		cy.get('[data-testid="upcoming-day-previous"]').should('have.css', 'background-color', 'rgb(13, 17, 23)');
 	});
 
-	// Same gap, via --as-tertiary-bg: a focused arrow used to flash #f8f9fa.
+	// Same gap, via --as-bg-1: a focused arrow used to flash #f8f9fa.
 	it('keeps a focused arrow dark', () => {
 		mountPager(2, 5);
 		cy.get('[data-testid="upcoming-day-next"]').click();
@@ -83,7 +83,7 @@ describe('upcomingDayPager', () => {
 		cy.mount(
 			<div className='popup-container'>
 				<div className='game-card' style={{ height: '40px' }}>
-					<div className='dropdown-menu show' style={{ top: '100%', left: 0, right: 0, height: '120px' }}>menu</div>
+					<div className='menu show' style={{ top: '100%', left: 0, right: 0, height: '120px' }}>menu</div>
 				</div>
 				<UpcomingDayPager dayLabel='Tuesday, Sep 2' index={1} total={3} onSelect={() => {}} />
 			</div>,
@@ -91,7 +91,7 @@ describe('upcomingDayPager', () => {
 		cy.get('[data-testid="upcoming-day-label"]').then(([label]: JQuery<HTMLElement>) => {
 			const box = label!.getBoundingClientRect();
 			const top = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
-			expect(top?.closest('.dropdown-menu') ?? null, 'the open menu, not the pager').to.not.equal(null);
+			expect(top?.closest('.menu') ?? null, 'the open menu, not the pager').to.not.equal(null);
 		});
 	});
 });

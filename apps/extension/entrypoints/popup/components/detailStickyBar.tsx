@@ -10,7 +10,7 @@ import type { MonoLogos } from './useSummaryData';
 // The bar sits on the shell's own background rather than on team colour, and it is the one place a
 // crest is drawn at 18px with nothing else to identify the team but three letters — a navy monogram
 // there is a blank box. Same three treatments as the hero below it. Spelled out per theme because
-// the legibility check does its arithmetic on a hex, not on --as-body-bg.
+// the legibility check does its arithmetic on a hex, not on --as-bg-body.
 const barSurface: Record<ResolvedTheme, string> = { dark: '#0d1117', light: '#ffffff' };
 
 // Blank rather than lettered: the abbreviation is already the next element along. It still holds
@@ -24,6 +24,7 @@ const BarCrest = ({ team, monoMarks, theme }: { team: Team; monoMarks?: TeamMono
 		discClassName='gd-bar-logo-shell'
 		crestClassName='gd-bar-logo'
 		fallback='blank'
+		teamColor={team.color}
 	/>
 );
 

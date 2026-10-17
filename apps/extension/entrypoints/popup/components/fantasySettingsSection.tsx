@@ -1,4 +1,5 @@
 import { i18n } from '#i18n';
+import FormRange from './formRange';
 import SettingTooltipIcon from './settingTooltipIcon';
 
 interface fantasySettingsSectionProps {
@@ -16,18 +17,16 @@ const fantasySettingsSection = ({ blend, rosterSize, changedRules, disabled, onB
 	const rulesSummary = changedRules === 0 ? i18n.t('setup.fantasyRulesDefault') : i18n.t('setup.fantasyRulesChanged', changedRules);
 	return (
 		<>
-			<div className='fw-bold popup-section-label mt-3'><i className='bi bi-person-badge' />{i18n.t('powerScore.modeFantasy')}</div>
+			<div className='fw-bold popup-section-label mt-5'><i className='bi bi-person-badge' />{i18n.t('powerScore.modeFantasy')}</div>
 			<div>
 				<div className='d-flex justify-content-between align-items-baseline mb-1'>
 					<div className='d-flex align-items-center gap-1'>
-						<label className='text-body-secondary setting-toggle-label' htmlFor='fantasyBlendSlider'>{i18n.t('setup.fantasyBlend')}</label>
+						<label className='fg-secondary setting-toggle-label' htmlFor='fantasyBlendSlider'>{i18n.t('setup.fantasyBlend')}</label>
 						<SettingTooltipIcon text={i18n.t('setup.fantasyBlendExplainer')} label={i18n.t('setup.fantasyBlend')} />
 					</div>
 					<span className='fw-semibold setting-value-label'>{i18n.t('setup.fantasyBlendValue', { percent: blend })}</span>
 				</div>
-				<input
-					type='range'
-					className='form-range'
+				<FormRange
 					id='fantasyBlendSlider'
 					min={0}
 					max={100}
@@ -43,7 +42,7 @@ const fantasySettingsSection = ({ blend, rosterSize, changedRules, disabled, onB
 				</div>
 			</div>
 
-			<div className='settings-index mt-3'>
+			<div className='settings-index mt-5'>
 				<button type='button' id='fantasyRosterOpen' className='settings-index-row' onClick={onOpenRoster} aria-label={`${i18n.t('setup.fantasyRoster')}, ${rosterSummary}`}>
 					<i className='bi bi-people settings-index-icon' aria-hidden='true' />
 					<span className='settings-index-text'>

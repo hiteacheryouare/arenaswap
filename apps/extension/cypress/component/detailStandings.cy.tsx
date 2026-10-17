@@ -83,8 +83,8 @@ describe('detail screen tab strip', () => {
 
 	it('files a live game under three tabs', () => {
 		mount(football);
-		cy.get('.gd-tabs .nav-link').should('have.length', 3);
-		cy.get('.gd-tabs .nav-link').then($tabs => {
+		cy.get('.gd-tabs [role="tab"]').should('have.length', 3);
+		cy.get('.gd-tabs [role="tab"]').then($tabs => {
 			expect([...$tabs].map(tab => tab.textContent?.trim()))
 				.to.deep.equal([en.detail.tabOverview, en.box.heading, en.detail.tabStandings]);
 		});
@@ -107,7 +107,7 @@ describe('detail screen tab strip', () => {
 	it('offers a table but no box score before a start', () => {
 		mount(preGame);
 		// `should`, not `then`: the Matchup fixture arrives on a dynamic import, a beat after the table.
-		cy.get('.gd-tabs .nav-link').should($tabs => {
+		cy.get('.gd-tabs [role="tab"]').should($tabs => {
 			expect([...$tabs].map(tab => tab.textContent?.trim()))
 				.to.deep.equal([en.detail.tabOverview, en.detail.tabMatchup, en.detail.tabStandings]);
 		});
@@ -155,7 +155,7 @@ describe('detail screen tab strip', () => {
 		mount(live);
 		cy.get('.gd-tabs').should('not.exist');
 		cy.get('.powerscore-breakdown').then($breakdown => { $breakdown[0]!.dataset.probe = 'kept'; });
-		cy.get('.gd-tabs .nav-link').should('have.length', 3);
+		cy.get('.gd-tabs [role="tab"]').should('have.length', 3);
 		cy.get('.tab-pane.active .powerscore-breakdown').should('have.attr', 'data-probe', 'kept');
 	});
 
@@ -168,7 +168,7 @@ describe('detail screen tab strip', () => {
 		cy.then(() => prefetchGameDetail(live));
 		cy.wait(['@summary', '@standings']);
 		mount(live);
-		cy.get('.gd-tabs .nav-link').should('have.length', 3);
+		cy.get('.gd-tabs [role="tab"]').should('have.length', 3);
 		cy.get('@summary.all').should('have.length', 1);
 		cy.get('@standings.all').should('have.length', 1);
 	});
@@ -192,10 +192,10 @@ describe('detail screen tab strip', () => {
 		cy.intercept({ url: /\/summary\?event=401000005/ }, { body: mockBoxScorePayloads['mock-5'] }).as('summary');
 		cy.intercept({ url: /\/standings\?level=3/ }, { body: mockStandingsPayloads['mock-5'] }).as('standings');
 		mount(live);
-		cy.get('.gd-tabs .nav-link').should('have.length', 3);
+		cy.get('.gd-tabs [role="tab"]').should('have.length', 3);
 		cy.mount(<div />);
 		mount(live);
-		cy.get('.gd-tabs .nav-link').should('have.length', 3);
+		cy.get('.gd-tabs [role="tab"]').should('have.length', 3);
 		cy.get('@summary.all').should('have.length', 1);
 		cy.get('@standings.all').should('have.length', 1);
 	});
@@ -204,7 +204,7 @@ describe('detail screen tab strip', () => {
 	// hairline just under the strip's own.
 	it('draws one rule between the strip and the first section, not two', () => {
 		mount({ ...football, status: 'post' });
-		cy.get('.gd-tabs .nav-link').should('have.length.at.least', 2);
+		cy.get('.gd-tabs [role="tab"]').should('have.length.at.least', 2);
 		cy.get('.tab-pane.active > :first-child').should('have.class', 'game-info-panel')
 			.and('have.css', 'border-top-width', '0px');
 	});
@@ -218,7 +218,7 @@ describe('detail screen tab strip', () => {
 
 	it('moves the selection with the arrow keys, which the plugin binds', () => {
 		mount(football);
-		cy.get('.gd-tabs .nav-link').eq(0).focus().trigger('keydown', { key: 'ArrowRight' });
+		cy.get('.gd-tabs [role="tab"]').eq(0).focus().trigger('keydown', { key: 'ArrowRight' });
 		cy.get('.gd-tabs .nav-link.active').should('have.text', en.box.heading);
 
 		cy.focused().trigger('keydown', { key: 'End' });
@@ -234,12 +234,12 @@ describe('detail screen tab strip', () => {
 		mount(football);
 		// `should` rather than `then`: the third tab appears when the box score resolves and the
 		// plugin is attached in an effect a commit later, so a single read lands before either.
-		cy.get('.gd-tabs .nav-link').should($tabs => {
+		cy.get('.gd-tabs [role="tab"]').should($tabs => {
 			const stops = [...$tabs].map(tab => (tab as HTMLButtonElement).tabIndex);
 			expect(stops).to.deep.equal([0, -1, -1]);
 		});
 		cy.get(`#gd-tab-${football.id}-standings`).click();
-		cy.get('.gd-tabs .nav-link').should($tabs => {
+		cy.get('.gd-tabs [role="tab"]').should($tabs => {
 			const stops = [...$tabs].map(tab => (tab as HTMLButtonElement).tabIndex);
 			expect(stops, 'the one tab stop follows the selection').to.deep.equal([-1, -1, 0]);
 		});
@@ -249,19 +249,19 @@ describe('detail screen tab strip', () => {
 		mount(football);
 		// #f75c03 on #0d1117 is 5.9:1. The nav-tabs skin the box score uses would paint #f8fafc
 		// here, and $nav-link-color's #4b5563 reaches only 2.5:1 on this background.
-		cy.get('.gd-tabs .nav-link.active').then($tab => {
+		cy.get('.gd-tabs [role="tab"].active').then($tab => {
 			const style = getComputedStyle($tab[0]);
 			expect(style.color).to.equal('rgb(247, 92, 3)');
 			expect(style.backgroundColor).to.equal('rgba(0, 0, 0, 0)');
 		});
-		cy.get('.gd-tabs .nav-link').not('.active').first().then($tab => {
+		cy.get('.gd-tabs [role="tab"]').not('.active').first().then($tab => {
 			expect(getComputedStyle($tab[0]).color).to.equal('rgb(139, 148, 158)');
 		});
 	});
 
 	it('divides the width evenly so the underline measures the tab, not the word', () => {
 		mount(football);
-		cy.get('.gd-tabs .nav-link').then($tabs => {
+		cy.get('.gd-tabs [role="tab"]').then($tabs => {
 			const widths = [...$tabs].map(tab => Math.round(tab.getBoundingClientRect().width));
 			expect(Math.max(...widths) - Math.min(...widths)).to.be.at.most(1);
 		});
@@ -272,7 +272,7 @@ describe('detail screen tab strip', () => {
 	// label has to be measured in the box it will actually render in.
 	it('fits every locale\'s tab labels on one line', () => {
 		mount(football);
-		cy.get('.gd-tabs .nav-link').then($tabs => {
+		cy.get('.gd-tabs [role="tab"]').then($tabs => {
 			const baseline = [...$tabs].map(tab => tab.getBoundingClientRect().height);
 			for (const [code, bundle] of Object.entries(locales)) {
 				const labels = [

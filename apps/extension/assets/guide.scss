@@ -2,21 +2,21 @@
 // 320x560 — the one place that class IS reused here is inside the detail drawer, where the width is
 // exactly what the detail screen is designed against and the height is overridden to fill the tab.
 @use '@arenaswap/ui/src/motion' as m;
-@at-root {
+@layer custom {
 
 	// The theme's own tokens, read at runtime rather than copied: the popup's stylesheet already emits
 	// them on :root, and pulling the Sass theme in here would compile Bootstrap into the page twice.
-	$guide-bg: var(--as-body-bg);
-	$guide-surface: var(--as-tertiary-bg);
+	$guide-bg: var(--as-bg-body);
+	$guide-surface: var(--as-bg-1);
 	$guide-border: var(--as-border-color);
-	$guide-ink: var(--as-body-color);
-	$guide-ink-dim: var(--as-secondary-color);
-	$guide-bar: var(--as-secondary-bg);
+	$guide-ink: var(--as-fg-body);
+	$guide-ink-dim: var(--as-fg-3);
+	$guide-bar: var(--as-bg-2);
 	// A live bar is a step up off the page rather than a second colour to learn: same hue, more
 	// light, brighter ink. Scheduled stays flat and finished stays dimmed.
 	$guide-bar-live: var(--guide-bar-live);
 	$guide-bar-live-border: var(--guide-bar-live-border);
-	$guide-accent: var(--as-primary);
+	$guide-accent: var(--as-primary-base);
 	// The popup's quieter muted grey, for what is on the grid but already over.
 	$guide-ink-faint: var(--as-faint);
 	// Three weights of rule, so the eye can tell a row from an hour from a league boundary. All three
@@ -95,7 +95,7 @@
 		align-items: center;
 		margin-left: auto;
 
-		.form-check-label {
+		label {
 			font-size: 0.78rem;
 			color: $guide-ink-dim;
 			margin-left: 0.4rem;
@@ -233,7 +233,7 @@
 		position: absolute;
 		top: 0;
 		bottom: 0;
-		background: rgba(var(--as-primary-rgb), 0.14);
+		background: color-mix(in srgb, var(--as-primary-base) 14%, transparent);
 		border-bottom: 2px solid $guide-accent;
 	}
 
@@ -280,7 +280,7 @@
 		position: absolute;
 		top: 0;
 		bottom: 0;
-		background: rgba(var(--as-primary-rgb), 0.07);
+		background: color-mix(in srgb, var(--as-primary-base) 7%, transparent);
 	}
 
 	.guide-now {
@@ -377,12 +377,11 @@
 		height: 1.35rem;
 		border-radius: 999px;
 		overflow: hidden;
-		box-shadow: 0 0 0 1px rgba(var(--as-overlay-rgb), 0.22);
+		box-shadow: 0 0 0 1px color-mix(in srgb, var(--as-overlay) 22%, transparent);
 	}
 
 	.guide-league-logo {
-		width: 1rem;
-		height: 1rem;
+		--as-avatar-size: 1rem;
 	}
 
 	.guide-group-rows {
@@ -402,11 +401,11 @@
 		// Banding does the same work the hairline does, one level quieter: a bar is on a shaded row or a
 		// plain one, which is readable at a glance across 1,000px of empty grid.
 		&:nth-child(odd) {
-			background: rgba(var(--as-overlay-rgb), 0.014);
+			background: color-mix(in srgb, var(--as-overlay) 1.4%, transparent);
 		}
 
 		&:hover {
-			background: rgba(var(--as-overlay-rgb), 0.035);
+			background: color-mix(in srgb, var(--as-overlay) 3.5%, transparent);
 		}
 	}
 
@@ -629,7 +628,7 @@
 		height: 1.15rem;
 		border-radius: 999px;
 		overflow: hidden;
-		box-shadow: 0 0 0 1px rgba(var(--as-overlay-rgb), 0.25);
+		box-shadow: 0 0 0 1px color-mix(in srgb, var(--as-overlay) 25%, transparent);
 	}
 
 	// Bare when the crest carries itself — the plate only ever existed for the ones that do not.
@@ -639,13 +638,12 @@
 	}
 
 	.guide-crest {
-		width: 0.85rem;
-		height: 0.85rem;
+		--as-avatar-size: 0.85rem;
 	}
 
 	// The disc already carries the wash, so the shared grey placeholder inside it would read as a hole.
-	.guide-crest-disc .crest-fallback {
-		background: transparent;
+	.guide-crest-disc .guide-crest {
+		--as-avatar-bg: transparent;
 	}
 
 	.guide-bar-team {
@@ -670,8 +668,17 @@
 		// box-sizing is border-box here, so the basis has to carry the 1px rule as well or the detail
 		// screen renders one pixel narrow.
 		flex: 0 0 calc(320px + 1px);
-		display: flex;
+		// A non-modal <dialog>, so the UA's centred, padded box has to go: it sits in the flow here.
+		position: static;
+		width: auto;
+		height: auto;
+		max-width: none;
+		max-height: none;
+		margin: 0;
+		padding: 0;
+		color: inherit;
 		overflow-y: auto;
+		border: 0;
 		border-left: 1px solid $guide-border;
 		background: $guide-surface;
 		box-shadow: -12px 0 32px rgba(0, 0, 0, 0.45);
@@ -679,6 +686,8 @@
 		// header's own rule above the drawer.
 		clip-path: inset(0 0 0 -48px);
 		animation: guideDrawerIn m.$motion-base m.$motion-ease;
+
+		&[open] { display: flex; }
 	}
 
 	.guide-drawer[data-closing='true'] {

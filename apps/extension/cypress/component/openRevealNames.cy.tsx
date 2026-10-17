@@ -83,7 +83,7 @@ const Harness = ({ mode = 'full', away = club('Miami Marlins'), home = club('Was
 	};
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<div className='mt-2'>
+			<div className='mt-3'>
 				<div>
 					<GameCardReveal game={subject} mode={mode} index={0} skipping={false}>
 						<LiveGameCard {...shared} />

@@ -14,7 +14,7 @@ describe('selectDropdown', () => {
 	// never which tab.
 	it('names a hidden-labelled control with its label and its current value', () => {
 		cy.mount(<SelectDropdown value='dark' options={options} onChange={() => {}} ariaLabel='Theme' />);
-		cy.get('.form-select').should(([button]: JQuery<HTMLElement>) => {
+		cy.get('.form-control-caret').should(([button]: JQuery<HTMLElement>) => {
 			expect(accessibleName(button)).to.equal('Theme Dark');
 		});
 	});

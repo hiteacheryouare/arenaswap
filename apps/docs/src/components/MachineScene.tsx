@@ -85,8 +85,8 @@ const NetworkScene = ({ showScores, alt }: { showScores: boolean; alt: string })
 const demoGame = {
 	league: 'NBA',
 	status: 'Q4 · 0:48',
-	away: { abbr: 'LAL', name: 'Lakers', score: 112, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/lal.png' },
-	home: { abbr: 'BOS', name: 'Celtics', score: 110, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/bos.png' },
+	away: { abbr: 'LAL', name: 'Lakers', score: 112, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/lal.png', color: '#552583' },
+	home: { abbr: 'BOS', name: 'Celtics', score: 110, logo: 'https://a.espncdn.com/i/teamlogos/nba/500/bos.png', color: '#007A33' },
 	power: 92,
 };
 // Names come in as a list and are paired with the figures by position, so a locale supplies five
@@ -129,7 +129,7 @@ const GameCard = ({ active, chartElRef, strings }: { active: boolean; chartElRef
 	<div className='mw-card'>
 		<div className='mw-card-teams'>
 			<div className='mw-team'>
-				<Crest logo={demoGame.away.logo} abbreviation={demoGame.away.abbr} loading='lazy' />
+				<Crest logo={demoGame.away.logo} abbreviation={demoGame.away.abbr} teamColor={demoGame.away.color} loading='lazy' />
 				<span className='mw-team-abbr'>{demoGame.away.abbr}</span>
 			</div>
 			<div className='mw-team-mid'>
@@ -137,7 +137,7 @@ const GameCard = ({ active, chartElRef, strings }: { active: boolean; chartElRef
 				<span className='mw-team-status'><span className='live-dot'></span>{demoGame.league} · {demoGame.status}</span>
 			</div>
 			<div className='mw-team'>
-				<Crest logo={demoGame.home.logo} abbreviation={demoGame.home.abbr} loading='lazy' />
+				<Crest logo={demoGame.home.logo} abbreviation={demoGame.home.abbr} teamColor={demoGame.home.color} loading='lazy' />
 				<span className='mw-team-abbr'>{demoGame.home.abbr}</span>
 			</div>
 		</div>

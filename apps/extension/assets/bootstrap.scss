@@ -1,122 +1,145 @@
 // The popup's stylesheet. `@arenaswap/ui/src/bootstrap` is the theme and forwards Bootstrap itself,
-// so configuring it here is how Bootstrap gets configured — there is no second load of Bootstrap to
-// order these against, which is what the old `@import` pair needed.
+// so configuring it here is how Bootstrap gets configured.
 @use '@arenaswap/ui/src/bootstrap' as bs with (
-	$font-size-base:   0.9375rem,
-	$font-size-sm:     0.8125rem,
-	$headings-font-weight: 700,
-	$form-range-thumb-bg:  #F75C03,
-	$form-range-track-bg:  var(--as-border-color),
-	$btn-border-radius:    0.25rem,
-	$enable-dark-mode:     false,
-
-	// No $form-switch-checked-bg here: Bootstrap has no such variable — its switch reads
-	// $form-check-input-checked-bg-color, which is the line below and is what actually turns the
-	// toggle orange. The old override set a name nothing read.
-	$form-check-input-checked-bg-color:    #F75C03,
-	$form-check-input-checked-border-color: #F75C03,
-
-	// Bootstrap's default tooltip-color is var(--as-body-bg), which on this dark theme would be
-	// dark text on a dark background.
-	$tooltip-color: #f8fafc,
-	$tooltip-bg:    #1f2937,
-
-	// The Up Next day pager is the only pagination in the popup, and it heads a section rather than
-	// closing a page of results, so it takes the scale of a heading label instead of body text.
-	$pagination-font-size: 0.72rem,
-	// Bootstrap picks the active page's label with $component-active-color, a flat white that only
-	// reaches 3.22:1 on $primary. Buttons escape this because they run the colour through
-	// color-contrast(); pagination does not.
-	$pagination-active-color: #0d1117,
-	// Pagination was the first thing in the popup to reach for --as-secondary-bg and --as-tertiary-bg,
-	// back when this theme left both at Bootstrap's light defaults and an arrow at the end of the range
-	// was a white slab on a #0d1117 popup. Both tokens are set in packages/ui now, so these are a
-	// choice rather than a repair: a disabled arrow recedes into the popup entirely instead of holding
-	// the secondary surface.
-	$pagination-disabled-bg: var(--as-body-bg),
-	$pagination-hover-bg: var(--as-tertiary-bg),
-	$pagination-focus-bg: var(--as-tertiary-bg),
-
-	// Every picker in the popup is a Dropdown opening off a .form-select (selectDropdown.tsx), so the
-	// menu takes the select's own surface and type size, and a press dims instead of flashing orange.
-	$dropdown-bg:                 var(--as-tertiary-bg),
-	$dropdown-border-color:       var(--as-border-color),
-	$dropdown-font-size:          0.8125rem,
-	$dropdown-link-hover-bg:      var(--as-secondary-bg),
-	$dropdown-link-active-color:  var(--as-body-color),
-	$dropdown-link-active-bg:     var(--as-secondary-bg),
-
-	// ── Box score ────────────────────────────────────────────────────────────────
-	// The box score is the first and only .table and .nav in the popup, so these are set globally
-	// the way $pagination-font-size above is rather than being re-specified on the component.
-	//
-	// Every default here resolves against the dark popup and the box score sits on the light
-	// .gd-setup card, so left alone the table would be a #0d1117 slab with light ink on it. Same
-	// class of bug the pagination arrows had.
-	$table-color:            #111827,
-	// Transparent rather than a colour of its own, so the card it sits on shows through and the two
-	// cannot drift apart.
-	$table-bg:               transparent,
-	$table-border-color:     #d1d5db,
-	// Bootstrap 5.3 draws this only through the opt-in .table-group-divider class, which nothing in
-	// our source uses, so it is a guard rather than an active fix: left at the default currentcolor,
-	// the first table to ask for a divider would draw the table's own #111827 as a heavy bar across
-	// the light card.
-	$table-group-separator-color: #d1d5db,
-	$table-striped-color:    #111827,
-	$table-striped-bg:       rgba(17, 24, 39, 0.045),
-	$table-active-color:     #111827,
-	$table-active-bg:        rgba(17, 24, 39, 0.075),
-	$table-hover-color:      #111827,
-	$table-hover-bg:         rgba(17, 24, 39, 0.06),
-	$table-th-font-weight:   700,
-	// A 320px popup has ~263px inside the card. Bootstrap's .25rem of horizontal padding a side
-	// spends 96px of that on a nine-inning line score before a single digit is drawn.
-	$table-cell-padding-y-sm: 0.12rem,
-	$table-cell-padding-x-sm: 0.16rem,
-
-	// $nav-tabs-link-active-bg is var(--as-body-bg) by default, which would punch a dark hole in the
-	// light card the selected team's tab sits on.
-	$nav-tabs-link-active-bg:           #f8fafc,
-	$nav-tabs-border-color:             #d1d5db,
-	$nav-tabs-link-active-color:        #111827,
-	$nav-tabs-link-active-border-color: #d1d5db #d1d5db #f8fafc,
-	// The default hover border reaches for --as-secondary-bg, which is a dark surface, and this strip
-	// sits on a light card.
-	$nav-tabs-link-hover-border-color:  #e5e7eb #e5e7eb #d1d5db,
-	// $nav-link-color is the link colour, and #F75C03 on #f8fafc is 3.0:1 — under the 4.5:1 an
-	// unselected tab's label needs as body text.
-	$nav-link-color:                    #4b5563,
-	$nav-link-hover-color:              #111827,
-	$nav-link-font-size:                0.64rem,
-	$nav-link-font-weight:              700,
-	$nav-link-padding-y:                0.2rem,
-	$nav-link-padding-x:                0.45rem
+	$body-font-size: 0.9375rem,
+	$radius:         0.375rem,
+	// v5's popup sizes at a 320px viewport. v6's lg and up are fluid on the viewport, which in a popup
+	// is always the narrow end, so every heading would have shrunk a step.
+	$font-sizes: (
+		'sm': ('font-size': 0.8125rem, 'line-height': 1.5),
+		'md': ('font-size': 0.9375rem, 'line-height': 1.5),
+		'lg': ('font-size': 1.171875rem, 'line-height': 1.5),
+		'xl': ('font-size': calc(1.265625rem + 0.1875vw), 'line-height': 1.2),
+		'2xl': ('font-size': calc(1.2890625rem + 0.46875vw), 'line-height': 1.2),
+	),
 );
-@use 'bootstrap-icons/font/bootstrap-icons' with ($bootstrap-icons-font-dir: '/fonts');
+@use '@arenaswap/ui/src/icons';
 @use '@arenaswap/ui/src/game-card' as gc;
 @use '@arenaswap/ui/src/motion' as m;
 @use '@arenaswap/ui/src/popup';
-@use '@arenaswap/ui/src/theme';
 @use 'collegeFilter';
 @use 'scoringSettings';
-@at-root {
 
-	// After the Bootstrap load above, so this beats its `:root, [data-bs-theme=light]` block on source
-	// order. Dark needs no block of its own: it is what :root already carries.
-	[data-bs-theme='light'] {
-		@include theme.color-mode(light);
+// A popup never scrolls the document, so the gutter v6 reserves would only narrow it on a mouse.
+:root {
+	scrollbar-gutter: auto;
+}
+
+@layer custom {
+	:root {
+		--as-heading-font-weight: 700;
 	}
 
-	// #3E9BD1 is 3.0:1 on white, short of what the button's own label needs as text. The deeper blue
-	// is the one the PowerScore signals already use on the light cards.
-	[data-bs-theme='light'] .btn-outline-secondary {
-		@include bs.button-outline-variant(bs.$secondary-on-light);
+	.btn {
+		--as-btn-border-radius: 0.25rem;
+	}
+
+	// v5 drew an outline button's border in its full colour. v6 softens it to the theme's border tone.
+	.btn-outline {
+		--as-btn-border-color: var(--as-theme-fg);
+	}
+
+	// Bootstrap's tooltip is the inverse of the page, which on a dark popup is a white slab.
+	.tooltip {
+		--as-tooltip-color: #f8fafc;
+		--as-tooltip-bg:    #1f2937;
+	}
+
+	// The Up Next day pager heads a section rather than closing a page of results, so it takes the
+	// scale of a heading label. The active label is near-black because white is 3.22:1 on the orange,
+	// and a disabled arrow recedes into the popup instead of holding a surface.
+	// Every picker in the popup is a Menu opening off a form control (selectDropdown.tsx), so the menu
+	// takes the control's surface and type size, keeps v5's square full-width rows, and a press dims
+	// instead of flashing orange.
+	.menu {
+		--as-menu-bg:                 var(--as-bg-1);
+		--as-menu-border-color:       var(--as-border-color);
+		--as-menu-border-radius:      var(--as-radius-5);
+		--as-menu-font-size:          0.8125rem;
+		--as-menu-gap:                0;
+		--as-menu-padding-x:          0;
+		--as-menu-padding-y:          0.5rem;
+		--as-menu-item-padding-x:     1rem;
+		--as-menu-item-border-radius: 0;
+		--as-menu-item-hover-bg:      var(--as-bg-2);
+		--as-menu-item-active-color:  var(--as-fg-body);
+		--as-menu-item-active-bg:     var(--as-bg-2);
+	}
+
+	.pagination {
+		--as-pagination-font-size:   0.72rem;
+		--as-pagination-active-color: #0d1117;
+		--as-pagination-disabled-bg: var(--as-bg-body);
+		--as-pagination-hover-bg:    var(--as-bg-1);
+
+		// v5's $pagination-focus-bg. v6 draws only the ring.
+		.page-link:focus {
+			background-color: var(--as-pagination-hover-bg);
+		}
+	}
+
+	// The box score is the only .table and the detail tabs and box score the only .nav in the popup,
+	// and both sit on light cards, so the defaults (built for the dark page) are re-toned globally.
+	.table {
+		--as-table-color:              #111827;
+		--as-table-bg:                 transparent;
+		--as-table-border-color:       #d1d5db;
+		--as-table-group-separator-color: #d1d5db;
+		--as-table-striped-color:      #111827;
+		--as-table-striped-bg:         rgba(17, 24, 39, 0.045);
+		--as-table-active-color:       #111827;
+		--as-table-active-bg:          rgba(17, 24, 39, 0.075);
+		--as-table-hover-color:        #111827;
+		--as-table-hover-bg:           rgba(17, 24, 39, 0.06);
+
+		th { font-weight: 700; }
+	}
+
+	// A 320px popup has ~263px inside the card, and the default padding spends 96px of that on a
+	// nine-inning line score before a digit is drawn.
+	.table-sm {
+		--as-table-cell-padding-y: 0.12rem;
+		--as-table-cell-padding-x: 0.16rem;
+	}
+
+	.nav {
+		// The link colour is the brand orange, 3.0:1 on #f8fafc: under what an unselected tab needs.
+		--as-nav-link-color:       #4b5563;
+		--as-nav-link-hover-color: #111827;
+		--as-nav-link-padding-y:   0.2rem;
+		--as-nav-link-padding-x:   0.45rem;
+	}
+
+	.nav-link {
+		font-size:   0.64rem;
+		font-weight: 700;
+	}
+
+	.nav-tabs {
+		--as-nav-tabs-border-color:             #d1d5db;
+		--as-nav-tabs-link-active-bg:           #f8fafc;
+		--as-nav-tabs-link-active-color:        #111827;
+		--as-nav-tabs-link-active-border-color: #d1d5db #d1d5db #f8fafc;
+		--as-nav-tabs-link-hover-border-color:  #e5e7eb #e5e7eb #d1d5db;
+	}
+
+	.form-range {
+		--as-range-thumb-bg: #{bs.$primary};
+		--as-range-track-bg: var(--as-border-color);
+		--as-range-tick-height: 0;
+	}
+
+	// v5's height, which left room for a .25rem focus ring either side of the thumb. Inline-block on
+	// the text baseline like v5's bare input, which kept the line's descender space under the track:
+	// every slider's spacing in settings is tuned with it there.
+	.form-range-input {
+		display: inline-block;
+		height: calc(var(--as-range-thumb-height) + 0.5rem);
 	}
 
 	// The toast's check. #00CC66 is under 2:1 on the light toast; an icon needs 3:1.
-	[data-bs-theme='light'] .toast .text-success {
-		color: #00854a !important;
+	[data-bs-theme='light'] .toast .fg-success {
+		color: #00854a;
 	}
 
 	@keyframes onbLogoRise {
@@ -193,8 +216,11 @@
 		font-weight:     700;
 		text-align:      start;
 		color:           #4b5563;
+		list-style:      none;
+		cursor:          pointer;
 		transition:      color m.$motion-snap m.$motion-ease;
 
+		&::-webkit-details-marker { display: none; }
 		&:hover { color: #111827; }
 		&:focus-visible {
 			outline:        1px solid bs.$primary;
@@ -207,11 +233,29 @@
 		font-size:  0.5rem;
 		transition: transform m.$motion-quick m.$motion-ease;
 
-		.collapsed > & { transform: rotate(-90deg); }
+		.powerscore-breakdown-section:not([open]) > summary > & { transform: rotate(-90deg); }
+	}
+
+	// Without `interpolate-size` the height can only jump, and a discrete transition would hold the
+	// jump back by half its duration, so those browsers fold instantly instead.
+	@supports (interpolate-size: allow-keywords) {
+		.powerscore-breakdown-section {
+			interpolate-size: allow-keywords;
+
+			&::details-content {
+				block-size: 0;
+				overflow-y: clip;
+				transition: block-size m.$motion-slow m.$motion-ease, content-visibility m.$motion-slow m.$motion-ease allow-discrete;
+
+				@include m.reduced-motion { transition: none; }
+			}
+
+			&[open]::details-content { block-size: auto; }
+		}
 	}
 
 	// The first row's top margin would otherwise collapse through the body once it is open, and the
-	// section would jump by that much as the plugin's height animation hands back to `auto`.
+	// section would jump by that much as the height animation hands back to `auto`.
 	.powerscore-breakdown-section-body { display: flow-root; }
 
 	@include m.reduced-motion {
@@ -338,7 +382,7 @@
 		cursor:      pointer;
 		flex-shrink: 0;
 
-		&:hover  { color: var(--as-body-color); }
+		&:hover  { color: var(--as-fg-body); }
 		&:focus-visible {
 			outline:        1px solid bs.$primary;
 			outline-offset: -6px;
@@ -461,7 +505,7 @@
 	.game-card-tab-assign {
 		margin-top: 0.4rem;
 
-		.form-select {
+		.form-control {
 			background-color: #f8f9fa;
 			color:            #374151;
 			border-color:     #dee2e6;
@@ -477,10 +521,10 @@
 		}
 
 		// Scaled to the card's own small picker rather than to the settings pickers the menu defaults to.
-		.dropdown-menu {
-			--as-dropdown-font-size:      0.68rem;
-			--as-dropdown-item-padding-y: 0.2rem;
-			--as-dropdown-item-padding-x: 0.5rem;
+		.menu {
+			--as-menu-font-size:      0.68rem;
+			--as-menu-item-padding-y: 0.2rem;
+			--as-menu-item-padding-x: 0.5rem;
 		}
 	}
 
@@ -488,30 +532,26 @@
 	// its own: the menu's z-index then only counts inside the card, and the next card in the list paints
 	// over it. While a card holds an open menu, the card itself is what climbs.
 	// It climbs past 3, where Bootstrap holds the active page of the Up Next day pager.
-	.game-card:has(.dropdown-menu.show) {
+	.game-card:has(.menu.show) {
 		position: relative;
 		z-index:  4;
 	}
 
-	.settings-search {
-		position:      relative;
-		margin-bottom: 0.75rem;
+	.form-adorn {
+		--as-form-adorn-gap: 0.5rem;
 	}
 
-	.settings-search-icon {
-		position:      absolute;
-		left:          0.55rem;
-		top:           50%;
-		transform:     translateY(-50%);
+	.form-adorn-icon {
+		font-size: 0.72rem;
+		color:     var(--as-faint);
+	}
+
+	.settings-search {
+		margin-bottom: 0.75rem;
 		font-size:     0.72rem;
-		color:         var(--as-faint);
-		pointer-events: none;
 	}
 
 	.settings-search-input {
-		padding-left: 1.75rem;
-		font-size:    0.72rem;
-
 		&::placeholder { color: var(--as-faint); }
 
 		// Safari draws its own clear affordance that collides with the 320px layout.
@@ -528,7 +568,7 @@
 	.settings-index {
 		display:        flex;
 		flex-direction: column;
-		border-top:     1px solid var(--as-secondary-bg);
+		border-top:     1px solid var(--as-bg-2);
 	}
 
 	.settings-index-row {
@@ -539,12 +579,12 @@
 		padding:       0.72rem 0.15rem;
 		background:    none;
 		border:        none;
-		border-bottom: 1px solid var(--as-secondary-bg);
+		border-bottom: 1px solid var(--as-bg-2);
 		color:         inherit;
 		text-align:    left;
 		cursor:        pointer;
 
-		&:hover { background: rgba(var(--as-body-color-rgb), 0.035); }
+		&:hover { background: color-mix(in srgb, var(--as-fg-body) 3.5%, transparent); }
 
 		&:focus-visible {
 			outline:        1px solid bs.$primary;
@@ -563,10 +603,10 @@
 		align-items:   center;
 		gap:           0.6rem;
 		padding:       0.6rem 0.15rem;
-		border-bottom: 1px solid var(--as-secondary-bg);
+		border-bottom: 1px solid var(--as-bg-2);
 		cursor:        pointer;
 
-		&:hover { background: rgba(var(--as-body-color-rgb), 0.035); }
+		&:hover { background: color-mix(in srgb, var(--as-fg-body) 3.5%, transparent); }
 	}
 
 	// The same white disc the team picker uses, at row size. The two crests here sit on the popup's
@@ -581,16 +621,14 @@
 		height:          1.27rem;
 		border-radius:   999px;
 		overflow:        hidden;
-		box-shadow:      0 0 0 1px rgba(var(--as-overlay-rgb), 0.28);
-	}
-
-	.suggest-crest {
-		width:  0.95rem;
-		height: 0.95rem;
+		box-shadow:      0 0 0 1px color-mix(in srgb, var(--as-overlay) 28%, transparent);
 	}
 
 	// The disc already carries the wash, so the shared grey placeholder inside it would read as a hole.
-	.suggest-crest .crest-fallback { background: transparent; }
+	.suggest-crest {
+		--as-avatar-size: 0.95rem;
+		--as-avatar-bg:   transparent;
+	}
 
 	.suggest-matchup {
 		font-size: 0.72rem;
@@ -621,7 +659,7 @@
 		font-size:   0.78rem;
 		font-weight: 600;
 		line-height: 1.25;
-		color:       var(--as-body-color);
+		color:       var(--as-fg-body);
 	}
 
 	.settings-index-desc {
@@ -645,32 +683,27 @@
 		color:       var(--as-warning-ink);
 	}
 
-	.select-dropdown-check {
-		color: var(--as-accent-ink);
-	}
-
+	// `font-size` restated over the avatar's own, which would otherwise shrink the em the size is in.
 	.tab-favicon {
-		display:        inline-block;
-		flex-shrink:    0;
-		width:          1.15em;
-		height:         1.15em;
-		font-size:      1em;
-		line-height:    1;
-		vertical-align: -0.2em;
-		object-fit:     contain;
+		--as-avatar-size:  1.15em;
+		--as-avatar-bg:    transparent;
+		--as-avatar-color: var(--as-faint);
+		font-size:         1em;
+		vertical-align:    -0.2em;
 	}
 
-	i.tab-favicon {
-		color:      var(--as-faint);
-		text-align: center;
+	.tab-favicon .crest-fallback {
+		font-size:      inherit;
+		letter-spacing: 0;
 	}
 
-	.dropdown-item.disabled img.tab-favicon {
+	.menu-item.disabled .tab-favicon > img {
 		opacity: 0.5;
 	}
 
 	// A native select scrolled its own list; a tab picker with thirty tabs open needs the same.
 	.select-dropdown-menu {
+		--as-menu-check-color: var(--as-accent-ink);
 		max-height: 14rem;
 		overflow-y: auto;
 	}
@@ -686,7 +719,7 @@
 	.settings-stack > * + * {
 		margin-top:  0.7rem;
 		padding-top: 0.7rem;
-		border-top:  1px solid var(--as-tertiary-bg);
+		border-top:  1px solid var(--as-bg-1);
 	}
 
 	.setup-header {
@@ -698,7 +731,7 @@
 		border-bottom: 1px solid var(--as-border-color);
 		font-size:     0.8rem;
 		font-weight:   700;
-		color:         var(--as-body-color);
+		color:         var(--as-fg-body);
 		cursor:        pointer;
 		background:    none;
 		border-top:    none;
@@ -710,9 +743,9 @@
 		padding-left:  0;
 		padding-right: 0;
 
-		i { color: var(--as-secondary-color); }
+		i { color: var(--as-fg-3); }
 
-		&:hover i { color: var(--as-body-color); }
+		&:hover i { color: var(--as-fg-body); }
 	}
 
 	.league-toggle-group + .league-toggle-group {
@@ -720,16 +753,15 @@
 	}
 
 	.league-toggle-logo {
-		width:         36px;
-		height:        36px;
-		border-radius: 0.3rem;
+		--as-avatar-size:          36px;
+		--as-avatar-border-radius: 0.3rem;
+		--as-avatar-bg:            var(--as-border-color);
+		--as-avatar-color:         var(--as-fg-body);
 	}
 
 	// League marks are rounded rects, not discs, so the placeholder cannot inherit the shared circle.
 	.league-toggle-logo .crest-fallback {
 		border-radius:  0.3rem;
-		background:     var(--as-border-color);
-		color:          var(--as-body-color);
 		font-size:      0.5rem;
 		letter-spacing: 0.04em;
 	}
@@ -756,7 +788,7 @@
 
 	.popup-empty-leagues-copy {
 		font-size: 0.78rem;
-		color: var(--as-body-color);
+		color: var(--as-fg-body);
 	}
 
 	.popup-loading-wrap {
@@ -765,34 +797,24 @@
 
 	.popup-loading-text {
 		font-size: 0.78rem;
-		color: var(--as-body-color);
+		color: var(--as-fg-body);
 	}
 
 	// Every notice above the list shares one surface. Bootstrap's alert variants read the
 	// *-bg-subtle tokens, which this theme never sets, so they rendered as pale slabs on the dark popup.
 	.alert.popup-notice {
-		--as-alert-bg:            var(--as-tertiary-bg);
-		--as-alert-color:         var(--as-body-color);
+		--as-alert-bg:            var(--as-bg-1);
+		--as-alert-color:         var(--as-fg-body);
 		--as-alert-border-color:  var(--as-border-color);
 		--as-alert-padding-x:     0.6rem;
 		--as-alert-padding-y:     0.5rem;
-		--as-alert-margin-bottom: 0.5rem;
+		margin-bottom:            0.5rem;
 		font-size: 0.72rem;
 		line-height: 1.35;
 
 		.btn-close {
 			font-size: 0.55rem;
 		}
-	}
-
-	// Bootstrap draws the close X in black and only inverts it under its own dark mode, which this
-	// theme leaves off, so the dark default needs the inversion stated.
-	:root {
-		--as-btn-close-filter: #{bs.$btn-close-filter-dark};
-	}
-
-	[data-bs-theme='light'] {
-		--as-btn-close-filter: none;
 	}
 
 	.popup-notice-title {
@@ -883,29 +905,35 @@
 		font-size: 0.65rem;
 		color: var(--as-warning-ink);
 		padding: 0.35rem 0.5rem;
-		border: 1px solid rgba(var(--as-warning-rgb), 0.3);
+		border: 1px solid color-mix(in srgb, var(--as-warning-base) 30%, transparent);
 		border-radius: 0.35rem;
-		background: rgba(var(--as-warning-rgb), 0.07);
+		background: color-mix(in srgb, var(--as-warning-base) 7%, transparent);
 	}
 
-	.sensitivity-ticks {
+	// Range's tick labels, under the sensitivity slider. Each one centres under the thumb at its stop,
+	// the two ends included, where Bootstrap pulls the ends in to the track's edges. No tick marks.
+	.form-range-ticks {
 		height: 0.85rem;
-		margin: 0.15rem 0.5rem 0;
+		margin-top: 0.15rem;
+		padding-inline: calc(var(--as-range-thumb-width) * 0.5);
 	}
 
-	.sensitivity-tick {
+	.form-range-tick:first-child,
+	.form-range-tick:last-child {
+		align-items: center;
+	}
+
+	.form-range-tick-label {
+		margin-top: 0;
 		font-size: 0.5rem;
-		white-space: nowrap;
-	}
-
-	@for $i from 0 through 6 {
-		.sensitivity-tick-#{$i} { left: calc($i / 6 * 100%); }
+		color: var(--as-secondary-fg);
 	}
 
 	.onb-league-logo {
-		width:         28px;
-		height:        28px;
-		border-radius: 50%;
+		--as-avatar-size:          28px;
+		--as-avatar-border-radius: 50%;
+		--as-avatar-bg:            var(--as-border-color);
+		--as-avatar-color:         var(--as-fg-body);
 	}
 
 	.team-pick-row {
@@ -925,11 +953,11 @@
 
 	// Hovering an unstarred row previews the gold it would take.
 	.team-pick-star {
-		color:      var(--as-secondary-color);
+		color:      var(--as-fg-3);
 		transition: color m.$motion-snap m.$motion-ease;
 
 		.team-pick-row:hover &,
-		&[data-favorited='true'] { color: rgb(var(--as-warning-rgb)); }
+		&[data-favorited='true'] { color: var(--as-warning-base); }
 	}
 
 	// The same white disc the pre-game poster puts its crests on, at list size, tinted with a colour
@@ -942,25 +970,22 @@
 		height:          28px;
 		border-radius:   999px;
 		overflow:        hidden;
-		box-shadow:      0 0 0 1px rgba(var(--as-overlay-rgb), 0.28);
-	}
-
-	.team-pick-crest-logo {
-		width:  21px;
-		height: 21px;
+		box-shadow:      0 0 0 1px color-mix(in srgb, var(--as-overlay) 28%, transparent);
 	}
 
 	// The disc already carries the wash, so a second grey disc inside it would read as a hole. The
 	// disc under a crest that never loaded is plain white, so the initials take a dark ink.
+	.team-pick-crest-logo {
+		--as-avatar-size:  21px;
+		--as-avatar-bg:    transparent;
+		--as-avatar-color: #111827;
+	}
+
 	.team-pick-crest-logo .crest-fallback {
-		background:  transparent;
-		color:       #111827;
-		font-size:   0.46rem;
+		font-size: 0.46rem;
 	}
 
 	.onb-league-logo .crest-fallback {
-		background:     var(--as-border-color);
-		color:          var(--as-body-color);
 		font-size:      0.5rem;
 		letter-spacing: 0.04em;
 	}
@@ -978,8 +1003,8 @@
 		gap:            0.3rem;
 		padding:        0.4rem 0.5rem;
 		border-radius:  0.35rem;
-		background:     var(--as-tertiary-bg);
-		border:         1px solid var(--as-secondary-bg);
+		background:     var(--as-bg-1);
+		border:         1px solid var(--as-bg-2);
 	}
 
 	.league-toggle-row-top {
@@ -1010,14 +1035,13 @@
 		gap:           0.4rem;
 		padding:       0.25rem 0.4rem;
 		border-radius: 0.35rem;
-		background:    var(--as-tertiary-bg);
-		border:        1px solid var(--as-secondary-bg);
+		background:    var(--as-bg-1);
+		border:        1px solid var(--as-bg-2);
 		border-top:    2px solid transparent;
 
 		// The shared LeagueLogo is sized for the toggle grid; shrink it for these compact rows.
 		.league-toggle-logo {
-			width:  22px;
-			height: 22px;
+			--as-avatar-size: 22px;
 
 			.crest-fallback { font-size: 0.4rem; }
 		}
@@ -1032,7 +1056,7 @@
 	}
 
 	.league-order-handle {
-		color:       var(--as-secondary-color);
+		color:       var(--as-fg-3);
 		cursor:      grab;
 		flex-shrink: 0;
 
@@ -1051,11 +1075,11 @@
 
 	.league-order-move-btn {
 		padding:     0 0.2rem;
-		color:       var(--as-secondary-color);
+		color:       var(--as-fg-3);
 		line-height: 1;
 		flex-shrink: 0;
 
-		&:hover:not(:disabled) { color: var(--as-body-color); }
+		&:hover:not(:disabled) { color: var(--as-fg-body); }
 		&:disabled             { opacity: 0.3; }
 	}
 
@@ -1063,10 +1087,10 @@
 		align-self:      flex-start;
 		padding:         0.1rem 0;
 		font-size:       0.7rem;
-		color:           var(--as-secondary-color);
+		color:           var(--as-fg-3);
 		text-decoration: none;
 
-		&:hover:not(:disabled) { color: var(--as-body-color); }
+		&:hover:not(:disabled) { color: var(--as-fg-body); }
 	}
 
 	// ── Pre-game poster ──────────────────────────────────────────────────────────
@@ -1132,15 +1156,14 @@
 	}
 
 	.gd-poster-crest-logo {
-		width: 64px;
-		height: 64px;
+		--as-avatar-size: 64px;
+		--as-avatar-bg: transparent;
 	}
 
-	// The disc behind it already carries the team's colour wash, so a second grey disc inside it would
-	// read as a hole. The letter colour is set per-team from the component.
+	// With no team colour to fill it, the placeholder stays clear: a grey disc on a team's own half of
+	// the poster reads as a hole.
 	.gd-poster-crest-logo .crest-fallback {
 		@include gc.scoreboard-figures;
-		background: transparent;
 		font-size: 1.25rem;
 		letter-spacing: 0.02em;
 	}
@@ -1347,8 +1370,10 @@
 	// for good. Team logos never showed it because they are opaque; these headshots are transparent
 	// PNGs, so the disc reads as a white halo around the player's head.
 	.gd-pregame-disc-crest {
-		width:  100%;
-		height: 100%;
+		--as-avatar-size:          100%;
+		--as-avatar-border-radius: 50%;
+		--as-avatar-bg:            transparent;
+		--as-avatar-color:         #111827;
 
 		img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
 	}
@@ -1520,8 +1545,7 @@
 	}
 
 	.gd-form-crest {
-		width:  14px;
-		height: 14px;
+		--as-avatar-size: 14px;
 	}
 
 	.gd-form-letter {
@@ -1762,8 +1786,7 @@
 	}
 
 	.gd-box-line-crest {
-		width:  13px;
-		height: 13px;
+		--as-avatar-size: 13px;
 	}
 
 	.gd-box-line-abbr {
@@ -1822,8 +1845,7 @@
 	}
 
 	.gd-box-tab-crest {
-		width:  13px;
-		height: 13px;
+		--as-avatar-size: 13px;
 	}
 
 	// ── Detail screen tab strip ──────────────────────────────────────────────────
@@ -1834,24 +1856,46 @@
 	// Bootstrap exposes the whole component through custom properties, so every line below sets one
 	// rather than overriding a rule. The labels it is not on take the muted ink and the one it is on
 	// takes the accent ink, which is the brand orange on dark and the deeper one on light.
-	.gd-tabs {
-		--as-nav-link-color:                  var(--as-secondary-color);
-		--as-nav-link-hover-color:            var(--as-body-color);
-		--as-nav-underline-link-active-color: var(--as-accent-ink);
-		--as-nav-underline-border-width:      0.14rem;
-		--as-nav-underline-gap:               0;
-
-		// Tighter than the 0.5rem the cards below take. This is chrome rather than content, and every
-		// pixel it spends here comes off the PowerScore breakdown's head start down the screen.
+	// Tighter than the 0.5rem the cards below take. This is chrome rather than content, and every
+	// pixel it spends here comes off the PowerScore breakdown's head start down the screen. On the
+	// overflow wrapper rather than the strip: the wrapper contains its own layout, so a margin on
+	// the strip inside it could no longer collapse with the hero's.
+	.gd-tabs-overflow {
 		margin-top:    0.34rem;
 		margin-bottom: 0.05rem;
+	}
+
+	.gd-tabs {
+		--as-nav-link-color:                  var(--as-fg-3);
+		--as-nav-link-hover-color:            var(--as-fg-body);
+		--as-nav-underline-link-active-color: var(--as-accent-ink);
+		--as-nav-underline-border-width:      0.14rem;
+		--as-nav-gap:                         0;
+
 		// The rule the underline is drawn against, so an unselected tab reads as sitting on the same
 		// line rather than floating above nothing.
 		border-bottom: 1px solid var(--as-border-color);
 
 		// Three labels across 320px read as one control when they divide the width evenly, and the
-		// underline then measures the tab rather than the word inside it.
-		.nav-item { flex: 1 1 0; }
+		// underline then measures the tab rather than the word inside it. Not while the overflow is
+		// measuring, though: it shows its own button and counts natural widths, and tabs stretched to
+		// fill would always look one too many.
+		&:not(:has(> .nav-overflow-item:not(.d-none))) > .nav-item,
+		&:has(> [data-bs-nav-overflow]) > .nav-item {
+			flex: 1 1 0;
+		}
+
+		// The overflow button holding the open tab underlines like the tab would.
+		&:has(> [data-bs-nav-overflow] > .active) .nav-overflow-toggle {
+			font-weight:         var(--as-font-weight-bold);
+			color:               var(--as-nav-underline-link-active-color);
+			border-bottom-color: currentcolor;
+		}
+
+		.nav-overflow-icon svg {
+			width:  1em;
+			height: 1em;
+		}
 
 		.nav-link {
 			width:      100%;
@@ -1901,9 +1945,7 @@
 	}
 
 	.gd-standings-crest {
-		width:       13px;
-		height:      13px;
-		flex-shrink: 0;
+		--as-avatar-size: 13px;
 	}
 
 	// The name gives way first. `.gd-box-name` truncates the cell; a flex child inside it needs its
@@ -1944,7 +1986,7 @@
 	.gd-play-heading {
 		font-size:     0.62rem;
 		font-weight:   700;
-		color:         var(--as-body-color);
+		color:         var(--as-fg-body);
 		margin-bottom: 0.24rem;
 	}
 
@@ -1973,7 +2015,7 @@
 	.gd-play-drive {
 		margin-top: 0.14rem;
 		font-size:  0.58rem;
-		color:      var(--as-secondary-color);
+		color:      var(--as-fg-3);
 	}
 
 	// One line per card, each under its own team's rule, with a gap so two bars from the same side
@@ -1992,7 +2034,7 @@
 	.gd-dueup-row {
 		padding: 0.18rem 0;
 
-		& + & { border-top: 1px solid var(--as-secondary-bg); }
+		& + & { border-top: 1px solid var(--as-bg-2); }
 	}
 
 	// The position is a sibling of the name here, not nested in it as in Your Players, so it needs the
@@ -2031,7 +2073,7 @@
 	.game-info-heading {
 		font-size:     0.62rem;
 		font-weight:   700;
-		color:         var(--as-body-color);
+		color:         var(--as-fg-body);
 		margin-bottom: 0.24rem;
 	}
 
@@ -2041,7 +2083,7 @@
 		gap:         0.3rem;
 		padding:     0.14rem 0;
 
-		& + & { border-top: 1px solid var(--as-secondary-bg); }
+		& + & { border-top: 1px solid var(--as-bg-2); }
 	}
 
 	// For a label that reads as a sentence: it takes the full line, and the value drops beneath it,
@@ -2075,7 +2117,7 @@
 		// anything over about ten characters. The value column loses 11px and clips nothing.
 		width:       3.6rem;
 		font-size:   0.58rem;
-		color:       var(--as-secondary-color);
+		color:       var(--as-fg-3);
 	}
 
 	.game-info-value {
@@ -2091,7 +2133,7 @@
 	.game-info-value-strong {
 		font-size:   0.66rem;
 		font-weight: 600;
-		color:       var(--as-body-color);
+		color:       var(--as-fg-body);
 	}
 
 	// The building carries the weight; the city sits under it at the same size the weather sub-line
@@ -2103,7 +2145,7 @@
 	.game-info-venue-location {
 		margin-top: 0.04rem;
 		font-size:  0.58rem;
-		color:      var(--as-secondary-color);
+		color:      var(--as-fg-3);
 	}
 
 	.game-info-weather {
@@ -2112,7 +2154,7 @@
 		gap:         0.25rem;
 		margin-top:  0.08rem;
 		font-size:   0.58rem;
-		color:       var(--as-secondary-color);
+		color:       var(--as-fg-3);
 	}
 
 	.game-info-link {
@@ -2175,7 +2217,7 @@
 		// popup edge. One variable so the light frame can push both inwards together.
 		--gd-inset: 0.75rem;
 		padding: var(--gd-inset);
-		background: var(--as-body-bg);
+		background: var(--as-bg-body);
 
 		.game-meta-venue,
 		.game-meta-networks,
@@ -2198,7 +2240,7 @@
 		// and re-add that padding inside, so rows sliding under it are covered edge to edge.
 		margin: calc(var(--gd-inset) * -1) calc(var(--gd-inset) * -1) 0.5rem;
 		padding: 0 var(--gd-inset);
-		background: var(--as-body-bg);
+		background: var(--as-bg-body);
 		border-bottom: 1px solid var(--as-border-color);
 	}
 
@@ -2206,7 +2248,7 @@
 	// `:focus-visible` rules read these too, and with them undefined a press drew no fill and a
 	// keyboard focus drew no ring.
 	.game-detail-back-button {
-		--as-btn-color:               var(--as-body-color);
+		--as-btn-color:               var(--as-fg-body);
 		--as-btn-bg:                  var(--as-control-bg);
 		--as-btn-border-color:        var(--as-border-color);
 		--as-btn-hover-color:         var(--as-control-hover-color);
@@ -2310,15 +2352,16 @@
 	}
 
 	.game-detail-team-logo {
-		width: 52px;
-		height: 52px;
+		--as-avatar-size: 52px;
+		--as-avatar-bg: transparent;
+		--as-avatar-color: rgba(255, 255, 255, 0.85);
 	}
 
-	// Inset rather than sized, so the placeholder disc stays centred in the box: 46px inside 52px.
+	// Inset rather than sized, so the placeholder disc stays centred in the box: 46px inside 52px. The
+	// wash goes over a team colour too, so the placeholder looks the same on a hero painted in it.
 	.game-detail-team-logo .crest-fallback {
 		inset: 3px;
-		background: rgba(255, 255, 255, 0.16);
-		color: rgba(255, 255, 255, 0.85);
+		background-image: linear-gradient(rgba(255, 255, 255, 0.16) 0 0);
 	}
 
 	.game-detail-center {
@@ -2411,8 +2454,8 @@
 	}
 
 	.gd-bar-logo {
-		width: 18px;
-		height: 18px;
+		--as-avatar-size: 18px;
+		--as-avatar-bg: color-mix(in srgb, var(--as-fg-body) 14%, transparent);
 	}
 
 	// The shell the crest sits in. Bare unless the artwork was measured as unreadable and the team has
@@ -2436,13 +2479,11 @@
 		&:not(.is-bare) {
 			overflow: hidden;
 
-			.gd-bar-logo { width: 75%; height: 75%; }
+			.gd-bar-logo { --as-avatar-size: 75%; }
 		}
 
 		&.is-bare { background: none; box-shadow: none; }
 	}
-
-	.gd-bar-logo .crest-fallback { background: rgba(var(--as-body-color-rgb), 0.14); }
 
 	.gd-bar-abbrev {
 		font-size: 0.66rem;
@@ -2456,7 +2497,7 @@
 		font-size: 0.95rem;
 		font-weight: 600;
 		line-height: 1;
-		color: var(--as-body-color);
+		color: var(--as-fg-body);
 	}
 
 	.gd-bar-sep {
@@ -2475,7 +2516,7 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		font-size: 0.6rem;
-		color: var(--as-secondary-color);
+		color: var(--as-fg-3);
 		opacity: 0;
 		pointer-events: none;
 		transition: opacity m.$motion-base m.$motion-ease;
@@ -2627,8 +2668,10 @@
 	}
 
 	.gd-atbat-face-crest {
-		width:  100%;
-		height: 100%;
+		--as-avatar-size:          100%;
+		--as-avatar-border-radius: 50%;
+		--as-avatar-bg:            transparent;
+		--as-avatar-color:         rgba(255, 255, 255, 0.85);
 
 		// ESPN headshots are cut-outs framed at the shoulders, so they are anchored to the top of the
 		// disc rather than centred in it — centring crops the face.
@@ -2639,9 +2682,7 @@
 	}
 
 	.gd-atbat-face-crest .crest-fallback {
-		background:  transparent;
-		color:       rgba(255, 255, 255, 0.85);
-		font-size:   0.56rem;
+		font-size: 0.56rem;
 	}
 
 	.gd-atbat-text {
@@ -2778,11 +2819,11 @@
 
 
 	.toast {
-		--as-toast-bg: var(--as-secondary-bg);
+		--as-toast-bg: var(--as-bg-2);
 		--as-toast-border-color: var(--as-border-color);
-		--as-toast-color: var(--as-body-color);
-		--as-toast-header-bg: var(--as-tertiary-bg);
-		--as-toast-header-color: var(--as-body-color);
+		--as-toast-color: var(--as-fg-body);
+		--as-toast-header-bg: var(--as-bg-1);
+		--as-toast-header-color: var(--as-fg-body);
 		min-width: 240px;
 		max-width: 288px;
 	}
@@ -2796,7 +2837,7 @@
 	.toast-body {
 		padding: 0.5rem 0.65rem;
 		font-size: 0.78rem;
-		color: var(--as-body-color);
+		color: var(--as-fg-body);
 	}
 
 	.toast-container {
@@ -2843,7 +2884,7 @@
 		.debug-label {
 			flex-shrink: 0;
 			font-size: 0.65rem;
-			color: var(--as-secondary-color);
+			color: var(--as-fg-3);
 		}
 
 		.debug-value {
@@ -2895,12 +2936,12 @@
 		.debug-score-label {
 			flex-shrink: 0;
 			width: 5rem;
-			color: var(--as-secondary-color);
+			color: var(--as-fg-3);
 		}
 
 		// Bootstrap's track is the light plate grey the game card sits on; this one sits on the page.
 		.debug-score-progress {
-			--as-progress-bg: var(--as-secondary-bg);
+			--as-progress-bg: var(--as-bg-2);
 			height: 5px;
 		}
 

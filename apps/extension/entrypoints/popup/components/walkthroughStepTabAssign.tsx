@@ -3,6 +3,7 @@ import { teamLogoOnColor } from '@arenaswap/core/constants';
 import { matchupSurfaceStyle, powerScoreColor } from './gameCardShared';
 import { i18n } from '#i18n';
 import SelectDropdown from './selectDropdown';
+import FlowStepper from './flowStepper';
 import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepTabAssignProps {
@@ -32,16 +33,16 @@ const TeamLogo = ({ abbr, color, logoUrl }: TeamLogoProps) => (
 		logo={teamLogoOnColor(logoUrl)}
 		abbreviation={abbr}
 		className='team-crest-32'
-		fallbackStyle={{ backgroundColor: color, color: '#fff' }}
+		teamColor={color}
 	/>
 );
 
 const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignProps) => (
 	<div className='popup-container d-flex flex-column'>
-		<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepTabAssign.step', [3, 8])}</div>
+		<FlowStepper step={3} total={8} className='pt-5 pb-3' />
 
-		<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepTabAssign.title')}</div>
-		<div className='text-body-secondary small text-center mb-3 lh-base'>
+		<div className='fw-bold fs-lg text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepTabAssign.title')}</div>
+		<div className='fg-secondary small text-center mb-5 lh-md'>
 			{i18n.t('stepTabAssign.subtitle')}
 		</div>
 
@@ -78,7 +79,7 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 				</div>
 			</div>
 
-			<div className='d-flex align-items-center gap-2 game-card-ps-bar-row'>
+			<div className='d-flex align-items-center gap-3 game-card-ps-bar-row'>
 				<span className='game-card-ps-label'>PowerScore</span>
 				<div className='progress flex-grow-1 game-card-ps-progress'>
 					<div
@@ -103,20 +104,20 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 							{ value: '2', label: 'nfl.com/watch/live' },
 						]}
 					/>
-					<span className='text-primary fw-semibold ms-1 mt-1' style={{ fontSize: '0.65rem' }}>{i18n.t('stepTabAssign.linkHint')}</span>
+					<span className='fg-primary fw-semibold ms-1 mt-1' style={{ fontSize: '0.65rem' }}>{i18n.t('stepTabAssign.linkHint')}</span>
 				</div>
 			</div>
 		</div>
 
-		<p className='text-body-secondary small lh-base mt-1'>
+		<p className='fg-secondary small lh-md mt-1'>
 			{i18n.t('stepTabAssign.body')}
 		</p>
 
-		<div className='d-flex gap-2 mt-auto'>
-			<button type='button' className='btn btn-secondary flex-grow-1' onClick={onBack}>
+		<div className='d-flex gap-3 mt-auto'>
+			<button type='button' className='btn btn-solid theme-accent flex-grow-1' onClick={onBack}>
 				<i className='bi bi-arrow-left' /> {i18n.t('stepTabAssign.back')}
 			</button>
-			<button type='button' className='btn btn-primary flex-grow-1' onClick={onNext}>
+			<button type='button' className='btn btn-solid theme-primary flex-grow-1' onClick={onNext}>
 				{i18n.t('stepTabAssign.next')} <i className='bi bi-arrow-right' />
 			</button>
 		</div>

@@ -11,7 +11,7 @@ describe('the seconds sliders', () => {
 	it('holds the value label at one width while the digits change', () => {
 		cy.mount(<CooldownSlider value={15} onChange={() => {}} />);
 		figuresLoaded();
-		cy.get('#cooldown-range').parent().find('.setting-value-label').should(([label]: JQuery<HTMLElement>) => {
+		cy.get('#cooldown-range').closest('.form-range').parent().find('.setting-value-label').should(([label]: JQuery<HTMLElement>) => {
 			const widthOf = (text: string) => {
 				label!.textContent = text;
 				return label!.getBoundingClientRect().width;
@@ -30,7 +30,7 @@ describe('the seconds sliders', () => {
 
 	it('draws both ends in the same faint style as the other sliders', () => {
 		cy.mount(<SwitchDelaySlider value={30} onChange={() => {}} />);
-		cy.get('#switch-delay-range').next().children().each(end => {
+		cy.get('#switch-delay-range').closest('.form-range').next().children().each(end => {
 			cy.wrap(end).should('have.class', 'setting-explainer');
 		});
 	});

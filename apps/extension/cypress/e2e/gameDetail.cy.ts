@@ -39,7 +39,7 @@ describe('game detail drill-down', () => {
 
 	it('does not open detail when the tab picker is used', () => {
 		cy.contains('.game-card', sixersThunder.homeTeam.abbreviation)
-			.find('.game-card-tab-assign .form-select')
+			.find('.game-card-tab-assign .form-control-caret')
 			.choose(openTabs[0].title);
 
 		cy.get('.game-detail-shell').should('not.exist');

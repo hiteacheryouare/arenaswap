@@ -325,8 +325,8 @@ describe('setupView cooldown slider', () => {
 		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, cooldownSeconds: 0 }} />);
 		openGroup('switching');
 
-		cy.get('#cooldown-range').parent().find('.setting-value-label').should('have.text', 'Off');
-		cy.get('#cooldown-range').parent().should('not.contain.text', '0s');
+		cy.get('#cooldown-range').closest('.form-range').parent().find('.setting-value-label').should('have.text', 'Off');
+		cy.get('#cooldown-range').closest('.form-range').parent().should('not.contain.text', '0s');
 	});
 
 	it('keeps every locale\'s Off label on one line beside the setting name', () => {
@@ -335,7 +335,7 @@ describe('setupView cooldown slider', () => {
 		openGroup('switching');
 
 		Object.entries(locales).forEach(([name, locale]) => {
-			cy.get('#cooldown-range').parent().find('.setting-value-label').should(([el]: JQuery<HTMLElement>) => {
+			cy.get('#cooldown-range').closest('.form-range').parent().find('.setting-value-label').should(([el]: JQuery<HTMLElement>) => {
 				el.textContent = locale.cooldown.off;
 				const row = el.parentElement!;
 				expect(el.getBoundingClientRect().height, `off label stays one line in ${name}`).to.be.at.most(22);
@@ -599,7 +599,8 @@ describe('setupView standby stream', () => {
 
 		// Copy only the guide's first step carries, so the settings page behind it cannot satisfy it.
 		cy.contains('A fallback for the slow moments.').should('be.visible');
-		cy.contains('Step 1 of 2').should('be.visible');
+		cy.get('.flow-stepper .stepper-item.is-current').should('be.visible');
+		cy.contains('Step 1 of 2').should('exist');
 	});
 
 	it('does not put the guide back in front of somebody who has already read it', () => {
@@ -653,7 +654,7 @@ const middle = (rect: DOMRect) => rect.top + rect.height / 2;
 
 const chooseOption = (selector: string, label: string) => {
 	cy.get(selector).click();
-	cy.contains('.dropdown-menu.show .dropdown-item', label).click();
+	cy.contains('.menu.show .menu-item', label).click();
 };
 
 const customPrefs: UserPreferences = {
@@ -676,10 +677,10 @@ describe('setupView scoring mode', () => {
 		cy.get('#scoringModeSelect').should('contain.text', 'Classic').find('.bi-lightning-charge').should('exist');
 		cy.contains('.setting-explainer', en.setup.modeExplainerClassic).should('exist');
 		cy.get('#scoringModeSelect').click();
-		cy.get('.dropdown-menu.show .dropdown-item').then($items => {
+		cy.get('.menu.show .menu-item').then($items => {
 			expect([...$items].map(item => item.textContent?.trim())).to.deep.equal(['Classic', 'Blowouts', 'Fantasy', 'Custom']);
 		});
-		cy.get('.dropdown-menu.show .dropdown-item .bi').should('have.length.at.least', 4);
+		cy.get('.menu.show .menu-item .bi').should('have.length.at.least', 4);
 	});
 
 	it('reports the mode that was picked', () => {
@@ -743,8 +744,8 @@ describe('setupView scoring mode', () => {
 		cy.mount(<SetupView {...defaultProps} prefs={customPrefs} onLeagueModeChange={spy} />);
 		openGroup('scoring');
 		cy.get('#leagueMode-epl').click();
-		cy.contains('.dropdown-menu.show .dropdown-item', 'Fantasy').should('be.disabled');
-		cy.contains('.dropdown-menu.show .dropdown-item', 'Blowouts').click();
+		cy.contains('.menu.show .menu-item', 'Fantasy').should('be.disabled');
+		cy.contains('.menu.show .menu-item', 'Blowouts').click();
 		cy.get('@onLeagueModeChange').should('have.been.calledOnceWith', 'epl', 'blowouts');
 	});
 
@@ -754,7 +755,7 @@ describe('setupView scoring mode', () => {
 		cy.get('.league-mode-row').each(([row]: JQuery<HTMLElement>) => {
 			const logo = row.querySelector('.league-toggle-logo')!.getBoundingClientRect();
 			const label = row.querySelector('.league-order-label')!.getBoundingClientRect();
-			const picker = row.querySelector('.form-select')!.getBoundingClientRect();
+			const picker = row.querySelector('.form-control-caret')!.getBoundingClientRect();
 			const box = row.getBoundingClientRect();
 			expect(Math.abs(middle(logo) - middle(picker)), 'mark and picker share a centre line').to.be.at.most(1.5);
 			expect(Math.abs(middle(label) - middle(picker)), 'name and picker share a centre line').to.be.at.most(1.5);
@@ -1055,7 +1056,7 @@ describe('setupView leagues group', () => {
 
 const chooseTheme = (label: string) => {
 	cy.get('#themeSelect').click();
-	cy.contains('.dropdown-menu.show .dropdown-item', label).click();
+	cy.contains('.menu.show .menu-item', label).click();
 };
 
 describe('the theme setting', () => {
@@ -1073,11 +1074,11 @@ describe('the theme setting', () => {
 	it('lists light, dark and system, each with an icon, and ticks the current one', () => {
 		openDisplay();
 		cy.get('#themeSelect').click();
-		cy.get('.dropdown-menu.show .dropdown-item').should('have.length', 3).then($items => {
+		cy.get('.menu.show .menu-item').should('have.length', 3).then($items => {
 			expect([...$items].map(item => item.textContent?.trim())).to.deep.equal(['Light', 'Dark', 'Match my system']);
 		});
-		cy.get('.dropdown-menu.show .dropdown-item .bi-sun, .dropdown-menu.show .dropdown-item .bi-moon-stars, .dropdown-menu.show .dropdown-item .bi-circle-half').should('have.length', 3);
-		cy.get('.dropdown-menu.show [aria-current="true"]').should('have.length', 1).and('contain.text', 'Dark').find('.bi-check2').should('exist');
+		cy.get('.menu.show .menu-item .bi-sun, .menu.show .menu-item .bi-moon-stars, .menu.show .menu-item .bi-circle-half').should('have.length', 3);
+		cy.get('.menu.show [aria-current="true"]').should('have.length', 1).and('contain.text', 'Dark').find('.bi-check2').should('exist');
 	});
 
 	it('reflects a stored choice', () => {
@@ -1090,7 +1091,7 @@ describe('the theme setting', () => {
 		openDisplay(defaultPrefs, { onThemeChange: spy });
 		chooseTheme('Light');
 		cy.get('@onThemeChange').should('have.been.calledOnceWith', 'light');
-		cy.get('.dropdown-menu.show').should('not.exist');
+		cy.get('.menu.show').should('not.exist');
 	});
 
 	it('cannot be opened before the prefs have loaded', () => {
@@ -1120,7 +1121,7 @@ describe('what happens to a tab once its game finishes', () => {
 	it('offers the three choices and opens on leaving the tab alone', () => {
 		openSwitching();
 		cy.get('#finishedTabSelect').should('contain.text', 'Leave the tab alone');
-		cy.get('#finishedTabSelect').parent().find('.dropdown-item').then((items: JQuery<HTMLElement>) => {
+		cy.get('#finishedTabSelect').parent().find('.menu-item').then((items: JQuery<HTMLElement>) => {
 			expect([...items].map(item => item.textContent?.trim())).to.deep.equal(['Leave the tab alone', 'Free it from ArenaSwap', 'Close the tab']);
 		});
 	});
@@ -1163,7 +1164,7 @@ describe('what happens to a tab once its game finishes', () => {
 		openSwitching();
 		cy.get('#finishedTabSelect').should(([select]: JQuery<HTMLElement>) => {
 			const style = getComputedStyle(select);
-			// .form-select keeps its right-hand padding for the chevron, so the text gets the
+			// .form-control-caret keeps its right-hand padding for the chevron, so the text gets the
 			// content box and nothing more.
 			const available = select.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
 			expect(available, 'the select has a measurable width').to.be.greaterThan(100);

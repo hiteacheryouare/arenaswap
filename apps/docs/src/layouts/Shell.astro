@@ -69,7 +69,7 @@ const alternates = localized && translated
 	: [];
 ---
 <!doctype html>
-<html lang={locale}>
+<html lang={locale} data-bs-theme='dark'>
 <head>
 	<meta charset='UTF-8' />
 	<meta name='viewport' content='width=device-width, initial-scale=1.0' />
@@ -129,7 +129,7 @@ const alternates = localized && translated
 				applyCta(el) {
 					if (!el) return;
 					el.href = detected.primary.href;
-					el.querySelector('[data-install-icon]').className = `bi ${detected.primary.icon} me-2`;
+					el.querySelector('[data-install-icon]').className = `bi ${detected.primary.icon} me-3`;
 					// The browser name is a proper noun and is not translated, but the sentence around
 					// it is, and in several languages the name does not come last.
 					el.querySelector('[data-install-label]').textContent =

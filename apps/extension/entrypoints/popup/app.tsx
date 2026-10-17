@@ -699,9 +699,9 @@ export default () => {
 					/>
 				)}
 				{view === 'detail' && !selectedGame && (
-					<div className='popup-container d-flex flex-column justify-content-center align-items-center gap-2'>
-						<div className='fw-bold text-body'>{i18n.t('app.gameDetailsUnavailable')}</div>
-						<button type='button' className='btn btn-sm btn-primary' onClick={() => setView('main')}>{i18n.t('app.backToGames')}</button>
+					<div className='popup-container d-flex flex-column justify-content-center align-items-center gap-3'>
+						<div className='fw-bold fg-body'>{i18n.t('app.gameDetailsUnavailable')}</div>
+						<button type='button' className='btn btn-sm btn-solid theme-primary' onClick={() => setView('main')}>{i18n.t('app.backToGames')}</button>
 					</div>
 				)}
 			</div>

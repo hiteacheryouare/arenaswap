@@ -30,7 +30,7 @@ const seriesDots = ({ info, game }: seriesDotsProps) => {
 	});
 
 	return (
-		<div className='d-flex align-items-center justify-content-center gap-2 series-dots-wrap'>
+		<div className='d-flex align-items-center justify-content-center gap-3 series-dots-wrap'>
 			{info.summary && <div className='series-dots-summary'>{info.summary}</div>}
 			<div className='d-flex gap-1'>{dots}</div>
 		</div>

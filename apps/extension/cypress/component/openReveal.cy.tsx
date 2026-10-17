@@ -33,7 +33,7 @@ const game = (status: 'in' | 'post', away = 'MIA', home = 'ARI') => ({
 	homeTeam: { id: 'h', name: 'Arizona', abbreviation: home, score: 1, color: '#A71930', logo: goldLogo },
 }) as unknown as Game;
 
-// The nesting `mainView` actually builds — `.popup-container`, the section's `.mt-2`, the league's
+// The nesting `mainView` actually builds — `.popup-container`, the section's `.mt-3`, the league's
 // own div, then the wrapper. Not a shortcut: mounted straight into the flex column the container is,
 // the wrapper becomes a flex item and stops the card's bottom margin collapsing out of it, so the
 // box assertions below would be describing a DOM the popup never has.
@@ -55,7 +55,7 @@ const Harness = ({ mode, status = 'in', away, home, skipping = false }: {
 	};
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<div className='mt-2'>
+			<div className='mt-3'>
 				<div>
 					<GameCardReveal game={subject} mode={mode} index={0} skipping={skipping}>
 						{status === 'post' ? <FinalGameCard {...shared} /> : <LiveGameCard {...shared} />}

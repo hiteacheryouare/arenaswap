@@ -4,6 +4,7 @@ import { logWarn } from '@arenaswap/core';
 import { collegeDivisions, collegeLeaguesWithOtherConferences, isConferenceCovered, otherConferenceKey } from '@arenaswap/core/constants';
 import type { CollegeFilter, CollegeLeagueId, ConferenceDirectory, ConferenceEntry, LeagueLogoMap } from '@arenaswap/core/types';
 import ConferenceCrest from '@arenaswap/ui/src/components/conferenceCrest';
+import ToggleSwitch from '@arenaswap/ui/src/components/toggleSwitch';
 import { loadConferenceDirectory } from '../../../utils/collegeConferences';
 import { collegeDivisionLabel, collegeDivisionShortLabel, collegeRankedLabel, collegeTitleRoundsLabel } from './collegeFilterLabels';
 import LeagueLogo, { type leagueConfig } from './leagueLogo';
@@ -22,7 +23,7 @@ interface directoryResult {
 	failed?: boolean;
 }
 
-// `--as-tertiary-bg` in each theme, which is what a tile is painted with.
+// `--as-bg-1` in each theme, which is what a tile is painted with.
 const tileSurfaces = { dark: '#161b22', light: '#f3f5f8' };
 
 // Loading is whatever has no answer for the current request yet, so a retry or a different league
@@ -76,20 +77,16 @@ const FilterTile = ({ id, crest, label, title, checked, disabled, coveredHint, o
 	<div className={`league-toggle-row${coveredHint ? ' is-covered' : ''}`}>
 		<div className='league-toggle-row-top'>
 			{crest}
-			<div className='form-check form-switch mb-0'>
-				<input
-					className='form-check-input'
-					type='checkbox'
-					id={id}
-					checked={checked}
-					onChange={onChange}
-					disabled={disabled || Boolean(coveredHint)}
-					aria-describedby={coveredHint ? `${id}-covered` : undefined}
-				/>
-			</div>
+			<ToggleSwitch
+				id={id}
+				checked={checked}
+				onChange={onChange}
+				disabled={disabled || Boolean(coveredHint)}
+				aria-describedby={coveredHint ? `${id}-covered` : undefined}
+			/>
 		</div>
 		<label className='mb-0 league-toggle-label' htmlFor={id} title={title}>
-			<span className='d-block fw-semibold text-body'>{label}</span>
+			<span className='d-block fw-semibold fg-body'>{label}</span>
 		</label>
 		{coveredHint && <span id={`${id}-covered`} className='visually-hidden'>{coveredHint}</span>}
 	</div>
@@ -124,7 +121,7 @@ const CollegeFilterPage = ({ league, leagueLogos, filter, disabled, onChange }: 
 	return (
 		<>
 			<div className='league-toggle-group'>
-				<div className='fw-semibold text-body-secondary setting-toggle-label'>{i18n.t('collegeFilter.divisionsHeading')}</div>
+				<div className='fw-semibold fg-secondary setting-toggle-label'>{i18n.t('collegeFilter.divisionsHeading')}</div>
 				<div className='league-toggle-grid'>
 					{divisions.map(division => (
 						<FilterTile
@@ -139,7 +136,7 @@ const CollegeFilterPage = ({ league, leagueLogos, filter, disabled, onChange }: 
 					))}
 					<FilterTile
 						id='college-ranked'
-						crest={<span className='league-toggle-logo college-filter-icon' aria-hidden='true'><i className='bi bi-trophy' /></span>}
+						crest={<span className='avatar league-toggle-logo college-filter-icon' aria-hidden='true'><i className='bi bi-trophy' /></span>}
 						label={collegeRankedLabel(leagueId)}
 						checked={filter.ranked}
 						disabled={disabled}
@@ -147,7 +144,7 @@ const CollegeFilterPage = ({ league, leagueLogos, filter, disabled, onChange }: 
 					/>
 					<FilterTile
 						id='college-title-rounds'
-						crest={<span className='league-toggle-logo college-filter-icon' aria-hidden='true'><i className='bi bi-diagram-3' /></span>}
+						crest={<span className='avatar league-toggle-logo college-filter-icon' aria-hidden='true'><i className='bi bi-diagram-3' /></span>}
 						label={collegeTitleRoundsLabel(leagueId)}
 						title={i18n.t('collegeFilter.titleRoundsHint')}
 						checked={filter.titleRounds}
@@ -158,7 +155,7 @@ const CollegeFilterPage = ({ league, leagueLogos, filter, disabled, onChange }: 
 			</div>
 
 			{!directory && (
-				<div className='college-filter-status text-body-secondary' role='status'>
+				<div className='college-filter-status fg-secondary' role='status'>
 					{status === 'failed' ? (
 						<>
 							{i18n.t('collegeFilter.loadFailed')}{' '}
@@ -175,7 +172,7 @@ const CollegeFilterPage = ({ league, leagueLogos, filter, disabled, onChange }: 
 				const isLast = index === conferenceDivisions.length - 1;
 				return (
 					<div key={division.key} className='league-toggle-group'>
-						<div className='fw-semibold text-body-secondary setting-toggle-label'>
+						<div className='fw-semibold fg-secondary setting-toggle-label'>
 							{divisions.length === 1
 								? i18n.t('collegeFilter.conferencesHeading')
 								: i18n.t('collegeFilter.divisionConferencesHeading', { division: collegeDivisionShortLabel(division.name) })}
@@ -196,7 +193,7 @@ const CollegeFilterPage = ({ league, leagueLogos, filter, disabled, onChange }: 
 							))}
 							{offersOther && isLast && conferenceTile(
 								otherConferenceKey,
-								<span className='league-toggle-logo college-filter-icon' aria-hidden='true'><i className='bi bi-three-dots' /></span>,
+								<span className='avatar league-toggle-logo college-filter-icon' aria-hidden='true'><i className='bi bi-three-dots' /></span>,
 								i18n.t('collegeFilter.otherConferences'),
 								division.key,
 							)}
@@ -206,7 +203,7 @@ const CollegeFilterPage = ({ league, leagueLogos, filter, disabled, onChange }: 
 			})}
 
 			{nothingPicked && (
-				<div className='setup-no-leagues-warn mt-2 mb-1'>
+				<div className='setup-no-leagues-warn mt-3 mb-1'>
 					<i className='bi bi-exclamation-circle me-1' />
 					{i18n.t('collegeFilter.nothingPicked', { league: league.label })}
 				</div>

@@ -196,7 +196,7 @@ const popupFooter = () => {
 							)}
 						</>
 					) : (
-						<div className='setting-explainer mt-3'>The background worker didn't answer.</div>
+						<div className='setting-explainer mt-5'>The background worker didn't answer.</div>
 					)}
 
 					<Section title='Storage' icon='database'>
@@ -208,7 +208,7 @@ const popupFooter = () => {
 						<DRow label='Session keys' value={debug.storage.sessionKeys} wide />
 					</Section>
 
-					<div className='setting-explainer text-center mt-3'>
+					<div className='setting-explainer text-center mt-5'>
 						Refreshes every 5s · last at {new Date(debug.loadedAt).toLocaleTimeString()}
 					</div>
 				</div>

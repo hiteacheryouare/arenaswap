@@ -1,6 +1,6 @@
 import { defineConfig } from 'wxt';
 import pkg from '../../package.json';
-import sassOptions from '@arenaswap/ui/src/sassOptions';
+import bootstrapTokenPrefix from '@arenaswap/ui/src/bootstrapTokenPrefix';
 import { bossCommandName } from './utils/bossMode';
 
 const year = new Date().getFullYear();
@@ -48,11 +48,9 @@ export default defineConfig({
 		build: {
 			target: 'es2023',
 		},
-		// Silences Bootstrap 5.3's Sass deprecation warnings, and only for as long as Bootstrap
-		// is the one emitting them. See packages/ui/src/sassOptions.ts.
 		css: {
-			preprocessorOptions: {
-				scss: sassOptions,
+			postcss: {
+				plugins: [bootstrapTokenPrefix],
 			},
 		},
 		// Firefox MV3 dev server: serve responses uncompressed. Compressed responses trip

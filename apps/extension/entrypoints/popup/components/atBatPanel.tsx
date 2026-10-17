@@ -8,9 +8,10 @@ import { playerInitials } from './pregameLabels';
 //
 // Sits on the hero's scrimmed band of team colour rather than on a light card, so it gets a
 // translucent plate and white ink instead of the .gd-setup treatment used lower down the screen.
-const AtBatSide = ({ player, roleLabel, side }: {
+const AtBatSide = ({ player, roleLabel, side, teamColor }: {
 	player: AtBatPlayer;
 	roleLabel: string;
+	teamColor?: string;
 	// Which half of the panel this player occupies, which is the side of the hero their team is on
 	// — not which of the two roles they are playing.
 	side: 'away' | 'home';
@@ -23,6 +24,7 @@ const AtBatSide = ({ player, roleLabel, side }: {
 				logo={player.headshot}
 				abbreviation={playerInitials(player.name)}
 				className='gd-atbat-face-crest'
+				teamColor={teamColor}
 				loading='lazy'
 			/>
 		</span>
@@ -56,9 +58,9 @@ const atBatPanel = ({ game }: { game: Game }) => {
 
 	return (
 		<div className='gd-atbat-panel'>
-			<AtBatSide {...left} side='away' />
+			<AtBatSide {...left} side='away' teamColor={game.awayTeam.color} />
 			<span className='gd-atbat-versus'>{i18n.t('gameCard.vs')}</span>
-			<AtBatSide {...right} side='home' />
+			<AtBatSide {...right} side='home' teamColor={game.homeTeam.color} />
 		</div>
 	);
 };

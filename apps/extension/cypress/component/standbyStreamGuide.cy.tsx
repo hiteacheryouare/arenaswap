@@ -11,8 +11,10 @@ describe('standbyStreamGuide', () => {
 		cy.mount(<StandbyStreamGuide onDone={() => {}} />);
 		cy.contains('button', 'Next').click();
 		cy.contains('Step 2 of 2').should('exist');
+		cy.get('.flow-stepper .stepper-item').last().should('have.class', 'is-current');
 		cy.contains('button', 'Back').click();
 		cy.contains('Step 1 of 2').should('exist');
+		cy.get('.flow-stepper .stepper-item').first().should('have.class', 'is-current');
 	});
 
 	it('finishes from the second page', () => {

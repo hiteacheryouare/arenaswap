@@ -3,6 +3,7 @@ import { i18n } from '#i18n';
 import type { EspnTeamEntry } from '@arenaswap/sideline';
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
 import TeamPickerList from './teamPickerList';
+import FlowStepper from './flowStepper';
 import focusStepTitle from './stepTitleFocus';
 
 interface onboardingTeamPickerProps {
@@ -33,14 +34,14 @@ const onboardingTeamPicker = ({
 	return (
 		<div className='popup-container d-flex flex-column'>
 			<div className='d-flex align-items-center mb-1'>
-				<button className='btn btn-link btn-sm p-0 text-body-secondary small' onClick={onBack}>
+				<button className='btn btn-link btn-sm p-0 fg-secondary small' onClick={onBack}>
 					<i className='bi bi-arrow-left me-1' />{i18n.t('teamPicker.back')}
 				</button>
-				<span className='small text-body-secondary text-uppercase ms-auto'>{i18n.t('teamPicker.step', [3, 3])}</span>
+				<FlowStepper step={3} total={3} className='ms-auto' />
 			</div>
 
-			<div className='fw-bold lh-sm mb-1 fs-5 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('teamPicker.title')}</div>
-			<div className='setting-explainer mb-2'>
+			<div className='fw-bold lh-xs mb-1 fs-lg popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('teamPicker.title')}</div>
+			<div className='setting-explainer mb-3'>
 				{i18n.t('teamPicker.explainer')}
 			</div>
 
@@ -55,11 +56,11 @@ const onboardingTeamPicker = ({
 				onRetry={onRetry}
 			/>
 
-			<div className='d-flex align-items-center justify-content-between mt-3 pt-2 border-top'>
-				<button type='button' className='btn btn-link btn-sm p-0 text-body-secondary' onClick={onSkip}>
+			<div className='d-flex align-items-center justify-content-between mt-5 pt-3 border-top'>
+				<button type='button' className='btn btn-link btn-sm p-0 fg-secondary' onClick={onSkip}>
 					{i18n.t('teamPicker.skip')}
 				</button>
-				<button type='button' className='btn btn-primary btn-sm' onClick={onDone}>
+				<button type='button' className='btn btn-solid theme-primary btn-sm' onClick={onDone}>
 					{i18n.t('teamPicker.done')} <i className='bi bi-check-lg' />
 				</button>
 			</div>

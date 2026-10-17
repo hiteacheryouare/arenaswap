@@ -98,7 +98,7 @@ describe('the guide button', () => {
 	it('does not overlap the enable switch', () => {
 		mountHeader();
 		cy.get('.bi-calendar-week').parent().then(([guide]: JQuery<HTMLElement>) => {
-			cy.get('.form-check-input').then(([toggle]: JQuery<HTMLElement>) => {
+			cy.get('.switch').then(([toggle]: JQuery<HTMLElement>) => {
 				expect(guide.getBoundingClientRect().right).to.be.lessThan(toggle.getBoundingClientRect().left);
 			});
 		});

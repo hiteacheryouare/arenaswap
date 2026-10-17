@@ -48,12 +48,12 @@ const temperatureUnitToggle = ({ unit, romerUnlocked, disabled, onCycle, onUnloc
 
 	return (
 		<>
-			<div className='d-flex justify-content-between align-items-center mt-2'>
-				<label className='text-body-secondary setting-toggle-label' htmlFor='temperatureUnitToggle'>{i18n.t('setup.temperatureUnit')}</label>
+			<div className='d-flex justify-content-between align-items-center mt-3'>
+				<label className='fg-secondary setting-toggle-label' htmlFor='temperatureUnitToggle'>{i18n.t('setup.temperatureUnit')}</label>
 				<button
 					type='button'
 					id='temperatureUnitToggle'
-					className={`btn btn-sm btn-outline-secondary temperature-unit-toggle${revealing ? ' romer-revealing' : ''}`}
+					className={`btn btn-sm btn-outline theme-accent temperature-unit-toggle${revealing ? ' romer-revealing' : ''}`}
 					onClick={handleClick}
 					disabled={disabled}
 				>

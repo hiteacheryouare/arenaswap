@@ -109,11 +109,14 @@ if (faq?.length) {
 
 				{faq?.length && (
 					<section class='docs-faq' aria-label={t('reading.commonQuestions')} lang={contentLang}>
-						<div class='faq-list'>
+						<div class='faq-list accordion'>
 							{faq.map((item, position) => (
-								<details class='faq-item' open={position === 0}>
-									<summary>{item.q}</summary>
-									<p>{item.a}</p>
+								<details class='faq-item accordion-item' open={position === 0}>
+									<summary class='accordion-header'>
+										{item.q}
+										<svg class='accordion-icon' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='m2 5 6 6 6-6' /></svg>
+									</summary>
+									<p class='accordion-body'>{item.a}</p>
 								</details>
 							))}
 						</div>

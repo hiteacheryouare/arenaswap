@@ -27,12 +27,13 @@ const entries = locales.map(entry => ({
 }));
 ---
 {variant === 'dropdown' ? (
-	<div class='lang-switch dropdown'>
+	<div class='lang-switch'>
 		<button
 			class='lang-switch-trigger'
 			type='button'
-			data-bs-toggle='dropdown'
+			data-bs-toggle='menu'
 			data-bs-display='static'
+			data-bs-placement='bottom-end'
 			aria-expanded='false'
 			aria-label={t('nav.chooseLanguage')}
 		>
@@ -40,25 +41,23 @@ const entries = locales.map(entry => ({
 			<span class='lang-switch-current'>{current.shortLabel}</span>
 			<i class='bi bi-chevron-down lang-switch-caret' aria-hidden='true'></i>
 		</button>
-		<ul class='dropdown-menu dropdown-menu-end lang-switch-menu'>
+		<div class='menu lang-switch-menu'>
 			{!localized && (
 				<>
-					<li><p class='lang-switch-note'>{t('nav.englishOnly')}</p></li>
-					<li><hr class='dropdown-divider' /></li>
+					<p class='lang-switch-note'>{t('nav.englishOnly')}</p>
+					<hr class='menu-divider' />
 				</>
 			)}
 			{entries.map(entry => (
-				<li>
-					<a
-						class:list={['dropdown-item', entry.isCurrent && 'active']}
-						href={entry.href}
-						hreflang={entry.code}
-						lang={entry.code}
-						aria-current={entry.isCurrent ? 'true' : undefined}
-					><span class='lang-switch-flag' aria-hidden='true'>{entry.flag}</span>{entry.label}</a>
-				</li>
+				<a
+					class:list={['menu-item', entry.isCurrent && 'active']}
+					href={entry.href}
+					hreflang={entry.code}
+					lang={entry.code}
+					aria-current={entry.isCurrent ? 'true' : undefined}
+				><span class='lang-switch-flag' aria-hidden='true'>{entry.flag}</span>{entry.label}</a>
 			))}
-		</ul>
+		</div>
 	</div>
 ) : (
 	<div class='lang-switch-list'>

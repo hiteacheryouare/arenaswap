@@ -35,26 +35,26 @@ const PowerScoreInstallCommands = ({ copyLabel, copiedLabel }: Props) => {
 
 	return (
 		<div className='feature-card'>
-			<div className='d-flex flex-wrap gap-2 mb-3'>
+			<div className='d-flex flex-wrap gap-3 mb-5'>
 				{installCommands.map(item => (
 					<button
 						key={item.id}
 						type='button'
-						className={`btn ${activeId === item.id ? 'btn-cta' : 'btn-outline-secondary-custom'} py-2 px-3`}
+						className={`btn ${activeId === item.id ? 'btn-cta' : 'btn-outline-secondary-custom'} py-3 px-5`}
 						onClick={() => setActiveId(item.id)}
 					>
-						<i className={`bi ${item.icon} me-2`}></i>
+						<i className={`bi ${item.icon} me-3`}></i>
 						{item.label}
 					</button>
 				))}
 			</div>
 			<div
-				className='rounded-4 px-3 py-3 d-flex flex-wrap align-items-center justify-content-between gap-3'
+				className='rounded-4 px-5 py-5 d-flex flex-wrap align-items-center justify-content-between gap-5'
 				style={{ background: 'rgba(13,17,23,0.9)', border: '1px solid var(--color-border)' }}
 			>
 				<code className='mb-0 text-[0.92rem] text-[var(--color-text)] font-[var(--font-mono)]'>{activeCommand?.command}</code>
-				<button type='button' className='btn btn-cta py-2 px-3' onClick={copyCommand}>
-					<i className={`bi ${copied ? 'bi-check2' : 'bi-clipboard'} me-2`}></i>
+				<button type='button' className='btn btn-cta py-3 px-5' onClick={copyCommand}>
+					<i className={`bi ${copied ? 'bi-check2' : 'bi-clipboard'} me-3`}></i>
 					{copied ? copiedLabel : copyLabel}
 				</button>
 			</div>

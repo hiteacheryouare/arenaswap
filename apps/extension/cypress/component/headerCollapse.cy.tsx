@@ -32,6 +32,14 @@ const scrollTo = (top: number) => cy.get('.popup-container').then(([node]: JQuer
 // read in the middle of a 450ms animation.
 // `rgba(13, 17, 23, 0)` and `rgb(13, 17, 23)` are the two ends of the same declaration, so what
 // these specs mean is the alpha, not the string.
+// A color-mix() computes to color(srgb …) rather than rgb(), so it is painted and read back as bytes.
+const toRgb = (color: string) => {
+	const context = document.createElement('canvas').getContext('2d')!;
+	context.fillStyle = color;
+	context.fillRect(0, 0, 1, 1);
+	return Array.from(context.getImageData(0, 0, 1, 1).data.slice(0, 3)).join(', ');
+};
+
 const surfaceAlpha = (header: HTMLElement) => {
 	const parts = getComputedStyle(header).backgroundColor.match(/[\d.]+/g) as string[];
 	return parts.length > 3 ? parseFloat(parts[3] as string) : 1;
@@ -123,8 +131,8 @@ describe('the popup header', () => {
 		cy.get('.popup-header').should(([header]: JQuery<HTMLElement>) => {
 			const style = getComputedStyle(header);
 			expect(surfaceAlpha(header)).to.equal(1);
-			expect(style.backgroundColor).to.contain('13, 17, 23');
-			expect(style.borderBottomColor).to.contain('48, 54, 61');
+			expect(toRgb(style.backgroundColor)).to.equal('13, 17, 23');
+			expect(toRgb(style.borderBottomColor)).to.equal('48, 54, 61');
 			expect(style.backdropFilter === 'none' || style.backdropFilter === '').to.equal(true);
 		});
 	});

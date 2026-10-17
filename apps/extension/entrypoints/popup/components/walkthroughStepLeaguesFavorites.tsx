@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
+import ToggleSwitch from '@arenaswap/ui/src/components/toggleSwitch';
+import FlowStepper from './flowStepper';
 import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepLeaguesFavoritesProps {
@@ -16,7 +18,7 @@ interface LeagueRowProps {
 
 const LeagueRow = ({ label, color, enabled, onToggle }: LeagueRowProps) => (
 	<div className='d-flex align-items-center justify-content-between py-1'>
-		<div className='d-flex align-items-center gap-2'>
+		<div className='d-flex align-items-center gap-3'>
 			<span
 				className='badge fw-bold motion-tint'
 				style={{ backgroundColor: enabled ? color : 'transparent', color: enabled ? '#fff' : '#6c757d', border: `1px solid ${enabled ? color : '#6c757d'}`, minWidth: '3rem' }}
@@ -24,15 +26,11 @@ const LeagueRow = ({ label, color, enabled, onToggle }: LeagueRowProps) => (
 				{label}
 			</span>
 		</div>
-		<div className='form-check form-switch mb-0'>
-			<input
-				className='form-check-input'
-				type='checkbox'
-				checked={enabled}
-				onChange={onToggle}
-				aria-label={i18n.t('stepLeaguesFavorites.toggleAriaLabel', { label })}
-			/>
-		</div>
+		<ToggleSwitch
+			checked={enabled}
+			onChange={onToggle}
+			aria-label={i18n.t('stepLeaguesFavorites.toggleAriaLabel', { label })}
+		/>
 	</div>
 );
 
@@ -46,14 +44,14 @@ interface TeamRowProps {
 
 const TeamRow = ({ name, abbr, color, starred, onStar }: TeamRowProps) => (
 	<div className='d-flex align-items-center justify-content-between py-1'>
-		<div className='d-flex align-items-center gap-2'>
+		<div className='d-flex align-items-center gap-3'>
 			<div
 				className='d-flex align-items-center justify-content-center rounded fw-bold'
 				style={{ backgroundColor: color, color: '#fff', width: '2rem', height: '2rem', fontSize: '0.6rem' }}
 			>
 				{abbr}
 			</div>
-			<span className='text-body small'>{name}</span>
+			<span className='fg-body small'>{name}</span>
 		</div>
 		<button
 			type='button'
@@ -79,19 +77,17 @@ const walkthroughStepLeaguesFavorites = ({ onNext, onBack }: walkthroughStepLeag
 
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>
-				{i18n.t('stepLeaguesFavorites.step', [7, 8])}
-			</div>
+			<FlowStepper step={7} total={8} className='pt-5 pb-3' />
 
-			<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepLeaguesFavorites.title')}</div>
-			<div className='text-body-secondary small text-center mb-3 lh-base'>
+			<div className='fw-bold fs-lg text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepLeaguesFavorites.title')}</div>
+			<div className='fg-secondary small text-center mb-5 lh-md'>
 				{i18n.t('stepLeaguesFavorites.subtitle')}
 			</div>
 
-			<div className='d-flex gap-1 mb-2'>
+			<div className='d-flex gap-1 mb-3'>
 				<button
 					type='button'
-					className={`btn btn-sm flex-grow-1 ${tab === 'leagues' ? 'btn-primary' : 'btn-outline-secondary'}`}
+					className={`btn btn-sm flex-grow-1 ${tab === 'leagues' ? 'btn-solid theme-primary' : 'btn-outline theme-accent'}`}
 					onClick={() => setTab('leagues')}
 				>
 					<i className='bi bi-trophy me-1' />
@@ -99,7 +95,7 @@ const walkthroughStepLeaguesFavorites = ({ onNext, onBack }: walkthroughStepLeag
 				</button>
 				<button
 					type='button'
-					className={`btn btn-sm flex-grow-1 ${tab === 'favorites' ? 'btn-warning' : 'btn-outline-secondary'}`}
+					className={`btn btn-sm flex-grow-1 ${tab === 'favorites' ? 'btn-solid theme-warning' : 'btn-outline theme-accent'}`}
 					onClick={() => setTab('favorites')}
 				>
 					<i className='bi bi-star me-1' />
@@ -107,10 +103,10 @@ const walkthroughStepLeaguesFavorites = ({ onNext, onBack }: walkthroughStepLeag
 				</button>
 			</div>
 
-			<div className='border border-secondary-subtle rounded p-2 mb-3' style={{ minHeight: '9rem' }}>
+			<div className='border border-subtle-accent rounded p-3 mb-5' style={{ minHeight: '9rem' }}>
 				{tab === 'leagues' ? (
 					<>
-						<p className='text-body-secondary mb-2 lh-base' style={{ fontSize: '0.72rem' }}>
+						<p className='fg-secondary mb-3 lh-md' style={{ fontSize: '0.72rem' }}>
 							{i18n.t('stepLeaguesFavorites.leaguesExplain')}
 						</p>
 						<LeagueRow label='NFL' color='#013369' enabled={leagues.nfl} onToggle={() => toggleLeague('nfl')} />
@@ -120,7 +116,7 @@ const walkthroughStepLeaguesFavorites = ({ onNext, onBack }: walkthroughStepLeag
 					</>
 				) : (
 					<>
-						<p className='text-body-secondary mb-2 lh-base' style={{ fontSize: '0.72rem' }}>
+						<p className='fg-secondary mb-3 lh-md' style={{ fontSize: '0.72rem' }}>
 							{i18n.t('stepLeaguesFavorites.favoritesExplain')}
 						</p>
 						<TeamRow name='Philadelphia Eagles' abbr='PHI' color='#004C54' starred={starred.eagles} onStar={() => toggleStar('eagles')} />
@@ -128,7 +124,7 @@ const walkthroughStepLeaguesFavorites = ({ onNext, onBack }: walkthroughStepLeag
 						<TeamRow name='Milwaukee Bucks' abbr='MIL' color='#00471B' starred={starred.bucks} onStar={() => toggleStar('bucks')} />
 						{(starred.eagles || starred.chiefs || starred.bucks) && (
 							<div
-								className='mt-2 rounded px-2 py-1 small'
+								className='mt-3 rounded px-3 py-1 small'
 								style={{ backgroundColor: 'rgba(241,196,15,0.12)', color: '#f1c40f', fontSize: '0.68rem' }}
 							>
 								<i className='bi bi-star-fill me-1' />
@@ -139,17 +135,17 @@ const walkthroughStepLeaguesFavorites = ({ onNext, onBack }: walkthroughStepLeag
 				)}
 			</div>
 
-			<p className='text-body-secondary small lh-base'>
+			<p className='fg-secondary small lh-md'>
 				{tab === 'leagues'
 					? i18n.t('stepLeaguesFavorites.leaguesBody')
 					: i18n.t('stepLeaguesFavorites.favoritesBody')}
 			</p>
 
-			<div className='d-flex gap-2 mt-auto'>
-				<button type='button' className='btn btn-secondary flex-grow-1' onClick={onBack}>
+			<div className='d-flex gap-3 mt-auto'>
+				<button type='button' className='btn btn-solid theme-accent flex-grow-1' onClick={onBack}>
 					<i className='bi bi-arrow-left' /> {i18n.t('stepLeaguesFavorites.back')}
 				</button>
-				<button type='button' className='btn btn-primary flex-grow-1' onClick={onNext}>
+				<button type='button' className='btn btn-solid theme-primary flex-grow-1' onClick={onNext}>
 					{i18n.t('stepLeaguesFavorites.next')} <i className='bi bi-arrow-right' />
 				</button>
 			</div>

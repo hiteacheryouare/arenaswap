@@ -39,6 +39,7 @@ const OnColorCrest = ({ team, surface, className, fallback, loading, onFailed }:
 			abbreviation={(team.abbreviation || '?').slice(0, 3)}
 			className={className}
 			fallback={fallback}
+			teamColor={team.color}
 			loading={loading}
 			onFailed={onColorLogo && logo === onColorLogo ? () => {
 				missingDarkVariants.add(onColorLogo);

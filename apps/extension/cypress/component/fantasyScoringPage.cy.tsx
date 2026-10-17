@@ -87,7 +87,7 @@ describe('fantasy scoring rules page', () => {
 	it('switches sport from the picker', () => {
 		cy.mount(<Harness />);
 		cy.get('#fantasySportSelect').click();
-		cy.contains('.dropdown-menu.show .dropdown-item', 'Basketball').click();
+		cy.contains('.menu.show .menu-item', 'Basketball').click();
 		cy.get('.fantasy-rule-row').should('have.length', 6);
 		cy.get('.fantasy-rule-heading').should('not.exist');
 		cy.get('#fantasyRule-basketball-rebounds').should('have.value', '1.2');

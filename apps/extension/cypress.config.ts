@@ -3,7 +3,7 @@ import codeCoverageTask from '@cypress/code-coverage/task';
 import { existsSync } from 'node:fs';
 import path from 'path';
 import { startStaticServer } from './cypress/staticServer';
-import sassOptions from '@arenaswap/ui/src/sassOptions';
+import bootstrapTokenPrefix from '@arenaswap/ui/src/bootstrapTokenPrefix';
 
 const root = (rel: string) => path.resolve(__dirname, rel);
 
@@ -53,11 +53,11 @@ export default defineConfig({
 			framework: 'react',
 			bundler: 'vite',
 			viteConfig: async () => ({
-				// The support file imports both .scss entries, so the component runner compiles
-				// Bootstrap the same way the real build does and needs the same silencing.
+				// The support file imports both .scss entries, so the component runner needs the same
+				// token prefix the real build applies.
 				css: {
-					preprocessorOptions: {
-						scss: sassOptions,
+					postcss: {
+						plugins: [bootstrapTokenPrefix],
 					},
 				},
 				resolve: {

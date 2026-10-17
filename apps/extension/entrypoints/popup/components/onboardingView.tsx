@@ -115,7 +115,7 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 				)}
 				{step === 4 && (
 					<div className='popup-container d-flex flex-column'>
-						<div className='onb-logo-wrap d-flex justify-content-center pt-4 pb-3'>
+						<div className='onb-logo-wrap d-flex justify-content-center pt-7 pb-5'>
 							<img
 								src='/images/full_logo_white_on_transparent.svg'
 								alt='ArenaSwap'
@@ -123,14 +123,14 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 							/>
 						</div>
 						<div className='onb-content-wrap d-flex flex-column'>
-							<div className='fw-bold lh-sm mb-2 fs-4 text-center popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('onboarding.allSetTitle')}</div>
-							<div className='text-body-secondary fs-6 text-center mb-4 lh-base'>
+							<div className='fw-bold lh-xs mb-3 fs-xl text-center popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('onboarding.allSetTitle')}</div>
+							<div className='fg-secondary fs-md text-center mb-7 lh-md'>
 								{i18n.t('onboarding.allSetSubtitle')}
 							</div>
-							<div className='d-flex flex-column gap-3 mt-auto'>
+							<div className='d-flex flex-column gap-5 mt-auto'>
 								<button
 									type='button'
-									className='btn btn-primary w-100'
+									className='btn btn-solid theme-primary w-100'
 									onClick={() => onStartWalkthrough?.(pendingLeagues, pendingFavorites)}
 								>
 									<i className='bi bi-play-fill me-1' />
@@ -138,7 +138,7 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 								</button>
 								<button
 									type='button'
-									className='btn btn-outline-secondary w-100'
+									className='btn btn-outline theme-accent w-100'
 									onClick={() => onComplete(pendingLeagues, pendingFavorites)}
 								>
 									{i18n.t('onboarding.jumpIn')}

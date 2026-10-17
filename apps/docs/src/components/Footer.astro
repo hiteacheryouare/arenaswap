@@ -15,7 +15,7 @@ const credit = tokenize(t('footer.madeWith'));
 ---
 <footer style="background:var(--color-bg);">
 	<div class="section-divider"></div>
-	<div class="container py-5">
+	<div class="container py-12">
 
 		<!-- Brand band: ArenaSwap and the parent company, equal weight -->
 		<div class="footer-brand-band">
@@ -31,12 +31,12 @@ const credit = tokenize(t('footer.madeWith'));
 
 		<p class="footer-tagline">{t('footer.tagline')}</p>
 
-		<div class="section-divider my-5"></div>
+		<div class="section-divider my-12"></div>
 
-		<div class="row g-5">
+		<div class="row g-12">
 
 			<!-- Product -->
-			<div class="col-12 col-md-4">
+			<div class="col-12 md:col-4">
 				<p class="footer-col-label">{t('footer.product')}</p>
 				<ul class="list-unstyled footer-links">
 					<li><a href={localePath(locale, 'faq/')}>{t('nav.faq')}</a></li>
@@ -48,7 +48,7 @@ const credit = tokenize(t('footer.madeWith'));
 			</div>
 
 			<!-- Legal -->
-			<div class="col-12 col-md-4">
+			<div class="col-12 md:col-4">
 				<p class="footer-col-label">{t('footer.legal')}</p>
 				<ul class="list-unstyled footer-links">
 					<li><a href={localePath(locale, 'legal/privacy/')}>{t('footer.privacy')}</a></li>
@@ -59,22 +59,22 @@ const credit = tokenize(t('footer.madeWith'));
 			</div>
 
 			<!-- Install -->
-			<div class="col-12 col-md-4">
+			<div class="col-12 md:col-4">
 				<p class="footer-col-label">{t('footer.install')}</p>
 				<ul class="list-unstyled footer-links">
 					<li>
 						<a href={chromeWebStore}>
-							<i class="bi bi-browser-chrome me-2" style="font-size:0.85rem;"></i>{t('footer.chromeWebStore')}
+							<i class="bi bi-browser-chrome me-3" style="font-size:0.85rem;"></i>{t('footer.chromeWebStore')}
 						</a>
 					</li>
 					<li>
 						<a href={firefoxAddons}>
-							<i class="bi bi-browser-firefox me-2" style="font-size:0.85rem;"></i>{t('footer.firefoxAddons')}
+							<i class="bi bi-browser-firefox me-3" style="font-size:0.85rem;"></i>{t('footer.firefoxAddons')}
 						</a>
 					</li>
 					<li>
 						<a href={edgeAddons}>
-							<i class="bi bi-browser-edge me-2" style="font-size:0.85rem;"></i>{t('footer.edgeAddons')}
+							<i class="bi bi-browser-edge me-3" style="font-size:0.85rem;"></i>{t('footer.edgeAddons')}
 						</a>
 					</li>
 				</ul>
@@ -82,11 +82,11 @@ const credit = tokenize(t('footer.madeWith'));
 
 		</div>
 
-		<div class="section-divider my-5"></div>
+		<div class="section-divider my-12"></div>
 
-		<div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+		<div class="d-flex flex-wrap justify-content-between align-items-center gap-5">
 			<a href={localePath(locale, 'legal/licenses/')} style="font-size:0.78rem;color:var(--color-muted);text-decoration:none;">{t('footer.iscLicense')}</a>
-			<div class="d-flex gap-3">
+			<div class="d-flex gap-5">
 				<a href="https://github.com/hiteacheryouare/arenaswap" title="GitHub" class="footer-icon-link"><i class="bi bi-github"></i></a>
 				<a href={chromeWebStore} title={t('footer.chromeWebStore')} class="footer-icon-link"><i class="bi bi-browser-chrome"></i></a>
 				<a href={firefoxAddons} title={t('footer.firefoxAddons')} class="footer-icon-link"><i class="bi bi-browser-firefox"></i></a>

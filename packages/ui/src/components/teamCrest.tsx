@@ -16,6 +16,7 @@ interface teamCrestProps {
 	crestClassName: string;
 	fallback?: 'abbreviation' | 'blank';
 	loading?: 'eager' | 'lazy';
+	teamColor?: string;
 }
 
 // A team's crest in its own colours, which is what it should be: half the league's artwork is built
@@ -29,7 +30,7 @@ interface teamCrestProps {
 //      a team's own light alternate it does not;
 //   3. the colour artwork on a white disc tinted from the crest, when neither of those holds. That
 //      is every non-North-American club, and it is what shipped before any of this.
-const TeamCrest = ({ logo, monoMarks, abbreviation, background, discClassName, crestClassName, fallback, loading }: teamCrestProps) => {
+const TeamCrest = ({ logo, monoMarks, abbreviation, background, discClassName, crestClassName, fallback, loading, teamColor }: teamCrestProps) => {
 	// Both answers are looked up in the module caches on every render rather than copied into state
 	// at mount. A verdict is a fact about a crest and a surface, and both of those move underneath a
 	// mounted instance: the guide's drawer reconciles one game's detail view into the next, and the
@@ -95,6 +96,7 @@ const TeamCrest = ({ logo, monoMarks, abbreviation, background, discClassName, c
 				abbreviation={abbreviation}
 				className={`${crestClassName}${useMono ? ' is-mono' : ''}`}
 				fallback={fallback}
+				teamColor={teamColor}
 				loading={loading}
 				crossOrigin='anonymous'
 				verdict={verdict}

@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import Crest from './crest';
-import { crestBacking, logoTint } from '@arenaswap/chromatic';
+import { crestBacking, isHex, logoTint } from '@arenaswap/chromatic';
 
 interface crestDiscProps {
 	logo?: string;
@@ -11,6 +11,7 @@ interface crestDiscProps {
 	crestClassName: string;
 	fallback?: 'abbreviation' | 'blank';
 	loading?: 'eager' | 'lazy';
+	teamColor?: string;
 }
 
 // A crest on a white disc tinted with a colour sampled out of the crest itself. Read off the image
@@ -20,19 +21,26 @@ interface crestDiscProps {
 //
 // The URL comes off the element rather than the prop, so the handler never has to be rebuilt and
 // can never key the cache on a logo the image is no longer showing.
-const CrestDisc = ({ logo, abbreviation, discClassName, crestClassName, fallback, loading }: crestDiscProps) => {
+//
+// With a team colour, the whole disc takes it until the crest lands, so the placeholder fills the
+// disc rather than sitting inside a white ring.
+const CrestDisc = ({ logo, abbreviation, discClassName, crestClassName, fallback, loading, teamColor }: crestDiscProps) => {
 	const [tint, setTint] = useState<string | null>(null);
+	const [loadedLogo, setLoadedLogo] = useState<string>();
 	const handleLoaded = useCallback((image: HTMLImageElement) => {
 		setTint(logoTint(image, image.currentSrc || image.src));
+		setLoadedLogo(image.getAttribute('src') ?? undefined);
 	}, []);
+	const fill = isHex(teamColor) && (!logo || loadedLogo !== logo) ? teamColor : crestBacking(tint);
 
 	return (
-		<span className={discClassName} style={{ background: crestBacking(tint) }}>
+		<span className={discClassName} style={{ background: fill }}>
 			<Crest
 				logo={logo}
 				abbreviation={abbreviation}
 				className={crestClassName}
 				fallback={fallback}
+				teamColor={teamColor}
 				loading={loading}
 				crossOrigin='anonymous'
 				onLoaded={handleLoaded}

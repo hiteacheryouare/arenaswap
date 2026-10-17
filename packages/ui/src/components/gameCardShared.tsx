@@ -226,7 +226,7 @@ export const SeasonLabel = ({ game }: { game: Game }) => {
 export const CardStatusRow = ({ children, status, league }: { children?: ReactNode; status?: ReactNode; league?: ReactNode }) => (
 	<div className='d-flex align-items-center flex-wrap game-card-status-row mb-1'>
 		{league ? (
-			<span className='d-flex align-items-center gap-2'>
+			<span className='d-flex align-items-center gap-3'>
 				{league}
 				{status}
 			</span>

@@ -50,29 +50,32 @@ const teamPickerList = ({
 
 	return (
 		<>
-			<input
-				type='search'
-				className='form-control form-control-sm mb-2'
-				placeholder={i18n.t('teamPicker.searchPlaceholder')}
-				aria-label={i18n.t('teamPicker.searchPlaceholder')}
-				value={query}
-				onChange={e => onQueryChange(e.target.value)}
-			/>
+			<label className='form-control form-control-sm form-adorn mb-3'>
+				<span className='form-adorn-icon' aria-hidden='true'><i className='bi bi-search' /></span>
+				<input
+					type='search'
+					className='form-ghost'
+					placeholder={i18n.t('teamPicker.searchPlaceholder')}
+					aria-label={i18n.t('teamPicker.searchPlaceholder')}
+					value={query}
+					onChange={e => onQueryChange(e.target.value)}
+				/>
+			</label>
 
 			<div className='overflow-auto'>
 				{isLoading && (
-					<div className='d-flex flex-column justify-content-center align-items-center mt-4 popup-loading-wrap'>
+					<div className='d-flex flex-column justify-content-center align-items-center mt-7 popup-loading-wrap'>
 						<div className='spinner-border popup-loading-spinner' role='status'>
 							<span className='visually-hidden'>{i18n.t('teamPicker.loading')}</span>
 						</div>
-						<div className='mt-2 text-center popup-loading-text'>{i18n.t('teamPicker.loading')}</div>
+						<div className='mt-3 text-center popup-loading-text'>{i18n.t('teamPicker.loading')}</div>
 					</div>
 				)}
 
 				{hasError && !isLoading && (
-					<div className='text-center mt-3'>
-						<div className='small text-danger mb-2'>{i18n.t('teamPicker.loadError')}</div>
-						<button type='button' className='btn btn-sm btn-outline-secondary' onClick={onRetry}>{i18n.t('teamPicker.retry')}</button>
+					<div className='text-center mt-5'>
+						<div className='small fg-danger mb-3'>{i18n.t('teamPicker.loadError')}</div>
+						<button type='button' className='btn btn-sm btn-outline theme-accent' onClick={onRetry}>{i18n.t('teamPicker.retry')}</button>
 					</div>
 				)}
 
@@ -81,7 +84,7 @@ const teamPickerList = ({
 						{pinned}
 						{groups.map(({ leagueId, teams: leagueTeams }) => (
 							<div key={leagueId}>
-								<div className='fw-bold text-uppercase popup-section-label mt-2'>
+								<div className='fw-bold text-uppercase popup-section-label mt-3'>
 									{leagueLabels[leagueId] ?? leagueId.toUpperCase()}
 								</div>
 								{leagueTeams.map(team => (
@@ -95,7 +98,7 @@ const teamPickerList = ({
 							</div>
 						))}
 						{groups.length === 0 && query && (
-							<div className='small text-body-secondary text-center mt-3'>
+							<div className='small fg-secondary text-center mt-5'>
 								{i18n.t('teamPicker.noMatch', { query })}
 							</div>
 						)}

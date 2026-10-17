@@ -31,7 +31,7 @@ const scoringModeSection = ({ prefs, leagueLogos, disabled, onScoringModeChange,
 	return (
 		<>
 			<div className='fw-bold popup-section-label'><i className='bi bi-compass' />{i18n.t('setup.scoringModeSection')}</div>
-			<label className='text-body-secondary setting-toggle-label d-block mb-1' id='scoringModeSelectLabel' htmlFor='scoringModeSelect'>
+			<label className='fg-secondary setting-toggle-label d-block mb-1' id='scoringModeSelectLabel' htmlFor='scoringModeSelect'>
 				{i18n.t('setup.scoringMode')}
 			</label>
 			<SelectDropdown<ScoringModeChoice>
@@ -45,7 +45,7 @@ const scoringModeSection = ({ prefs, leagueLogos, disabled, onScoringModeChange,
 			<div className='setting-explainer mt-1'>{i18n.t(modeExplainerKeys[prefs.scoringMode])}</div>
 
 			{isCustom && (
-				<div id='leagueModeList' className='league-order-list mt-2'>
+				<div id='leagueModeList' className='league-order-list mt-3'>
 					{prefs.enabledLeagues.length === 0 && <div className='setting-explainer'>{i18n.t('setup.noLeaguesWarning')}</div>}
 					{prefs.enabledLeagues.map(leagueId => {
 						const league = leagueConfigMap[leagueId];
@@ -55,7 +55,7 @@ const scoringModeSection = ({ prefs, leagueLogos, disabled, onScoringModeChange,
 						return (
 							<div key={leagueId} className='league-order-row league-mode-row'>
 								<LeagueLogo league={league} logos={leagueLogos} />
-								<span className='league-order-label fw-semibold text-body'>{league.label}</span>
+								<span className='league-order-label fw-semibold fg-body'>{league.label}</span>
 								<div className='league-mode-select'>
 									<SelectDropdown<BuiltInModeId>
 										id={`leagueMode-${leagueId}`}

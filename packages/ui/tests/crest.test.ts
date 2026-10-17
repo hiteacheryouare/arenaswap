@@ -1,4 +1,4 @@
-import { resolveCrestState } from '../src/components/crest';
+import { crestFill, resolveCrestState } from '../src/components/crest';
 
 describe('resolveCrestState', () => {
 	test('is missing when there is no logo to load at all', () => {
@@ -35,5 +35,20 @@ describe('resolveCrestState', () => {
 	// calling it pending would lose the one state a stylesheet can tell apart.
 	test('reports a failure whether or not a verdict is still out', () => {
 		expect(resolveCrestState('a.png', { src: 'a.png', status: 'failed' }, 'pending')).toBe('failed');
+	});
+});
+
+describe('crestFill', () => {
+	test('fills the placeholder with a team colour, in the ink that reads on it', () => {
+		expect(crestFill('#0C2340')).toEqual({ '--as-avatar-bg': '#0C2340', '--as-avatar-color': '#ffffff' });
+		expect(crestFill('#FFB81C')).toEqual({ '--as-avatar-bg': '#FFB81C', '--as-avatar-color': '#111827' });
+	});
+
+	// ESPN sends a colour as something unparseable often enough that the neutral disc has to be
+	// what an unusable one falls back to, rather than an empty fill.
+	test('leaves the neutral disc alone without a usable colour', () => {
+		expect(crestFill(undefined)).toBeUndefined();
+		expect(crestFill('')).toBeUndefined();
+		expect(crestFill('navy')).toBeUndefined();
 	});
 });

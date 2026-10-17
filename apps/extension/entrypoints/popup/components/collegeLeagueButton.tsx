@@ -35,7 +35,7 @@ const CollegeLeagueButton = ({ leagueId, leagueLabel, filter, children, onOpen }
 		>
 			<span className='d-block'>
 				{children}
-				<span className='d-block text-body-secondary college-league-summary'>{collegeFilterSummary(leagueId, filter, directory)}</span>
+				<span className='d-block fg-secondary college-league-summary'>{collegeFilterSummary(leagueId, filter, directory)}</span>
 			</span>
 			<i className='bi bi-chevron-right college-league-chevron' aria-hidden='true' />
 		</button>

@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Bootstrap 6 — 2026-10-16
+
+Everything moves to `bootstrap@6.0.0-alpha.1`, pinned exactly so each beta is a deliberate bump: the theme is `light-dark()` token pairs, our CSS sits in Bootstrap's `custom` cascade layer, and a PostCSS pass (`tokenPrefix.ts`) keeps the `--as-` prefix that v6 dropped; v6 compiles without Sass deprecation warnings, so the `quietDeps` silencer is gone. Crests and headshots are now avatars that fall back to team colour and initials, and selects, switches, sliders, the breakdown, the guide and site drawers, the detail tabs, the onboarding steps and the docs prose all run on v6's own components. `tokenNames.test.ts` fails on any `--as-` token nobody declares, which is where a renamed token in the next prerelease will show up.
+
 ## The offseason wrap test stops depending on your scrollbars — 2026-10-16
 
 The setupView spec that checks "Back Nov 30 (410 days)" drops its count to a new line only failed on macOS overlay scrollbars, which give the card back the 15px a classic scrollbar takes, just enough for the whole label to fit. The test now narrows the line to the date's own width so the count has to wrap whatever the system's scrollbar setting is.

@@ -1,9 +1,9 @@
 @use '@arenaswap/ui/src/fonts';
-@use 'bootstrap-icons/font/bootstrap-icons' with ($bootstrap-icons-font-dir: '/fonts');
+@use '@arenaswap/ui/src/icons';
 // The homepage hero's browser window, used as is so the film and the site draw the same Chrome.
 @use '../../../docs/src/styles/browser-hero';
 @use '@arenaswap/ui/src/crest';
-@at-root {
+@layer custom {
 
 	$dot-orange: #ff751f;
 	$ink: #ffffff;
@@ -235,8 +235,10 @@
 		padding: 0 8%;
 	}
 
+	// `height: auto` over the avatar's own, or the ratio has nothing to set.
 	.stream-crest {
 		width: 30%;
+		height: auto;
 		aspect-ratio: 1;
 		object-fit: contain;
 		filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.35));
@@ -320,6 +322,7 @@
 
 	.wall-tile-crest {
 		width: 26%;
+		height: auto;
 		aspect-ratio: 1;
 		object-fit: contain;
 		display: flex;
@@ -355,7 +358,11 @@
 
 	.league-mark {
 		position: absolute;
-		object-fit: contain;
+		display: flex;
+	}
+
+	.league-mark-art {
+		--as-avatar-size: 100%;
 	}
 
 	// ─── Credits ──────────────────────────────────────────────────────────────────────────────────

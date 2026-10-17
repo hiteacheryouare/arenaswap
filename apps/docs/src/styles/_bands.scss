@@ -2,7 +2,7 @@
 // rather than by whitespace alone. Type is the only decoration: there is no illustration on the
 // page, so the headline sizes have to carry it.
 @use '@arenaswap/ui/src/motion' as m;
-@at-root {
+@layer custom {
 
 	.band {
 		padding: 3.5rem 0;
@@ -105,12 +105,8 @@
 		align-items: center;
 		gap: 0.7rem;
 
-		// `_crest.scss` guarantees the image and its placeholder share a box; the size of that box is the
-		// call site's job, and without it `.crest` is an inline-flex with an absolutely positioned child
-		// and collapses to nothing.
 		.crest {
-			width: 1.8rem;
-			height: 1.8rem;
+			--as-avatar-size: 1.8rem;
 			// Held slightly back so no one crest shouts over the rest, and brought up together on hover.
 			opacity: 0.9;
 			transition: opacity m.$motion-instant m.$motion-ease;
@@ -263,13 +259,14 @@
 			line-height: 1.35;
 		}
 
-		img {
-			width: 1.15rem;
-			height: 1.15rem;
-			object-fit: contain;
-			flex-shrink: 0;
+		// The plate is on the image rather than the box, so it goes with the image when the image fails.
+		.crest {
+			--as-avatar-size: 1.15rem;
+			--as-avatar-border-radius: 3px;
+		}
+
+		.crest > img {
 			padding: 1px;
-			border-radius: 3px;
 			background: #e6edf3;
 		}
 	}

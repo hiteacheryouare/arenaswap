@@ -39,6 +39,7 @@ const TeamRow = ({ row, showRank, color }: rowProps) => {
 						abbreviation={row.name}
 						className='gd-standings-crest'
 						fallback='blank'
+						teamColor={color}
 						loading='lazy'
 					/>
 					<span className='gd-standings-name' style={ink ? { color: ink } : undefined}>{row.name}</span>

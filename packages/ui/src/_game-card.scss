@@ -1,4 +1,5 @@
 // Loaded after the theme, whose $warning and $score-loser-color it reads.
+@use 'sass:color';
 @use 'bootstrap' as bs;
 @use 'crest';
 @use 'motion' as m;
@@ -10,7 +11,7 @@
 	font-family: 'Geist', 'DM Sans', system-ui, sans-serif;
 	font-variant-numeric: tabular-nums;
 }
-@at-root {
+@layer custom {
 
 	@keyframes scoreSlideOut {
 		from { transform: translateY(0%); }
@@ -140,7 +141,7 @@
 	.delay-status-label {
 		font-size:      0.65rem;
 		letter-spacing: 0.08em;
-		color:          bs.shade-color(bs.$warning, 40%);
+		color:          color.mix(#000, bs.$warning, 40%);
 	}
 
 	.game-card-ps-bar-row {
@@ -193,8 +194,7 @@
 	}
 
 	.game-card-league-logo {
-		width: 14px;
-		height: 14px;
+		--as-avatar-size: 14px;
 	}
 
 	.game-postseason-label {
@@ -224,7 +224,7 @@
 
 	// Shade the warning yellow 60% toward black so it passes WCAG AA on the
 	// white card base. contrast-ratio() is Bootstrap's built-in WCAG checker.
-	$pre-game-time-color: bs.shade-color(bs.$warning, 60%);
+	$pre-game-time-color: color.mix(#000, bs.$warning, 60%);
 
 	.pre-game-start-time {
 		font-size: 0.7rem;
@@ -367,30 +367,30 @@
 	}
 
 	.team-crest {
-		width: 64px;
-		height: 64px;
+		--as-avatar-size: 64px;
 	}
 
 	// The card is the one white surface a crest sits on, so it takes the light-surface muted colour.
 	// The shared #8b949e only reaches 2.92:1 here, which was tolerable while the placeholder appeared
 	// on failure alone and is not now that it shows on every slow load.
+	.team-crest {
+		--as-avatar-bg: #f8f9fa;
+		--as-avatar-color: #495057;
+	}
+
 	.team-crest .crest-fallback {
-		background: #f8f9fa;
-		color: #495057;
 		font-size: 0.7rem;
 	}
 
 	// The walkthrough's mock scoreboards, which draw their own crests at two smaller sizes.
 	.team-crest-32 {
-		width: 32px;
-		height: 32px;
+		--as-avatar-size: 32px;
 	}
 
 	.team-crest-32 .crest-fallback { font-size: 0.62rem; }
 
 	.team-crest-28 {
-		width: 28px;
-		height: 28px;
+		--as-avatar-size: 28px;
 	}
 
 	.team-crest-28 .crest-fallback { font-size: 0.6rem; }
@@ -546,7 +546,7 @@
 		&:hover { opacity: 1; }
 		&:focus-visible {
 			opacity: 1;
-			outline: 1px solid var(--as-primary);
+			outline: 1px solid var(--as-primary-base);
 			outline-offset: 1px;
 			border-radius: 2px;
 		}
@@ -562,7 +562,7 @@
 
 	.game-card-tab-assign {
 		margin-top: 0.4rem;
-		.form-select {
+		.form-control {
 			background-color: #f8f9fa;
 			color:            #374151;
 			border-color:     #dee2e6;
@@ -674,9 +674,15 @@
 			opacity: 0.55;
 		}
 
+		// The same wash over a team colour as over the side's own paint, so the placeholder looks the
+		// same where the two match.
+		.team-crest {
+			--as-avatar-bg: transparent;
+			--as-avatar-color: currentColor;
+		}
+
 		.team-crest .crest-fallback {
-			background: rgba(255, 255, 255, 0.16);
-			color: inherit;
+			background-image: linear-gradient(rgba(255, 255, 255, 0.16) 0 0);
 		}
 
 		// The yellow shade and the DELAY label carry a delay here. Dimming the score as the plate card
@@ -701,8 +707,9 @@
 
 		.game-card-tab-assign { margin-top: 0; }
 
-		.game-card-tab-assign .form-select {
-			--as-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+		.game-card-tab-assign .form-control {
+			--as-control-select-bg-dark: var(--as-control-select-bg);
+			--as-control-select-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
 			background-color: rgba(255, 255, 255, 0.1);
 			color: #ffffff;
 			border-color: rgba(255, 255, 255, 0.18);
@@ -818,23 +825,20 @@
 	}
 
 	.ff-endzone-crest-art {
-		width: 9px;
-		height: 9px;
+		--as-avatar-size: 9px;
 	}
 
 	// Three quarters of the plate, which is what the widest mark in any league needs to land on it:
 	// measured over 264 crests, the furthest ink reaches 65% of the way to the corner of its own box,
 	// so anything above this plates Charlotte and the Royals by amputating them.
 	.ff-endzone-crest:not(.is-bare) .ff-endzone-crest-art {
-		width: 75%;
-		height: 75%;
+		--as-avatar-size: 75%;
 	}
 
 	// Bare is the common case: the crest draws in its own colours straight onto the paint, and only a
 	// crest that cannot be read there falls back to the tinted disc the class above describes.
 	.ff-endzone-crest.is-bare .ff-endzone-crest-art {
-		width: 11px;
-		height: 11px;
+		--as-avatar-size: 11px;
 	}
 
 	.ff-endzone-name {
@@ -888,15 +892,13 @@
 	}
 
 	.ff-logo-art {
-		width: 75%;
-		height: 75%;
+		--as-avatar-size: 75%;
 	}
 
 	// Bare is the common case and the one that should fill the stencil: there is no disc around it to
 	// keep clear of.
 	.ff-logo-shell.is-bare .ff-logo-art {
-		width: 100%;
-		height: 100%;
+		--as-avatar-size: 100%;
 	}
 
 	// Ground the offense has already covered on this drive, running back from the ball to where the

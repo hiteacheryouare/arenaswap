@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { BuiltInModeId } from '@arenaswap/core/types';
 import { i18n } from '#i18n';
 import { boostPresentation, modeSignalIds, penaltyPresentation, signalPresentation } from '@arenaswap/ui/src/components/scoringModeMeta';
+import FlowStepper from './flowStepper';
 import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepPowerScoreProps {
@@ -303,12 +304,12 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0, modeId 
 		if (subStep === 0) {
 			return (
 				<>
-					<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepPowerScore.introTitle')}</div>
-					<div className='text-body-secondary small text-center mb-3 lh-base'>
+					<div className='fw-bold fs-lg text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepPowerScore.introTitle')}</div>
+					<div className='fg-secondary small text-center mb-5 lh-md'>
 						{i18n.t('stepPowerScore.subtitle')}
 					</div>
 					{renderVisual()}
-					<p className='text-body-secondary small lh-base text-center mt-2 px-1'>
+					<p className='fg-secondary small lh-md text-center mt-3 px-1'>
 						{i18n.t('stepPowerScore.introBody')}
 					</p>
 				</>
@@ -320,8 +321,8 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0, modeId 
 			const activeDot = dots[subStep - 1]!;
 			return (
 				<>
-					<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepPowerScore.title')}</div>
-					<div className='text-body-secondary small text-center mb-3 lh-base'>
+					<div className='fw-bold fs-lg text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepPowerScore.title')}</div>
+					<div className='fg-secondary small text-center mb-5 lh-md'>
 						{i18n.t('stepPowerScore.subtitle')}
 					</div>
 					{renderVisual()}
@@ -341,16 +342,16 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0, modeId 
 		const activeBoost = boostPenaltyMeta[subStep - signalCount - 1]!;
 		return (
 			<>
-				<div className='fw-bold fs-5 text-center mb-1'>{i18n.t('stepPowerScore.boostsHeading')}</div>
-				<div className='text-body-secondary small text-center mb-3 lh-base'>
+				<div className='fw-bold fs-lg text-center mb-1'>{i18n.t('stepPowerScore.boostsHeading')}</div>
+				<div className='fg-secondary small text-center mb-5 lh-md'>
 					{i18n.t('stepPowerScore.boostsSubtitle')}
 				</div>
 				{renderVisual()}
-				<div className='text-center px-3 mt-2'>
+				<div className='text-center px-5 mt-3'>
 					<div className='fw-semibold small mb-1' style={{ color: activeBoost.color }}>
 						{i18n.t(activeBoost.labelKey)}
 					</div>
-					<p className='text-body-secondary small lh-base mb-0'>
+					<p className='fg-secondary small lh-md mb-0'>
 						{i18n.t(activeBoost.descriptionKey)}
 					</p>
 				</div>
@@ -360,9 +361,7 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0, modeId 
 
 	return (
 		<div className='popup-container d-flex flex-column' style={{ position: 'relative', overflow: 'hidden' }}>
-			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2 walkthrough-step-label'>
-				{i18n.t('stepPowerScore.step', [2, 8])}
-			</div>
+			<FlowStepper step={2} total={8} className='pt-5 pb-3' />
 
 			{renderContent()}
 
@@ -397,11 +396,11 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0, modeId 
 				})}
 			</ul>
 
-			<div className='d-flex gap-2 mt-auto walkthrough-step-actions'>
-				<button type='button' className='btn btn-secondary flex-grow-1' onClick={handleBack}>
+			<div className='d-flex gap-3 mt-auto walkthrough-step-actions'>
+				<button type='button' className='btn btn-solid theme-accent flex-grow-1' onClick={handleBack}>
 					<i className='bi bi-arrow-left' /> {i18n.t('stepPowerScore.back')}
 				</button>
-				<button type='button' className='btn btn-primary flex-grow-1' onClick={handleNext}>
+				<button type='button' className='btn btn-solid theme-primary flex-grow-1' onClick={handleNext}>
 					{subStep === 0 ? i18n.t('stepPowerScore.introButton') : i18n.t('stepPowerScore.next')} <i className='bi bi-arrow-right' />
 				</button>
 			</div>

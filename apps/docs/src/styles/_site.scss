@@ -7,7 +7,7 @@
 // coming later. Loaded first it would lose, and the page would stop widening on a large display.
 @use '@arenaswap/ui/src/bootstrap' as bs;
 @use '@arenaswap/ui/src/motion' as m;
-@at-root {
+@layer custom {
 
 	@font-face {
 		font-family: 'bootstrap-icons';
@@ -143,10 +143,6 @@
 	}
 
 	// ─── Site header / nav ────────────────────────────────────────────────────────
-	body.nav-open {
-		overflow: hidden;
-	}
-
 	.site-header {
 		position: fixed;
 		top: 0;
@@ -274,36 +270,47 @@
 		transition: transform m.$motion-base m.$motion-ease, opacity m.$motion-base m.$motion-ease;
 	}
 
-	.nav-hamburger.open {
+	.nav-hamburger[aria-expanded='true'] {
 		.ham-bar:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
 		.ham-bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
 		.ham-bar:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 	}
 
+	// Bootstrap's top drawer, pinned under the 64px bar rather than floating inset from the edges,
+	// and arriving with a short drop and a fade rather than sliding its whole height in.
 	.nav-drawer {
-		position: fixed;
-		top: 64px;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background: rgba(13, 17, 23, 0.98);
+		--as-drawer-zindex: 999;
+		--as-drawer-bg: rgba(13, 17, 23, 0.98);
+		--as-drawer-border-width: 0;
+		--as-drawer-border-radius: 0;
+		--as-drawer-box-shadow: none;
+		--as-drawer-padding-x: 1.25rem;
+		--as-drawer-padding-y: 1.5rem;
+		--as-drawer-transition-property: transform, opacity, visibility;
+
+		inset: 64px 0 0;
+		height: auto;
+		max-width: none;
+		max-height: none;
+		color: inherit;
 		backdrop-filter: blur(20px);
 		-webkit-backdrop-filter: blur(20px);
 		border-top: 1px solid var(--color-border);
-		padding: 1.5rem 1.25rem;
-		transform: translateY(-8px);
-		opacity: 0;
-		pointer-events: none;
-		visibility: hidden;
-		transition: transform m.$motion-base m.$motion-ease, opacity m.$motion-base m.$motion-ease, visibility m.$motion-base m.$motion-ease;
-		overflow-y: auto;
-		z-index: 999;
+		background-clip: border-box;
 
-		&.open {
-			transform: translateY(0);
-			opacity: 1;
-			pointer-events: auto;
-			visibility: visible;
+		&:not([open]) {
+			transform: translateY(-8px);
+			opacity: 0;
+		}
+
+		// The bar stays in sight above the menu, so nothing dims or blurs it.
+		&::backdrop {
+			background: transparent;
+			backdrop-filter: none;
+		}
+
+		.drawer-body {
+			gap: 0;
 		}
 
 		ul {
@@ -386,9 +393,20 @@
 		transform: translateY(1px);
 	}
 
-	// Bootstrap's own dropdown, themed through the variables above rather than re-specified here. The
-	// only thing left is the height, because twelve entries at 992px run past a laptop's fold.
+	// Bootstrap's own menu, on the site's surfaces and with v5's square full-width rows. The height is
+	// capped because twelve entries at 992px run past a laptop's fold.
 	.lang-switch-menu {
+		--as-menu-bg:                 var(--as-bg-1);
+		--as-menu-border-color:       var(--as-border-color);
+		--as-menu-border-radius:      var(--as-radius-5);
+		--as-menu-gap:                0;
+		--as-menu-padding-x:          0;
+		--as-menu-padding-y:          0.5rem;
+		--as-menu-item-padding-x:     1rem;
+		--as-menu-item-border-radius: 0;
+		--as-menu-item-color:         rgba(230, 237, 243, 0.82);
+		--as-menu-item-hover-color:   var(--as-fg-body);
+		--as-menu-item-hover-bg:      var(--as-bg-2);
 		max-height: min(70vh, 26rem);
 		overflow-y: auto;
 	}
@@ -461,7 +479,7 @@
 	}
 
 	// ─── Buttons ─────────────────────────────────────────────────────────────────
-	.btn-primary {
+	.btn-solid.theme-primary {
 		font-weight: 600;
 		letter-spacing: -0.01em;
 	}
@@ -478,7 +496,7 @@
 		--as-btn-active-color: #fff;
 		--as-btn-active-bg: #e05200;
 		--as-btn-active-border-color: transparent;
-		--as-btn-focus-shadow-rgb: 247, 92, 3;
+		--as-focus-ring-color: rgba(247, 92, 3, 0.5);
 		background: var(--color-primary);
 		color: #fff;
 		border: none;
@@ -512,7 +530,7 @@
 		--as-btn-active-color: var(--color-text);
 		--as-btn-active-bg: rgba(230, 237, 243, 0.06);
 		--as-btn-active-border-color: var(--color-text);
-		--as-btn-focus-shadow-rgb: 230, 237, 243;
+		--as-focus-ring-color: rgba(230, 237, 243, 0.5);
 		background: transparent;
 		color: var(--color-text);
 		border: 1px solid var(--color-border);
@@ -1205,8 +1223,7 @@
 	}
 
 	.mw-team .crest {
-		width: 52px;
-		height: 52px;
+		--as-avatar-size: 52px;
 	}
 
 	.mw-team .crest-fallback { font-size: 0.8rem; }

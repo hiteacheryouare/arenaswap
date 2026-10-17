@@ -11,6 +11,8 @@
 // orphans, which reads as a mistake rather than as a grid.
 
 import { leagueConfigs } from '@arenaswap/core/constants';
+import Crest from '@arenaswap/ui/src/components/crest';
+import CrestSettle from '../CrestSettle.astro';
 import { localePath } from '../../i18n/locales';
 import { currentLocale, useTranslations } from '../../i18n/ui';
 
@@ -23,52 +25,27 @@ const espnTeam = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.pn
 // footer. The rest are picked to read on a dark page as much as for being famous: the Cowboys' navy
 // star and the Yankees' navy monogram are both nearly invisible on #0d1117, so neither is here.
 const teams = [
-	{ name: 'Philadelphia Eagles', abbr: 'PHI', logo: espnTeam('nfl/500/phi') },
-	{ name: 'Philadelphia Phillies', abbr: 'PHI', logo: espnTeam('mlb/500/phi') },
-	{ name: 'Philadelphia Flyers', abbr: 'PHI', logo: espnTeam('nhl/500/phi') },
-	{ name: 'Philadelphia 76ers', abbr: 'PHI', logo: espnTeam('nba/500/phi') },
-	{ name: 'Boston Celtics', abbr: 'BOS', logo: espnTeam('nba/500/bos') },
-	{ name: 'Boston Red Sox', abbr: 'BOS', logo: espnTeam('mlb/500/bos') },
-	{ name: 'Kansas City Chiefs', abbr: 'KC', logo: espnTeam('nfl/500/kc') },
-	{ name: 'Los Angeles Lakers', abbr: 'LAL', logo: espnTeam('nba/500/lal') },
-	{ name: 'Arsenal', abbr: 'ARS', logo: espnTeam('soccer/500/359') },
-	{ name: 'Manchester City', abbr: 'MCI', logo: espnTeam('soccer/500/382') },
+	{ name: 'Philadelphia Eagles', abbr: 'PHI', logo: espnTeam('nfl/500/phi'), color: '#004C54' },
+	{ name: 'Philadelphia Phillies', abbr: 'PHI', logo: espnTeam('mlb/500/phi'), color: '#E81828' },
+	{ name: 'Philadelphia Flyers', abbr: 'PHI', logo: espnTeam('nhl/500/phi'), color: '#F74902' },
+	{ name: 'Philadelphia 76ers', abbr: 'PHI', logo: espnTeam('nba/500/phi'), color: '#006BB6' },
+	{ name: 'Boston Celtics', abbr: 'BOS', logo: espnTeam('nba/500/bos'), color: '#007A33' },
+	{ name: 'Boston Red Sox', abbr: 'BOS', logo: espnTeam('mlb/500/bos'), color: '#BD3039' },
+	{ name: 'Kansas City Chiefs', abbr: 'KC', logo: espnTeam('nfl/500/kc'), color: '#E31837' },
+	{ name: 'Los Angeles Lakers', abbr: 'LAL', logo: espnTeam('nba/500/lal'), color: '#552583' },
+	{ name: 'Arsenal', abbr: 'ARS', logo: espnTeam('soccer/500/359'), color: '#EF0107' },
+	{ name: 'Manchester City', abbr: 'MCI', logo: espnTeam('soccer/500/382'), color: '#6CABDD' },
 ];
 ---
 <a class='team-strip' href={`${localePath(locale)}#leagues`}>
 	<span class='team-strip-label'>{t('home.hero.teamStrip', { leagues: leagueConfigs.length })}</span>
-	<span class='team-strip-logos'>
+	<span class='team-strip-logos' data-crest-settle>
 		{teams.map(team => (
-			<span class='crest' data-crest-state='pending' role='img' aria-label={team.name} title={team.name}>
-				<span class='crest-fallback' aria-hidden='true'>{team.abbr}</span>
-				<img src={team.logo} alt='' loading='eager' />
-			</span>
+			<Crest logo={team.logo} abbreviation={team.abbr} label={team.name} title={team.name} teamColor={team.color} loading='eager' />
 		))}
 	</span>
 </a>
 
-<script>
-	// Static markup rather than an island: this row sits directly under the hero, which is already
-	// hydrating a React tree, and flipping one attribute on ten images is not worth a second.
-	// Same contract as the shared Crest component, so both drive the same stylesheet.
-	//
-	// The `complete` check is not padding — this is a deferred module, so a crest above the fold has
-	// usually fired `load` before it runs. And `complete` is true for a broken image too, which is
-	// what `naturalWidth` is deciding.
-	document.querySelectorAll<HTMLElement>('.team-strip-logos .crest').forEach(crest => {
-		const image = crest.querySelector('img');
-		if (!image) return;
-
-		const settle = (state: 'loaded' | 'failed') => { crest.dataset.crestState = state; };
-		if (image.complete) {
-			settle(image.naturalWidth > 0 ? 'loaded' : 'failed');
-			return;
-		}
-		image.addEventListener('load', () => settle('loaded'), { once: true });
-		image.addEventListener('error', () => settle('failed'), { once: true });
-	});
-</script>
-
-<!-- Without the script the row never leaves `pending`, and every placeholder would sit behind a
-     loaded crest, showing through the transparent parts of it. -->
-<noscript><style>.team-strip-logos .crest-fallback { display: none; }</style></noscript>
+<!-- Static markup rather than an island: this row sits directly under the hero, which is already
+     hydrating a React tree, and settling ten images is not worth a second. -->
+<CrestSettle />

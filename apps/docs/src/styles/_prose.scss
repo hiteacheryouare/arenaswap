@@ -1,23 +1,37 @@
-@at-root {
+@layer custom {
 	// Prose scope. Everything written as Markdown, release notes and documentation alike, renders inside
 	// `.prose`, so a body of text picks up the right measure and rhythm without every page setting
 	// them again. Scoped rather than global on purpose: the landing page's type is not this type.
+	//
+	// Bootstrap's own `.prose` is the base. What follows is only where the site's reading type differs
+	// from it.
 
 	.prose {
-		color: #a7b0ba;
-		font-size: 1rem;
-		line-height: 1.75;
+		--as-content-font-size: 1rem;
+		--as-content-line-height: 1.75;
+		--as-content-gap: 1.15rem;
+
+		// Bootstrap lays prose out as a flex column with a gap. Block flow is kept so margins still
+		// collapse: a heading opening the block spaces itself from whatever sits above the block.
+		display: block;
 		max-width: 68ch;
+		margin-inline: 0;
+		color: #a7b0ba;
 
 		> * + * {
-			margin-top: 1.15rem;
+			margin-top: var(--as-content-gap);
+		}
+
+		// Bootstrap zeroes these, which leaves the last paragraph flush against the table after it.
+		> :where(p, ul, ol, pre) {
+			margin-bottom: 1rem;
 		}
 
 		h2, h3, h4 {
 			color: var(--color-text);
 			letter-spacing: -0.03em;
 			line-height: 1.2;
-			margin-top: 2.4rem;
+			margin-block: 2.4rem 0;
 		}
 
 		h2 {
@@ -42,7 +56,7 @@
 
 		a {
 			color: var(--color-primary);
-			text-decoration: underline;
+			text-decoration-color: currentcolor;
 			text-underline-offset: 2px;
 		}
 
@@ -69,9 +83,8 @@
 		}
 
 		blockquote {
-			margin: 0;
-			padding-left: 1.1rem;
-			border-left: 2px solid var(--color-primary);
+			padding-inline-start: 1.1rem;
+			border-inline-start: 2px solid var(--color-primary);
 			color: var(--color-muted);
 		}
 
@@ -101,15 +114,13 @@
 		}
 
 		img {
-			max-width: 100%;
 			height: auto;
 			border-radius: 0.5rem;
 		}
 
 		hr {
-			border: 0;
-			border-top: 1px solid #21262d;
-			margin: 2.4rem 0;
+			border-block-start-color: #21262d;
+			margin-block: 2.4rem;
 		}
 
 		// Inside a table an identifier keeps its shape and the table scrolls, rather than every column
@@ -123,14 +134,13 @@
 		}
 
 		table {
-			width: 100%;
-			border-collapse: collapse;
 			font-size: 0.9rem;
 		}
 
 		th, td {
 			text-align: left;
 			padding: 0.5rem 0.75rem 0.5rem 0;
+			border: 0;
 			border-bottom: 1px solid #21262d;
 		}
 

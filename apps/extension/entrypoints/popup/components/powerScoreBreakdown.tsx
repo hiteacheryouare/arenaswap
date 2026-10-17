@@ -236,7 +236,7 @@ const PowerScoreBreakdown = ({
 									/>
 								</div>
 								{row.disabled
-									? <span className='powerscore-signal-value text-muted'>—</span>
+									? <span className='powerscore-signal-value fg-secondary'>—</span>
 									: <span className='powerscore-signal-value'>{row.points}<span className='powerscore-signal-max'>/{row.max}</span></span>
 								}
 							</div>

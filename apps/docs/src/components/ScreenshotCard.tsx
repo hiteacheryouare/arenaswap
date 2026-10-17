@@ -18,7 +18,7 @@ const ScreenshotCard = ({ game, excitementResult, tabLabel }: ScreenshotCardProp
 		bettingPrefs={{ bettingEnabled: false }}
 		tabSlot={tabLabel ? (
 			<div className='game-card-tab-assign'>
-				<select className='form-select form-select-sm' value={tabLabel} disabled aria-label={tabLabel} onChange={() => {}}>
+				<select className='form-control form-control-sm' value={tabLabel} disabled aria-label={tabLabel} onChange={() => {}}>
 					<option>{tabLabel}</option>
 				</select>
 			</div>

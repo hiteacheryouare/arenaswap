@@ -14,31 +14,32 @@ const mountPicker = (registry: { tabId: number; gameId: string }[] = []) => cy.m
 	</div>,
 );
 
-const menuItem = (label: string) => cy.contains('.dropdown-item', label);
+const menuItem = (label: string) => cy.contains('.menu-item', label);
 
 describe('tabAssignSelect favicons', () => {
 	it('shows each tab with the icon its browser tab shows, and a globe where there is none', () => {
 		mountPicker();
-		cy.get('.form-select').click();
+		cy.get('.form-control-caret').click();
 
-		menuItem('Celtics vs 76ers live').find('img.tab-favicon').should('have.attr', 'src', favicon);
-		menuItem('New Tab').find('i.tab-favicon.bi-globe2').should('be.visible');
+		menuItem('Celtics vs 76ers live').find('.tab-favicon.avatar img').should('have.attr', 'src', favicon);
+		menuItem('New Tab').find('.tab-favicon .bi-globe2').should('be.visible');
 		// The icon URL exists but will not load, which is what an internal page's chrome:// icon does.
-		menuItem('Settings').find('i.tab-favicon.bi-globe2').should('be.visible');
-		menuItem('Settings').find('img').should('not.exist');
+		menuItem('Settings').find('.tab-favicon').should('have.attr', 'data-crest-state', 'failed');
+		menuItem('Settings').find('.tab-favicon .bi-globe2').should('be.visible');
+		menuItem('Settings').find('.tab-favicon img').should('not.be.visible');
 	});
 
 	it('leaves the placeholder without an icon', () => {
 		mountPicker();
-		cy.get('.form-select').click();
-		cy.get('.dropdown-item').first().find('.tab-favicon').should('not.exist');
+		cy.get('.form-control-caret').click();
+		cy.get('.menu-item').first().find('.tab-favicon').should('not.exist');
 	});
 
 	it('puts the assigned tab\'s icon on the closed picker, beside its title', () => {
 		mountPicker([{ tabId: 11, gameId: 'g1' }]);
-		cy.get('.form-select img.tab-favicon').should(([element]: JQuery<HTMLElement>) => {
+		cy.get('.form-control-caret .tab-favicon img').should(([element]: JQuery<HTMLElement>) => {
 			const icon = element as HTMLImageElement;
-			const title = icon.closest('.form-select')!.querySelector('[id$="-value"]')!.getBoundingClientRect();
+			const title = icon.closest('.form-control-caret')!.querySelector('[id$="-value"]')!.getBoundingClientRect();
 			const box = icon.getBoundingClientRect();
 			expect(icon.complete && icon.naturalWidth).to.be.greaterThan(0);
 			expect(box.right).to.be.lessThan(title.left);
@@ -48,7 +49,7 @@ describe('tabAssignSelect favicons', () => {
 
 	it('dims the icon of a tab another game already holds', () => {
 		mountPicker([{ tabId: 11, gameId: 'g2' }]);
-		cy.get('.form-select').click();
-		menuItem('Celtics vs 76ers live').find('img.tab-favicon').should('have.css', 'opacity', '0.5');
+		cy.get('.form-control-caret').click();
+		menuItem('Celtics vs 76ers live').find('.tab-favicon img').should('have.css', 'opacity', '0.5');
 	});
 });

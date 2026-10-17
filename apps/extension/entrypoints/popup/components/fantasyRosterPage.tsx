@@ -77,23 +77,23 @@ interface pickRowProps {
 const PickRow = ({ shot, name, detail, error, state, disabled, onClick }: pickRowProps) => (
 	<button
 		type='button'
-		className='d-flex align-items-center justify-content-between gap-2 mt-1 py-1 team-pick-row fantasy-pick-row'
+		className='d-flex align-items-center justify-content-between gap-3 mt-1 py-1 team-pick-row fantasy-pick-row'
 		onClick={onClick}
 		disabled={disabled}
 		aria-busy={state === 'pending' ? 'true' : undefined}
 		aria-label={state === 'added' ? i18n.t('fantasy.removePlayer', { name }) : i18n.t('fantasy.addPlayer', { name })}
 	>
-		<span className='d-flex align-items-center gap-2 min-w-0'>
+		<span className='d-flex align-items-center gap-3 min-w-0'>
 			{shot}
 			<span className='d-block min-w-0'>
-				<span className='d-block fw-semibold text-body lh-sm small text-truncate'>{name}</span>
+				<span className='d-block fw-semibold fg-body lh-xs small text-truncate'>{name}</span>
 				{error
-					? <span className='d-block setting-explainer lh-sm text-danger'>{error}</span>
-					: detail && <span className='d-block setting-explainer lh-sm text-truncate'>{detail}</span>}
+					? <span className='d-block setting-explainer lh-xs fg-danger'>{error}</span>
+					: detail && <span className='d-block setting-explainer lh-xs text-truncate'>{detail}</span>}
 			</span>
 		</span>
 		{state === 'pending'
-			? <span className='spinner-border spinner-border-sm flex-shrink-0 fantasy-pick-spinner' aria-hidden='true' />
+			? <span className='spinner-border spinner-sm flex-shrink-0 fantasy-pick-spinner' aria-hidden='true' />
 			: <i className={`bi ${state === 'added' ? 'bi-check2' : 'bi-plus-lg'} flex-shrink-0 fantasy-pick-icon`} data-added={state === 'added'} aria-hidden='true' />}
 	</button>
 );
@@ -197,19 +197,19 @@ const fantasyRosterPage = ({ roster, onRosterChange, services = liveServices }: 
 
 	const searchResults = (
 		<>
-			{full && <div className='setting-explainer mt-1 mb-2'>{i18n.t('fantasy.rosterFull')}</div>}
+			{full && <div className='setting-explainer mt-1 mb-3'>{i18n.t('fantasy.rosterFull')}</div>}
 
 			{searching && (
-				<div className='d-flex align-items-center gap-2 mt-2 setting-explainer' role='status'>
-					<span className='spinner-border spinner-border-sm fantasy-pick-spinner' aria-hidden='true' />
+				<div className='d-flex align-items-center gap-3 mt-3 setting-explainer' role='status'>
+					<span className='spinner-border spinner-sm fantasy-pick-spinner' aria-hidden='true' />
 					{searchingMessage}
 				</div>
 			)}
 
 			{current?.failed && (
-				<div className='text-center mt-3'>
-					<div className='small text-danger mb-2'>{i18n.t('fantasy.searchError')}</div>
-					<button type='button' className='btn btn-sm btn-outline-secondary' onClick={() => {
+				<div className='text-center mt-5'>
+					<div className='small fg-danger mb-3'>{i18n.t('fantasy.searchError')}</div>
+					<button type='button' className='btn btn-sm btn-outline theme-accent' onClick={() => {
 						setOutcome(undefined);
 						setAttempt(previous => previous + 1);
 					}}>{i18n.t('teamPicker.retry')}</button>
@@ -218,7 +218,7 @@ const fantasyRosterPage = ({ roster, onRosterChange, services = liveServices }: 
 
 			{players.length > 0 && (
 				<div>
-					<div className='fw-bold popup-section-label mt-2'>{i18n.t('fantasy.playersHeading')}</div>
+					<div className='fw-bold popup-section-label mt-3'>{i18n.t('fantasy.playersHeading')}</div>
 					{players.map(result => {
 						const key = rosterKey(result);
 						const isPending = pending.has(key);
@@ -241,7 +241,7 @@ const fantasyRosterPage = ({ roster, onRosterChange, services = liveServices }: 
 
 			{defenses.length > 0 && (
 				<div>
-					<div className='fw-bold popup-section-label mt-2'>{i18n.t('fantasy.defensesHeading')}</div>
+					<div className='fw-bold popup-section-label mt-3'>{i18n.t('fantasy.defensesHeading')}</div>
 					{defenses.map(team => {
 						const key = rosterKey(defenseRosterEntry('nfl', team));
 						const isAdded = rostered.has(key);
@@ -261,27 +261,27 @@ const fantasyRosterPage = ({ roster, onRosterChange, services = liveServices }: 
 			)}
 
 			{current?.results && players.length === 0 && defenses.length === 0 && (
-				<div className='small text-body-secondary text-center mt-3'>{i18n.t('fantasy.noMatch', { query: query.trim() })}</div>
+				<div className='small fg-secondary text-center mt-5'>{i18n.t('fantasy.noMatch', { query: query.trim() })}</div>
 			)}
 		</>
 	);
 
 	const rosterList = roster.length === 0 ? (
-		<div className='setting-explainer mt-2'>{i18n.t('fantasy.rosterEmpty')}</div>
+		<div className='setting-explainer mt-3'>{i18n.t('fantasy.rosterEmpty')}</div>
 	) : (
 		groupRosterByLeague(roster).map(group => (
 			<div key={group.league}>
-				<div className='fw-bold popup-section-label mt-2'>{leagueLabels[group.league]}</div>
+				<div className='fw-bold popup-section-label mt-3'>{leagueLabels[group.league]}</div>
 				{group.entries.map(entry => {
 					const key = rosterKey(entry);
 					const team = teamById.get(`${entry.league}:${entry.teamId}`);
 					return (
-						<div key={key} className='d-flex align-items-center justify-content-between gap-2 mt-1 py-1 fantasy-roster-row'>
-							<span className='d-flex align-items-center gap-2 min-w-0'>
+						<div key={key} className='d-flex align-items-center justify-content-between gap-3 mt-1 py-1 fantasy-roster-row'>
+							<span className='d-flex align-items-center gap-3 min-w-0'>
 								{entry.position === 'DST' ? teamShot(team, entry.name) : playerShot(entry.name, rosterHeadshot(entry))}
 								<span className='d-block min-w-0'>
-									<span className='d-block fw-semibold text-body lh-sm small text-truncate'>{entry.name}</span>
-									<span className='d-block setting-explainer lh-sm text-truncate'>{joinDetail(positionLabel(entry.position), team?.name)}</span>
+									<span className='d-block fw-semibold fg-body lh-xs small text-truncate'>{entry.name}</span>
+									<span className='d-block setting-explainer lh-xs text-truncate'>{joinDetail(positionLabel(entry.position), team?.name)}</span>
 								</span>
 							</span>
 							<button
@@ -301,20 +301,23 @@ const fantasyRosterPage = ({ roster, onRosterChange, services = liveServices }: 
 
 	return (
 		<div className='d-flex flex-column min-h-0 flex-grow-1'>
-			<input
-				type='search'
-				id='fantasyPlayerSearch'
-				className='form-control form-control-sm mb-2'
-				placeholder={i18n.t('fantasy.searchPlaceholder')}
-				aria-label={i18n.t('fantasy.searchPlaceholder')}
-				value={query}
-				onChange={e => setQuery(e.target.value)}
-				autoComplete='off'
-			/>
+			<label className='form-control form-control-sm form-adorn mb-3'>
+				<span className='form-adorn-icon' aria-hidden='true'><i className='bi bi-search' /></span>
+				<input
+					type='search'
+					id='fantasyPlayerSearch'
+					className='form-ghost'
+					placeholder={i18n.t('fantasy.searchPlaceholder')}
+					aria-label={i18n.t('fantasy.searchPlaceholder')}
+					value={query}
+					onChange={e => setQuery(e.target.value)}
+					autoComplete='off'
+				/>
+			</label>
 
 			{!searchable && (
 				<div className='d-flex justify-content-between align-items-baseline'>
-					<span className='text-body-secondary setting-toggle-label'>{i18n.t('fantasy.rosterHeading')}</span>
+					<span className='fg-secondary setting-toggle-label'>{i18n.t('fantasy.rosterHeading')}</span>
 					<span id='fantasyRosterCount' className='fw-semibold setting-value-label'>
 						{i18n.t('fantasy.rosterCount', { count: roster.length, limit: fantasyRosterLimit })}
 					</span>

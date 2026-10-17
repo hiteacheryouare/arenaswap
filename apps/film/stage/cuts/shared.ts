@@ -22,7 +22,7 @@ export const liveDotOrigin: CardOrigin = { popup: 'main', selector: liveDotSelec
 // The tab suggestion banner, then its "Assign 5 tabs" button.
 export const mainPopupActions = (takeALookAt: number, assignAt: number): PopupAction[] => [
 	{ at: takeALookAt, kind: 'click', selector: '.popup-notice-action' },
-	{ at: assignAt, kind: 'click', selector: '.suggest-view .btn-primary, .btn-primary.w-100' },
+	{ at: assignAt, kind: 'click', selector: '.suggest-view .btn-solid.theme-primary, .btn-solid.theme-primary.w-100' },
 ];
 
 // Starring Kentucky, after which the scores the popup is fed are the ones its new favourite earns.

@@ -4,23 +4,26 @@
 
 // `@arenaswap/ui/src/bootstrap` is the theme and forwards Bootstrap itself, so there is no second
 // Bootstrap load to order these against.
-@use '@arenaswap/ui/src/bootstrap' with ($font-size-base: 0.9375rem);
+@use '@arenaswap/ui/src/bootstrap' with ($body-font-size: 0.9375rem);
 @use '@arenaswap/ui/src/game-card';
 @use '@arenaswap/ui/src/motion' as m;
 @use '@arenaswap/ui/src/fonts' with ($font-base-url: '/src/fonts');
-@at-root {
+// Under Bootstrap's components, so a class's own margin and padding still win over this.
+@layer reboot {
+	* {
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
+	}
+}
+
+@layer custom {
 
 	@font-face {
 		font-family: 'bootstrap-icons';
 		src: url('/src/fonts/bootstrap-icons.woff2') format('woff2'),
 		     url('/src/fonts/bootstrap-icons.woff') format('woff');
 		font-display: block;
-	}
-
-	* {
-		box-sizing: border-box;
-		margin: 0;
-		padding: 0;
 	}
 
 	html, body {

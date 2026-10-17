@@ -53,7 +53,7 @@ const currentFor = (path: string) => {
 				<div class="nav-end">
 					<LanguageSwitcher localized={localized} />
 					<InstallCta class="nav-cta-desktop" />
-					<button class="nav-hamburger" id="nav-toggle" aria-label={t('nav.openMenu')} aria-controls="nav-drawer" aria-expanded="false">
+					<button type="button" class="nav-hamburger" id="nav-toggle" aria-label={t('nav.openMenu')} aria-controls="nav-drawer" aria-expanded="false" data-bs-toggle="drawer" data-bs-target="#nav-drawer">
 						<span class="ham-bar"></span>
 						<span class="ham-bar"></span>
 						<span class="ham-bar"></span>
@@ -64,46 +64,38 @@ const currentFor = (path: string) => {
 		</div>
 	</nav>
 
-	<div class="nav-drawer" id="nav-drawer" aria-hidden="true">
-		<ul>
-			{[...links, legal].map(link => <li><a href={localePath(locale, link.path)} aria-current={currentFor(link.path)}>{link.label}</a></li>)}
-		</ul>
-		<div class="nav-drawer-cta">
-			<InstallCta class="d-block text-center" />
+	{/* Modal, so the page behind goes inert and Tab stays in the menu. It hangs below the bar, and
+	    the bar's X is really the transparent backdrop: a click there is what closes it. */}
+	<dialog class="drawer drawer-top nav-drawer" id="nav-drawer" aria-label={t('nav.menu')}>
+		<div class="drawer-body">
+			<ul>
+				{[...links, legal].map(link => <li><a href={localePath(locale, link.path)} aria-current={currentFor(link.path)}>{link.label}</a></li>)}
+			</ul>
+			<div class="nav-drawer-cta">
+				<InstallCta class="d-block text-center" />
+			</div>
+			<LanguageSwitcher variant='list' localized={localized} />
 		</div>
-		<LanguageSwitcher variant='list' localized={localized} />
-	</div>
+	</dialog>
 </header>
 
 <script>
+// The same module the layout loads, so this is the one Drawer the data API registered, not a copy.
+import { Drawer } from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import driveWordmarkCollapse from '@arenaswap/ui/src/components/wordmarkCollapse';
 
 const toggle = document.getElementById('nav-toggle');
 const drawer = document.getElementById('nav-drawer');
 const header = document.getElementById('site-header');
 
-const isOpen = () => toggle?.getAttribute('aria-expanded') === 'true';
+// Bootstrap's Drawer opens, closes on Escape and hands focus back to the button, but leaves the
+// button's own state alone.
+drawer?.addEventListener('show.bs.drawer', () => toggle?.setAttribute('aria-expanded', 'true'));
+drawer?.addEventListener('hide.bs.drawer', () => toggle?.setAttribute('aria-expanded', 'false'));
 
-const setOpen = (open: boolean) => {
-	toggle?.setAttribute('aria-expanded', String(open));
-	toggle?.classList.toggle('open', open);
-	drawer?.classList.toggle('open', open);
-	drawer?.setAttribute('aria-hidden', String(!open));
-	document.body.classList.toggle('nav-open', open);
-};
-
-toggle?.addEventListener('click', () => setOpen(!isOpen()));
-
+// Closed on the way out, so going Back to this page from the cache does not find the menu open.
 drawer?.querySelectorAll('a').forEach(a => {
-	a.addEventListener('click', () => setOpen(false));
-});
-
-// Escape closes the drawer and hands focus back to the button that opened it, rather than leaving
-// it on a link that is about to disappear.
-document.addEventListener('keydown', event => {
-	if (event.key !== 'Escape' || !isOpen()) return;
-	setOpen(false);
-	toggle?.focus();
+	a.addEventListener('click', () => Drawer.getOrCreateInstance(drawer).hide());
 });
 
 // The bar keeps its 64px — the drawer hangs off that height and the hero measures against it — so

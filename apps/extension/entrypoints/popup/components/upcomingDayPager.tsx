@@ -18,7 +18,7 @@ const upcomingDayPager = ({ dayLabel, index, total, onSelect }: upcomingDayPager
 	const atLast = index >= total - 1;
 	return (
 		<nav aria-label={i18n.t('main.upcomingDayNavLabel')} data-testid='upcoming-day-pager'>
-			<ul className='pagination pagination-sm w-100 my-2'>
+			<ul className='pagination pagination-sm w-100 my-3'>
 				<li className={`page-item flex-grow-1${atFirst ? ' disabled' : ''}`}>
 					<button
 						type='button'

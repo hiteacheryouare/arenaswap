@@ -13,7 +13,7 @@ const locale = currentLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 ---
 {locale !== defaultLocale && (
-	<aside class='alert alert-secondary untranslated-notice' role='note'>
+	<aside class='alert theme-accent untranslated-notice' role='note'>
 		<p class='alert-heading untranslated-notice-heading'>{t('nav.untranslatedHeading')}</p>
 		<p class='untranslated-notice-body'>{t('nav.untranslatedBody')}</p>
 	</aside>

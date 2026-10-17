@@ -1,4 +1,4 @@
-import { Dropdown } from 'bootstrap';
+import { Menu } from 'bootstrap';
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 
 export interface selectDropdownOption<T extends string> {
@@ -22,8 +22,9 @@ interface selectDropdownProps<T extends string> {
 	ariaLabel?: string;
 }
 
-// Bootstrap's Dropdown dressed as a .form-select, so it sits among the popup's other controls with
-// the same chevron and size while its items can carry an icon, a tick and a disabled state.
+// Bootstrap's Menu opened off a form control with the select caret, so it sits among the popup's other
+// controls with the same chevron and size while its items can carry an icon, a tick and a disabled
+// state.
 const selectDropdown = <T extends string>({ value, options, onChange, id, disabled = false, labelId, ariaLabel }: selectDropdownProps<T>) => {
 	const toggleRef = useRef<HTMLButtonElement>(null);
 	const ownId = useId();
@@ -34,46 +35,45 @@ const selectDropdown = <T extends string>({ value, options, onChange, id, disabl
 
 	useEffect(() => {
 		if (!toggleRef.current) return;
-		const dropdown = Dropdown.getOrCreateInstance(toggleRef.current);
-		return () => dropdown.dispose();
+		const menu = Menu.getOrCreateInstance(toggleRef.current);
+		return () => menu.dispose();
 	}, []);
 
 	return (
-		<div className='dropdown'>
+		<div className='position-relative'>
 			<button
 				ref={toggleRef}
 				id={id}
 				type='button'
-				className='form-select form-select-sm text-start text-truncate'
-				data-bs-toggle='dropdown'
+				className='form-control form-control-sm form-control-caret text-start text-truncate'
+				data-bs-toggle='menu'
 				aria-expanded='false'
 				aria-labelledby={nameIds}
 				disabled={disabled}
 			>
 				{!labelId && ariaLabel && <span id={hiddenLabelId} className='visually-hidden'>{ariaLabel}</span>}
-				{current?.image && <span className='me-2'>{current.image}</span>}
-				{current?.icon && <i className={`bi ${current.icon} me-2`} aria-hidden='true' />}
+				{current?.image && <span className='me-3'>{current.image}</span>}
+				{current?.icon && <i className={`bi ${current.icon} me-3`} aria-hidden='true' />}
 				<span id={valueId}>{current?.label}</span>
 			</button>
-			<ul className='dropdown-menu w-100 select-dropdown-menu'>
+			<div className='menu w-100 select-dropdown-menu'>
 				{options.map(option => (
-					<li key={option.value}>
-						<button
-							type='button'
-							className={`dropdown-item d-flex align-items-center gap-2${option.disabled ? ' disabled' : ''}`}
-							aria-current={option.value === value ? 'true' : undefined}
-							aria-disabled={option.disabled ? 'true' : undefined}
-							disabled={option.disabled}
-							onClick={() => onChange(option.value)}
-						>
-							{option.image}
-							{option.icon && <i className={`bi ${option.icon}`} aria-hidden='true' />}
-							<span className='flex-grow-1 text-truncate'>{option.label}</span>
-							{option.value === value && <i className='bi bi-check2 select-dropdown-check' aria-hidden='true' />}
-						</button>
-					</li>
+					<button
+						key={option.value}
+						type='button'
+						className={`menu-item${option.value === value ? ' selected' : ''}${option.disabled ? ' disabled' : ''}`}
+						aria-current={option.value === value ? 'true' : undefined}
+						aria-disabled={option.disabled ? 'true' : undefined}
+						disabled={option.disabled}
+						onClick={() => onChange(option.value)}
+					>
+						{option.image}
+						{option.icon && <i className={`bi ${option.icon}`} aria-hidden='true' />}
+						<span className='flex-grow-1 text-truncate'>{option.label}</span>
+						{option.value === value && <i className='bi bi-check2 menu-item-check' aria-hidden='true' />}
+					</button>
 				))}
-			</ul>
+			</div>
 		</div>
 	);
 };

@@ -2,7 +2,7 @@
 // after `game-card`.
 @use 'bootstrap' as bs;
 @use 'motion' as m;
-@at-root {
+@layer custom {
 	//
 	// These rules used to live only in `apps/extension/assets/bootstrap.scss`, which meant the
 	// website's popup mockups were a hand-copied approximation that drifted every time the popup
@@ -47,7 +47,7 @@
 		font-size: 1.2rem;
 		font-weight: 700;
 		letter-spacing: -0.01em;
-		color: var(--as-body-color);
+		color: var(--as-fg-body);
 		margin-bottom: 0.5rem;
 		margin-top: 1rem;
 		padding-left: 0.6rem;
@@ -60,7 +60,7 @@
 		gap: 0.45rem;
 		font-size: 0.75rem;
 		letter-spacing: 0.03em;
-		color: var(--as-secondary-color);
+		color: var(--as-fg-3);
 		margin-top: 0.5rem;
 		margin-bottom: 0.5rem;
 		padding-bottom: 0.35rem;
@@ -68,8 +68,7 @@
 	}
 
 	.popup-league-logo {
-		width: 20px;
-		height: 20px;
+		--as-avatar-size: 20px;
 	}
 
 	// `--collapse` is written on `.popup-header` every frame by `usePopupHeaderCollapse`, already
@@ -106,8 +105,8 @@
 		// the first pixel of scroll, which is 40px and 450ms before the collapse has finished bringing
 		// one up. Cards pass directly under this at 320px wide and anything the eye can see through
 		// reads as a smudge over them rather than as a surface they go behind.
-		background-color: rgba(var(--as-body-bg-rgb), var(--lifted, 0));
-		border-bottom: 1px solid rgba(var(--as-border-color-rgb), var(--lifted, 0));
+		background-color: color-mix(in srgb, var(--as-bg-body) calc(var(--lifted, 0) * 100%), transparent);
+		border-bottom: 1px solid color-mix(in srgb, var(--as-border-color) calc(var(--lifted, 0) * 100%), transparent);
 	}
 
 	.popup-container {
@@ -116,8 +115,8 @@
 		width: 320px;
 		height: 560px;
 		padding: 0.75rem;
-		background: var(--as-body-bg);
-		color: var(--as-body-color);
+		background: var(--as-bg-body);
+		color: var(--as-fg-body);
 		overflow-y: auto;
 	}
 
@@ -155,7 +154,7 @@
 	}
 
 	.popup-settings-button {
-		color: var(--as-secondary-color);
+		color: var(--as-fg-3);
 		background: none;
 		border: none;
 		line-height: 1;
@@ -192,7 +191,7 @@
 	.game-detail-chart-title {
 		font-size: 0.62rem;
 		font-weight: 700;
-		color: var(--as-body-color);
+		color: var(--as-fg-body);
 		margin-bottom: 0.18rem;
 	}
 
@@ -218,12 +217,43 @@
 		height: 0.46rem;
 		border-radius: 999px;
 		flex-shrink: 0;
-		box-shadow: 0 0 0 1px rgba(var(--as-overlay-rgb), 0.25);
+		box-shadow: 0 0 0 1px color-mix(in srgb, var(--as-overlay) 25%, transparent);
 	}
 
 	.game-detail-chart-canvas {
 		width: 100%;
 		height: 176px;
+	}
+
+	// The switch and check tokens in the theme carry v5's sizes and colours; these are the parts of
+	// v5's look v6 hardcodes instead. v6 never reads --as-switch-checked-indicator-bg, so the knob
+	// stayed the unchecked dot on orange.
+	.switch {
+		box-shadow: none;
+
+		&::before {
+			box-shadow: none;
+		}
+
+		&:has(input:checked) {
+			--as-switch-indicator-bg: var(--as-switch-checked-indicator-bg);
+		}
+
+		&:has(input:disabled) {
+			opacity: 0.5;
+
+			&::before {
+				opacity: 1;
+			}
+		}
+	}
+
+	.check {
+		border-radius: 0.25em;
+
+		&::before {
+			background-color: var(--as-white);
+		}
 	}
 
 	@include m.reduced-motion {

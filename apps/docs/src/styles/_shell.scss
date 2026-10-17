@@ -2,7 +2,7 @@
 // FAQ, credits. Only the homepage carries the visual idea; these pages carry text, and the job
 // here is a comfortable measure and a side-nav that stays out of the way.
 @use '@arenaswap/ui/src/motion' as m;
-@at-root {
+@layer custom {
 
 	// For dates, outlines and other small secondary text. #6e7681 sat at 4.1:1 on the page, just under
 	// the 4.5:1 small text needs; this clears it at 5.1:1 and still reads a step quieter than muted.
@@ -645,54 +645,42 @@
 	}
 
 	// ─── FAQ ─────────────────────────────────────────────────────────────────────
+	// Bootstrap's accordion on native <details>, flattened to the site's ruled list: no fill, no
+	// side borders or radius, and the open question keeps its plain heading colour.
 	.faq-list {
 		margin-top: 0.5rem;
 		// Without the side nav the list would run the width of the container, leaving each rule about
 		// twice as long as the answer it sits under.
 		max-width: 76ch;
+
+		--as-accordion-padding-x: 0;
+		--as-accordion-padding-y: 1rem;
+		--as-accordion-body-padding-y: 0;
+		--as-accordion-bg: transparent;
+		--as-accordion-btn-bg: transparent;
+		--as-accordion-active-bg: transparent;
+		--as-accordion-border-color: #21262d;
+		--as-accordion-border-radius: 0;
+		--as-accordion-btn-icon-transition: transform #{m.$motion-quick} #{m.$motion-ease};
 	}
 
-	// Native disclosure widgets. The marker is replaced with a caret that rotates, which is the one
-	// piece of motion here; everything else about a <details> already works.
-
 	.faq-item {
-		border-top: 1px solid #21262d;
-
-		&:last-of-type {
-			border-bottom: 1px solid #21262d;
-		}
+		border-inline: 0;
 
 		> summary {
-			display: flex;
 			align-items: baseline;
 			gap: 0.75rem;
-			padding: 1rem 0;
 			font-size: 1rem;
 			font-weight: 600;
 			letter-spacing: -0.015em;
 			color: var(--color-text);
-			cursor: pointer;
-			list-style: none;
-
-			&::-webkit-details-marker {
-				display: none;
-			}
-
-			&::after {
-				content: '';
-				margin-left: auto;
-				flex-shrink: 0;
-				width: 0.5rem;
-				height: 0.5rem;
-				border-right: 1.5px solid var(--color-primary);
-				border-bottom: 1.5px solid var(--color-primary);
-				transform: rotate(45deg) translateY(-0.15rem);
-				transition: transform m.$motion-quick m.$motion-ease;
-			}
+			box-shadow: none;
 		}
 
-		&[open] > summary::after {
-			transform: rotate(-135deg) translateY(-0.15rem);
+		// Sits where the old border-drawn caret did, which hung a few pixels past the text's right edge.
+		.accordion-icon {
+			translate: 0.35rem 0.33rem;
+			color: var(--color-primary);
 		}
 
 		> p {
@@ -704,8 +692,10 @@
 		}
 	}
 
-	@include m.reduced-motion {
-		.faq-item > summary::after {
+	// Without `interpolate-size` the answer can only jump open, and the accordion's discrete
+	// transition would hold that jump back by half its duration.
+	@supports not (interpolate-size: allow-keywords) {
+		.faq-item::details-content {
 			transition: none;
 		}
 	}

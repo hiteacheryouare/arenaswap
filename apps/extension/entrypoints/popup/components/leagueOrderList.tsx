@@ -65,7 +65,7 @@ const LeagueOrderList = ({ order, leagueLogos, disabled, onReorder, onReset }: l
 	};
 
 	return (
-		<div className='league-order-list mb-3'>
+		<div className='league-order-list mb-5'>
 			{order.map((leagueId, index) => {
 				const league = leagueConfigMap[leagueId];
 				if (!league) return null;
@@ -101,7 +101,7 @@ const LeagueOrderList = ({ order, leagueLogos, disabled, onReorder, onReset }: l
 					>
 						<i className='bi bi-grip-vertical league-order-handle' aria-hidden='true' title={i18n.t('setup.leagueDragHandle')} />
 						<LeagueLogo league={league} logos={leagueLogos} />
-						<span className='league-order-label fw-semibold text-body'>{league.label}</span>
+						<span className='league-order-label fw-semibold fg-body'>{league.label}</span>
 						<button
 							type='button'
 							id={`league-order-up-${leagueId}`}

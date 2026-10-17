@@ -276,6 +276,24 @@ describe('the guide page', () => {
 		cy.get('.guide-drawer').contains('Philadelphia Eagles').should('exist');
 	});
 
+	// Non-modal on purpose: the grid beside it stays live, so it must not trap focus or go inert.
+	it('opens the drawer as a dialog named for its game, with focus moved inside', () => {
+		mountGuide();
+		openFirstGame();
+		cy.get('dialog.guide-drawer').should('have.attr', 'open');
+		cy.get('dialog.guide-drawer').should('have.attr', 'aria-label', 'Dallas Cowboys @ Philadelphia Eagles');
+		cy.get('dialog.guide-drawer').should(([drawer]: JQuery<HTMLElement>) => expect(drawer.matches(':modal')).to.equal(false));
+		cy.focused().should('have.class', 'game-detail-back-button');
+	});
+
+	it('hands focus back to the game it was opened from', () => {
+		mountGuide();
+		openFirstGame();
+		cy.get('.guide-drawer .game-detail-back-button').click();
+		cy.get('.guide-drawer').should('not.exist');
+		cy.focused().should('have.class', 'guide-bar');
+	});
+
 	// Two beats, and the pair is the point: with motion on the panel has to stay mounted long
 	// enough to animate out, so a spec that only waited for it to disappear could not tell the
 	// animated path from the reduced-motion one below.

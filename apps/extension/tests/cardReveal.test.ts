@@ -525,14 +525,14 @@ describe('the figures the stylesheet repeats by hand', () => {
 		const total = revealOpenBeatMs + revealNameBeatMs + 1050;
 		const posterStartsAt = Math.round(((revealOpenBeatMs + revealNameBeatMs) / total) * 100);
 
-		const collapsed = /@keyframes cardRevealOpeningName \{[\s\S]*?\n\t(\d+)%, 100% \{ opacity: 0;/.exec(stylesheet);
+		const collapsed = /@keyframes cardRevealOpeningName \{[\s\S]*?\n\t+(\d+)%, 100% \{ opacity: 0;/.exec(stylesheet);
 		expect(Number(collapsed![1])).toBe(posterStartsAt);
 
 		// And the scene before it is over before the naming lands: the crests have cleared the field
 		// and the bands have closed on the centre line, both of them well inside the poster's start.
-		const crestGone = /@keyframes cardRevealOpeningCrest \{[\s\S]*?\n\t(\d+)%\s+\{ opacity: 0;/.exec(stylesheet);
-		const bandShut = /@keyframes cardRevealOpeningBand \{[\s\S]*?\n\t(\d+)%, 100% \{ clip-path: inset\(0\)/.exec(stylesheet);
-		const nameLanded = /@keyframes cardRevealOpeningName \{[\s\S]*?\n\t(\d+)%, \d+%\s+\{ opacity: 0\.9;/.exec(stylesheet);
+		const crestGone = /@keyframes cardRevealOpeningCrest \{[\s\S]*?\n\t+(\d+)%\s+\{ opacity: 0;/.exec(stylesheet);
+		const bandShut = /@keyframes cardRevealOpeningBand \{[\s\S]*?\n\t+(\d+)%, 100% \{ clip-path: inset\(0\)/.exec(stylesheet);
+		const nameLanded = /@keyframes cardRevealOpeningName \{[\s\S]*?\n\t+(\d+)%, \d+%\s+\{ opacity: 0\.9;/.exec(stylesheet);
 		expect(Number(crestGone![1])).toBeLessThan(Number(bandShut![1]));
 		expect(Number(bandShut![1])).toBeLessThanOrEqual(Number(nameLanded![1]));
 		expect(Number(nameLanded![1])).toBeLessThan(posterStartsAt);
@@ -544,8 +544,8 @@ describe('the figures the stylesheet repeats by hand', () => {
 	// actually plays, because that is the quantity a person experiences.
 	it('holds the naming still for long enough to read two clubs', () => {
 		const total = revealOpenBeatMs + revealNameBeatMs + 1050;
-		const landed = Number(/@keyframes cardRevealOpeningName \{[\s\S]*?\n\t(\d+)%, \d+%\s+\{ opacity: 0\.9;/.exec(stylesheet)![1]);
-		const leaves = Number(/@keyframes cardRevealOpeningName \{[\s\S]*?\n\t\d+%, (\d+)%\s+\{ opacity: 0\.9;/.exec(stylesheet)![1]);
+		const landed = Number(/@keyframes cardRevealOpeningName \{[\s\S]*?\n\t+(\d+)%, \d+%\s+\{ opacity: 0\.9;/.exec(stylesheet)![1]);
+		const leaves = Number(/@keyframes cardRevealOpeningName \{[\s\S]*?\n\t+\d+%, (\d+)%\s+\{ opacity: 0\.9;/.exec(stylesheet)![1]);
 		const heldMs = ((leaves - landed) / 100) * total * revealFullRate;
 		expect(heldMs).toBeGreaterThanOrEqual(1000);
 	});

@@ -1,5 +1,5 @@
 @use '@arenaswap/ui/src/motion' as m;
-@at-root {
+@layer custom {
 
 	// A college league's label on the Leagues page doubles as the way into its picker. The chevron sits
 	// at the end of the summary line only, so the name and the offseason line keep the tile's full width.
@@ -13,7 +13,7 @@
 		color:           inherit;
 		text-align:      start;
 
-		&:hover .college-league-chevron { color: var(--as-body-color); }
+		&:hover .college-league-chevron { color: var(--as-fg-body); }
 	}
 
 	.college-league-summary {
@@ -36,7 +36,7 @@
 		transition: opacity m.$motion-quick m.$motion-ease;
 
 		// Bootstrap fades a disabled switch as well, which on top of the tile would all but hide it.
-		.form-check-input:disabled { opacity: 1; }
+		.switch { opacity: 1; }
 	}
 
 	.college-filter-icon {
@@ -45,7 +45,7 @@
 		justify-content: center;
 		flex-shrink:     0;
 		background:      var(--as-border-color);
-		color:           var(--as-body-color);
+		color:           var(--as-fg-body);
 		font-size:       1.05rem;
 	}
 
@@ -63,19 +63,17 @@
 	}
 
 	.college-crest {
-		width:  36px;
-		height: 36px;
+		--as-avatar-size:  36px;
+		--as-avatar-bg:    var(--as-border-color);
+		--as-avatar-color: var(--as-fg-body);
 	}
 
 	.college-crest-disc:not(.is-bare) .college-crest {
-		width:  27px;
-		height: 27px;
+		--as-avatar-size: 27px;
 	}
 
 	.college-crest .crest-fallback {
 		border-radius:  0.3rem;
-		background:     var(--as-border-color);
-		color:          var(--as-body-color);
 		font-size:      0.5rem;
 		letter-spacing: 0.04em;
 	}

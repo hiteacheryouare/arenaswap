@@ -16,11 +16,11 @@ Cypress.Commands.add('setInputValue', { prevSubject: 'element' }, (subject: JQue
 	return cy.wrap(subject, { log: false });
 });
 
-// The popup's pickers are Bootstrap dropdowns (selectDropdown.tsx), so choosing is two clicks on
+// The popup's pickers are Bootstrap menus (selectDropdown.tsx), so choosing is two clicks on
 // what a person would see rather than one .select() on an element that no longer exists.
 Cypress.Commands.add('choose', { prevSubject: 'element' }, (toggle: JQuery<HTMLElement>, label: string) => {
 	cy.wrap(toggle, { log: false }).click();
-	cy.wrap(toggle, { log: false }).parent().find('.dropdown-menu.show').contains('.dropdown-item', label).click();
+	cy.wrap(toggle, { log: false }).parent().find('.menu.show').contains('.menu-item', label).click();
 	return cy.wrap(toggle, { log: false });
 });
 

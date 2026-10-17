@@ -34,9 +34,10 @@ const periodHeading = (label: PeriodLabel): string => {
 
 // A crest beside the abbreviation in the team's own ink, which is how the pre-game leader rows and
 // the line score both say which team a row belongs to.
-const TeamIdentity = ({ abbreviation, ink, logo }: {
+const TeamIdentity = ({ abbreviation, ink, color, logo }: {
 	abbreviation: string;
 	ink: string;
+	color: string;
 	logo?: string;
 }) => (
 	<span className='gd-box-line-id'>
@@ -45,6 +46,7 @@ const TeamIdentity = ({ abbreviation, ink, logo }: {
 			abbreviation={abbreviation}
 			className='gd-box-line-crest'
 			fallback='blank'
+			teamColor={color}
 			loading='lazy'
 		/>
 		<span className='gd-box-line-abbr' style={{ color: ink }}>{abbreviation}</span>
@@ -70,7 +72,7 @@ const LineRow = ({ row, periodCount, showHitsErrors, color, ink, logo }: {
 }) => (
 	<tr style={{ backgroundImage: teamRowWash(color) }}>
 		<th scope='row' className='gd-box-line-team'>
-			<TeamIdentity abbreviation={row.abbreviation} ink={ink} logo={logo} />
+			<TeamIdentity abbreviation={row.abbreviation} ink={ink} color={color} logo={logo} />
 		</th>
 		{Array.from({ length: periodCount }, (_, index) => (
 			<td key={index}>{row.periods[index]}</td>
@@ -207,6 +209,7 @@ const boxScore = ({ game, boxScore: box }: boxScoreProps) => {
 	const active = teams[activeSide];
 	const activeTeam = activeSide === 'away' ? game.awayTeam : game.homeTeam;
 	const activeInk = activeSide === 'away' ? awayInk : homeInk;
+	const activeColor = activeSide === 'away' ? awayColor : homeColor;
 	const sections = active ? buildSections(game.sportType, active) : [];
 	const hasBothSides = box.away !== null && box.home !== null;
 
@@ -322,6 +325,7 @@ const boxScore = ({ game, boxScore: box }: boxScoreProps) => {
 						<ul className='nav nav-tabs gd-box-tabs' role='tablist'>
 							{sides.map(which => {
 								const team = which === 'away' ? game.awayTeam : game.homeTeam;
+								const color = which === 'away' ? awayColor : homeColor;
 								return (
 									<li className='nav-item' role='presentation' key={which}>
 										<button
@@ -343,6 +347,7 @@ const boxScore = ({ game, boxScore: box }: boxScoreProps) => {
 												abbreviation={team.abbreviation}
 												className='gd-box-tab-crest'
 												fallback='blank'
+												teamColor={color}
 												loading='lazy'
 											/>
 											{team.abbreviation}
@@ -358,6 +363,7 @@ const boxScore = ({ game, boxScore: box }: boxScoreProps) => {
 							<TeamIdentity
 								abbreviation={activeTeam.abbreviation}
 								ink={activeInk}
+								color={activeColor}
 								logo={activeTeam.logo}
 							/>
 						</div>

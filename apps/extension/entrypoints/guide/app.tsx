@@ -2,7 +2,8 @@ import { i18n } from '#i18n';
 import { createDefaultUserPreferences, createFavoriteTeamKey, isFavoriteTeamGame, normalizeUserPreferences } from '@arenaswap/core/constants';
 import type { BackgroundState, Game, GuideSlate, LeagueId, LeagueLogoMap, PowerScoreSnapshot, ScoreSnapshot, TeamMonoLogoMap, UserPreferences } from '@arenaswap/core/types';
 import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import ToggleSwitch from '@arenaswap/ui/src/components/toggleSwitch';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { browser } from 'wxt/browser';
 import { resolveDecorationDate } from '../../utils/holidayDecorations';
 import GameDetailView from '../popup/components/gameDetailView';
@@ -57,6 +58,7 @@ const App = () => {
 	// day list is rebuilt on every poll, so an index would silently land on a different date.
 	const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
 	const [closingDrawer, setClosingDrawer] = useState(false);
+	const drawerRef = useRef<HTMLDialogElement | null>(null);
 	const [now, setNow] = useState(() => Date.now());
 	const scrollerRef = useRef<HTMLDivElement | null>(null);
 	const hasScrolledToNow = useRef(false);
@@ -157,19 +159,27 @@ const App = () => {
 		setSelectedGameId(gameId);
 	};
 
+	// `close()` before the unmount, because that is what hands focus back to the bar that opened it.
+	const finishClosingDrawer = () => {
+		drawerRef.current?.close();
+		setClosingDrawer(false);
+		setSelectedGameId(null);
+	};
+
 	// Kept mounted through the exit animation, then dropped on animationend. Under reduced motion the
 	// animation is off entirely, so there is no animationend to wait for and the panel closes at once
 	// — checking the query here rather than trusting the event is what stops it sticking open.
 	const closeDrawer = () => {
 		if (prefersReducedMotion()) {
-			setSelectedGameId(null);
+			finishClosingDrawer();
 			return;
 		}
 		setClosingDrawer(true);
 	};
 
 	// Escape closes the drawer, which is what every panel over a page does and the only way back out
-	// without reaching for the mouse. Unkeyed on purpose: the handler closes over `selectedGameId`.
+	// without reaching for the mouse. A non-modal dialog gets no Escape of its own, and this one also
+	// answers it from the grid. Unkeyed on purpose: the handler closes over `selectedGameId`.
 	useEffect(() => {
 		const onKeyDown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape' && selectedGameId) closeDrawer();
@@ -284,6 +294,14 @@ const App = () => {
 	};
 
 	const selectedGame = selectedGameId ? slateGames.find(game => game.id === selectedGameId) : undefined;
+	const isDrawerOpen = Boolean(selectedGame);
+
+	// Non-modal, because the grid beside it stays live: picking another game while one is open swaps
+	// the drawer over. `show()` rather than the `open` attribute moves focus in and remembers where
+	// it came from.
+	useLayoutEffect(() => {
+		if (isDrawerOpen) drawerRef.current?.show();
+	}, [isDrawerOpen]);
 
 	// A game that drops off the slate takes the drawer with it, and the selection has to go too:
 	// left behind, it marks the drawer closing with nothing left to finish the animation.
@@ -320,9 +338,9 @@ const App = () => {
 				    here — the label it follows is never absent. Absent itself while there is no grid to
 				    mark, where it was a switch that switched nothing. */}
 				{hasBars && (
-					<div className='form-check form-switch mb-0 guide-band-toggle'>
-						<input className='form-check-input' type='checkbox' id='guideBandToggle' checked={showBand} onChange={() => setShowBand(value => !value)} />
-						<label className='form-check-label' htmlFor='guideBandToggle'>{i18n.t('guide.bestWindow')}</label>
+					<div className='guide-band-toggle'>
+						<ToggleSwitch id='guideBandToggle' checked={showBand} onChange={() => setShowBand(value => !value)} />
+						<label htmlFor='guideBandToggle'>{i18n.t('guide.bestWindow')}</label>
 						{/* Inside the control rather than beside it, so the header's own 1rem column gap cannot open
 						    a hole in the middle of a sentence. */}
 						{showBand && band && <span className='guide-band-summary'>{`\u00b7 ${bandLabel(band, displayLocale())}`}</span>}
@@ -351,13 +369,14 @@ const App = () => {
 			)}
 
 			{selectedGame && (
-				<aside
+				<dialog
+					ref={drawerRef}
 					className='guide-drawer'
+					aria-label={`${selectedGame.awayTeam.name} ${i18n.t('guide.at')} ${selectedGame.homeTeam.name}`}
 					data-closing={closingDrawer ? 'true' : undefined}
 					onAnimationEnd={event => {
 						if (!closingDrawer || event.target !== event.currentTarget) return;
-						setClosingDrawer(false);
-						setSelectedGameId(null);
+						finishClosingDrawer();
 					}}
 				>
 					<GameDetailView
@@ -386,7 +405,7 @@ const App = () => {
 						onBack={closeDrawer}
 						theme={theme}
 					/>
-				</aside>
+				</dialog>
 			)}
 			</div>
 			<canvas ref={confettiCanvasRef} className='guide-confetti-canvas' aria-hidden='true' />

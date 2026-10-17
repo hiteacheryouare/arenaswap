@@ -11,13 +11,14 @@
 		"lint": "oxlint ."
 	},
 	"peerDependencies": {
-		"bootstrap": "^5.3.8",
+		"bootstrap": "6.0.0-alpha.1",
 		"react": "^19.3.0",
 		"react-dom": "^19.3.0"
 	},
 	"dependencies": {
 		"@arenaswap/chromatic": "*",
-		"@arenaswap/core": "*"
+		"@arenaswap/core": "*",
+		"@floating-ui/dom": "1.7.6"
 	},
 	"devDependencies": {
 		"@types/jest": "^30.0.0",

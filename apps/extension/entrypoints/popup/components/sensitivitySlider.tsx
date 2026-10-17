@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { sensitivityThresholds } from '@arenaswap/core/constants';
 import { i18n } from '#i18n';
+import FormRange from './formRange';
 import SettingTooltipIcon from './settingTooltipIcon';
 import LudicrousSpeedOverlay from './ludicrousSpeedOverlay';
 
@@ -30,7 +31,7 @@ const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
 		{showLudicrous && <LudicrousSpeedOverlay onClose={closeLudicrous} />}
 		<div className='d-flex justify-content-between align-items-center mb-1'>
 			<div className='d-flex align-items-center gap-1'>
-				<label htmlFor='sensitivity-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-sliders me-1 text-primary' />{i18n.t('sensitivity.label')}</label>
+				<label htmlFor='sensitivity-range' className='fg-secondary setting-toggle-label'><i className='bi bi-sliders me-1 fg-primary' />{i18n.t('sensitivity.label')}</label>
 				<SettingTooltipIcon text={i18n.t('sensitivity.explainer')} label={i18n.t('sensitivity.label')} />
 			</div>
 			{value === 7 ? (
@@ -48,29 +49,24 @@ const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
 				</span>
 			)}
 		</div>
-		<input
+		<FormRange
 			id='sensitivity-range'
-			type='range'
 			min={1}
 			max={7}
 			step={1}
 			value={value}
+			list='sensitivity-ticks'
 			onChange={e => {
 				const next = Number(e.target.value);
 				if (next !== value) onChange(next);
 			}}
-			className='form-range w-100'
-		/>
-		<div className='position-relative sensitivity-ticks'>
-			{[1, 2, 3, 4, 5, 6, 7].map((level, i) => (
-				<span
-					key={level}
-					className={`position-absolute translate-middle-x text-body-secondary sensitivity-tick sensitivity-tick-${i}`}
-				>
-					{sensitivityThresholds[level]}
-				</span>
-			))}
-		</div>
+		>
+			<datalist id='sensitivity-ticks'>
+				{[1, 2, 3, 4, 5, 6, 7].map(level => (
+					<option key={level} value={level} label={String(sensitivityThresholds[level])}>{sensitivityThresholds[level]}</option>
+				))}
+			</datalist>
+		</FormRange>
 	</div>
 	);
 };

@@ -3,6 +3,7 @@ import Crest from '@arenaswap/ui/src/components/crest';
 import { teamLogoOnColor } from '@arenaswap/core/constants';
 import { matchupSurfaceStyle, powerScoreColor } from './gameCardShared';
 import { i18n } from '#i18n';
+import FlowStepper from './flowStepper';
 import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepAutoSwitchProps {
@@ -33,7 +34,7 @@ const TeamLogo = ({ abbr, color, logoUrl }: TeamLogoProps) => (
 		logo={teamLogoOnColor(logoUrl)}
 		abbreviation={abbr}
 		className='team-crest-32'
-		fallbackStyle={{ backgroundColor: color, color: '#fff' }}
+		teamColor={color}
 	/>
 );
 
@@ -63,7 +64,7 @@ const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, 
 					{i18n.t('gameCard.live')}
 				</div>
 				{watching && (
-					<span className='badge text-bg-primary' style={{ fontSize: '0.6rem' }}>{i18n.t('stepAutoSwitch.watchingBadge')}</span>
+					<span className='badge theme-primary' style={{ fontSize: '0.6rem' }}>{i18n.t('stepAutoSwitch.watchingBadge')}</span>
 				)}
 			</div>
 
@@ -87,7 +88,7 @@ const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, 
 				</div>
 			</div>
 
-			<div className='d-flex align-items-center gap-2 game-card-ps-bar-row'>
+			<div className='d-flex align-items-center gap-3 game-card-ps-bar-row'>
 				<span className='game-card-ps-label'>PowerScore</span>
 				<div className='progress flex-grow-1 game-card-ps-progress'>
 					<div
@@ -123,9 +124,9 @@ const walkthroughStepAutoSwitch = ({ onNext, onBack }: walkthroughStepAutoSwitch
 
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepAutoSwitch.step', [4, 8])}</div>
+			<FlowStepper step={4} total={8} className='pt-5 pb-3' />
 
-			<div className='fw-bold fs-5 text-center mb-3 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepAutoSwitch.title')}</div>
+			<div className='fw-bold fs-lg text-center mb-5 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepAutoSwitch.title')}</div>
 
 			<div className='position-relative'>
 				<MockCard
@@ -151,25 +152,25 @@ const walkthroughStepAutoSwitch = ({ onNext, onBack }: walkthroughStepAutoSwitch
 			</div>
 
 			{phase === 0 && (
-				<p className='text-body-secondary small lh-base mt-2 text-center fst-italic'>
+				<p className='fg-secondary small lh-md mt-3 text-center fst-italic'>
 					{i18n.t('stepAutoSwitch.watchingCaption')}
 				</p>
 			)}
 
 			{phase === 1 && (
 				<>
-					<p className='fw-semibold text-body mt-2 mb-1'>{i18n.t('stepAutoSwitch.reveal')}</p>
-					<p className='text-body-secondary small lh-base'>
+					<p className='fw-semibold fg-body mt-3 mb-1'>{i18n.t('stepAutoSwitch.reveal')}</p>
+					<p className='fg-secondary small lh-md'>
 						{i18n.t('stepAutoSwitch.revealBody')}
 					</p>
 				</>
 			)}
 
-			<div className='d-flex gap-2 mt-auto'>
-				<button type='button' className='btn btn-secondary flex-grow-1' onClick={onBack}>
+			<div className='d-flex gap-3 mt-auto'>
+				<button type='button' className='btn btn-solid theme-accent flex-grow-1' onClick={onBack}>
 					<i className='bi bi-arrow-left' /> {i18n.t('stepAutoSwitch.back')}
 				</button>
-				<button type='button' className='btn btn-primary flex-grow-1' onClick={onNext} disabled={phase === 0}>
+				<button type='button' className='btn btn-solid theme-primary flex-grow-1' onClick={onNext} disabled={phase === 0}>
 					{i18n.t('stepAutoSwitch.next')} <i className='bi bi-arrow-right' />
 				</button>
 			</div>

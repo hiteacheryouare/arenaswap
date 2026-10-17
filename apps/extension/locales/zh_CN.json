@@ -446,6 +446,7 @@
 		"leaderRushing": "RUSH",
 		"leaderReceiving": "REC",
 		"tabMatchup": "对阵",
+		"moreTabs": "更多",
 		"recentForm": "近期战绩",
 		"seasonStats": "赛季数据",
 		"injuries": "伤病",
@@ -910,14 +911,12 @@
 	},
 	"leaguePicker": {
 		"back": "返回",
-		"step": "第 $1 步，共 $2 步",
 		"title": "您喜欢看哪些运动？",
 		"all": "全部",
 		"next": "下一步"
 	},
 	"teamPicker": {
 		"back": "返回",
-		"step": "第 $1 步，共 $2 步",
 		"title": "选择您的球队",
 		"explainer": "收藏的球队会获得 PowerScore 加成，让它们的比赛赢得更多切换。",
 		"yourFavorites": "您的收藏",
@@ -933,7 +932,6 @@
 		"done": "完成"
 	},
 	"tabControl": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "欢迎使用 ArenaSwap",
 		"subtitle": "开始配置之前，先了解一下它的工作方式。",
 		"feature1Title": "自动切换标签页",
@@ -944,11 +942,13 @@
 		"feature3Body": "随时暂停自动切换。在设置中调整灵敏度和冷却时间。",
 		"gotIt": "明白了"
 	},
+	"flowStepper": {
+		"step": "第 $1 步，共 $2 步"
+	},
 	"walkthrough": {
 		"skipTour": "跳过引导教程"
 	},
 	"stepToggle": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "开启与关闭",
 		"subtitle": "一个开关，掌控一切。",
 		"tryIt": "↑ 试试看",
@@ -960,7 +960,6 @@
 		"next": "下一步"
 	},
 	"stepPowerScore": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "认识 PowerScore",
 		"subtitle": "ArenaSwap 的核心引擎",
 		"introTitle": "认识 PowerScore",
@@ -982,7 +981,6 @@
 		"tapHint": "点击屏幕任意位置继续"
 	},
 	"stepTabAssign": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "将标签页分配给比赛",
 		"subtitle": "ArenaSwap 只操作您注册的标签页。",
 		"assignPlaceholder": "— 分配标签页 —",
@@ -992,7 +990,6 @@
 		"next": "下一步"
 	},
 	"stepAutoSwitch": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "看它大显身手",
 		"watchingCaption": "正在看老鹰队的比赛……",
 		"reveal": "看到了吗？👀",
@@ -1002,7 +999,6 @@
 		"watchingBadge": "观看中"
 	},
 	"stepSettings": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "按您的方式调整",
 		"subtitle": "随时打开设置进行调整。",
 		"sensitivity1": "几乎不动",
@@ -1021,7 +1017,6 @@
 		"next": "下一步"
 	},
 	"stepGameDetail": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "深入了解任意比赛",
 		"subtitle": "点击任意比赛卡片，查看是什么在驱动它的得分。",
 		"tapHint": "点击打开",
@@ -1038,7 +1033,6 @@
 		"next": "下一步"
 	},
 	"stepLeaguesFavorites": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "联赛与收藏",
 		"subtitle": "两种不同的方式，定制 ArenaSwap 的关注范围。",
 		"tabLeagues": "联赛",
@@ -1055,7 +1049,6 @@
 		"next": "下一步"
 	},
 	"stepReAccess": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "随时回来看看",
 		"subtitle": "引导教程随时触手可及。",
 		"callout": "就是这个",
@@ -1064,7 +1057,6 @@
 		"next": "完成"
 	},
 	"standbyGuide": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "Standby Stream",
 		"subtitle": "冷清时刻的备用方案。",
 		"quietTitle": "当比赛归于平静",
@@ -1139,12 +1131,12 @@
 	},
 	"favoriteTeamBonus": {
 		"label": "收藏球队加成",
-		"perTeam": "每支球队 +$1 分",
+		"unit": "分（每支球队）",
 		"explainer": "比赛中每有一支收藏球队就加一次，所以双方都是收藏球队时加成翻倍。"
 	},
 	"postseasonBoost": {
 		"label": "季后赛加成",
-		"points": "最多 +$1 分",
+		"unit": "分（上限）",
 		"explainer": "决赛能加的最高分。更早的轮次只拿一部分，半决赛四分之三、四分之一决赛一半、更早的轮次四分之一。表演赛不加分。"
 	},
 	"proTip": {

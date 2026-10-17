@@ -1,6 +1,8 @@
 ---
 import { leagueConfigs } from '@arenaswap/core/constants';
 import type { SportType } from '@arenaswap/core/types';
+import Crest from '@arenaswap/ui/src/components/crest';
+import CrestSettle from '../CrestSettle.astro';
 import { currentLocale, useTranslations } from '../../i18n/ui';
 
 // Generated from `leagueConfigs`, so the count and the list are whatever the extension actually
@@ -37,14 +39,14 @@ const sportCount = numerals[groups.length] ?? String(groups.length);
 			</div>
 		</div>
 
-		<div class='leagues-grid'>
+		<div class='leagues-grid' data-crest-settle>
 			{groups.map(group => (
 				<div class='leagues-group'>
 					<h3>{group.name}</h3>
 					<ul>
 						{group.leagues.map(league => (
 							<li>
-								<img src={`${import.meta.env.BASE_URL}images/leagues/${league.id}.png`} alt='' loading='lazy' width='17' height='17' />
+								<Crest logo={`${import.meta.env.BASE_URL}images/leagues/${league.id}.png`} abbreviation='' fallback='blank' loading='lazy' />
 								{league.label}
 							</li>
 						))}
@@ -55,3 +57,5 @@ const sportCount = numerals[groups.length] ?? String(groups.length);
 
 	</div>
 </section>
+
+<CrestSettle />

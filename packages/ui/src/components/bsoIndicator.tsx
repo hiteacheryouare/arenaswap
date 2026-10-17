@@ -30,7 +30,7 @@ const bsoIndicator = ({ balls, strikes, outs }: bsoIndicatorProps) => {
 		outs: t('bso.outsSpoken', outs),
 	});
 	return (
-		<div className='d-flex align-items-center gap-2 bso-indicator' role='img' aria-label={spoken}>
+		<div className='d-flex align-items-center gap-3 bso-indicator' role='img' aria-label={spoken}>
 			{bsoGroup(t('bso.balls'), balls, 3)}
 			{bsoGroup(t('bso.strikes'), strikes, 2)}
 			{bsoGroup(t('bso.outs'), outs, 2)}

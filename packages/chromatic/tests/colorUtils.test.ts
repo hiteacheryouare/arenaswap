@@ -374,7 +374,7 @@ describe('readableInkOn', () => {
 	// straight back into a `color` rule. Here that paints white type onto a white band.
 	test('cannot measure an ink that is not a hex, and returns the unreadable one anyway', () => {
 		expect(readableInkOn('#FFFFFF', 'white')).toBe('white');
-		expect(readableInkOn('#FFFFFF', 'var(--as-body-color)')).toBe('var(--as-body-color)');
+		expect(readableInkOn('#FFFFFF', 'var(--as-fg-body)')).toBe('var(--as-fg-body)');
 	});
 });
 

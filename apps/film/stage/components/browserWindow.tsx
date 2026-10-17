@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { Game } from '@arenaswap/core/types';
+import Crest from '@arenaswap/ui/src/components/crest';
 import type { Slate } from '../data/slate';
 import { browserTabs, filmTabs, isGameTab, tabById, type BrowserTab } from '../data/tabs';
 import StreamView, { ChannelView } from './streamView';
@@ -43,7 +44,7 @@ const TabPicture = ({ tab, slate, slateTime, t, style }: { tab: BrowserTab; slat
 };
 
 const Favicon = ({ tab, slate }: { tab: BrowserTab; slate: Slate }) => (isGameTab(tab)
-	? <img src={resolveLeagueLogoUrl(tab.league, slate.raw.leagueLogos[tab.league])} alt='' className='browser-tab-favicon' />
+	? <Crest logo={resolveLeagueLogoUrl(tab.league, slate.raw.leagueLogos[tab.league])} abbreviation='' icon='bi-globe2' className='browser-tab-favicon' />
 	: <i className='bi bi-broadcast browser-tab-favicon film-tab-channel' />);
 
 // The docs hero's Chrome window (apps/docs/src/styles/_browser-hero.scss) with the night's streams

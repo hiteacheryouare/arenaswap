@@ -313,7 +313,7 @@ describe('mainView empty states', () => {
    for. */
 const sectionTitleOf = (gameId: string) => cy
 	.get(`[data-testid="game-card-${gameId}"]`)
-	.closest('.mt-2')
+	.closest('.mt-3')
 	.find('.popup-section-title');
 
 describe('mainView header glow', () => {

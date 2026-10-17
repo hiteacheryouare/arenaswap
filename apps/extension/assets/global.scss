@@ -4,8 +4,9 @@
 // no difference to either. Sass comments rather than CSS ones, so this note does not ship.
 @use '@arenaswap/ui/src/fonts';
 @use '@arenaswap/ui/src/motion' as m;
-@at-root {
-
+// Element resets sit in Bootstrap's reboot layer, under its components: a class rule has to keep
+// beating `button { color: inherit }`, as it did when nothing was layered.
+@layer reboot {
 	/* ─── Reset carry-overs ───────────────────────────────────────────────────────
 	   The popup used to pull in `@import 'tailwindcss'` here, which never actually
 	   compiled (no @tailwindcss/vite plugin in this app) — Sass just inlined
@@ -39,19 +40,9 @@
 		font-family: 'DM Sans', system-ui, sans-serif;
 		box-sizing: border-box;
 	}
+}
 
-	/* Bootstrap has no `min-width: 0` utility; needed so flex children can shrink
-	   below their content width and let `text-truncate` engage. */
-	.min-w-0 {
-		min-width: 0;
-	}
-
-	/* Same gap on the other axis. A flex child that is not itself a scroll container keeps
-	   `min-height: auto`, which stops it shrinking and pushes the scrollbar onto the whole page
-	   instead of onto the list inside it. */
-	.min-h-0 {
-		min-height: 0;
-	}
+@layer custom {
 
 	/* ─── Ludicrous Speed ─────────────────────────────────────────────────────── */
 	@keyframes ludicrousSpeed {
@@ -458,8 +449,58 @@
 		}
 	}
 
+	/* ─── Flow stepper ─── */
+	// Takes exactly the line the "Step n of 8" caption took, so nothing under it moves: the
+	// PowerScore bloom aims at its orbit dots from a fixed offset down the popup.
+	.flow-stepper {
+		display:     flex;
+		align-items: center;
+
+		.stepper {
+			--as-stepper-size:       1rem;
+			--as-stepper-gap:        0.5rem;
+			--as-stepper-text-gap:   0;
+			--as-stepper-font-size:  0.5625rem;
+			--as-stepper-track-size: 2px;
+			--as-stepper-bg:         var(--as-bg-2);
+			align-items: center;
+			min-height:  1lh;
+			margin:      0;
+		}
+
+		.stepper-item::before {
+			padding:     0;
+			font-family: 'Geist Figures', 'DM Sans', system-ui, sans-serif;
+			color:       var(--as-fg-3);
+		}
+
+		// Behind you: the track is lit, the marker only tinted, so the one you are on stays the
+		// brightest thing in the row. Mixed onto the page rather than onto transparent, because the
+		// track runs underneath the marker.
+		.stepper-item.active::before {
+			background-color: color-mix(in srgb, var(--as-primary-bg) 22%, var(--as-bg-body));
+			color:            var(--as-primary-fg);
+		}
+
+		.stepper-item.is-current::before {
+			background-color: var(--as-primary-bg);
+			color:            var(--as-primary-contrast);
+			animation:        flowStepArrive m.$motion-base m.$motion-ease;
+		}
+	}
+
+	@keyframes flowStepArrive {
+		from { transform: scale(0.6); }
+	}
+
+	@include m.reduced-motion {
+		.flow-stepper .stepper-item.is-current::before {
+			@include m.motion-still;
+		}
+	}
+
 	/* ─── Walkthrough ─── */
-	// Sits on the step counter's line, over every step, so leaving the tour is never more than one
+	// Sits on the stepper's line, over every step, so leaving the tour is never more than one
 	// click away. The steps are each a full .popup-container at z-index 1.
 	.walkthrough-skip {
 		position:        absolute;
@@ -468,10 +509,10 @@
 		z-index:         2;
 		padding:         0;
 		font-size:       0.7rem;
-		color:           var(--as-secondary-color);
+		color:           var(--as-fg-3);
 		text-decoration: none;
 
-		&:hover { color: var(--as-body-color); }
+		&:hover { color: var(--as-fg-body); }
 	}
 
 	/* ─── PowerScore Walkthrough Orbit Animation ─── */
@@ -928,7 +969,7 @@
 		position:       absolute;
 		inset:          -1px;
 		z-index:        1;
-		background:     var(--as-body-bg);
+		background:     var(--as-bg-body);
 		pointer-events: none;
 		animation:      cardRevealBase calc(3400ms * var(--reveal-rate)) linear var(--reveal-spine) both;
 	}
@@ -1186,11 +1227,10 @@
 	   when nothing was clipping it at the seam. Oversized against the card's height, so it overruns its
 	   field on every side and the field is what cuts it. */
 	.game-card-reveal-opening-logo {
+		--as-avatar-size: var(--reveal-open-crest);
 		position:  absolute;
 		top:       50%;
 		left:      50%;
-		width:     var(--reveal-open-crest);
-		height:    var(--reveal-open-crest);
 		margin:    calc(var(--reveal-open-crest) / -2) 0 0 calc(var(--reveal-open-crest) / -2);
 		animation: cardRevealOpeningCrest calc((700ms + 1750ms + 1050ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
 	}
@@ -1311,12 +1351,11 @@
 		inset:    calc(-100% / 6);
 		overflow: hidden;
 
-		.game-card-reveal-crest-logo { width: 75%; height: 75%; }
+		.game-card-reveal-crest-logo { --as-avatar-size: 75%; }
 	}
 
 	.game-card-reveal-crest-logo {
-		width:  100%;
-		height: 100%;
+		--as-avatar-size: 100%;
 	}
 
 	/* The poster's stand-in for a crest we do not have: the club's name, set across the plate a crest
@@ -1335,17 +1374,25 @@
 		animation:       cardRevealCrestName calc(3400ms * var(--reveal-rate)) linear calc(var(--reveal-spine) - var(--reveal-late, 0ms)) both;
 	}
 
+	.game-card-reveal-crest.is-named .crest {
+		--as-avatar-bg:    var(--reveal-surface);
+		--as-avatar-color: var(--reveal-ink);
+	}
+
 	.game-card-reveal-crest.is-named .crest-fallback {
-		background: linear-gradient(rgba(255, 255, 255, 0.16) 0 0), var(--reveal-surface);
-		color:      var(--reveal-ink);
-		font-size:  0.7rem;
-		animation:  cardRevealCrestDisc calc(3400ms * var(--reveal-rate)) linear calc(var(--reveal-spine) - var(--reveal-late, 0ms)) both;
+		background-image: linear-gradient(rgba(255, 255, 255, 0.16) 0 0);
+		font-size:        0.7rem;
+		animation:        cardRevealCrestDisc calc(3400ms * var(--reveal-rate)) linear calc(var(--reveal-spine) - var(--reveal-late, 0ms)) both;
 	}
 
 	/* A finished game lands on the plain plate card, which draws its placeholder light. */
+	.game-card-reveal.is-final .game-card-reveal-crest.is-named .crest {
+		--as-avatar-bg:    #f8f9fa;
+		--as-avatar-color: #495057;
+	}
+
 	.game-card-reveal.is-final .game-card-reveal-crest.is-named .crest-fallback {
-		background: #f8f9fa;
-		color:      #495057;
+		background-image: none;
 	}
 
 	/* The card's own crest waits under the graphic until the overlay has finished walking onto it, and

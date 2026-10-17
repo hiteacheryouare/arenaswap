@@ -1,23 +1,24 @@
-// ArenaSwap's two palettes, as CSS custom properties. Dark is what :root carries in both apps and
-// what _bootstrap.scss hands Bootstrap; the docs site never sets data-bs-theme, so it only sees dark.
-// Light lives under [data-bs-theme=light], set on <html> from the Theme setting. It restates
-// Bootstrap's body tokens because Bootstrap emits the dark ones on `:root, [data-bs-theme=light]`,
-// and it has to land later in the stylesheet than that block to win.
-@use 'sass:color';
+// ArenaSwap's two palettes. Every token is one light-dark() pair, so the side that renders follows
+// `color-scheme`: dark unless <html> carries data-bs-theme=light, which the Theme setting sets.
 @use 'sass:map';
 
 $palettes: (
 	dark: (
 		body-color:          #e6edf3,
 		body-bg:             #0d1117,
+		ink-soft:            #b6c2cf,
+		ink-mid:             #a1abb7,
 		secondary-color:     #8b949e,
-		secondary-bg:        #21262d,
+		faint:               #6e7681,
 		tertiary-bg:         #161b22,
+		secondary-bg:        #21262d,
+		raised-bg:           #30363d,
+		lifted-bg:           #484f58,
 		border-color:        #30363d,
+		border-subtle:       #1b2128,
+		border-emphasized:   #484f58,
 		link-color:          #f75c03,
 		link-hover-color:    #c64a02,
-		faint:               #6e7681,
-		ink-soft:            #b6c2cf,
 		accent-ink:          #f75c03,
 		secondary-ink:       #3e9bd1,
 		warning-ink:         #f1c40f,
@@ -30,14 +31,19 @@ $palettes: (
 	light: (
 		body-color:          #0b1016,
 		body-bg:             #ffffff,
+		ink-soft:            #252d38,
+		ink-mid:             #313a45,
 		secondary-color:     #3d4652,
-		secondary-bg:        #e7ebf0,
+		faint:               #5a6472,
 		tertiary-bg:         #f3f5f8,
+		secondary-bg:        #e7ebf0,
+		raised-bg:           #d5dbe2,
+		lifted-bg:           #c3cad3,
 		border-color:        #c3cad3,
+		border-subtle:       #edf0f4,
+		border-emphasized:   #9aa4b0,
 		link-color:          #c2410c,
 		link-hover-color:    #9a3412,
-		faint:               #5a6472,
-		ink-soft:            #252d38,
 		// #F75C03 is 3.24:1 on white, under the 4.5:1 small text needs. Fills keep the brand orange.
 		accent-ink:          #c2410c,
 		secondary-ink:       #2274a5,
@@ -53,51 +59,85 @@ $palettes: (
 	),
 );
 
-@function channels($value) {
-	@return '#{color.channel($value, 'red', $space: rgb)}, #{color.channel($value, 'green', $space: rgb)}, #{color.channel($value, 'blue', $space: rgb)}';
-}
-
 @function tone($mode, $name) {
 	@return map.get($palettes, $mode, $name);
 }
 
+@function pair($name) {
+	@return light-dark(tone(light, $name), tone(dark, $name));
+}
+
+// A theme colour in the shape Bootstrap 6 asks for. Built off the hue's own 025–975 scale, the way
+// Bootstrap builds its defaults, except for `fg`, which is a measured ink, and `contrast`, the label
+// a filled control puts on it.
+@function theme-color($hue, $fg, $contrast) {
+	@return (
+		'base':        var(--#{$hue}-500),
+		'fg':          $fg,
+		'fg-emphasis': light-dark(var(--#{$hue}-800), var(--#{$hue}-200)),
+		'bg':          var(--#{$hue}-500),
+		'bg-subtle':   light-dark(var(--#{$hue}-100), var(--#{$hue}-900)),
+		'bg-muted':    light-dark(var(--#{$hue}-200), var(--#{$hue}-800)),
+		'border':      light-dark(var(--#{$hue}-300), var(--#{$hue}-600)),
+		'focus-ring':  light-dark(color-mix(in oklch, var(--#{$hue}-500) 50%, var(--bg-body)), color-mix(in oklch, var(--#{$hue}-500) 75%, var(--bg-body))),
+		'contrast':    $contrast,
+	);
+}
+
+// White only reaches 3.22:1 on the orange, 3.0:1 on the blue and under 2:1 on the green and the
+// yellow, so those fills carry the page's own near-black.
+$theme-colors: (
+	'primary':   theme-color(orange, pair(accent-ink), #0d1117),
+	'accent':    theme-color(blue, pair(secondary-ink), #0d1117),
+	'success':   theme-color(green, light-dark(#00854a, var(--green-500)), #0d1117),
+	'danger':    theme-color(red, light-dark(var(--red-600), var(--red-400)), #ffffff),
+	'warning':   theme-color(yellow, pair(warning-ink), #0d1117),
+	'secondary': (
+		'base':        tone(dark, secondary-color),
+		'fg':          pair(secondary-color),
+		'fg-emphasis': pair(body-color),
+		'bg':          pair(raised-bg),
+		'bg-subtle':   pair(tertiary-bg),
+		'bg-muted':    pair(secondary-bg),
+		'border':      pair(border-color),
+		'focus-ring':  color-mix(in oklch, #{pair(secondary-color)} 50%, var(--bg-body)),
+		'contrast':    pair(body-color),
+	),
+);
+
+$theme-bgs: (
+	'body': pair(body-bg),
+	'1':    pair(tertiary-bg),
+	'2':    pair(secondary-bg),
+	'3':    pair(raised-bg),
+	'4':    pair(lifted-bg),
+);
+
+$theme-fgs: (
+	'body': pair(body-color),
+	'1':    pair(ink-soft),
+	'2':    pair(ink-mid),
+	'3':    pair(secondary-color),
+	'4':    pair(faint),
+);
+
+$theme-borders: (
+	'body':       pair(border-color),
+	'muted':      pair(secondary-bg),
+	'subtle':     pair(border-subtle),
+	'emphasized': pair(border-emphasized),
+);
+
 // Ours rather than Bootstrap's, so both apps need these on :root.
-@mixin arenaswap-tokens($mode) {
-	--as-faint: #{tone($mode, faint)};
-	--as-ink-soft: #{tone($mode, ink-soft)};
-	--as-accent-ink: #{tone($mode, accent-ink)};
-	--as-secondary-ink: #{tone($mode, secondary-ink)};
-	--as-warning-ink: #{tone($mode, warning-ink)};
-	--as-control-bg: #{tone($mode, control-bg)};
-	--as-control-hover-bg: #{tone($mode, control-hover-bg)};
-	--as-control-hover-color: #{tone($mode, control-hover-color)};
-	--as-border-color-rgb: #{channels(tone($mode, border-color))};
-	--as-overlay-rgb: #{channels(tone($mode, overlay))};
-	--as-wordmark-ink: #{tone($mode, wordmark-ink)};
-}
-
-@mixin bootstrap-tokens($mode) {
-	--as-body-color: #{tone($mode, body-color)};
-	--as-body-color-rgb: #{channels(tone($mode, body-color))};
-	--as-body-bg: #{tone($mode, body-bg)};
-	--as-body-bg-rgb: #{channels(tone($mode, body-bg))};
-	--as-secondary-color: #{tone($mode, secondary-color)};
-	--as-secondary-color-rgb: #{channels(tone($mode, secondary-color))};
-	--as-secondary-bg: #{tone($mode, secondary-bg)};
-	--as-secondary-bg-rgb: #{channels(tone($mode, secondary-bg))};
-	--as-tertiary-color: #{color.change(tone($mode, body-color), $alpha: 0.5)};
-	--as-tertiary-color-rgb: #{channels(tone($mode, body-color))};
-	--as-tertiary-bg: #{tone($mode, tertiary-bg)};
-	--as-tertiary-bg-rgb: #{channels(tone($mode, tertiary-bg))};
-	--as-border-color: #{tone($mode, border-color)};
-	--as-highlight-color: #{tone($mode, body-color)};
-	--as-link-color: #{tone($mode, link-color)};
-	--as-link-color-rgb: #{channels(tone($mode, link-color))};
-	--as-link-hover-color: #{tone($mode, link-hover-color)};
-	--as-link-hover-color-rgb: #{channels(tone($mode, link-hover-color))};
-}
-
-@mixin color-mode($mode) {
-	@include bootstrap-tokens($mode);
-	@include arenaswap-tokens($mode);
+@mixin arenaswap-tokens {
+	--as-faint: #{pair(faint)};
+	--as-ink-soft: #{pair(ink-soft)};
+	--as-accent-ink: #{pair(accent-ink)};
+	--as-secondary-ink: #{pair(secondary-ink)};
+	--as-warning-ink: #{pair(warning-ink)};
+	--as-control-bg: #{pair(control-bg)};
+	--as-control-hover-bg: #{pair(control-hover-bg)};
+	--as-control-hover-color: #{pair(control-hover-color)};
+	--as-overlay: #{pair(overlay)};
+	--as-wordmark-ink: #{pair(wordmark-ink)};
 }

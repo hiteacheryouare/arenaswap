@@ -33,7 +33,7 @@ const bandBox = (band: guideBand, fromMs: number): CSSProperties => {
 	return { left: `${left}px`, width: `${Math.max(msToPx(band.toMs, fromMs) - left, 8)}px` };
 };
 
-// The bar is --as-secondary-bg, which is what a crest drawn on it has to stand off. Spelled out
+// The bar is --as-bg-2, which is what a crest drawn on it has to stand off. Spelled out
 // because the legibility check does its arithmetic on a hex, not on a variable.
 const guideBarSurface: Record<ResolvedTheme, string> = { dark: '#21262d', light: '#e7ebf0' };
 
@@ -48,6 +48,7 @@ const BarTeam = ({ team, mono, score, lost, theme }: { team: Team; mono?: TeamMo
 			crestClassName='guide-crest'
 			fallback='blank'
 			loading='lazy'
+			teamColor={team.color}
 		/>
 		<span className='guide-bar-team'>{team.abbreviation}</span>
 		{score !== undefined && <span className='guide-bar-score'>{score}</span>}

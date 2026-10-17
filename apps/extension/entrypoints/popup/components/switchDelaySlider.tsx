@@ -1,5 +1,6 @@
 import { i18n } from '#i18n';
 import { formatSecondsLabel, secondsSliderSteps } from '../../../utils/secondsLabel';
+import FormRange from './formRange';
 import SettingTooltipIcon from './settingTooltipIcon';
 
 interface switchDelaySliderProps {
@@ -21,21 +22,19 @@ const switchDelaySlider = ({ value, onChange }: switchDelaySliderProps) => {
 		<div>
 			<div className='d-flex justify-content-between align-items-center mb-1'>
 				<div className='d-flex align-items-center gap-1'>
-					<label htmlFor='switch-delay-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-hourglass-split me-1 text-primary' />{i18n.t('switchDelay.label')}</label>
+					<label htmlFor='switch-delay-range' className='fg-secondary setting-toggle-label'><i className='bi bi-hourglass-split me-1 fg-primary' />{i18n.t('switchDelay.label')}</label>
 					<SettingTooltipIcon text={i18n.t('switchDelay.explainer')} label={i18n.t('switchDelay.label')} />
 				</div>
 				<span className='fw-semibold setting-value-label'>{formatSeconds(steps[currentIdx]!)}</span>
 			</div>
-			<input
+			<FormRange
 				id='switch-delay-range'
-				type='range'
 				min={0}
 				max={steps.length - 1}
 				step={1}
 				value={currentIdx}
 				aria-valuetext={formatSeconds(steps[currentIdx]!)}
 				onChange={e => onChange(steps[Number(e.target.value)]!)}
-				className='form-range w-100'
 			/>
 			<div className='d-flex justify-content-between'>
 				<span className='setting-explainer'>{formatSeconds(steps[0]!)}</span>

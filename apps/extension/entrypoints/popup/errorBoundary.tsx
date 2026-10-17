@@ -22,18 +22,18 @@ class ErrorBoundary extends Component<errorBoundaryProps, errorBoundaryState> {
 	render() {
 		if (this.state.error) {
 			return (
-				<div className='popup-container d-flex flex-column align-items-center justify-content-center gap-3 text-center'>
+				<div className='popup-container d-flex flex-column align-items-center justify-content-center gap-5 text-center'>
 					<img src={fullLogoSrc(readDocumentTheme())} alt='ArenaSwap' className='arenaswap-logo mb-1' />
 					<div>
-						<i className='bi bi-exclamation-triangle-fill text-danger fs-3' />
-						<div className='fw-bold mt-2'>{i18n.t('errorBoundary.title')}</div>
-						<div className='text-body-secondary small mt-1'>{i18n.t('errorBoundary.body')}</div>
+						<i className='bi bi-exclamation-triangle-fill fg-danger fs-2xl' />
+						<div className='fw-bold mt-3'>{i18n.t('errorBoundary.title')}</div>
+						<div className='fg-secondary small mt-1'>{i18n.t('errorBoundary.body')}</div>
 					</div>
-					<div className='alert alert-danger w-100 py-2 px-3 text-start small text-break mb-0' role='alert'>
+					<div className='alert theme-danger w-100 py-3 px-5 text-start small text-break mb-0' role='alert'>
 						<strong>{i18n.t('errorBoundary.errorLabel')}</strong> {this.state.error.message}
 					</div>
 					<button
-						className='btn btn-danger btn-sm'
+						className='btn btn-solid theme-danger btn-sm'
 						onClick={() => this.setState({ error: null })}
 					>
 						<i className='bi bi-arrow-clockwise me-1' />

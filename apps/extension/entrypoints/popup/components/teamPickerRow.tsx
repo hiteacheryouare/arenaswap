@@ -13,11 +13,11 @@ interface teamPickerRowProps {
 const teamPickerRow = ({ team, isFavorite, sublabel, onToggle }: teamPickerRowProps) => (
 	<button
 		type='button'
-		className='d-flex align-items-center justify-content-between gap-2 mt-1 py-1 team-pick-row'
+		className='d-flex align-items-center justify-content-between gap-3 mt-1 py-1 team-pick-row'
 		onClick={onToggle}
 		aria-label={isFavorite ? i18n.t('teamPicker.removeFavorite', { team: team.name }) : i18n.t('teamPicker.addFavorite', { team: team.name })}
 	>
-		<span className='d-flex align-items-center gap-2 min-w-0'>
+		<span className='d-flex align-items-center gap-3 min-w-0'>
 			<CrestDisc
 				logo={team.logo}
 				abbreviation={(team.abbreviation ?? team.name ?? '?').slice(0, 3)}
@@ -26,11 +26,11 @@ const teamPickerRow = ({ team, isFavorite, sublabel, onToggle }: teamPickerRowPr
 				loading='lazy'
 			/>
 			<span className='d-block min-w-0'>
-				<span className='d-block fw-semibold text-body lh-sm small'>{team.name}</span>
-				{sublabel && <span className='d-block setting-explainer lh-sm'>{sublabel}</span>}
+				<span className='d-block fw-semibold fg-body lh-xs small'>{team.name}</span>
+				{sublabel && <span className='d-block setting-explainer lh-xs'>{sublabel}</span>}
 			</span>
 		</span>
-		<i className={`bi ${isFavorite ? 'bi-star-fill' : 'bi-star'} fs-6 flex-shrink-0 team-pick-star`} data-favorited={isFavorite} aria-hidden='true' />
+		<i className={`bi ${isFavorite ? 'bi-star-fill' : 'bi-star'} fs-md flex-shrink-0 team-pick-star`} data-favorited={isFavorite} aria-hidden='true' />
 	</button>
 );
 

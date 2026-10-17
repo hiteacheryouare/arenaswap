@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { LeagueId } from '@arenaswap/core/types';
+import Crest from '@arenaswap/ui/src/components/crest';
 import GameCard from '@arenaswap/ui/src/components/gameCard';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
 import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
@@ -35,7 +36,7 @@ const noop = () => {};
 // might.
 const HeroTabSlot = ({ label }: { label: string }) => (
 	<div className='game-card-tab-assign' data-card-control='true'>
-		<select className='form-select form-select-sm' value={label} disabled aria-label={label} onChange={noop}>
+		<select className='form-control form-control-sm' value={label} disabled aria-label={label} onChange={noop}>
 			<option>{label}</option>
 		</select>
 	</div>
@@ -196,7 +197,7 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 								className={`browser-tab${index === onScreenIndex ? ' is-active' : ''}`}
 								aria-current={index === onScreenIndex ? 'true' : undefined}
 							>
-								<img src={`${base}images/leagues/${script.base.league}.png`} alt='' className='browser-tab-favicon' />
+								<Crest logo={`${base}images/leagues/${script.base.league}.png`} abbreviation='' icon='bi-globe2' className='browser-tab-favicon' />
 								<span className='browser-tab-title'>{script.tabTitle}</span>
 								<span className='browser-tab-close' aria-hidden='true'><i className='bi bi-x-lg' /></span>
 								<span className='browser-tab-flare' aria-hidden='true' />

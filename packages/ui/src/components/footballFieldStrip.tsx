@@ -129,6 +129,7 @@ const footballFieldStrip = ({ game, monoMarks }: footballFieldStripProps) => {
 							discClassName='ff-logo-shell'
 							crestClassName='ff-logo-art'
 							fallback='blank'
+							teamColor={game.homeTeam.color}
 						/>
 					</foreignObject>
 				)}
@@ -196,6 +197,7 @@ const footballFieldStrip = ({ game, monoMarks }: footballFieldStripProps) => {
 							discClassName='ff-endzone-crest'
 							crestClassName='ff-endzone-crest-art'
 							fallback='blank'
+							teamColor={color}
 						/>
 					)}
 					<span className='ff-endzone-name'>{team.nickname || team.abbreviation}</span>

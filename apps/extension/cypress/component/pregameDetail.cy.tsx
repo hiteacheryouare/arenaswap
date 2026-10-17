@@ -133,7 +133,8 @@ describe('pre-game detail screen', () => {
 		});
 	});
 
-	// The poster's crests come from ESPN, so the slot has to hold its box before they arrive.
+	// The poster's crests come from ESPN, so the slot has to hold its box before they arrive, on a disc
+	// of the team's own colour.
 	it('holds the crest box with the abbreviation until the logo lands', () => {
 		mountPre(preGame);
 		cy.get('.gd-poster-crest-logo').should('have.length', 2).each(($crest: JQuery<HTMLElement>) => {
@@ -141,7 +142,7 @@ describe('pre-game detail screen', () => {
 			expect(box.width, 'crest width').to.equal(64);
 			expect(box.height, 'crest height').to.equal(64);
 			expect(getComputedStyle($crest[0]!.querySelector('.crest-fallback')!).backgroundColor,
-				'no second disc inside the tinted one').to.equal('rgba(0, 0, 0, 0)');
+				'the team\'s own colour').to.be.oneOf(['rgb(0, 51, 141)', 'rgb(227, 24, 55)']);
 		});
 	});
 
@@ -176,7 +177,7 @@ describe('pre-game detail screen', () => {
 
 	it('offers the tab picker and the boost, and no favourites row', () => {
 		mountPre(preGame);
-		cy.get('.gd-setup .game-card-tab-assign .form-select').should('exist');
+		cy.get('.gd-setup .game-card-tab-assign .form-control-caret').should('exist');
 		cy.get('.gd-setup .powerscore-boost-input').should('have.value', '10');
 		cy.get('.gd-setup').should('not.contain.text', 'avorite');
 	});

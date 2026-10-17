@@ -1,6 +1,7 @@
 import { i18n } from '#i18n';
 import { defaultCooldownSecs } from '@arenaswap/core';
 import { formatSecondsLabel, secondsSliderSteps } from '../../../utils/secondsLabel';
+import FormRange from './formRange';
 import SettingTooltipIcon from './settingTooltipIcon';
 
 interface cooldownSliderProps {
@@ -22,14 +23,13 @@ const cooldownSlider = ({ value, onChange }: cooldownSliderProps) => {
 		<div>
 			<div className='d-flex justify-content-between align-items-center mb-1'>
 				<div className='d-flex align-items-center gap-1'>
-					<label htmlFor='cooldown-range' className='text-body-secondary setting-toggle-label'><i className='bi bi-clock me-1 text-primary' />{i18n.t('cooldown.label')}</label>
+					<label htmlFor='cooldown-range' className='fg-secondary setting-toggle-label'><i className='bi bi-clock me-1 fg-primary' />{i18n.t('cooldown.label')}</label>
 					<SettingTooltipIcon text={i18n.t('cooldown.explainer')} label={i18n.t('cooldown.label')} />
 				</div>
 				<span className='fw-semibold setting-value-label'>{formatCooldownSeconds(cooldownSteps[currentIdx]!)}</span>
 			</div>
-			<input
+			<FormRange
 				id='cooldown-range'
-				type='range'
 				min={0}
 				max={cooldownSteps.length - 1}
 				step={1}
@@ -39,7 +39,6 @@ const cooldownSlider = ({ value, onChange }: cooldownSliderProps) => {
 					const next = cooldownSteps[Number(e.target.value)]!;
 					if (next !== value) onChange(next);
 				}}
-				className='form-range w-100'
 			/>
 			<div className='d-flex justify-content-between'>
 				<span className='setting-explainer'>{formatCooldownSeconds(cooldownSteps[0]!)}</span>

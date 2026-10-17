@@ -23,6 +23,7 @@ const TeamMark = ({ team }: { team: Team }) => (
 			discClassName='suggest-crest-disc'
 			crestClassName='suggest-crest'
 			fallback='blank'
+			teamColor={team.color}
 		/>
 		<span className='fw-bold text-nowrap'>{team.abbreviation}</span>
 	</span>
@@ -91,14 +92,14 @@ const suggestView = ({ suggestions, games, openTabs, formatTabLabel, onApply, on
 										<input
 											type='checkbox'
 											id={`suggest-${key}`}
-											className='form-check-input flex-shrink-0 mt-0'
+											className='check my-0'
 											checked={checked.includes(key)}
 											onChange={() => toggle(suggestion)}
 										/>
 										<span className='min-w-0'>
 											<span className='d-flex align-items-center gap-1 suggest-matchup'>
 												<TeamMark team={game.awayTeam} />
-												<span className='text-body-tertiary'>{i18n.t('guide.at')}</span>
+												<span className='fg-4'>{i18n.t('guide.at')}</span>
 												<TeamMark team={game.homeTeam} />
 											</span>
 											<span className='d-flex align-items-center gap-1 suggest-tab-label'>
@@ -113,10 +114,10 @@ const suggestView = ({ suggestions, games, openTabs, formatTabLabel, onApply, on
 					</>
 				)}
 
-			<div className='mt-auto pt-3'>
+			<div className='mt-auto pt-5'>
 				<button
 					type='button'
-					className='btn btn-sm btn-primary w-100'
+					className='btn btn-sm btn-solid theme-primary w-100'
 					disabled={accepted.length === 0}
 					onClick={() => onApply(accepted)}
 				>

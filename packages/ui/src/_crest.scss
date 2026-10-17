@@ -1,21 +1,29 @@
-@at-root {
-	// One remote logo over one placeholder, in one box. The image is layered on top of the placeholder
-	// rather than swapped for it, so a crest already in the cache paints in the first frame and nothing
-	// moves when a slow one lands. Size, shape, font-size and placeholder colour all come from the call
-	// site's own class — this file only guarantees the two layers share a box.
-
+@layer custom {
+	// One remote logo over one placeholder, in one Bootstrap avatar. The image is layered on top of the
+	// placeholder rather than swapped for it, so a crest already in the cache paints in the first frame
+	// and nothing moves when a slow one lands. Size, shape and placeholder colour are the avatar tokens,
+	// set by the call site's own class; the default is a bare mark, since a circle would shave the
+	// corners off most transparent square artwork. The box itself never paints, or a transparent logo
+	// would sit on a disc once it loaded.
 	.crest {
-		position:    relative;
-		display:     inline-flex;
-		flex-shrink: 0;
-		overflow:    hidden;
-		line-height: 1;
+		--as-avatar-border-radius: 0;
+		--as-avatar-bg:            color-mix(in srgb, var(--as-fg-3) 18%, transparent);
+		--as-avatar-color:         var(--as-fg-3);
+
+		position:         relative;
+		display:          inline-flex;
+		flex-shrink:      0;
+		overflow:         hidden;
+		line-height:      1;
+		background-color: transparent;
+		color:            inherit;
 	}
 
-	// The `.crest` ancestor is load-bearing, not tidiness: both the extension's own reset and
-	// Tailwind's preflight set `img { height: auto }`, and in the extension that reset loads after this
-	// file. A bare `img` selector would lose on source order. `inset` alone is not enough either — an
-	// absolutely positioned replaced element with `width: auto` uses its intrinsic size.
+	// The `.crest` ancestor is needed, not tidiness: both the extension's own reset and Tailwind's
+	// preflight set `img { height: auto }`, and in the extension that reset loads after this file. A bare
+	// `img` selector would lose on source order. `inset` alone is not enough either — an absolutely
+	// positioned replaced element with `width: auto` uses its intrinsic size. `img` rather than
+	// `.avatar-img`, so a call site's own `img` rule for a headshot's fit still wins on order.
 	.crest > img {
 		position:   absolute;
 		inset:      0;
@@ -24,22 +32,22 @@
 		object-fit: contain;
 	}
 
-	// Neutral enough to read on the dark popup, the dark site, the white poster disc and the light
-	// matchup card, so one value serves every call site. Static on purpose: a shimmer across thirty
-	// crests at once reads as a fault rather than as loading.
+	// Painted from the avatar tokens: the neutral above, a call site's own tone, or the team colour
+	// `Crest` sets inline. Always a disc, whatever shape the box clips to. Static on purpose: a shimmer
+	// across thirty crests at once reads as a fault rather than as loading.
 	.crest-fallback {
-		position:        absolute;
-		inset:           0;
-		display:         flex;
-		align-items:     center;
-		justify-content: center;
-		overflow:        hidden;
-		border-radius:   999px;
-		background:      rgba(var(--as-secondary-color-rgb), 0.18);
-		color:           var(--as-secondary-color);
-		font-weight:     700;
-		font-size:       0.5rem;
-		letter-spacing:  0.02em;
+		position:         absolute;
+		inset:            0;
+		display:          flex;
+		align-items:      center;
+		justify-content:  center;
+		overflow:         hidden;
+		border-radius:    999px;
+		background-color: var(--as-avatar-bg);
+		color:            var(--as-avatar-color);
+		font-weight:      700;
+		font-size:        0.5rem;
+		letter-spacing:   0.02em;
 	}
 
 	// `display: none` rather than `opacity: 0`, so a crest with a transparent background cannot bleed

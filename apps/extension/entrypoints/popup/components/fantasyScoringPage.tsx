@@ -24,7 +24,7 @@ const fantasyScoringPage = ({ scoring, initialSport, disabled, onRuleChange, onR
 
 	return (
 		<>
-			<label className='text-body-secondary setting-toggle-label d-block mb-1' id='fantasySportSelectLabel' htmlFor='fantasySportSelect'>
+			<label className='fg-secondary setting-toggle-label d-block mb-1' id='fantasySportSelectLabel' htmlFor='fantasySportSelect'>
 				{i18n.t('fantasy.sportLabel')}
 			</label>
 			<SelectDropdown<FantasySport>
@@ -40,9 +40,9 @@ const fantasyScoringPage = ({ scoring, initialSport, disabled, onRuleChange, onR
 				.map(group => ({ ...group, rules: group.rules.filter(({ rule }) => fantasyRulesRead[sport].includes(rule)) }))
 				.filter(group => group.rules.length > 0)
 				.map((group, index) => (
-				<div key={group.rules[0]!.rule} className={index === 0 ? 'mt-3' : 'mt-4'}>
+				<div key={group.rules[0]!.rule} className={index === 0 ? 'mt-5' : 'mt-7'}>
 					{'headingKey' in group && (
-						<div className='fw-semibold text-body-secondary setting-toggle-label fantasy-rule-heading'>{i18n.t(group.headingKey)}</div>
+						<div className='fw-semibold fg-secondary setting-toggle-label fantasy-rule-heading'>{i18n.t(group.headingKey)}</div>
 					)}
 					{group.rules.map(({ rule, labelKey }) => {
 						const id = `fantasyRule-${sport}-${rule}`;
@@ -50,7 +50,7 @@ const fantasyScoringPage = ({ scoring, initialSport, disabled, onRuleChange, onR
 						return (
 							<div key={id} className='fantasy-rule-row'>
 								<label className='fantasy-rule-label' htmlFor={id}>
-									<span className='d-block text-body-secondary setting-toggle-label'>{i18n.t(labelKey)}</span>
+									<span className='d-block fg-secondary setting-toggle-label'>{i18n.t(labelKey)}</span>
 									<span id={`${id}-default`} className='d-block setting-explainer'>
 										{i18n.t('fantasy.ruleDefault', { points: format.format(defaults.points) })}
 									</span>
@@ -74,7 +74,7 @@ const fantasyScoringPage = ({ scoring, initialSport, disabled, onRuleChange, onR
 			<button
 				type='button'
 				id='fantasyRulesReset'
-				className='btn btn-sm btn-link league-order-reset mt-3'
+				className='btn btn-sm btn-link league-order-reset mt-5'
 				onClick={() => onResetSport(sport)}
 				disabled={disabled || !changed}
 			>

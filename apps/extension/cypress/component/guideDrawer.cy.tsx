@@ -11,9 +11,9 @@ const mountDrawer = (closing = false) => {
 		<div className='guide-page'>
 			<div className='guide-main'>
 				<div className='guide-scroller' />
-				<aside className='guide-drawer' data-closing={closing ? 'true' : undefined}>
+				<dialog open className='guide-drawer' data-closing={closing ? 'true' : undefined}>
 					<div className='popup-container'>detail</div>
-				</aside>
+				</dialog>
 			</div>
 		</div>,
 	);

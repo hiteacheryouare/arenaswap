@@ -142,7 +142,7 @@ const cut60: Cut = {
 				{ at: 1, kind: 'click', selector: 'button[aria-label="Settings"]' },
 				{ at: 1.5, kind: 'click', selector: '#settingsGroup-scoring' },
 				{ at: b(16) + beats(1), kind: 'click', selector: '#scoringModeSelect' },
-				{ at: b(16) + beats(3), kind: 'click', selector: '#scoringModeSelect + .dropdown-menu li:nth-child(2) button' },
+				{ at: b(16) + beats(3), kind: 'click', selector: '#scoringModeSelect + .menu > .menu-item:nth-child(2)' },
 			],
 		},
 		{

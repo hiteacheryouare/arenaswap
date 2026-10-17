@@ -31,7 +31,7 @@ const bosNyyGame3 = {
 const bosNyyScore3 = { gameId: 'sc-mlb-3', total: 71, closeness: 20, lateGame: 15, momentum: 18, leadChanges: 10, comeback: 8, reason: '' };
 ---
 <!doctype html>
-<html lang='en'>
+<html lang='en' data-bs-theme='dark'>
 <head>
 	<meta charset='UTF-8' />
 	<meta name='robots' content='noindex' />
@@ -92,29 +92,29 @@ const bosNyyScore3 = { gameId: 'sc-mlb-3', total: 71, closeness: 20, lateGame: 1
 						<div class='popup-league-label'>NBA</div>
 						<ScreenshotCard game={chiPhiGame} excitementResult={chiPhiScore} tabLabel='Tab 2: NBA League Pass' />
 
-						<!-- Card 2: unassigned (dropdown shown open via .dropdown-menu-fake below) -->
+						<!-- Card 2: unassigned (its tab menu drawn open via .menu-fake below) -->
 						<div class='popup-league-label'>MLB</div>
 						<ScreenshotCard game={bosNyyGame3} excitementResult={bosNyyScore3} tabLabel='— Assign a tab —' />
 					</div>
 				</div>
 
-				<div class='dropdown-menu-fake'>
-					<div class='dropdown-item dropdown-item-disabled'>
+				<div class='menu show menu-fake'>
+					<div class='menu-item disabled'>
 						<i class='bi bi-1-circle'></i>
 						<span>Tab 1: Prime Video</span>
 						<span class='in-use'>(in use)</span>
 					</div>
-					<div class='dropdown-item dropdown-item-disabled'>
+					<div class='menu-item disabled'>
 						<i class='bi bi-2-circle'></i>
 						<span>Tab 2: NBA League Pass</span>
 						<span class='in-use'>(in use)</span>
 					</div>
-					<div class='dropdown-item dropdown-item-active'>
+					<div class='menu-item selected'>
 						<i class='bi bi-3-circle-fill'></i>
 						<span>Tab 5: MLB.TV</span>
-						<i class='bi bi-check2 check'></i>
+						<i class='bi bi-check2 menu-item-check'></i>
 					</div>
-					<div class='dropdown-item'>
+					<div class='menu-item'>
 						<i class='bi bi-4-circle'></i>
 						<span>Tab 6: NHL.tv</span>
 					</div>
@@ -205,7 +205,8 @@ const bosNyyScore3 = { gameId: 'sc-mlb-3', total: 71, closeness: 20, lateGame: 1
 				0 0 80px rgba(247, 92, 3, 0.25);
 		}
 
-		.dropdown-menu-fake {
+		.menu-fake {
+			display: block;
 			position: absolute;
 			left: calc(50% + 160px);
 			top: 340px;
@@ -219,9 +220,10 @@ const bosNyyScore3 = { gameId: 'sc-mlb-3', total: 71, closeness: 20, lateGame: 1
 			padding: 6px;
 			font-family: 'DM Sans', sans-serif;
 			z-index: 8;
+			transition: none;
 		}
 
-		.dropdown-menu-fake::before {
+		.menu-fake::before {
 			content: '';
 			position: absolute;
 			top: 18px;
@@ -234,7 +236,7 @@ const bosNyyScore3 = { gameId: 'sc-mlb-3', total: 71, closeness: 20, lateGame: 1
 			transform: rotate(45deg);
 		}
 
-		.dropdown-item {
+		.menu-item {
 			display: flex;
 			align-items: center;
 			gap: 8px;
@@ -243,41 +245,43 @@ const bosNyyScore3 = { gameId: 'sc-mlb-3', total: 71, closeness: 20, lateGame: 1
 			font-size: 0.78rem;
 			color: #1f2937;
 			font-weight: 500;
+			white-space: normal;
 		}
 
-		.dropdown-item i.bi {
+		.menu-item i.bi {
 			color: #6b7280;
 			font-size: 0.95rem;
 			flex-shrink: 0;
 		}
 
-		.dropdown-item span {
+		.menu-item span {
 			flex: 1;
 		}
 
-		.dropdown-item-disabled {
+		.menu-item.disabled {
 			color: #9ca3af;
 		}
 
-		.dropdown-item-disabled .in-use {
+		.menu-item.disabled .in-use {
 			font-size: 0.65rem;
 			color: #d1d5db;
 			font-weight: 500;
 		}
 
-		.dropdown-item-active {
+		.menu-item.selected {
 			background: rgba(247,92,3,0.1);
 			color: #F75C03;
 			font-weight: 700;
 		}
 
-		.dropdown-item-active i.bi {
+		.menu-item.selected i.bi {
 			color: #F75C03;
 		}
 
-		.check {
-			color: #F75C03 !important;
-			font-size: 1rem !important;
+		.menu-item i.menu-item-check {
+			align-self: center;
+			margin-block-start: 0;
+			font-size: 1rem;
 		}
 
 	</style>

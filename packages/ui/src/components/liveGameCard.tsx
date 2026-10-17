@@ -119,7 +119,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 			<StaleLeagueNote league={game.league} />
 
 			{excitementResult && (
-				<div className='d-flex align-items-center gap-2 game-card-ps-bar-row'>
+				<div className='d-flex align-items-center gap-3 game-card-ps-bar-row'>
 					<span className='game-card-ps-label'>{t('gameCard.powerScore')}</span>
 					<div className='progress flex-grow-1 game-card-ps-progress'>
 						<div

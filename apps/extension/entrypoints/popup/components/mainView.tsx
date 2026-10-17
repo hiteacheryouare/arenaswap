@@ -146,7 +146,7 @@ const gameSection = ({
 	);
 
 	return (
-		<div className='mt-2'>
+		<div className='mt-3'>
 			<PopupSectionTitle first={first}>{title}</PopupSectionTitle>
 			{afterTitle}
 			{grouped
@@ -329,7 +329,7 @@ const mainView = ({
 			)}
 
 			{onStandbyStream && (
-				<div className='alert popup-notice d-flex align-items-center gap-2' role='status' data-testid='standby-banner'>
+				<div className='alert popup-notice d-flex align-items-center gap-3' role='status' data-testid='standby-banner'>
 					<i className='bi bi-broadcast popup-notice-icon' aria-hidden='true' />
 					<span>{i18n.t('main.onStandbyStream')}</span>
 				</div>

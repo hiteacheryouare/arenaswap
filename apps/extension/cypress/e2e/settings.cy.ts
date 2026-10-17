@@ -136,7 +136,7 @@ const html = () => cy.document().its('documentElement');
 const themeLabels: Record<string, string> = { dark: 'Dark', light: 'Light', system: 'Match my system' };
 const chooseTheme = (value: string) => {
 	cy.get('#themeSelect').click();
-	cy.contains('.dropdown-menu.show .dropdown-item', themeLabels[value]!).click();
+	cy.contains('.menu.show .menu-item', themeLabels[value]!).click();
 };
 const pickTheme = (value: string) => {
 	openSettings();

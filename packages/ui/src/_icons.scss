@@ -1,0 +1,12 @@
+// Bootstrap Icons, loaded into the layer our own rules use so a rule of ours that restyles an icon
+// still wins on source order, as it did before Bootstrap had layers.
+@use 'sass:meta';
+// Loaded first so Bootstrap's layer order is declared before the block below names `custom`; a
+// layer named before that statement would rank below every Bootstrap layer.
+@use 'bootstrap';
+
+$font-dir: '/fonts' !default;
+
+@layer custom {
+	@include meta.load-css('bootstrap-icons/font/bootstrap-icons', $with: ('bootstrap-icons-font-dir': $font-dir));
+}

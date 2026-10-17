@@ -40,7 +40,7 @@ const Harness = ({ subject, mode = 'full' }: { subject: Game; mode?: revealMode 
 	};
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<div className='mt-2'>
+			<div className='mt-3'>
 				<div>
 					<GameCardReveal game={subject} mode={mode} index={0} skipping={false}>
 						{subject.status === 'post' ? <FinalGameCard {...shared} /> : <LiveGameCard {...shared} />}
@@ -163,7 +163,7 @@ describe('the open reveal for a club with no crest', () => {
 				expect($disc.text()).to.equal($real.text());
 				expect(drawn.fontSize, 'font size').to.equal(real.fontSize);
 				expect(drawn.color, 'ink').to.equal(real.color);
-				expect(real.backgroundColor, 'the card\'s tint').to.equal('rgba(255, 255, 255, 0.16)');
+				expect(real.backgroundImage, 'the card\'s tint').to.contain('rgba(255, 255, 255, 0.16)');
 				expect(drawn.backgroundImage, 'the same tint').to.contain('rgba(255, 255, 255, 0.16)');
 				expect(drawn.backgroundColor, 'over the side\'s colour').to.equal('rgb(48, 54, 61)');
 			});

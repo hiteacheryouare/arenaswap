@@ -39,7 +39,7 @@ const fantasyPlayersPanel = ({ game, roster, boxScore }: fantasyPlayersPanelProp
 					return (
 						<li key={entry.athleteId} className='fantasy-player-row'>
 							{entry.position === 'DST'
-								? <CrestDisc logo={team.logo} abbreviation={team.abbreviation.slice(0, 3)} discClassName='fantasy-player-crest-disc' crestClassName='fantasy-player-crest-logo' loading='lazy' />
+								? <CrestDisc logo={team.logo} abbreviation={team.abbreviation.slice(0, 3)} discClassName='fantasy-player-crest-disc' crestClassName='fantasy-player-crest-logo' loading='lazy' teamColor={team.color} />
 								: <PlayerShot url={rosterHeadshot(entry)} name={entry.name} color='#e5e7eb' className='gd-pregame-leader-shot' />}
 							<div className='min-w-0'>
 								<div className='fantasy-player-name'>

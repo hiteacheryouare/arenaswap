@@ -79,7 +79,7 @@ describe('the boss button in the header', () => {
 const DecoyField = ({ initial = '', shortcut, onSave }: { initial?: string; shortcut?: string; onSave: (url: string) => void }) => {
 	const [saved, setSaved] = useState(initial);
 	return (
-		<div className='popup-container p-3'>
+		<div className='popup-container p-5'>
 			<BossDecoyInput value={saved} shortcut={shortcut} disabled={false} onChange={url => { setSaved(url); onSave(url); }} />
 			<output data-testid='saved'>{saved}</output>
 		</div>

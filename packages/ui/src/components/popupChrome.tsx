@@ -3,6 +3,7 @@ import type { RefObject } from 'react';
 import { leagueLabels, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap } from '@arenaswap/core/types';
 import Crest from './crest';
+import ToggleSwitch from './toggleSwitch';
 import useDocumentTheme from './useDocumentTheme';
 import { useT } from './i18nContext';
 import Wordmark from './wordmark';
@@ -92,7 +93,7 @@ export const PopupHeader = ({
 	return (
 		<div ref={headerRef} className='popup-header d-flex justify-content-between align-items-center'>
 			<Wordmark ref={wordmarkRef} className='arenaswap-logo' />
-			<div className='d-flex align-items-center gap-2' aria-hidden={interactive ? undefined : true}>
+			<div className='d-flex align-items-center gap-3' aria-hidden={interactive ? undefined : true}>
 				{onBossButton && (
 					<button className='btn btn-sm p-0 popup-settings-button' onClick={onBossButton} title={bossShortcut ? t('main.bossButtonShortcut', { shortcut: bossShortcut }) : t('main.bossButton')} aria-label={t('main.bossButton')} disabled={!interactive} tabIndex={interactive ? undefined : -1}>
 						<i className='bi bi-incognito popup-settings-icon' />
@@ -112,9 +113,7 @@ export const PopupHeader = ({
 				<button className='btn btn-sm p-0 popup-settings-button' onClick={onOpenSettings} title={t('main.settingsButton')} aria-label={t('main.settingsButton')} disabled={!interactive} tabIndex={interactive ? undefined : -1}>
 					<i className='bi bi-gear-fill popup-settings-icon' />
 				</button>
-				<div className='form-check form-switch mb-0'>
-					<input className='form-check-input' type='checkbox' id={toggleId} checked={enabled} onChange={onToggleEnabled} disabled={!prefsLoaded || !interactive} tabIndex={interactive ? undefined : -1} aria-label={t('main.enableToggleLabel')} />
-				</div>
+				<ToggleSwitch id={toggleId} checked={enabled} onChange={onToggleEnabled} disabled={!prefsLoaded || !interactive} tabIndex={interactive ? undefined : -1} aria-label={t('main.enableToggleLabel')} />
 			</div>
 		</div>
 	);

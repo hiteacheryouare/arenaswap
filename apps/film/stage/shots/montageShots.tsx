@@ -1,5 +1,6 @@
 import { allLeagueIds } from 'powerscore';
 import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
+import Crest from '@arenaswap/ui/src/components/crest';
 import { easeIn, easeSignature, progress, spring } from '../timing';
 import type { PopupPlacement, ShotContext, ShotModule } from './shotTypes';
 
@@ -73,13 +74,13 @@ const Leagues = ({ ctx }: { ctx: ShotContext }) => {
 				const cell = leagueCell(ctx, index);
 				const pop = spring(ctx.local - (index / urls.length) * popInSeconds, 0.35);
 				return (
-					<img
+					<span
 						key={url}
 						className='league-mark'
-						src={url}
-						alt=''
 						style={{ left: cell.x, top: cell.y, width: cell.size, height: cell.size, opacity: Math.min(1, pop), transform: `scale(${0.6 + 0.4 * Math.min(1, pop)})` }}
-					/>
+					>
+						<Crest logo={url} abbreviation='' className='league-mark-art' fallback='blank' loading='eager' />
+					</span>
 				);
 			})}
 		</div>

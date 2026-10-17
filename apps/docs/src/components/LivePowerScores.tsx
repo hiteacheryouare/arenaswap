@@ -287,7 +287,7 @@ const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string
 		if (loading) {
 			return (
 				<div className='feature-card'>
-					<div className='d-flex align-items-center gap-3'>
+					<div className='d-flex align-items-center gap-5'>
 						<div className='spinner-border text-[var(--color-primary)]' role='status' aria-label={strings.loading}></div>
 						<span className='section-sub mb-0'>{strings.loadingCopy}</span>
 					</div>
@@ -298,7 +298,7 @@ const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string
 		if (error) {
 			return (
 				<div className='feature-card'>
-					<div className='alert alert-warning mb-0'>{error}</div>
+					<div className='alert theme-warning mb-0'>{error}</div>
 				</div>
 			);
 		}
@@ -306,26 +306,26 @@ const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string
 		if (cards.length === 0) {
 			return (
 				<div className='feature-card'>
-					<span className='fw-semibold mb-3 d-block'>{strings.emptyTitle}</span>
+					<span className='fw-semibold mb-5 d-block'>{strings.emptyTitle}</span>
 					<p className='mb-0 section-sub'>{strings.emptyCopy}</p>
 				</div>
 			);
 		}
 
 		return (
-			<div className='d-flex flex-column gap-3'>
+			<div className='d-flex flex-column gap-5'>
 				{cards.slice(0, 8).map(card => (
-					<div key={card.game.id} className='feature-card py-3 px-3'>
-						<div className='d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2'>
+					<div key={card.game.id} className='feature-card py-5 px-5'>
+						<div className='d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3'>
 							<span className='text-[0.75rem] tracking-[0.08em] text-[var(--color-muted)]'>
 								{leagueConfigMap[card.game.league].label.toUpperCase()}
 							</span>
-							<span className='badge rounded-pill text-bg-dark px-3 py-2 text-[0.78rem]'>
+							<span className='badge rounded-pill bg-body fg-white px-5 py-3 text-[0.78rem]'>
 								{strings.scoreBadge.split('{score}').join(String(card.score))}
 							</span>
 						</div>
-						<div className='d-flex align-items-center justify-content-between gap-2'>
-							<div className='d-flex align-items-center gap-2'>
+						<div className='d-flex align-items-center justify-content-between gap-3'>
+							<div className='d-flex align-items-center gap-3'>
 								<span className='fw-semibold'>{card.game.awayTeam.abbreviation}</span>
 								<span className='text-[var(--color-muted)]'>{card.game.awayTeam.score}</span>
 							</div>
@@ -333,7 +333,7 @@ const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string
 								<div>{formatPeriod(card.game, t)}</div>
 								<div>{card.game.sportType === 'baseball' ? strings.live : formatGameClock(card.game)}</div>
 							</div>
-							<div className='d-flex align-items-center gap-2'>
+							<div className='d-flex align-items-center gap-3'>
 								<span className='text-[var(--color-muted)]'>{card.game.homeTeam.score}</span>
 								<span className='fw-semibold'>{card.game.homeTeam.abbreviation}</span>
 							</div>

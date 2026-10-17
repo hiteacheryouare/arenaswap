@@ -1,0 +1,27 @@
+---
+// For a `Crest` rendered as static markup with no island behind it, inside a container marked
+// `data-crest-settle`. Nothing would ever run its load check, so it would stay `pending` and show
+// its placeholder through the transparent parts of the logo. This is that check, by hand.
+//
+// The `complete` check is not padding — this is a deferred module, so a crest above the fold has
+// usually fired `load` before it runs. And `complete` is true for a broken image too, which is
+// what `naturalWidth` is deciding.
+---
+<script>
+	document.querySelectorAll<HTMLElement>('[data-crest-settle] .crest[data-crest-state="pending"]').forEach(crest => {
+		const image = crest.querySelector('img');
+		if (!image) return;
+
+		const settle = (state: 'loaded' | 'failed') => { crest.dataset.crestState = state; };
+		if (image.complete) {
+			settle(image.naturalWidth > 0 ? 'loaded' : 'failed');
+			return;
+		}
+		image.addEventListener('load', () => settle('loaded'), { once: true });
+		image.addEventListener('error', () => settle('failed'), { once: true });
+	});
+</script>
+
+<!-- Without the script the crests never leave `pending`, and every placeholder would sit behind a
+     loaded crest, showing through the transparent parts of it. -->
+<noscript><style>[data-crest-settle] .crest-fallback { display: none; }</style></noscript>

@@ -123,8 +123,8 @@ describe('the language switcher', () => {
 		cy.visit('/');
 		cy.get('.lang-switch-trigger').click();
 		cy.get('.lang-switch-menu').should('be.visible');
-		cy.get('.lang-switch-menu .dropdown-item').should('have.length', 12);
-		cy.get('.lang-switch-menu .dropdown-item.active').should('contain.text', 'English');
+		cy.get('.lang-switch-menu .menu-item').should('have.length', 12);
+		cy.get('.lang-switch-menu .menu-item.active').should('contain.text', 'English');
 		cy.get('.lang-switch-menu').then($menu => {
 			const rect = $menu[0].getBoundingClientRect();
 			expect(rect.right, 'menu inside the viewport').to.be.lessThan(1281);
@@ -139,13 +139,13 @@ describe('the language switcher', () => {
 		cy.visit('/');
 		cy.get('.lang-switch-trigger').click();
 		cy.get('.lang-switch-menu').should('have.css', 'background-color', 'rgb(22, 27, 34)');
-		cy.get('.lang-switch-menu .dropdown-item.active').should('have.css', 'color', 'rgb(13, 17, 23)');
+		cy.get('.lang-switch-menu .menu-item.active').should('have.css', 'color', 'rgb(13, 17, 23)');
 	});
 
 	it('keeps your place when you change language', () => {
 		cy.visit('/legal/privacy/');
 		cy.get('.lang-switch-trigger').click();
-		cy.get('.lang-switch-menu .dropdown-item').eq(1).click();
+		cy.get('.lang-switch-menu .menu-item').eq(1).click();
 		cy.location('pathname').should('eq', '/arenaswap/de/legal/privacy/');
 		cy.get('html').should('have.attr', 'lang', 'de');
 	});
@@ -154,7 +154,7 @@ describe('the language switcher', () => {
 		cy.visit('/docs/extension/getting-started/');
 		cy.get('.lang-switch-note').should('not.exist');
 		cy.get('.lang-switch-trigger').click();
-		cy.get('.lang-switch-menu .dropdown-item').eq(1).click();
+		cy.get('.lang-switch-menu .menu-item').eq(1).click();
 		cy.location('pathname').should('eq', '/arenaswap/de/docs/extension/getting-started/');
 	});
 
@@ -164,7 +164,7 @@ describe('the language switcher', () => {
 		cy.visit('/404.html');
 		cy.get('.lang-switch-trigger').click();
 		cy.get('.lang-switch-menu .lang-switch-note').should('be.visible');
-		cy.get('.lang-switch-menu .dropdown-item').eq(1).should('have.attr', 'href', '/arenaswap/de/');
+		cy.get('.lang-switch-menu .menu-item').eq(1).should('have.attr', 'href', '/arenaswap/de/');
 	});
 
 	it('is a plain list in the drawer, where a nested dropdown would open twice', () => {
@@ -179,15 +179,36 @@ describe('the language switcher', () => {
 	});
 });
 
+// Chrome reports a colour in whatever space it was mixed in, oklch included, so it is painted to a
+// canvas and read back as sRGB.
+const toRgb = (color: string): [number, number, number] => {
+	const context = document.createElement('canvas').getContext('2d')!;
+	context.fillStyle = color;
+	context.fillRect(0, 0, 1, 1);
+	const [r, g, b] = context.getImageData(0, 0, 1, 1).data;
+	return [r!, g!, b!];
+};
+
+const luminance = (color: string) => {
+	const [r, g, b] = toRgb(color).map(channel => {
+		const value = channel / 255;
+		return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+	});
+	return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+};
+
 describe('the untranslated notice', () => {
-	// Bootstrap computes a light and a dark set of the -bg-subtle tokens and this site sets no
-	// colour mode, so an unthemed alert is a pale slab on a #0d1117 page.
+	// Bootstrap's alert surfaces come in a light and a dark tone, and a light one is a pale slab on
+	// this page.
 	it('is a Bootstrap alert that reads on the dark page', () => {
 		cy.visit('/de/docs/extension/getting-started/');
-		cy.get('.untranslated-notice')
-			.should('have.class', 'alert')
-			.and('have.css', 'background-color', 'rgb(12, 31, 42)')
-			.and('have.css', 'color', 'rgb(139, 196, 228)');
+		cy.get('.untranslated-notice').should('have.class', 'alert').then($notice => {
+			const style = getComputedStyle($notice[0]);
+			const surface = luminance(style.backgroundColor);
+			const ink = luminance(style.color);
+			expect(surface, 'a dark surface').to.be.lessThan(0.05);
+			expect((ink + 0.05) / (surface + 0.05), 'contrast').to.be.greaterThan(4.5);
+		});
 	});
 
 	it('names the language it is written in, in every locale', () => {

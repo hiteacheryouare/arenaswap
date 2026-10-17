@@ -2,6 +2,7 @@ import { i18n } from '#i18n';
 import { modesInUse } from '@arenaswap/core';
 import type { BuiltInModeId, SignalName, UserPreferences } from '@arenaswap/core/types';
 import { modeNameKeys, modeSignalIds, signalPresentation, type ModeSignalId } from '@arenaswap/ui/src/components/scoringModeMeta';
+import ToggleSwitch from '@arenaswap/ui/src/components/toggleSwitch';
 import SettingTooltipIcon from './settingTooltipIcon';
 import { disabledSignalsOf } from '../../../utils/scoringPrefs';
 
@@ -25,7 +26,7 @@ const modeSignalSwitches = ({ prefs, disabled, onToggleSignal, onToggleModeSigna
 
 	return (
 		<>
-			<div className='fw-bold popup-section-label mt-3'>
+			<div className='fw-bold popup-section-label mt-5'>
 				<i className='bi bi-sliders' />
 				{i18n.t('setup.signalsSection')}
 				<SettingTooltipIcon text={i18n.t('setup.signalsExplainer')} label={i18n.t('setup.signalsSection')} />
@@ -35,38 +36,34 @@ const modeSignalSwitches = ({ prefs, disabled, onToggleSignal, onToggleModeSigna
 				const off = disabledSignalsOf(prefs, mode);
 				const oneLeft = off.length === signals.length - 1;
 				return (
-					<div key={mode} className={headed && index > 0 ? 'mt-3' : undefined} data-mode={mode}>
+					<div key={mode} className={headed && index > 0 ? 'mt-5' : undefined} data-mode={mode}>
 						{headed && (
-							<div className='fw-semibold text-body-secondary setting-toggle-label mode-signals-heading'>{i18n.t(modeNameKeys[mode])}</div>
+							<div className='fw-semibold fg-secondary setting-toggle-label mode-signals-heading'>{i18n.t(modeNameKeys[mode])}</div>
 						)}
 						{signals.map(signal => {
 							const isOff = off.includes(signal);
 							const isLastOn = !isOff && oneLeft;
 							const id = switchId(mode, signal);
 							return (
-								<div key={signal} className='d-flex justify-content-between align-items-center mt-2'>
-									<label className='text-body-secondary setting-toggle-label' htmlFor={id}>
+								<div key={signal} className='d-flex justify-content-between align-items-center mt-3'>
+									<label className='fg-secondary setting-toggle-label' htmlFor={id}>
 										<span
 											className='d-inline-block rounded-circle me-1'
 											style={{ width: '8px', height: '8px', backgroundColor: isOff ? '#6c757d' : signalPresentation[signal].color, verticalAlign: 'middle' }}
 										/>
 										{i18n.t(signalPresentation[signal].labelKey)}
 									</label>
-									<div className='form-check form-switch mb-0'>
-										<input
-											className='form-check-input'
-											type='checkbox'
-											id={id}
-											checked={!isOff}
-											onChange={() => (mode === 'classic' ? onToggleSignal(signal as SignalName) : onToggleModeSignal(mode, signal))}
-											disabled={disabled || isLastOn}
-											aria-describedby={isLastOn ? lastActiveNoteId(mode) : undefined}
-										/>
-									</div>
+									<ToggleSwitch
+										id={id}
+										checked={!isOff}
+										onChange={() => (mode === 'classic' ? onToggleSignal(signal as SignalName) : onToggleModeSignal(mode, signal))}
+										disabled={disabled || isLastOn}
+										aria-describedby={isLastOn ? lastActiveNoteId(mode) : undefined}
+									/>
 								</div>
 							);
 						})}
-						{oneLeft && <div id={lastActiveNoteId(mode)} className='setting-explainer mt-2'>{i18n.t('setup.signalLastActive')}</div>}
+						{oneLeft && <div id={lastActiveNoteId(mode)} className='setting-explainer mt-3'>{i18n.t('setup.signalLastActive')}</div>}
 					</div>
 				);
 			})}

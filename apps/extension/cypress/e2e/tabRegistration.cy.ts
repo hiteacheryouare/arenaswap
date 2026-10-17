@@ -2,7 +2,7 @@ import { bullsHeat, eaglesCowboys, liveState, makeScore, onboardedPrefs, openTab
 
 const onboarded = { local: { onboardingCompleted: true }, sync: { prefs: onboardedPrefs() } };
 const cardFor = (abbreviation: string) => cy.contains('.game-card', abbreviation);
-const tabPicker = (abbreviation: string) => cardFor(abbreviation).find('.game-card-tab-assign .form-select');
+const tabPicker = (abbreviation: string) => cardFor(abbreviation).find('.game-card-tab-assign .form-control-caret');
 
 describe('registering a tab and watching the lead change', () => {
 	beforeEach(() => cy.openPopup({ ...onboarded, state: liveState(), tabs: openTabs }));
@@ -28,7 +28,7 @@ describe('registering a tab and watching the lead change', () => {
 
 		cardFor(bullsHeat.homeTeam.abbreviation)
 			.find('.game-card-tab-assign')
-			.contains('.dropdown-item', openTabs[0].title)
+			.contains('.menu-item', openTabs[0].title)
 			.should('be.disabled');
 	});
 
@@ -51,7 +51,7 @@ describe('registering a tab and watching the lead change', () => {
 		});
 		tabPicker(sixersThunder.homeTeam.abbreviation).click();
 
-		cy.get('.dropdown-menu.show').should('be.visible').then($menu => {
+		cy.get('.menu.show').should('be.visible').then($menu => {
 			const box = $menu[0]!.getBoundingClientRect();
 			const topmost = $menu[0]!.ownerDocument.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
 			expect($menu[0]!.contains(topmost), 'the menu is what is on top').to.equal(true);

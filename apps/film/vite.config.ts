@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import sassOptions from '@arenaswap/ui/src/sassOptions';
+import bootstrapTokenPrefix from '@arenaswap/ui/src/bootstrapTokenPrefix';
 import alias from './sourceAliases';
 
 // The stage the films are shot on. It is a page like any other, served beside the built extension
@@ -12,7 +12,7 @@ export default defineConfig({
 	publicDir: false,
 	plugins: [react()],
 	resolve: { alias },
-	css: { preprocessorOptions: { scss: sassOptions } },
+	css: { postcss: { plugins: [bootstrapTokenPrefix] } },
 	build: {
 		outDir: resolve(import.meta.dirname, '.build/stage'),
 		emptyOutDir: true,

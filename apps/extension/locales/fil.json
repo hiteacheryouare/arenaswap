@@ -446,6 +446,7 @@
 		"leaderRushing": "RUSH",
 		"leaderReceiving": "REC",
 		"tabMatchup": "Matchup",
+		"moreTabs": "Iba pa",
 		"recentForm": "Recent form",
 		"seasonStats": "Season stats",
 		"injuries": "Injuries",
@@ -910,14 +911,12 @@
 	},
 	"leaguePicker": {
 		"back": "Bumalik",
-		"step": "Step $1 ng $2",
 		"title": "Anong mga sports ang pinapanood mo?",
 		"all": "Lahat",
 		"next": "Susunod"
 	},
 	"teamPicker": {
 		"back": "Bumalik",
-		"step": "Step $1 ng $2",
 		"title": "Piliin ang mga Team Mo",
 		"explainer": "May PowerScore boost ang mga paborito, kaya mas madalas manalo ng switch ang mga laro nila.",
 		"yourFavorites": "Mga Paborito Mo",
@@ -933,7 +932,6 @@
 		"done": "Tapos na"
 	},
 	"tabControl": {
-		"step": "Step $1 ng $2",
 		"title": "Maligayang Pagdating sa ArenaSwap",
 		"subtitle": "Bago tayo mag-set up, ito ang aasahan mo.",
 		"feature1Title": "Awtomatikong Paglipat ng Tab",
@@ -944,11 +942,13 @@
 		"feature3Body": "I-pause ang auto-switching kahit kailan. I-adjust ang sensitivity at cooldown mula sa Mga Setting.",
 		"gotIt": "Gets Ko!"
 	},
+	"flowStepper": {
+		"step": "Step $1 ng $2"
+	},
 	"walkthrough": {
 		"skipTour": "Laktawan ang tour"
 	},
 	"stepToggle": {
-		"step": "Step $1 ng $2",
 		"title": "Pag-on at Pag-off",
 		"subtitle": "Iisang switch ang kumokontrol sa lahat.",
 		"tryIt": "↑ subukan mo",
@@ -960,7 +960,6 @@
 		"next": "Susunod"
 	},
 	"stepPowerScore": {
-		"step": "Step $1 ng $2",
 		"title": "Kilalanin ang PowerScore",
 		"subtitle": "Ang Puso ng ArenaSwap",
 		"introTitle": "Kilalanin ang PowerScore",
@@ -982,7 +981,6 @@
 		"tapHint": "I-click kahit saan para magpatuloy"
 	},
 	"stepTabAssign": {
-		"step": "Step $1 ng $2",
 		"title": "I-assign ang mga Tab sa mga Laro",
 		"subtitle": "Hihipuin lang ng ArenaSwap ang mga tab na ire-register mo.",
 		"assignPlaceholder": "— Mag-assign ng tab —",
@@ -992,7 +990,6 @@
 		"next": "Susunod"
 	},
 	"stepAutoSwitch": {
-		"step": "Step $1 ng $2",
 		"title": "Panoorin Itong Gumana",
 		"watchingCaption": "pinapanood ang laro ng Eagles…",
 		"reveal": "Nakita mo ba 'yon? 👀",
@@ -1002,7 +999,6 @@
 		"watchingBadge": "WATCHING"
 	},
 	"stepSettings": {
-		"step": "Step $1 ng $2",
 		"title": "I-tune Ayon sa Gusto Mo",
 		"subtitle": "Buksan ang Mga Setting kahit kailan para i-adjust.",
 		"sensitivity1": "Halos Tulog",
@@ -1021,7 +1017,6 @@
 		"next": "Susunod"
 	},
 	"stepGameDetail": {
-		"step": "Step $1 ng $2",
 		"title": "Tuklasin ang Kahit Anong Laro",
 		"subtitle": "I-click ang isang game card para makita kung ano ang nagtutulak sa score nito.",
 		"tapHint": "i-click para buksan",
@@ -1038,7 +1033,6 @@
 		"next": "Susunod"
 	},
 	"stepLeaguesFavorites": {
-		"step": "Step $1 ng $2",
 		"title": "Mga Liga at Paborito",
 		"subtitle": "Dalawang paraan para hubugin kung ano ang pinapanood ng ArenaSwap.",
 		"tabLeagues": "Mga Liga",
@@ -1055,7 +1049,6 @@
 		"next": "Susunod"
 	},
 	"stepReAccess": {
-		"step": "Step $1 ng $2",
 		"title": "Pagbalik Dito",
 		"subtitle": "Isang click lang ang layo ng tour.",
 		"callout": "ayan 'yun",
@@ -1064,7 +1057,6 @@
 		"next": "Tapos na"
 	},
 	"standbyGuide": {
-		"step": "Step $1 ng $2",
 		"title": "Standby Stream",
 		"subtitle": "Fallback para sa mga tahimik na sandali.",
 		"quietTitle": "Kapag Tumahimik ang mga Laro",
@@ -1139,12 +1131,12 @@
 	},
 	"favoriteTeamBonus": {
 		"label": "Boost ng Paboritong Team",
-		"perTeam": "+$1 pts kada team",
+		"unit": "pts kada team",
 		"explainer": "Isang beses itong inilalapat sa bawat paboritong team sa laro, kaya kapag dalawa ang paborito, doble ang boost."
 	},
 	"postseasonBoost": {
 		"label": "Boost sa Postseason",
-		"points": "hanggang +$1 pts",
+		"unit": "pts max",
 		"explainer": "Ito ang pinakamataas na maidaragdag ng championship game. May share ang mas maagang rounds — 75% sa semifinal, 50% sa quarterfinal, 25% sa kahit anong mas maagang round pa. Wala namang maidaragdag ang mga exhibition game."
 	},
 	"proTip": {

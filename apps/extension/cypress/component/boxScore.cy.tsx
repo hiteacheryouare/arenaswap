@@ -628,7 +628,7 @@ describe('box score', () => {
 
 		it('keeps the table on the light card rather than the dark popup default', () => {
 			mount(games.basketball);
-			// $table-bg defaults to var(--as-body-bg), which is #0d1117 on this theme.
+			// $table-bg defaults to var(--as-bg-body), which is #0d1117 on this theme.
 			cy.get('.gd-box-table tbody td').first().then($td => {
 				const style = getComputedStyle($td[0]);
 				expect(style.color).to.equal('rgb(17, 24, 39)');

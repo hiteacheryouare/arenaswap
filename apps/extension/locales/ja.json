@@ -446,6 +446,7 @@
 		"leaderRushing": "RUSH",
 		"leaderReceiving": "REC",
 		"tabMatchup": "対戦",
+		"moreTabs": "その他",
 		"recentForm": "直近の成績",
 		"seasonStats": "シーズン成績",
 		"injuries": "負傷者",
@@ -910,14 +911,12 @@
 	},
 	"leaguePicker": {
 		"back": "戻る",
-		"step": "ステップ $1 / $2",
 		"title": "どのスポーツを観ますか？",
 		"all": "すべて",
 		"next": "次へ"
 	},
 	"teamPicker": {
 		"back": "戻る",
-		"step": "ステップ $1 / $2",
 		"title": "チームを選ぶ",
 		"explainer": "お気に入りにはPowerScoreブーストが付き、その試合が切り替えで選ばれやすくなります。",
 		"yourFavorites": "あなたのお気に入り",
@@ -933,7 +932,6 @@
 		"done": "完了"
 	},
 	"tabControl": {
-		"step": "ステップ $1 / $2",
 		"title": "ArenaSwapへようこそ",
 		"subtitle": "設定を始める前に、何ができるかをご確認ください。",
 		"feature1Title": "タブの自動切り替え",
@@ -944,11 +942,13 @@
 		"feature3Body": "自動切り替えはいつでも一時停止できます。感度とクールダウンは設定から調整できます。",
 		"gotIt": "了解"
 	},
+	"flowStepper": {
+		"step": "ステップ $1 / $2"
+	},
 	"walkthrough": {
 		"skipTour": "ツアーをスキップ"
 	},
 	"stepToggle": {
-		"step": "ステップ $1 / $2",
 		"title": "オン・オフの切り替え",
 		"subtitle": "スイッチひとつですべてをコントロール。",
 		"tryIt": "↑ 試してみて",
@@ -960,7 +960,6 @@
 		"next": "次へ"
 	},
 	"stepPowerScore": {
-		"step": "ステップ $1 / $2",
 		"title": "PowerScoreとは",
 		"subtitle": "ArenaSwapの心臓部",
 		"introTitle": "PowerScoreとは",
@@ -982,7 +981,6 @@
 		"tapHint": "どこでもクリックして続ける"
 	},
 	"stepTabAssign": {
-		"step": "ステップ $1 / $2",
 		"title": "タブを試合に割り当てる",
 		"subtitle": "ArenaSwapが触るのは登録したタブだけです。",
 		"assignPlaceholder": "— タブを割り当て —",
@@ -992,7 +990,6 @@
 		"next": "次へ"
 	},
 	"stepAutoSwitch": {
-		"step": "ステップ $1 / $2",
 		"title": "動作を確認しよう",
 		"watchingCaption": "イーグルスの試合を観ています…",
 		"reveal": "見ましたか？ 👀",
@@ -1002,7 +999,6 @@
 		"watchingBadge": "視聴中"
 	},
 	"stepSettings": {
-		"step": "ステップ $1 / $2",
 		"title": "自分好みに調整",
 		"subtitle": "いつでも設定を開いて調整できます。",
 		"sensitivity1": "ほぼ反応なし",
@@ -1021,7 +1017,6 @@
 		"next": "次へ"
 	},
 	"stepGameDetail": {
-		"step": "ステップ $1 / $2",
 		"title": "試合の詳細を見る",
 		"subtitle": "試合カードをクリックしてスコアの要因を確認しましょう。",
 		"tapHint": "クリックして開く",
@@ -1038,7 +1033,6 @@
 		"next": "次へ"
 	},
 	"stepLeaguesFavorites": {
-		"step": "ステップ $1 / $2",
 		"title": "リーグとお気に入り",
 		"subtitle": "ArenaSwapが観る試合を形作る2つの方法。",
 		"tabLeagues": "リーグ",
@@ -1055,7 +1049,6 @@
 		"next": "次へ"
 	},
 	"stepReAccess": {
-		"step": "ステップ $1 / $2",
 		"title": "ここに戻る方法",
 		"subtitle": "ツアーはいつでもワンクリックで。",
 		"callout": "これです",
@@ -1064,7 +1057,6 @@
 		"next": "完了"
 	},
 	"standbyGuide": {
-		"step": "ステップ $1 / $2",
 		"title": "Standby Stream",
 		"subtitle": "静かな時間のためのフォールバック。",
 		"quietTitle": "試合が静かになったら",
@@ -1139,12 +1131,12 @@
 	},
 	"favoriteTeamBonus": {
 		"label": "お気に入りチームブースト",
-		"perTeam": "チームごとに+$1点",
+		"unit": "点（チームごと）",
 		"explainer": "試合に出るお気に入りチーム1チームにつき1回適用されるので、両チームがお気に入りならブーストは2倍です。"
 	},
 	"postseasonBoost": {
 		"label": "ポストシーズンブースト",
-		"points": "最大+$1点",
+		"unit": "点（最大）",
 		"explainer": "決勝が加算できる上限です。それより前のラウンドは一部のみで、準決勝は4分の3、準々決勝は半分、それより前は4分の1です。エキシビションマッチには加算されません。"
 	},
 	"proTip": {

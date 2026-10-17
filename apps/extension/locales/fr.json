@@ -446,6 +446,7 @@
 		"leaderRushing": "RUSH",
 		"leaderReceiving": "REC",
 		"tabMatchup": "Duel",
+		"moreTabs": "Plus",
 		"recentForm": "Forme récente",
 		"seasonStats": "Stats de la saison",
 		"injuries": "Blessures",
@@ -910,14 +911,12 @@
 	},
 	"leaguePicker": {
 		"back": "Retour",
-		"step": "Étape $1 sur $2",
 		"title": "Quels sports tu regardes ?",
 		"all": "Toutes",
 		"next": "Suivant"
 	},
 	"teamPicker": {
 		"back": "Retour",
-		"step": "Étape $1 sur $2",
 		"title": "Choisis tes équipes",
 		"explainer": "Les favoris reçoivent un bonus de PowerScore, pour que leurs matchs remportent plus de changements.",
 		"yourFavorites": "Tes favoris",
@@ -933,7 +932,6 @@
 		"done": "Terminé"
 	},
 	"tabControl": {
-		"step": "Étape $1 sur $2",
 		"title": "Bienvenue sur ArenaSwap",
 		"subtitle": "Avant de tout configurer, voici ce à quoi t'attendre.",
 		"feature1Title": "Changement d'onglet automatique",
@@ -944,11 +942,13 @@
 		"feature3Body": "Mets le changement automatique en pause à tout moment. Règle la sensibilité et le délai depuis Paramètres.",
 		"gotIt": "Compris"
 	},
+	"flowStepper": {
+		"step": "Étape $1 sur $2"
+	},
 	"walkthrough": {
 		"skipTour": "Passer la visite"
 	},
 	"stepToggle": {
-		"step": "Étape $1 sur $2",
 		"title": "L'activer et le désactiver",
 		"subtitle": "Un seul interrupteur contrôle tout.",
 		"tryIt": "↑ essaie",
@@ -960,7 +960,6 @@
 		"next": "Suivant"
 	},
 	"stepPowerScore": {
-		"step": "Étape $1 sur $2",
 		"title": "Découvre le PowerScore",
 		"subtitle": "Le moteur d'ArenaSwap",
 		"introTitle": "Découvre le PowerScore",
@@ -982,7 +981,6 @@
 		"tapHint": "Clique n'importe où pour continuer"
 	},
 	"stepTabAssign": {
-		"step": "Étape $1 sur $2",
 		"title": "Associe des onglets aux matchs",
 		"subtitle": "ArenaSwap ne touche que les onglets que tu enregistres.",
 		"assignPlaceholder": "— Associer un onglet —",
@@ -992,7 +990,6 @@
 		"next": "Suivant"
 	},
 	"stepAutoSwitch": {
-		"step": "Étape $1 sur $2",
 		"title": "Regarde-le à l'œuvre",
 		"watchingCaption": "on regarde le match des Eagles…",
 		"reveal": "Tu as vu ça ? 👀",
@@ -1002,7 +999,6 @@
 		"watchingBadge": "EN VISIONNAGE"
 	},
 	"stepSettings": {
-		"step": "Étape $1 sur $2",
 		"title": "Règle-le à ta façon",
 		"subtitle": "Ouvre Paramètres à tout moment pour ajuster.",
 		"sensitivity1": "À peine actif",
@@ -1021,7 +1017,6 @@
 		"next": "Suivant"
 	},
 	"stepGameDetail": {
-		"step": "Étape $1 sur $2",
 		"title": "Plonge dans n'importe quel match",
 		"subtitle": "Clique sur une fiche pour voir ce qui propulse son score.",
 		"tapHint": "clique pour ouvrir",
@@ -1038,7 +1033,6 @@
 		"next": "Suivant"
 	},
 	"stepLeaguesFavorites": {
-		"step": "Étape $1 sur $2",
 		"title": "Ligues et favoris",
 		"subtitle": "Deux façons différentes de façonner ce qu'ArenaSwap surveille.",
 		"tabLeagues": "Ligues",
@@ -1055,7 +1049,6 @@
 		"next": "Suivant"
 	},
 	"stepReAccess": {
-		"step": "Étape $1 sur $2",
 		"title": "Revenir ici",
 		"subtitle": "La visite guidée est toujours à portée de clic.",
 		"callout": "c'est celui-là",
@@ -1064,7 +1057,6 @@
 		"next": "Terminé"
 	},
 	"standbyGuide": {
-		"step": "Étape $1 sur $2",
 		"title": "Standby Stream",
 		"subtitle": "Un repli pour les moments calmes.",
 		"quietTitle": "Quand les matchs s'endorment",
@@ -1139,12 +1131,12 @@
 	},
 	"favoriteTeamBonus": {
 		"label": "Bonus d'équipe favorite",
-		"perTeam": "+$1 pts par équipe",
+		"unit": "pts par équipe",
 		"explainer": "Appliqué une fois par équipe favorite dans un match : deux favoris, double bonus."
 	},
 	"postseasonBoost": {
 		"label": "Bonus de playoffs",
-		"points": "jusqu'à +$1 pts",
+		"unit": "pts max",
 		"explainer": "Le maximum que peut ajouter une finale. Les tours précédents en touchent une part : trois quarts pour une demi-finale, la moitié pour un quart de finale, un quart pour tout tour antérieur. Les matchs d'exhibition n'ajoutent rien."
 	},
 	"proTip": {

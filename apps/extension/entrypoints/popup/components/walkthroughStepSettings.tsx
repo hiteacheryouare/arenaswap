@@ -3,6 +3,8 @@ import { i18n } from '#i18n';
 import { leagueShortLabels } from '@arenaswap/core/constants';
 import type { LeagueId } from '@arenaswap/core/types';
 import { cooldownSteps, formatCooldownSeconds } from './cooldownSlider';
+import FlowStepper from './flowStepper';
+import FormRange from './formRange';
 import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepSettingsProps {
@@ -28,71 +30,67 @@ const walkthroughStepSettings = ({ onNext, onBack, leagues = fallbackLeagues }: 
 
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<div className='small text-body-secondary text-uppercase text-center pt-3 pb-2'>{i18n.t('stepSettings.step', [5, 8])}</div>
+			<FlowStepper step={5} total={8} className='pt-5 pb-3' />
 
-			<div className='fw-bold fs-5 text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepSettings.title')}</div>
-			<div className='text-body-secondary small text-center mb-3 lh-base'>
+			<div className='fw-bold fs-lg text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepSettings.title')}</div>
+			<div className='fg-secondary small text-center mb-5 lh-md'>
 				{i18n.t('stepSettings.subtitle')}
 			</div>
 
-			<div className='border border-secondary-subtle rounded p-2 mb-3'>
-				<div className='mb-3'>
+			<div className='border border-subtle-accent rounded p-3 mb-5'>
+				<div className='mb-5'>
 					<div className='d-flex justify-content-between align-items-center mb-1'>
-						<span className='text-body-secondary setting-toggle-label'>
-							<i className='bi bi-sliders me-1 text-primary' />
+						<span className='fg-secondary setting-toggle-label'>
+							<i className='bi bi-sliders me-1 fg-primary' />
 							{i18n.t('stepSettings.sensitivityLabel')}
 						</span>
 						<span className={`fw-semibold setting-value-label${sensitivity === 7 ? ' ludicrous-speed' : ''}`}>
 							{sensitivityLabels[sensitivity]}
 						</span>
 					</div>
-					<input
-						type='range'
-						className='form-range w-100'
+					<FormRange
 						min={1} max={7} step={1}
 						value={sensitivity}
 						onChange={e => setSensitivity(Number(e.target.value))}
 					/>
-					<div className='text-body-secondary small lh-base' style={{ fontSize: '0.7rem' }}>
+					<div className='fg-secondary small lh-md' style={{ fontSize: '0.7rem' }}>
 						{i18n.t('stepSettings.sensitivityHelp')}
 					</div>
 				</div>
 
 				<div>
 					<div className='d-flex justify-content-between align-items-center mb-1'>
-						<span className='text-body-secondary setting-toggle-label'>
-							<i className='bi bi-clock me-1 text-primary' />
+						<span className='fg-secondary setting-toggle-label'>
+							<i className='bi bi-clock me-1 fg-primary' />
 							{i18n.t('stepSettings.cooldownLabel')}
 						</span>
 						<span className='fw-semibold setting-value-label'>
 							{formatCooldownSeconds(cooldownSteps[cooldownIdx]!)}
 						</span>
 					</div>
-					<input
-						type='range'
-						className='form-range w-100'
+					<FormRange
 						min={0} max={cooldownSteps.length - 1} step={1}
 						value={cooldownIdx}
 						onChange={e => setCooldownIdx(Number(e.target.value))}
 					/>
-					<div className='text-body-secondary small lh-base' style={{ fontSize: '0.7rem' }}>
+					<div className='fg-secondary small lh-md' style={{ fontSize: '0.7rem' }}>
 						{i18n.t('stepSettings.cooldownHelp')}
 					</div>
 				</div>
 
-				<div className='d-flex gap-1 flex-wrap mt-3'>
+				<div className='d-flex gap-1 flex-wrap mt-5'>
 					{shownLeagues.map(league => (
-						<span key={league} className='badge text-bg-primary'>{leagueShortLabels[league]}</span>
+						<span key={league} className='badge theme-primary'>{leagueShortLabels[league]}</span>
 					))}
-					<span className='badge border border-secondary-subtle text-body-secondary'>{i18n.t('stepSettings.moreLeagues')}</span>
+					<span className='badge border border-subtle-accent fg-secondary'>{i18n.t('stepSettings.moreLeagues')}</span>
 				</div>
 			</div>
 
-			<div className='d-flex gap-2 mt-auto'>
-				<button type='button' className='btn btn-secondary flex-grow-1' onClick={onBack}>
+			<div className='d-flex gap-3 mt-auto'>
+				<button type='button' className='btn btn-solid theme-accent flex-grow-1' onClick={onBack}>
 					<i className='bi bi-arrow-left' /> {i18n.t('stepSettings.back')}
 				</button>
-				<button type='button' className='btn btn-primary flex-grow-1' onClick={onNext}>
+				<button type='button' className='btn btn-solid theme-primary flex-grow-1' onClick={onNext}>
 					{i18n.t('stepSettings.next')} <i className='bi bi-arrow-right' />
 				</button>
 			</div>

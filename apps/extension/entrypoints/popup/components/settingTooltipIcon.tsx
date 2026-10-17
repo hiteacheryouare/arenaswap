@@ -11,7 +11,6 @@ interface settingTooltipIconProps {
 
 const SettingTooltipIcon = ({ text, label }: settingTooltipIconProps) => {
 	const btnRef = useRef<HTMLButtonElement>(null);
-	const tooltipRef = useRef<Tooltip | null>(null);
 
 	useEffect(() => {
 		if (!btnRef.current) return;
@@ -21,7 +20,6 @@ const SettingTooltipIcon = ({ text, label }: settingTooltipIconProps) => {
 			trigger: 'hover focus',
 			container: 'body',
 		});
-		tooltipRef.current = tooltip;
 		return () => tooltip.dispose();
 	}, [text]);
 
@@ -31,9 +29,6 @@ const SettingTooltipIcon = ({ text, label }: settingTooltipIconProps) => {
 			type='button'
 			className='setting-tooltip-btn'
 			aria-label={label ? i18n.t('setup.aboutSetting', { setting: label }) : i18n.t('setup.moreInfo')}
-			onKeyDown={e => {
-				if (e.key === 'Escape') tooltipRef.current?.hide();
-			}}
 		>
 			<i className='bi bi-question-circle' aria-hidden='true' />
 		</button>

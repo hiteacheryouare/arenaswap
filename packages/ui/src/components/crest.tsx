@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
+import { isHex, readableInkOn } from '@arenaswap/chromatic';
 
 type crestState = 'pending' | 'loaded' | 'failed' | 'missing';
 
@@ -27,6 +28,11 @@ interface crestProps {
 	title?: string;
 	fallback?: 'abbreviation' | 'blank' | 'none';
 	fallbackStyle?: CSSProperties;
+	// The team's own colour, where the call site knows it: the placeholder is filled with it and the
+	// initials take whichever ink reads on it. Anything else gets the neutral disc.
+	teamColor?: string;
+	// A Bootstrap Icons class drawn in the placeholder instead of the abbreviation.
+	icon?: string;
 	loading?: 'eager' | 'lazy';
 	// Both opt-in, and only for a caller that reads the crest's own pixels back off a canvas.
 	// Without `crossOrigin` that canvas is tainted and throws on read; with it the request changes
@@ -59,9 +65,17 @@ export const resolveCrestState = (logo: string | undefined, outcome: crestOutcom
 	return verdict === 'pending' && state !== 'failed' ? 'pending' : state;
 };
 
+// A team colour goes in through the avatar tokens the placeholder paints with, inline, so it beats a
+// call site's own neutral tone the way that tone beats the default.
+export const crestFill = (teamColor: string | undefined): CSSProperties | undefined => (
+	isHex(teamColor)
+		? { '--as-avatar-bg': teamColor, '--as-avatar-color': readableInkOn(teamColor) } as CSSProperties
+		: undefined
+);
+
 // The placeholder and the image share one box, and CSS picks between them off `data-crest-state`.
 // Layering rather than swapping means a crest already in the cache paints in the first frame, and
-// it lets the one non-React caller (`TeamStrip.astro`) drive the same stylesheet by hand.
+// it lets the docs' static markup (`CrestSettle.astro`) drive the same stylesheet by hand.
 const Crest = ({
 	logo,
 	abbreviation,
@@ -70,6 +84,8 @@ const Crest = ({
 	title,
 	fallback = 'abbreviation',
 	fallbackStyle,
+	teamColor,
+	icon,
 	loading,
 	crossOrigin,
 	verdict,
@@ -100,7 +116,8 @@ const Crest = ({
 
 	return (
 		<span
-			className={className ? `crest ${className}` : 'crest'}
+			className={className ? `avatar crest ${className}` : 'avatar crest'}
+			style={crestFill(teamColor)}
 			data-crest-state={resolveCrestState(logo, outcome, verdict)}
 			data-crest-verdict={verdict}
 			role={label ? 'img' : undefined}
@@ -111,12 +128,13 @@ const Crest = ({
 			    DOM order — reorder these two and the placeholder covers the crest. */}
 			{fallback !== 'none' && (
 				<span className='crest-fallback' style={fallbackStyle} aria-hidden='true'>
-					{fallback === 'abbreviation' ? abbreviation : null}
+					{fallback === 'blank' ? null : icon ? <i className={`bi ${icon}`} /> : abbreviation}
 				</span>
 			)}
 			{logo && (
 				<img
 					ref={settle}
+					className='avatar-img'
 					src={logo}
 					alt=''
 					loading={loading}

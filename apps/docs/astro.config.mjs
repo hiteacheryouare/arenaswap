@@ -7,7 +7,7 @@ import tailwindcss from '@tailwindcss/vite';
 import istanbul from 'vite-plugin-istanbul';
 import pkg from '../../package.json';
 import { localeCodes } from './src/i18n/locales.ts';
-import sassOptions from '@arenaswap/ui/src/sassOptions.ts';
+import bootstrapTokenPrefix from '@arenaswap/ui/src/bootstrapTokenPrefix.ts';
 import relativeDocLinks from './src/lib/relativeDocLinks.ts';
 import scrollableTables from './src/lib/scrollableTables.ts';
 
@@ -67,11 +67,9 @@ export default defineConfig({
 	},
 	vite: {
 		plugins: [tailwindcss(), ...coveragePlugins],
-		// Silences Bootstrap 5.3's Sass deprecation warnings, and only for as long as Bootstrap
-		// is the one emitting them. See packages/ui/src/sassOptions.ts.
 		css: {
-			preprocessorOptions: {
-				scss: sassOptions,
+			postcss: {
+				plugins: [bootstrapTokenPrefix],
 			},
 		},
 		// Astro 7 builds with rolldown-vite, which reads build.rolldownOptions.output (see astro's

@@ -446,6 +446,7 @@
 		"leaderRushing": "RUSH",
 		"leaderReceiving": "REC",
 		"tabMatchup": "對戰",
+		"moreTabs": "更多",
 		"recentForm": "近期戰績",
 		"seasonStats": "球季數據",
 		"injuries": "傷兵",
@@ -910,14 +911,12 @@
 	},
 	"leaguePicker": {
 		"back": "返回",
-		"step": "第 $1 步，共 $2 步",
 		"title": "你都看哪些運動？",
 		"all": "全部",
 		"next": "下一步"
 	},
 	"teamPicker": {
 		"back": "返回",
-		"step": "第 $1 步，共 $2 步",
 		"title": "選擇你的球隊",
 		"explainer": "收藏的球隊會獲得 PowerScore 加成，讓它們的比賽贏得更多切換。",
 		"yourFavorites": "你的收藏",
@@ -933,7 +932,6 @@
 		"done": "完成"
 	},
 	"tabControl": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "歡迎使用 ArenaSwap",
 		"subtitle": "開始設定之前，先了解一下它的運作方式。",
 		"feature1Title": "自動切換分頁",
@@ -944,11 +942,13 @@
 		"feature3Body": "隨時可以暫停自動切換，也能在設定中調整靈敏度和冷卻時間。",
 		"gotIt": "了解"
 	},
+	"flowStepper": {
+		"step": "第 $1 步，共 $2 步"
+	},
 	"walkthrough": {
 		"skipTour": "略過導覽"
 	},
 	"stepToggle": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "開啟與關閉",
 		"subtitle": "一個開關，掌控一切。",
 		"tryIt": "↑ 試試看",
@@ -960,7 +960,6 @@
 		"next": "下一步"
 	},
 	"stepPowerScore": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "認識 PowerScore",
 		"subtitle": "ArenaSwap 的核心引擎",
 		"introTitle": "認識 PowerScore",
@@ -982,7 +981,6 @@
 		"tapHint": "點擊畫面任何位置繼續"
 	},
 	"stepTabAssign": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "把分頁指派給比賽",
 		"subtitle": "ArenaSwap 只會動用你註冊的分頁。",
 		"assignPlaceholder": "— 指派分頁 —",
@@ -992,7 +990,6 @@
 		"next": "下一步"
 	},
 	"stepAutoSwitch": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "看它大顯身手",
 		"watchingCaption": "正在看老鷹隊的比賽……",
 		"reveal": "有看到嗎？👀",
@@ -1002,7 +999,6 @@
 		"watchingBadge": "觀看中"
 	},
 	"stepSettings": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "照你的方式調整",
 		"subtitle": "隨時打開設定進行調整。",
 		"sensitivity1": "幾乎不動",
@@ -1021,7 +1017,6 @@
 		"next": "下一步"
 	},
 	"stepGameDetail": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "深入了解任何比賽",
 		"subtitle": "點一下比賽卡片，看看是什麼在驅動它的分數。",
 		"tapHint": "點一下開啟",
@@ -1038,7 +1033,6 @@
 		"next": "下一步"
 	},
 	"stepLeaguesFavorites": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "聯賽與收藏",
 		"subtitle": "兩種不同方式，塑造 ArenaSwap 關注的內容。",
 		"tabLeagues": "聯賽",
@@ -1055,7 +1049,6 @@
 		"next": "下一步"
 	},
 	"stepReAccess": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "隨時回來看看",
 		"subtitle": "導覽隨時觸手可及。",
 		"callout": "就是這個",
@@ -1064,7 +1057,6 @@
 		"next": "完成"
 	},
 	"standbyGuide": {
-		"step": "第 $1 步，共 $2 步",
 		"title": "Standby Stream",
 		"subtitle": "冷場時刻的備用方案。",
 		"quietTitle": "當比賽都冷了下來",
@@ -1139,12 +1131,12 @@
 	},
 	"favoriteTeamBonus": {
 		"label": "收藏球隊加成",
-		"perTeam": "每支球隊 +$1 分",
+		"unit": "分（每支球隊）",
 		"explainer": "比賽中每有一支收藏球隊就加一次，所以雙方都是收藏球隊時加成加倍。"
 	},
 	"postseasonBoost": {
 		"label": "季後賽加成",
-		"points": "最多 +$1 分",
+		"unit": "分（上限）",
 		"explainer": "決賽能加的最高分。更早的輪次只拿一部分，準決賽四分之三、八強賽一半、更早的輪次四分之一。表演賽不加分。"
 	},
 	"proTip": {

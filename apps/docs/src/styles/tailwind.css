@@ -1,2 +1,9 @@
-@import 'tailwindcss';
+/* Tailwind's three parts in layers of their own, ranked under every Bootstrap layer. Tailwind and
+   Bootstrap share class names (.container, .collapse, .table, .border), and Bootstrap has to keep
+   winning them, as it did when it was unlayered and Tailwind was not. */
+@layer tw-theme, tw-base, tw-utilities, colors, config, root, reboot, layout, content, forms, components, custom, helpers, utilities;
+
+@import 'tailwindcss/theme.css' layer(tw-theme);
+@import 'tailwindcss/preflight.css' layer(tw-base);
+@import 'tailwindcss/utilities.css' layer(tw-utilities);
 @import '@arenaswap/ui/src/tailwind.css';

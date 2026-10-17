@@ -37,8 +37,8 @@ const bossDecoyInput = ({ value, shortcut, disabled, onChange }: bossDecoyInputP
 	return (
 		<div>
 			<div className='d-flex align-items-center gap-1 mb-1'>
-				<label className='text-body-secondary setting-toggle-label' htmlFor='bossDecoyInput'>
-					<i className='bi bi-incognito me-1 text-primary' />{i18n.t('setup.bossDecoy')}
+				<label className='fg-secondary setting-toggle-label' htmlFor='bossDecoyInput'>
+					<i className='bi bi-incognito me-1 fg-primary' />{i18n.t('setup.bossDecoy')}
 				</label>
 				<SettingTooltipIcon text={i18n.t('setup.bossDecoyExplainer')} label={i18n.t('setup.bossDecoy')} />
 			</div>

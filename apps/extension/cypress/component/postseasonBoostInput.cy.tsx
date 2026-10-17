@@ -7,6 +7,14 @@ describe('PostseasonBoostInput', () => {
 		cy.get('#postseasonBoostInput').should('exist');
 	});
 
+	it('draws its unit inside the field and reads it as the field\'s description', () => {
+		cy.mount(<PostseasonBoostInput value={10} onChange={() => {}} />);
+		cy.get('#postseasonBoostInput').closest('.form-adorn').find('.form-adorn-text').should('have.text', 'pts max');
+		cy.get('#postseasonBoostInput').invoke('attr', 'aria-describedby').then(id => {
+			cy.get(`#${id}`).should('have.text', 'pts max');
+		});
+	});
+
 	it('displays the current value in the input', () => {
 		cy.mount(<PostseasonBoostInput value={10} onChange={() => {}} />);
 		cy.get('#postseasonBoostInput').should('have.value', '10');

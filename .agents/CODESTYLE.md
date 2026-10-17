@@ -186,8 +186,7 @@ For spacing, typography, layout, responsive behavior, colour and sizing, prefer
 chaining utility classes over introducing custom styles.
 
 In `apps/extension` and `packages/ui`, that means **Bootstrap's** utilities
-(`d-flex`, `gap-2`, `flex-shrink-0`, `text-truncate`, `fs-5`, …). Bootstrap has no
-`min-width: 0` utility; `.min-w-0` is defined in the extension's `global.scss`.
+(`d-flex`, `gap-2`, `flex-shrink-0`, `text-truncate`, `fs-5`, …).
 
 In `apps/docs`, Tailwind utilities are available and compiled, including
 arbitrary values such as `text-[0.6rem]` or `w-[3.5rem]`.
@@ -205,10 +204,8 @@ Typical acceptable cases include:
 - Complex pseudo-elements
 - Attribute selectors
 - Advanced media queries
-- Re-skinning a property Bootstrap already sets on the same element
-- In `apps/docs`, Bootstrap property overrides affected by the Tailwind v4
-  cascade — Tailwind emits utilities into `@layer utilities`, and unlayered
-  Bootstrap rules beat layered ones regardless of source order
+- Re-skinning a Bootstrap component — override its tokens (`.menu { --as-menu-bg: … }`)
+  before its properties
 
 Only `.scss` files are permitted.
 
@@ -217,15 +214,29 @@ Do not create application `.css` files, except a Tailwind entry file in
 
 ---
 
-## Dark Mode
+## Tokens, Layers and Colour Modes
 
-There is no light mode to design for. The dark palette is baked in through the
-Sass variable overrides in `packages/ui/src/_bootstrap.scss` (`$body-bg`,
-`$body-color`, `$card-bg`, `$input-bg`, …), and the extension sets
-`$enable-dark-mode: false` — Bootstrap's runtime colour-mode switching is off.
+Bootstrap 6 is configured once, in `packages/ui/src/_bootstrap.scss`, which owns
+every Sass token map. Apps configure only its scalars (`$body-font-size`,
+`$radius`, `$font-sizes`, `$link-hover-color`); passing a token map from an app
+replaces the theme's instead of merging with it.
 
-Style against those variables. Do not write `dark:` variants: Tailwind variants
-are only compiled in `apps/docs`, and there is no `.dark` class to match on.
+- **Tokens are `--as-*`.** A PostCSS plugin (`packages/ui/src/tokenPrefix.ts`)
+  prefixes every token Bootstrap declares. Write the compiled name in our code:
+  `var(--as-fg-body)`, not `var(--fg-body)`. The few tokens Bootstrap's JS reads
+  (`--bs-range-fill`, `--bs-breakpoint-*`) keep `--bs-`.
+  `packages/ui/tests/tokenNames.test.ts` fails on a token nobody declares.
+- **Our CSS goes in `@layer custom`.** Bootstrap layers everything and its
+  utilities are not `!important`; `custom` sits between its components and its
+  utilities, so a Bootstrap utility class still beats our rules. Element resets go
+  in `@layer reboot` instead, so a class keeps beating them. On the docs site
+  Tailwind is layered under all of Bootstrap (`tailwind.css` declares the order),
+  so where the two share a class name, Bootstrap's wins.
+- **Colour modes.** Every colour token is a `light-dark()` pair from
+  `packages/ui/src/_theme.scss`. Dark is the default; light is
+  `data-bs-theme='light'` on `<html>`, set from the Theme setting. Write one rule
+  against the token, not a light-mode patch. Do not write Tailwind `dark:`
+  variants.
 
 ---
 

@@ -446,6 +446,7 @@
 		"leaderRushing": "RUSH",
 		"leaderReceiving": "REC",
 		"tabMatchup": "Sfida",
+		"moreTabs": "Altro",
 		"recentForm": "Forma recente",
 		"seasonStats": "Statistiche stagionali",
 		"injuries": "Infortuni",
@@ -910,14 +911,12 @@
 	},
 	"leaguePicker": {
 		"back": "Indietro",
-		"step": "Passo $1 di $2",
 		"title": "Quali sport segui?",
 		"all": "Tutti",
 		"next": "Avanti"
 	},
 	"teamPicker": {
 		"back": "Indietro",
-		"step": "Passo $1 di $2",
 		"title": "Scegli le tue squadre",
 		"explainer": "I preferiti ricevono un boost di PowerScore, così le loro partite vincono più cambi.",
 		"yourFavorites": "I tuoi preferiti",
@@ -933,7 +932,6 @@
 		"done": "Fatto"
 	},
 	"tabControl": {
-		"step": "Passo $1 di $2",
 		"title": "Benvenuto su ArenaSwap",
 		"subtitle": "Prima di configurare tutto, ecco cosa aspettarti.",
 		"feature1Title": "Cambio automatico delle schede",
@@ -944,11 +942,13 @@
 		"feature3Body": "Metti in pausa il cambio automatico quando vuoi. Regola sensibilità e tempo di attesa dalle Impostazioni.",
 		"gotIt": "Capito"
 	},
+	"flowStepper": {
+		"step": "Passo $1 di $2"
+	},
 	"walkthrough": {
 		"skipTour": "Salta il tour"
 	},
 	"stepToggle": {
-		"step": "Passo $1 di $2",
 		"title": "Accendere e spegnere",
 		"subtitle": "Un solo interruttore controlla tutto.",
 		"tryIt": "↑ provalo",
@@ -960,7 +960,6 @@
 		"next": "Avanti"
 	},
 	"stepPowerScore": {
-		"step": "Passo $1 di $2",
 		"title": "Scopri il PowerScore",
 		"subtitle": "Il cuore pulsante di ArenaSwap",
 		"introTitle": "Scopri il PowerScore",
@@ -982,7 +981,6 @@
 		"tapHint": "Fai clic ovunque per continuare"
 	},
 	"stepTabAssign": {
-		"step": "Passo $1 di $2",
 		"title": "Assegna le schede alle partite",
 		"subtitle": "ArenaSwap tocca solo le schede che registri.",
 		"assignPlaceholder": "— Assegna una scheda —",
@@ -992,7 +990,6 @@
 		"next": "Avanti"
 	},
 	"stepAutoSwitch": {
-		"step": "Passo $1 di $2",
 		"title": "Guardalo in azione",
 		"watchingCaption": "stai guardando la partita degli Eagles…",
 		"reveal": "Hai visto? 👀",
@@ -1002,7 +999,6 @@
 		"watchingBadge": "GUARDANDO"
 	},
 	"stepSettings": {
-		"step": "Passo $1 di $2",
 		"title": "Regolalo a modo tuo",
 		"subtitle": "Apri le Impostazioni quando vuoi per regolarlo.",
 		"sensitivity1": "Appena attivo",
@@ -1021,7 +1017,6 @@
 		"next": "Avanti"
 	},
 	"stepGameDetail": {
-		"step": "Passo $1 di $2",
 		"title": "Approfondisci qualsiasi partita",
 		"subtitle": "Fai clic su un riquadro partita per vedere cosa guida il suo punteggio.",
 		"tapHint": "fai clic per aprire",
@@ -1038,7 +1033,6 @@
 		"next": "Avanti"
 	},
 	"stepLeaguesFavorites": {
-		"step": "Passo $1 di $2",
 		"title": "Leghe e preferiti",
 		"subtitle": "Due modi diversi per definire cosa segue ArenaSwap.",
 		"tabLeagues": "Leghe",
@@ -1055,7 +1049,6 @@
 		"next": "Avanti"
 	},
 	"stepReAccess": {
-		"step": "Passo $1 di $2",
 		"title": "Tornare qui",
 		"subtitle": "Il tour è sempre a un clic di distanza.",
 		"callout": "eccolo",
@@ -1064,7 +1057,6 @@
 		"next": "Fatto"
 	},
 	"standbyGuide": {
-		"step": "Passo $1 di $2",
 		"title": "Standby Stream",
 		"subtitle": "Una soluzione di riserva per i momenti morti.",
 		"quietTitle": "Quando le partite si calmano",
@@ -1139,12 +1131,12 @@
 	},
 	"favoriteTeamBonus": {
 		"label": "Boost squadra preferita",
-		"perTeam": "+$1 pts per squadra",
+		"unit": "pts per squadra",
 		"explainer": "Si applica una volta per ogni squadra preferita in una partita, quindi due preferite valgono un boost doppio."
 	},
 	"postseasonBoost": {
 		"label": "Boost postseason",
-		"points": "fino a +$1 pts",
+		"unit": "pts max",
 		"explainer": "Il massimo che può aggiungere una finale. I turni precedenti ne ricevono una quota: tre quarti per una semifinale, metà per un quarto di finale, un quarto per qualsiasi turno precedente. Le partite di esibizione non aggiungono nulla."
 	},
 	"proTip": {

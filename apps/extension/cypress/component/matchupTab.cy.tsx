@@ -76,7 +76,7 @@ describe('Matchup tab', () => {
 
 	it('sits between the overview and the table, with its three sections in order', () => {
 		openMatchup(baseball);
-		cy.get('.gd-tabs .nav-link').eq(1).should('have.text', en.detail.tabMatchup);
+		cy.get('.gd-tabs [role="tab"]').eq(1).should('have.text', en.detail.tabMatchup);
 		pane(baseball).find('.gd-setup-heading').should($headings => {
 			expect([...$headings].map(heading => heading.textContent)).to.deep.equal([
 				en.detail.recentForm,
@@ -88,7 +88,7 @@ describe('Matchup tab', () => {
 
 	it('is gone once the game is under way', () => {
 		cy.mount(detailView({ ...football, status: 'in', period: 2, clockSeconds: 300 }));
-		cy.get('.gd-tabs .nav-link').should('exist');
+		cy.get('.gd-tabs [role="tab"]').should('exist');
 		cy.get(`#gd-tab-${football.id}-matchup`).should('not.exist');
 	});
 
@@ -103,7 +103,7 @@ describe('Matchup tab', () => {
 			});
 		});
 		cy.get(`#gd-tab-${football.id}-matchup`).should('not.exist');
-		cy.get('.gd-tabs .nav-link').should('exist');
+		cy.get('.gd-tabs [role="tab"]').should('exist');
 		cy.get('.tab-pane.active').should('have.length', 1).and('have.id', `gd-pane-${football.id}-overview`);
 		cy.get('.gd-tabs .nav-link.active').should('have.text', en.detail.tabOverview);
 	});

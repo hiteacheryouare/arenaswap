@@ -1,6 +1,6 @@
 @use '@arenaswap/ui/src/bootstrap' as bs;
 @use '@arenaswap/ui/src/motion' as m;
-@at-root {
+@layer custom {
 
 	// Custom mode's league list borrows the display-order tile and puts a picker where the arrows were.
 	.league-mode-select {
@@ -20,7 +20,7 @@
 		gap:             0.75rem;
 		padding:         0.35rem 0;
 
-		& + & { border-top: 1px solid var(--as-tertiary-bg); }
+		& + & { border-top: 1px solid var(--as-bg-1); }
 	}
 
 	.fantasy-rule-label {
@@ -54,7 +54,7 @@
 
 	.fantasy-pick-icon {
 		font-size:  0.9rem;
-		color:      var(--as-secondary-color);
+		color:      var(--as-fg-3);
 		transition: color m.$motion-snap m.$motion-ease;
 
 		.fantasy-pick-row:hover:not(:disabled) &,
@@ -65,7 +65,7 @@
 		width:        0.85rem;
 		height:       0.85rem;
 		border-width: 0.12em;
-		color:        var(--as-secondary-color);
+		color:        var(--as-fg-3);
 	}
 
 	.fantasy-roster-remove {
@@ -73,9 +73,9 @@
 		padding:     0 0.2rem;
 		line-height: 1;
 		font-size:   0.75rem;
-		color:       var(--as-secondary-color);
+		color:       var(--as-fg-3);
 
-		&:hover { color: var(--as-body-color); }
+		&:hover { color: var(--as-fg-body); }
 
 		&:focus-visible {
 			outline:        1px solid bs.$primary;
@@ -96,7 +96,7 @@
 		font-size:   0.62rem;
 		font-weight: 600;
 		line-height: 1.35;
-		color:       var(--as-body-color);
+		color:       var(--as-fg-body);
 	}
 
 	.fantasy-player-position {
@@ -120,17 +120,14 @@
 		height:          20px;
 		border-radius:   999px;
 		overflow:        hidden;
-		box-shadow:      0 0 0 1px rgba(var(--as-overlay-rgb), 0.28);
+		box-shadow:      0 0 0 1px color-mix(in srgb, var(--as-overlay) 28%, transparent);
 	}
 
 	.fantasy-player-crest-logo {
-		width:  15px;
-		height: 15px;
+		--as-avatar-size:  15px;
+		--as-avatar-bg:    transparent;
+		--as-avatar-color: #111827;
 
-		.crest-fallback {
-			background: transparent;
-			color:      #111827;
-			font-size:  0.4rem;
-		}
+		.crest-fallback { font-size: 0.4rem; }
 	}
 }

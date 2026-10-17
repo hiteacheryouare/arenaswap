@@ -446,6 +446,7 @@
 		"leaderRushing": "RUSH",
 		"leaderReceiving": "REC",
 		"tabMatchup": "Matchup",
+		"moreTabs": "More",
 		"recentForm": "Recent form",
 		"seasonStats": "Season stats",
 		"injuries": "Injuries",
@@ -910,14 +911,12 @@
 	},
 	"leaguePicker": {
 		"back": "Back",
-		"step": "Step $1 of $2",
 		"title": "Which sports do you watch?",
 		"all": "All",
 		"next": "Next"
 	},
 	"teamPicker": {
 		"back": "Back",
-		"step": "Step $1 of $2",
 		"title": "Pick Your Teams",
 		"explainer": "Favorites get a PowerScore boost, so their games win more switches.",
 		"yourFavorites": "Your Favorites",
@@ -933,7 +932,6 @@
 		"done": "Done"
 	},
 	"tabControl": {
-		"step": "Step $1 of $2",
 		"title": "Welcome to ArenaSwap",
 		"subtitle": "Before we set things up, here's what to expect.",
 		"feature1Title": "Automatic Tab Switching",
@@ -944,11 +942,13 @@
 		"feature3Body": "Pause auto-switching any time. Tune sensitivity and cooldown from Settings.",
 		"gotIt": "Got it"
 	},
+	"flowStepper": {
+		"step": "Step $1 of $2"
+	},
 	"walkthrough": {
 		"skipTour": "Skip tour"
 	},
 	"stepToggle": {
-		"step": "Step $1 of $2",
 		"title": "Turning It On & Off",
 		"subtitle": "One switch controls everything.",
 		"tryIt": "↑ try it",
@@ -960,7 +960,6 @@
 		"next": "Next"
 	},
 	"stepPowerScore": {
-		"step": "Step $1 of $2",
 		"title": "Meet PowerScore",
 		"subtitle": "The heartbeat of ArenaSwap",
 		"introTitle": "Meet PowerScore",
@@ -982,7 +981,6 @@
 		"tapHint": "Click anywhere to continue"
 	},
 	"stepTabAssign": {
-		"step": "Step $1 of $2",
 		"title": "Assign Tabs to Games",
 		"subtitle": "ArenaSwap only touches tabs you register.",
 		"assignPlaceholder": "— Assign a tab —",
@@ -992,7 +990,6 @@
 		"next": "Next"
 	},
 	"stepAutoSwitch": {
-		"step": "Step $1 of $2",
 		"title": "Watch It Work",
 		"watchingCaption": "watching the Eagles game…",
 		"reveal": "Did you see that? 👀",
@@ -1002,7 +999,6 @@
 		"watchingBadge": "WATCHING"
 	},
 	"stepSettings": {
-		"step": "Step $1 of $2",
 		"title": "Tune It Your Way",
 		"subtitle": "Open Settings any time to adjust.",
 		"sensitivity1": "Barely Active",
@@ -1021,7 +1017,6 @@
 		"next": "Next"
 	},
 	"stepGameDetail": {
-		"step": "Step $1 of $2",
 		"title": "Dive Into Any Game",
 		"subtitle": "Click a game card to see what's driving its score.",
 		"tapHint": "click to open",
@@ -1038,7 +1033,6 @@
 		"next": "Next"
 	},
 	"stepLeaguesFavorites": {
-		"step": "Step $1 of $2",
 		"title": "Leagues & Favorites",
 		"subtitle": "Two different ways to shape what ArenaSwap watches.",
 		"tabLeagues": "Leagues",
@@ -1055,7 +1049,6 @@
 		"next": "Next"
 	},
 	"stepReAccess": {
-		"step": "Step $1 of $2",
 		"title": "Coming Back Here",
 		"subtitle": "The tour is always one click away.",
 		"callout": "that's the one",
@@ -1064,7 +1057,6 @@
 		"next": "Done"
 	},
 	"standbyGuide": {
-		"step": "Step $1 of $2",
 		"title": "Standby Stream",
 		"subtitle": "A fallback for the slow moments.",
 		"quietTitle": "When Games Go Quiet",
@@ -1139,12 +1131,12 @@
 	},
 	"favoriteTeamBonus": {
 		"label": "Favorite team boost",
-		"perTeam": "+$1 pts per team",
+		"unit": "pts per team",
 		"explainer": "Applied once for each favorited team in a game, so two favorites means a double boost."
 	},
 	"postseasonBoost": {
 		"label": "Postseason boost",
-		"points": "up to +$1 pts",
+		"unit": "pts max",
 		"explainer": "The most a title game can add. Earlier rounds earn a share — three quarters for a semifinal, half for a quarterfinal, a quarter for anything earlier. Exhibitions earn nothing."
 	},
 	"proTip": {

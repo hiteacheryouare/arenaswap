@@ -321,7 +321,7 @@ describe('reaching the decorations from demo mode', () => {
 		cy.mount(<SetupView {...setupProps} demoMode />);
 		cy.get('#settingsGroup-switching').click();
 		cy.get('#demoSeasonSelect').should('contain.text', 'The real date');
-		cy.get('#demoSeasonSelect').parent().find('.dropdown-item').should('have.length', 3);
+		cy.get('#demoSeasonSelect').parent().find('.menu-item').should('have.length', 3);
 	});
 
 	it('reports the season the user picked', () => {
