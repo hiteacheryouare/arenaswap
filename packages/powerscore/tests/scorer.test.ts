@@ -323,24 +323,24 @@ describe('computePowerScore', () => {
 		expect(earlyHockeyResult.closeness).toBeGreaterThan(0);
 		expect(lateHockeyResult.closeness).toBeGreaterThan(earlyHockeyResult.closeness);
 		expect(lateSoccerResult.closeness).toBeGreaterThan(earlySoccerResult.closeness);
-		expect(earlyHockeyResult.reason).toBe(scorerTunables.reasons.tied);
-		expect(lateHockeyResult.reason).toContain(scorerTunables.reasons.tied);
+		expect(earlyHockeyResult.reason).toMatch(/^Tied /);
+		expect(lateHockeyResult.reason).toMatch(/^Tied /);
 	});
 
 	test('applies basketball closeness thresholds at boundary margins', () => {
-		// Reason classification keys off the raw tier; the value is progress-scaled, so at period 1
-		// every active tier sits near its floor and only the ordering is meaningful.
+		// The value is progress-scaled, so at period 1 every active tier sits near its floor and only
+		// the ordering is meaningful. The reason gives the score whatever tier it lands in.
 		const cases = [
-			{ margin: 5, expectedReason: '5-point game', positive: true },
-			{ margin: 6, expectedReason: '6-point game', positive: true },
-			{ margin: 10, expectedReason: '10-point game', positive: true },
-			{ margin: 11, expectedReason: scorerTunables.reasons.fallback, positive: true },
-			{ margin: 18, expectedReason: scorerTunables.reasons.fallback, positive: true },
-			{ margin: 19, expectedReason: scorerTunables.reasons.fallback, positive: false },
+			{ margin: 5, positive: true },
+			{ margin: 6, positive: true },
+			{ margin: 10, positive: true },
+			{ margin: 11, positive: true },
+			{ margin: 18, positive: true },
+			{ margin: 19, positive: false },
 		];
 
 		let previousCloseness = Number.POSITIVE_INFINITY;
-		for (const { margin, expectedReason, positive } of cases) {
+		for (const { margin, positive } of cases) {
 			const game = makeGame({
 				period: 1,
 				clockSeconds: 600,
@@ -349,7 +349,7 @@ describe('computePowerScore', () => {
 			});
 
 			const result = computePowerScore(game, []);
-			expect(result.reason).toBe(expectedReason);
+			expect(result.reason).toBe(`HOM up ${margin} in the 1st quarter`);
 			expect(result.closeness).toBeLessThanOrEqual(previousCloseness);
 			if (positive) expect(result.closeness).toBeGreaterThan(0);
 			else expect(result.closeness).toBe(0);
@@ -397,7 +397,7 @@ describe('computePowerScore', () => {
 		expect(finalEnd.lateGame).toBeGreaterThan(finalMid.lateGame);
 		expect(finalEnd.lateGame).toBeGreaterThanOrEqual(Math.ceil(scoreMaxLateGame * 0.8));
 		expect(finalEnd.lateGame).toBeLessThanOrEqual(scorerTunables.scores.lateGame.closeCeiling);
-		expect(finalMid.reason).toContain('min left');
+		expect(finalMid.reason).toMatch(/with \d+:\d{2} left$/);
 	});
 
 	test('late-game ramp is near-linear across the final period (no end spike)', () => {
@@ -444,7 +444,7 @@ describe('computePowerScore', () => {
 		expect(finalEnd.lateGame).toBeGreaterThan(finalMid.lateGame);
 		expect(finalEnd.lateGame).toBeGreaterThanOrEqual(Math.ceil(scoreMaxLateGame * 0.8));
 		expect(finalEnd.lateGame).toBeLessThanOrEqual(scorerTunables.scores.lateGame.closeCeiling);
-		expect(finalMid.reason).toContain('min left');
+		expect(finalMid.reason).toMatch(/in the \d+(st|nd|rd|th) minute$/);
 	});
 
 	test('builds a monotonic late-game gradient for baseball innings', () => {
@@ -470,7 +470,7 @@ describe('computePowerScore', () => {
 		expect(endOfRegulation.lateGame).toBeGreaterThan(late.lateGame);
 		expect(endOfRegulation.lateGame).toBeGreaterThanOrEqual(Math.ceil(scoreMaxLateGame * 0.8));
 		expect(endOfRegulation.lateGame).toBeLessThanOrEqual(scoreMaxLateGame);
-		expect(endOfRegulation.reason).toContain('inning');
+		expect(endOfRegulation.reason).toBe('HOM up 2 in the 9th');
 	});
 
 	test('every clock league ramps the whole final period up to the close ceiling', () => {
@@ -552,9 +552,9 @@ describe('computePowerScore', () => {
 		const extraInningsResult = computePowerScore(game, []);
 
 		expect(overtimeResult.lateGame).toBe(scoreMaxLateGame);
-		expect(overtimeResult.reason).toContain('overtime');
+		expect(overtimeResult.reason).toBe('Tied with 2:00 left in overtime');
 		expect(extraInningsResult.lateGame).toBe(scoreMaxLateGame);
-		expect(extraInningsResult.reason).toContain('extra innings');
+		expect(extraInningsResult.reason).toBe('Tied in the 10th');
 	});
 
 	test('scores a tense tied late regulation game high but below max', () => {
@@ -607,7 +607,7 @@ describe('computePowerScore', () => {
 		const result = computePowerScore(game, history);
 
 		expect(result.momentum).toBe(scorerTunables.scores.momentum.bigRun);
-		expect(result.reason).toContain('HOM outscoring AWY 10-0');
+		expect(result.reason).toContain('HOM on a 10–0 run');
 	});
 
 	test('applies momentum boundaries for none, small, and big runs', () => {
@@ -620,18 +620,18 @@ describe('computePowerScore', () => {
 
 		const noRun = computePowerScore(game, makeHistory([[90, 60], [92, 62], [94, 64]]));
 		expect(noRun.momentum).toBe(scorerTunables.scores.momentum.none);
-		expect(noRun.reason).toBe(scorerTunables.reasons.fallback);
+		expect(noRun.reason).toBe('HOM up 30 in the 1st quarter');
 
 		const smallRun = computePowerScore(game, makeHistory([[90, 60], [93, 60], [95, 60]]));
 		expect(smallRun.momentum).toBe(scorerTunables.scores.momentum.smallRun);
-		expect(smallRun.reason).toBe('HOM on a roll');
+		expect(smallRun.reason).toBe('HOM on a 5–0 run. Up 30 in the 1st quarter');
 
 		const bigRun = computePowerScore(game, makeHistory([[90, 60], [95, 60], [100, 60]]));
 		expect(bigRun.momentum).toBe(scorerTunables.scores.momentum.bigRun);
-		expect(bigRun.reason).toBe('HOM outscoring AWY 10-0');
+		expect(bigRun.reason).toBe('HOM on a 10–0 run. Up 30 in the 1st quarter');
 	});
 
-	test('orders reasons by momentum then late game and truncates extra reasons', () => {
+	test('names the run, then the score and the clock', () => {
 		const game = makeGame({
 			period: 4,
 			clockSeconds: 119,
@@ -641,11 +641,10 @@ describe('computePowerScore', () => {
 		const history = makeHistory([[60, 56], [65, 56], [70, 56]]);
 
 		const result = computePowerScore(game, history);
-		expect(result.reason).toBe('HOM outscoring AWY 10-0, under 2 min left');
-		expect(result.reason).not.toContain('2-point game');
+		expect(result.reason).toBe('HOM on a 10–0 run. Up 2 with 1:59 left');
 	});
 
-	test('uses fallback reason when only non-reason scoring signals are present', () => {
+	test('gives the score when only the state signals are scoring', () => {
 		const game = makeGame({
 			period: 3,
 			clockSeconds: 300,
@@ -660,7 +659,7 @@ describe('computePowerScore', () => {
 		expect(result.lateGame).toBeLessThan(scoreMaxLateGame);
 		expect(result.momentum).toBe(scorerTunables.scores.momentum.none);
 		expect(result.total).toBe(result.closeness + result.lateGame + result.momentum + result.leadChanges + result.comeback);
-		expect(result.reason).toBe(scorerTunables.reasons.fallback);
+		expect(result.reason).toBe('HOM up 11 in the 3rd quarter');
 	});
 
 	test('applies no stall penalty below the first threshold', () => {
@@ -715,7 +714,7 @@ describe('computePowerScore', () => {
 		expect(stalled.stallPenalty).toBe(heavyStep.deduction);
 	});
 
-	test('falls back to default reason when no signal reasons are present', () => {
+	test('gives the score when no signal has anything to say', () => {
 		const game = makeGame({
 			homeTeam: { ...makeGame().homeTeam, score: 120 },
 			awayTeam: { ...makeGame().awayTeam, score: 80 },
@@ -724,7 +723,7 @@ describe('computePowerScore', () => {
 		});
 
 		const result = computePowerScore(game, makeHistory([[120, 80], [120, 80], [120, 80]]));
-		expect(result.reason).toBe(scorerTunables.reasons.fallback);
+		expect(result.reason).toBe('HOM up 40 in the 1st quarter');
 		expect(result.momentum).toBe(0);
 		expect(result.lateGame).toBe(0);
 		expect(result.closeness).toBe(0);
@@ -742,14 +741,14 @@ describe('computePowerScore', () => {
 			makeHistory([[50, 48], [51, 50], [50, 51]]),
 		);
 		expect(singleChange.leadChanges).toBe(scorerTunables.scores.leadChanges.single);
-		expect(singleChange.reason).toContain(scorerTunables.reasons.leadChangeSingle);
+		expect(singleChange.reason).toContain('AWY just took the lead');
 
 		const multiChange = computePowerScore(
 			makeGame({ homeTeam: { abbreviation: 'HOM', score: 60 }, awayTeam: { abbreviation: 'AWY', score: 58 } }),
 			makeHistory([[50, 48], [50, 52], [54, 52], [54, 56], [60, 58]]),
 		);
 		expect(multiChange.leadChanges).toBe(scorerTunables.scores.leadChanges.multiple);
-		expect(multiChange.reason).toContain(scorerTunables.reasons.leadChangeMultiple);
+		expect(multiChange.reason).toContain('4 lead changes in the last minute');
 	});
 
 	test('scores comeback: none, moderate, and big', () => {
@@ -766,18 +765,17 @@ describe('computePowerScore', () => {
 			makeHistory([[80, 70], [83, 75], [89, 84]]),
 		);
 		expect(moderateComeback.comeback).toBe(scorerTunables.scores.comeback.moderate);
-		expect(moderateComeback.reason).toContain('closing the gap');
+		expect(moderateComeback.reason).toContain('AWY cut the deficit from 10 to 5');
 
 		const bigComeback = computePowerScore(
 			makeGame({ period: 4, clockSeconds: 1, homeTeam: { ...makeGame().homeTeam, score: 90 }, awayTeam: { ...makeGame().awayTeam, score: 88 } }),
 			makeHistory([[80, 70], [84, 74], [90, 88]]),
 		);
 		expect(bigComeback.comeback).toBe(scorerTunables.scores.comeback.big);
-		expect(bigComeback.reason).toContain('cutting into it');
+		expect(bigComeback.reason).toContain('AWY cut the deficit from 10 to 2');
 	});
 
-	test('reason priority: momentum > comeback > leadChanges > lateGame > closeness', () => {
-		// Momentum also fires here, so it takes the first reason slot and comeback the second.
+	test('a comeback built on a run is one sentence, and a level game takes the time instead of "Tied"', () => {
 		const game = makeGame({
 			period: 2,
 			clockSeconds: 600,
@@ -787,7 +785,8 @@ describe('computePowerScore', () => {
 		const history = makeHistory([[80, 70], [81, 75], [84, 84]]);
 		const result = computePowerScore(game, history);
 		expect(result.comeback).toBeGreaterThan(0);
-		expect(result.reason).toContain('cutting into it');
+		expect(result.momentum).toBeGreaterThan(0);
+		expect(result.reason).toBe('AWY came back from 10 down in the 2nd quarter');
 	});
 
 	test('produces numeric lead-change and comeback scores for every league', () => {
@@ -889,7 +888,7 @@ describe('PowerScore v2 — live-action decay & overtime anticipation', () => {
 		expect(tied30.lateGame).toBeGreaterThan(tied60.lateGame);
 		expect(tied1.lateGame).toBeGreaterThan(tied30.lateGame);
 		expect(tied1.lateGame).toBe(scoreMaxLateGame);
-		expect(tied1.reason).toContain(scorerTunables.reasons.overtimeAnticipation);
+		expect(tied1.reason).toBe('Tied with 0:01 left');
 		// A non-tied buzzer caps at the close ceiling, so OT-bound games separate from it.
 		expect(nonTiedBuzzer.lateGame).toBe(scorerTunables.scores.lateGame.closeCeiling);
 		expect(tied1.lateGame).toBeGreaterThan(nonTiedBuzzer.lateGame);
@@ -1343,30 +1342,26 @@ describe('computePowerScore — soccer has no overtime', () => {
 		for (const period of [3, 4]) {
 			const result = computePowerScore(soccerAt(period, 300, 1, 1), []);
 			expect(result.lateGame).toBe(scoreMaxLateGame);
-			expect(result.reason).toContain(scorerTunables.reasons.extraTime);
-			expect(result.reason).not.toContain(scorerTunables.reasons.overtime);
+			expect(result.reason).toBe('Tied in extra time');
 		}
 	});
 
-	test('calls a shootout penalties, the same way the card labels it PENS', () => {
+	test('calls a shootout a penalty shootout, the same way the card labels it PENS', () => {
 		const result = computePowerScore(soccerAt(5, 0, 1, 1), []);
 		expect(result.lateGame).toBe(scoreMaxLateGame);
-		expect(result.reason).toContain(scorerTunables.reasons.shootout);
-		expect(result.reason).not.toContain(scorerTunables.reasons.overtime);
+		expect(result.reason).toBe('Penalty shootout');
 	});
 
 	test('keeps the pre-boost for a late level match but does not call it overtime-bound', () => {
 		const result = computePowerScore(soccerAt(2, 5_390, 1, 1), []);
 		expect(result.lateGame).toBe(scoreMaxLateGame);
 		expect(result.lateGame).toBeGreaterThan(scorerTunables.scores.lateGame.closeCeiling);
-		expect(result.reason).toContain(scorerTunables.reasons.drawAnticipation);
-		expect(result.reason).not.toContain(scorerTunables.reasons.overtime);
+		expect(result.reason).toBe('Tied in the 89th minute');
 	});
 
 	test('reports elapsed minutes past 90 rather than a countdown that reached zero', () => {
 		const result = computePowerScore(soccerAt(2, 5_640, 2, 1), []);
-		expect(result.reason).toContain('94 min in');
-		expect(result.reason).not.toContain('0:00');
+		expect(result.reason).toBe('HOM up 1 in the 94th minute');
 	});
 
 	test('still calls overtime overtime in the sports that have it', () => {
@@ -1376,7 +1371,7 @@ describe('computePowerScore — soccer has no overtime', () => {
 			homeTeam: { abbreviation: 'HOM', score: 105 },
 			awayTeam: { abbreviation: 'AWY', score: 105 },
 		}), []);
-		expect(result.reason).toContain(scorerTunables.reasons.overtime);
+		expect(result.reason).toBe('Tied with 2:00 left in overtime');
 	});
 });
 
@@ -1448,8 +1443,8 @@ describe('computePowerScore — momentum reasons state what the number supports'
 			makeHistory([[60, 60], [65, 61], [70, 62]]),
 		);
 		expect(result.momentum).toBe(scorerTunables.scores.momentum.bigRun);
-		expect(result.reason).toContain('BOS outscoring LAL 10-2');
-		expect(result.reason).not.toContain('8-0');
+		expect(result.reason).toContain('BOS on a 10–2 run');
+		expect(result.reason).not.toContain('8–0');
 	});
 });
 

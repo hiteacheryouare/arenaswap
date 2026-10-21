@@ -1,24 +1,24 @@
 import { ageSince, clamp, decayFactor } from '../math';
-import { closenessUnit, lastScoreChangeTimestamp } from './classic';
-import type { Game, SignalDefinition, SignalInput, SignalOutput, SportType } from '../types';
+import { lastScoreChangeTimestamp, runReason } from './classic';
+import type { SignalDefinition, SignalInput, SignalOutput, SportType } from '../types';
 
 // The margin that earns full credit: four scores in football, a 30-point game in basketball.
 const fullMargin: Record<SportType, number> = { basketball: 30, football: 28, hockey: 5, baseball: 10, softball: 10, soccer: 5 };
 
 const none: SignalOutput = { points: 0 };
 
-const leader = (game: Game<string>) => (game.homeTeam.score >= game.awayTeam.score ? game.homeTeam : game.awayTeam);
-
 // Closeness turned inside out: nothing until the game is two scores apart, then climbing to full
 // credit at a rout, and surer as the game goes on.
-export const computeBlowoutMargin = ({ game, sport, progress, margin }: SignalInput): SignalOutput => {
+// The score sentence already gives the margin and the time, so the first three signals have nothing to
+// add to it.
+export const computeBlowoutMargin = ({ sport, progress, margin }: SignalInput): SignalOutput => {
 	const [, t2, t3] = sport.closenessMargins;
 	if (margin <= t2) return none;
 	const shape = margin <= t3
 		? 0.3 * (margin - t2) / (t3 - t2)
 		: 0.3 + 0.7 * Math.min(1, (margin - t3) / Math.max(1, fullMargin[sport.id] - t3));
 	const certainty = 0.6 + 0.4 * Math.pow(clamp(progress, 0, 1), 0.55);
-	return { points: Math.round(50 * shape * certainty), reason: { key: 'blowoutMargin', params: { margin, unit: closenessUnit(game) } } };
+	return { points: Math.round(50 * shape * certainty) };
 };
 
 // Built and held, not a run that may revert: the share of the window the current leader has been
@@ -31,15 +31,13 @@ export const computeSustained = ({ game, context, sport, margin }: SignalInput):
 	const held = history.filter(snapshot => (homeLeads ? snapshot.homeScore - snapshot.awayScore : snapshot.awayScore - snapshot.homeScore) > t2).length / history.length;
 	const span = history[history.length - 1]!.timestamp - history[0]!.timestamp;
 	const coverage = Math.min(1, span / sport.historyWindowMs);
-	const points = Math.round(30 * held * coverage);
-	return points > 0 ? { points, reason: { key: 'leadHeld', params: { team: leader(game).abbreviation ?? '?' } } } : none;
+	return { points: Math.round(30 * held * coverage) };
 };
 
 // An early rout has more beatdown left to watch than one that is nearly over.
 export const computeTiming = ({ sport, progress, margin, game }: SignalInput): SignalOutput => {
 	if (margin <= sport.closenessMargins[2] || (game.period !== undefined && progress >= 1)) return none;
-	const points = Math.round(25 * Math.pow(1 - clamp(progress, 0, 1), 0.7));
-	return points > 0 ? { points, reason: { key: 'earlyRout' } } : none;
+	return { points: Math.round(25 * Math.pow(1 - clamp(progress, 0, 1), 0.7)) };
 };
 
 // Momentum read only in the leader's direction: still extending, not hanging on.
@@ -55,7 +53,9 @@ export const computePileOn = ({ game, context, sport, now }: SignalInput): Signa
 	const tier = run >= sport.momentumBigRun ? 15 : run >= sport.momentumSmallRun ? 8 : 0;
 	if (tier === 0) return none;
 	const points = Math.round(tier * decayFactor(ageSince(lastScoreChangeTimestamp(history), now), sport.decayHalfLifeMs.momentum));
-	return points > 0 ? { points, reason: { key: 'pilingOn', params: { team: leader(game).abbreviation ?? '?' } } } : none;
+	if (points <= 0) return none;
+	const reason = runReason(game, homeLeads ? game.homeTeam : game.awayTeam, homeLeads ? game.awayTeam : game.homeTeam, leaderGain, trailerGain, history);
+	return reason ? { points, reason } : { points };
 };
 
 export const blowoutMarginSignal: SignalDefinition = { id: 'blowoutMargin', ceiling: 50, compute: computeBlowoutMargin };

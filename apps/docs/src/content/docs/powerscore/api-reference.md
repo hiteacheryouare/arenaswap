@@ -45,7 +45,7 @@ The total is built in a fixed order:
 ```ts
 const score = scoreGame(game, { history }, { mode: 'blowouts' });
 score.total;  // 0–100
-score.reason; // 'BOS piling on, 28-point lead'
+score.reason; // 'BOS on a 12–0 run. Up 28 in the 3rd quarter'
 ```
 
 ### signalPoints and boostPoints
@@ -97,7 +97,6 @@ const overtimeOnly: PowerScoreMode = defineMode({
 	],
 	boosts: [],
 	reasonPriority: ['extraTime'],
-	reasonLimit: 1,
 	usesStallPenalty: false,
 	usesWinProbability: false,
 });
@@ -107,7 +106,7 @@ scoreGame(game, context, { mode: overtimeOnly });
 
 A signal's `compute` receives the game, the context, the resolved sport and league config, the game's `progress` (0 at the start, 1 at the end of regulation and through overtime), and the `margin`. It returns `points`, clamped to the ceiling, and an optional `reason`. A mode can also carry `boosts`, `bucketCaps`, a `classicBlend`, and an `appliesTo(game, context)` that sends games it has nothing to say about to Classic.
 
-A reason key the built-in modes know renders as English in `score.reason`. A key of your own renders as itself, so translate from `score.reasons`, not from the string.
+`reasonPriority` lists the signals whose reasons may be read. The strongest of them speaks, and the order breaks ties. A reason key the built-in modes know renders as English in `score.reason`. A key of your own renders as itself, so translate from `score.reasons`, not from the string.
 
 ### classicMode, blowoutsMode, fantasyMode, builtInModes, and getMode
 
@@ -137,7 +136,7 @@ function renderReasonEnglish(fragment: ReasonFragment): string
 function renderReasonsEnglish(fragments: readonly ReasonFragment[]): string
 ```
 
-Render one reason fragment, or a list joined with commas, as English. It's what fills `score.reason`. Use them when you build reasons of your own and want them to read the same way.
+Render one reason sentence, or a list of them joined into sentences, as English. It's what fills `score.reason`. Use them when you build reasons of your own and want them to read the same way. `ordinal(n)` gives the English ordinal they use ("2nd", "11th", "21st").
 
 ## Config and progress
 
@@ -213,7 +212,7 @@ Why Classic's ceilings outrun the 100-point cap is in [PowerScore signals in eve
 
 `stallPenaltySteps`, `scoringOpportunityBaseRunnerBoosts`, `scoringOpportunityRedZoneBoost`, `scoringOpportunityRedZoneFringeBoost`, `redZoneDownMultipliers`, and `thirdAndShortDistance` hold the exact values behind the stall deduction and the scoring opportunity boost, tabulated in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/). The newer boosts keep their numbers in `goAheadRunTunables`, `twoMinuteDrillTunables`, `noHitterTunables`, `redCardTunables`, `upsetTunables`, `stakesTunables`, and `hockeyTunables`.
 
-`scorerTunables` holds every tier value and every reason string the engine can produce, the same numbers the constants above already give by name. It's exported so a consumer can read a tier's value or match against a reason string directly instead of hardcoding either.
+`scorerTunables` holds every tier value the engine scores with, the same numbers the constants above already give by name, so a consumer can read a tier's value instead of hardcoding it.
 
 `sportTypeConfigs`, `sportTypeConfigMap`, `leagueConfigs`, `leagueConfigMap`, and `allLeagueIds` hold the sport and league tuning the engine reads on every call. Their fields and every sport and league's actual values are in [Sport and league configuration](/arenaswap/docs/powerscore/configuration/).
 

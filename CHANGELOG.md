@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Switch reasons read as plain facts — 2026-10-20
+
+The reason behind a switch is now up to three short sentences: what's happening right now, what just happened, then the score and the clock ("Lakers on a 12–2 run to take the lead. Up 7 with 2:10 left"). They replace comma-joined fragments with boost points tacked on. Teams go by nickname (a soccer club by its short name), the wording no longer contradicts the scoreboard ("cutting into it" in a tied game), and scores are untouched: 20,000 seeded games and nine days of recordings switch exactly as before.
+
 ## Content-aware switching waits for a break in play — 2026-10-20
 
 A new Switching toggle, on for fresh installs and off for upgrades, holds a switch until the game you're leaving stops: a new batter or an out in baseball, the next play in the NFL, a dead ball in basketball, a whistle in hockey, capped at 45s to 2m by sport. The signals and caps were measured against nine days of recordings, and soccer, college football and college hockey still switch at once, because play never stops or the feed is too stale to tell.

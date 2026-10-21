@@ -57,7 +57,7 @@ Run that, and the terminal prints:
 
 ```text
 68
-0:45 left, 2-point game
+BOS up 2 with 0:45 left
 ```
 
 `scoreGame` takes two more arguments, and both are optional: a `context` for everything the game doesn't carry (score history, win probability, the pregame line, a fantasy roster) and `options` for how to score it (which mode, which signals to switch off). With neither, you get Classic, the mode that asks whether a game is close and late.

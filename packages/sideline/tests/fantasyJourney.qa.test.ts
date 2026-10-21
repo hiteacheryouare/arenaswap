@@ -89,7 +89,7 @@ describe('a rostered player scoring between two polls', () => {
 		const classic = scoreGame(toScoringGame(game), {}, { mode: 'classic' });
 
 		expect(result.signals.find(signal => signal.id === 'production')?.points).toBeGreaterThan(0);
-		expect(result.reasons).toContainEqual({ key: 'fantasyPoints', params: { name: 'Jonathan Taylor', points: 6.5 } });
+		expect(result.reasons).toContainEqual({ key: 'fantasyPoints', params: { name: 'Jonathan Taylor', points: 6.5, minutes: 12 } });
 		expect(result.total).toBeGreaterThan(classic.total);
 	});
 

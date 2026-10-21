@@ -19,9 +19,14 @@ const yardsToEndZone = (yardLine: number | undefined, possession: Side | undefin
 	return possession === 'home' ? 100 - yardLine : yardLine;
 };
 
-const toTeamState = (team: Team, seeded: boolean): ScoringGame['homeTeam'] => ({
+const reasonName = (team: Team, sportType: Game['sportType']): string | undefined => (
+	sportType === 'soccer' ? team.shortName ?? team.nickname : team.nickname ?? team.shortName
+);
+
+const toTeamState = (team: Team, sportType: Game['sportType'], seeded: boolean): ScoringGame['homeTeam'] => ({
 	score: team.score,
 	...(team.abbreviation ? { abbreviation: team.abbreviation } : {}),
+	...(reasonName(team, sportType) ? { nickname: reasonName(team, sportType)! } : {}),
 	...(team.rank !== undefined && !seeded ? { rank: team.rank } : {}),
 	...(team.timeouts !== undefined ? { timeouts: team.timeouts } : {}),
 	...(team.hits !== undefined ? { hits: team.hits } : {}),
@@ -52,8 +57,8 @@ export const toScoringGame = (game: Game): ScoringGame => {
 		id: game.id,
 		league: game.league,
 		sportType: game.sportType,
-		homeTeam: toTeamState(game.homeTeam, seeded),
-		awayTeam: toTeamState(game.awayTeam, seeded),
+		homeTeam: toTeamState(game.homeTeam, game.sportType, seeded),
+		awayTeam: toTeamState(game.awayTeam, game.sportType, seeded),
 		...(game.period !== undefined ? inningState(game) : {}),
 		...(game.clockSeconds !== undefined ? { clockSeconds: game.clockSeconds } : {}),
 		...(game.intermission !== undefined ? { intermission: game.intermission } : {}),

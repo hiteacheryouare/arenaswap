@@ -16,7 +16,7 @@ interface fantasyPlayersPanelProps {
 
 const statText = (group: playerStatGroup): string => group.stats
 	.map(stat => i18n.t('fantasy.statValue', { value: stat.value, label: i18n.t(stat.labelKey) }))
-	.join(i18n.t('powerScore.reasonJoiner'));
+	.join(i18n.t('fantasy.statJoiner'));
 
 const rosterPosition = (entry: FantasyRosterEntry): string => {
 	if (entry.position === 'DST') return i18n.t('fantasy.positionDst');

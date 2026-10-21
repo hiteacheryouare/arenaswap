@@ -90,6 +90,23 @@ describe('translating our sources\' game into the engine\'s', () => {
 		expect(scoring.yardsToEndZone).toBeUndefined();
 	});
 
+	test('reasons call a club what fans do: the nickname, except in soccer, where it is the short name', () => {
+		const pros = toScoringGame(chiefsBills({
+			homeTeam: team('12', 'KC', 'Kansas City Chiefs', 17, { nickname: 'Chiefs', shortName: 'Chiefs' }),
+			awayTeam: team('2', 'BUF', 'Buffalo Bills', 24),
+		}));
+		const college = toScoringGame(chiefsBills({ homeTeam: team('213', 'PSU', 'Penn State Nittany Lions', 17, { nickname: 'Nittany Lions', shortName: 'Penn State' }) }));
+		const soccer = toScoringGame(chiefsBills({
+			league: 'nwsl',
+			sportType: 'soccer',
+			homeTeam: team('15362', 'POR', 'Portland Thorns FC', 1, { nickname: 'Portland Thorns FC', shortName: 'Portland' }),
+		}));
+		expect(pros.homeTeam.nickname).toBe('Chiefs');
+		expect(pros.awayTeam.nickname).toBeUndefined();
+		expect(college.homeTeam.nickname).toBe('Nittany Lions');
+		expect(soccer.homeTeam.nickname).toBe('Portland');
+	});
+
 	test('a bracket seed is not passed off as a poll ranking', () => {
 		const marchMadness: Partial<Game> = {
 			league: 'ncaab',
@@ -325,7 +342,8 @@ describe('favorite teams', () => {
 		));
 		expect(result.favoriteBonus).toBe(8);
 		expect(result.favoriteTeamCount).toBe(1);
-		expect(result.reason).toMatch(/favorite bonus \(\+8\)/);
+		// The breakdown shows the bonus; the reason line sticks to what is happening in the game.
+		expect(result.reason).not.toMatch(/favorite/i);
 	});
 });
 

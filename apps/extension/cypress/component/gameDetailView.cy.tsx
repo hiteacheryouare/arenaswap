@@ -122,7 +122,7 @@ const excitement: PowerScoreResult = {
 	favoriteBonus: 0,
 	favoriteTeamCount: 0,
 	stalled: false,
-	reason: 'close game, lead changes',
+	reason: '3 lead changes in the last 5 minutes. Lakers up 2 with 2:10 left',
 };
 
 // The charts only render once history exists, so tests that need a scrollable page supply this.
@@ -139,7 +139,7 @@ const powerScoreHistory: PowerScoreSnapshot[] = Array.from({ length: 6 }, (_, i)
 	favoriteBonus: 0,
 	favoriteTeamCount: 0,
 	stalled: false,
-	reason: 'close game, lead changes',
+	reason: '3 lead changes in the last 5 minutes. Lakers up 2 with 2:10 left',
 }));
 
 const makeLiveGame = (overrides: Partial<Game> = {}): Game => ({
@@ -555,7 +555,7 @@ describe('gameDetailView hero', () => {
 
 	it('keeps the PowerScore reason in the breakdown', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
-		cy.get('.powerscore-breakdown-reason').should('contain.text', 'Close game, lead changes');
+		cy.get('.powerscore-breakdown-reason').should('have.text', '3 lead changes in the last 5 minutes. Lakers up 2 with 2:10 left');
 	});
 
 	it('shows the commercial break row for a sport that goes to commercial', () => {
@@ -1125,7 +1125,7 @@ describe('gameDetailView scoring modes', () => {
 
 	const blowoutScore: LiveScore = {
 		...excitement,
-		reason: '24-point lead, OKC piling on',
+		reason: 'Thunder on a 12–0 run. Up 24 in the 3rd quarter',
 		breakdown: {
 			modeId: 'blowouts',
 			signals: [
@@ -1135,7 +1135,7 @@ describe('gameDetailView scoring modes', () => {
 				{ id: 'pileOn', points: 6, ceiling: 15, disabled: false },
 			],
 			boosts: [{ id: 'favoriteBoost', points: 0, meta: { teams: 0 } }, { id: 'gameBoost', points: 0 }, { id: 'postseasonBoost', points: 0 }],
-			reasons: [{ key: 'blowoutMargin', params: { margin: 24, unit: 'point' } }, { key: 'pilingOn', params: { team: 'OKC' } }],
+			reasons: [{ key: 'run', params: { team: 'Thunder', scoredFor: 12, scoredAgainst: 0 } }, { key: 'state', params: { score: 'up', team: 'Thunder', margin: 24, when: 'quarter', period: 3 } }],
 			frozen: false,
 			scaledSubtotal: 78,
 			signalCeiling: 120,
@@ -1159,7 +1159,7 @@ describe('gameDetailView scoring modes', () => {
 			expect(titles[score + 1]).to.equal('Lead Over Time');
 		});
 		cy.get('.powerscore-breakdown-heading').should('have.text', 'Blowouts Breakdown');
-		cy.get('.powerscore-breakdown-reason').should('have.text', '24-point lead, OKC piling on');
+		cy.get('.powerscore-breakdown-reason').should('have.text', 'Thunder on a 12–0 run. Up 24 in the 3rd quarter');
 	});
 
 	it('reads the mode off the newest reading when there is no live score', () => {

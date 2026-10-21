@@ -145,9 +145,9 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 				['postseasonBoost', v2.postseasonBoost, boostPoints(v3, 'postseasonBoost')],
 			];
 
-			// The two deliberate changes. 2.x kept a disabled signal's reason in the line, and its
-			// disabled path floored after adding win probability instead of before.
-			if (disabledSignals.length === 0) fields.push(['reason', v2.reason, v3.reason]);
+			// The deliberate changes. The reason line was rewritten from a list of fragments into
+			// sentences, so it is not compared, and 2.x's disabled path floored after adding win
+			// probability instead of before.
 			const subtotalUnderStall = v3.scaledSubtotal < v3.stallPenalty && (v3.winProbabilityVariance ?? 0) > 0;
 			if (!overtimeLead && (disabledSignals.length === 0 || !subtotalUnderStall)) fields.push(['total', v2.total, v3.total]);
 

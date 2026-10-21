@@ -29,7 +29,6 @@ const testMode = (overrides: Partial<PowerScoreMode> = {}): PowerScoreMode => de
 	signals: [fixedSignal('alpha', 50, 30), fixedSignal('beta', 50, 20)],
 	boosts: [],
 	reasonPriority: ['alpha', 'beta'],
-	reasonLimit: 2,
 	usesStallPenalty: false,
 	usesWinProbability: false,
 	...overrides,
@@ -118,11 +117,11 @@ describe('switching signals off', () => {
 
 	test('drops a switched-off signal\'s reason and lets the next one take its place', () => {
 		const allOn = scoreGame(tiedFinalMinute(), denverRun());
-		expect(allOn.reasons.map(reason => reason.key)).toEqual(['outscoring', 'cuttingIn']);
+		expect(allOn.reasons.map(reason => reason.key)).toEqual(['cameBack']);
 
-		const noMomentum = scoreGame(tiedFinalMinute(), denverRun(), { disabledSignals: ['momentum'] });
-		expect(noMomentum.reasons.map(reason => reason.key)).toEqual(['cuttingIn', 'overtimeLooming']);
-		expect(noMomentum.reason).not.toMatch(/outscoring/);
+		const noComeback = scoreGame(tiedFinalMinute(), denverRun(), { disabledSignals: ['comeback'] });
+		expect(noComeback.reasons.map(reason => reason.key)).toEqual(['run', 'state']);
+		expect(noComeback.reason).toBe('DEN on an 11–2 run. Tied with 0:40 left');
 	});
 
 	test('scales the stall penalty with the subtotal so a stalled game keeps its proportion', () => {
@@ -380,15 +379,16 @@ describe('a game with play stopped', () => {
 
 describe('reasons', () => {
 	test('each fragment carries what a translation needs, and the English line is built from them', () => {
+		// The run that tied it is the comeback, so the two signals make one sentence, and a level game
+		// takes the clock rather than a second sentence saying "Tied". The favorite boost is the
+		// breakdown's to show.
 		const score = scoreGame(tiedFinalMinute(), denverRun(), { favoriteTeamCount: 1, favoriteBoostPoints: 10 });
-		expect(score.reasons[0]).toEqual({ key: 'outscoring', params: { team: 'DEN', other: 'PHX', scoredFor: 11, scoredAgainst: 2 } });
-		expect(score.reasons[1]).toEqual({ key: 'cuttingIn', params: { team: 'DEN' } });
-		expect(score.reasons[score.reasons.length - 1]).toEqual({ key: 'favoriteBoost', params: { points: 10 } });
+		expect(score.reasons).toEqual([{ key: 'cameBack', params: { team: 'DEN', from: 9, when: 'clock', clock: '0:40' } }]);
 		expect(score.reason).toBe(renderReasonsEnglish(score.reasons));
-		expect(score.reason).toBe('DEN outscoring PHX 11-2, DEN cutting into it, favorite bonus (+10)');
+		expect(score.reason).toBe('DEN came back from 9 down with 0:40 left');
 	});
 
-	test('a custom mode\'s reasons follow its priority rather than its signal order, and stop at its limit', () => {
+	test('a custom mode\'s reason comes from its strongest signal, its priority breaking ties', () => {
 		const mode = testMode({
 			signals: [
 				fixedSignal('alpha', 30, 10, { key: 'alphaSays' }),
@@ -396,17 +396,16 @@ describe('reasons', () => {
 				fixedSignal('gamma', 30, 10, { key: 'gammaSays' }),
 			],
 			reasonPriority: ['gamma', 'alpha', 'beta'],
-			reasonLimit: 2,
 		});
 		const score = scoreGame(thirdQuarter(), {}, { mode });
-		expect(score.reasons).toEqual([{ key: 'gammaSays' }, { key: 'alphaSays' }]);
-		expect(score.reason).toBe('gammaSays, alphaSays');
+		expect(score.reasons.map(reason => reason.key)).toEqual(['gammaSays', 'state']);
+		expect(score.reason).toBe('gammaSays. BOS up 4 in the 3rd quarter');
 	});
 
-	test('a game with nothing to say still names the boosts that moved it', () => {
+	test('a game with nothing to say gives the score, and never a boost\'s arithmetic', () => {
 		const score = scoreGame(thirdQuarter(), {}, { mode: testMode(), gameBoost: 5 });
-		expect(score.reasons).toEqual([{ key: 'fallback' }, { key: 'gameBoost', params: { points: 5 } }]);
-		expect(score.reason).toBe('best game available, game boost (+5)');
+		expect(score.reasons).toEqual([{ key: 'state', params: { score: 'lead', team: 'BOS', margin: 4, unit: 'point', when: 'quarter', period: 3 } }]);
+		expect(score.reason).toBe('BOS up 4 in the 3rd quarter');
 	});
 });
 

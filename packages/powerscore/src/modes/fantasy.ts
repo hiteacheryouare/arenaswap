@@ -9,7 +9,6 @@ export const fantasyMode: PowerScoreMode = {
 	signals: fantasySignals,
 	boosts: [],
 	reasonPriority: ['situation', 'production', 'exposure'],
-	reasonLimit: 2,
 	usesStallPenalty: false,
 	usesWinProbability: false,
 	classicBlend: { kind: 'boost', weight: 0.6 },

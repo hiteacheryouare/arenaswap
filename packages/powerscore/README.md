@@ -39,14 +39,14 @@ const score = scoreGame({
 	league: 'nba',
 	sportType: 'basketball',
 	status: 'in',
-	homeTeam: { score: 98 },
-	awayTeam: { score: 96 },
+	homeTeam: { nickname: 'Celtics', score: 98 },
+	awayTeam: { nickname: 'Lakers', score: 96 },
 	period: 4,
 	clockSeconds: 74,
 });
 
 score.total;  // 0–100
-score.reason; // "under 2 min left, 2-point game"
+score.reason; // "Celtics up 2 with 1:14 left"
 ```
 
 `scoreGame(game, context, options)` takes three things:
@@ -84,8 +84,8 @@ const score = scoreGame(
 		league: 'nfl',
 		sportType: 'football',
 		status: 'in',
-		homeTeam: { score: 20, timeouts: 2 },
-		awayTeam: { score: 17, timeouts: 1 },
+		homeTeam: { abbreviation: 'KC', nickname: 'Chiefs', score: 20, timeouts: 2 },
+		awayTeam: { abbreviation: 'BUF', nickname: 'Bills', score: 17, timeouts: 1 },
 		period: 4,
 		clockSeconds: 95,
 		possession: 'away',
@@ -99,7 +99,7 @@ const score = scoreGame(
 score.boosts.find(boost => boost.id === 'twoMinuteDrill');
 // { id: 'twoMinuteDrill', points: 6, meta: { secondsLeft: 95, trailBy: 3 } }
 
-score.reason; // "under 2 min left, 3-point game, two-minute drill (+6)"
+score.reason; // "Bills down 3, driving from 41 yards out with 1:35 left"
 ```
 
 ---
@@ -255,7 +255,6 @@ const overtimeOnly: PowerScoreMode = defineMode({
 	],
 	boosts: [],
 	reasonPriority: ['extraTime'],
-	reasonLimit: 1,
 	usesStallPenalty: false,
 	usesWinProbability: false,
 });
@@ -267,7 +266,7 @@ A signal's `compute` gets the game, the context, the resolved sport and league c
 
 A mode can also carry `boosts`, `bucketCaps`, a `classicBlend` (`{ kind: 'floor', factor }`, `{ kind: 'mix', weight }` for `total = weight × own + (1 − weight) × classic`, or `{ kind: 'boost', weight }` for `total = min(100, classic + weight × own)`), `paysPostseason` (default `true`; `false` withholds the postseason boost) and an `appliesTo(game, context)` that sends games it has nothing to say about to Classic.
 
-Reason keys the built-in modes know render as English in `score.reason`. A key of your own renders as itself, so translate from `score.reasons` rather than from the string.
+`reasonPriority` lists the signals whose reasons may be read. The strongest of them speaks, and the order breaks ties. Reason keys the built-in modes know render as English in `score.reason`. A key of your own renders as itself, so translate from `score.reasons` rather than from the string.
 
 ---
 
@@ -294,13 +293,13 @@ interface PowerScore {
 	classicTotal?: number;          // Classic's own total, when the mode blends with it
 	blend?: BlendResult;            // { kind, weight, ownTotal, classicTotal, floorApplied? }, to show the arithmetic
 	boosts: ScoredBoost[];          // { id, points, meta?, details? }
-	reasons: ReasonFragment[];      // { key, params? }, ready to translate
+	reasons: ReasonFragment[];      // up to three sentences as { key, params? }, ready to translate
 	reason: string;                 // the same, in English
 }
 ```
 
 - **`signals` and `boosts` are lists.** Every signal the mode defines is there, with its ceiling, even at 0. So is every boost the mode pays, at 0 when it isn't paying. Boost ids are listed above, plus `favoriteBoost`, `postseasonBoost` and `gameBoost` when you asked for them. Look one up with `signalPoints(score, 'momentum')` or `boostPoints(score, 'noHitter')`.
-- **`reasons` are structured** (`{ key: 'outscoring', params: { team: 'BOS', ... } }`) so a UI can translate them. `reason` is the same list in English, joined with commas, for when you don't have translations. It's display text, not an API. Don't match on it.
+- **`reasons` are sentences** (`{ key: 'run', params: { team: 'Lakers', scoredFor: 12, scoredAgainst: 2 } }`) so a UI can translate them. `reason` is the same list in English, joined into sentences, for when you don't have translations. It's display text, not an API. Don't match on it. See [Reasons](#reasons) for what each sentence says.
 - **`frozen`** is true at halftime, in an intermission or in a delay. Everything scores 0 until play resumes, and `reason` is empty.
 - **`stalled`** is true when a stall deduction applied. `stallPenalty` is how many points it took. 8 consecutive frozen polls cost 15, 15 cost 25.
 - **`onBreak`** is true when a commercial break deduction applied. `breakPenalty` is how many points it took, 15 at most. Both are `false` and `0` on a frozen score, and `stalled` only ever fires through `stallCount`.
@@ -355,6 +354,45 @@ interface PowerScore {
 | `postseasonBoost` | `postseasonRound` | `round` | 0 is the final, 1 a semifinal, 2 a quarterfinal, 3 an earlier round |
 | `postseasonBoost` | `regularSeason` | — | Regular season, so nothing extra here. |
 | `postseasonBoost` | `postseasonBoostOff` | — | Your postseason boost is set to 0 in Settings. |
+
+### Reasons
+
+A reason is plain facts, at most three sentences, in this order. Each part is left out when it has nothing to say, except the score.
+
+1. **What is happening right now**, from the strongest moment boost: a red zone, a late drive, a pulled goalie, a power play, runners on, a no-hitter, a red card. Fantasy mode's player situation goes here too. A drive or a pulled goalie gives the score and the clock itself, so the score sentence is left out.
+2. **What just happened**, from the strongest of the run, comeback and lead-change signals. Where they describe the same stretch they make one sentence: a run that takes the lead is `runToLead`, and a comeback built on a run is the comeback. A comeback that leaves the game level takes the time and replaces the score sentence: "Sharks just tied it with 6:11 left".
+3. **The score and the time**, always: `state`, with `score` of `tied`, `lead` (names the leader) or `up` (the sentence before already named them), and `when` of `clock`, `quarter`, `half`, `period`, `overtime`, `overtimeClock`, `overtimeNumbered`, `minute`, `extraTime`, `top`, `bottom` or `inning`. A shootout is `shootout` or `penaltyShootout` on its own.
+4. **What is at stake**, only when there is room: a series clinch or decider, a title-race clinch or elimination, or an upset worth 3 points or more. Never the favorite, manual or postseason boost, and never a boost's points.
+
+Teams are named with `TeamState.nickname` ("Lakers", "Nittany Lions", or a soccer club's short name such as "Portland"), falling back to the abbreviation.
+
+| Part | Key | Params | In English |
+| --- | --- | --- | --- |
+| Right now | `redZone`, `redZoneThirdAndShort`, `redZoneFourthDown` | `team` | Chiefs in the red zone |
+| | `driveTrailing` | `team`, `trailBy`, `yards`, `clock` | Bills down 3, driving from 41 yards out with 1:35 left |
+| | `driveTied` | `team`, `yards`, `clock` | Tied, Bills driving from 41 yards out with 1:35 left |
+| | `emptyNet` | `team`, `margin`, `clock` | Maple Leafs pulled the goalie, down 1 with 1:20 left |
+| | `powerPlay`, `powerPlayTeam` | `team` on the second | Power play / Bruins on the power play |
+| | `goAheadRun`, `tyingRun`, `winningRun` | `team` | Brewers have the tying run on base |
+| | `runnerSecond`, `runnerThird`, `runnersFirstSecond`, `runnersFirstThird`, `runnersSecondThird`, `basesLoaded` | — | Runners on the corners |
+| | `noHitter`, `doubleNoHitter` | `team`, `innings` | Yankees have no hits through 6 innings |
+| | `redCard` | `team`, `players`, `minute` | Portland down to 10 since the 21st minute |
+| | `fantasyHasBall`, `fantasyRedZone`, `fantasyFieldGoalRange`, `fantasyDefense`, `fantasyAtBat`, `fantasyOnDeck`, `fantasyPitching`, `fantasyInGame` | `name` | Mahomes has the ball |
+| Just happened | `run`, `runToLead` | `team`, `scoredFor`, `scoredAgainst` | Lakers on a 12–2 run to take the lead |
+| | `scoredStraight`, `scoredStraightToLead` | `team`, `count` | Sabres have scored 2 straight |
+| | `outscoring` | `team`, `other`, `scoredFor`, `scoredAgainst`, `minutes` | Lakers outscoring Celtics 10–6 in the last 5 minutes |
+| | `leadChanges` | `count`, `minutes` | 4 lead changes in the last 5 minutes |
+| | `tookLead` | `team` | Bobcats just took the lead |
+| | `tiedIt`, `cameBack` | `team`, `from`, plus the `state` time params | Hornets came back from 6 down in the 1st quarter |
+| | `cameBackToLead`, `cutDeficit` | `team`, `from`, `to` | Rockets cut the deficit from 8 to 5 |
+| | `fantasyPoints` | `name`, `points`, `minutes` | Kelce has scored 8.5 fantasy points in the last 16 minutes |
+| Score | `state` | see above | Celtics up 2 with 1:14 left |
+| At stake | `seriesClinch`, `raceClinch`, `raceElimination` | `team` | White Sox clinch the series with a win |
+| | `seriesDecider` | `game` | Game 5, winner takes the series |
+| | `upset` | `team`, `chance` | Aztecs were 25% to win before the game |
+| | `fantasyRostered` | `count` | 2 of your players are in this game |
+
+Basketball calls a lopsided stretch a run (12–4 or better). Everywhere else only an unanswered stretch is a streak, and in the low-scoring sports a single goal or run is left to the score sentence.
 
 ### How the total is built
 
@@ -548,12 +586,14 @@ result.total; // 0–100, the same number 2.x gave you
 
 ## Migrating from 2.x
 
-Nothing breaks. Upgrade, run your tests, and move to `scoreGame` when you want modes or the new boosts.
+Scores don't change. Reasons do, and one field is gone. Upgrade, run your tests, and move to `scoreGame` when you want modes or the new boosts.
 
 - **`computePowerScore` and its friends still work.** They are deprecated, not removed. `PowerScoreResult` is unchanged, and `computePowerScore` keeps 2.x's boost-free behavior: it returns the same totals it did.
 - **`Game` gained optional fields and a type parameter.** `Game<League extends string = LeagueId>`, so a bare `Game` means what it meant. New fields: `possession`, `yardsToEndZone`, `outs`, `series`, `redCards`, `seasonType`, `postseasonRound`, plus `rank`, `hits`, `errors` and `timeouts` on each team.
 - **Unknown leagues now fall back by sport, not to the NBA.** A league id the table doesn't know used to be scored with the NBA's configuration whatever the sport. Now a hockey game in an unknown league gets the NHL's periods and clock, and so on. If you relied on the old fallback for a non-basketball sport, scores will move, and for the better.
-- **`ScorerTunables.reasons` gained optional fields** (`comebackBig`, `comebackModerate`, `boosts`, and the Blowouts reason strings). They're optional, so a 2.x tunables object still type-checks and the built-in English fills the gaps.
+- **Reasons are sentences of plain facts.** `reason` reads "Lakers on a 12–2 run to take the lead. Up 7 with 2:10 left" where 2.x read "LAL outscoring BOS 12-2, just took the lead". Boosts are no longer appended with their points. Most reason keys are new; see [Reasons](#reasons). Pass `nickname` on each team to have it used in place of the abbreviation.
+- **`PowerScoreMode.reasonLimit` is gone.** A mode's strongest signal gives the one "what just happened" sentence, so there is no list to cut short. A custom mode that still sets it fails to type-check as an object literal; delete the line.
+- **`ScorerTunables.reasons` holds only `fallback`.** The English phrasing lives in `renderReasonEnglish`, since a sentence can't be assembled from suffixes in every language.
 - **Classic through `scoreGame` includes the new boosts.** The same game can score higher there than in `computePowerScore`, by up to the boost caps. If you want the 2.x number from `scoreGame`, pass a Classic mode with `boosts: []`.
 
 ```ts

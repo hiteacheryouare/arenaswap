@@ -103,7 +103,7 @@ Boston just took the lead on the back of a 13-2 run:
 
 ```ts
 score.total;  // 70
-score.reason; // 'BOS outscoring LAL 13-2, just took the lead'
+score.reason; // 'BOS on a 13–2 run to take the lead. Up 6 in the 3rd quarter'
 // closeness 18, lateGame 2, momentum 38, leadChanges 12, comeback 0
 ```
 

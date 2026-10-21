@@ -15,6 +15,8 @@ interface EspnCompetitor {
 	team: {
 		displayName: string;
 		abbreviation?: string;
+		name?: string;
+		shortDisplayName?: string;
 	};
 }
 
@@ -38,6 +40,11 @@ interface EspnEvent {
 interface EspnScoreboardResponse {
 	events?: EspnEvent[];
 }
+
+// The extension's rule: a soccer club by its short name ("Portland"), everyone else by nickname.
+const nicknameOf = (team: EspnCompetitor['team'], sportType: Game['sportType']): string | undefined => (
+	sportType === 'soccer' ? team.shortDisplayName ?? team.name : team.name ?? team.shortDisplayName
+);
 
 interface LiveScoreCard {
 	game: Game;
@@ -92,10 +99,12 @@ const parseLiveGames = (leagueId: LeagueId, payload: EspnScoreboardResponse): Ga
 			sportType: config.sportType,
 			homeTeam: {
 				abbreviation: home.team.abbreviation || home.team.displayName?.slice(0, 3).toUpperCase() || 'HOME',
+				nickname: nicknameOf(home.team, config.sportType),
 				score: Number.parseInt(home.score ?? '0', 10) || 0,
 			},
 			awayTeam: {
 				abbreviation: away.team.abbreviation || away.team.displayName?.slice(0, 3).toUpperCase() || 'AWAY',
+				nickname: nicknameOf(away.team, config.sportType),
 				score: Number.parseInt(away.score ?? '0', 10) || 0,
 			},
 			period: competition.status?.period ?? 1,

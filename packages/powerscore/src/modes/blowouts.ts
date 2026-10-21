@@ -14,7 +14,6 @@ export const blowoutsMode: PowerScoreMode = {
 	boosts: [noHitterBoost, upsetRoutBoost],
 	bucketCaps: boostBucketCaps,
 	reasonPriority: ['pileOn', 'blowoutMargin', 'sustained', 'timing'],
-	reasonLimit: 2,
 	usesStallPenalty: true,
 	usesWinProbability: false,
 	classicBlend: { kind: 'floor', factor: 0.3 },

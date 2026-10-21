@@ -47,6 +47,7 @@ The state of the game right now. Only `id`, `league`, `sportType`, and the two t
 interface TeamState {
 	score: number;
 	abbreviation?: string;
+	nickname?: string;
 	rank?: number;
 	hits?: number;
 	errors?: number;
@@ -57,7 +58,8 @@ interface TeamState {
 | Field | Missing means |
 |---|---|
 | `score` | Required. |
-| `abbreviation` | Shows as `?` in reasons that name a team. |
+| `abbreviation` | Names the team in reasons when `nickname` is missing too, and shows as `?` when both are. |
+| `nickname` | What reasons call the team: "Lakers", "Nittany Lions", or a soccer club's short name such as "Portland". Falls back to `abbreviation`. |
 | `rank` | The team is unranked. Leave it out for a bracket seed too: it's a poll ranking, where 1 is best. Stakes needs it on both teams. |
 | `hits` | Baseball and softball. No hits count, so the no-hitter can't pay. `0` is a real value: it means a hitless team. |
 | `errors` | Baseball and softball. Not read by any score today. |
@@ -225,8 +227,8 @@ interface PowerScore {
 | `classicTotal?` | Classic's own total, when the mode blends with it. |
 | `blend?` | How a blended mode reached its total. See [`BlendResult`](#blendresult). |
 | `boosts` | Every boost the mode pays, at 0 when it isn't paying. Plus `favoriteBoost`, `postseasonBoost`, and `gameBoost` once you've asked for them. |
-| `reasons` | Structured fragments, ready to translate. |
-| `reason` | The same in English, joined with commas. Display text, not an API: it can change wording between versions. Don't match on it. |
+| `reasons` | Up to three sentences of plain facts, as fragments ready to translate: what is happening right now, what just happened, the score and the time, and what is at stake. See the [README's reason table](https://github.com/hiteacheryouare/arenaswap/blob/mega/packages/powerscore/README.md#reasons) for every key. |
+| `reason` | The same in English, as sentences. Display text, not an API: it can change wording between versions. Don't match on it. |
 
 ### ScoredSignal, ScoredBoost, and ReasonFragment
 
@@ -236,7 +238,7 @@ interface ScoredBoost  { id: string; points: number; meta?: Record<string, numbe
 interface ReasonFragment { key: string; params?: Record<string, string | number> }
 ```
 
-`meta` on a boost carries what a UI might want to say, such as `{ inning: 8 }` on a no-hitter or `{ secondsLeft: 95, trailBy: 3 }` on a two-minute drill. A reason fragment looks like `{ key: 'outscoring', params: { team: 'BOS' } }`. Reason keys the built-in modes know render as English in `reason`. A key of your own renders as itself, so translate from `reasons`, not from the string.
+`meta` on a boost carries what a UI might want to say, such as `{ inning: 8 }` on a no-hitter or `{ secondsLeft: 95, trailBy: 3 }` on a two-minute drill. A reason fragment looks like `{ key: 'run', params: { team: 'Lakers', scoredFor: 12, scoredAgainst: 2 } }`. Reason keys the built-in modes know render as English in `reason`. A key of your own renders as itself, so translate from `reasons`, not from the string.
 
 `details` on a boost says what is happening in this game that the boost pays for, or doesn't, as reason fragments for a UI to translate: `{ key: 'seriesClinch', params: { team: 'CHW' } }` on stakes, or a pulled goalie and a power play together on a hockey 6-on-4. It's absent when there's nothing to say, such as before a game starts or while play is stopped. There is no English renderer for these keys; the table below lists every one the built-in boosts send, with the sentence ArenaSwap shows for it.
 
@@ -300,7 +302,6 @@ interface PowerScoreMode {
 	boosts: readonly BoostDefinition[];
 	bucketCaps?: Readonly<Record<string, number>>;
 	reasonPriority: readonly string[];
-	reasonLimit: number;
 	usesStallPenalty: boolean;
 	usesWinProbability: boolean;
 	classicBlend?: ClassicBlend;
@@ -312,7 +313,7 @@ interface PowerScoreMode {
 |---|---|
 | `signals`, `boosts` | In display order. |
 | `bucketCaps` | The most a bucket of boosts may add together. Earlier boosts in the list are paid first. |
-| `reasonPriority`, `reasonLimit` | Signal ids in the order their reasons are worth reading, and how many reach `reason`. |
+| `reasonPriority` | Signal ids whose reasons may be read, most worth reading first. The strongest one gives the "what just happened" sentence; the order breaks ties. |
 | `usesStallPenalty`, `usesWinProbability` | Whether the stall and break deductions and the ±5 modifier apply. One flag covers both deductions. |
 | `classicBlend` | How the mode combines with Classic. |
 | `paysPostseason?` | `false` withholds the postseason boost in this mode. Defaults to `true`. Blowouts sets it to `false`, since a playoff blowout has settled its result. |
@@ -398,7 +399,7 @@ Only baseball and softball set `SportTypeConfig.lateGameCurve`. Clock sports der
 
 ## ScorerTunables
 
-The single exported object holding every tier value and every reason string the engine can produce. It's a fully populated constant, not a partial config.
+The single exported object holding every tier value the engine scores with. It's a fully populated constant, not a partial config.
 
 | Branch | Holds |
 |---|---|
@@ -409,9 +410,7 @@ The single exported object holding every tier value and every reason string the 
 | `scores.leadChanges` | The two lead-change tier values. |
 | `scores.comeback` | The two comeback tier values and its flat floor. |
 | `scores.winProbabilityVariance` | `maxAvgDist` and `minDataPoints`, tabulated in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance). |
-| `reasons` | Every string a reason can contain, from `"it's tied"` to `"best game available"`. Display text, not an API. |
-
-`reasons` gained optional fields in 3.0 (`comebackBig`, `comebackModerate`, `boosts`, and the Blowouts strings). They're optional so a 2.x tunables object still type-checks, and the built-in English fills the gaps.
+| `reasons` | Only `fallback` ("best game available"), the reason the deprecated flat result falls back to. The English phrasing lives in `renderReasonEnglish`. |
 
 ## FantasyRule and FantasySport
 

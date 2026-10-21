@@ -13,7 +13,7 @@ export { stakesBoost } from './boosts/stakes';
 export { classicSignals, closenessSignal, lateGameSignal, momentumSignal, leadChangesSignal, comebackSignal, applyProgressFloor, findLeadChanges } from './signals/classic';
 export { scoringOpportunityBoost } from './boosts/scoringOpportunity';
 export { postseasonBoostShare } from './postseason';
-export { renderReasonEnglish, renderReasonsEnglish } from './reasons';
+export { ordinal, renderReasonEnglish, renderReasonsEnglish } from './reasons';
 export { resolveLeagueConfig, resolveSportConfig } from './config';
 export { getGameProgress, scoreMargin } from './progress';
 export { computeGameProgress, computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, isPlayFrozen, normalizePowerScoreResult } from './scorer';

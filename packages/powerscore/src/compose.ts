@@ -3,6 +3,7 @@ import { resolveLeagueConfig, resolveSportConfig } from './config';
 import { clamp, isFiniteNumber, sum, toFiniteNumber } from './math';
 import { classicMode, getMode } from './modes';
 import { postseasonBoostShare, postseasonDetails } from './postseason';
+import { narrate } from './narrate';
 import { getGameProgress, isPlayFrozen, scoreMargin } from './progress';
 import { renderReasonsEnglish } from './reasons';
 import { computeWinProbVarianceScore } from './winProbability';
@@ -97,13 +98,6 @@ const runMode = (mode: PowerScoreMode, input: SignalInput, disabledSignals?: rea
 		: undefined;
 	const baseTotal = clamp(Math.max(0, scaledSubtotal - stallPenalty - scaledBreakPenalty) + (winProbabilityVariance ?? 0), 0, scoreMaxTotal);
 
-	const reasonById = new Map(outputs.map(({ signal, output }) => [signal.id, output.reason]));
-	const reasons = mode.reasonPriority
-		.filter(id => !isOff(id))
-		.map(id => reasonById.get(id))
-		.filter((reason): reason is ReasonFragment => reason !== undefined)
-		.slice(0, mode.reasonLimit);
-
 	const bucketRoom = new Map(Object.entries(mode.bucketCaps ?? {}));
 	const boosts = mode.boosts.map((boost): ScoredBoost => {
 		const output = boost.compute(input);
@@ -120,6 +114,12 @@ const runMode = (mode: PowerScoreMode, input: SignalInput, disabledSignals?: rea
 			...(output.details?.length ? { details: output.details } : {}),
 		};
 	});
+
+	const scoredById = new Map(outputs.map(({ signal, output }, i) => [signal.id, { points: signals[i]!.points, reason: output.reason }]));
+	const spoken = mode.reasonPriority
+		.filter(id => !isOff(id) && scoredById.has(id))
+		.map(id => ({ id, ...scoredById.get(id)! }));
+	const reasons = narrate(input, spoken, boosts);
 
 	return {
 		signals,
@@ -217,12 +217,6 @@ export const scoreGame = (game: Game<string>, context: ScoringContext = {}, opti
 		...(options.postseasonBoostPoints !== undefined && paysPostseason ? [postseasonScoredBoost(game, postseasonBoost, options.postseasonBoostPoints)] : []),
 	];
 
-	const signalReasons = run.reasons.length > 0 ? run.reasons : [{ key: 'fallback' }];
-	const reasons: ReasonFragment[] = [
-		...signalReasons,
-		...boosts.filter(boost => boost.points > 0).map(boost => ({ key: boost.id, params: { points: boost.points } })),
-	];
-
 	return {
 		gameId: game.id,
 		modeId: mode.id,
@@ -241,8 +235,8 @@ export const scoreGame = (game: Game<string>, context: ScoringContext = {}, opti
 		...(classicRun ? { classicTotal: classicRun.automaticTotal } : {}),
 		...(blended ? { blend: blended.result } : {}),
 		boosts,
-		reasons,
-		reason: renderReasonsEnglish(reasons),
+		reasons: run.reasons,
+		reason: renderReasonsEnglish(run.reasons),
 	};
 };
 

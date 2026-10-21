@@ -10,7 +10,7 @@ import {
 import { ageSince, clamp, decayFactor } from '../math';
 import { getClockSecondsRemaining } from '../progress';
 import { shorthandedSide } from '../boosts/redCard';
-import { formatClock } from '../reasons';
+import { teamName } from '../teams';
 import type {
 	BaseballLateGameCurveConfig,
 	Game,
@@ -36,10 +36,6 @@ export const applyProgressFloor = (tierCeiling: number, flatFloor: number, progr
 
 const none: SignalOutput = { points: 0 };
 
-export const closenessUnit = (game: Game<string>): string => (
-	scorerTunables.reasons.closenessUnitBySportType[game.sportType] ?? scorerTunables.reasons.defaultClosenessUnit
-);
-
 const shouldScoreZeroZeroAsFullTie = (game: Game<string>, sport: SportTypeConfig): boolean => (
 	sport.zeroZeroAsFullTie && (game.period == null || sport.zeroZeroPenaltyPeriods?.includes(game.period) !== true)
 );
@@ -47,22 +43,16 @@ const shouldScoreZeroZeroAsFullTie = (game: Game<string>, sport: SportTypeConfig
 export const computeCloseness = ({ game, sport, progress, margin }: SignalInput): SignalOutput => {
 	const { scores } = scorerTunables;
 	const [t1, t2, t3] = sport.closenessMargins;
-	const marginReason: ReasonFragment = { key: 'margin', params: { margin, unit: closenessUnit(game) } };
 
 	let tier: number;
-	let reason: ReasonFragment | undefined;
 	if (game.homeTeam.score === 0 && game.awayTeam.score === 0) {
 		tier = shouldScoreZeroZeroAsFullTie(game, sport) ? scores.closeness.tied : scores.closeness.zeroZero;
-		reason = { key: 'tied' };
 	} else if (margin === 0) {
 		tier = scores.closeness.tied;
-		reason = { key: 'tied' };
 	} else if (margin <= t1) {
 		tier = scores.closeness.tight;
-		reason = marginReason;
 	} else if (margin <= t2) {
 		tier = scores.closeness.close;
-		reason = marginReason;
 	} else if (margin <= t3) {
 		tier = scores.closeness.fringe;
 	} else {
@@ -74,7 +64,7 @@ export const computeCloseness = ({ game, sport, progress, margin }: SignalInput)
 	// is closer than the score says.
 	const shorthanded = margin === 1 ? shorthandedSide(game) : undefined;
 	const underSiege = shorthanded !== undefined && (shorthanded === 'home' ? game.homeTeam.score > game.awayTeam.score : game.awayTeam.score > game.homeTeam.score);
-	return { points: underSiege ? Math.min(scoreMaxCloseness, points + redCardTunables.siegeClosenessBump) : points, reason };
+	return { points: underSiege ? Math.min(scoreMaxCloseness, points + redCardTunables.siegeClosenessBump) : points };
 };
 
 type LateGamePhase = 'previous' | 'final';
@@ -114,28 +104,6 @@ const getLateGameCeiling = (margin: number, sport: SportTypeConfig): number => {
 	return lateGame.blowoutCeiling;
 };
 
-// Keyed on sportType the same way the card's period label is: soccer plays two extra-time halves
-// and then a shootout, none of which is overtime.
-const getOvertimeReason = (game: Game<string>, regularPeriods: number): ReasonFragment => {
-	if (game.sportType !== 'soccer') return { key: 'overtime' };
-	return { key: (game.period ?? 0) - regularPeriods > 2 ? 'shootout' : 'extraTime' };
-};
-
-// A count-up clock has no countdown to render — soccer's stoppage time is never published ahead of
-// time — so it reports elapsed minutes instead of a 0:00 that never arrives.
-const getFinalStretchReason = (
-	game: Game<string>,
-	sport: SportTypeConfig,
-	periodDurationSecs: number,
-	secsRemaining: number,
-): ReasonFragment => {
-	if (!sport.clockCountsUp) return { key: 'clockLeft', params: { clock: formatClock(secsRemaining) } };
-	const elapsedSecs = sport.clockIsFullGameElapsed
-		? Math.max(0, game.clockSeconds ?? 0)
-		: Math.max(0, (game.period ?? 1) - 1) * periodDurationSecs + (periodDurationSecs - secsRemaining);
-	return { key: 'minutesIn', params: { minutes: Math.floor(elapsedSecs / 60) } };
-};
-
 export const computeLateGame = ({ game, sport, league, margin }: SignalInput): SignalOutput => {
 	const { scores } = scorerTunables;
 	if (game.period == null) return none;
@@ -144,10 +112,7 @@ export const computeLateGame = ({ game, sport, league, margin }: SignalInput): S
 	// Overtime and extra innings start from a tie and take the top of the range, until a lead built
 	// inside them (five runs in the top of the 10th) is past the sport's close margin.
 	if (game.period > regularPeriods)
-		return {
-			points: margin <= sport.closenessMargins[1] ? scores.lateGame.overtime : getLateGameCeiling(margin, sport),
-			reason: sport.clockBased ? getOvertimeReason(game, regularPeriods) : { key: 'extraInnings' },
-		};
+		return { points: margin <= sport.closenessMargins[1] ? scores.lateGame.overtime : getLateGameCeiling(margin, sport) };
 
 	const tierCeiling = getLateGameCeiling(margin, sport);
 
@@ -157,10 +122,7 @@ export const computeLateGame = ({ game, sport, league, margin }: SignalInput): S
 		if (!curve || curve.model !== 'baseball') return none;
 		const regulationProgress = getBaseballRegulationProgress(game.period, curve);
 		if (regulationProgress === null) return none;
-		return {
-			points: mapLinearLateGame('final', regulationProgress, tierCeiling),
-			reason: { key: 'inning', params: { inning: Math.min(game.period, curve.regulationInnings) } },
-		};
+		return { points: mapLinearLateGame('final', regulationProgress, tierCeiling) };
 	}
 
 	const periodDuration = Math.max(1, league.periodDurationSecs);
@@ -171,18 +133,11 @@ export const computeLateGame = ({ game, sport, league, margin }: SignalInput): S
 	if (game.period < regularPeriods) return { points: mapLinearLateGame('previous', elapsedFraction, tierCeiling) };
 
 	const rampScore = mapLinearLateGame('final', elapsedFraction, tierCeiling);
-	// An unknown clock cannot place the game inside the pre-overtime window, and there is no clock
-	// position worth reporting, so the ramp holds where the period started.
+	// An unknown clock cannot place the game inside the pre-overtime window, so the ramp holds where
+	// the period started.
 	if (secsRemaining === null) return { points: rampScore };
 
-	const otBoost = getOtPreBoost(game, sport, secsRemaining);
-	const points = clamp(rampScore + otBoost, 0, scoreMaxLateGame);
-	const reason: ReasonFragment = otBoost > 0
-		? { key: game.sportType === 'soccer' ? 'levelLate' : 'overtimeLooming' }
-		: secsRemaining < 60
-			? getFinalStretchReason(game, sport, periodDuration, secsRemaining)
-			: { key: 'underMinutes', params: { minutes: Math.ceil(secsRemaining / 60) } };
-	return { points, reason };
+	return { points: clamp(rampScore + getOtPreBoost(game, sport, secsRemaining), 0, scoreMaxLateGame) };
 };
 
 export const lastScoreChangeTimestamp = (history: readonly ScoreSnapshot[]): number | null => {
@@ -213,12 +168,34 @@ export const findLeadChanges = (history: readonly ScoreSnapshot[]): { count: num
 };
 
 // Clears the reason once the value fades to nothing.
-const decaySignal = (tier: number, reason: ReasonFragment, ageMs: number, halfLifeMs: number): SignalOutput => {
+const decaySignal = (tier: number, reason: ReasonFragment | undefined, ageMs: number, halfLifeMs: number): SignalOutput => {
 	const points = Math.round(tier * decayFactor(ageMs, halfLifeMs));
-	return points <= 0 ? none : { points, reason };
+	if (points <= 0) return none;
+	return reason ? { points, reason } : { points };
 };
 
-const abbreviation = (team: Game<string>['homeTeam']): string => team.abbreviation ?? '?';
+// Wall-clock minutes the window covers, which is what "in the last 12 minutes" can honestly claim.
+export const windowMinutes = (history: readonly ScoreSnapshot[]): number => (
+	history.length < 2 ? 0 : Math.max(1, Math.round((history[history.length - 1]!.timestamp - history[0]!.timestamp) / 60_000))
+);
+
+// Basketball calls a lopsided stretch a 12–4 run; 10–6 is two teams trading baskets. Elsewhere only an
+// unanswered stretch is a streak, and a single goal or run is just the score, which the score sentence
+// already gives.
+export const runReason = (
+	game: Game<string>,
+	team: Game<string>['homeTeam'],
+	other: Game<string>['homeTeam'],
+	scoredFor: number,
+	scoredAgainst: number,
+	history: readonly ScoreSnapshot[],
+): ReasonFragment | undefined => {
+	if (game.sportType === 'basketball' && scoredAgainst * 3 <= scoredFor) return { key: 'run', params: { team: teamName(team), scoredFor, scoredAgainst } };
+	const lowScoring = game.sportType !== 'football' && game.sportType !== 'basketball';
+	if (lowScoring && scoredFor - scoredAgainst < 2) return undefined;
+	if (scoredAgainst === 0) return { key: 'scoredStraight', params: { team: teamName(team), count: scoredFor } };
+	return { key: 'outscoring', params: { team: teamName(team), other: teamName(other), scoredFor, scoredAgainst, minutes: windowMinutes(history) } };
+};
 
 export const computeMomentum = ({ game, context, sport, now }: SignalInput): SignalOutput => {
 	const { scores } = scorerTunables;
@@ -233,29 +210,25 @@ export const computeMomentum = ({ game, context, sport, now }: SignalInput): Sig
 	const awayDelta = Math.max(0, newest.awayScore - oldest.awayScore);
 	const run = Math.abs(homeDelta - awayDelta);
 	const homeIsRunning = homeDelta > awayDelta;
-	const runTeam = abbreviation(homeIsRunning ? game.homeTeam : game.awayTeam);
-	const chasingTeam = abbreviation(homeIsRunning ? game.awayTeam : game.homeTeam);
 
 	let tier: number;
-	let reason: ReasonFragment;
-	if (run >= sport.momentumBigRun) {
-		tier = scores.momentum.bigRun;
-		// `run` is the differential, not an unanswered streak, so both scores are named.
-		reason = {
-			key: 'outscoring',
-			params: { team: runTeam, other: chasingTeam, scoredFor: Math.max(homeDelta, awayDelta), scoredAgainst: Math.min(homeDelta, awayDelta) },
-		};
-	} else if (run >= sport.momentumSmallRun) {
-		tier = scores.momentum.smallRun;
-		reason = { key: 'onARoll', params: { team: runTeam } };
-	} else {
-		return none;
-	}
+	if (run >= sport.momentumBigRun) tier = scores.momentum.bigRun;
+	else if (run >= sport.momentumSmallRun) tier = scores.momentum.smallRun;
+	else return none;
 
+	// `run` is the differential, not an unanswered streak, so both scores are named.
+	const reason = runReason(
+		game,
+		homeIsRunning ? game.homeTeam : game.awayTeam,
+		homeIsRunning ? game.awayTeam : game.homeTeam,
+		Math.max(homeDelta, awayDelta),
+		Math.min(homeDelta, awayDelta),
+		history,
+	);
 	return decaySignal(tier, reason, ageSince(lastScoreChangeTimestamp(history), now), sport.decayHalfLifeMs.momentum);
 };
 
-export const computeLeadChanges = ({ context, sport, now }: SignalInput): SignalOutput => {
+export const computeLeadChanges = ({ game, context, sport, now }: SignalInput): SignalOutput => {
 	const { scores } = scorerTunables;
 	const history = context.history ?? [];
 	if (history.length < 3) return none;
@@ -268,13 +241,15 @@ export const computeLeadChanges = ({ context, sport, now }: SignalInput): Signal
 	// The newer of the two: a flip the snapshots missed can be later than the last one they saw.
 	const lastTimestamp = fromLog ? Math.max(seen.lastTimestamp ?? 0, logged.lastAt ?? seen.lastTimestamp ?? now) : seen.lastTimestamp;
 	let tier: number;
-	let reason: ReasonFragment;
+	let reason: ReasonFragment | undefined;
 	if (count >= 2) {
 		tier = scores.leadChanges.multiple;
-		reason = { key: 'tradingLeads' };
+		reason = { key: 'leadChanges', params: { count, minutes: windowMinutes(history) } };
 	} else if (count === 1) {
 		tier = scores.leadChanges.single;
-		reason = { key: 'justTookLead' };
+		// Level again since, so nobody has just taken it.
+		const { homeTeam, awayTeam } = game;
+		if (homeTeam.score !== awayTeam.score) reason = { key: 'tookLead', params: { team: teamName(homeTeam.score > awayTeam.score ? homeTeam : awayTeam) } };
 	} else {
 		return none;
 	}
@@ -288,20 +263,21 @@ export const computeComeback = ({ game, context, sport, progress, now, margin }:
 	if (history.length < 3) return none;
 
 	const first = history[0]!;
-	const shrinkage = Math.abs(first.homeScore - first.awayScore) - margin;
-	const trailingTeam = abbreviation(first.homeScore < first.awayScore ? game.homeTeam : game.awayTeam);
+	const deficit = Math.abs(first.homeScore - first.awayScore);
+	const shrinkage = deficit - margin;
 
 	let tier: number;
+	if (shrinkage >= sport.comebackThresholdBig) tier = scores.comeback.big;
+	else if (shrinkage >= sport.comebackThresholdSmall) tier = scores.comeback.moderate;
+	else return none;
+
+	const homeTrailed = first.homeScore < first.awayScore;
+	const team = teamName(homeTrailed ? game.homeTeam : game.awayTeam);
+	const nowLeads = homeTrailed ? game.homeTeam.score > game.awayTeam.score : game.awayTeam.score > game.homeTeam.score;
 	let reason: ReasonFragment;
-	if (shrinkage >= sport.comebackThresholdBig) {
-		tier = scores.comeback.big;
-		reason = { key: 'cuttingIn', params: { team: trailingTeam } };
-	} else if (shrinkage >= sport.comebackThresholdSmall) {
-		tier = scores.comeback.moderate;
-		reason = { key: 'closingGap', params: { team: trailingTeam } };
-	} else {
-		return none;
-	}
+	if (margin === 0) reason = deficit === 1 ? { key: 'tiedIt', params: { team } } : { key: 'cameBack', params: { team, from: deficit } };
+	else if (nowLeads) reason = { key: 'cameBackToLead', params: { team, from: deficit } };
+	else reason = { key: 'cutDeficit', params: { team, from: deficit, to: margin } };
 
 	// Progress-scaled first, since a late rally matters more, then faded with the cluster.
 	const floored = applyProgressFloor(tier, scores.comeback.flatFloor, progress);

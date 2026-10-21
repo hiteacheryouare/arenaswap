@@ -52,7 +52,8 @@ describe('a league the built-in tables have never heard of', () => {
 		const khl = feedGame({ league: 'khl', sportType: 'hockey', period: 3, clockSeconds: 240, homeTeam: { score: 2 }, awayTeam: { score: 2 } });
 		const asHockey = scoreGame(khl);
 		const asFourQuarters = scoreGame(khl, {}, { league: { regularPeriods: 4, periodDurationSecs: 720 } });
-		expect(asHockey.reasons).toContainEqual({ key: 'underMinutes', params: { minutes: 4 } });
+		expect(asHockey.reason).toBe('Tied with 4:00 left');
+		expect(asFourQuarters.reason).toBe('Tied in the 3rd quarter');
 		expect(signalPoints(asHockey, 'lateGame')).toBeGreaterThan(signalPoints(asFourQuarters, 'lateGame') + 10);
 	});
 });
@@ -64,7 +65,8 @@ describe('overriding the tables for a league that plays differently', () => {
 		const asHalves = scoreGame(game, {}, { league: { regularPeriods: 2, periodDurationSecs: 1200 } });
 		expect(signalPoints(asQuarters, 'lateGame')).toBe(0);
 		expect(signalPoints(asHalves, 'lateGame')).toBeGreaterThan(20);
-		expect(asHalves.reasons).toContainEqual({ key: 'underMinutes', params: { minutes: 2 } });
+		expect(asQuarters.reason).toMatch(/up 2 in the 2nd quarter$/);
+		expect(asHalves.reason).toMatch(/up 2 with 2:00 left$/);
 	});
 
 	test('a sport with tighter margins reads a three-point game as loose', () => {
@@ -75,8 +77,6 @@ describe('overriding the tables for a league that plays differently', () => {
 		const singlePeriod = { regularPeriods: 1, periodDurationSecs: 600 };
 		const fullCourtMargins = scoreGame(game, {}, { league: singlePeriod });
 		const halfCourtMargins = scoreGame(game, {}, { league: singlePeriod, sport: { closenessMargins: [1, 2, 3] } });
-		expect(fullCourtMargins.reasons).toContainEqual({ key: 'margin', params: { margin: 3, unit: 'point' } });
-		expect(halfCourtMargins.reasons.some(reason => reason.key === 'margin')).toBe(false);
 		expect(signalPoints(halfCourtMargins, 'closeness')).toBeLessThan(signalPoints(fullCourtMargins, 'closeness'));
 		expect(signalPoints(halfCourtMargins, 'lateGame')).toBeGreaterThan(0);
 	});
@@ -101,11 +101,11 @@ describe('a feed that publishes more as it matures', () => {
 		];
 
 		expect(signalPoints(steps[0]!, 'lateGame')).toBe(0);
-		expect(steps[1]!.reasons).toContainEqual({ key: 'inning', params: { inning: 7 } });
+		expect(steps[1]!.reason).toMatch(/up 1 in the bottom of the 7th$/);
 		expect(boostPoints(steps[1]!, 'scoringOpportunity')).toBe(0);
 		expect(boostPoints(steps[2]!, 'scoringOpportunity')).toBe(6);
 		expect(signalPoints(steps[3]!, 'leadChanges')).toBeGreaterThan(0);
-		expect(steps[3]!.reasons).toContainEqual({ key: 'justTookLead' });
+		expect(steps[3]!.reasons.map(reason => reason.key)).toContain('scoredStraightToLead');
 		expect(steps[3]!.winProbabilityVariance).toBeUndefined();
 		expect(steps[4]!.winProbabilityVariance).toBeGreaterThan(0);
 		for (let i = 1; i < steps.length; i++) expect(steps[i]!.total).toBeGreaterThan(steps[i - 1]!.total);

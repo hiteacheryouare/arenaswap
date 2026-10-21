@@ -247,7 +247,7 @@ describe('lead changes from the play log', () => {
 		const now = steadyLead[2]!.timestamp;
 		const score = classic(late, { history: steadyLead, recentLeadChanges: { count: 2, lastAt: now - 30_000 } });
 		expect(signalPoints(score, 'leadChanges')).toBe(13);
-		expect(score.reasons.map(reason => reason.key)).toContain('tradingLeads');
+		expect(score.reasons.map(reason => reason.key)).toContain('leadChanges');
 	});
 
 	test('a log that counts no more than the snapshots changes nothing', () => {

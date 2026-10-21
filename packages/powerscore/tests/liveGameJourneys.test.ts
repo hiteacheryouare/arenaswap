@@ -236,11 +236,9 @@ describe('the feed revises a score after a video review', () => {
 	});
 
 	test('credits the run to the team that scored it', () => {
-		// Both sides are named, so what is being checked is the order: the team on the run reads
-		// first and the team chasing reads second.
+		// Away's four came off, so the window is nine unanswered for home.
 		const result = mixedWindow([[100, 100], [100, 100], [109, 96]]);
-		expect(result.reason).toContain('HOM');
-		expect(result.reason.indexOf('HOM')).toBeLessThan(result.reason.indexOf('AWY'));
+		expect(result.reason).toMatch(/^HOM on a 9–0 run\./);
 	});
 
 	// The tie the floor creates. Two teams that both had points taken off come out with equal

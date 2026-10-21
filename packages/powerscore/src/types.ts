@@ -13,6 +13,9 @@ export type Side = 'home' | 'away';
 export interface TeamState {
 	score: number;
 	abbreviation?: string;
+	// What reasons call the team: "Lakers", "Nittany Lions", or a soccer club's short name, "Portland".
+	// Falls back to the abbreviation.
+	nickname?: string;
 	// A poll ranking (1 is best). Leave it out for an unranked team, and for a bracket seed.
 	rank?: number;
 	// Baseball and softball.
@@ -163,36 +166,8 @@ export interface ScorerTunables {
 		};
 	};
 	reasons: {
-		tied: string;
-		closenessUnitBySportType: Partial<Record<SportType, string>>;
-		defaultClosenessUnit: string;
-		closenessGameSuffix: string;
-		overtime: string;
-		// Soccer's extra time and shootout, which are not overtime.
-		extraTime: string;
-		shootout: string;
-		extraInnings: string;
-		inningSuffix: string;
-		clockLeftSuffix: string;
-		underPrefix: string;
-		minutesLeftSuffix: string;
-		minutesElapsedSuffix: string;
-		overtimeAnticipation: string;
-		drawAnticipation: string;
-		momentumOutscoring: string;
-		momentumRolling: string;
-		leadChangeMultiple: string;
-		leadChangeSingle: string;
-		// Optional so a 2.x tunables object still type-checks; the built-in English fills the gaps.
-		comebackBig?: string;
-		comebackModerate?: string;
+		// What `scorer.ts`'s deprecated flat result says when it has no reason of its own.
 		fallback: string;
-		// English label for each boost's reason fragment, keyed by boost id.
-		boosts?: Record<string, string>;
-		blowoutMarginSuffix?: string;
-		leadHeld?: string;
-		earlyRout?: string;
-		pilingOn?: string;
 	};
 }
 
@@ -398,9 +373,9 @@ export interface PowerScoreMode {
 	boosts: readonly BoostDefinition[];
 	// Most a bucket of boosts may add together. Earlier boosts in the list are paid first.
 	bucketCaps?: Readonly<Record<string, number>>;
-	// Signal ids in the order their reasons are worth reading.
+	// Signal ids whose reasons may be read, most worth reading first. The strongest signal still wins;
+	// the order breaks ties.
 	reasonPriority: readonly string[];
-	reasonLimit: number;
 	// Covers the break penalty too.
 	usesStallPenalty: boolean;
 	usesWinProbability: boolean;
@@ -475,7 +450,9 @@ export interface PowerScore {
 	classicTotal?: number;
 	blend?: BlendResult;
 	boosts: ScoredBoost[];
+	// Up to three sentences: what is happening right now, what just happened, the score and the
+	// time, and what is at stake.
 	reasons: ReasonFragment[];
-	// The reasons in English, joined. For display where the caller has no translations.
+	// The reasons in English, as sentences. For display where the caller has no translations.
 	reason: string;
 }

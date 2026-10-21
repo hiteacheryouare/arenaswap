@@ -103,7 +103,13 @@ export const computeFantasyProduction = ({ game, context, sport, now }: SignalIn
 	}
 	const points = Math.round(35 * Math.min(1, recent / full));
 	if (points <= 0 || !topPlayer) return none;
-	return { points, reason: { key: 'fantasyPoints', params: { name: label(topPlayer), points: Math.round(topRecent * 10) / 10 } } };
+	// The faded figure ranks players; the reason quotes what they actually scored inside the window.
+	const scored = (topPlayer.pointEvents ?? [])
+		.filter(event => event.points > 0 && ageSince(event.at, now) <= sport.historyWindowMs)
+		.reduce((total, event) => total + event.points, 0);
+	if (scored <= 0) return { points };
+	const minutes = Math.round(sport.historyWindowMs / 60_000);
+	return { points, reason: { key: 'fantasyPoints', params: { name: label(topPlayer), points: Math.round(scored * 10) / 10, minutes } } };
 };
 
 export const computeFantasyExposure = ({ context }: SignalInput): SignalOutput => {

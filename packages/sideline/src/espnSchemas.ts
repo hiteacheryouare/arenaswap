@@ -36,6 +36,8 @@ const EspnTeamSchema = z.object({
 	// The nickname on its own: "Titans", "Nittany Lions". `shortDisplayName` is the school in
 	// college and the nickname in the pros, so it is the wrong field to reach for.
 	name: z.optional(z.string()),
+	// What a soccer club is called in passing: "Portland", "Gotham", "Angel City".
+	shortDisplayName: z.optional(z.string()),
 	abbreviation: z.optional(z.string()),
 	logo: z.optional(z.string()),
 	color: z.optional(z.string()),

@@ -66,7 +66,7 @@ describe('piling on', () => {
 	test('pays the leader for stretching the lead', () => {
 		const result = blowouts(nba(3, 300, 90, 62), window([78, 62], [90, 62]));
 		expect(signal(result, 'pileOn')).toBe(15);
-		expect(result.reasons).toContainEqual({ key: 'pilingOn', params: { team: 'BOS' } });
+		expect(result.reason).toBe('BOS on a 12–0 run. Up 28 in the 3rd quarter');
 	});
 
 	test('pays nothing for the trailing team chipping away', () => {

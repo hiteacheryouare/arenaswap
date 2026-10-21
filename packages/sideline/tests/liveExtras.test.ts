@@ -131,6 +131,12 @@ const liveAt = (displayClock: string, home: number, away: number, detailsThrough
 	competition.details = competition.details.slice(0, last + 1);
 };
 
+test('a soccer club carries the short name fans call it, beside its full name', () => {
+	const game = mlsEvent();
+	expect(game.homeTeam).toMatchObject({ nickname: 'Columbus Crew', shortName: 'Columbus' });
+	expect(game.awayTeam.shortName).toBe('Miami');
+});
+
 describe('soccer red cards from the scoreboard', () => {
 	test('reads only the red card, with its team and player, not the dozen yellows around it', () => {
 		const game = mlsEvent();
