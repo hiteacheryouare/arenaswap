@@ -6,12 +6,13 @@ import WalkthroughStepToggle from './walkthroughStepToggle';
 import WalkthroughStepPowerScore, { lastPowerScoreSubStep } from './walkthroughStepPowerScore';
 import WalkthroughStepTabAssign from './walkthroughStepTabAssign';
 import WalkthroughStepAutoSwitch from './walkthroughStepAutoSwitch';
+import WalkthroughStepFullScreen from './walkthroughStepFullScreen';
 import WalkthroughStepSettings from './walkthroughStepSettings';
 import WalkthroughStepGameDetail from './walkthroughStepGameDetail';
 import WalkthroughStepLeaguesFavorites from './walkthroughStepLeaguesFavorites';
 import WalkthroughStepReAccess from './walkthroughStepReAccess';
 
-type walkthroughStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+type walkthroughStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 interface walkthroughViewProps {
 	onComplete: () => void;
@@ -36,7 +37,7 @@ const walkthroughView = ({ onComplete, leagues, scoringMode }: walkthroughViewPr
 
 	const next = () => {
 		if (step === 1) setInitialSubStep(0);
-		setStep(prev => Math.min(prev + 1, 8) as walkthroughStep);
+		setStep(prev => Math.min(prev + 1, 9) as walkthroughStep);
 	};
 
 	const finish = () => {
@@ -61,10 +62,11 @@ const walkthroughView = ({ onComplete, leagues, scoringMode }: walkthroughViewPr
 				{step === 2 && <WalkthroughStepPowerScore key={`step2-${initialSubStep}`} onNext={next} onBack={() => back(2)} initialSubStep={initialSubStep} modeId={modeId} />}
 				{step === 3 && <WalkthroughStepTabAssign onNext={next} onBack={() => back(3)} />}
 				{step === 4 && <WalkthroughStepAutoSwitch onNext={next} onBack={() => back(4)} />}
-				{step === 5 && <WalkthroughStepSettings onNext={next} onBack={() => back(5)} leagues={leagues} />}
-				{step === 6 && <WalkthroughStepGameDetail onNext={next} onBack={() => back(6)} />}
-				{step === 7 && <WalkthroughStepLeaguesFavorites onNext={next} onBack={() => back(7)} />}
-				{step === 8 && <WalkthroughStepReAccess onNext={finish} onBack={() => back(8)} />}
+				{step === 5 && <WalkthroughStepFullScreen onNext={next} onBack={() => back(5)} />}
+				{step === 6 && <WalkthroughStepSettings onNext={next} onBack={() => back(6)} leagues={leagues} />}
+				{step === 7 && <WalkthroughStepGameDetail onNext={next} onBack={() => back(7)} />}
+				{step === 8 && <WalkthroughStepLeaguesFavorites onNext={next} onBack={() => back(8)} />}
+				{step === 9 && <WalkthroughStepReAccess onNext={finish} onBack={() => back(9)} />}
 			</div>
 		</div>
 	);

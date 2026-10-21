@@ -998,6 +998,13 @@
 		"next": "Seguinte",
 		"watchingBadge": "A VER"
 	},
+	"stepFullScreen": {
+		"title": "Leva-o para a TV",
+		"subtitle": "O ecrã inteiro mantém-se, mudança após mudança.",
+		"body": "Carrega em {shortcut} para pôr o navegador todo em ecrã inteiro antes de o jogo começar. O botão de ecrã inteiro de um reprodutor larga sempre que o separador muda, por isso o ArenaSwap repõe a janela e o jogo seguinte também enche o ecrã.",
+		"back": "Voltar",
+		"next": "Seguinte"
+	},
 	"stepSettings": {
 		"title": "Ajusta ao teu gosto",
 		"subtitle": "Abre as Definições quando quiseres para modificar.",
@@ -1148,7 +1155,8 @@
 			"t3": "Misturas desportos? Ativa ligas extra nas Definições para mudar entre todas de uma vez.",
 			"t4": "Girafas e ouriços são fixes. Ver todos os jogos ao mesmo tempo também.",
 			"t5": "ArenaSwap melhora quanto mais tempo o deixares a correr!",
-			"t6": "Ativa as notificações de mudança nas Definições para receberes um alerta sempre que o ArenaSwap mudar de separador."
+			"t6": "Ativa as notificações de mudança nas Definições para receberes um alerta sempre que o ArenaSwap mudar de separador.",
+			"t7": "A ver na TV? Carrega em {shortcut} e todas as mudanças ficam em ecrã inteiro."
 		},
 		"main": {
 			"t0": "Marca as tuas equipas favoritas para fixar os seus jogos no topo da lista.",

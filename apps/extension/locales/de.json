@@ -998,6 +998,13 @@
 		"next": "Weiter",
 		"watchingBadge": "LÄUFT"
 	},
+	"stepFullScreen": {
+		"title": "Ab auf den Fernseher",
+		"subtitle": "Vollbild bleibt Vollbild, Wechsel für Wechsel.",
+		"body": "Drück {shortcut}, um den ganzen Browser vor dem Anpfiff auf Vollbild zu stellen. Der Vollbild-Button eines Players lässt bei jedem Tab-Wechsel los, deshalb holt ArenaSwap das Fenster zurück und auch das nächste Spiel füllt den Bildschirm.",
+		"back": "Zurück",
+		"next": "Weiter"
+	},
 	"stepSettings": {
 		"title": "Nach deinem Geschmack einstellen",
 		"subtitle": "Einstellungen jederzeit öffnen und anpassen.",
@@ -1148,7 +1155,8 @@
 			"t3": "Mehrere Sportarten? Weitere Ligen in den Einstellungen aktivieren, damit ArenaSwap zwischen allen wechselt.",
 			"t4": "Giraffen und Igel sind toll. Alle Spiele gleichzeitig zu sehen auch.",
 			"t5": "ArenaSwap wird besser, je länger du es laufen lässt!",
-			"t6": "Wechselbenachrichtigungen in den Einstellungen aktivieren, um bei jedem Tab-Wechsel durch ArenaSwap eine Meldung zu erhalten."
+			"t6": "Wechselbenachrichtigungen in den Einstellungen aktivieren, um bei jedem Tab-Wechsel durch ArenaSwap eine Meldung zu erhalten.",
+			"t7": "Du schaust auf dem Fernseher? Drück {shortcut} und jeder Wechsel bleibt im Vollbild."
 		},
 		"main": {
 			"t0": "Lieblingsteams markieren, um ihre Spiele oben in der Liste zu fixieren.",

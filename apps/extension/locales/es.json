@@ -998,6 +998,13 @@
 		"next": "Siguiente",
 		"watchingBadge": "VIENDO"
 	},
+	"stepFullScreen": {
+		"title": "Llévalo a la tele",
+		"subtitle": "La pantalla completa sigue completa, cambio tras cambio.",
+		"body": "Presiona {shortcut} para poner todo el navegador en pantalla completa antes de que empiece el partido. El botón de pantalla completa de un reproductor se suelta cada vez que cambia la pestaña, así que ArenaSwap devuelve la ventana y el siguiente partido también llena la pantalla.",
+		"back": "Atrás",
+		"next": "Siguiente"
+	},
 	"stepSettings": {
 		"title": "Ajústalo a tu manera",
 		"subtitle": "Abre Ajustes cuando quieras para modificarlo.",
@@ -1148,7 +1155,8 @@
 			"t3": "¿Mezclas deportes? Activa más ligas en Ajustes para cambiar entre todas a la vez.",
 			"t4": "Las jirafas y los erizos son geniales. Ver todos los partidos a la vez también.",
 			"t5": "¡ArenaSwap mejora cuanto más tiempo lo dejas correr!",
-			"t6": "Activa las notificaciones de cambio en Ajustes para recibir una alerta cada vez que ArenaSwap cambie de pestaña."
+			"t6": "Activa las notificaciones de cambio en Ajustes para recibir una alerta cada vez que ArenaSwap cambie de pestaña.",
+			"t7": "¿Viendo en la tele? Presiona {shortcut} y cada cambio sigue en pantalla completa."
 		},
 		"main": {
 			"t0": "Marca tus equipos favoritos para fijar sus partidos al principio de la lista.",

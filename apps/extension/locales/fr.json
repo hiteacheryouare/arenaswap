@@ -998,6 +998,13 @@
 		"next": "Suivant",
 		"watchingBadge": "EN VISIONNAGE"
 	},
+	"stepFullScreen": {
+		"title": "Direction la télé",
+		"subtitle": "Le plein écran tient bon, changement après changement.",
+		"body": "Appuie sur {shortcut} pour passer tout le navigateur en plein écran avant le coup d'envoi. Le bouton plein écran d'un lecteur lâche à chaque changement d'onglet, alors ArenaSwap remet la fenêtre en place et le match suivant remplit lui aussi l'écran.",
+		"back": "Retour",
+		"next": "Suivant"
+	},
 	"stepSettings": {
 		"title": "Règle-le à ta façon",
 		"subtitle": "Ouvre Paramètres à tout moment pour ajuster.",
@@ -1148,7 +1155,8 @@
 			"t3": "Tu mixes les sports ? Active plus de ligues dans Paramètres pour alterner entre toutes à la fois.",
 			"t4": "Les girafes et les hérissons, c'est cool. Regarder tous les matchs à la fois aussi.",
 			"t5": "ArenaSwap s'améliore plus tu le laisses tourner longtemps !",
-			"t6": "Active les notifications de changement dans Paramètres pour recevoir une alerte à chaque fois qu'ArenaSwap change d'onglet."
+			"t6": "Active les notifications de changement dans Paramètres pour recevoir une alerte à chaque fois qu'ArenaSwap change d'onglet.",
+			"t7": "Tu regardes sur la télé ? Appuie sur {shortcut} et chaque changement reste en plein écran."
 		},
 		"main": {
 			"t0": "Mets une étoile sur tes équipes favorites pour épingler leurs matchs en haut de la liste.",

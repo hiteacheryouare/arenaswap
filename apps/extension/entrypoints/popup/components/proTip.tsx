@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
+import fullScreenShortcut from '../../../utils/fullScreenShortcut';
 
 type proTipContext = 'main' | 'setup' | 'detail' | 'general';
 
@@ -17,6 +18,7 @@ const tipsByContext: Record<proTipContext, string[]> = {
 		i18n.t('proTip.general.t4'),
 		i18n.t('proTip.general.t5'),
 		i18n.t('proTip.general.t6'),
+		i18n.t('proTip.general.t7', { shortcut: fullScreenShortcut() }),
 	],
 	main: [
 		i18n.t('proTip.main.t0'),

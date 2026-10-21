@@ -998,6 +998,13 @@
 		"next": "Susunod",
 		"watchingBadge": "WATCHING"
 	},
+	"stepFullScreen": {
+		"title": "Dalhin Mo sa TV",
+		"subtitle": "Full screen pa rin, kahit ilang switch pa.",
+		"body": "Pindutin ang {shortcut} para i-full screen ang buong browser bago magsimula ang laro. Bumibitaw ang sariling full screen button ng player sa bawat palit ng tab, kaya ibinabalik ng ArenaSwap ang window at puno pa rin ng susunod na laro ang screen.",
+		"back": "Bumalik",
+		"next": "Susunod"
+	},
 	"stepSettings": {
 		"title": "I-tune Ayon sa Gusto Mo",
 		"subtitle": "Buksan ang Mga Setting kahit kailan para i-adjust.",
@@ -1148,7 +1155,8 @@
 			"t3": "Naghahalo ng sports? I-enable ang extra na liga sa Mga Setting para makapaglipat sa lahat ng ito nang sabay.",
 			"t4": "Astig ang mga giraffe at hedgehog. Ganun din ang panonood ng lahat ng laro nang sabay.",
 			"t5": "Mas gumagana nang maayos ang ArenaSwap kapag mas matagal mo itong pinapatakbo!",
-			"t6": "I-on ang switch notifications sa Mga Setting para makatanggap ng alerto tuwing may binabago ang ArenaSwap na tab."
+			"t6": "I-on ang switch notifications sa Mga Setting para makatanggap ng alerto tuwing may binabago ang ArenaSwap na tab.",
+			"t7": "Nanonood sa TV? Pindutin ang {shortcut} at mananatiling full screen ang bawat switch."
 		},
 		"main": {
 			"t0": "I-star ang mga paborito mong team para i-pin ang kanilang mga laro sa taas ng listahan.",

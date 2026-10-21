@@ -373,7 +373,7 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0, modeId 
 
 	return (
 		<div className='popup-container d-flex flex-column' style={{ position: 'relative', overflow: 'hidden' }}>
-			<FlowStepper step={2} total={8} className='pt-5 pb-3' />
+			<FlowStepper step={2} total={9} className='pt-5 pb-3' />
 
 			{renderContent()}
 

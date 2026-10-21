@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Full screen survives a switch — 2026-10-20
+
+Chrome, Edge and Firefox all take a player out of full screen when its tab stops being the active one, and only a click can put the new player back, so a switch now puts the window back in full screen instead. A game in another window comes to the front, where before its tab changed out of sight and the sound stayed on the old game. A new tour step and a pro tip point TV watchers at ⌃⌘F / F11.
+
 ## Onboarding and the tour follow the Theme setting — 2026-10-17
 
 The dark pin is gone from `useTheme`, so the tour comes up light for anyone who picked Light (first-run still opens dark, since nothing is stored yet), and its logos, washes and boost inks switch with the theme; light mode uses each boost's darker `ink` so it stays legible on white. The tour's last step and its watching ring had gone blank in both themes because they still read `--bs-primary`, which Bootstrap 6 no longer declares.

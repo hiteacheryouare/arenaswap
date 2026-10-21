@@ -62,6 +62,9 @@ let storageLocalGet: jest.Mock;
 let storageLocalSet: jest.Mock;
 let tabsQuery: jest.Mock;
 let tabsUpdate: jest.Mock;
+let windowsUpdate: jest.Mock;
+let windowsGet: jest.Mock;
+let windowsGetLastFocused: jest.Mock;
 let notificationsCreate: jest.Mock;
 let tabsRemove: jest.Mock;
 let storageSessionSet: jest.Mock;
@@ -114,6 +117,7 @@ interface LoadOptions {
 	storedLocal?: Record<string, unknown>;
 	openTabIds?: number[];
 	activeTabId?: number;
+	windowIds?: Record<number, number>;
 	storedSession?: Record<string, unknown>;
 }
 
@@ -134,6 +138,9 @@ const loadBackground = async (options: LoadOptions = {}) => {
 	storageLocalSet = jest.fn().mockResolvedValue(undefined);
 	tabsQuery = jest.fn().mockResolvedValue([]);
 	tabsUpdate = jest.fn().mockResolvedValue(undefined);
+	windowsUpdate = jest.fn().mockResolvedValue(undefined);
+	windowsGet = jest.fn().mockResolvedValue({ id: 1, state: 'normal' });
+	windowsGetLastFocused = jest.fn().mockResolvedValue({ id: 1, state: 'normal' });
 	notificationsCreate = jest.fn().mockResolvedValue(undefined);
 	tabsRemove = jest.fn().mockResolvedValue(undefined);
 	storageSessionSet = jest.fn().mockResolvedValue(undefined);
@@ -179,7 +186,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 			},
 		},
 		notifications: { create: notificationsCreate },
-		windows: { update: jest.fn().mockResolvedValue(undefined) },
+		windows: { update: windowsUpdate, get: windowsGet, getLastFocused: windowsGetLastFocused },
 		commands: { onCommand: { addListener: jest.fn() } },
 		// A switch notification formats its reason in the UI language, as the popup's fake does.
 		i18n: { getUILanguage: () => 'en-US' },
@@ -703,6 +710,99 @@ describe('win probability read off the scoreboard', () => {
 
 		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string; winProbabilityVariance?: number }[] };
 		expect(state.scores.find(s => s.gameId === 'nfl-1')?.winProbabilityVariance).toBeUndefined();
+	});
+});
+
+// Browsers take a player out of full screen when its tab stops being the active one, and a tab
+// activated in a window behind this one stays out of sight.
+describe('a switch fills the screen the way the last game did', () => {
+	const liveGame: Game = {
+		id: 'g1',
+		league: 'nba' as LeagueId,
+		sportType: 'basketball',
+		status: 'in',
+		homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 5 },
+		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 4 },
+		period: 4,
+		clockSeconds: 60,
+	};
+
+	const switchToGameIn = async (gameWindowId: number) => {
+		await loadBackground({
+			prefs: {
+				enabled: true,
+				enabledLeagues: ['nba' as LeagueId],
+				cooldownSeconds: 0,
+				sensitivity: 7,
+				switchDelaySeconds: 0,
+				notificationsEnabled: false,
+			},
+			tabRegistry: [{ gameId: 'g1', tabId: 2 }],
+			fetchReturnValue: { games: [liveGame], leagueLogos: {}, shedLeagues: [] },
+			openTabIds: [1, 2],
+			activeTabId: 1,
+			windowIds: { 1: 1, 2: gameWindowId },
+		});
+	};
+
+	const poll = async () => {
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+	};
+
+	test('puts the window back in full screen when the player was full screen', async () => {
+		await switchToGameIn(1);
+		windowsGetLastFocused.mockResolvedValue({ id: 1, state: 'fullscreen' });
+		windowsGet.mockResolvedValue({ id: 1, state: 'normal' });
+
+		await poll();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+		expect(windowsUpdate).toHaveBeenCalledWith(1, { state: 'fullscreen' });
+		expect(windowsUpdate).not.toHaveBeenCalledWith(1, { focused: true });
+	});
+
+	test('leaves a window that stayed full screen alone', async () => {
+		await switchToGameIn(1);
+		windowsGetLastFocused.mockResolvedValue({ id: 1, state: 'fullscreen' });
+		windowsGet.mockResolvedValue({ id: 1, state: 'fullscreen' });
+
+		await poll();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+		expect(windowsUpdate).not.toHaveBeenCalled();
+	});
+
+	test('brings a game in another window to the front', async () => {
+		await switchToGameIn(2);
+		windowsGet.mockResolvedValue({ id: 2, state: 'normal' });
+
+		await poll();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+		expect(windowsUpdate).toHaveBeenCalledWith(2, { focused: true });
+		expect(windowsUpdate).not.toHaveBeenCalledWith(2, { state: 'fullscreen' });
+	});
+
+	test('takes a game in another window full screen when the last one was', async () => {
+		await switchToGameIn(2);
+		windowsGetLastFocused.mockResolvedValue({ id: 1, state: 'fullscreen' });
+		windowsGet.mockResolvedValue({ id: 2, state: 'normal' });
+
+		await poll();
+
+		expect(windowsUpdate).toHaveBeenCalledWith(2, { focused: true });
+		expect(windowsUpdate).toHaveBeenCalledWith(2, { state: 'fullscreen' });
+	});
+
+	test('still counts the switch when the window cannot be brought forward', async () => {
+		await switchToGameIn(2);
+		windowsUpdate.mockRejectedValue(new Error('No window with id: 2.'));
+
+		await poll();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+		expect(storageLocalSet).toHaveBeenCalledWith({ reviewPromptState: expect.objectContaining({ successfulSwitchCount: 1 }) });
 	});
 });
 

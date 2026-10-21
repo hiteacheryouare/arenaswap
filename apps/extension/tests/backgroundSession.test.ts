@@ -116,7 +116,11 @@ const startWorker = async ({ games, openTabIds, activeTabId, atMs }: StartOption
 			onActivated: { addListener: (h: (info: { tabId: number }) => unknown) => { onActivatedHandler = h; } },
 			onRemoved: { addListener: () => {} },
 		},
-		windows: { update: jest.fn().mockResolvedValue(undefined) },
+		windows: {
+			update: jest.fn().mockResolvedValue(undefined),
+			get: jest.fn().mockResolvedValue({ id: 1, state: 'normal' }),
+			getLastFocused: jest.fn().mockResolvedValue({ id: 1, state: 'normal' }),
+		},
 		commands: { onCommand: { addListener: (h: (command: string) => unknown) => { onCommandHandler = h; } } },
 		notifications: { create: jest.fn().mockResolvedValue(undefined) },
 	};

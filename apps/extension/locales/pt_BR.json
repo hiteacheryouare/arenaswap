@@ -998,6 +998,13 @@
 		"next": "Próximo",
 		"watchingBadge": "ASSISTINDO"
 	},
+	"stepFullScreen": {
+		"title": "Leve pra TV",
+		"subtitle": "Tela cheia continua tela cheia, troca após troca.",
+		"body": "Aperte {shortcut} pra colocar o navegador inteiro em tela cheia antes do jogo começar. O botão de tela cheia do player solta a cada troca de aba, então o ArenaSwap recoloca a janela e o próximo jogo também ocupa a tela toda.",
+		"back": "Voltar",
+		"next": "Próximo"
+	},
 	"stepSettings": {
 		"title": "Ajuste do seu jeito",
 		"subtitle": "Abra as Configurações quando quiser pra modificar.",
@@ -1148,7 +1155,8 @@
 			"t3": "Misturando esportes? Ative ligas extras nas Configurações pra trocar entre todas de uma vez.",
 			"t4": "Girafas e ouriços são demais. Ver todos os jogos ao mesmo tempo também.",
 			"t5": "ArenaSwap melhora quanto mais tempo você deixar rodando!",
-			"t6": "Ative as notificações de troca nas Configurações pra receber um alerta toda vez que o ArenaSwap mudar de aba."
+			"t6": "Ative as notificações de troca nas Configurações pra receber um alerta toda vez que o ArenaSwap mudar de aba.",
+			"t7": "Assistindo na TV? Aperte {shortcut} e toda troca continua em tela cheia."
 		},
 		"main": {
 			"t0": "Marque seus times favoritos pra fixar seus jogos no topo da lista.",

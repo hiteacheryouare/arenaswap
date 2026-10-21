@@ -998,6 +998,13 @@
 		"next": "Next",
 		"watchingBadge": "WATCHING"
 	},
+	"stepFullScreen": {
+		"title": "Take It to the TV",
+		"subtitle": "Full screen stays full screen, switch after switch.",
+		"body": "Press {shortcut} to put the whole browser in full screen before kickoff. A player's own full screen button lets go whenever the tab changes, so ArenaSwap puts the window back and the next game still fills the screen.",
+		"back": "Back",
+		"next": "Next"
+	},
 	"stepSettings": {
 		"title": "Tune It Your Way",
 		"subtitle": "Open Settings any time to adjust.",
@@ -1148,7 +1155,8 @@
 			"t3": "Mixing sports? Enable extra leagues in Settings to swap across all of them at once.",
 			"t4": "Giraffes and hedgehogs are cool. So is watching every game at once.",
 			"t5": "ArenaSwap works better the longer you let it run!",
-			"t6": "Turn on switch notifications in Settings to get an alert every time ArenaSwap changes your tab."
+			"t6": "Turn on switch notifications in Settings to get an alert every time ArenaSwap changes your tab.",
+			"t7": "Watching on a TV? Press {shortcut} and every switch stays full screen."
 		},
 		"main": {
 			"t0": "Star your favorite teams to pin their games to the top of the list.",

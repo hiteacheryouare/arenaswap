@@ -84,7 +84,11 @@ const startWorker = async (atMs: number) => {
 			onActivated: { addListener: () => {} },
 			onRemoved: { addListener: () => {} },
 		},
-		windows: { update: jest.fn().mockResolvedValue(undefined) },
+		windows: {
+			update: jest.fn().mockResolvedValue(undefined),
+			get: jest.fn().mockResolvedValue({ id: 1, state: 'normal' }),
+			getLastFocused: jest.fn().mockResolvedValue({ id: 1, state: 'normal' }),
+		},
 		commands: { onCommand: { addListener: () => {} } },
 		notifications: { create: jest.fn().mockResolvedValue(undefined) },
 		i18n: { getUILanguage: () => 'en-US' },

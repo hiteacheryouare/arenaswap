@@ -998,6 +998,13 @@
 		"next": "Avanti",
 		"watchingBadge": "GUARDANDO"
 	},
+	"stepFullScreen": {
+		"title": "Portalo sulla TV",
+		"subtitle": "Lo schermo intero resta intero, cambio dopo cambio.",
+		"body": "Premi {shortcut} per mettere tutto il browser a schermo intero prima del fischio d'inizio. Il pulsante schermo intero di un player si disattiva a ogni cambio di scheda, così ArenaSwap rimette a posto la finestra e anche la partita successiva riempie lo schermo.",
+		"back": "Indietro",
+		"next": "Avanti"
+	},
 	"stepSettings": {
 		"title": "Regolalo a modo tuo",
 		"subtitle": "Apri le Impostazioni quando vuoi per regolarlo.",
@@ -1148,7 +1155,8 @@
 			"t3": "Segui più sport? Attiva altre leghe nelle Impostazioni per cambiare tra tutte insieme.",
 			"t4": "Le giraffe e i ricci sono fantastici. Anche guardare tutte le partite insieme lo è.",
 			"t5": "ArenaSwap funziona meglio più a lungo lo lasci in esecuzione!",
-			"t6": "Attiva le notifiche di cambio nelle Impostazioni per ricevere un avviso ogni volta che ArenaSwap cambia la tua scheda."
+			"t6": "Attiva le notifiche di cambio nelle Impostazioni per ricevere un avviso ogni volta che ArenaSwap cambia la tua scheda.",
+			"t7": "Guardi sulla TV? Premi {shortcut} e ogni cambio resta a schermo intero."
 		},
 		"main": {
 			"t0": "Metti una stella sulle tue squadre preferite per fissare le loro partite in cima alla lista.",

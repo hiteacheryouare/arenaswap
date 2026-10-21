@@ -515,6 +515,11 @@
 		&:hover { color: var(--as-fg-body); }
 	}
 
+	// Nine steps at the usual gap run into the longer skip labels, Spanish first.
+	.walkthrough-skip ~ .popup-container .stepper {
+		--as-stepper-gap: 0.3125rem;
+	}
+
 	/* ─── PowerScore Walkthrough Orbit Animation ─── */
 	@keyframes powerscoreOrbit {
 		from { transform: rotate(0deg); }

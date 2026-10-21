@@ -105,6 +105,16 @@ const getActiveTabId = async (): Promise<number | undefined> => {
 	return activeTab?.id;
 };
 
+// Activating a tab in a window behind this one changes nothing anyone can see. And a player in full
+// screen drops out of it once its tab stops being the active one; only a click can put the new
+// tab's player back, but the window needs none, so it goes back and the game still fills the screen.
+const bringWindowForward = async (windowId: number, watchedWindow: { id?: number; state?: string }) => {
+	if (windowId !== watchedWindow.id) await browser.windows.update(windowId, { focused: true });
+	if (watchedWindow.state !== 'fullscreen') return;
+	const { state } = await browser.windows.get(windowId);
+	if (state !== 'fullscreen') await browser.windows.update(windowId, { state: 'fullscreen' });
+};
+
 // What the popup reads on its next open to say how many tabs were handed back while it was shut.
 // Accumulated rather than replaced, so a second wave of finals cannot erase the first.
 const recordFinishedTabNotice = async (freed: number, closed: number) => {
@@ -589,11 +599,11 @@ export default defineBackground(() => {
 	const executeSwitch = async (tabId: number, gameId?: string, reason?: string) => {
 		if (await getActiveTabId() === tabId) return;
 
-		const allTabs = await browser.tabs.query({});
-		const tabExists = allTabs.some(tab => tab.id === tabId);
+		const [allTabs, watchedWindow] = await Promise.all([browser.tabs.query({}), browser.windows.getLastFocused()]);
+		const targetTab = allTabs.find(tab => tab.id === tabId);
 		// Read last, with nothing awaited before the update: a boss press during the queries above
 		// pauses auto-switching, and a switch that lands over the decoy would undo it.
-		if (!tabExists || !prefs.enabled) return;
+		if (!targetTab || !prefs.enabled) return;
 
 		try {
 			await browser.tabs.update(tabId, { active: true });
@@ -601,6 +611,14 @@ export default defineBackground(() => {
 			// The tab closed between the query above and the update.
 			logWarn(`Failed to switch to tab ${tabId}.`, err);
 			return;
+		}
+		// Before the mute sync, which follows whichever window was focused last.
+		if (targetTab.windowId !== undefined) {
+			try {
+				await bringWindowForward(targetTab.windowId, watchedWindow);
+			} catch (err) {
+				logWarn(`Failed to bring the window for tab ${tabId} forward.`, err);
+			}
 		}
 		// Parking on standby is not a switch the cooldown should count: it would hold the user there
 		// while a game that just woke up plays out.

@@ -30,7 +30,7 @@ const walkthroughStepSettings = ({ onNext, onBack, leagues = fallbackLeagues }: 
 
 	return (
 		<div className='popup-container d-flex flex-column'>
-			<FlowStepper step={5} total={8} className='pt-5 pb-3' />
+			<FlowStepper step={6} total={9} className='pt-5 pb-3' />
 
 			<div className='fw-bold fs-lg text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepSettings.title')}</div>
 			<div className='fg-secondary small text-center mb-5 lh-md'>
