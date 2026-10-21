@@ -19,3 +19,4 @@
 - [powerscore3_labelling_calls.md](powerscore3_labelling_calls.md) — Slate-labelling judgement calls (possessor, punts, garbled OT, 2-pt tries, onside, L1/L2 floor) for slates a-d
 - [commercial_break_signals.md](commercial_break_signals.md) — Commercial-break feed signatures per sport, measured break lengths, MLB breaks invisible to intermission, stall misfires
 - [Matchup order conventions](reference_matchup_order_conventions.md) — home-left vs away-left by league, with sources; NPB and KBO use opposite orders
+- [content_aware_switching_breaks.md](content_aware_switching_breaks.md) — Natural-break defs, poll-diff proxies, measured residual waits, hold caps per sport, override rules
