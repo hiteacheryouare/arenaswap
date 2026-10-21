@@ -269,6 +269,7 @@
 		"keywordsSensitivity": "差, しきい値, 積極的, 敏感, トリガー, ludicrous",
 		"keywordsCooldown": "待機, 連続, 頻繁, 往復, 間隔, 抑制",
 		"keywordsSwitchDelay": "遅延, ラグ, バッファ, 遅れ, 先送り",
+		"keywordsContentAwareSwitching": "プレー中断, 中断, 笛, ホイッスル, ボールデッド, プレー中, 割り込み, 打席, 待機",
 		"keywordsCloseness": "接戦, 点差, 僅差, 白熱, シグナル",
 		"keywordsLateGame": "終盤, 最終盤, 勝負所, プレッシャー, シグナル",
 		"keywordsMomentum": "流れ, 連続得点, 勢い, シグナル",
@@ -1108,7 +1109,14 @@
 		"switchedMessageWithReason": "{reason}。{venue}へGO！",
 		"unknownGame": "不明な試合",
 		"switchedMessageNoVenue": "試合へGO！",
-		"switchedMessageWithReasonNoVenue": "{reason}。試合へGO！"
+		"switchedMessageWithReasonNoVenue": "{reason}。試合へGO！",
+		"afterBreak": "{waited}{message}",
+		"waitedFor": {
+			"baseball": "打席が終わるのを待ちました。",
+			"football": "プレーが終わるのを待ちました。",
+			"basketball": "ボールデッドを待ちました。",
+			"hockey": "笛が鳴るのを待ちました。"
+		}
 	},
 	"tabAssign": {
 		"placeholder": "— タブを割り当て —",
@@ -1201,6 +1209,10 @@
 		"label": "切り替え遅延",
 		"explainer": "切り替えを実行する前にこの時間だけ待ちます。ストリームがライブデータより遅れている場合に役立ちます。",
 		"off": "オフ"
+	},
+	"contentAwareSwitching": {
+		"label": "プレーの切れ目で切り替え",
+		"explainer": "見ている試合にプレーの切れ目（打席の終わり、笛、プレーの終了など）が来るまで、切り替えを待ちます。プレーの途中で切り替わることはありません。切り替え遅延は、切れ目のあとにカウントダウンします。"
 	},
 	"sensitivity": {
 		"label": "切り替え感度",

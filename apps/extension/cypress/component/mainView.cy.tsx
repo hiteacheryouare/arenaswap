@@ -9,6 +9,7 @@ const defaultPrefs: UserPreferences = {
 	sensitivity: 4,
 	cooldownSeconds: 45,
 	switchDelaySeconds: 0,
+	contentAwareSwitching: true,
 	showUpcomingGames: true,
 	keepFinalGames: false,
 	groupByLeague: true,

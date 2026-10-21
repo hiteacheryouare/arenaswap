@@ -269,6 +269,7 @@
 		"keywordsSensitivity": "diferenca, limiar, ansioso, agressivo, gatilho, ludicrous",
 		"keywordsCooldown": "espera, spam, saltar, vai e vem, frequencia, limitar",
 		"keywordsSwitchDelay": "atraso, lag, buffer, atrasado, adiar",
+		"keywordsContentAwareSwitching": "pausa, apito, interrupcao, bola morta, a meio da jogada, interromper, vez de bater, esperar",
 		"keywordsCloseness": "equilibrado, diferenca, renhido, emocao, sinal",
 		"keywordsLateGame": "reta final, fim de jogo, pressao, decisivo, sinal",
 		"keywordsMomentum": "sequencia, embalo, ritmo, sinal",
@@ -1108,7 +1109,14 @@
 		"switchedMessageWithReason": "{reason}. Rumo a {venue}!",
 		"unknownGame": "Jogo desconhecido",
 		"switchedMessageNoVenue": "Rumo ao jogo!",
-		"switchedMessageWithReasonNoVenue": "{reason}. Rumo ao jogo!"
+		"switchedMessageWithReasonNoVenue": "{reason}. Rumo ao jogo!",
+		"afterBreak": "{waited} {message}",
+		"waitedFor": {
+			"baseball": "Deixámos a vez de bater terminar primeiro.",
+			"football": "Deixámos a jogada terminar primeiro.",
+			"basketball": "Esperámos pela bola morta.",
+			"hockey": "Esperámos pelo apito."
+		}
 	},
 	"tabAssign": {
 		"placeholder": "— Associa um separador —",
@@ -1201,6 +1209,10 @@
 		"label": "Atraso de mudança",
 		"explainer": "Aguarda este tempo antes de executar uma mudança, o que ajuda quando as transmissões ficam atrás dos dados em direto.",
 		"off": "Desativado"
+	},
+	"contentAwareSwitching": {
+		"label": "Mudança nas pausas",
+		"explainer": "Retém uma mudança até o jogo que estás a ver chegar a uma pausa, como o fim de uma vez de bater, um apito ou o fim de uma jogada, para que nada seja cortado a meio da ação. A opção Atraso de mudança continua a contar depois da pausa."
 	},
 	"sensitivity": {
 		"label": "Sensibilidade de mudança",

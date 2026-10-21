@@ -269,6 +269,7 @@
 		"keywordsSensitivity": "分差, 阈值, 积极, 灵敏, 触发, ludicrous",
 		"keywordsCooldown": "等待, 频繁, 来回, 间隔, 冷却, 限制",
 		"keywordsSwitchDelay": "延迟, 卡顿, 缓冲, 落后, 推迟",
+		"keywordsContentAwareSwitching": "比赛暂停, 暂停, 哨声, 死球, 回合结束, 打断, 打席, 等待",
 		"keywordsCloseness": "胶着, 分差, 接近, 紧张, 信号",
 		"keywordsLateGame": "末段, 最后时刻, 压力, 决胜, 信号",
 		"keywordsMomentum": "连续得分, 势头, 节奏, 信号",
@@ -1108,7 +1109,14 @@
 		"switchedMessageWithReason": "{reason}。出发前往 {venue}！",
 		"unknownGame": "未知比赛",
 		"switchedMessageNoVenue": "出发去看比赛！",
-		"switchedMessageWithReasonNoVenue": "{reason}。出发去看比赛！"
+		"switchedMessageWithReasonNoVenue": "{reason}。出发去看比赛！",
+		"afterBreak": "{waited}{message}",
+		"waitedFor": {
+			"baseball": "先等这个打席打完。",
+			"football": "先等这次进攻打完。",
+			"basketball": "等到死球才切换。",
+			"hockey": "等到哨响才切换。"
+		}
 	},
 	"tabAssign": {
 		"placeholder": "— 分配标签页 —",
@@ -1201,6 +1209,10 @@
 		"label": "切换延迟",
 		"explainer": "在执行切换前等待指定时长，有助于应对直播流落后于实时数据的情况。",
 		"off": "关闭"
+	},
+	"contentAwareSwitching": {
+		"label": "比赛间歇再切换",
+		"explainer": "等您正在观看的比赛出现间歇（如一个打席结束、哨声响起或一次进攻结束）后再切换，这样就不会在比赛进行到一半时被切走。切换延迟仍会在间歇之后继续倒计时。"
 	},
 	"sensitivity": {
 		"label": "切换灵敏度",

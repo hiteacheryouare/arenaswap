@@ -1,8 +1,8 @@
 import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { createWinProbabilityTracker, summaryStillNeeded, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, computeRetryDelayMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextCommercialBreak, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
+import { createWinProbabilityTracker, summaryStillNeeded, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, computeRetryDelayMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextCommercialBreak, checkHeldSwitch, holdSwitch, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
 import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, fetchNextScheduledStart, scoreboardRefreshMs, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces } from '@arenaswap/sideline';
-import type { CommercialBreakEntry } from '@arenaswap/core';
+import type { CommercialBreakEntry, HeldSwitch, PlayBreakSport } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { gameEndRetentionMs, gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
 import type { gameEndRecords } from '../utils/gameEndTimes';
@@ -315,7 +315,10 @@ export default defineBackground(() => {
 	let demoTimer: ReturnType<typeof setInterval> | null = null;
 	let inFlightRefresh: Promise<void> | null = null;
 	let pendingSwitchTimer: ReturnType<typeof setTimeout> | null = null;
-	let pendingSwitch: { gameId: string; tabId: number; reason?: string } | null = null;
+	let pendingSwitch: { gameId: string; tabId: number; reason?: string; waitedFor?: PlayBreakSport } | null = null;
+	// Content-aware switching: a switch waiting on a break in play in the game being left.
+	let heldSwitch: HeldSwitch | null = null;
+	let heldSwitchTimer: ReturnType<typeof setTimeout> | null = null;
 	let standbyStreamTabId: number | null = null;
 	let onStandbyStream = false;
 	// Mirrored into session storage because MV3 tears the service worker down whenever it goes
@@ -544,7 +547,16 @@ export default defineBackground(() => {
 		await persistMutedTabIds();
 	};
 
+	const clearHeldSwitch = () => {
+		if (heldSwitchTimer) {
+			clearTimeout(heldSwitchTimer);
+			heldSwitchTimer = null;
+		}
+		heldSwitch = null;
+	};
+
 	const clearPendingSwitch = () => {
+		clearHeldSwitch();
 		if (pendingSwitchTimer) {
 			clearTimeout(pendingSwitchTimer);
 			pendingSwitchTimer = null;
@@ -566,7 +578,7 @@ export default defineBackground(() => {
 			standbyStreamTabId = null;
 			onStandbyStream = false;
 		}
-		if (pendingSwitch?.tabId === tabId) clearPendingSwitch();
+		if (pendingSwitch?.tabId === tabId || heldSwitch?.tabId === tabId) clearPendingSwitch();
 
 		try {
 			await browser.storage.session.set({ tabRegistry, standbyStreamTabId, mutedTabIds: [...mutedTabIds] });
@@ -596,7 +608,7 @@ export default defineBackground(() => {
 		}
 	};
 
-	const executeSwitch = async (tabId: number, gameId?: string, reason?: string) => {
+	const executeSwitch = async (tabId: number, gameId?: string, reason?: string, waitedFor?: PlayBreakSport) => {
 		if (await getActiveTabId() === tabId) return;
 
 		const [allTabs, watchedWindow] = await Promise.all([browser.tabs.query({}), browser.windows.getLastFocused()]);
@@ -649,9 +661,12 @@ export default defineBackground(() => {
 				const current = currentScores.find(score => score.gameId === gameId && score.reason === reason);
 				const spoken = reason ? speakReason({ reason, breakdown: current?.breakdown }, i18n.t, locale) : undefined;
 				const said = spoken ? capitalizeReason(spoken, locale) : undefined;
-				const message = venue
+				const switched = venue
 					? (said ? i18n.t('notification.switchedMessageWithReason', { reason: said, venue }) : i18n.t('notification.switchedMessage', { venue }))
 					: (said ? i18n.t('notification.switchedMessageWithReasonNoVenue', { reason: said }) : i18n.t('notification.switchedMessageNoVenue'));
+				const message = waitedFor
+					? i18n.t('notification.afterBreak', { waited: i18n.t(`notification.waitedFor.${waitedFor}`), message: switched })
+					: switched;
 
 				await browser.notifications.create(switchNotificationId, {
 					type: 'basic',
@@ -699,16 +714,23 @@ export default defineBackground(() => {
 		const target = resolveSwitchTarget(openTabIds, activeTabId);
 		if (!target) return;
 
-		await executeSwitch(target.tabId, target.gameId, target.reason);
+		await executeSwitch(target.tabId, target.gameId, target.reason, queuedSwitch.waitedFor);
 	};
 
-	const queuePendingSwitch = (gameId: string, tabId: number, reason?: string) => {
+	const queuePendingSwitch = (gameId: string, tabId: number, reason?: string, waitedFor?: PlayBreakSport) => {
 		if (pendingSwitchTimer || pendingSwitch) return;
 
-		pendingSwitch = { gameId, tabId, reason };
+		pendingSwitch = { gameId, tabId, reason, waitedFor };
 		pendingSwitchTimer = setTimeout(() => {
 			executePendingSwitch().catch(err => logWarn('The queued switch hit a snag.', err));
 		}, prefs.switchDelaySeconds * 1000);
+	};
+
+	// Hands a held switch to the delay queue, which re-targets it against the scores of the moment.
+	const releaseHeldSwitch = (waitedFor?: PlayBreakSport) => {
+		const held = heldSwitch;
+		clearHeldSwitch();
+		if (held) queuePendingSwitch(held.gameId, held.tabId, held.reason, waitedFor);
 	};
 
 	const collegeDirectories: Partial<Record<CollegeLeagueId, ConferenceDirectory>> = {};
@@ -899,7 +921,7 @@ export default defineBackground(() => {
 
 		const releasedTabIds = new Set(resolutions.map(resolution => resolution.tabId));
 		tabRegistry = tabRegistry.filter(reg => !releasedTabIds.has(reg.tabId));
-		if (pendingSwitch && releasedTabIds.has(pendingSwitch.tabId)) clearPendingSwitch();
+		if ((pendingSwitch && releasedTabIds.has(pendingSwitch.tabId)) || (heldSwitch && releasedTabIds.has(heldSwitch.tabId))) clearPendingSwitch();
 
 		let closed = 0;
 		for (const resolution of resolutions.filter(entry => entry.close)) {
@@ -1023,10 +1045,30 @@ export default defineBackground(() => {
 		}
 		if (standbyDecision === 'resume') onStandbyStream = false;
 
+		const watchedGameId = liveRegistry.find(reg => reg.tabId === activeTabId)?.gameId;
+		if (heldSwitch) {
+			const verdict = checkHeldSwitch(heldSwitch, liveGames.find(g => g.id === heldSwitch!.leavingGameId), commercialBreaks.get(heldSwitch.leavingGameId), {
+				now,
+				observed: freshGames.some(g => g.id === heldSwitch!.leavingGameId),
+				watching: watchedGameId === heldSwitch.leavingGameId,
+				arriving: liveGames.find(g => g.id === heldSwitch!.gameId),
+			});
+			if (verdict.release) releaseHeldSwitch(verdict.waitedFor);
+			else heldSwitch = verdict.held;
+			return;
+		}
 		if (pendingSwitch) return;
 
 		const target = resolveSwitchTarget(openTabIds, activeTabId);
 		if (!target) return;
+
+		const leaving = prefs.contentAwareSwitching && !demoMode ? liveGames.find(g => g.id === watchedGameId) : undefined;
+		const held = leaving ? holdSwitch(target, leaving, commercialBreaks.get(leaving.id), now, liveGames.find(g => g.id === target.gameId)) : null;
+		if (held) {
+			heldSwitch = held;
+			heldSwitchTimer = setTimeout(() => releaseHeldSwitch(), held.holdUntil - now);
+			return;
+		}
 
 		if (prefs.switchDelaySeconds > 0) {
 			queuePendingSwitch(target.gameId, target.tabId, target.reason);
@@ -1524,6 +1566,7 @@ export default defineBackground(() => {
 					demoMode,
 					lastSwitchTime,
 					pendingSwitch,
+					heldSwitch: heldSwitch && { gameId: heldSwitch.gameId, tabId: heldSwitch.tabId, leavingGameId: heldSwitch.leavingGameId, holdUntil: heldSwitch.holdUntil },
 					liveGameCount: games.filter(g => g.status === 'in').length,
 					upcomingGameCount: games.filter(g => g.status === 'pre').length,
 					totalGameCount: games.length,
@@ -1537,6 +1580,7 @@ export default defineBackground(() => {
 					sensitivity: prefs.sensitivity,
 					cooldownSeconds: prefs.cooldownSeconds,
 					switchDelaySeconds: prefs.switchDelaySeconds,
+					contentAwareSwitching: prefs.contentAwareSwitching,
 				};
 			});
 		}

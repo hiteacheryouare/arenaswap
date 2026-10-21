@@ -55,6 +55,7 @@ interface setupViewProps {
 	onSensitivityChange: (val: number) => void;
 	onCooldownChange: (val: number) => void;
 	onSwitchDelayChange: (val: number) => void;
+	onToggleContentAwareSwitching: () => void;
 	onFavoriteTeamBonusChange: (val: number) => void;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 	onToggleLeague: (leagueId: LeagueId) => void;
@@ -117,7 +118,7 @@ const pageFallback = (
 
 const setupView = ({
 	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, leagueSchedules, favoriteTeamIds, standbyStreamTabId, standbyOnboardingDone,
-	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange,
+	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange, onToggleContentAwareSwitching,
 	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder, onCollegeFilterChange,
 	onToggleGroupByLeague, onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onThemeChange, onUpcomingGamesDaysChange,
 	onToggleProTips, onToggleNotifications, bossShortcut, onBossDecoyChange, onToggleDemo, onDemoSeasonChange, onToggleStandbyStream, onStandbyThresholdChange,
@@ -223,6 +224,13 @@ const setupView = ({
 				<SensitivitySlider value={prefs.sensitivity} onChange={onSensitivityChange} />
 				<CooldownSlider value={prefs.cooldownSeconds} onChange={onCooldownChange} />
 				<SwitchDelaySlider value={prefs.switchDelaySeconds} onChange={onSwitchDelayChange} />
+				<div className='d-flex justify-content-between align-items-center'>
+					<div className='d-flex align-items-center gap-1'>
+						<label className='fg-secondary setting-toggle-label' htmlFor='contentAwareSwitchingToggle'><i className='bi bi-pause-circle me-1 fg-primary' />{i18n.t('contentAwareSwitching.label')}</label>
+						<SettingTooltipIcon text={i18n.t('contentAwareSwitching.explainer')} label={i18n.t('contentAwareSwitching.label')} />
+					</div>
+					<ToggleSwitch id='contentAwareSwitchingToggle' checked={prefs.contentAwareSwitching} onChange={onToggleContentAwareSwitching} disabled={!prefsLoaded} />
+				</div>
 			</div>
 
 			<div className='fw-bold popup-section-label mt-5'><i className='bi bi-window-stack' />{i18n.t('setup.tabsSection')}</div>

@@ -269,6 +269,7 @@
 		"keywordsSensitivity": "격차, 기준값, 민감도, 공격적, 트리거, 미친 속도",
 		"keywordsCooldown": "대기, 연속, 전환, 빈번, 속도제한, 빈도",
 		"keywordsSwitchDelay": "지연, 버퍼, 렉, 스트림 지연, 딜레이",
+		"keywordsContentAwareSwitching": "경기 중단, 중단, 휘슬, 볼 데드, 데드볼, 플레이 도중, 끼어들기, 타석, 대기, 기다림",
 		"keywordsCloseness": "접전, 점수차, 박빙, 시그널",
 		"keywordsLateGame": "클러치, 막판, 종반, 압박감, 시그널",
 		"keywordsMomentum": "연속득점, 흐름, 모멘텀, 시그널",
@@ -1108,7 +1109,14 @@
 		"switchedMessageWithReason": "{reason}. {venue}에서 만나요!",
 		"unknownGame": "알 수 없는 경기",
 		"switchedMessageNoVenue": "경기로 출발!",
-		"switchedMessageWithReasonNoVenue": "{reason}. 경기로 출발!"
+		"switchedMessageWithReasonNoVenue": "{reason}. 경기로 출발!",
+		"afterBreak": "{waited} {message}",
+		"waitedFor": {
+			"baseball": "타석이 끝날 때까지 기다렸어요.",
+			"football": "플레이가 끝날 때까지 기다렸어요.",
+			"basketball": "데드볼을 기다렸어요.",
+			"hockey": "휘슬을 기다렸어요."
+		}
 	},
 	"tabAssign": {
 		"placeholder": "— 탭 할당 —",
@@ -1201,6 +1209,10 @@
 		"label": "전환 지연",
 		"explainer": "전환을 실행하기 전에 이만큼 기다려요. 스트림이 실시간 데이터보다 늦을 때 도움이 돼요.",
 		"off": "꺼짐"
+	},
+	"contentAwareSwitching": {
+		"label": "플레이 중단 시 전환",
+		"explainer": "보고 있는 경기에서 타석 종료, 휘슬, 플레이 종료처럼 흐름이 끊기는 순간이 올 때까지 전환을 미뤄요. 그래서 한창 진행 중인 장면이 잘리지 않아요. 전환 지연은 그 순간 이후에 카운트다운돼요."
 	},
 	"sensitivity": {
 		"label": "전환 민감도",

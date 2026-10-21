@@ -269,6 +269,7 @@
 		"keywordsSensitivity": "diferenca, limite, ansioso, agressivo, gatilho, ludicrous",
 		"keywordsCooldown": "espera, spam, pular, vai e volta, frequencia, limitar",
 		"keywordsSwitchDelay": "atraso, lag, buffer, atrasado, adiar",
+		"keywordsContentAwareSwitching": "pausa, apito, paralisacao, bola morta, no meio da jogada, interromper, turno ao bastao, esperar",
 		"keywordsCloseness": "equilibrado, diferenca, apertado, emocao, sinal",
 		"keywordsLateGame": "reta final, fim de jogo, pressao, decisivo, sinal",
 		"keywordsMomentum": "sequencia, embalo, ritmo, sinal",
@@ -1108,7 +1109,14 @@
 		"switchedMessageWithReason": "{reason}. Partiu {venue}!",
 		"unknownGame": "Jogo desconhecido",
 		"switchedMessageNoVenue": "Partiu jogo!",
-		"switchedMessageWithReasonNoVenue": "{reason}. Partiu jogo!"
+		"switchedMessageWithReasonNoVenue": "{reason}. Partiu jogo!",
+		"afterBreak": "{waited} {message}",
+		"waitedFor": {
+			"baseball": "Deixamos o turno ao bastão acabar primeiro.",
+			"football": "Deixamos a jogada acabar primeiro.",
+			"basketball": "Esperamos a bola morta.",
+			"hockey": "Esperamos o apito."
+		}
 	},
 	"tabAssign": {
 		"placeholder": "— Atribuir uma aba —",
@@ -1201,6 +1209,10 @@
 		"label": "Atraso de troca",
 		"explainer": "Aguarda esse tempo antes de executar uma troca, o que ajuda quando os streams ficam atrás dos dados ao vivo.",
 		"off": "Desativado"
+	},
+	"contentAwareSwitching": {
+		"label": "Troca nas pausas",
+		"explainer": "Segura uma troca até o jogo que você está assistindo chegar a uma pausa, como o fim de um turno ao bastão, um apito ou o fim de uma jogada, para nada ser cortado no meio da ação. A opção Atraso de troca continua contando depois da pausa."
 	},
 	"sensitivity": {
 		"label": "Sensibilidade de troca",

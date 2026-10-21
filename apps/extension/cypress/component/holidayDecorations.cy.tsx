@@ -218,6 +218,7 @@ const setupProps = {
 	onSensitivityChange: () => {},
 	onCooldownChange: () => {},
 	onSwitchDelayChange: () => {},
+	onToggleContentAwareSwitching: () => {},
 	onFavoriteTeamBonusChange: () => {},
 	onToggleFavoriteTeam: () => {},
 	onToggleLeague: () => {},

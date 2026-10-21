@@ -82,7 +82,7 @@ const isTwoMinuteDrill = (game: Game): boolean => {
 	return (game.period === 2 || game.period >= 4) && clockSeconds <= lateClockSeconds;
 };
 
-const pitchTypes = /^(ball|strike|foul|bunted|play result|automatic|stolen base|pickoff|caught stealing|balk|wild pitch|passed ball)/;
+export const pitchTypes = /^(ball|strike|foul|bunted|play result|automatic|stolen base|pickoff|caught stealing|balk|wild pitch|passed ball)/;
 
 const baseballRule: Rule = (game, previous, next) => {
 	if (game.inningBreak) {
@@ -163,7 +163,7 @@ const basketballRule: Rule = (game, previous) => {
 };
 
 // Plays that happen with the puck in play; anything else on the scoreboard is a stoppage.
-const hockeyFlowTypes = /^(face off|shot|missed|blocked|hit|giveaway|takeaway|goal|period start|period end|end of game|shootout end)$/;
+export const hockeyFlowTypes = /^(face off|shot|missed|blocked|hit|giveaway|takeaway|goal|period start|period end|end of game|shootout end)$/;
 
 // Three TV timeouts a period, each at the first stoppage after 14:00, 10:00 and 6:00 remain. Never
 // straight after an icing, and never during a power play. A mark is only used up once the stoppage

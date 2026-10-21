@@ -269,6 +269,7 @@
 		"keywordsSensitivity": "gap, threshold, sabik, aggressive, trigger, ludicrous, sensitivity",
 		"keywordsCooldown": "hintay, wait, spam, flip, mabilis, throttle, frequency, cooldown",
 		"keywordsSwitchDelay": "lag, buffer, huli, delay, stream delay, antala",
+		"keywordsContentAwareSwitching": "break sa laro, pito, whistle, tigil, stoppage, dead ball, gitna ng play, at-bat, hintay, wait, interrupt",
 		"keywordsCloseness": "close, malapit, margin, tight, kaba, signal",
 		"keywordsLateGame": "clutch, final, endgame, pressure, signal, huling saglit",
 		"keywordsMomentum": "run, streak, swing, signal, bilis",
@@ -1108,7 +1109,14 @@
 		"switchedMessageWithReason": "{reason}. Tara sa {venue}!",
 		"unknownGame": "Hindi kilalang laro",
 		"switchedMessageNoVenue": "Tara sa laro!",
-		"switchedMessageWithReasonNoVenue": "{reason}. Tara sa laro!"
+		"switchedMessageWithReasonNoVenue": "{reason}. Tara sa laro!",
+		"afterBreak": "{waited} {message}",
+		"waitedFor": {
+			"baseball": "Hayaan munang matapos ang at-bat.",
+			"football": "Hayaan munang matapos ang play.",
+			"basketball": "Naghintay ng dead ball.",
+			"hockey": "Naghintay ng whistle."
+		}
 	},
 	"tabAssign": {
 		"placeholder": "— Mag-assign ng tab —",
@@ -1201,6 +1209,10 @@
 		"label": "Delay ng Paglipat",
 		"explainer": "Naghihintay ng ganitong katagal bago isagawa ang isang paglipat, na nakakatulong kapag naiiwan ang stream sa live na data.",
 		"off": "Off"
+	},
+	"contentAwareSwitching": {
+		"label": "Paglipat sa Break ng Laro",
+		"explainer": "Pinipigilan ang paglipat hanggang magkaroon ng break sa larong pinapanood mo, gaya ng dulo ng at-bat, pito, o dulo ng play, para walang maputol sa gitna ng aksyon. Bumibilang pa rin ang Delay ng Paglipat pagkatapos ng break."
 	},
 	"sensitivity": {
 		"label": "Sensitivity ng Paglipat",

@@ -269,6 +269,7 @@
 		"keywordsSensitivity": "scarto, soglia, ansioso, aggressivo, grilletto, ludicrous",
 		"keywordsCooldown": "attesa, spam, cambio, continuo, rapido, limitare, frequenza",
 		"keywordsSwitchDelay": "lag, buffer, ritardo, rinviare, ritardo diretta",
+		"keywordsContentAwareSwitching": "pausa, fischio, interruzione, palla morta, durante l'azione, turno di battuta, at-bat, attesa, aspettare",
 		"keywordsCloseness": "equilibrio, margine, punteggio, tirato, segnale",
 		"keywordsLateGame": "clutch, finale, pressione, decisivo, segnale",
 		"keywordsMomentum": "parziale, striscia, slancio, segnale",
@@ -1108,7 +1109,14 @@
 		"switchedMessageWithReason": "{reason}. Destinazione {venue}!",
 		"unknownGame": "Partita sconosciuta",
 		"switchedMessageNoVenue": "Destinazione partita!",
-		"switchedMessageWithReasonNoVenue": "{reason}. Destinazione partita!"
+		"switchedMessageWithReasonNoVenue": "{reason}. Destinazione partita!",
+		"afterBreak": "{waited} {message}",
+		"waitedFor": {
+			"baseball": "Prima lasciamo finire il turno di battuta.",
+			"football": "Prima lasciamo finire l'azione.",
+			"basketball": "Abbiamo atteso la palla morta.",
+			"hockey": "Abbiamo atteso il fischio."
+		}
 	},
 	"tabAssign": {
 		"placeholder": "— Assegna una scheda —",
@@ -1201,6 +1209,10 @@
 		"label": "Ritardo di cambio",
 		"explainer": "Attende questo tempo prima di eseguire un cambio, utile quando le dirette sono in ritardo rispetto ai dati in diretta.",
 		"off": "Off"
+	},
+	"contentAwareSwitching": {
+		"label": "Cambio nelle pause",
+		"explainer": "Trattiene un cambio finché la partita che stai guardando non arriva a una pausa, come la fine di un turno di battuta, un fischio o la fine di un'azione, così niente viene tagliato sul più bello. L'opzione Ritardo di cambio continua il conto alla rovescia dopo la pausa."
 	},
 	"sensitivity": {
 		"label": "Sensibilità di cambio",

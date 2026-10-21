@@ -9,6 +9,8 @@ export type { FantasyRosterEntry, FantasyScoringOverrides } from './fantasy';
 export { chooseSwitchTarget, getFavoriteTeamCount, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, recentSnapshots, retainSnapshots, scoreLiveGame, scoreOptionsFor, scoringContextFor, toLegacyPowerScoreResult, toLiveScore, toScoreSnapshot, toScoringGame } from './scoring';
 export { hasCommercialBreaks, nextCommercialBreak } from './commercialBreaks';
 export type { CommercialBreakEntry, CommercialBreakInput, CommercialBreakKind } from './commercialBreaks';
+export { checkHeldSwitch, holdSwitch, isDecisiveMoment, isPlayStopped, markPlay, playBreakCapMs, playBreakSport, reachedPlayBreak } from './playBreaks';
+export type { HeldSwitch, HoldCheck, HoldTarget, HoldVerdict, PlayBreakSport, PlayMark } from './playBreaks';
 export type { ClockStallEntry, LiveScoringInput, ScoringPrefs, SwitchCandidateTab, SwitchPolicyInput, SwitchTarget } from './scoring';
 export { offseasonGraceMs, resolveOffseason } from './leagueSchedule';
 export type { LeagueOffseason } from './leagueSchedule';

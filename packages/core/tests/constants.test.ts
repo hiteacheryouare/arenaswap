@@ -35,6 +35,7 @@ describe('constants', () => {
 			sensitivity: 4,
 			cooldownSeconds: 45,
 			switchDelaySeconds: 0,
+			contentAwareSwitching: true,
 			enabled: true,
 			enabledLeagues: [],
 			favoriteTeamIds: [],
@@ -91,6 +92,12 @@ describe('constants', () => {
 		expect(normalizeUserPreferences({ groupByLeague: true }).groupByLeague).toBe(true);
 	});
 
+	test('waits for a break in play on a fresh install and keeps switching straight away for anyone upgrading', () => {
+		expect(normalizeUserPreferences(undefined).contentAwareSwitching).toBe(true);
+		expect(normalizeUserPreferences({ enabledLeagues: ['nba'] }).contentAwareSwitching).toBe(false);
+		expect(normalizeUserPreferences({ contentAwareSwitching: true }).contentAwareSwitching).toBe(true);
+	});
+
 	test('has a short label for every league, short enough for a card status row', () => {
 		for (const leagueId of allLeagueIds) {
 			expect(leagueShortLabels[leagueId]).toBeTruthy();
@@ -142,6 +149,7 @@ describe('constants', () => {
 			sensitivity: 4,
 			cooldownSeconds: 0,
 			switchDelaySeconds: 15,
+			contentAwareSwitching: false,
 			enabled: true,
 			enabledLeagues: ['nba'],
 			favoriteTeamIds: ['nba:20', 'nfl:20'],

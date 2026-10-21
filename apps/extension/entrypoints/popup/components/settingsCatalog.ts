@@ -43,6 +43,7 @@ export const settingsEntries: readonly settingsEntry[] = [
 	{ group: 'switching', labelKey: 'sensitivity.label', keywordsKey: 'setup.keywordsSensitivity', controlId: 'sensitivity-range' },
 	{ group: 'switching', labelKey: 'cooldown.label', keywordsKey: 'setup.keywordsCooldown', controlId: 'cooldown-range' },
 	{ group: 'switching', labelKey: 'switchDelay.label', keywordsKey: 'setup.keywordsSwitchDelay', controlId: 'switch-delay-range' },
+	{ group: 'switching', labelKey: 'contentAwareSwitching.label', keywordsKey: 'setup.keywordsContentAwareSwitching', controlId: 'contentAwareSwitchingToggle' },
 	{ group: 'switching', labelKey: 'setup.switchNotifications', keywordsKey: 'setup.keywordsNotifications', controlId: 'notificationsToggle' },
 	{ group: 'switching', labelKey: 'setup.finishedTabAction', keywordsKey: 'setup.keywordsFinishedTab', controlId: 'finishedTabSelect' },
 	{ group: 'switching', labelKey: 'setup.bossDecoy', keywordsKey: 'setup.keywordsBossDecoy', controlId: 'bossDecoyInput' },

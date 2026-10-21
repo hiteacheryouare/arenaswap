@@ -15,6 +15,7 @@ Settings live behind the gear icon in the popup's top bar, grouped into six cate
 | Switch sensitivity | Balanced (level 4, gap ≥ 11) | Level 1–7: Barely Active (37), Passive (27), Conservative (18), Balanced (11), Eager (6), Trigger Happy (3), Ludicrous Speed (1) | The PowerScore gap a game needs over the one currently active before ArenaSwap switches to it. |
 | Switch cooldown | 45s | Off, 15s, 30s, 45s, 60s, 90s, 2m, 3m | The minimum time between automatic switches. |
 | Switch delay | Off | Off, 15s, 30s, 45s, 60s, 90s, 2m, 3m | The wait before ArenaSwap executes a switch it has decided on. |
+| Content-aware switching | On for new installs, off if you upgraded from an earlier version | On/off | Holds a switch until the game you're leaving reaches a break in play, up to a cap that depends on the sport. Switch delay counts down after the break. |
 
 ## Scoring
 

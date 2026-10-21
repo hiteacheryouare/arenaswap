@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Content-aware switching waits for a break in play — 2026-10-20
+
+A new Switching toggle, on for fresh installs and off for upgrades, holds a switch until the game you're leaving stops: a new batter or an out in baseball, the next play in the NFL, a dead ball in basketball, a whistle in hockey, capped at 45s to 2m by sport. The signals and caps were measured against nine days of recordings, and soccer, college football and college hockey still switch at once, because play never stops or the feed is too stale to tell.
+
 ## Full screen survives a switch — 2026-10-20
 
 Chrome, Edge and Firefox all take a player out of full screen when its tab stops being the active one, and only a click can put the new player back, so a switch now puts the window back in full screen instead. A game in another window comes to the front, where before its tab changed out of sight and the sound stayed on the old game. A new tour step and a pro tip point TV watchers at ⌃⌘F / F11.

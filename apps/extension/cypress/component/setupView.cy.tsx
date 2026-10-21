@@ -22,6 +22,7 @@ const defaultPrefs: UserPreferences = {
 	sensitivity: 4,
 	cooldownSeconds: 45,
 	switchDelaySeconds: 0,
+	contentAwareSwitching: true,
 	enabled: true,
 	enabledLeagues: ['nba', 'nfl'],
 	favoriteTeamIds: [],
@@ -71,6 +72,7 @@ const defaultProps = {
 	onSensitivityChange: () => {},
 	onCooldownChange: () => {},
 	onSwitchDelayChange: () => {},
+	onToggleContentAwareSwitching: () => {},
 	onFavoriteTeamBonusChange: () => {},
 	onToggleFavoriteTeam: () => {},
 	onToggleLeague: () => {},
@@ -453,6 +455,14 @@ describe('setupView display group', () => {
 		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, temperatureUnit: 'Ro', romerUnlocked: true }} />);
 		openGroup('display');
 		cy.get('#temperatureUnitToggle').should('contain', '°Rø');
+	});
+
+	it('calls onToggleContentAwareSwitching when waiting for a break is switched off', () => {
+		const spy = cy.spy().as('onToggleContentAwareSwitching');
+		cy.mount(<SetupView {...defaultProps} onToggleContentAwareSwitching={spy} />);
+		openGroup('switching');
+		cy.get('#contentAwareSwitchingToggle').should('be.checked').click();
+		cy.get('@onToggleContentAwareSwitching').should('have.been.calledOnce');
 	});
 
 	it('calls onToggleOpenReveal when the opening animation is switched off', () => {

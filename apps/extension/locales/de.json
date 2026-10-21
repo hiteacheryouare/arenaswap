@@ -269,6 +269,7 @@
 		"keywordsSensitivity": "abstand, schwelle, aggressiv, ungeduldig, ausloser, ludicrous",
 		"keywordsCooldown": "warten, spam, springen, hin und her, haufig, drosseln",
 		"keywordsSwitchDelay": "verzogerung, lag, puffer, hinterher, aufschieben",
+		"keywordsContentAwareSwitching": "spielpause, pause, pfiff, abpfiff, unterbrechung, spielunterbrechung, toter ball, mitten im spielzug, at-bat, abwarten, warten",
 		"keywordsCloseness": "knapp, abstand, eng, krimi, signal",
 		"keywordsLateGame": "schlussphase, ende, druck, entscheidung, signal",
 		"keywordsMomentum": "lauf, serie, schwung, signal",
@@ -1108,7 +1109,14 @@
 		"switchedMessageWithReason": "{reason}. Auf geht's: {venue}!",
 		"unknownGame": "Unbekanntes Spiel",
 		"switchedMessageNoVenue": "Auf geht's zum Spiel!",
-		"switchedMessageWithReasonNoVenue": "{reason}. Auf geht's zum Spiel!"
+		"switchedMessageWithReasonNoVenue": "{reason}. Auf geht's zum Spiel!",
+		"afterBreak": "{waited} {message}",
+		"waitedFor": {
+			"baseball": "Erst den At-Bat zu Ende laufen lassen.",
+			"football": "Erst den Spielzug zu Ende laufen lassen.",
+			"basketball": "Auf eine Spielunterbrechung gewartet.",
+			"hockey": "Auf den Pfiff gewartet."
+		}
 	},
 	"tabAssign": {
 		"placeholder": "— Tab zuweisen —",
@@ -1201,6 +1209,10 @@
 		"label": "Wechselverzögerung",
 		"explainer": "Wartet diese Zeit, bevor ein Wechsel ausgeführt wird — nützlich, wenn Streams hinter den Live-Daten hinterherhinken.",
 		"off": "Aus"
+	},
+	"contentAwareSwitching": {
+		"label": "Wechsel bei Spielpause",
+		"explainer": "Hält einen Wechsel zurück, bis im Spiel, das du schaust, eine Spielpause eintritt, zum Beispiel das Ende eines At-Bats, ein Pfiff oder das Ende eines Spielzugs, damit nichts mitten in der Aktion abgeschnitten wird. Die Wechselverzögerung läuft nach der Pause trotzdem noch herunter."
 	},
 	"sensitivity": {
 		"label": "Wechselempfindlichkeit",

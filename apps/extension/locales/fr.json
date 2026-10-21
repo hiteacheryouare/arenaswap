@@ -269,6 +269,7 @@
 		"keywordsSensitivity": "ecart, seuil, impatient, agressif, declencheur, ludicrous",
 		"keywordsCooldown": "attente, spam, sauter, va et vient, frequence, limiter",
 		"keywordsSwitchDelay": "delai, retard, lag, tampon, en retard, reporter",
+		"keywordsContentAwareSwitching": "pause, arret de jeu, coup de sifflet, sifflet, balle morte, ballon mort, interruption, passage au baton, au bat, attendre",
 		"keywordsCloseness": "serre, ecart, tendu, suspense, signal",
 		"keywordsLateGame": "fin de match, derniere minute, pression, decisif, signal",
 		"keywordsMomentum": "serie, elan, dynamique, signal",
@@ -1108,7 +1109,14 @@
 		"switchedMessageWithReason": "{reason}. Direction {venue} !",
 		"unknownGame": "Match inconnu",
 		"switchedMessageNoVenue": "Direction le match !",
-		"switchedMessageWithReasonNoVenue": "{reason}. Direction le match !"
+		"switchedMessageWithReasonNoVenue": "{reason}. Direction le match !",
+		"afterBreak": "{waited} {message}",
+		"waitedFor": {
+			"baseball": "On laisse d’abord finir le passage au bâton.",
+			"football": "On laisse d’abord finir l’action.",
+			"basketball": "On a attendu un ballon mort.",
+			"hockey": "On a attendu le coup de sifflet."
+		}
 	},
 	"tabAssign": {
 		"placeholder": "— Associer un onglet —",
@@ -1201,6 +1209,10 @@
 		"label": "Délai de changement",
 		"explainer": "Attend ce temps avant d'exécuter un changement, utile quand les flux sont en retard sur les données en direct.",
 		"off": "Désactivé"
+	},
+	"contentAwareSwitching": {
+		"label": "Changement aux pauses",
+		"explainer": "Retient un changement jusqu’à ce que le match que tu regardes atteigne une pause, comme la fin d’un passage au bâton, un coup de sifflet ou la fin d’une action, pour que rien ne soit coupé en plein jeu. Le réglage Délai de changement continue de décompter après la pause."
 	},
 	"sensitivity": {
 		"label": "Sensibilité de changement",

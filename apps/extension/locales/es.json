@@ -269,6 +269,7 @@
 		"keywordsSensitivity": "diferencia, umbral, ansioso, agresivo, disparador, ludicrous",
 		"keywordsCooldown": "esperar, spam, saltar, ida y vuelta, frecuencia, limitar",
 		"keywordsSwitchDelay": "retardo, retraso, lag, buffer, atrasado, posponer",
+		"keywordsContentAwareSwitching": "pausa, silbato, silbatazo, pitazo, interrupcion, balon muerto, a mitad de jugada, turno al bate, bateo, esperar",
 		"keywordsCloseness": "ajustado, margen, renido, emocion, senal",
 		"keywordsLateGame": "final, recta final, presion, decisivo, senal",
 		"keywordsMomentum": "racha, impulso, seguidilla, senal",
@@ -1108,7 +1109,14 @@
 		"switchedMessageWithReason": "{reason}. ¡Rumbo a {venue}!",
 		"unknownGame": "Partido desconocido",
 		"switchedMessageNoVenue": "¡Rumbo al partido!",
-		"switchedMessageWithReasonNoVenue": "{reason}. ¡Rumbo al partido!"
+		"switchedMessageWithReasonNoVenue": "{reason}. ¡Rumbo al partido!",
+		"afterBreak": "{waited} {message}",
+		"waitedFor": {
+			"baseball": "Primero, que termine el turno al bate.",
+			"football": "Primero, que termine la jugada.",
+			"basketball": "Esperamos un balón muerto.",
+			"hockey": "Esperamos el silbatazo."
+		}
 	},
 	"tabAssign": {
 		"placeholder": "— Asigna una pestaña —",
@@ -1201,6 +1209,10 @@
 		"label": "Retardo de cambio",
 		"explainer": "Espera este tiempo antes de ejecutar un cambio, lo que ayuda cuando las transmisiones van por detrás de los datos en vivo.",
 		"off": "Desactivado"
+	},
+	"contentAwareSwitching": {
+		"label": "Cambio en pausas del juego",
+		"explainer": "Retiene un cambio hasta que el juego que estás viendo llegue a una pausa, como el final de un turno al bate, un silbatazo o el final de una jugada, para que nada se corte a media acción. El ajuste Retardo de cambio sigue contando después de la pausa."
 	},
 	"sensitivity": {
 		"label": "Sensibilidad de cambio",

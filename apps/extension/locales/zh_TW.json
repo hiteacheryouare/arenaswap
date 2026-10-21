@@ -269,6 +269,7 @@
 		"keywordsSensitivity": "分差, 閾值, 積極, 靈敏, 觸發, ludicrous",
 		"keywordsCooldown": "等待, 頻繁, 來回, 間隔, 冷卻, 限制",
 		"keywordsSwitchDelay": "延遲, 卡頓, 緩衝, 落後, 推遲",
+		"keywordsContentAwareSwitching": "比賽暫停, 暫停, 哨聲, 死球, 回合結束, 打斷, 打席, 等待",
 		"keywordsCloseness": "膠著, 分差, 接近, 緊張, 信號",
 		"keywordsLateGame": "末段, 最後時刻, 壓力, 決勝, 信號",
 		"keywordsMomentum": "連續得分, 氣勢, 節奏, 信號",
@@ -1108,7 +1109,14 @@
 		"switchedMessageWithReason": "{reason}。出發前往 {venue}！",
 		"unknownGame": "未知比賽",
 		"switchedMessageNoVenue": "出發去看比賽！",
-		"switchedMessageWithReasonNoVenue": "{reason}。出發去看比賽！"
+		"switchedMessageWithReasonNoVenue": "{reason}。出發去看比賽！",
+		"afterBreak": "{waited}{message}",
+		"waitedFor": {
+			"baseball": "先等這個打席結束。",
+			"football": "先等這次進攻結束。",
+			"basketball": "等到死球才切換。",
+			"hockey": "等到哨響才切換。"
+		}
 	},
 	"tabAssign": {
 		"placeholder": "— 指派分頁 —",
@@ -1201,6 +1209,10 @@
 		"label": "切換延遲",
 		"explainer": "在執行切換前等待這段時間，有助於應對直播落後即時數據的情況。",
 		"off": "關閉"
+	},
+	"contentAwareSwitching": {
+		"label": "比賽間歇再切換",
+		"explainer": "等你正在看的比賽出現間歇（例如一個打席結束、哨聲響起或一次進攻結束）再切換，這樣就不會在比賽進行到一半時被切走。切換延遲仍會在間歇之後繼續倒數。"
 	},
 	"sensitivity": {
 		"label": "切換靈敏度",

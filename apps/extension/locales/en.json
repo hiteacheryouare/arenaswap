@@ -269,6 +269,7 @@
 		"keywordsSensitivity": "gap, threshold, eager, aggressive, trigger, ludicrous",
 		"keywordsCooldown": "wait, spam, flip, flipping, rapid, throttle, frequency",
 		"keywordsSwitchDelay": "lag, buffer, behind, postpone, stream delay",
+		"keywordsContentAwareSwitching": "break in play, whistle, stoppage, dead ball, mid-play, interrupt, at-bat, wait",
 		"keywordsCloseness": "close, margin, tight, nail biter, signal",
 		"keywordsLateGame": "clutch, final, endgame, pressure, signal",
 		"keywordsMomentum": "run, streak, swing, signal",
@@ -1108,7 +1109,14 @@
 		"switchedMessageWithReason": "{reason}. Off to {venue}!",
 		"unknownGame": "Unknown game",
 		"switchedMessageNoVenue": "Off to the game!",
-		"switchedMessageWithReasonNoVenue": "{reason}. Off to the game!"
+		"switchedMessageWithReasonNoVenue": "{reason}. Off to the game!",
+		"afterBreak": "{waited} {message}",
+		"waitedFor": {
+			"baseball": "Let the at-bat finish first.",
+			"football": "Let the play finish first.",
+			"basketball": "Waited for a dead ball.",
+			"hockey": "Waited for the whistle."
+		}
 	},
 	"tabAssign": {
 		"placeholder": "— Assign a tab —",
@@ -1201,6 +1209,10 @@
 		"label": "Switch delay",
 		"explainer": "Waits this long before executing a switch, which helps when streams lag behind live data.",
 		"off": "Off"
+	},
+	"contentAwareSwitching": {
+		"label": "Content-aware switching",
+		"explainer": "Holds a switch until the game you're watching hits a break in play, like the end of an at-bat, a whistle or the end of a play, so nothing gets cut off mid-action. Switch delay still counts down after the break."
 	},
 	"sensitivity": {
 		"label": "Switch sensitivity",

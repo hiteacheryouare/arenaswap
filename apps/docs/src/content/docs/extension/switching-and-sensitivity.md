@@ -41,6 +41,19 @@ If two of your assigned games are close enough that the lead keeps trading back 
 
 If ArenaSwap keeps switching you to a game a few seconds before your feed shows the exciting play, add a delay. Your stream then has time to catch up first. A queued switch still re-checks the score right before it fires. You won't get sent to a game that cooled off while the switch waited.
 
+## Don't get cut off mid-play
+
+**Content-aware switching** holds a switch until the game you're leaving reaches a break in play, so you see how the at-bat, the snap or the possession turns out.
+
+- **Baseball and softball:** the plate appearance ends, an out is recorded, a run scores, the pitcher changes, or the inning ends.
+- **NFL and UFL:** the play ends.
+- **Basketball:** a whistle: a foul, a timeout, a violation, a substitution, or free throws.
+- **Hockey:** a whistle, a goal, or a penalty.
+
+If play doesn't stop in time, the switch goes ahead anyway: after 45 seconds in football, 90 in basketball and hockey, and 2 minutes in baseball. It doesn't wait at all when the game you're leaving is already at a timeout, a TV break or an intermission, when it's a blowout, or when the other game is at a deciding moment, like a walk-off chance or a last shot. Soccer, college football and college hockey switch straight away. Soccer plays straight through, and the college feeds our spotters send back arrive too late to time a break by.
+
+When a switch waited for a break, its notification says so. Switch delay still counts down after the break, so a stream that runs well behind gets its extra time too.
+
 ## Related
 
 - [ArenaSwap settings reference](/arenaswap/docs/extension/settings/) lists the exact default and range for every setting mentioned here.

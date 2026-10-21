@@ -97,6 +97,9 @@ export interface Team {
 	// "Tennessee Titans"; "Nittany Lions", not "Lions", which is why it is carried rather than
 	// sliced off the end of `name`. Painted in the end zones of the football field diagram.
 	nickname?: string;
+	// ESPN's `shortDisplayName`. The school in college and the nickname in the pros, but in soccer it
+	// is what the club is called in passing: "Portland" for the Portland Thorns FC.
+	shortName?: string;
 	abbreviation: string;
 	score: number;
 	// Soccer only, once a match reaches a shootout: `score` stays frozen at the 120-minute
@@ -292,6 +295,7 @@ export interface UserPreferences {
 	sensitivity: 1 | 2 | 3 | 4 | 5 | 6 | 7;
 	cooldownSeconds: number;
 	switchDelaySeconds: number;
+	contentAwareSwitching: boolean;
 	enabled: boolean;
 	enabledLeagues: LeagueId[];
 	// Stored as `${league}:${teamId}`, e.g. `nba:20`.
@@ -554,6 +558,7 @@ export interface DebugState {
 	demoMode: boolean;
 	lastSwitchTime: number;
 	pendingSwitch: { gameId: string; tabId: number; reason?: string } | null;
+	heldSwitch: { gameId: string; tabId: number; leavingGameId: string; holdUntil: number } | null;
 	liveGameCount: number;
 	upcomingGameCount: number;
 	totalGameCount: number;
@@ -567,6 +572,7 @@ export interface DebugState {
 	sensitivity: number;
 	cooldownSeconds: number;
 	switchDelaySeconds: number;
+	contentAwareSwitching: boolean;
 }
 
 export type ExtensionMessage =

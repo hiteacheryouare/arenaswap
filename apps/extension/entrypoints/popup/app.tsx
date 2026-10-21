@@ -565,6 +565,7 @@ export default () => {
 						onSensitivityChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, sensitivity: val as UserPreferences['sensitivity'] }))}
 						onCooldownChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, cooldownSeconds: val }))}
 						onSwitchDelayChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, switchDelaySeconds: val }))}
+						onToggleContentAwareSwitching={() => persistPrefs(currentPrefs => ({ ...currentPrefs, contentAwareSwitching: !currentPrefs.contentAwareSwitching }))}
 						onFavoriteTeamBonusChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, favoriteTeamBonusPoints: val }))}
 						onToggleFavoriteTeam={toggleFavoriteTeam}
 						onToggleLeague={onToggleLeague}

@@ -148,6 +148,12 @@ const popupFooter = () => {
 								<DRow label='Sensitivity' value={`${bg.sensitivity} (Δ${sensitivityThresholds[bg.sensitivity] ?? '?'} pts)`} />
 								<DRow label='Cooldown' value={`${bg.cooldownSeconds}s`} />
 								<DRow label='Delay' value={`${bg.switchDelaySeconds}s`} />
+								<DRow
+									label='Held'
+									value={bg.heldSwitch
+										? `→ ${bg.gameLabels?.[bg.heldSwitch.gameId] ?? bg.heldSwitch.gameId} by ${Math.max(0, Math.round((bg.heldSwitch.holdUntil - Date.now()) / 1000))}s`
+										: bg.contentAwareSwitching ? '—' : 'off'}
+								/>
 							</Section>
 
 							<Section title='Games' icon='trophy'>
