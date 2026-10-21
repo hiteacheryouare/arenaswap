@@ -77,12 +77,13 @@ export const collapsedBox = {
 };
 
 // ─── beats ───────────────────────────────────────────────────────────────────────────────────
-// `lead` carries the letters, the bar's tail, the dot and both mask edges: the sweep. `follow`
-// carries the arrowhead, and with it the box — so for the first third the arrow *lengthens*, its
-// tail running inward across `aren` while its head is still out at the right, and only then does
-// the whole thing close up. Tying the box to the head is also what keeps the head inside it.
+// `lead` carries every mark — letters, both arrows, the dot and both mask edges — so the whole
+// logo moves as one. `follow` carries the box and the header around it, trailing just enough that
+// the dot, which starts flush against the right edge, is never clipped on its way left. Any later
+// start or earlier finish and it is.
 const leadEnd = 0.72;
-const followFrom = 0.18;
+const followFrom = 0.1;
+const followEnd = 0.85;
 
 // Width of the soft edge the letters dissolve across. Small: at the end the top mask edge sits
 // only 38 units clear of where `aren` starts, so a wide band would leave the first `a` showing.
@@ -153,7 +154,7 @@ const boxPose = (from: typeof aBox, to: typeof aEnd, k: number): pose => {
 
 const wordmarkFrameAt = (t: number): wordmarkFrame => {
 	const lead = easeInOut(seg(t, 0, leadEnd));
-	const follow = easeInOut(seg(t, followFrom, 1));
+	const follow = easeInOut(seg(t, followFrom, followEnd));
 
 	const a = boxPose(aBox, aEnd, lead);
 	const s = boxPose(sBox, sEnd, lead);
@@ -161,10 +162,9 @@ const wordmarkFrameAt = (t: number): wordmarkFrame => {
 	// while the dot is eating it.
 	const wap = boxPose(wapBox, { ...wapBox, x: wapBox.x + (sEnd.x - sBox.x), y: wapBox.y + (sEnd.y - sBox.y) }, lead);
 
-	// The bar's tail is pinned just off the `a`'s shoulder, so extending inward is not a separate
-	// animation — it is the bar keeping up with the letter while its head stays behind.
+	// The bar's tail is pinned just off the `a`'s shoulder, so the gap between them never opens up.
 	const aRight = mix(aBox.x, aEnd.x, lead) + mix(aBox.w, aEnd.w, lead);
-	const barStroke = mix(barStrokeRest, barEnd.stroke, follow);
+	const barStroke = mix(barStrokeRest, barEnd.stroke, lead);
 	const barLeft = aRight + mix(barRest - (aBox.x + aBox.w), barEnd.left - (aEnd.x + aEnd.w), lead);
 
 	const closing = easeInOut(seg(t, dotCloseFrom, dotCloseTo));
@@ -190,11 +190,11 @@ const wordmarkFrameAt = (t: number): wordmarkFrame => {
 			stroke: mix(dotRest.stroke, dotEnd.stroke, closing),
 		},
 		chevronMorph: lead,
-		headMorph: follow,
+		headMorph: lead,
 		barX1: barLeft + barStroke / 2,
-		barX2: mix(barJoint, barEnd.joint, follow),
+		barX2: mix(barJoint, barEnd.joint, lead),
 		barStroke,
-		barCentre: mix(barCentreRest, barEnd.centre, follow),
+		barCentre: mix(barCentreRest, barEnd.centre, lead),
 		dashX1: mix(dashFirstCapRest, dashEnd.firstCap, lead),
 		dashX2: mix(dashLastCapRest, dashEnd.lastCap, lead),
 		dashStroke: mix(dashStrokeRest, dashEnd.stroke, lead),

@@ -1,7 +1,8 @@
 // The site's stylesheet, in load order. `@arenaswap/ui/src/bootstrap` is the theme and forwards
 // Bootstrap itself, so configuring it here is how Bootstrap gets configured.
 @use '@arenaswap/ui/src/bootstrap' as bs with (
-	$link-hover-color: #d44e00,
+	// The dark side is the site's own, a touch brighter than the popup's on the wider page.
+	$link-hover-color: light-dark(#9a3412, #d44e00),
 );
 @use '@arenaswap/ui/src/icons' with ($font-dir: '/src/fonts');
 @use '@arenaswap/ui/src/game-card';

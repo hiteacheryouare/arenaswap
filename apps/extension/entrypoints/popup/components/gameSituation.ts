@@ -1,7 +1,7 @@
 import type { BasketballTeamSituation } from '@arenaswap/sideline';
 import { sportTypeConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, RedCardEvent } from '@arenaswap/core/types';
-import { formatGameClock, formatPeriod, isHalftime } from './gameCardShared';
+import { formatBreak, formatGameClock, formatPeriod } from './gameCardShared';
 
 // Injected rather than imported so the resolver stays pure and Jest-testable.
 type Translate = (key: string, subsOrCount?: unknown, subs?: unknown) => string;
@@ -24,20 +24,11 @@ export const resolveStatus = (game: Game, isInningSport: boolean, t: Translate):
 	}
 	if (game.status === 'pre') return { text: '' };
 	if (isInningSport) return { text: formatPeriod(game, t) };
-	if (game.intermission === true) {
-		if (isHalftime(game)) return { text: t('detail.halftime') };
-		// Intermission is hockey's word. A quarter break reads the way a broadcast says it, "End of Q1".
-		return { text: game.sportType === 'hockey' ? t('detail.intermission') : t('detail.endOfPeriod', { period: formatPeriod(game, t) }) };
-	}
+	if (game.intermission === true) return { text: formatBreak(game, t) };
 
 	const clockBased = sportTypeConfigMap[game.sportType]?.clockBased ?? false;
 	return { text: formatPeriod(game, t), clock: clockBased ? formatGameClock(game) : undefined };
 };
-
-// A full allotment, so the dots can show the ones already spent.
-const basketballTimeoutAllotments: Partial<Record<LeagueId, number>> = { nba: 7, wnba: 5 };
-
-export const basketballTimeoutAllotment = (league: LeagueId): number => basketballTimeoutAllotments[league] ?? 4;
 
 // Every other league's penalty is two shots from the first foul past the limit, which our sources
 // report as DOUBLE. Saying "double bonus" there would describe a rule those leagues don't have.

@@ -163,7 +163,12 @@ const CollegeFilterPage = ({ league, leagueLogos, filter, disabled, onChange }: 
 								{i18n.t('collegeFilter.retry')}
 							</button>
 						</>
-					) : i18n.t('collegeFilter.loading')}
+					) : (
+						<span className='d-flex align-items-center gap-2'>
+							<span className='spinner-border flex-shrink-0 college-filter-spinner' aria-hidden='true' />
+							{i18n.t('collegeFilter.loading')}
+						</span>
+					)}
 				</div>
 			)}
 

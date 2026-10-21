@@ -36,3 +36,6 @@
 - [project_powerscore3_modes_fantasy.md](project_powerscore3_modes_fantasy.md) — 2026-10-04: PowerScore 3 (modes, Blowouts/Fantasy signals, fantasy.*) for de/es/fil/fr/it/pt_BR; mode-name map, upset/bonus terms
 - [project_store_listing_kword_stuffing_fix.md](project_store_listing_kword_stuffing_fix.md) — 2026-09-05: SUPPORTED LEAGUES bulleted list -> prose in all 12 desc_long.md; no em dash anywhere in these files, professional/college/Olympic term set per locale
 - [Reason sentences rewrite](project_reason_sentences_rewrite.md) — 2026-10-20: powerScore.reason* plain-facts rewrite, 11 locales; team-name grammar, joinWhen order, fr ordinal workaround
+- [project_plain_language_tour_cjk.md](project_plain_language_tour_cjk.md) — 2026-10-21: issue #228 tour rewrite ja/ko/zh; link-a-tab verb per locale, 强打 vs 多打少 flag
+- [project_issue228_plain_tour_ptpt_fil.md](project_issue228_plain_tour_ptpt_fil.md) — 2026-10-21: #228 plain tour copy, pt_BR/pt_PT/fil; link-a-tab verb per locale, figurative-phrase swaps
+- [project_issue228_plain_onboarding_de_fr_it_es.md](project_issue228_plain_onboarding_de_fr_it_es.md) — 2026-10-21: #228 plain tour rewrite de/fr/it/es; link-verb per locale, term map, length notes

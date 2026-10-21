@@ -32,6 +32,7 @@
 		"skipToContent": "Saltar al contenido",
 		"language": "Idioma",
 		"chooseLanguage": "Elige un idioma",
+		"themeLabel": "Tema: {mode}",
 		"englishOnly": "Esta página solo está disponible en inglés.",
 		"untranslatedHeading": "Esta página aún no se ha traducido.",
 		"untranslatedBody": "La documentación y las notas de versión están escritas en inglés. Todo lo demás en este sitio está disponible en tu idioma."
@@ -461,7 +462,11 @@
 			"groupStandbyDesc": "Dónde dejarte cuando todos los partidos se apagan.",
 			"groupDemo": "Modo demostración",
 			"groupDemoDesc": "Partidos inventados, para ver un cambio cuando quieras.",
-			"switchNotifications": "Notificaciones de cambio"
+			"switchNotifications": "Notificaciones de cambio",
+			"theme": "Tema",
+			"themeLight": "Claro",
+			"themeDark": "Oscuro",
+			"themeSystem": "Predeterminado del sistema"
 		},
 		"sensitivity": {
 			"label": "Sensibilidad de cambio"

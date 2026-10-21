@@ -44,13 +44,13 @@ describe('walkthroughView step navigation', () => {
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
 		cy.contains('button', 'Next').click(); // 1 -> 2
-		cy.contains('Explore Formula').should('exist');
+		cy.contains('See What Counts').should('exist');
 
 		cy.get('.powerscore-progress-dot').eq(1).click();
 		cy.tick(600);
 		cy.get('.ps-bloom-overlay.ps-bloom-visible').should('exist');
 		cy.contains('Closeness').should('exist');
-		cy.contains('Scored from the current point margin').should('exist');
+		cy.contains('How close the score is').should('exist');
 
 		cy.get('.ps-bloom-overlay').click();
 		cy.tick(400);
@@ -70,7 +70,7 @@ describe('walkthroughView step navigation', () => {
 			cy.get('button.btn-solid.theme-primary').last().click();
 		}
 		cy.contains('Step 3 of 9').should('exist');
-		cy.contains('Assign Tabs to Games').should('exist');
+		cy.contains('Link Tabs to Games').should('exist');
 	});
 
 	it('goes back to step 2 from step 3', () => {
@@ -132,7 +132,7 @@ describe('walkthroughView step navigation', () => {
 		cy.tick(2500);
 		cy.get('button.btn-solid.theme-primary').last().click(); // 4 -> 5
 		cy.contains('Step 5 of 9').should('exist');
-		cy.contains('Take It to the TV').should('exist');
+		cy.contains('Going Full Screen').should('exist');
 	});
 
 	it('step 5 switches the game while the screen stays filled', () => {

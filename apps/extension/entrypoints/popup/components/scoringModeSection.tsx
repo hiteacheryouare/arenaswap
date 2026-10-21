@@ -4,6 +4,7 @@ import type { BuiltInModeId, LeagueId, LeagueLogoMap, ScoringModeChoice, UserPre
 import { modeIcons, modeNameKeys } from '@arenaswap/ui/src/components/scoringModeMeta';
 import LeagueLogo from './leagueLogo';
 import SelectDropdown from './selectDropdown';
+import SettingTooltipIcon from './settingTooltipIcon';
 import { canUseFantasy } from '../../../utils/scoringPrefs';
 
 interface scoringModeSectionProps {
@@ -31,9 +32,12 @@ const scoringModeSection = ({ prefs, leagueLogos, disabled, onScoringModeChange,
 	return (
 		<>
 			<div className='fw-bold popup-section-label'><i className='bi bi-compass' />{i18n.t('setup.scoringModeSection')}</div>
-			<label className='fg-secondary setting-toggle-label d-block mb-1' id='scoringModeSelectLabel' htmlFor='scoringModeSelect'>
-				{i18n.t('setup.scoringMode')}
-			</label>
+			<div className='d-flex align-items-center gap-1 mb-1'>
+				<label className='fg-secondary setting-toggle-label' id='scoringModeSelectLabel' htmlFor='scoringModeSelect'>
+					{i18n.t('setup.scoringMode')}
+				</label>
+				{someLeagueLacksFantasy && <SettingTooltipIcon text={i18n.t('setup.modeFantasyLeagues')} label={i18n.t('setup.scoringMode')} />}
+			</div>
 			<SelectDropdown<ScoringModeChoice>
 				id='scoringModeSelect'
 				labelId='scoringModeSelectLabel'
@@ -74,7 +78,6 @@ const scoringModeSection = ({ prefs, leagueLogos, disabled, onScoringModeChange,
 							</div>
 						);
 					})}
-					{someLeagueLacksFantasy && <div className='setting-explainer'>{i18n.t('setup.modeFantasyLeagues')}</div>}
 				</div>
 			)}
 		</>

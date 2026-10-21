@@ -10,11 +10,11 @@ import BsoIndicator from './bsoIndicator';
 import FlipScore from './flipScore';
 import InningHalfIcon from './inningHalfIcon';
 import type { GameCardDisplayProps } from './gameCardTypes';
-import { buildCardShellProps, buildGameCardSurface, CardDetailsButton, CardStatusRow, formatGameClock, formatPeriod, GameMeta, isHalftime, SeasonLabel, powerScoreColor, TeamColumn } from './gameCardShared';
+import { buildCardShellProps, buildGameCardSurface, CardDetailsButton, CardStatusRow, formatBreak, formatGameClock, formatPeriod, GameMeta, SeasonLabel, powerScoreColor, TeamColumn } from './gameCardShared';
 import { useT } from './i18nContext';
 import { StaleLeagueNote } from './staleLeagueNote';
 import useSwitchCrest from './useSwitchCrest';
-import { gridironTimeoutAllotment } from './timeoutDots';
+import { timeoutAllotment } from './timeoutDots';
 
 const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, tabSlot, leagueSlot, interactive = true }: GameCardDisplayProps) => {
 	const t = useT();
@@ -44,12 +44,12 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const downDistanceLine = game.downDistance && game.fieldPosition
 		? t('gameCard.downDistanceAt', { downDistance: game.downDistance, fieldPosition: game.fieldPosition })
 		: game.downDistance;
-	const atHalftime = !isInningSport && game.intermission === true && isHalftime(game);
+	const onBreak = !isInningSport && game.intermission === true;
 	const psBarPercent = Math.min((totalPowerScore / scoreMaxTotal) * 100, 100);
 	const psColor = powerScoreColor(totalPowerScore, scoreMaxTotal);
 	const shellProps = buildCardShellProps(game, t, onOpenGameDetail, interactive);
 	const surface = buildGameCardSurface(game, isDelayed);
-	const timeoutsMax = game.sportType === 'football' ? gridironTimeoutAllotment(game) : undefined;
+	const timeoutsMax = timeoutAllotment(game);
 
 	const awayColumn = <TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' surface={surface.awayColor} timeoutsMax={timeoutsMax} interactive={interactive} />;
 	const homeColumn = <TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' surface={surface.homeColor} timeoutsMax={timeoutsMax} interactive={interactive} />;
@@ -93,7 +93,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 						}
 						<FlipScore value={rightTeam.score} className='fw-bold lh-1 game-score-value' />
 					</div>
-					{!isInningSport && hasClock && (
+					{!isInningSport && hasClock && !onBreak && (
 						<span className='game-clock'>{formatGameClock(game)}</span>
 					)}
 					{/* The shootout line already carries the period, so rendering the
@@ -101,7 +101,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 					{!shootout && (
 						<span className='game-period'>
 							{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}
-							{atHalftime ? t('detail.halftime') : formatPeriod(game, t)}
+							{onBreak ? formatBreak(game, t) : formatPeriod(game, t)}
 						</span>
 					)}
 					{shootout && (

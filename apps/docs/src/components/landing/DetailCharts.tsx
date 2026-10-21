@@ -133,7 +133,7 @@ const Chart = ({ title, option }: { title: string; option: EChartsOption }) => {
 const ChartGrid = () => {
 	const t = useT();
 	return (
-		<div className='charts-grid'>
+		<div className='charts-grid' data-bs-theme='dark'>
 			<Chart title={t('detail.chartPowerScoreTitle')} option={options.powerScore} />
 			<Chart title={t('detail.chartScoreTitle')} option={options.teamScore} />
 			<Chart title={t('detail.chartWinProbTitle')} option={options.winProbability} />

@@ -32,6 +32,7 @@
 		"skipToContent": "Pular para o conteúdo",
 		"language": "Idioma",
 		"chooseLanguage": "Escolha um idioma",
+		"themeLabel": "Tema: {mode}",
 		"englishOnly": "Esta página só está disponível em inglês.",
 		"untranslatedHeading": "Esta página ainda não foi traduzida.",
 		"untranslatedBody": "A documentação e as notas de versão são escritas em inglês. Todo o restante do site está disponível no seu idioma."
@@ -461,7 +462,11 @@
 			"groupStandbyDesc": "Onde te deixar quando todos os jogos esfriam.",
 			"groupDemo": "Modo demonstração",
 			"groupDemoDesc": "Jogos inventados, para ver uma troca acontecer na hora que quiser.",
-			"switchNotifications": "Notificações de troca"
+			"switchNotifications": "Notificações de troca",
+			"theme": "Tema",
+			"themeLight": "Claro",
+			"themeDark": "Escuro",
+			"themeSystem": "Padrão do sistema"
 		},
 		"sensitivity": {
 			"label": "Sensibilidade de troca"

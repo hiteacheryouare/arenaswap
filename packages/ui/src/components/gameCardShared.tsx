@@ -9,11 +9,11 @@ import OnColorCrest from './onColorCrest';
 import HoverTooltip from './hoverTooltip';
 import { useT } from './i18nContext';
 import type { Translator } from './i18nContext';
-import { formatClock, formatGameClock, formatPeriod, isHalftime } from './gameFormat';
+import { formatBreak, formatClock, formatGameClock, formatPeriod, isHalftime } from './gameFormat';
 import TimeoutDots from './timeoutDots';
 
 // Re-exported so the card's existing callers keep one import site.
-export { formatClock, formatGameClock, formatPeriod, isHalftime };
+export { formatBreak, formatClock, formatGameClock, formatPeriod, isHalftime };
 
 
 export const formatStartTime = (iso: string, locale?: string): string => (

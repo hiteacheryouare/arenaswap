@@ -32,6 +32,7 @@
 		"skipToContent": "Zum Inhalt springen",
 		"language": "Sprache",
 		"chooseLanguage": "Sprache auswählen",
+		"themeLabel": "Design: {mode}",
 		"englishOnly": "Diese Seite ist nur auf Englisch verfügbar.",
 		"untranslatedHeading": "Diese Seite wurde noch nicht übersetzt.",
 		"untranslatedBody": "Die Dokumentation und die Versionshinweise sind auf Englisch verfasst. Alles andere auf dieser Website ist in deiner Sprache verfügbar."
@@ -461,7 +462,11 @@
 			"groupStandbyDesc": "Wohin du kommst, wenn alle Spiele einschlafen.",
 			"groupDemo": "Demo-Modus",
 			"groupDemoDesc": "Erfundene Spiele, damit du einen Wechsel jederzeit sehen kannst.",
-			"switchNotifications": "Wechsel-Benachrichtigungen"
+			"switchNotifications": "Wechsel-Benachrichtigungen",
+			"theme": "Design",
+			"themeLight": "Hell",
+			"themeDark": "Dunkel",
+			"themeSystem": "Systemeinstellung"
 		},
 		"sensitivity": {
 			"label": "Wechselempfindlichkeit"

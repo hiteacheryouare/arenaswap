@@ -32,6 +32,7 @@
 		"skipToContent": "Aller au contenu",
 		"language": "Langue",
 		"chooseLanguage": "Choisir une langue",
+		"themeLabel": "Thème : {mode}",
 		"englishOnly": "Cette page n'est disponible qu'en anglais.",
 		"untranslatedHeading": "Cette page n'a pas encore été traduite.",
 		"untranslatedBody": "La documentation et les notes de version sont rédigées en anglais. Tout le reste du site est disponible dans ta langue."
@@ -461,7 +462,11 @@
 			"groupStandbyDesc": "Où te garer quand tous les matchs s'endorment.",
 			"groupDemo": "Mode démo",
 			"groupDemoDesc": "Des matchs inventés, pour voir un changement quand tu veux.",
-			"switchNotifications": "Notifications de changement"
+			"switchNotifications": "Notifications de changement",
+			"theme": "Thème",
+			"themeLight": "Clair",
+			"themeDark": "Sombre",
+			"themeSystem": "Comme mon système"
 		},
 		"sensitivity": {
 			"label": "Sensibilité de changement"

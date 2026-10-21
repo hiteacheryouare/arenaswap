@@ -58,6 +58,12 @@ export const isHalftime = (game: PeriodSource): boolean => {
 	return regular !== undefined && regular % 2 === 0 && game.period === regular / 2;
 };
 
+// Intermission is hockey's word. A quarter break reads the way a broadcast says it, "End of Q1".
+export const formatBreak = (game: PeriodSource, t: Translator = defaultTranslate): string => {
+	if (isHalftime(game)) return t('detail.halftime');
+	return game.sportType === 'hockey' ? t('detail.intermission') : t('detail.endOfPeriod', { period: formatPeriod(game, t) });
+};
+
 // Only the two fields the clock reads. Same reason as PeriodSource: the docs island holds
 // `powerscore`'s Game, which declares clockSeconds optional.
 interface ClockSource {

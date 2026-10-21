@@ -56,6 +56,8 @@ export const defaultStrings: Record<string, string> = {
 	'main.onStandbyStream': 'On Standby Stream until something heats up',
 	'tabAssign.placeholder': '— Assign a tab —',
 	'detail.halftime': 'Halftime',
+	'detail.intermission': 'Intermission',
+	'detail.endOfPeriod': 'End of {period}',
 	'detail.chartPowerScoreTitle': 'PowerScore Over Time',
 	'detail.chartScoreTitle': 'Game Score Over Time',
 	'detail.chartWinProbTitle': 'Win Probability',

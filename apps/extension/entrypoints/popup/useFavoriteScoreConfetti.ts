@@ -6,9 +6,10 @@ import { buildLiveGameSnapshots, findFavoriteTeamScoreConfettiBursts } from './s
 interface useFavoriteScoreConfettiProps {
 	games: Game[];
 	favoriteTeamIds: Set<string>;
+	onMainView?: boolean;
 }
 
-const useFavoriteScoreConfetti = ({ games, favoriteTeamIds }: useFavoriteScoreConfettiProps) => {
+const useFavoriteScoreConfetti = ({ games, favoriteTeamIds, onMainView = true }: useFavoriteScoreConfettiProps) => {
 	const confettiCanvasRef = useRef<HTMLCanvasElement | null>(null);
 	const confettiInstanceRef = useRef<confettiInstance | null>(null);
 	const confettiLoadPromiseRef = useRef<Promise<confettiInstance> | null>(null);
@@ -30,9 +31,9 @@ const useFavoriteScoreConfetti = ({ games, favoriteTeamIds }: useFavoriteScoreCo
 	}, []);
 
 	const launchBurst = useCallback((nextOptions: confettiOptions) => {
-		// The canvas only exists on the main view, but this hook runs for every view. Without this
-		// guard a favorite scoring during onboarding cached a rejected promise that killed confetti
-		// for the rest of the session.
+		// Onboarding and the walkthrough render without the canvas. Without this guard a favorite
+		// scoring during onboarding cached a rejected promise that killed confetti for the rest of the
+		// session.
 		if (!confettiCanvasRef.current) return;
 		void ensureConfettiInstance()
 			.then(confetti => confetti(nextOptions))
@@ -55,7 +56,7 @@ const useFavoriteScoreConfetti = ({ games, favoriteTeamIds }: useFavoriteScoreCo
 			favoriteTeamIds,
 		);
 		previousLiveSnapshotsRef.current = nextLiveSnapshots;
-		if (bursts.length === 0) return;
+		if (!onMainView || bursts.length === 0) return;
 
 		for (const burst of bursts) {
 			launchBurst({
@@ -68,7 +69,11 @@ const useFavoriteScoreConfetti = ({ games, favoriteTeamIds }: useFavoriteScoreCo
 				disableForReducedMotion: true,
 			});
 		}
-	}, [games, favoriteTeamIds, launchBurst]);
+	}, [games, favoriteTeamIds, onMainView, launchBurst]);
+
+	useEffect(() => {
+		if (!onMainView) confettiInstanceRef.current?.reset();
+	}, [onMainView]);
 
 	useEffect(() => {
 		return () => {

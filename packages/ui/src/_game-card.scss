@@ -595,9 +595,9 @@
 
 		&:not(.is-ot) {
 			// A black team on the dark popup has no edge without this, and a white one on the light page.
-			border-color: rgba(255, 255, 255, 0.1);
-
-			:root[data-bs-theme='light'] & { border-color: rgba(13, 17, 23, 0.12); }
+			// Read off color-scheme rather than <html>, so a card in a dark panel on the light website
+			// keeps the dark edge.
+			border-color: light-dark(rgba(13, 17, 23, 0.12), rgba(255, 255, 255, 0.1));
 		}
 
 		.game-card-status-row > :first-child,

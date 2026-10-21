@@ -2,6 +2,7 @@
 import Wordmark from '@arenaswap/ui/src/components/wordmark';
 import InstallCta from './InstallCta.astro';
 import LanguageSwitcher from './LanguageSwitcher.astro';
+import ThemeToggle from './ThemeToggle.astro';
 import { localePath, stripLocale } from '../i18n/locales';
 import { currentLocale, useTranslations } from '../i18n/ui';
 
@@ -51,6 +52,7 @@ const currentFor = (path: string) => {
 				</ul>
 
 				<div class="nav-end">
+					<ThemeToggle />
 					<LanguageSwitcher localized={localized} />
 					<InstallCta class="nav-cta-desktop" />
 					<button type="button" class="nav-hamburger" id="nav-toggle" aria-label={t('nav.openMenu')} aria-controls="nav-drawer" aria-expanded="false" data-bs-toggle="drawer" data-bs-target="#nav-drawer">

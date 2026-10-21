@@ -32,6 +32,8 @@ const headRight = (morph: number) => {
 	return max;
 };
 
+const progress = (value: number, from: number, to: number) => (value - from) / (to - from);
+
 // A box's placement under a frame's pose, which is what the browser actually draws.
 const placed = (box: { x: number; y: number; w: number; h: number }, at: { x: number; y: number; scaleX: number; scaleY: number }) => ({
 	left: box.x * at.scaleX + at.x,
@@ -177,16 +179,17 @@ describe('across the whole run', () => {
 		});
 	});
 
-	// The bar's tail is pinned off the `a`'s shoulder and its head is on a slower clock, which is
-	// what makes it lengthen before it collapses. If both ever land on the same curve the arrow
-	// just slides left instead, and the covering move is gone.
-	test('lengthens the top arrow before shortening it', () => {
-		const lengths = everyFrame.map(t => {
+	// The top arrow's head used to run on the box's clock and landed a good 100ms after the rest of
+	// the mark. Each arrow's progress is measured end to end, so this holds whatever the curve is.
+	test('collapses both arrows together', () => {
+		const rest = wordmarkFrameAt(0);
+		const end = wordmarkFrameAt(1);
+		everyFrame.forEach(t => {
 			const frame = wordmarkFrameAt(t);
-			return frame.barX2 - frame.barX1;
+			const top = progress(frame.barX2, rest.barX2, end.barX2);
+			const bottom = progress(frame.dashX2, rest.dashX2, end.dashX2);
+			expect({ t, gap: Math.abs(top - bottom) < 0.01 }).toEqual({ t, gap: true });
 		});
-		expect(Math.max(...lengths)).toBeGreaterThan((lengths[0] as number) * 1.3);
-		expect(lengths[lengths.length - 1] as number).toBeLessThan(lengths[0] as number);
 	});
 
 	test('closes the box without ever widening it again', () => {

@@ -32,6 +32,7 @@
 		"skipToContent": "跳到主要內容",
 		"language": "語言",
 		"chooseLanguage": "選擇語言",
+		"themeLabel": "主題：{mode}",
 		"englishOnly": "這個頁面只有英文版本。",
 		"untranslatedHeading": "此頁面尚未翻譯。",
 		"untranslatedBody": "文件和更新紀錄以英文撰寫。本網站其餘部分皆提供中文版本。"
@@ -461,7 +462,11 @@
 			"groupStandbyDesc": "所有比賽都冷場時，把你停在哪裡。",
 			"groupDemo": "示範模式",
 			"groupDemoDesc": "用虛構比賽，隨時看一次切換是怎麼發生的。",
-			"switchNotifications": "切換通知"
+			"switchNotifications": "切換通知",
+			"theme": "主題",
+			"themeLight": "淺色",
+			"themeDark": "深色",
+			"themeSystem": "跟隨系統"
 		},
 		"sensitivity": {
 			"label": "切換靈敏度"

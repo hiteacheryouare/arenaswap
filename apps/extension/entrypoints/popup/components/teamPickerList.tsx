@@ -84,7 +84,7 @@ const teamPickerList = ({
 						{pinned}
 						{groups.map(({ leagueId, teams: leagueTeams }) => (
 							<div key={leagueId}>
-								<div className='fw-bold text-uppercase popup-section-label mt-3'>
+								<div className='fw-bold popup-section-label mt-3'>
 									{leagueLabels[leagueId] ?? leagueId.toUpperCase()}
 								</div>
 								{leagueTeams.map(team => (

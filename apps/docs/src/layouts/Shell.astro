@@ -7,6 +7,7 @@ import '../styles/global.scss';
 import { chromeWebStore, edgeAddons, firefoxAddons } from '../lib/installTargets';
 import { defaultLocale, findLocale, localePath, locales } from '../i18n/locales';
 import publicImageSize from '../lib/publicImageSize';
+import themeBoot from '../lib/themeBoot.js?raw';
 import { currentLocale, useTranslations } from '../i18n/ui';
 
 interface Props {
@@ -69,12 +70,13 @@ const alternates = localized && translated
 	: [];
 ---
 <!doctype html>
-<html lang={locale} data-bs-theme='dark'>
+<html lang={locale}>
 <head>
 	<meta charset='UTF-8' />
 	<meta name='viewport' content='width=device-width, initial-scale=1.0' />
 	<meta name='description' content={description} />
 	<meta name='theme-color' content='#0d1117' />
+	<script is:inline set:html={themeBoot}></script>
 	{noindex
 		? <meta name='robots' content='noindex' />
 		: <link rel='canonical' href={canonical.href} />}

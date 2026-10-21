@@ -12,8 +12,8 @@ const subscribe = (onChange: () => void) => {
 };
 
 // For a leaf that only needs to know which way the page is lit — a logo picking its variant — and is
-// too deep to be handed the theme. The attribute on <html> is the source; the website never sets it,
-// so there this is always dark. Server rendering has no document and gets dark too.
+// too deep to be handed the theme. The attribute on <html> is the source, set by the popup's Theme
+// setting and by the website's toggle. Server rendering has no document and gets dark.
 export const useDocumentTheme = (): ResolvedTheme => useSyncExternalStore(subscribe, readDocumentTheme, () => 'dark');
 
 export default useDocumentTheme;

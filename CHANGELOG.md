@@ -5,6 +5,38 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Basketball cards show timeouts — 2026-10-21
+
+Live basketball cards now draw each team's timeouts as dots, like football's, which finishes #165: seven a size down in the NBA, five in the WNBA, four in college. The background fetches the game's situation on each league poll, which needs no new permission, and tells the popup the moment a timeout is called, so the detail screen has the dots before its own fetch lands.
+
+## The conference list spins while it loads — 2026-10-21
+
+A college league's picker now shows a small spinner beside "Our scouts are fetching the conference list…", so a slow fetch looks like work in progress instead of a stuck page. It goes away when the list arrives or the fetch fails.
+
+## Favorite teams stop shouting — 2026-10-21
+
+The Your Favorites heading and the league headings under it in the team picker are no longer forced to all caps, so they match the rest of Settings. The main view's league headings keep their uppercase.
+
+## The tour speaks plainly — 2026-10-21
+
+Onboarding and the tour were rewritten for sports fans who have never used ArenaSwap, in short sentences with no analogies, and each term such as PowerScore, signal, boost or cooldown is explained the first time it appears. The tour now has its own plain descriptions of the Classic signals and the boosts. The breakdown card keeps its precise tooltips, and Blowouts and Fantasy signals still borrow them.
+
+## Confetti stays on the main view — 2026-10-21
+
+A favorite scoring no longer sets off confetti over Settings, a game's detail page or tab suggestions, and any burst still falling is cleared the moment you leave the main view. Scores keep being tracked while you're away, so coming back doesn't replay a celebration you missed.
+
+## Eight more things to do while games load — 2026-10-20
+
+The loading spinner adds eight fresh lines, from dusting off a foam finger to putting the kettle on between innings, and swaps six niche controversy callbacks for increasingly unhinged couch-side rituals. The same pool is localized in all twelve languages and now contains 120 messages, so neither the popup nor the guide can choose a missing string.
+
+## Settings explain themselves in tooltips — 2026-10-20
+
+The explainer lines under Finished tabs, Demo mode, Demo season, Keep finished games and Group by league moved into the ? tooltip beside each label, along with the boss shortcut and the note on which leagues Fantasy covers. Pages no longer repeat their index description under the header, and the Fantasy roster, Fantasy rules and college filter pages dropped their opening paragraph. The Scoring mode description and the warnings that react to a change stay inline.
+
+## No frozen clock during a break — 2026-10-20
+
+A live card on the main view drops its clock at halftime and between periods, and its period line names the break the way the game detail view already did: "Halftime", "End of Q1", or "Intermission" in hockey. Both now read their wording from one `formatBreak` helper, so they can't drift apart.
+
 ## A held switch says what it's waiting for — 2026-10-20
 
 While content-aware switching holds a switch, the popup shows a notice like "Switching to BOS vs LAL after this at-bat", and an "Up next" notification goes out under the switch's own notification id, so the switch replaces it when it lands. A hold that's called off without switching takes its notification down with it.
@@ -20,6 +52,18 @@ A new Switching toggle, on for fresh installs and off for upgrades, holds a swit
 ## Full screen survives a switch — 2026-10-20
 
 Chrome, Edge and Firefox all take a player out of full screen when its tab stops being the active one, and only a click can put the new player back, so a switch now puts the window back in full screen instead. A game in another window comes to the front, where before its tab changed out of sight and the sound stayed on the old game. A new tour step and a pro tip point TV watchers at ⌃⌘F / F11.
+
+## The logo collapses in one piece — 2026-10-20
+
+The top arrowhead used to ride the header box's slower clock and landed about 100ms after the letters and the bottom arrow. Every mark now shares one clock, and only the box and header trail, by the smallest margin that still keeps the orange period from being clipped.
+
+## Tab suggestions stick to today — 2026-10-20
+
+The suggestion banner only offers games that are live or start later today in your local time, so a preview tab for next week's matchup no longer gets paired early. A scheduled game with no start time is skipped, since nothing says it's today.
+
+## Store keywords follow the persona research — 2026-10-20
+
+`sports-betting` and `espn` are out of `kwords.txt`: the Chrome Web Store bans real-money gambling extensions, so a betting keyword only invites the question, and the other names our sources. In their place are the phrases the research found fans using: college football, March Madness, multiview, muting tabs, watching at work and the boss button.
 
 ## Onboarding and the tour follow the Theme setting — 2026-10-17
 

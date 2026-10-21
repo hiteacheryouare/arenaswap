@@ -35,6 +35,9 @@ const makeGame = (
 
 const makeTab = (id: number, title: string, url: string): SuggestionTab => ({ id, title, url });
 
+const localTime = (day: number, hour: number): Date => new Date(2026, 7, day, hour);
+const now = localTime(28, 12).getTime();
+
 const celticsKnicks = makeGame(
 	'401704999', 'nba', 'basketball',
 	team('2', 'Boston Celtics', 'BOS'),
@@ -44,13 +47,13 @@ const celticsHeat = makeGame(
 	'401705000', 'nba', 'basketball',
 	team('2', 'Boston Celtics', 'BOS'),
 	team('14', 'Miami Heat', 'MIA'),
-	{ status: 'pre', startTime: '2026-08-28T23:00:00Z' },
+	{ status: 'pre', startTime: localTime(28, 19).toISOString() },
 );
 const celticsKnicksLater = makeGame(
 	'401705111', 'nba', 'basketball',
 	team('2', 'Boston Celtics', 'BOS'),
 	team('18', 'New York Knicks', 'NYK'),
-	{ status: 'pre', startTime: '2026-08-29T23:00:00Z' },
+	{ status: 'pre', startTime: localTime(28, 21).toISOString() },
 );
 const buckeyesWolverines = makeGame(
 	'401600001', 'ncaaf', 'football',
@@ -198,7 +201,7 @@ describe('scoreTabGamePair', () => {
 });
 
 describe('suggestTabAssignments', () => {
-	const base = { games: [celticsKnicks, celticsHeat, buckeyesWolverines], registry: [] as TabRegistration[] };
+	const base = { games: [celticsKnicks, celticsHeat, buckeyesWolverines], registry: [] as TabRegistration[], now };
 
 	it('prefers the live game when two games score identically', () => {
 		const tab = makeTab(1, 'Celtics vs Knicks Live', 'https://example.com/watch');
@@ -274,6 +277,25 @@ describe('suggestTabAssignments', () => {
 		const done = makeGame('401704998', 'nba', 'basketball', team('2', 'Boston Celtics', 'BOS'), team('18', 'New York Knicks', 'NYK'), { status: 'post' });
 		const tab = makeTab(1, 'Celtics vs Knicks Live', 'https://example.com/watch');
 		expect(suggestTabAssignments({ tabs: [tab], games: [done], registry: [] })).toHaveLength(0);
+	});
+
+	it('suggests a game that starts later today', () => {
+		const tab = makeTab(1, 'Celtics vs Knicks Preview', 'https://example.com/watch');
+		const [first] = suggestTabAssignments({ ...base, games: [celticsKnicksLater], tabs: [tab] });
+		expect(first?.gameId).toBe(celticsKnicksLater.id);
+	});
+
+	it('holds a game scheduled for tomorrow until its day comes', () => {
+		const tab = makeTab(1, 'Celtics vs Knicks Preview', 'https://example.com/watch');
+		const tomorrow = { ...celticsKnicksLater, startTime: localTime(29, 1).toISOString() };
+		expect(suggestTabAssignments({ ...base, games: [tomorrow], tabs: [tab] })).toHaveLength(0);
+		expect(suggestTabAssignments({ ...base, games: [tomorrow], tabs: [tab], now: localTime(29, 0).getTime() })).toHaveLength(1);
+	});
+
+	it('skips a scheduled game with no start time', () => {
+		const tab = makeTab(1, 'Celtics vs Knicks Preview', 'https://example.com/watch');
+		const undated = { ...celticsKnicksLater, startTime: undefined };
+		expect(suggestTabAssignments({ ...base, games: [undated], tabs: [tab] })).toHaveLength(0);
 	});
 
 	it('drops dismissed pairs', () => {

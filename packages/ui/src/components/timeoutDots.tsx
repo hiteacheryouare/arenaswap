@@ -1,5 +1,5 @@
 import { leagueConfigMap } from '@arenaswap/core/constants';
-import type { Game } from '@arenaswap/core/types';
+import type { Game, LeagueId } from '@arenaswap/core/types';
 import { useT } from './i18nContext';
 
 interface timeoutDotsProps {
@@ -20,6 +20,19 @@ export const gridironTimeoutAllotment = (game: Pick<Game, 'league' | 'period' | 
 	if (game.league === 'nfl' && !game.isPostseason) return 2;
 	return gridironTimeouts;
 };
+
+const basketballTimeoutAllotments: Partial<Record<LeagueId, number>> = { nba: 7, wnba: 5 };
+
+export const basketballTimeoutAllotment = (league: LeagueId): number => basketballTimeoutAllotments[league] ?? 4;
+
+// A full allotment, so the dots can show the ones already spent. Undefined in the sports that
+// draw no dots.
+export const timeoutAllotment = (game: Pick<Game, 'sportType' | 'league' | 'period' | 'isPostseason'>): number | undefined => {
+	if (game.sportType === 'football') return gridironTimeoutAllotment(game);
+	if (game.sportType === 'basketball') return basketballTimeoutAllotment(game.league);
+	return undefined;
+};
+
 // Past four the dots shrink so the NBA's seven still fit under a team name. Past seven they would
 // not, and the row says the number instead.
 const maxFullSizeDots = 4;

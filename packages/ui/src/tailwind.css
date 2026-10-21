@@ -1,20 +1,20 @@
 /* ─── ArenaSwap shared Tailwind v4 theme tokens ──────────────────────────────
    @import this after @import 'tailwindcss' in each app's Tailwind entry file.
-   These tokens mirror the Bootstrap variables in _bootstrap.scss, so both styling
-   systems stay in sync from a single source.
+   The surface and ink tokens read Bootstrap's own, so they follow the colour mode with it.
+   Primary stays the flat brand orange because it is a fill; orange text uses --as-accent-ink.
 
    `static` because the docs SCSS reads several of these through var(), which Tailwind's
    usage scan does not see. Without it the unreferenced ones are pruned and those var()
    calls resolve to nothing. */
 
 @theme static {
-	--color-bg:        #0d1117;
-	--color-card:      #161b22;
-	--color-border:    #30363d;
+	--color-bg:        var(--as-bg-body);
+	--color-card:      var(--as-bg-1);
+	--color-border:    var(--as-border-color);
 	--color-primary:   #F75C03;
 	--color-secondary: #3E9BD1;
-	--color-text:      #e6edf3;
-	--color-muted:     #8b949e;
+	--color-text:      var(--as-fg-body);
+	--color-muted:     var(--as-fg-3);
 	--color-success:   #00CC66;
 	--color-danger:    #D90368;
 	--color-warning:   #F1C40F;

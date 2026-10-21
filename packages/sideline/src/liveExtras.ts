@@ -255,6 +255,7 @@ interface GameExtras {
 	boxLeadChanges: { ts: number; count: number }[];
 	powerPlay?: boolean;
 	emptyNetPolls: number;
+	timeouts?: { home?: number; away?: number };
 	// Rostered players' latest box-score lines, kept as stats rather than points so a rule changed
 	// mid-game rescores both sides of the comparison instead of reading as points just scored.
 	fantasyLines: Map<string, Record<string, number>>;
@@ -343,13 +344,30 @@ export const createLiveExtras = () => {
 		if (state.boxLeadChanges.length > 40) state.boxLeadChanges.shift();
 	};
 
-	const ingestSituation = (gameId: string, situation: unknown) => {
+	// True when basketball's timeouts moved, which the cards show and the boosts don't read.
+	const ingestSituation = (gameId: string, situation: unknown): boolean => {
 		// A reply that lands after the game was forgotten mustn't bring it back.
-		if (forgotten.has(gameId)) return;
+		if (forgotten.has(gameId)) return false;
 		const state = stateOf(gameId);
 		const { powerPlay, emptyNet } = readHockeySituation(situation);
 		state.powerPlay = powerPlay;
 		state.emptyNetPolls = emptyNet ? state.emptyNetPolls + 1 : 0;
+		const basketball = readBasketballSituation(situation);
+		if (!basketball) return false;
+		const timeouts = { home: basketball.home.timeoutsLeft, away: basketball.away.timeoutsLeft };
+		const moved = timeouts.home !== state.timeouts?.home || timeouts.away !== state.timeouts?.away;
+		state.timeouts = timeouts;
+		return moved;
+	};
+
+	const withTimeouts = (game: Game): Game => {
+		const timeouts = games.get(game.id)?.timeouts;
+		if (!timeouts || game.status !== 'in') return game;
+		return {
+			...game,
+			homeTeam: timeouts.home === undefined ? game.homeTeam : { ...game.homeTeam, timeouts: timeouts.home },
+			awayTeam: timeouts.away === undefined ? game.awayTeam : { ...game.awayTeam, timeouts: timeouts.away },
+		};
 	};
 
 	const ingestStandings = (league: LeagueId, sportType: Game['sportType'], standings: unknown) => {
@@ -399,7 +417,7 @@ export const createLiveExtras = () => {
 
 	const hasRosteredPlayer = (game: Game): boolean => rosterInGame(roster, game).length > 0;
 
-	return { ingestSummary, ingestSituation, ingestStandings, contextFor, forget, setRoster, setFantasyScoring, hasRosteredPlayer };
+	return { ingestSummary, ingestSituation, ingestStandings, contextFor, withTimeouts, forget, setRoster, setFantasyScoring, hasRosteredPlayer };
 };
 
 export type LiveExtras = ReturnType<typeof createLiveExtras>;

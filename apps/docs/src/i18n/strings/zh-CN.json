@@ -32,6 +32,7 @@
 		"skipToContent": "跳到主要内容",
 		"language": "语言",
 		"chooseLanguage": "选择语言",
+		"themeLabel": "主题：{mode}",
 		"englishOnly": "此页面仅提供英文版本。",
 		"untranslatedHeading": "此页面尚未翻译。",
 		"untranslatedBody": "文档和更新日志使用英文撰写。本网站的其余部分均提供中文版本。"
@@ -461,7 +462,11 @@
 			"groupStandbyDesc": "所有比赛都冷场时把您停在哪里。",
 			"groupDemo": "演示模式",
 			"groupDemoDesc": "用虚构的比赛，随时看一次切换是怎么发生的。",
-			"switchNotifications": "切换通知"
+			"switchNotifications": "切换通知",
+			"theme": "主题",
+			"themeLight": "浅色",
+			"themeDark": "深色",
+			"themeSystem": "跟随系统"
 		},
 		"sensitivity": {
 			"label": "切换灵敏度"

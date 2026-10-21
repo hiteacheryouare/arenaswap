@@ -84,6 +84,13 @@
 		line-height: 1.4;
 	}
 
+	.college-filter-spinner {
+		width:        0.8rem;
+		height:       0.8rem;
+		border-width: 0.12em;
+		color:        var(--as-fg-3);
+	}
+
 	.college-filter-retry {
 		font-size: inherit;
 	}

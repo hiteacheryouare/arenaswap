@@ -2,14 +2,14 @@ import { i18n } from '#i18n';
 import type { BasketballSituation } from '@arenaswap/sideline';
 import { isHomeFirst } from '@arenaswap/core/constants';
 import type { Game, Team } from '@arenaswap/core/types';
-import { gridironTimeoutAllotment } from '@arenaswap/ui/src/components/timeoutDots';
+import { timeoutAllotment } from '@arenaswap/ui/src/components/timeoutDots';
 import AtBatPanel from './atBatPanel';
 import BaseDiamond from './baseDiamond';
 import BsoIndicator from './bsoIndicator';
 import DetailTeamPill from './detailTeamPill';
 import FlipScore from './flipScore';
 import FootballFieldStrip from './footballFieldStrip';
-import { basketballTimeoutAllotment, bonusKind, type GameStatus } from './gameSituation';
+import { bonusKind, type GameStatus } from './gameSituation';
 import GameStatusText from './gameStatusText';
 import InningHalfIcon from './inningHalfIcon';
 import PossessionArrow from './possessionArrow';
@@ -46,9 +46,7 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 
 	const liveBasketball = game.sportType === 'basketball' && game.status === 'in';
 	const situation = liveBasketball ? basketballSituation : null;
-	const timeoutMax = situation
-		? basketballTimeoutAllotment(game.league)
-		: game.sportType === 'football' ? gridironTimeoutAllotment(game) : undefined;
+	const timeoutMax = timeoutAllotment(game);
 	// Between periods the fouls have already reset for the next one, so nobody is in the bonus.
 	const bonusOf = (side: 'home' | 'away') => (
 		situation && game.intermission !== true ? bonusKind(situation[side], game.league) : undefined

@@ -20,6 +20,7 @@ export interface SuggestTabAssignmentsParams {
 	registry: readonly TabRegistration[];
 	dismissed?: readonly string[];
 	standbyStreamTabId?: number | null;
+	now?: number;
 }
 
 export const tabSuggestionDismissalsKey = 'tabSuggestionDismissals';
@@ -265,6 +266,18 @@ export const isSuggestableUrl = (url: string): boolean => {
 	return !blockedSchemes.some(scheme => lowered.startsWith(scheme));
 };
 
+const isSameLocalDay = (ms: number, other: number): boolean => {
+	const a = new Date(ms);
+	const b = new Date(other);
+	return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+};
+
+const isSuggestableGame = (game: Game, now: number): boolean => {
+	if (game.status === 'in') return true;
+	if (game.status !== 'pre' || !game.startTime) return false;
+	return isSameLocalDay(Date.parse(game.startTime), now);
+};
+
 const startTimeValue = (game: Game): number => {
 	const parsed = game.startTime ? Date.parse(game.startTime) : Number.NaN;
 	return Number.isNaN(parsed) ? Number.MAX_SAFE_INTEGER : parsed;
@@ -287,13 +300,13 @@ export const suggestTabAssignments = ({
 	registry,
 	dismissed = [],
 	standbyStreamTabId = null,
+	now = Date.now(),
 }: SuggestTabAssignmentsParams): TabSuggestion[] => {
 	const registeredTabIds = new Set(registry.map(entry => entry.tabId));
 	const registeredGameIds = new Set(registry.map(entry => entry.gameId));
 	const dismissedKeys = new Set(dismissed);
 
-	const eligibleGames = games.filter(game =>
-		(game.status === 'in' || game.status === 'pre') && !registeredGameIds.has(game.id));
+	const eligibleGames = games.filter(game => isSuggestableGame(game, now) && !registeredGameIds.has(game.id));
 	const eligibleTabs = tabs.filter(tab =>
 		Number.isInteger(tab.id)
 		&& isSuggestableUrl(tab.url)

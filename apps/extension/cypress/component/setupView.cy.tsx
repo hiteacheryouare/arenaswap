@@ -201,10 +201,12 @@ describe('setupView navigation', () => {
 		cy.focused().should('have.id', 'settingsGroup-display');
 	});
 
-	it('shows the group description as the sub-page lede', () => {
+	// The index row already says what the page is for, so the page doesn't say it again.
+	it('leaves the group description on the index, not under the page header', () => {
 		cy.mount(<SetupView {...defaultProps} />);
+		cy.contains('.settings-index-desc', en.setup.groupStandbyDesc).should('exist');
 		openGroup('standby');
-		cy.get('.settings-page-lede').should('not.be.empty');
+		cy.contains(en.setup.groupStandbyDesc).should('not.exist');
 	});
 });
 
@@ -310,6 +312,18 @@ describe('setupView switching group', () => {
 	it('offers the explainer as a tooltip rather than permanent body copy', () => {
 		cy.get('.setting-tooltip-btn').should('have.length.at.least', 3);
 		cy.contains('Controls how big the PowerScore gap').should('not.exist');
+		cy.contains(en.setup.demoModeExplainer).should('not.exist');
+	});
+});
+
+describe('setupView display group', () => {
+	it('keeps its explainers in tooltips beside their toggles', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('display');
+		cy.contains(en.setup.keepFinalGamesExplainer).should('not.exist');
+		cy.contains(en.setup.groupByLeagueExplainer).should('not.exist');
+		cy.get('label[for="groupByLeagueToggle"]').parent().find('.setting-tooltip-btn').focus();
+		cy.get('.tooltip').should('contain.text', en.setup.groupByLeagueExplainer);
 	});
 });
 
@@ -746,7 +760,9 @@ describe('setupView scoring mode', () => {
 		cy.get('#leagueMode-nba').should('contain.text', 'Blowouts');
 		cy.get('#leagueMode-nfl').should('contain.text', 'Fantasy');
 		cy.get('#leagueMode-epl').should('contain.text', 'Classic');
-		cy.contains('.setting-explainer', en.setup.modeFantasyLeagues).should('exist');
+		cy.contains(en.setup.modeFantasyLeagues).should('not.exist');
+		cy.get('#scoringModeSelectLabel').parent().find('.setting-tooltip-btn').focus();
+		cy.get('.tooltip').should('contain.text', en.setup.modeFantasyLeagues);
 	});
 
 	it('will not put a league with no fantasy players into Fantasy', () => {
@@ -1119,6 +1135,8 @@ describe('the theme setting', () => {
 	});
 });
 
+const finishedTabTooltip = () => cy.get('#finishedTabSelectLabel').parent().find('.setting-tooltip-btn');
+
 describe('what happens to a tab once its game finishes', () => {
 	const optionKeys = ['finishedTabKeep', 'finishedTabFree', 'finishedTabClose'] as const;
 
@@ -1151,21 +1169,23 @@ describe('what happens to a tab once its game finishes', () => {
 	// Nothing is being taken while it says keep, so there is nothing to explain.
 	it('says nothing extra while it is set to keep', () => {
 		openSwitching();
-		cy.contains(en.setup.finishedTabActiveExplainer).should('not.exist');
-		cy.contains(en.setup.finishedTabCloseExplainer).should('not.exist');
+		finishedTabTooltip().should('not.exist');
 	});
 
 	it('warns about the tab in front of you as soon as it is doing anything', () => {
 		openSwitching({ ...defaultPrefs, finishedTabAction: 'free' });
-		cy.contains(en.setup.finishedTabActiveExplainer).should('exist');
-		// Nothing is closing, so the sole-tab rule has nothing to say.
-		cy.contains(en.setup.finishedTabCloseExplainer).should('not.exist');
+		cy.contains(en.setup.finishedTabActiveExplainer).should('not.exist');
+		finishedTabTooltip().focus();
+		cy.get('.tooltip').should('contain.text', en.setup.finishedTabActiveExplainer)
+			// Nothing is closing, so the sole-tab rule has nothing to say.
+			.and('not.contain.text', en.setup.finishedTabCloseExplainer);
 	});
 
 	it('adds the last-tab rule only when it is closing', () => {
 		openSwitching({ ...defaultPrefs, finishedTabAction: 'close' });
-		cy.contains(en.setup.finishedTabActiveExplainer).should('exist');
-		cy.contains(en.setup.finishedTabCloseExplainer).should('exist');
+		finishedTabTooltip().focus();
+		cy.get('.tooltip').should('contain.text', en.setup.finishedTabActiveExplainer)
+			.and('contain.text', en.setup.finishedTabCloseExplainer);
 	});
 
 	// A native select clips rather than wraps, so a string that does not fit is silently

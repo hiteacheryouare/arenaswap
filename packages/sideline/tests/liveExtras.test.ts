@@ -427,6 +427,42 @@ describe('the hockey situation', () => {
 	});
 });
 
+describe('basketball timeouts on the cards', () => {
+	test('a live game takes each side\'s timeouts from the latest situation', () => {
+		const extras = createLiveExtras();
+		expect(extras.ingestSituation(nbaGame.id, basketball.firstQuarter.raw)).toBe(true);
+		expect(extras.ingestSituation(nbaGame.id, basketball.homeInBonus.raw)).toBe(true);
+		const stamped = extras.withTimeouts(nbaGame);
+		expect(stamped.homeTeam.timeouts).toBe(6);
+		expect(stamped.awayTeam.timeouts).toBe(7);
+	});
+
+	// The popup is told only when a timeout is called, not on every reply.
+	test('a reply with the same timeouts reports nothing moved', () => {
+		const extras = createLiveExtras();
+		extras.ingestSituation(nbaGame.id, basketball.homeInBonus.raw);
+		expect(extras.ingestSituation(nbaGame.id, basketball.bothInBonus.raw)).toBe(false);
+	});
+
+	test('a hockey reply or a final game leaves the teams as they came', () => {
+		const extras = createLiveExtras();
+		const hockeyGame = { id: situations.nhlPowerPlay.gameId, league: 'nhl', sportType: 'hockey', status: 'in', homeTeam: { id: '1' }, awayTeam: { id: '2' } } as Game;
+		expect(extras.ingestSituation(hockeyGame.id, situations.nhlPowerPlay.raw)).toBe(false);
+		expect(extras.withTimeouts(hockeyGame)).toBe(hockeyGame);
+		extras.ingestSituation(nbaGame.id, basketball.lastMinutes.raw);
+		const final = { ...nbaGame, status: 'post' } as Game;
+		expect(extras.withTimeouts(final)).toBe(final);
+	});
+
+	test('a forgotten game keeps no timeouts', () => {
+		const extras = createLiveExtras();
+		extras.ingestSituation(nbaGame.id, basketball.lastMinutes.raw);
+		extras.forget(nbaGame.id);
+		expect(extras.ingestSituation(nbaGame.id, basketball.lastMinutes.raw)).toBe(false);
+		expect(extras.withTimeouts(nbaGame)).toBe(nbaGame);
+	});
+});
+
 interface StandingsNode {
 	standings?: { entries: Json[] };
 	children?: StandingsNode[];

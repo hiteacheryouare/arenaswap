@@ -6,7 +6,8 @@
 
 	// For dates, outlines and other small secondary text. #6e7681 sat at 4.1:1 on the page, just under
 	// the 4.5:1 small text needs; this clears it at 5.1:1 and still reads a step quieter than muted.
-	$text-subtle: #7d8590;
+	// The light side is the palette's own faint ink, 6.0:1 on white.
+	$text-subtle: light-dark(#5a6472, #7d8590);
 
 	.page-head {
 		// Clears the fixed header with room to breathe, on a page whose first element is a heading.
@@ -77,7 +78,7 @@
 			}
 
 			&[aria-current='page'] {
-				color: var(--color-primary);
+				color: var(--as-accent-ink);
 			}
 		}
 
@@ -102,7 +103,7 @@
 		}
 
 		&[aria-current='page'] {
-			color: var(--color-primary);
+			color: var(--as-accent-ink);
 		}
 	}
 
@@ -123,10 +124,10 @@
 
 		li {
 			padding: 1.5rem 0;
-			border-top: 1px solid #21262d;
+			border-top: 1px solid var(--as-border-muted);
 
 			&:last-child {
-				border-bottom: 1px solid #21262d;
+				border-bottom: 1px solid var(--as-border-muted);
 			}
 		}
 
@@ -141,7 +142,7 @@
 				text-decoration: none;
 
 				&:hover {
-					color: var(--color-primary);
+					color: var(--as-accent-ink);
 				}
 			}
 		}
@@ -172,7 +173,7 @@
 		max-width: 68ch;
 		margin: 3.5rem 0 0;
 		padding-top: 1.5rem;
-		border-top: 1px solid #21262d;
+		border-top: 1px solid var(--as-border-muted);
 
 		a {
 			font-size: 0.9rem;
@@ -181,7 +182,7 @@
 			text-decoration: none;
 
 			&:hover {
-				color: var(--color-primary);
+				color: var(--as-accent-ink);
 			}
 		}
 
@@ -219,7 +220,7 @@
 				text-decoration: none;
 
 				&:hover {
-					color: var(--color-primary);
+					color: var(--as-accent-ink);
 				}
 			}
 		}
@@ -239,10 +240,10 @@
 		padding: 0;
 
 		li {
-			border-top: 1px solid #21262d;
+			border-top: 1px solid var(--as-border-muted);
 
 			&:last-child {
-				border-bottom: 1px solid #21262d;
+				border-bottom: 1px solid var(--as-border-muted);
 			}
 		}
 
@@ -254,7 +255,7 @@
 			text-decoration: none;
 
 			&:hover {
-				color: var(--color-primary);
+				color: var(--as-accent-ink);
 			}
 		}
 	}
@@ -302,7 +303,7 @@
 		transition: color m.$motion-quick m.$motion-ease;
 
 		&:hover {
-			color: var(--color-primary);
+			color: var(--as-accent-ink);
 		}
 	}
 
@@ -324,7 +325,7 @@
 			text-decoration: none;
 
 			&:hover {
-				color: var(--color-primary);
+				color: var(--as-accent-ink);
 			}
 		}
 	}
@@ -343,7 +344,7 @@
 
 		li {
 			padding: 1.6rem 0;
-			border-top: 1px solid #21262d;
+			border-top: 1px solid var(--as-border-muted);
 		}
 
 		h3 {
@@ -357,7 +358,7 @@
 				text-decoration: none;
 
 				&:hover {
-					color: var(--color-primary);
+					color: var(--as-accent-ink);
 				}
 			}
 		}
@@ -419,7 +420,7 @@
 		img {
 			width: 100%;
 			height: auto;
-			border: 1px solid #21262d;
+			border: 1px solid var(--as-border-muted);
 			border-radius: 0.75rem;
 		}
 	}
@@ -470,7 +471,7 @@
 
 			&.is-current {
 				color: var(--color-text);
-				border-left-color: var(--color-primary);
+				border-left-color: var(--as-accent-ink);
 			}
 		}
 	}
@@ -482,7 +483,7 @@
 		max-width: 68ch;
 		margin: 4.5rem auto 0;
 		padding-top: 1.5rem;
-		border-top: 1px solid #21262d;
+		border-top: 1px solid var(--as-border-muted);
 
 		a {
 			font-size: 0.9rem;
@@ -491,7 +492,7 @@
 			text-decoration: none;
 
 			&:hover {
-				color: var(--color-primary);
+				color: var(--as-accent-ink);
 			}
 		}
 
@@ -537,10 +538,10 @@
 
 		li {
 			padding: 1.5rem 0;
-			border-top: 1px solid #21262d;
+			border-top: 1px solid var(--as-border-muted);
 
 			&:last-child {
-				border-bottom: 1px solid #21262d;
+				border-bottom: 1px solid var(--as-border-muted);
 			}
 		}
 
@@ -555,7 +556,7 @@
 				text-decoration: none;
 
 				&:hover {
-					color: var(--color-primary);
+					color: var(--as-accent-ink);
 				}
 			}
 		}
@@ -609,7 +610,7 @@
 
 	.credit-item {
 		padding: 1.1rem 0;
-		border-top: 1px solid #21262d;
+		border-top: 1px solid var(--as-border-muted);
 
 		h3 {
 			font-size: 1rem;
@@ -640,7 +641,7 @@
 		.reading-nav {
 			position: static;
 			padding-bottom: 1.25rem;
-			border-bottom: 1px solid #21262d;
+			border-bottom: 1px solid var(--as-border-muted);
 		}
 	}
 
@@ -659,7 +660,7 @@
 		--as-accordion-bg: transparent;
 		--as-accordion-btn-bg: transparent;
 		--as-accordion-active-bg: transparent;
-		--as-accordion-border-color: #21262d;
+		--as-accordion-border-color: var(--as-border-muted);
 		--as-accordion-border-radius: 0;
 		--as-accordion-btn-icon-transition: transform #{m.$motion-quick} #{m.$motion-ease};
 	}
@@ -680,7 +681,7 @@
 		// Sits where the old border-drawn caret did, which hung a few pixels past the text's right edge.
 		.accordion-icon {
 			translate: 0.35rem 0.33rem;
-			color: var(--color-primary);
+			color: var(--as-accent-ink);
 		}
 
 		> p {

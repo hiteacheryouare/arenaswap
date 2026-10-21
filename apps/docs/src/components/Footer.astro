@@ -1,7 +1,9 @@
 ---
 import { Image } from 'astro:assets';
 import logoImg from '../assets/full_logo_white_on_transparent.svg';
+import logoImgBlack from '../assets/full_logo_black.svg';
 import latticeMark from '../assets/lattice-rosette-white.svg';
+import latticeMarkBlack from '../assets/lattice-rosette-black.svg';
 import { chromeWebStore, edgeAddons, firefoxAddons } from '../lib/installTargets';
 import { localePath } from '../i18n/locales';
 import { currentLocale, tokenize, useTranslations } from '../i18n/ui';
@@ -20,11 +22,13 @@ const credit = tokenize(t('footer.madeWith'));
 		<!-- Brand band: ArenaSwap and the parent company, equal weight -->
 		<div class="footer-brand-band">
 			<a href={localePath(locale)} title="ArenaSwap" class="footer-brand-item">
-				<Image src={logoImg} alt="ArenaSwap" class="footer-arenaswap-mark" />
+				<Image src={logoImg} alt="ArenaSwap" class="footer-arenaswap-mark for-dark" />
+				<Image src={logoImgBlack} alt="ArenaSwap" class="footer-arenaswap-mark for-light" />
 			</a>
 			<span class="footer-brand-rule" aria-hidden="true"></span>
 			<a href="https://latticeandcompany.github.io" title="Lattice &amp; Company" class="footer-brand-item latticeco-lockup">
-				<Image src={latticeMark} alt="" aria-hidden="true" class="latticeco-mark" />
+				<Image src={latticeMark} alt="" aria-hidden="true" class="latticeco-mark for-dark" />
+				<Image src={latticeMarkBlack} alt="" aria-hidden="true" class="latticeco-mark for-light" />
 				<span class="latticeco-word">Lattice <span class="latticeco-amp">&amp;</span> Company</span>
 			</a>
 		</div>

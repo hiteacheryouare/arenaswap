@@ -217,6 +217,11 @@ const setupView = ({
 		return <StandbyStreamGuide onDone={handleStandbyGuideDone} />;
 	}
 
+	const finishedTabExplainer = [
+		prefs.finishedTabAction !== 'keep' && i18n.t('setup.finishedTabActiveExplainer'),
+		prefs.finishedTabAction === 'close' && i18n.t('setup.finishedTabCloseExplainer'),
+	].filter(Boolean).join(' ');
+
 	const switchingPage = () => (
 		<>
 			<div className='fw-bold popup-section-label'><i className='bi bi-speedometer2' />{i18n.t('setup.whenToSwitchSection')}</div>
@@ -240,9 +245,12 @@ const setupView = ({
 			</div>
 
 			<div className='mt-5'>
-				<label className='fg-secondary setting-toggle-label d-block mb-1' id='finishedTabSelectLabel' htmlFor='finishedTabSelect'>
-					{i18n.t('setup.finishedTabAction')}
-				</label>
+				<div className='d-flex align-items-center gap-1 mb-1'>
+					<label className='fg-secondary setting-toggle-label' id='finishedTabSelectLabel' htmlFor='finishedTabSelect'>
+						{i18n.t('setup.finishedTabAction')}
+					</label>
+					{finishedTabExplainer && <SettingTooltipIcon text={finishedTabExplainer} label={i18n.t('setup.finishedTabAction')} />}
+				</div>
 				<SelectDropdown<FinishedTabAction>
 					id='finishedTabSelect'
 					labelId='finishedTabSelectLabel'
@@ -255,12 +263,6 @@ const setupView = ({
 						{ value: 'close', label: i18n.t('setup.finishedTabClose') },
 					]}
 				/>
-				{prefs.finishedTabAction !== 'keep' && (
-					<div className='setting-explainer mt-1'>{i18n.t('setup.finishedTabActiveExplainer')}</div>
-				)}
-				{prefs.finishedTabAction === 'close' && (
-					<div className='setting-explainer mt-1'>{i18n.t('setup.finishedTabCloseExplainer')}</div>
-				)}
 			</div>
 
 			<div className='mt-5'>
@@ -269,14 +271,19 @@ const setupView = ({
 
 			<div className='fw-bold popup-section-label mt-5'><i className='bi bi-joystick' />{i18n.t('setup.demoSection')}</div>
 			<div className='d-flex justify-content-between align-items-center'>
-				<label className='fg-secondary setting-toggle-label' htmlFor='demoToggle'>{i18n.t('setup.demoMode')}</label>
+				<div className='d-flex align-items-center gap-1'>
+					<label className='fg-secondary setting-toggle-label' htmlFor='demoToggle'>{i18n.t('setup.demoMode')}</label>
+					<SettingTooltipIcon text={i18n.t('setup.demoModeExplainer')} label={i18n.t('setup.demoMode')} />
+				</div>
 				<ToggleSwitch id='demoToggle' checked={demoMode} onChange={onToggleDemo} />
 			</div>
-			<div className='setting-explainer mt-1'>{i18n.t('setup.demoModeExplainer')}</div>
 
 			{demoMode && (
 				<div className='mt-5'>
-					<label className='fg-secondary setting-toggle-label d-block mb-1' id='demoSeasonSelectLabel' htmlFor='demoSeasonSelect'>{i18n.t('setup.demoSeason')}</label>
+					<div className='d-flex align-items-center gap-1 mb-1'>
+						<label className='fg-secondary setting-toggle-label' id='demoSeasonSelectLabel' htmlFor='demoSeasonSelect'>{i18n.t('setup.demoSeason')}</label>
+						<SettingTooltipIcon text={i18n.t('setup.demoSeasonExplainer')} label={i18n.t('setup.demoSeason')} />
+					</div>
 					<SelectDropdown<demoSeason>
 						id='demoSeasonSelect'
 						labelId='demoSeasonSelectLabel'
@@ -288,7 +295,6 @@ const setupView = ({
 							{ value: 'december', label: i18n.t('setup.demoSeasonDecember') },
 						]}
 					/>
-					<div className='setting-explainer mt-1'>{i18n.t('setup.demoSeasonExplainer')}</div>
 				</div>
 			)}
 		</>
@@ -372,10 +378,12 @@ const setupView = ({
 			)}
 
 			<div className='d-flex justify-content-between align-items-center mt-3'>
-				<label className='fg-secondary setting-toggle-label' htmlFor='keepFinalToggle'>{i18n.t('setup.keepFinalGames')}</label>
+				<div className='d-flex align-items-center gap-1'>
+					<label className='fg-secondary setting-toggle-label' htmlFor='keepFinalToggle'>{i18n.t('setup.keepFinalGames')}</label>
+					<SettingTooltipIcon text={i18n.t('setup.keepFinalGamesExplainer')} label={i18n.t('setup.keepFinalGames')} />
+				</div>
 				<ToggleSwitch id='keepFinalToggle' checked={prefs.keepFinalGames} onChange={onToggleKeepFinalGames} disabled={!prefsLoaded} />
 			</div>
-			<div className='setting-explainer mt-1'>{i18n.t('setup.keepFinalGamesExplainer')}</div>
 
 			<div className='d-flex justify-content-between align-items-center mt-3'>
 				<label className='fg-secondary setting-toggle-label' htmlFor='bettingToggle'>{i18n.t('setup.showBetting')}</label>
@@ -388,10 +396,12 @@ const setupView = ({
 			</div>
 
 			<div className='d-flex justify-content-between align-items-center mt-3'>
-				<label className='fg-secondary setting-toggle-label' htmlFor='groupByLeagueToggle'>{i18n.t('setup.groupByLeague')}</label>
+				<div className='d-flex align-items-center gap-1'>
+					<label className='fg-secondary setting-toggle-label' htmlFor='groupByLeagueToggle'>{i18n.t('setup.groupByLeague')}</label>
+					<SettingTooltipIcon text={i18n.t('setup.groupByLeagueExplainer')} label={i18n.t('setup.groupByLeague')} />
+				</div>
 				<ToggleSwitch id='groupByLeagueToggle' checked={prefs.groupByLeague} onChange={onToggleGroupByLeague} disabled={!prefsLoaded} />
 			</div>
-			<div className='setting-explainer mt-1'>{i18n.t('setup.groupByLeagueExplainer')}</div>
 			{prefs.groupByLeague && prefs.enabledLeagues.length > 1 && (
 				<>
 					<div id='leagueOrderSection' className='fw-bold popup-section-label mt-5'>
@@ -616,7 +626,6 @@ const setupView = ({
 					<i className='bi bi-arrow-left' />
 					{isRoster ? i18n.t('setup.fantasyRoster') : i18n.t('setup.fantasyRules')}
 				</button>
-				<div className='settings-page-lede'>{isRoster ? i18n.t('fantasy.rosterLede') : i18n.t('fantasy.rulesLede')}</div>
 				<Suspense fallback={pageFallback}>
 					{isRoster ? (
 						<FantasyRosterPage roster={fantasyRoster} onRosterChange={onFantasyRosterChange} />
@@ -642,7 +651,6 @@ const setupView = ({
 					<i className='bi bi-arrow-left' />
 					{league.label}
 				</button>
-				<div className='settings-page-lede'>{i18n.t('collegeFilter.lede')}</div>
 				<CollegeFilterPage
 					league={league}
 					leagueLogos={leagueLogos}
@@ -665,7 +673,6 @@ const setupView = ({
 					<i className='bi bi-arrow-left' />
 					{group ? i18n.t(group.labelKey) : i18n.t('setup.header')}
 				</button>
-				{group && <div className='settings-page-lede'>{i18n.t(group.descriptionKey)}</div>}
 				{pages[page]()}
 			</div>
 		);

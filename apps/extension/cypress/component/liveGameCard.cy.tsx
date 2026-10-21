@@ -303,20 +303,23 @@ describe('liveGameCard timeout dots', () => {
 	});
 
 	// Past four the row draws a size down, so the NBA's seven fit under a tricode.
-	it('draws a larger allotment a size down, inside the team column', () => {
+	it('draws the NBA\'s seven a size down, inside each team column', () => {
 		cy.viewport(320, 560);
 		cy.mount(
 			<div style={{ width: 320 }}>
 				<LiveGameCard {...defaultProps} game={{
 					...baseGame,
 					homeTeam: { ...baseGame.homeTeam, timeouts: 6 },
+					awayTeam: { ...baseGame.awayTeam, timeouts: 7 },
 				}} />
 			</div>,
 		);
-		cy.get('.timeout-dots').should('have.class', 'is-compact').find('.timeout-dot').should('have.length', 6);
+		cy.get('.timeout-dots').should('have.length', 2).and('have.class', 'is-compact');
+		cy.get('.team-column.is-home .timeout-dot').should('have.length', 7);
+		cy.get('.team-column.is-home .timeout-dot.is-empty').should('have.length', 1);
 		cy.get('.timeout-dots-numeric').should('not.exist');
-		cy.get('.team-column.is-home').then(([column]: JQuery<HTMLElement>) => {
-			cy.get('.timeout-dots').should(([dots]: JQuery<HTMLElement>) => {
+		cy.get('.team-column').each(([column]: JQuery<HTMLElement>) => {
+			cy.wrap(column).find('.timeout-dots').should(([dots]: JQuery<HTMLElement>) => {
 				const outer = column.getBoundingClientRect();
 				const inner = dots.getBoundingClientRect();
 				expect(inner.left, 'inside the column').to.be.at.least(outer.left);
@@ -324,6 +327,18 @@ describe('liveGameCard timeout dots', () => {
 				expect((inner.left + inner.right) / 2, 'centred').to.be.closeTo((outer.left + outer.right) / 2, 1);
 			});
 		});
+	});
+
+	it('draws college basketball\'s four at full size', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={{
+			...baseGame,
+			league: 'ncaab',
+			homeTeam: { ...baseGame.homeTeam, timeouts: 3 },
+			awayTeam: { ...baseGame.awayTeam, timeouts: 4 },
+		}} />);
+		cy.get('.timeout-dots').should('have.length', 2).and('not.have.class', 'is-compact');
+		cy.get('.team-column.is-home .timeout-dot').should('have.length', 4);
+		cy.get('.team-column.is-home .timeout-dot.is-empty').should('have.length', 1);
 	});
 
 	// Past seven a row would no longer fit, and one silently clipped would misreport the count.
@@ -357,5 +372,31 @@ describe('liveGameCard delay', () => {
 	it('falls back to the plain label when our sources give no reason', () => {
 		cy.mount(<LiveGameCard {...defaultProps} game={{ ...baseGame, delayed: true }} />);
 		cy.get('.delay-status-label').should('contain.text', 'DELAY');
+	});
+});
+
+describe('liveGameCard breaks', () => {
+	it('drops the frozen clock at halftime', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={{ ...baseGame, period: 2, clockSeconds: 0, intermission: true }} />);
+		cy.get('.game-clock').should('not.exist');
+		cy.get('.game-period').should('have.text', 'Halftime');
+	});
+
+	it('says which quarter just ended', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={{ ...baseGame, period: 1, clockSeconds: 0, intermission: true }} />);
+		cy.get('.game-clock').should('not.exist');
+		cy.get('.game-period').should('have.text', 'End of Q1');
+	});
+
+	it('calls a hockey break an intermission', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={{ ...baseGame, league: 'nhl', sportType: 'hockey', period: 1, clockSeconds: 0, intermission: true }} />);
+		cy.get('.game-clock').should('not.exist');
+		cy.get('.game-period').should('have.text', 'Intermission');
+	});
+
+	it('brings the clock back once play resumes', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={{ ...baseGame, period: 3, clockSeconds: 720 }} />);
+		cy.get('.game-clock').should('have.text', '12:00');
+		cy.get('.game-period').should('have.text', 'Q3');
 	});
 });

@@ -186,7 +186,7 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 
 	return (
 		<div className='browser-hero' ref={rootRef}>
-			<div className='browser' role='group' aria-label={copy.browserLabel}>
+			<div className='browser' role='group' aria-label={copy.browserLabel} data-bs-theme='dark'>
 
 				<div className='browser-titlebar'>
 					<span className='browser-lights' aria-hidden='true'><i /><i /><i /></span>
@@ -249,7 +249,7 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 				</div>
 			</div>
 
-			<div className='browser-popup'>
+			<div className='browser-popup' data-bs-theme='dark'>
 				<div className='popup-container' ref={popupBodyRef}>
 					<PopupHeader
 						scroller={popupBodyRef}

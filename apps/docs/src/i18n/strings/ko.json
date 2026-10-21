@@ -32,6 +32,7 @@
 		"skipToContent": "본문으로 건너뛰기",
 		"language": "언어",
 		"chooseLanguage": "언어 선택",
+		"themeLabel": "테마: {mode}",
 		"englishOnly": "이 페이지는 영어로만 제공돼요.",
 		"untranslatedHeading": "이 페이지는 아직 번역되지 않았어요.",
 		"untranslatedBody": "문서와 릴리스 노트는 영어로 되어 있어요. 이 사이트의 나머지 부분은 모두 한국어로 이용할 수 있어요."
@@ -461,7 +462,11 @@
 			"groupStandbyDesc": "모든 경기가 조용해졌을 때 이동할 곳이에요.",
 			"groupDemo": "데모 모드",
 			"groupDemoDesc": "가상 경기로 원할 때 전환 동작을 확인할 수 있어요.",
-			"switchNotifications": "전환 알림"
+			"switchNotifications": "전환 알림",
+			"theme": "테마",
+			"themeLight": "라이트",
+			"themeDark": "다크",
+			"themeSystem": "시스템 설정에 따름"
 		},
 		"sensitivity": {
 			"label": "전환 민감도"

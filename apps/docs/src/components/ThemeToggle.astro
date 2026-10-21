@@ -1,0 +1,53 @@
+---
+import { currentLocale, useTranslations } from '../i18n/ui';
+
+const t = useTranslations(currentLocale(Astro.currentLocale));
+
+// Each label names the mode the visitor is in now, not the one a click would switch to.
+const modes = [
+	{ value: 'system', icon: 'bi-circle-half', label: t('nav.themeLabel', { mode: t('ui.setup.themeSystem') }) },
+	{ value: 'light', icon: 'bi-sun', label: t('nav.themeLabel', { mode: t('ui.setup.themeLight') }) },
+	{ value: 'dark', icon: 'bi-moon', label: t('nav.themeLabel', { mode: t('ui.setup.themeDark') }) },
+];
+---
+<button type='button' class='theme-toggle' data-theme-toggle data-modes={JSON.stringify(modes)} aria-label={modes[0].label} title={modes[0].label}>
+	<i class={`bi ${modes[0].icon}`} aria-hidden='true'></i>
+</button>
+
+<script>
+import { applyThemePreference, nextThemePreference, prefersLightScheme, readThemePreference, themeStorageKey, watchSystemTheme, type ThemePreference } from '../lib/siteTheme';
+
+interface Mode {
+	value: ThemePreference;
+	icon: string;
+	label: string;
+}
+
+const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')];
+
+const render = (preference: ThemePreference) => {
+	applyThemePreference(preference);
+	buttons.forEach(button => {
+		const modes: Mode[] = JSON.parse(button.dataset.modes ?? '[]');
+		const mode = modes.find(entry => entry.value === preference) ?? modes[0];
+		button.setAttribute('aria-label', mode.label);
+		button.title = mode.label;
+		button.querySelector('i')!.className = `bi ${mode.icon}`;
+	});
+};
+
+buttons.forEach(button => {
+	button.addEventListener('click', () => {
+		const next = nextThemePreference(readThemePreference(), prefersLightScheme());
+		localStorage.setItem(themeStorageKey, next);
+		render(next);
+	});
+});
+
+watchSystemTheme(() => render(readThemePreference()));
+window.addEventListener('storage', event => {
+	if (event.key === themeStorageKey) render(readThemePreference());
+});
+
+render(readThemePreference());
+</script>

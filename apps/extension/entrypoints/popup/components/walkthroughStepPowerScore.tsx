@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { BuiltInModeId } from '@arenaswap/core/types';
 import { i18n } from '#i18n';
-import { boostPresentation, modeSignalIds, penaltyPresentation, signalPresentation } from '@arenaswap/ui/src/components/scoringModeMeta';
+import { boostPresentation, modeSignalIds, penaltyPresentation, signalPresentation, type ModeSignalId } from '@arenaswap/ui/src/components/scoringModeMeta';
 import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
 import { iconSrc } from '../../../utils/theme';
 import FlowStepper from './flowStepper';
+import type { plainMessageKey } from './settingsCatalog';
 import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepPowerScoreProps {
@@ -15,7 +16,20 @@ interface walkthroughStepPowerScoreProps {
 	modeId?: BuiltInModeId;
 }
 
-const signalMetaFor = (modeId: BuiltInModeId) => modeSignalIds[modeId].map(name => ({ name, ...signalPresentation[name] }));
+// The breakdown card's tooltips are precise; the tour explains the same signals in plainer words.
+const tourDescriptionKeys: Partial<Record<ModeSignalId, plainMessageKey>> = {
+	closeness: 'stepPowerScore.aboutCloseness',
+	lateGame: 'stepPowerScore.aboutLateGame',
+	momentum: 'stepPowerScore.aboutMomentum',
+	leadChanges: 'stepPowerScore.aboutLeadChanges',
+	comeback: 'stepPowerScore.aboutComeback',
+};
+
+const signalMetaFor = (modeId: BuiltInModeId) => modeSignalIds[modeId].map(name => ({
+	name,
+	...signalPresentation[name],
+	descriptionKey: tourDescriptionKeys[name] ?? signalPresentation[name].tooltipKey,
+}));
 
 type walkthroughSignal = ReturnType<typeof signalMetaFor>[number];
 
@@ -23,7 +37,7 @@ const boostPenaltyMeta = [
 	{
 		name: 'commercialBreak',
 		labelKey: 'stepPowerScore.breakPenaltyName',
-		descriptionKey: 'powerScore.tooltipBreakPenalty',
+		descriptionKey: 'stepPowerScore.aboutBreakPenalty',
 		color: penaltyPresentation.commercialBreak.color,
 		ink: penaltyPresentation.commercialBreak.ink,
 		icon: penaltyPresentation.commercialBreak.icon,
@@ -31,7 +45,7 @@ const boostPenaltyMeta = [
 	{
 		name: 'volatility',
 		labelKey: 'stepPowerScore.volatilityName',
-		descriptionKey: 'powerScore.tooltipVolatility',
+		descriptionKey: 'stepPowerScore.aboutVolatility',
 		color: penaltyPresentation.volatility.color,
 		ink: penaltyPresentation.volatility.ink,
 		icon: penaltyPresentation.volatility.icon,
@@ -39,7 +53,7 @@ const boostPenaltyMeta = [
 	{
 		name: 'favorite',
 		labelKey: 'stepPowerScore.favoriteBoostName',
-		descriptionKey: 'powerScore.tooltipFavoriteBoost',
+		descriptionKey: 'stepPowerScore.aboutFavoriteBoost',
 		color: boostPresentation.favoriteBoost.color,
 		ink: boostPresentation.favoriteBoost.ink,
 		icon: boostPresentation.favoriteBoost.icon,
@@ -47,7 +61,7 @@ const boostPenaltyMeta = [
 	{
 		name: 'gameBoost',
 		labelKey: 'stepPowerScore.gameBoostName',
-		descriptionKey: 'powerScore.tooltipGameBoost',
+		descriptionKey: 'stepPowerScore.aboutGameBoost',
 		color: boostPresentation.gameBoost.color,
 		ink: boostPresentation.gameBoost.ink,
 		icon: boostPresentation.gameBoost.icon,
@@ -55,7 +69,7 @@ const boostPenaltyMeta = [
 	{
 		name: 'scoringOpp',
 		labelKey: 'stepPowerScore.scoringOpportunityName',
-		descriptionKey: 'powerScore.tooltipScoringOpportunity',
+		descriptionKey: 'stepPowerScore.aboutScoringOpportunity',
 		color: boostPresentation.scoringOpportunity.color,
 		ink: boostPresentation.scoringOpportunity.ink,
 		icon: boostPresentation.scoringOpportunity.icon,
@@ -63,7 +77,7 @@ const boostPenaltyMeta = [
 	{
 		name: 'postseason',
 		labelKey: 'stepPowerScore.postseasonBoostName',
-		descriptionKey: 'powerScore.tooltipPostseasonBoost',
+		descriptionKey: 'stepPowerScore.aboutPostseasonBoost',
 		color: boostPresentation.postseasonBoost.color,
 		ink: boostPresentation.postseasonBoost.ink,
 		icon: boostPresentation.postseasonBoost.icon,
@@ -156,7 +170,7 @@ const BloomOverlay = ({ signal, dotPxX, dotPxY, phase, onClick }: BloomOverlayPr
 				</div>
 
 				<div className='ps-bloom-body' style={{ color: textColor }}>
-					{i18n.t(signal.tooltipKey)}
+					{i18n.t(signal.descriptionKey)}
 				</div>
 
 				<div className='ps-bloom-tap-hint' style={{ color: textColor }}>
@@ -318,7 +332,7 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0, modeId 
 				<>
 					<div className='fw-bold fs-lg text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepPowerScore.introTitle')}</div>
 					<div className='fg-secondary small text-center mb-5 lh-md'>
-						{i18n.t('stepPowerScore.subtitle')}
+						{i18n.t('stepPowerScore.signalsSubtitle')}
 					</div>
 					{renderVisual()}
 					<p className='fg-secondary small lh-md text-center mt-3 px-1'>

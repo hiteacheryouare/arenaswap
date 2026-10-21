@@ -50,7 +50,7 @@ const PowerScoreInstallCommands = ({ copyLabel, copiedLabel }: Props) => {
 			</div>
 			<div
 				className='rounded-4 px-5 py-5 d-flex flex-wrap align-items-center justify-content-between gap-5'
-				style={{ background: 'rgba(13,17,23,0.9)', border: '1px solid var(--color-border)' }}
+				style={{ background: 'color-mix(in srgb, var(--as-bg-body) 90%, transparent)', border: '1px solid var(--color-border)' }}
 			>
 				<code className='mb-0 text-[0.92rem] text-[var(--color-text)] font-[var(--font-mono)]'>{activeCommand?.command}</code>
 				<button type='button' className='btn btn-cta py-3 px-5' onClick={copyCommand}>

@@ -34,13 +34,17 @@ const bossDecoyInput = ({ value, shortcut, disabled, onChange }: bossDecoyInputP
 		if (url !== value) onChange(url);
 	};
 
+	const explainer = shortcut
+		? `${i18n.t('setup.bossDecoyExplainer')} ${i18n.t('setup.bossShortcut', { shortcut })}`
+		: i18n.t('setup.bossDecoyExplainer');
+
 	return (
 		<div>
 			<div className='d-flex align-items-center gap-1 mb-1'>
 				<label className='fg-secondary setting-toggle-label' htmlFor='bossDecoyInput'>
 					<i className='bi bi-incognito me-1 fg-primary' />{i18n.t('setup.bossDecoy')}
 				</label>
-				<SettingTooltipIcon text={i18n.t('setup.bossDecoyExplainer')} label={i18n.t('setup.bossDecoy')} />
+				<SettingTooltipIcon text={explainer} label={i18n.t('setup.bossDecoy')} />
 			</div>
 			<input
 				id='bossDecoyInput'
@@ -64,7 +68,6 @@ const bossDecoyInput = ({ value, shortcut, disabled, onChange }: bossDecoyInputP
 				}}
 			/>
 			{invalid && <div id='bossDecoyInvalid' className='invalid-feedback d-block'>{i18n.t('setup.bossDecoyInvalid')}</div>}
-			{shortcut && <div className='setting-explainer mt-1'>{i18n.t('setup.bossShortcut', { shortcut })}</div>}
 		</div>
 	);
 };

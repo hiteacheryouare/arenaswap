@@ -32,6 +32,7 @@
 		"skipToContent": "Skip to content",
 		"language": "Language",
 		"chooseLanguage": "Choose a language",
+		"themeLabel": "Theme: {mode}",
 		"englishOnly": "This page is only available in English.",
 		"untranslatedHeading": "This page has not been translated yet.",
 		"untranslatedBody": "The documentation and release notes are written in English. Everything else on the site is available in your language."
@@ -461,7 +462,11 @@
 			"groupStandbyDesc": "Where to park you when every game goes quiet.",
 			"groupDemo": "Demo Mode",
 			"groupDemoDesc": "Scripted games, so you can watch a switch happen on demand.",
-			"switchNotifications": "Switch notifications"
+			"switchNotifications": "Switch notifications",
+			"theme": "Theme",
+			"themeLight": "Light",
+			"themeDark": "Dark",
+			"themeSystem": "Match my system"
 		},
 		"sensitivity": {
 			"label": "Switch sensitivity"

@@ -1,5 +1,5 @@
 import { leagueMarkOnColor } from '../src/components/gameCardShared';
-import { gridironTimeoutAllotment } from '../src/components/timeoutDots';
+import { gridironTimeoutAllotment, timeoutAllotment } from '../src/components/timeoutDots';
 import type { Game, LeagueId } from '@arenaswap/core/types';
 
 const makeGame = (league: LeagueId, overrides: Partial<Game> = {}): Game => ({
@@ -28,6 +28,19 @@ describe('gridiron timeout allotment', () => {
 
 	test('one per college overtime period', () => {
 		expect(gridironTimeoutAllotment(makeGame('ncaaf', { period: 6 }))).toBe(1);
+	});
+});
+
+describe('timeout allotment by sport', () => {
+	test('a basketball game carries its league\'s full set: seven in the NBA, five in the WNBA, four in college', () => {
+		expect(timeoutAllotment(makeGame('nba', { sportType: 'basketball' }))).toBe(7);
+		expect(timeoutAllotment(makeGame('wnba', { sportType: 'basketball' }))).toBe(5);
+		expect(timeoutAllotment(makeGame('ncaab', { sportType: 'basketball' }))).toBe(4);
+	});
+
+	test('football keeps its overtime allotment and the sports without dots get none', () => {
+		expect(timeoutAllotment(makeGame('nfl', { period: 5 }))).toBe(2);
+		expect(timeoutAllotment(makeGame('nhl', { sportType: 'hockey' }))).toBeUndefined();
 	});
 });
 

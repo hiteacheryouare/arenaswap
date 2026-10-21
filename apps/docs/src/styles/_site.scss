@@ -21,6 +21,23 @@
 	// entry. Only tokens with no @theme equivalent belong here.
 	:root {
 		--gradient-sig:    linear-gradient(to right, #fdb913, #f36f21, #c9234a, #645faa, #0089cf, #0db14b);
+		// A step below the page for the quiet bands: darker than the page in dark, greyer than it in light.
+		--band-quiet-bg:   light-dark(#f3f5f8, #0b0f14);
+		// Black shadows vanish into the dark page at any strength that would not be a smudge on white.
+		--lift-shadow:     light-dark(rgba(11, 16, 22, 0.14), rgba(0, 0, 0, 0.55));
+	}
+
+	// ─── Colour modes ────────────────────────────────────────────────────────────
+	// A panel pinned dark on the light page needs its own ink: `color` inherits as the page's
+	// already-resolved dark ink, not as the token.
+	[data-bs-theme] {
+		color: var(--color-text);
+	}
+
+	// Artwork drawn for one ground is rendered once per ground, and only the one for the page shows.
+	:root[data-bs-theme='light'] .for-dark,
+	:root:not([data-bs-theme='light']) .for-light {
+		display: none;
 	}
 
 	// ─── Global resets & base ────────────────────────────────────────────────────
@@ -83,7 +100,7 @@
 	// Brand flourish: every sentence-ending period in body copy is painted ArenaSwap orange. Wrapped
 	// at runtime by OrangeDots.astro, and inside React islands by their own markup.
 	.as-dot {
-		color: var(--color-primary);
+		color: var(--as-accent-ink);
 	}
 
 	// ─── Scroll reveal ───────────────────────────────────────────────────────────
@@ -133,7 +150,7 @@
 		padding: 0.5rem 1rem;
 		border-radius: 0.5rem;
 		background: var(--color-primary);
-		color: var(--color-bg);
+		color: #0d1117;
 		font-weight: 600;
 		text-decoration: none;
 	}
@@ -158,7 +175,7 @@
 		transition: background m.$motion-base m.$motion-ease, backdrop-filter m.$motion-base m.$motion-ease, box-shadow m.$motion-base m.$motion-ease;
 
 		.site-header.is-condensed & {
-			background: rgba(13, 17, 23, 0.9);
+			background: color-mix(in srgb, var(--as-bg-body) 90%, transparent);
 			backdrop-filter: blur(16px);
 			-webkit-backdrop-filter: blur(16px);
 			box-shadow: 0 1px 0 var(--color-border);
@@ -203,7 +220,7 @@
 			padding: 0.375rem 0.75rem;
 			font-size: 0.875rem;
 			font-weight: 500;
-			color: rgba(230, 237, 243, 0.72);
+			color: color-mix(in srgb, var(--as-fg-body) 72%, transparent);
 			text-decoration: none;
 			border-radius: 0.5rem;
 			transition: color m.$motion-instant m.$motion-ease, background m.$motion-instant m.$motion-ease;
@@ -211,12 +228,12 @@
 
 			&:hover {
 				color: var(--color-text);
-				background: rgba(230, 237, 243, 0.06);
+				background: color-mix(in srgb, var(--as-fg-body) 6%, transparent);
 			}
 
 			&[aria-current] {
 				color: var(--color-text);
-				background: rgba(230, 237, 243, 0.06);
+				background: color-mix(in srgb, var(--as-fg-body) 6%, transparent);
 			}
 		}
 
@@ -280,7 +297,7 @@
 	// and arriving with a short drop and a fade rather than sliding its whole height in.
 	.nav-drawer {
 		--as-drawer-zindex: 999;
-		--as-drawer-bg: rgba(13, 17, 23, 0.98);
+		--as-drawer-bg: color-mix(in srgb, var(--as-bg-body) 98%, transparent);
 		--as-drawer-border-width: 0;
 		--as-drawer-border-radius: 0;
 		--as-drawer-box-shadow: none;
@@ -337,7 +354,7 @@
 
 				&:hover,
 				&[aria-current] {
-					color: var(--color-primary);
+					color: var(--as-accent-ink);
 				}
 			}
 		}
@@ -373,7 +390,7 @@
 		padding: 0.375rem 0.6rem;
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: rgba(230, 237, 243, 0.72);
+		color: color-mix(in srgb, var(--as-fg-body) 72%, transparent);
 		background: none;
 		border: none;
 		border-radius: 0.5rem;
@@ -383,7 +400,29 @@
 		&:hover,
 		&[aria-expanded='true'] {
 			color: var(--color-text);
-			background: rgba(230, 237, 243, 0.06);
+			background: color-mix(in srgb, var(--as-fg-body) 6%, transparent);
+		}
+	}
+
+	// The language trigger's resting and hover treatment, on a square that holds one icon. Unlike the
+	// languages it stays in the bar below 992px, where there is room for it beside the menu button.
+	.theme-toggle {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.25rem;
+		height: 2.25rem;
+		padding: 0;
+		font-size: 1rem;
+		color: color-mix(in srgb, var(--as-fg-body) 72%, transparent);
+		background: none;
+		border: none;
+		border-radius: 0.5rem;
+		transition: color m.$motion-instant m.$motion-ease, background m.$motion-instant m.$motion-ease;
+
+		&:hover {
+			color: var(--color-text);
+			background: color-mix(in srgb, var(--as-fg-body) 6%, transparent);
 		}
 	}
 
@@ -404,7 +443,7 @@
 		--as-menu-padding-y:          0.5rem;
 		--as-menu-item-padding-x:     1rem;
 		--as-menu-item-border-radius: 0;
-		--as-menu-item-color:         rgba(230, 237, 243, 0.82);
+		--as-menu-item-color:         color-mix(in srgb, var(--as-fg-body) 82%, transparent);
 		--as-menu-item-hover-color:   var(--as-fg-body);
 		--as-menu-item-hover-bg:      var(--as-bg-2);
 		max-height: min(70vh, 26rem);
@@ -463,7 +502,7 @@
 				color: var(--color-muted);
 
 				&[aria-current='true'] {
-					color: var(--color-primary);
+					color: var(--as-accent-ink);
 				}
 			}
 		}
@@ -528,9 +567,9 @@
 		--as-btn-hover-bg: transparent;
 		--as-btn-hover-border-color: var(--color-text);
 		--as-btn-active-color: var(--color-text);
-		--as-btn-active-bg: rgba(230, 237, 243, 0.06);
+		--as-btn-active-bg: color-mix(in srgb, var(--as-fg-body) 6%, transparent);
 		--as-btn-active-border-color: var(--color-text);
-		--as-focus-ring-color: rgba(230, 237, 243, 0.5);
+		--as-focus-ring-color: color-mix(in srgb, var(--as-fg-body) 50%, transparent);
 		background: transparent;
 		color: var(--color-text);
 		border: 1px solid var(--color-border);
@@ -1051,7 +1090,7 @@
 		padding: 6rem 1rem 5rem;
 		background:
 			radial-gradient(120% 80% at 50% 45%, rgba(247, 92, 3, 0.06), transparent 60%),
-			linear-gradient(180deg, var(--color-bg), #0b0f14 55%, var(--color-bg));
+			linear-gradient(180deg, var(--color-bg), var(--band-quiet-bg) 55%, var(--color-bg));
 	}
 
 	.machine-header {
@@ -1116,7 +1155,7 @@
 		font-weight: 600;
 		line-height: 1.3;
 		color: var(--color-text);
-		text-shadow: 0 2px 18px rgba(13, 17, 23, 0.95);
+		text-shadow: 0 2px 18px color-mix(in srgb, var(--as-bg-body) 95%, transparent);
 		opacity: 0;
 		transform: translateY(10px);
 		transition: opacity m.$motion-deliberate m.$motion-ease,
@@ -1165,14 +1204,14 @@
 	}
 
 	.mw-core-ring {
-		fill: #0d1117;
+		fill: var(--as-bg-body);
 		stroke: rgba(247, 92, 3, 0.6);
 		stroke-width: 2;
 		filter: drop-shadow(0 0 16px rgba(247, 92, 3, 0.5));
 	}
 
 	.mw-chip {
-		fill: #131922;
+		fill: light-dark(#f3f5f8, #131922);
 		stroke: rgba(247, 92, 3, 0.45);
 		stroke-width: 2;
 		filter: drop-shadow(0 0 10px rgba(247, 92, 3, 0.22));
@@ -1199,11 +1238,11 @@
 	// ─── Scene 3: game card + PowerScore breakdown ────────────────────────────────
 	.mw-card {
 		width: min(600px, 94%);
-		background: rgba(22, 27, 34, 0.94);
+		background: color-mix(in srgb, var(--as-bg-1) 94%, transparent);
 		border: 1px solid var(--color-border);
 		border-radius: 1.25rem;
 		padding: 1.75rem;
-		box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+		box-shadow: 0 30px 80px var(--lift-shadow);
 		backdrop-filter: blur(4px);
 	}
 
@@ -1320,11 +1359,11 @@
 	// ─── Scene 4: switch to the best tab ──────────────────────────────────────────
 	.mw-browser {
 		width: min(720px, 96%);
-		background: #0d1117;
+		background: var(--as-bg-body);
 		border: 1px solid var(--color-border);
 		border-radius: 1rem;
 		overflow: hidden;
-		box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+		box-shadow: 0 30px 80px var(--lift-shadow);
 	}
 
 	.mw-browser-bar {
@@ -1332,7 +1371,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.8rem 1rem 0;
-		background: #161b22;
+		background: var(--as-bg-1);
 		border-bottom: 1px solid var(--color-border);
 	}
 
@@ -1358,7 +1397,7 @@
 		gap: 0.5rem;
 		padding: 0.5rem 0.75rem;
 		border-radius: 0.55rem 0.55rem 0 0;
-		background: rgba(255, 255, 255, 0.03);
+		background: color-mix(in srgb, var(--as-overlay) 3%, transparent);
 		border: 1px solid transparent;
 		border-bottom: none;
 		font-size: 0.8rem;
@@ -1552,7 +1591,7 @@
 	.notfound-card {
 		max-width: 340px;
 		margin: 0 auto 2.5rem;
-		filter: drop-shadow(0 24px 64px rgba(0, 0, 0, 0.55));
+		filter: drop-shadow(0 24px 64px var(--lift-shadow));
 		animation: notfound-card-in m.$motion-deliberate m.$motion-ease both;
 	}
 

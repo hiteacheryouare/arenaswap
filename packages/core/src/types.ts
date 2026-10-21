@@ -124,8 +124,8 @@ export interface Team {
 	rank?: number;
 	// College football and basketball only; the other college scoreboards leave it out.
 	conferenceId?: string;
-	// Timeouts left. Live games only, and only in the sports that send them, which among the
-	// leagues we ship is the two gridiron ones.
+	// Timeouts left, live games only: gridiron's from the scoreboard, basketball's from the situation
+	// the background fetches beside it.
 	timeouts?: number;
 	// Baseball and softball, live and final.
 	hits?: number;

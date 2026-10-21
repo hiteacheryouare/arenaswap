@@ -240,7 +240,7 @@ export default () => {
 	const onStandbyStream = data?.onStandbyStream ?? false;
 	const heldSwitch = data?.heldSwitch ?? null;
 	const favoriteTeamIds = useMemo(() => new Set(prefs.favoriteTeamIds), [prefs.favoriteTeamIds]);
-	const confettiCanvasRef = useFavoriteScoreConfetti({ games, favoriteTeamIds });
+	const confettiCanvasRef = useFavoriteScoreConfetti({ games, favoriteTeamIds, onMainView: view === 'main' });
 
 	useEffect(() => {
 		const init = async () => {

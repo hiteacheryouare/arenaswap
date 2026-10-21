@@ -67,7 +67,8 @@ const NetworkScene = ({ showScores, alt }: { showScores: boolean; alt: string })
 
 		<circle className='mw-core-glow' cx={centerX} cy={centerY} r={92} />
 		<circle className='mw-core-ring' cx={centerX} cy={centerY} r={60} />
-		<image href={`${imageBase}/icon_white_on_transparent.png`} x={centerX - 34} y={centerY - 30} width={68} height={60} preserveAspectRatio='xMidYMid meet' />
+		<image className='for-dark' href={`${imageBase}/icon_white_on_transparent.png`} x={centerX - 34} y={centerY - 30} width={68} height={60} preserveAspectRatio='xMidYMid meet' />
+		<image className='for-light' href={`${imageBase}/icon_black_on_transparent.png`} x={centerX - 34} y={centerY - 30} width={68} height={60} preserveAspectRatio='xMidYMid meet' />
 
 		{nodes.map(n => (
 			<g key={`node-${n.id}`} className='mw-node'>
@@ -191,7 +192,8 @@ const TabSwitch = ({ activeTab, strings }: { activeTab: number; strings: Strings
 			</div>
 		</div>
 		<div className='mw-browser-body'>
-			<img src={`${imageBase}/icon_white_on_transparent.png`} alt='' className='mw-browser-mark' />
+			<img src={`${imageBase}/icon_white_on_transparent.png`} alt='' className='mw-browser-mark for-dark' />
+			<img src={`${imageBase}/icon_black_on_transparent.png`} alt='' className='mw-browser-mark for-light' />
 			<div className='mw-now-label'>{strings.nowWatching}</div>
 			<div className='mw-now-game'>{TABS[activeTab].game}</div>
 			<div className='mw-now-on'>{strings.nowOn.split('{service}').join(TABS[activeTab].service)}</div>

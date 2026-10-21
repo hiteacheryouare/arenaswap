@@ -1,6 +1,6 @@
 import { leagueConfigs, leagueConfigMap } from '@arenaswap/core/constants';
 import type { LeagueId, SportType } from '@arenaswap/core/types';
-import { formatPeriod, isHalftime } from '../src/components/gameFormat';
+import { formatBreak, formatPeriod, isHalftime } from '../src/components/gameFormat';
 import { translateFrom } from '../src/components/defaultStrings';
 
 /* The label in the middle of a live card is the one thing on it that says where the game is. A
@@ -185,6 +185,23 @@ describe('the re-export chain still carries both helpers', () => {
 		const shared = await import('../src/components/gameCardShared');
 		expect(shared.formatPeriod).toBe(formatPeriod);
 		expect(shared.isHalftime).toBe(isHalftime);
+		expect(shared.formatBreak).toBe(formatBreak);
+	});
+});
+
+describe('formatBreak names the break the way a broadcast would', () => {
+	test('the midpoint is halftime in every sport that has one', () => {
+		expect(formatBreak({ league: 'nba', sportType: 'basketball', period: 2 })).toBe('Halftime');
+		expect(formatBreak({ league: 'nfl', sportType: 'football', period: 2 })).toBe('Halftime');
+		expect(formatBreak({ league: 'ncaab', sportType: 'basketball', period: 1 })).toBe('Halftime');
+		expect(formatBreak({ league: 'epl', sportType: 'soccer', period: 1 })).toBe('Halftime');
+	});
+
+	test('any other break says which period ended, except in hockey', () => {
+		expect(formatBreak({ league: 'nba', sportType: 'basketball', period: 3 })).toBe('End of Q3');
+		expect(formatBreak({ league: 'nfl', sportType: 'football', period: 1 })).toBe('End of Q1');
+		expect(formatBreak({ league: 'nhl', sportType: 'hockey', period: 1 })).toBe('Intermission');
+		expect(formatBreak({ league: 'nhl', sportType: 'hockey', period: 2 })).toBe('Intermission');
 	});
 });
 

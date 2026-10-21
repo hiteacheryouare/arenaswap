@@ -304,7 +304,8 @@ export default defineBackground(() => {
 	const winProbHistory = new Map<string, number[]>();
 	// Leagues whose scoreboard carries the line build it from our own polls instead, and persist it.
 	const winProbTracker = createWinProbabilityTracker();
-	// The closing line, box score, hockey situation and standings races the boosts read.
+	// The closing line, box score, situation and standings races the boosts read, and basketball's
+	// timeouts for the cards.
 	const liveExtras = createLiveExtras();
 	const summaryFetchedAt = new Map<string, number>();
 	const standingsFetchedAt = new Map<LeagueId, number>();
@@ -447,7 +448,7 @@ export default defineBackground(() => {
 	};
 
 	const buildBackgroundState = () => ({
-		games,
+		games: games.map(liveExtras.withTimeouts),
 		scores: currentScores,
 		leagueLogos,
 		scoreHistory: serializeScoreHistory(),
@@ -1029,7 +1030,7 @@ export default defineBackground(() => {
 			favoriteTeamIds,
 		)));
 		currentScores = scores;
-		if (changedLeagueId !== null) refreshHockeySituations(freshGames);
+		if (changedLeagueId !== null) refreshSituations(freshGames);
 		updateHistory(freshGames);
 		updatePowerScoreHistory(liveGames, scores, changedLeagueId);
 		const pruned = pruneStaleHistory(now);
@@ -1300,16 +1301,22 @@ export default defineBackground(() => {
 	// Fetched after scoring and read on the next poll: the power play and empty net it reports last
 	// minutes, and a game past its blowout margin has no use for either. Only from the league's own
 	// poll, so the empty-net check counts polls rather than re-scores, and only the NHL: college
-	// hockey's situation carries neither flag.
-	const refreshHockeySituations = (freshGames: Game[]) => {
+	// hockey's situation carries neither flag. Basketball's carries the timeouts its cards show,
+	// blowout or not.
+	const refreshSituations = (freshGames: Game[]) => {
 		if (demoMode) return;
 		const blowoutMargin = sportTypeConfigMap.hockey?.closenessMargins[2] ?? 3;
-		for (const game of freshGames) {
-			if (game.league !== 'nhl' || isPlayFrozen(game) || Math.abs(game.homeTeam.score - game.awayTeam.score) > blowoutMargin) continue;
-			fetchCompetitionSituation(game)
-				.then(situation => liveExtras.ingestSituation(game.id, situation))
-				.catch((err: unknown) => logWarn(`Failed to fetch the situation for ${game.id}.`, err));
-		}
+		const wanted = freshGames.filter(game => !isPlayFrozen(game) && (game.sportType === 'basketball'
+			|| (game.league === 'nhl' && Math.abs(game.homeTeam.score - game.awayTeam.score) <= blowoutMargin)));
+		const replies = wanted.map(game => fetchCompetitionSituation(game)
+			.then(situation => liveExtras.ingestSituation(game.id, situation))
+			.catch((err: unknown) => {
+				logWarn(`Failed to fetch the situation for ${game.id}.`, err);
+				return false;
+			}));
+		void Promise.all(replies).then(moved => {
+			if (moved.includes(true)) broadcastScoresUpdated();
+		});
 	};
 
 	// Standings move only when games end, so half an hour is plenty.

@@ -32,6 +32,7 @@
 		"skipToContent": "本文へスキップ",
 		"language": "言語",
 		"chooseLanguage": "言語を選択",
+		"themeLabel": "テーマ：{mode}",
 		"englishOnly": "このページは英語版のみ利用可能です。",
 		"untranslatedHeading": "このページはまだ翻訳されていません。",
 		"untranslatedBody": "ドキュメントとリリースノートは英語で書かれています。このサイトの他の部分はすべて日本語でご利用いただけます。"
@@ -461,7 +462,11 @@
 			"groupStandbyDesc": "どの試合も盛り上がらないときの待機先。",
 			"groupDemo": "デモモード",
 			"groupDemoDesc": "架空の試合で、切り替えの動きをいつでも確認できます。",
-			"switchNotifications": "切り替え通知"
+			"switchNotifications": "切り替え通知",
+			"theme": "テーマ",
+			"themeLight": "ライト",
+			"themeDark": "ダーク",
+			"themeSystem": "システムに合わせる"
 		},
 		"sensitivity": {
 			"label": "切り替え感度"

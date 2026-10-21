@@ -32,6 +32,7 @@
 		"skipToContent": "Lumaktaw sa nilalaman",
 		"language": "Wika",
 		"chooseLanguage": "Pumili ng wika",
+		"themeLabel": "Theme: {mode}",
 		"englishOnly": "Available lang ang page na ito sa English.",
 		"untranslatedHeading": "Hindi pa isinalin ang page na ito.",
 		"untranslatedBody": "Nakasulat sa English ang dokumentasyon at ang mga release note. Available sa wika mo ang lahat ng iba pa sa site na ito."
@@ -461,7 +462,11 @@
 			"groupStandbyDesc": "Kung saan ka ipa-park kapag tahimik na ang lahat ng laro.",
 			"groupDemo": "Demo Mode",
 			"groupDemoDesc": "Mga scripted na laro, para mapanood mo kung paano nangyayari ang paglipat kahit kailan mo gusto.",
-			"switchNotifications": "Mga Abiso sa Paglipat"
+			"switchNotifications": "Mga Abiso sa Paglipat",
+			"theme": "Theme",
+			"themeLight": "Light",
+			"themeDark": "Dark",
+			"themeSystem": "Sundin ang sistema"
 		},
 		"sensitivity": {
 			"label": "Sensitivity ng Paglipat"

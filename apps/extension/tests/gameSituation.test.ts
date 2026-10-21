@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import type { Game } from '@arenaswap/core/types';
-import { basketballTimeoutAllotment, bonusKind, describeRedCard, formatMatchMinute, resolveStatus } from '../entrypoints/popup/components/gameSituation';
+import { bonusKind, describeRedCard, formatMatchMinute, resolveStatus } from '../entrypoints/popup/components/gameSituation';
 
 const t = i18n.t;
 
@@ -95,14 +95,6 @@ describe('bonusKind', () => {
 
 	test('is nothing for a team that is not in it', () => {
 		expect(bonusKind({ foulsToGive: 2, timeoutsLeft: 3 }, 'nba')).toBeUndefined();
-	});
-});
-
-describe('basketballTimeoutAllotment', () => {
-	test('the NBA carries seven, everyone else four', () => {
-		expect(basketballTimeoutAllotment('nba')).toBe(7);
-		expect(basketballTimeoutAllotment('wnba')).toBe(5);
-		expect(basketballTimeoutAllotment('ncaab')).toBe(4);
 	});
 });
 

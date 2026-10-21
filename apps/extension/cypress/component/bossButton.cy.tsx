@@ -137,11 +137,17 @@ describe('the decoy page setting', () => {
 		cy.get('#bossDecoyInput').should('have.value', '');
 	});
 
-	it('shows the shortcut the browser registered, and nothing when there is none', () => {
+	it('puts the shortcut the browser registered in the tooltip', () => {
 		cy.mount(<DecoyField shortcut='Alt+Shift+X' onSave={cy.stub()} />);
-		cy.contains('Shortcut: Alt+Shift+X').should('exist');
-		cy.mount(<DecoyField onSave={cy.stub()} />);
 		cy.contains('Shortcut:').should('not.exist');
+		cy.get('.setting-tooltip-btn').focus();
+		cy.get('.tooltip').should('contain.text', 'Shortcut: Alt+Shift+X');
+	});
+
+	it('leaves the shortcut out of the tooltip when there is none', () => {
+		cy.mount(<DecoyField onSave={cy.stub()} />);
+		cy.get('.setting-tooltip-btn').focus();
+		cy.get('.tooltip').should('contain.text', 'boss button takes you').and('not.contain.text', 'Shortcut:');
 	});
 
 	it('is labelled for assistive tech', () => {
