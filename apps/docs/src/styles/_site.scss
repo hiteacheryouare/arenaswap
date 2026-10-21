@@ -426,6 +426,14 @@
 		}
 	}
 
+	// The theme button costs the bar 48px, which at 992 is more than Japanese and both Portuguese
+	// rows had to spare. The flag still says which language this is, and the label is on the button.
+	@media (min-width: 992px) and (max-width: 1199.98px) {
+		.lang-switch-current {
+			display: none;
+		}
+	}
+
 	.lang-switch-caret {
 		font-size: 0.6rem;
 		// The chevron sits optically high next to a cap-height word.

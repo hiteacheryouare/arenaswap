@@ -1,3 +1,5 @@
+import { luminance } from '../colour';
+
 // What a browser can answer and a unit test cannot: whether the twelve languages fit the layout
 // they were written for, and whether a visit stays in the language it started in.
 //
@@ -9,6 +11,10 @@ const everyLocale = ['', ...locales.map(locale => `${locale}/`)];
 
 // 992px is where the desktop links appear. Anything that overflows, overflows here first.
 const navWidths = [992, 1280];
+
+// The site follows the OS until a visitor picks, and the test browser's OS may be light. These
+// specs measure the dark page, so they pick it.
+const pinDarkTheme = (win: Cypress.AUTWindow) => win.localStorage.setItem('arenaswap.theme', 'dark');
 
 const readRow = () =>
 	cy.get('.nav-row').then($row => ({
@@ -136,7 +142,7 @@ describe('the language switcher', () => {
 	// defaults: hovering an item put #e6edf3 on #f8f9fa, and the active item was white on $primary
 	// at 3.22:1. Read off the computed style, because that is the only place the answer lives.
 	it('is themed for a dark page rather than left on Bootstrap defaults', () => {
-		cy.visit('/');
+		cy.visit('/', { onBeforeLoad: pinDarkTheme });
 		cy.get('.lang-switch-trigger').click();
 		cy.get('.lang-switch-menu').should('have.css', 'background-color', 'rgb(22, 27, 34)');
 		cy.get('.lang-switch-menu .menu-item.active').should('have.css', 'color', 'rgb(13, 17, 23)');
@@ -179,29 +185,11 @@ describe('the language switcher', () => {
 	});
 });
 
-// Chrome reports a colour in whatever space it was mixed in, oklch included, so it is painted to a
-// canvas and read back as sRGB.
-const toRgb = (color: string): [number, number, number] => {
-	const context = document.createElement('canvas').getContext('2d')!;
-	context.fillStyle = color;
-	context.fillRect(0, 0, 1, 1);
-	const [r, g, b] = context.getImageData(0, 0, 1, 1).data;
-	return [r!, g!, b!];
-};
-
-const luminance = (color: string) => {
-	const [r, g, b] = toRgb(color).map(channel => {
-		const value = channel / 255;
-		return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
-	});
-	return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
-};
-
 describe('the untranslated notice', () => {
 	// Bootstrap's alert surfaces come in a light and a dark tone, and a light one is a pale slab on
 	// this page.
 	it('is a Bootstrap alert that reads on the dark page', () => {
-		cy.visit('/de/docs/extension/getting-started/');
+		cy.visit('/de/docs/extension/getting-started/', { onBeforeLoad: pinDarkTheme });
 		cy.get('.untranslated-notice').should('have.class', 'alert').then($notice => {
 			const style = getComputedStyle($notice[0]);
 			const surface = luminance(style.backgroundColor);

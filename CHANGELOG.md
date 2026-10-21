@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The website has a light mode — 2026-10-21
+
+The site now follows the visitor's OS, and a button in the nav steps through Light, Dark and System. It goes to the opposite of the OS first, so the one click that changes nothing comes last; `lib/themeBoot.js` is inlined into the head so a light page never flashes dark. The browser hero, the popup, the charts and the settings panel are pinned dark with `data-bs-theme='dark'`, the footer and Machine scene swap to the black ArenaSwap and Lattice marks, and between 992 and 1199px the language button drops its name to make room.
+
 ## Basketball cards show timeouts — 2026-10-21
 
 Live basketball cards now draw each team's timeouts as dots, like football's, which finishes #165: seven a size down in the NBA, five in the WNBA, four in college. The background fetches the game's situation on each league poll, which needs no new permission, and tells the popup the moment a timeout is called, so the detail screen has the dots before its own fetch lands.

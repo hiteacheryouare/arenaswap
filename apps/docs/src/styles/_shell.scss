@@ -575,6 +575,9 @@
 	.untranslated-notice {
 		margin: 1.5rem 0 2rem;
 		max-width: 70ch;
+		// The accent's own ink is 4.2:1 on its pale light-mode surface, and the body is drawn fainter
+		// still. Its emphasis shade clears 4.5:1 for both.
+		color: light-dark(var(--as-blue-800), var(--as-accent-fg));
 	}
 
 	.untranslated-notice-heading {
