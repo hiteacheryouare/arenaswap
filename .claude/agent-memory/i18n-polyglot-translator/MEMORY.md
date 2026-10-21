@@ -35,3 +35,4 @@
 - [project_college_filter_terms.md](project_college_filter_terms.md) — 2026-10-02: collegeFilter.* (NCAA division/conference picker), 11 locales; division/conference/Top N term map, scouts-joke per locale
 - [project_powerscore3_modes_fantasy.md](project_powerscore3_modes_fantasy.md) — 2026-10-04: PowerScore 3 (modes, Blowouts/Fantasy signals, fantasy.*) for de/es/fil/fr/it/pt_BR; mode-name map, upset/bonus terms
 - [project_store_listing_kword_stuffing_fix.md](project_store_listing_kword_stuffing_fix.md) — 2026-09-05: SUPPORTED LEAGUES bulleted list -> prose in all 12 desc_long.md; no em dash anywhere in these files, professional/college/Olympic term set per locale
+- [Reason sentences rewrite](project_reason_sentences_rewrite.md) — 2026-10-20: powerScore.reason* plain-facts rewrite, 11 locales; team-name grammar, joinWhen order, fr ordinal workaround
