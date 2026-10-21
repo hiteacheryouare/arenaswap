@@ -457,6 +457,7 @@ export default defineBackground(() => {
 		standbyStreamTabId,
 		slateShedLeagues,
 		leagueLastGoodAt,
+		heldSwitch: heldSwitch && { gameId: heldSwitch.gameId, sport: heldSwitch.sport },
 	});
 
 	const broadcastScoresUpdated = () => {
@@ -552,10 +553,22 @@ export default defineBackground(() => {
 			clearTimeout(heldSwitchTimer);
 			heldSwitchTimer = null;
 		}
+		if (!heldSwitch) return;
 		heldSwitch = null;
+		broadcastScoresUpdated();
+	};
+
+	// The notice a held switch posts up front goes out under the switch's own id, so the switch
+	// replaces it when it lands. One that never lands takes its notice down with it.
+	let holdAnnounced = false;
+	const withdrawHoldNotice = () => {
+		if (!holdAnnounced) return;
+		holdAnnounced = false;
+		void browser.notifications.clear(switchNotificationId).catch(() => {});
 	};
 
 	const clearPendingSwitch = () => {
+		withdrawHoldNotice();
 		clearHeldSwitch();
 		if (pendingSwitchTimer) {
 			clearTimeout(pendingSwitchTimer);
@@ -608,6 +621,33 @@ export default defineBackground(() => {
 		}
 	};
 
+	// The score for a notification's title, and the PowerScore reason as a sentence when this
+	// language can say it.
+	const describeSwitchTarget = (gameId: string, reason?: string) => {
+		const game = games.find(g => g.id === gameId);
+		const score = game
+			? `${game.awayTeam.abbreviation} ${game.awayTeam.score}–${game.homeTeam.score} ${game.homeTeam.abbreviation}`
+			: getGameLabel(gameId);
+		const locale = displayLocale();
+		// The keyed reasons are read only while they still describe the line being announced.
+		const current = currentScores.find(live => live.gameId === gameId && live.reason === reason);
+		const spoken = reason ? speakReason({ reason, breakdown: current?.breakdown }, i18n.t, locale) : undefined;
+		return { score, venue: game?.venueName, said: spoken ? capitalizeReason(spoken, locale) : undefined };
+	};
+
+	const announceHold = async ({ gameId, reason, sport }: HeldSwitch) => {
+		if (!prefs.notificationsEnabled) return;
+		const { score, said } = describeSwitchTarget(gameId, reason);
+		const waiting = i18n.t(`notification.heldFor.${sport}`);
+		holdAnnounced = true;
+		await browser.notifications.create(switchNotificationId, {
+			type: 'basic',
+			iconUrl: 'icon/128.png',
+			title: i18n.t('notification.heldTitle', { score }),
+			message: said ? i18n.t('notification.heldWithReason', { reason: said, held: waiting }) : waiting,
+		});
+	};
+
 	const executeSwitch = async (tabId: number, gameId?: string, reason?: string, waitedFor?: PlayBreakSport) => {
 		if (await getActiveTabId() === tabId) return;
 
@@ -639,6 +679,7 @@ export default defineBackground(() => {
 		if (gameId) await recordSuccessfulSwitchForReviewPrompt(lastSwitchTime);
 
 		if (prefs.notificationsEnabled) {
+			holdAnnounced = false;
 			// One id for every switch, so each notification replaces the last instead of a long game
 			// leaving dozens of them stacked in the notification centre.
 			if (!gameId) {
@@ -649,18 +690,9 @@ export default defineBackground(() => {
 					message: i18n.t('notification.standbyMessage'),
 				});
 			} else {
-				const game = games.find(g => g.id === gameId);
-				const scoreTitle = game
-					? `${game.awayTeam.abbreviation} ${game.awayTeam.score}–${game.homeTeam.score} ${game.homeTeam.abbreviation}`
-					: getGameLabel(gameId);
-				const venue = game?.venueName;
 				// A reason this language cannot be given drops out, leaving the plain message, and a
 				// game with no venue we know says where it is going without naming a building.
-				const locale = displayLocale();
-				// The keyed reasons are read only while they still describe the line being announced.
-				const current = currentScores.find(score => score.gameId === gameId && score.reason === reason);
-				const spoken = reason ? speakReason({ reason, breakdown: current?.breakdown }, i18n.t, locale) : undefined;
-				const said = spoken ? capitalizeReason(spoken, locale) : undefined;
+				const { score: scoreTitle, venue, said } = describeSwitchTarget(gameId, reason);
 				const switched = venue
 					? (said ? i18n.t('notification.switchedMessageWithReason', { reason: said, venue }) : i18n.t('notification.switchedMessage', { venue }))
 					: (said ? i18n.t('notification.switchedMessageWithReasonNoVenue', { reason: said }) : i18n.t('notification.switchedMessageNoVenue'));
@@ -690,7 +722,7 @@ export default defineBackground(() => {
 		now: Date.now(),
 	});
 
-	const executePendingSwitch = async () => {
+	const runPendingSwitch = async () => {
 		const queuedSwitch = pendingSwitch;
 		pendingSwitchTimer = null;
 		pendingSwitch = null;
@@ -715,6 +747,14 @@ export default defineBackground(() => {
 		if (!target) return;
 
 		await executeSwitch(target.tabId, target.gameId, target.reason, queuedSwitch.waitedFor);
+	};
+
+	const executePendingSwitch = async () => {
+		try {
+			await runPendingSwitch();
+		} finally {
+			withdrawHoldNotice();
+		}
 	};
 
 	const queuePendingSwitch = (gameId: string, tabId: number, reason?: string, waitedFor?: PlayBreakSport) => {
@@ -1067,6 +1107,8 @@ export default defineBackground(() => {
 		if (held) {
 			heldSwitch = held;
 			heldSwitchTimer = setTimeout(() => releaseHeldSwitch(), held.holdUntil - now);
+			broadcastScoresUpdated();
+			await announceHold(held);
 			return;
 		}
 

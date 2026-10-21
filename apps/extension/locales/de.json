@@ -355,6 +355,12 @@
 		"bossButton": "Chef kommt",
 		"bossButtonShortcut": "Chef kommt ({shortcut})",
 		"onStandbyStream": "Im Standby Stream, bis es wieder heiß wird",
+		"heldSwitch": {
+			"baseball": "Wechsel zu {game} nach diesem At-Bat",
+			"football": "Wechsel zu {game} nach diesem Spielzug",
+			"basketball": "Wechsel zu {game} bei der nächsten Spielunterbrechung",
+			"hockey": "Wechsel zu {game} beim nächsten Pfiff"
+		},
 		"sectionActiveLiveTabs": "Aktive Tabs",
 		"sectionOtherLiveGames": "Live-Spiele",
 		"sectionUpNext": "Als Nächstes",
@@ -1114,6 +1120,14 @@
 			"football": "Erst den Spielzug zu Ende laufen lassen.",
 			"basketball": "Auf eine Spielunterbrechung gewartet.",
 			"hockey": "Auf den Pfiff gewartet."
+		},
+		"heldTitle": "Als Nächstes → {score}",
+		"heldWithReason": "{reason}. {held}",
+		"heldFor": {
+			"baseball": "Wechsel nach diesem At-Bat.",
+			"football": "Wechsel nach diesem Spielzug.",
+			"basketball": "Wechsel bei der nächsten Spielunterbrechung.",
+			"hockey": "Wechsel beim nächsten Pfiff."
 		}
 	},
 	"tabAssign": {

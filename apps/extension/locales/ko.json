@@ -355,6 +355,12 @@
 		"bossButton": "상사가 온다",
 		"bossButtonShortcut": "상사가 온다 ({shortcut})",
 		"onStandbyStream": "뭔가 뜨거워질 때까지 Standby Stream에서 대기 중",
+		"heldSwitch": {
+			"baseball": "이 타석이 끝나면 {game} 경기로 전환",
+			"football": "이 플레이가 끝나면 {game} 경기로 전환",
+			"basketball": "다음 데드볼에 {game} 경기로 전환",
+			"hockey": "다음 휘슬에 {game} 경기로 전환"
+		},
 		"sectionActiveLiveTabs": "활성 탭",
 		"sectionOtherLiveGames": "진행 중인 경기",
 		"sectionUpNext": "다음 경기",
@@ -1114,6 +1120,14 @@
 			"football": "플레이가 끝날 때까지 기다렸어요.",
 			"basketball": "데드볼을 기다렸어요.",
 			"hockey": "휘슬을 기다렸어요."
+		},
+		"heldTitle": "다음 경기 → {score}",
+		"heldWithReason": "{reason}. {held}",
+		"heldFor": {
+			"baseball": "이 타석이 끝나면 전환해요.",
+			"football": "이 플레이가 끝나면 전환해요.",
+			"basketball": "다음 데드볼에 전환해요.",
+			"hockey": "다음 휘슬에 전환해요."
 		}
 	},
 	"tabAssign": {

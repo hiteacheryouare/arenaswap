@@ -63,6 +63,7 @@ export const liveState = (): BackgroundState => ({
 	standbyStreamTabId: null,
 	slateShedLeagues: [],
 	leagueLastGoodAt: {},
+	heldSwitch: null,
 });
 
 export const openTabs: fakeTab[] = [

@@ -355,6 +355,12 @@
 		"bossButton": "Vem aí o chefe",
 		"bossButtonShortcut": "Vem aí o chefe ({shortcut})",
 		"onStandbyStream": "No Standby Stream até algo aquecer",
+		"heldSwitch": {
+			"baseball": "A mudar para {game} depois desta vez de bater",
+			"football": "A mudar para {game} depois desta jogada",
+			"basketball": "A mudar para {game} na próxima bola morta",
+			"hockey": "A mudar para {game} no próximo apito"
+		},
 		"sectionActiveLiveTabs": "Separadores ativos",
 		"sectionOtherLiveGames": "Jogos em direto",
 		"sectionUpNext": "A seguir",
@@ -1114,6 +1120,14 @@
 			"football": "Deixámos a jogada terminar primeiro.",
 			"basketball": "Esperámos pela bola morta.",
 			"hockey": "Esperámos pelo apito."
+		},
+		"heldTitle": "A seguir → {score}",
+		"heldWithReason": "{reason}. {held}",
+		"heldFor": {
+			"baseball": "Mudamos depois desta vez de bater.",
+			"football": "Mudamos depois desta jogada.",
+			"basketball": "Mudamos na próxima bola morta.",
+			"hockey": "Mudamos no próximo apito."
 		}
 	},
 	"tabAssign": {

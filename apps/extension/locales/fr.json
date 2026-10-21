@@ -355,6 +355,12 @@
 		"bossButton": "Le chef arrive",
 		"bossButtonShortcut": "Le chef arrive ({shortcut})",
 		"onStandbyStream": "Sur Standby Stream jusqu'à ce que ça chauffe",
+		"heldSwitch": {
+			"baseball": "Changement vers {game} après ce passage au bâton",
+			"football": "Changement vers {game} après cette action",
+			"basketball": "Changement vers {game} au prochain ballon mort",
+			"hockey": "Changement vers {game} au prochain coup de sifflet"
+		},
 		"sectionActiveLiveTabs": "Onglets actifs",
 		"sectionOtherLiveGames": "Matchs en direct",
 		"sectionUpNext": "À suivre",
@@ -1114,6 +1120,14 @@
 			"football": "On laisse d’abord finir l’action.",
 			"basketball": "On a attendu un ballon mort.",
 			"hockey": "On a attendu le coup de sifflet."
+		},
+		"heldTitle": "À suivre → {score}",
+		"heldWithReason": "{reason}. {held}",
+		"heldFor": {
+			"baseball": "On change après ce passage au bâton.",
+			"football": "On change après cette action.",
+			"basketball": "On change au prochain ballon mort.",
+			"hockey": "On change au prochain coup de sifflet."
 		}
 	},
 	"tabAssign": {

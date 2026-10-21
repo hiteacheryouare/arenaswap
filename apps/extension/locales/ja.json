@@ -355,6 +355,12 @@
 		"bossButton": "上司が来た",
 		"bossButtonShortcut": "上司が来た（{shortcut}）",
 		"onStandbyStream": "何かが盛り上がるまでStandby Streamで待機中",
+		"heldSwitch": {
+			"baseball": "この打席のあとで{game}へ切り替え",
+			"football": "このプレーのあとで{game}へ切り替え",
+			"basketball": "次のボールデッドで{game}へ切り替え",
+			"hockey": "次の笛で{game}へ切り替え"
+		},
 		"sectionActiveLiveTabs": "アクティブタブ",
 		"sectionOtherLiveGames": "ライブ試合",
 		"sectionUpNext": "次の試合",
@@ -1114,6 +1120,14 @@
 			"football": "プレーが終わるのを待ちました。",
 			"basketball": "ボールデッドを待ちました。",
 			"hockey": "笛が鳴るのを待ちました。"
+		},
+		"heldTitle": "次の試合 → {score}",
+		"heldWithReason": "{reason}。{held}",
+		"heldFor": {
+			"baseball": "この打席のあとで切り替えます。",
+			"football": "このプレーのあとで切り替えます。",
+			"basketball": "次のボールデッドで切り替えます。",
+			"hockey": "次の笛で切り替えます。"
 		}
 	},
 	"tabAssign": {

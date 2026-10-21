@@ -15,6 +15,7 @@ import type {
 	ScoredSignal,
 	BlendResult,
 } from 'powerscore';
+import type { PlayBreakSport } from './playBreaks';
 import type { PollMode } from './pollModeTracker';
 import type { CommercialBreakEntry } from './commercialBreaks';
 
@@ -479,6 +480,8 @@ export interface BackgroundState {
 	// When each league last answered a poll, in epoch milliseconds, so a card whose league is in
 	// `slateShedLeagues` can say how old its score is.
 	leagueLastGoodAt: LeagueLastGoodAt;
+	// The switch content-aware switching is holding, and whose break in play it waits for.
+	heldSwitch: { gameId: string; sport: PlayBreakSport } | null;
 }
 
 export interface ScoresUpdatedMessage extends BackgroundState {

@@ -355,6 +355,12 @@
 		"bossButton": "老闆來了",
 		"bossButtonShortcut": "老闆來了（{shortcut}）",
 		"onStandbyStream": "在 Standby Stream 待命，等比賽升溫",
+		"heldSwitch": {
+			"baseball": "這個打席結束後切換到 {game}",
+			"football": "這次進攻結束後切換到 {game}",
+			"basketball": "下一個死球時切換到 {game}",
+			"hockey": "下一次哨響時切換到 {game}"
+		},
 		"sectionActiveLiveTabs": "活躍分頁",
 		"sectionOtherLiveGames": "直播比賽",
 		"sectionUpNext": "即將開賽",
@@ -1114,6 +1120,14 @@
 			"football": "先等這次進攻結束。",
 			"basketball": "等到死球才切換。",
 			"hockey": "等到哨響才切換。"
+		},
+		"heldTitle": "即將開賽 → {score}",
+		"heldWithReason": "{reason}。{held}",
+		"heldFor": {
+			"baseball": "這個打席結束後切換。",
+			"football": "這次進攻結束後切換。",
+			"basketball": "下一個死球時切換。",
+			"hockey": "下一次哨響時切換。"
 		}
 	},
 	"tabAssign": {

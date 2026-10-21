@@ -39,6 +39,7 @@ const emptyState = (): BackgroundState => ({
 	standbyStreamTabId: null,
 	slateShedLeagues: [],
 	leagueLastGoodAt: {},
+	heldSwitch: null,
 });
 
 // browser.storage.*.get takes either null (everything) or a defaults object, and resolves the

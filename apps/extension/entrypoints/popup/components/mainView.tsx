@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode, RefObject } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
 import type {
+	BackgroundState,
 	Game,
 	LeagueId,
 	LeagueLogoMap,
@@ -11,6 +12,7 @@ import type {
 	UserPreferences,
 } from '@arenaswap/core/types';
 import { resolveTeamColorPair } from '@arenaswap/chromatic';
+import { isHomeFirst } from '@arenaswap/core/constants';
 import { LeagueSectionHeader, PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 import GameCard from './gameCard';
 import GameCardReveal from './gameCardReveal';
@@ -69,6 +71,7 @@ interface mainViewProps {
 	gameBoosts: Record<string, number>;
 	openTabs: Browser.tabs.Tab[];
 	onStandbyStream: boolean;
+	heldSwitch?: BackgroundState['heldSwitch'];
 	onOpenGameDetail: (gameId: string) => void;
 	onOpenSetup: () => void;
 	suggestionCount: number;
@@ -161,6 +164,11 @@ const gameSection = ({
 	);
 };
 
+const matchupLabel = (game: Game): string => {
+	const [left, right] = isHomeFirst(game) ? [game.homeTeam, game.awayTeam] : [game.awayTeam, game.homeTeam];
+	return `${left.abbreviation} ${i18n.t('gameCard.vs')} ${right.abbreviation}`;
+};
+
 const mainView = ({
 	prefs,
 	prefsLoaded,
@@ -174,6 +182,7 @@ const mainView = ({
 	gameBoosts,
 	openTabs,
 	onStandbyStream,
+	heldSwitch = null,
 	onOpenGameDetail,
 	onOpenSetup,
 	suggestionCount,
@@ -197,6 +206,7 @@ const mainView = ({
 	revealMode = 'none',
 	revealSkipping = false,
 }: mainViewProps) => {
+	const heldGame = heldSwitch ? games.find(game => game.id === heldSwitch.gameId) : undefined;
 	const scrollerRef = useRestoredScroll(scrollOffsetRef);
 	const locale = useDisplayLocale();
 	useReorderGlide(scrollerRef);
@@ -332,6 +342,13 @@ const mainView = ({
 				<div className='alert popup-notice d-flex align-items-center gap-3' role='status' data-testid='standby-banner'>
 					<i className='bi bi-broadcast popup-notice-icon' aria-hidden='true' />
 					<span>{i18n.t('main.onStandbyStream')}</span>
+				</div>
+			)}
+
+			{heldGame && heldSwitch && (
+				<div className='alert popup-notice d-flex align-items-center gap-3' role='status' data-testid='held-switch-banner'>
+					<i className='bi bi-pause-circle popup-notice-icon' aria-hidden='true' />
+					<span>{i18n.t(`main.heldSwitch.${heldSwitch.sport}`, { game: matchupLabel(heldGame) })}</span>
 				</div>
 			)}
 

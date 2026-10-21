@@ -355,6 +355,12 @@
 		"bossButton": "Viene el jefe",
 		"bossButtonShortcut": "Viene el jefe ({shortcut})",
 		"onStandbyStream": "En Standby Stream hasta que algo se ponga bueno",
+		"heldSwitch": {
+			"baseball": "Cambiando a {game} tras este turno al bate",
+			"football": "Cambiando a {game} tras esta jugada",
+			"basketball": "Cambiando a {game} en el próximo balón muerto",
+			"hockey": "Cambiando a {game} en el próximo silbatazo"
+		},
 		"sectionActiveLiveTabs": "Pestañas activas",
 		"sectionOtherLiveGames": "Partidos en vivo",
 		"sectionUpNext": "A continuación",
@@ -1114,6 +1120,14 @@
 			"football": "Primero, que termine la jugada.",
 			"basketball": "Esperamos un balón muerto.",
 			"hockey": "Esperamos el silbatazo."
+		},
+		"heldTitle": "A continuación → {score}",
+		"heldWithReason": "{reason}. {held}",
+		"heldFor": {
+			"baseball": "Cambiamos tras este turno al bate.",
+			"football": "Cambiamos tras esta jugada.",
+			"basketball": "Cambiamos en el próximo balón muerto.",
+			"hockey": "Cambiamos en el próximo silbatazo."
 		}
 	},
 	"tabAssign": {

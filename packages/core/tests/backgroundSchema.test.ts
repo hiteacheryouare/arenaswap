@@ -11,6 +11,7 @@ const empty = {
 	standbyStreamTabId: null,
 	slateShedLeagues: [],
 	leagueLastGoodAt: {},
+	heldSwitch: null,
 };
 
 describe('BackgroundStateSchema', () => {
@@ -31,7 +32,12 @@ describe('BackgroundStateSchema', () => {
 			onStandbyStream: 'true',
 			standbyStreamTabId: '4',
 			slateShedLeagues: ['nba', 3, 'nfl'],
+			heldSwitch: { gameId: 'g1', sport: 'soccer' },
 		})).toEqual({ ...empty, slateShedLeagues: ['nba', 'nfl'] });
+	});
+
+	it('keeps a held switch the popup can name', () => {
+		expect(BackgroundStateSchema.parse({ heldSwitch: { gameId: 'g1', sport: 'hockey', holdUntil: 5 } }).heldSwitch).toEqual({ gameId: 'g1', sport: 'hockey' });
 	});
 
 	it('keeps the values it is given and drops undeclared keys', () => {

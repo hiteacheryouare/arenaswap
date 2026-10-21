@@ -238,6 +238,7 @@ export default () => {
 	const powerScoreHistory = useMemo(() => data?.powerScoreHistory ?? {}, [data?.powerScoreHistory]);
 	const gameBoosts = useMemo(() => data?.gameBoosts ?? {}, [data?.gameBoosts]);
 	const onStandbyStream = data?.onStandbyStream ?? false;
+	const heldSwitch = data?.heldSwitch ?? null;
 	const favoriteTeamIds = useMemo(() => new Set(prefs.favoriteTeamIds), [prefs.favoriteTeamIds]);
 	const confettiCanvasRef = useFavoriteScoreConfetti({ games, favoriteTeamIds });
 
@@ -631,6 +632,7 @@ export default () => {
 						gameBoosts={gameBoosts}
 						openTabs={openTabs}
 						onStandbyStream={onStandbyStream}
+						heldSwitch={heldSwitch}
 						onOpenGameDetail={openGameDetail}
 						onOpenSetup={openSetup}
 						suggestionCount={suggestions.length}

@@ -209,6 +209,20 @@ describe('mainView standby banner', () => {
 	});
 });
 
+describe('mainView held switch notice', () => {
+	it('names the game it is switching to and the break it waits for', () => {
+		cy.mount(<MainView {...defaultProps} games={[makeGame('g1'), makeGame('g2')]} heldSwitch={{ gameId: 'g2', sport: 'basketball' }} />);
+		cy.get('[data-testid="held-switch-banner"]').should('have.attr', 'role', 'status').and('contain.text', 'Switching to AWY vs HOM at the next dead ball');
+	});
+
+	it('stays away while nothing is held, or the game it named has left the list', () => {
+		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} heldSwitch={null} />);
+		cy.get('[data-testid="held-switch-banner"]').should('not.exist');
+		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} heldSwitch={{ gameId: 'gone', sport: 'hockey' }} />);
+		cy.get('[data-testid="held-switch-banner"]').should('not.exist');
+	});
+});
+
 // React builds pointerenter out of pointerover, so that is the event a resting pointer sends. Forced
 // because the stub card is empty and so has no height to be visible at.
 describe('mainView hover prefetch', () => {

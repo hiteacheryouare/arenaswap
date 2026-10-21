@@ -52,7 +52,7 @@ If ArenaSwap keeps switching you to a game a few seconds before your feed shows 
 
 If play doesn't stop in time, the switch goes ahead anyway: after 45 seconds in football, 90 in basketball and hockey, and 2 minutes in baseball. It doesn't wait at all when the game you're leaving is already at a timeout, a TV break or an intermission, when it's a blowout, or when the other game is at a deciding moment, like a walk-off chance or a last shot. Soccer, college football and college hockey switch straight away. Soccer plays straight through, and the college feeds our spotters send back arrive too late to time a break by.
 
-When a switch waited for a break, its notification says so. Switch delay still counts down after the break, so a stream that runs well behind gets its extra time too.
+While a switch waits, the popup says which game is up next and what it's waiting for, and with switch notifications on, an "Up next" notification says the same. The switch's own notification replaces it and says it waited, or the notification disappears if the switch is called off. Switch delay still counts down after the break, so a stream that runs well behind gets its extra time too.
 
 ## Related
 

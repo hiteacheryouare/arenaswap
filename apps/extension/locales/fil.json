@@ -355,6 +355,12 @@
 		"bossButton": "Parating na ang boss",
 		"bossButtonShortcut": "Parating na ang boss ({shortcut})",
 		"onStandbyStream": "Naka-Standby Stream hanggang may uminit",
+		"heldSwitch": {
+			"baseball": "Lilipat sa {game} pagkatapos ng at-bat na ito",
+			"football": "Lilipat sa {game} pagkatapos ng play na ito",
+			"basketball": "Lilipat sa {game} sa susunod na dead ball",
+			"hockey": "Lilipat sa {game} sa susunod na whistle"
+		},
 		"sectionActiveLiveTabs": "Mga Aktibong Tab",
 		"sectionOtherLiveGames": "Mga Live na Laro",
 		"sectionUpNext": "Susunod",
@@ -1114,6 +1120,14 @@
 			"football": "Hayaan munang matapos ang play.",
 			"basketball": "Naghintay ng dead ball.",
 			"hockey": "Naghintay ng whistle."
+		},
+		"heldTitle": "Susunod → {score}",
+		"heldWithReason": "{reason}. {held}",
+		"heldFor": {
+			"baseball": "Lilipat pagkatapos ng at-bat na ito.",
+			"football": "Lilipat pagkatapos ng play na ito.",
+			"basketball": "Lilipat sa susunod na dead ball.",
+			"hockey": "Lilipat sa susunod na whistle."
 		}
 	},
 	"tabAssign": {

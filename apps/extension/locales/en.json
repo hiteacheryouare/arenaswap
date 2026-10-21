@@ -355,6 +355,12 @@
 		"bossButton": "Boss is coming",
 		"bossButtonShortcut": "Boss is coming ({shortcut})",
 		"onStandbyStream": "On Standby Stream until something heats up",
+		"heldSwitch": {
+			"baseball": "Switching to {game} after this at-bat",
+			"football": "Switching to {game} after this play",
+			"basketball": "Switching to {game} at the next dead ball",
+			"hockey": "Switching to {game} at the next whistle"
+		},
 		"sectionActiveLiveTabs": "Active Tabs",
 		"sectionOtherLiveGames": "Live Games",
 		"sectionUpNext": "Up Next",
@@ -1114,6 +1120,14 @@
 			"football": "Let the play finish first.",
 			"basketball": "Waited for a dead ball.",
 			"hockey": "Waited for the whistle."
+		},
+		"heldTitle": "Up next → {score}",
+		"heldWithReason": "{reason}. {held}",
+		"heldFor": {
+			"baseball": "Switching after this at-bat.",
+			"football": "Switching after this play.",
+			"basketball": "Switching at the next dead ball.",
+			"hockey": "Switching at the next whistle."
 		}
 	},
 	"tabAssign": {

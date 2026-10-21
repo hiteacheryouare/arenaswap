@@ -23,6 +23,8 @@ const registry: TabRegistration[] = [{ gameId: 'watched', tabId: 2 }, { gameId: 
 
 let tabsUpdate: jest.Mock;
 let notify: jest.Mock;
+let clearNotice: jest.Mock;
+let runtimeSend: jest.Mock;
 let onMessageHandler!: (msg: unknown) => unknown;
 
 const nba = (id: string, home: number, away: number, period: number, clockSeconds: number, lastPlayId = '1'): Game => ({
@@ -66,6 +68,8 @@ const startWorker = async (prefs: Partial<UserPreferences>, whistleAt?: number) 
 
 	tabsUpdate = jest.fn().mockResolvedValue(undefined);
 	notify = jest.fn().mockResolvedValue(undefined);
+	clearNotice = jest.fn().mockResolvedValue(true);
+	runtimeSend = jest.fn().mockResolvedValue(undefined);
 
 	(globalThis as { defineBackground?: unknown }).defineBackground = (fn: () => void) => fn();
 	(globalThis as { browser?: unknown }).browser = {
@@ -75,7 +79,7 @@ const startWorker = async (prefs: Partial<UserPreferences>, whistleAt?: number) 
 			local: store({ demoMode: false }),
 		},
 		runtime: {
-			sendMessage: jest.fn().mockResolvedValue(undefined),
+			sendMessage: runtimeSend,
 			onMessage: { addListener: (h: (msg: unknown) => unknown) => { onMessageHandler = h; } },
 		},
 		tabs: {
@@ -92,7 +96,7 @@ const startWorker = async (prefs: Partial<UserPreferences>, whistleAt?: number) 
 			getLastFocused: jest.fn().mockResolvedValue({ id: 1, state: 'normal' }),
 		},
 		commands: { onCommand: { addListener: () => {} } },
-		notifications: { create: notify },
+		notifications: { create: notify, clear: clearNotice },
 		i18n: { getUILanguage: () => 'en' },
 	};
 
@@ -112,6 +116,9 @@ const advance = async (ms: number) => {
 
 const switchedToOther = () => tabsUpdate.mock.calls.some(([tabId, change]) => tabId === 3 && change.active === true);
 const lastMessage = (): string => notify.mock.calls.at(-1)?.[1].message;
+const lastTitle = (): string => notify.mock.calls.at(-1)?.[1].title;
+// What the popup was last told about a held switch.
+const broadcastHold = () => runtimeSend.mock.calls.map(([msg]) => msg).filter(msg => msg.type === 'SCORES_UPDATED').at(-1)?.heldSwitch;
 const debugState = async () => {
 	const state = onMessageHandler({ type: 'GET_DEBUG_STATE' }) as Promise<DebugState>;
 	await drain();
@@ -139,10 +146,28 @@ describe('content-aware switching in the worker', () => {
 		await advance(40_000);
 		expect(switchedToOther()).toBe(false);
 		expect((await debugState()).heldSwitch).toMatchObject({ gameId: 'other', tabId: 3, leavingGameId: 'watched' });
+		expect(broadcastHold()).toEqual({ gameId: 'other', sport: 'basketball' });
+		expect(lastTitle()).toBe('Up next → AWY 99–100 HOM');
+		expect(lastMessage()).toMatch(/Switching at the next dead ball\.$/);
 
 		await advance(60_000);
 		expect(switchedToOther()).toBe(true);
+		expect(lastTitle()).toBe('Switched → AWY 99–100 HOM');
 		expect(lastMessage()).toMatch(/^Waited for a dead ball\. /);
+		expect(broadcastHold()).toBeNull();
+		expect(clearNotice).not.toHaveBeenCalled();
+	});
+
+	test('takes the up-next notice down when a held switch is called off', async () => {
+		await startWorker(switching);
+		await advance(40_000);
+		expect(lastTitle()).toMatch(/^Up next/);
+
+		onMessageHandler({ type: 'UPDATE_PREFS', prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...switching, enabled: false }) });
+		await drain(40);
+		expect(clearNotice).toHaveBeenCalledWith('arenaswap-switch');
+		expect(broadcastHold()).toBeNull();
+		expect(switchedToOther()).toBe(false);
 	});
 
 	test('gives up waiting at the cap when play never stops, and does not claim it waited', async () => {

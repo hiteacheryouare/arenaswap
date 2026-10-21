@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## A held switch says what it's waiting for — 2026-10-20
+
+While content-aware switching holds a switch, the popup shows a notice like "Switching to BOS vs LAL after this at-bat", and an "Up next" notification goes out under the switch's own notification id, so the switch replaces it when it lands. A hold that's called off without switching takes its notification down with it.
+
 ## Switch reasons read as plain facts — 2026-10-20
 
 The reason behind a switch is now up to three short sentences: what's happening right now, what just happened, then the score and the clock ("Lakers on a 12–2 run to take the lead. Up 7 with 2:10 left"). They replace comma-joined fragments with boost points tacked on. Teams go by nickname (a soccer club by its short name), the wording no longer contradicts the scoreboard ("cutting into it" in a tied game), and scores are untouched: 20,000 seeded games and nine days of recordings switch exactly as before.

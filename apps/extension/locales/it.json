@@ -355,6 +355,12 @@
 		"bossButton": "Arriva il capo",
 		"bossButtonShortcut": "Arriva il capo ({shortcut})",
 		"onStandbyStream": "Su Standby Stream finché qualcosa non si scalda",
+		"heldSwitch": {
+			"baseball": "Cambio a {game} dopo questo turno di battuta",
+			"football": "Cambio a {game} dopo questa azione",
+			"basketball": "Cambio a {game} alla prossima palla morta",
+			"hockey": "Cambio a {game} al prossimo fischio"
+		},
 		"sectionActiveLiveTabs": "Schede attive",
 		"sectionOtherLiveGames": "In diretta",
 		"sectionUpNext": "A seguire",
@@ -1114,6 +1120,14 @@
 			"football": "Prima lasciamo finire l'azione.",
 			"basketball": "Abbiamo atteso la palla morta.",
 			"hockey": "Abbiamo atteso il fischio."
+		},
+		"heldTitle": "A seguire → {score}",
+		"heldWithReason": "{reason}. {held}",
+		"heldFor": {
+			"baseball": "Cambiamo dopo questo turno di battuta.",
+			"football": "Cambiamo dopo questa azione.",
+			"basketball": "Cambiamo alla prossima palla morta.",
+			"hockey": "Cambiamo al prossimo fischio."
 		}
 	},
 	"tabAssign": {
