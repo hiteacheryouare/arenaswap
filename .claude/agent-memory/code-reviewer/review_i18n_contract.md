@@ -13,7 +13,11 @@ Every user-facing string in `apps/extension` must go through `i18n.t('<dotted.ke
 
 Related: [[review-popup-failure-map]]
 
-**`pt_PT.json` uses pre-1990-Agreement spelling throughout** ("Actualizar", "actualizações",
-"directo" x17). New strings written as "atualização"/"direto" (the pt-BR/modern form) read
-inconsistently next to the Refresh button. Check new pt_PT strings against the file's own spelling, not
-a dictionary.
+**`pt_PT.json` spelling: CORRECTED 2026-10-21.** An earlier note said pt_PT used pre-1990-Agreement
+spelling ("Actualizar", "directo"). At HEAD e9d15c29 it uses the modern forms throughout ("Ativa" x6,
+"atualização" x4, "Desativado" x4, zero "actual-"/"activ-" hits). Do not flag "Ativado"/"Atualiza" in new
+pt_PT strings. Re-grep `git show HEAD:apps/extension/locales/pt_PT.json` before raising spelling at all.
+
+**Filipino and Italian often keep English** (fil: "Scoring mode", "Fantasy roster", "Onboarding", "Settings file";
+it: "On"/"Off"). A same-as-English check flags them; they read as loanword choices. Check
+`.claude/agent-memory/i18n-polyglot-translator/` for the term list before calling one a miss.

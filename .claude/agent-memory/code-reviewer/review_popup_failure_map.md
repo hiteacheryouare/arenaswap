@@ -52,3 +52,9 @@ real popup, so their "fits on one line in every locale" checks overstate the mar
 - The drawer's `onAnimationEnd` sees bubbled child animations — check `target === currentTarget` on any new exit-animation gate.
 - Detail charts init ECharts at mount size; a chart mounted inside a non-active (display:none) tab pane gets 0x0 and only a window resize repairs it.
 - `useBasketballSituation` polls without the `document.hidden` skip that `useSummaryData` has.
+
+**Downloads from the popup (Backup & Sync, 2026-10-21).** An `<a download>` blob click in the popup is
+fine in Chrome/Edge, but in Firefox a Save As dialog ("Always ask where to save files") takes focus, the
+popup closes, its blob URL dies with the document, and the download fails (Mozilla Connect idea 91153,
+bug 1338981 points at `downloads.download()`). A delayed `revokeObjectURL` does not help. The repo has no
+`downloads` permission; the extension-tab route (`settingsImport.html`) is the permission-free fix.

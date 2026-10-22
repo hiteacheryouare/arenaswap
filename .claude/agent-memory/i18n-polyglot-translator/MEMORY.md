@@ -39,3 +39,5 @@
 - [project_plain_language_tour_cjk.md](project_plain_language_tour_cjk.md) — 2026-10-21: issue #228 tour rewrite ja/ko/zh; link-a-tab verb per locale, 强打 vs 多打少 flag
 - [project_issue228_plain_tour_ptpt_fil.md](project_issue228_plain_tour_ptpt_fil.md) — 2026-10-21: #228 plain tour copy, pt_BR/pt_PT/fil; link-a-tab verb per locale, figurative-phrase swaps
 - [project_issue228_plain_onboarding_de_fr_it_es.md](project_issue228_plain_onboarding_de_fr_it_es.md) — 2026-10-21: #228 plain tour rewrite de/fr/it/es; link-verb per locale, term map, length notes
+- [project_backup_sync_translations.md](project_backup_sync_translations.md) — 2026-10-21: Backup & Sync strings; register + roster/onboarding/on-off term choices per locale
+- [project_profiles_translations.md](project_profiles_translations.md) — 2026-10-21: Profiles feature (profiles.* + Profiles & Backup group), 11 locales; term map, ko particle dodge, fr/it toast gender dodge

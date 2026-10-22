@@ -9,3 +9,4 @@
 - [feedback_technical_writing_revision_pass.md](feedback_technical_writing_revision_pass.md) — run /technical-writing as a real second pass (count words, check pronouns); skill is invocation-disabled, cat the SKILL.md instead; always end faq-touching work with `astro sync`
 - [project_powerscore_reference_docs.md](project_powerscore_reference_docs.md) — 7 powerscore package docs built + revised 2026-08-23; use `mega` branch for GitHub links, an abstract-mapper-reused-as-literal reproducibility bug, sportType/leagueConfigMap are unfrozen and read live
 - [project_powerscore3_docs.md](project_powerscore3_docs.md) — PowerScore 3 docs pass 2026-10-03: pages touched, Upset Rout README/code mismatch, anchors, postseason default 8
+- [feedback_no_implementation_narration.md](feedback_no_implementation_narration.md) — 2026-10-21 narration purge: what was cut/kept, 12-second polling ruling, localized marketing still says 6s

@@ -1,0 +1,14 @@
+---
+name: project-backup-sync-translations
+description: 2026-10-21 Backup & Sync strings (backup.*, backupImport.*): per-locale register and term choices for settings, roster, onboarding, on/off
+metadata:
+  type: reference
+---
+
+Register: de/es/fr/pt_PT/it/zh_TW informal (du/tu/tú/你); zh_CN uses 您; ko 해요체; ja です/ます; pt_BR você with "pra".
+Terms: Settings = de Einstellungen, es Ajustes, fr Paramètres, pt_BR Configurações, pt_PT Definições, fil Mga Setting. Tab = es/pt_BR pestaña/aba, pt_PT separador, it scheda, zh_CN 标签页, zh_TW 分頁. Fantasy = ja/ko ファンタジー/판타지, zh 梦幻/夢幻. Roster = de Kader, es Plantilla, fr Effectif, it Rosa, ja/ko ロスター/로스터, pt_BR Elenco, pt_PT Plantel. Browser = ja ブラウザ (no long mark). "Standby Stream" is never translated in any locale.
+Keyword strings (`setup.keywords*`) are comma-separated and search folds diacritics, so accents are optional; es/fr/pt files write them unaccented.
+fr uses plain spaces before ? ! : and « {x} » quotes; zh/ja use 「{x}」; de/es/it/pt/ko use straight quotes.
+Backup & sync copy (2026-10-21): "moving house" metaphor for import done/applying; "sources" spy joke kept in problemUnreadable.
+Follow-up (2026-10-21): backup.export now ends in "…" in every locale (opens a tab); added exportTitle/exportLede/exportButton/exportFileHint after it; importExplainer now says "both" (Export… and Import…). exportTitle mirrors backupImport.title shape (imperative + "your setup"). exportFileHint keeps {fileName} verbatim; ko uses "{fileName} 이름으로 저장돼요." to dodge the 으로/로 particle; ja "{fileName}として保存されます。" (no spaces, matching ArenaSwapから style), zh keeps spaces around {fileName}. Download button: es "Descargar copia", pt_PT "Descarregar backup", pt_BR "Baixar backup", fr "Télécharger la sauvegarde". Locale files round-trip exactly with json.dumps(indent="\t", ensure_ascii=False) + CRLF + trailing CRLF.
+Narration purge (2026-10-21): AGENTS.md "Copy Mistakes to Avoid" bans implementation narration, design justification, restating/reassuring. Trim approved strings by deleting the clause/sentence (script kept first N sentences); only rewrite where en was rewritten. "Tap" became "Click" (fantasy.addFailed): de klicken, es Haz clic, fil I-click, fr Clique, it Fai clic, ja クリック, ko 클릭, pt_BR Clique, pt_PT Clica, zh_CN 点击; zh_TW keeps 點一下. New keys: backup.open = de Sichern oder wiederherstellen…, es Crear copia o restaurar…, fr Sauvegarder ou restaurer…, it Backup o ripristino…, pt Fazer backup ou restaurar…, ja バックアップまたは復元…, zh_TW 備份或還原…; backup.yourSetup mirrors backupImport.title shape (ja あなたの設定, ko 내 설정, fil Ang setup mo); backupImport.fromFile = ja/zh "file contents" (ファイルの内容/文件内容/檔案內容), ko 파일 내용. backup.none uses the generic masculine in es/fr/it/pt (Ninguno/Aucun/Nessuno/Nenhum), flagged because list rows differ in gender. Tooltip five (tooltipCloseness etc.) copy stepPowerScore.about* verbatim; do not edit separately.
