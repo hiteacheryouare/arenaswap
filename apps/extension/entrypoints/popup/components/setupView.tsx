@@ -9,6 +9,7 @@ import type { Browser } from 'wxt/browser';
 import ToggleSwitch from '@arenaswap/ui/src/components/toggleSwitch';
 import CollegeFilterPage from './collegeFilterPage';
 import CollegeLeagueButton from './collegeLeagueButton';
+import BackupSyncPage, { type profileActions as profileActionHandlers } from './backupSyncPage';
 import BossDecoyInput from './bossDecoyInput';
 import CooldownSlider from './cooldownSlider';
 import FavoriteTeamBonusInput from './favoriteTeamBonusInput';
@@ -30,6 +31,7 @@ import StandbyStreamGuide from './standbyStreamGuide';
 import TabFavicon from './tabFavicon';
 import { searchSettings, settingsGroups, type settingsGroupId } from './settingsCatalog';
 import type { demoSeason } from '../../../utils/holidayDecorations';
+import type { profileList } from '../../../utils/profiles';
 import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
 import { changedFantasyRuleCount } from '../../../utils/scoringPrefs';
 
@@ -97,6 +99,9 @@ interface setupViewProps {
 	onFantasyRulesReset: (sport: FantasySport) => void;
 	fantasyRoster: readonly FantasyRosterEntry[];
 	onFantasyRosterChange: (update: (current: FantasyRosterEntry[]) => FantasyRosterEntry[]) => void;
+	profiles: profileList;
+	profilesBusy: boolean;
+	profileActions: profileActionHandlers;
 }
 
 // The rules page opens on the sport of the first league you follow that Fantasy can score.
@@ -126,7 +131,7 @@ const setupView = ({
 	onPostseasonBoostChange,
 	onToggleHolidayDecorations, onToggleHolidaySnow, onToggleHolidayLights, onToggleHolidayLeaves,
 	onToggleSignal, onToggleModeSignal, onScoringModeChange, onLeagueModeChange, onFantasyBlendChange, onFantasyRuleChange,
-	onFantasyRulesReset, fantasyRoster, onFantasyRosterChange,
+	onFantasyRulesReset, fantasyRoster, onFantasyRosterChange, profiles, profilesBusy, profileActions,
 }: setupViewProps) => {
 	const [page, setPage] = useState<settingsGroupId | null>(null);
 	const [collegeLeague, setCollegeLeague] = useState<CollegeLeagueId | null>(null);
@@ -616,6 +621,9 @@ const setupView = ({
 		leagues: leaguesPage,
 		display: displayPage,
 		standby: standbyPage,
+		backup: () => (
+			<BackupSyncPage prefs={prefs} fantasyRoster={fantasyRoster} profiles={profiles} profilesBusy={profilesBusy} profileActions={profileActions} />
+		),
 	};
 
 	if (page === 'scoring' && scoringPage) {

@@ -1,0 +1,170 @@
+// The backup tab's own surface, sized for a full tab rather than the popup's 320px column. Colours
+// come from the theme tokens bootstrap.scss already emits on :root.
+@use '@arenaswap/ui/src/motion' as m;
+@layer custom {
+	.backup-page {
+		min-height: 100vh;
+		background: var(--as-bg-body);
+		color:      var(--as-fg-body);
+	}
+
+	.backup-header {
+		display:       flex;
+		align-items:   center;
+		min-height:    3.25rem;
+		padding:       0.5rem 1.25rem;
+		border-bottom: 1px solid var(--as-border-color);
+	}
+
+	.backup-logo {
+		height:     26px;
+		width:      auto;
+		object-fit: contain;
+	}
+
+	.backup-main {
+		max-width: 68rem;
+		margin:    0 auto;
+		padding:   2.5rem 1.5rem 4rem;
+	}
+
+	.backup-title {
+		margin:         0 0 1.5rem;
+		font-size:      1.6rem;
+		font-weight:    700;
+		letter-spacing: -0.015em;
+	}
+
+	.backup-grid {
+		display:               grid;
+		grid-template-columns: minmax(0, 24rem) minmax(0, 1fr);
+		gap:                   1.25rem;
+		align-items:           start;
+
+		@media (max-width: 52rem) {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	.backup-actions {
+		display:        flex;
+		flex-direction: column;
+		gap:            1.25rem;
+	}
+
+	.backup-card {
+		padding:       1.25rem;
+		border:        1px solid var(--as-border-color);
+		border-radius: 0.75rem;
+		background:    var(--as-bg-1);
+	}
+
+	.backup-heading {
+		margin:      0;
+		font-size:   1rem;
+		font-weight: 700;
+	}
+
+	.backup-hint {
+		font-size: 0.78rem;
+		color:     var(--as-faint);
+		text-wrap: pretty;
+	}
+
+	.backup-problem {
+		padding:       0.5rem 0.75rem;
+		font-size:     0.82rem;
+		color:         var(--as-warning-ink);
+		border:        1px solid color-mix(in srgb, var(--as-warning-base) 30%, transparent);
+		border-radius: 0.35rem;
+		background:    color-mix(in srgb, var(--as-warning-base) 7%, transparent);
+	}
+
+	// The whole card is the target, and the page takes a drop anywhere besides.
+	.backup-drop {
+		display:        flex;
+		flex-direction: column;
+		align-items:    center;
+		padding:        1.75rem 1rem;
+		border:         1.5px dashed var(--as-border-color);
+		border-radius:  0.6rem;
+		text-align:     center;
+		cursor:         pointer;
+		transition:     border-color m.$motion-quick m.$motion-ease, background-color m.$motion-quick m.$motion-ease;
+
+		&:hover,
+		&[data-dragging='true'] {
+			border-color: var(--as-primary-base);
+			background:   color-mix(in srgb, var(--as-primary-base) 6%, transparent);
+		}
+
+		&:focus-within {
+			outline:        2px solid var(--as-primary-base);
+			outline-offset: 2px;
+		}
+	}
+
+	.backup-drop-icon {
+		font-size:   1.75rem;
+		line-height: 1;
+		color:       var(--as-primary-base);
+	}
+
+	.backup-drop-title {
+		margin-top:  0.6rem;
+		font-size:   0.9rem;
+		font-weight: 600;
+	}
+
+	.backup-setup-rows {
+		margin-top: 0.75rem;
+	}
+
+	.backup-setup-row {
+		display:               grid;
+		grid-template-columns: 9rem minmax(0, 1fr) auto;
+		gap:                   0.75rem;
+		align-items:           center;
+		min-height:            3rem;
+		padding:               0.55rem 0;
+		border-top:            1px solid var(--as-bg-2);
+	}
+
+	.backup-setup-label {
+		font-size: 0.8rem;
+		color:     var(--as-fg-3);
+	}
+
+	.backup-setup-value {
+		display:     flex;
+		flex-wrap:   wrap;
+		align-items: center;
+		gap:         0.35rem;
+		min-width:   0;
+	}
+
+	.backup-setup-text {
+		font-size: 0.85rem;
+		color:     var(--as-fg-3);
+	}
+
+	.backup-setup-change {
+		font-family:          'Geist Figures', 'DM Sans', system-ui, sans-serif;
+		font-size:            0.8rem;
+		font-weight:          600;
+		font-variant-numeric: tabular-nums;
+		white-space:          nowrap;
+	}
+
+	.backup-setup-item {
+		display: inline-flex;
+
+		.league-toggle-logo { --as-avatar-size: 30px; }
+
+		// On its way out, so it reads as going rather than staying.
+		&[data-removed='true'] {
+			opacity: 0.3;
+			filter:  grayscale(1);
+		}
+	}
+}

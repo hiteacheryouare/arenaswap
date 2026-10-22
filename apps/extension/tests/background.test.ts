@@ -151,6 +151,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 	(globalThis as { defineBackground?: unknown }).defineBackground = (fn: () => void) => fn();
 	(globalThis as { browser?: unknown }).browser = {
 		storage: {
+			onChanged: { addListener: () => {} },
 			sync: { get: storageSyncGet, set: storageSyncSet },
 			session: {
 				get: jest.fn().mockResolvedValue({

@@ -5,9 +5,17 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Profiles — 2026-10-21
+
+Backup & Sync is now Profiles & Backup: named setups you click to switch between, each holding every setting and the Fantasy roster, with Rename, Export and Delete in a ⋯ menu and a New profile modal that copies the current one or starts fresh through the league and team pickers. Only the profile in use rides browser sync (`utils/profiles.ts` keeps the others in `storage.local`), so switching on one computer moves the others too, and each sets its own profile aside first. The backup tab can export any profile, and an imported file can be added as a new profile or replace the current one, taking the file's name.
+
 ## The copy stops explaining itself — 2026-10-21
 
 Lines that narrated how ArenaSwap works or why it was built that way are gone from the extension, the website, the store listings and the README, and AGENTS.md now forbids writing them ("Copy Mistakes to Avoid"). The store listing and site hero now say 12 seconds, the real fastest check since the 6-second floor was removed, and the long listing no longer names where the scores come from.
+
+## Settings pack up and move — 2026-10-21
+
+A new Backup & Sync settings page lists what rides along with browser sync, and its Back up or restore… button opens a two-column tab: export and a drop zone on the left, and on the right your setup drawn with league logos, team crests and player headshots, which turns into a before-and-after of the file once one is dropped. Both directions run in that tab because a file dialog closes a Firefox popup, and onboarding's first screen links straight to it for anyone with a backup. The file holds one profile named `main`, so the named profiles that come later can reuse the same shape.
 
 ## The website has a light mode — 2026-10-21
 

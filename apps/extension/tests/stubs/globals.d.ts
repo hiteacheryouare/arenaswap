@@ -4,6 +4,8 @@
 declare const browser: {
 	runtime: {
 		id: string;
+		getURL: (path: string) => string;
+		getManifest: () => { version: string };
 		sendMessage: (...args: unknown[]) => Promise<any>;
 		onMessage: {
 			addListener: (listener: (msg: any) => any) => void;
@@ -28,6 +30,8 @@ declare const browser: {
 		create: (createProperties: unknown) => Promise<any>;
 		query: (queryInfo: unknown) => Promise<{ id?: number; title?: string; url?: string }[]>;
 		update: (tabId: number, updateProperties: unknown) => Promise<any>;
+		getCurrent: () => Promise<{ id?: number } | undefined>;
+		remove: (tabId: number) => Promise<void>;
 		onActivated: {
 			addListener: (listener: (...args: unknown[]) => unknown) => void;
 		};

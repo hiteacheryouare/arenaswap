@@ -10,6 +10,7 @@ import { resetPrefetchIntent } from '../../entrypoints/popup/components/prefetch
 import '../../assets/bootstrap.scss';
 import '../../assets/global.scss';
 import '../../assets/guide.scss';
+import '../../assets/settingsBackup.scss';
 
 Cypress.Commands.add('mount', mount);
 

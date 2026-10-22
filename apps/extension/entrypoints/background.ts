@@ -18,6 +18,7 @@ import { loadConferenceDirectory } from '../utils/collegeConferences';
 import { bossCommandName, bossHushedKey, createBossMode } from '../utils/bossMode';
 import { loadStoredUserPreferences, persistStoredUserPreferences } from '../utils/prefsStorage';
 import { loadFantasyRoster } from '../utils/fantasyRosterStorage';
+import { activeProfileSyncKey, followSyncedProfile } from '../utils/profiles';
 import { capitalizeReason, speakReason } from '../utils/powerScoreReason';
 import { displayLocale } from '../utils/displayLocale';
 import type { guideSlateOutcome } from '../utils/slateMerge';
@@ -489,7 +490,9 @@ export default defineBackground(() => {
 			prefs = { ...prefs, enabled: false };
 			setLastSwitchTime(0);
 			clearPendingSwitch();
-			await persistStoredUserPreferences(prefs);
+			// Saved from storage rather than memory, which can still hold the profile another browser just switched away from.
+			const stored = await loadStoredUserPreferences().catch(() => prefs);
+			await persistStoredUserPreferences({ ...stored, enabled: false });
 		},
 		muteManagedTabs: () => syncManagedTabMuteState(prefs.enabled),
 		saveHushed: hushed => browser.storage.session.set({ [bossHushedKey]: hushed }),
@@ -1413,12 +1416,12 @@ export default defineBackground(() => {
 		winProbTimer = setTimeout(() => void run(), winProbPollIntervalMs);
 	};
 
-	const stateReady = Promise.all([
+	const stateReady = followSyncedProfile().catch(() => {}).then(() => Promise.all([
 		loadStoredUserPreferences(),
 		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, lastSwitchTime: 0, [bossHushedKey]: false, ...historyStorageDefaults }),
 		browser.storage.local.get({ demoMode: false, [gameEndTimesKey]: {} }),
 		loadFantasyRoster().catch(() => []),
-	]).then(([storedPrefs, sessionResult, demoResult, roster]) => {
+	])).then(([storedPrefs, sessionResult, demoResult, roster]) => {
 		prefs = storedPrefs;
 		liveExtras.setRoster(roster);
 		tabRegistry = sessionResult.tabRegistry as TabRegistration[];
@@ -1515,6 +1518,20 @@ export default defineBackground(() => {
 			void sweepWinProbabilities();
 		}
 	};
+
+	// Another browser switched profiles. Its setup is already in the synced prefs, so this one moves too.
+	browser.storage.onChanged.addListener((changes, area) => {
+		if (area !== 'sync' || !(activeProfileSyncKey in changes)) return;
+		void stateReady.then(async () => {
+			await followSyncedProfile();
+			const [stored, roster] = await Promise.all([loadStoredUserPreferences(), loadFantasyRoster().catch(() => [])]);
+			liveExtras.setRoster(roster);
+			const change = adoptPrefs(stored);
+			clearPendingSwitch();
+			await syncManagedTabMuteState(prefs.enabled);
+			await applyPrefsChange(change);
+		}).catch(err => logWarn('Could not follow the synced profile.', err));
+	});
 
 	browser.runtime.onMessage.addListener((msg: ExtensionMessage) => {
 		if (msg.type === 'GET_STATE') {

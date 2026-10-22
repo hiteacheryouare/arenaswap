@@ -16,6 +16,8 @@ interface onboardingTeamPickerProps {
 	onRetry: () => void;
 	onSkip: () => void;
 	onDone: () => void;
+	step?: number;
+	totalSteps?: number;
 }
 
 const onboardingTeamPicker = ({
@@ -28,6 +30,8 @@ const onboardingTeamPicker = ({
 	onRetry,
 	onSkip,
 	onDone,
+	step = 3,
+	totalSteps = 3,
 }: onboardingTeamPickerProps) => {
 	const [query, setQuery] = useState('');
 
@@ -37,7 +41,7 @@ const onboardingTeamPicker = ({
 				<button className='btn btn-link btn-sm p-0 fg-secondary small' onClick={onBack}>
 					<i className='bi bi-arrow-left me-1' />{i18n.t('teamPicker.back')}
 				</button>
-				<FlowStepper step={3} total={3} className='ms-auto' />
+				<FlowStepper step={step} total={totalSteps} className='ms-auto' />
 			</div>
 
 			<div className='fw-bold lh-xs mb-1 fs-lg popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('teamPicker.title')}</div>

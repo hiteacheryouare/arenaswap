@@ -1,5 +1,6 @@
 import { i18n } from '#i18n';
 import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
+import { openBackupTab } from '../../../utils/settingsBackup';
 import { fullLogoSrc } from '../../../utils/theme';
 import FlowStepper from './flowStepper';
 import focusStepTitle from './stepTitleFocus';
@@ -61,6 +62,9 @@ const onboardingTabControl = ({ onNext }: onboardingTabControlProps) => {
 
 				<button className='btn btn-solid theme-primary w-100 mt-auto' onClick={onNext}>
 					{i18n.t('tabControl.gotIt')} <i className='bi bi-arrow-right' />
+				</button>
+				<button type='button' id='onboardingImport' className='btn btn-link btn-sm p-0 fg-secondary small mt-3 align-self-center text-center' onClick={() => openBackupTab('import')}>
+					{i18n.t('tabControl.importBackup')}
 				</button>
 			</div>
 		</div>

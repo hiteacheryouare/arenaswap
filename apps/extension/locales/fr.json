@@ -266,6 +266,8 @@
 		"groupDisplayDesc": "Ce qu'affiche la liste des matchs et l'apparence d'ArenaSwap.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Où te garer quand tous les matchs s'endorment.",
+		"groupBackup": "Profils et sauvegarde",
+		"groupBackupDesc": "Change de config, ou emmène-en une dans un autre navigateur.",
 		"bonusesSection": "Bonus",
 		"whenToSwitchSection": "Quand changer",
 		"tabsSection": "Onglets",
@@ -303,6 +305,7 @@
 		"keywordsStandby": "repli, secours, inactif, reserve, calme",
 		"keywordsStandbyThreshold": "score, seuil, limite, en dessous, calme",
 		"keywordsStandbyTab": "onglet, fenetre, page, destination",
+		"keywordsBackup": "profils, profil, changer, basculer, config, configuration, nouveau, renommer, supprimer, sauvegarde, backup, export, exporter, import, importer, synchro, synchronisation, sync, fichier, transfert, restaurer, deplacer, telecharger, envoyer",
 		"keywordsBossDecoy": "chef, cacher, panique, travail, cours, tableur, couverture, muet, raccourci, fuite",
 		"keywordsDemo": "faux, exemple, test, apercu, bac a sable",
 		"aboutSetting": "À propos de {setting}",
@@ -951,7 +954,8 @@
 		"feature2Body": "Ouvre le flux de chaque match dans son propre onglet, puis associe cet onglet au match dans ArenaSwap.",
 		"feature3Title": "Tu gardes le contrôle",
 		"feature3Body": "Désactive le changement à tout moment. Dans Paramètres, choisis la fréquence des changements et le temps d'attente entre deux changements.",
-		"gotIt": "Compris"
+		"gotIt": "Compris",
+		"importBackup": "Tu as un fichier de sauvegarde ? Passe la configuration et importe-le"
 	},
 	"flowStepper": {
 		"step": "Étape $1 sur $2"
@@ -1450,5 +1454,63 @@
 			"shutouts": "Blanchissage",
 			"overtimeLosses": "Défaite en prolongation"
 		}
+	},
+	"backup": {
+		"open": "Sauvegarder ou restaurer…",
+		"syncedSection": "Se synchronise avec ton navigateur",
+		"syncedExplainer": "Tous les paramètres de {name}, dès que la synchro est activée dans ton navigateur.",
+		"exportTitle": "Exporte ta configuration",
+		"exportProfile": "Profil",
+		"exportButton": "Télécharger la sauvegarde",
+		"exportFileHint": "Enregistré sous {fileName}.",
+		"exportFailed": "Ça n'a pas voulu se ranger. Réessaie.",
+		"rowLeagues": "Ligues actives",
+		"rowFavorites": "Équipes favorites",
+		"rowScoring": "Mode de score",
+		"rowRoster": "Effectif Fantasy",
+		"yourSetup": "Ta configuration",
+		"none": "Aucun",
+		"noChange": "Aucun changement"
+	},
+	"backupImport": {
+		"title": "Importe ta configuration",
+		"dropTitle": "Dépose une sauvegarde ici",
+		"chooseFile": "Choisir un fichier",
+		"fromFile": "Du fichier",
+		"problemUnreadable": "Nos sources ont tenu ce fichier à contre-jour et n'ont pas déchiffré un seul mot. Essaie avec un nouvel export.",
+		"problemNotOurs": "Un fichier tout à fait correct, mais pas des nôtres. Choisis-en un exporté depuis ArenaSwap.",
+		"problemTooNew": "Ce fichier vient d'une version plus récente d'ArenaSwap. Mets l'extension à jour, puis réessaie.",
+		"problemSaveFailed": "Ça ne s'est pas enregistré. Réessaie.",
+		"fileMeta": "Profil « {name} », exporté le {date}.",
+		"fileMetaUndated": "Profil « {name} ».",
+		"addAsNew": "Ajouter comme nouveau profil",
+		"replaceWarning": "Remplacer échange tous les paramètres de {name} contre ceux du fichier.",
+		"replace": "Remplacer {name}",
+		"applying": "Emménagement…",
+		"startOver": "Choisir un autre fichier",
+		"doneTitle": "{name} a fini d'emménager.",
+		"closeTab": "Fermer l'onglet"
+	},
+	"profiles": {
+		"section": "Profils",
+		"inUse": "Actif",
+		"more": "Plus d'options pour {name}",
+		"rename": "Renommer",
+		"export": "Exporter",
+		"delete": "Supprimer",
+		"new": "Nouveau profil",
+		"newTitle": "Nouveau profil",
+		"renameTitle": "Renommer le profil",
+		"deleteTitle": "Supprimer {name} ?",
+		"deleteBody": "Ses paramètres et son effectif Fantasy partent avec lui. Exporte-le d'abord pour en garder une copie.",
+		"nameLabel": "Nom",
+		"defaultName": "Profil {count}",
+		"nameTaken": "Tu as déjà un profil nommé {name}.",
+		"copyCurrent": "Copier {name}",
+		"startFresh": "Repartir de zéro",
+		"save": "Enregistrer",
+		"cancel": "Annuler",
+		"switchedToast": "Passage à {name}.",
+		"changeFailed": "Ça ne s'est pas enregistré. Réessaie."
 	}
 }

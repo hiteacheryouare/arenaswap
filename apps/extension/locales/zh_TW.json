@@ -266,6 +266,8 @@
 		"groupDisplayDesc": "比賽列表顯示什麼，以及 ArenaSwap 的外觀。",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "所有比賽都冷場時，把你停在哪裡。",
+		"groupBackup": "個人資料與備份",
+		"groupBackupDesc": "切換設定，或把設定帶到另一個瀏覽器。",
 		"bonusesSection": "加成",
 		"whenToSwitchSection": "切換時機",
 		"tabsSection": "分頁",
@@ -303,6 +305,7 @@
 		"keywordsStandby": "備用, 後備, 閒置, 替補, 冷場",
 		"keywordsStandbyThreshold": "分數, 閾值, 下限, 低於, 冷場",
 		"keywordsStandbyTab": "分頁, 視窗, 頁面, 目標",
+		"keywordsBackup": "個人資料, 設定檔, 切換, 設定, 新增, 重新命名, 刪除, 備份, 匯出, 匯入, 同步, 檔案, 轉移, 還原, 搬移, 下載, 上傳",
 		"keywordsBossDecoy": "老闆, 隱藏, 緊急, 工作, 上課, 試算表, 掩護, 靜音, 快速鍵, 逃跑",
 		"keywordsDemo": "虛構, 範例, 測試, 預覽, 沙盒",
 		"aboutSetting": "關於{setting}",
@@ -951,7 +954,8 @@
 		"feature2Body": "把每場比賽的直播開在各自的分頁，再到 ArenaSwap 把那個分頁連結到對應的比賽。",
 		"feature3Title": "掌控權始終在你手上",
 		"feature3Body": "隨時都能關閉切換。在設定中，你可以選擇 ArenaSwap 切換的頻率，以及兩次切換之間要等多久。",
-		"gotIt": "了解"
+		"gotIt": "了解",
+		"importBackup": "有備份檔案嗎？跳過設定，直接匯入"
 	},
 	"flowStepper": {
 		"step": "第 $1 步，共 $2 步"
@@ -1450,5 +1454,63 @@
 			"shutouts": "完封",
 			"overtimeLosses": "延長賽落敗"
 		}
+	},
+	"backup": {
+		"open": "備份或還原…",
+		"syncedSection": "隨瀏覽器同步",
+		"syncedExplainer": "{name} 中的所有設定，只要瀏覽器已開啟同步。",
+		"exportTitle": "匯出你的設定",
+		"exportProfile": "個人資料",
+		"exportButton": "下載備份",
+		"exportFileHint": "將儲存為 {fileName}。",
+		"exportFailed": "沒能打包成功，請再試一次。",
+		"rowLeagues": "已開啟的聯賽",
+		"rowFavorites": "收藏球隊",
+		"rowScoring": "評分模式",
+		"rowRoster": "夢幻陣容",
+		"yourSetup": "你的設定",
+		"none": "無",
+		"noChange": "無變更"
+	},
+	"backupImport": {
+		"title": "匯入你的設定",
+		"dropTitle": "把備份拖曳到這裡",
+		"chooseFile": "選擇檔案",
+		"fromFile": "檔案內容",
+		"problemUnreadable": "我們的線人把那個檔案舉到光下端詳，一個字也沒認出來。請重新匯出一份再試。",
+		"problemNotOurs": "這個檔案本身完全沒問題，只是不是我們家的。請選擇一個從 ArenaSwap 匯出的檔案。",
+		"problemTooNew": "這個檔案來自更新版本的 ArenaSwap。請先更新擴充功能，然後再試一次。",
+		"problemSaveFailed": "沒能儲存成功，請再試一次。",
+		"fileMeta": "個人資料「{name}」，匯出於 {date}。",
+		"fileMetaUndated": "個人資料「{name}」。",
+		"addAsNew": "加入為新個人資料",
+		"replaceWarning": "取代會把 {name} 中的所有設定換成檔案裡的設定。",
+		"replace": "取代 {name}",
+		"applying": "搬家中…",
+		"startOver": "選擇其他檔案",
+		"doneTitle": "{name} 搬家完成，全部就位。",
+		"closeTab": "關閉分頁"
+	},
+	"profiles": {
+		"section": "個人資料",
+		"inUse": "使用中",
+		"more": "{name} 的更多選項",
+		"rename": "重新命名",
+		"export": "匯出",
+		"delete": "刪除",
+		"new": "新增個人資料",
+		"newTitle": "新增個人資料",
+		"renameTitle": "重新命名個人資料",
+		"deleteTitle": "刪除 {name}？",
+		"deleteBody": "它的設定和夢幻陣容也會一併刪除。請先匯出，留一份副本。",
+		"nameLabel": "名稱",
+		"defaultName": "個人資料 {count}",
+		"nameTaken": "你已經有一個叫 {name} 的個人資料了。",
+		"copyCurrent": "複製 {name}",
+		"startFresh": "從頭開始",
+		"save": "儲存",
+		"cancel": "取消",
+		"switchedToast": "已切換到 {name}。",
+		"changeFailed": "沒能儲存成功，請再試一次。"
 	}
 }

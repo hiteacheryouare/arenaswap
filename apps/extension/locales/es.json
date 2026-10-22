@@ -266,6 +266,8 @@
 		"groupDisplayDesc": "Lo que muestra la lista de partidos y cómo se ve ArenaSwap.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Dónde dejarte cuando todos los partidos se apagan.",
+		"groupBackup": "Perfiles y copia",
+		"groupBackupDesc": "Cambia entre configuraciones o llévate una a otro navegador.",
 		"bonusesSection": "Impulsos",
 		"whenToSwitchSection": "Cuándo cambiar",
 		"tabsSection": "Pestañas",
@@ -303,6 +305,7 @@
 		"keywordsStandby": "respaldo, relleno, inactivo, reserva, tranquilo",
 		"keywordsStandbyThreshold": "puntuacion, corte, limite, debajo, tranquilo",
 		"keywordsStandbyTab": "pestana, ventana, pagina, destino",
+		"keywordsBackup": "perfiles, perfil, cambiar, configuracion, nuevo, renombrar, cambiar nombre, eliminar, borrar, copia, respaldo, backup, exportar, importar, sincronizar, sync, archivo, transferir, restaurar, mover, descargar, subir",
 		"keywordsBossDecoy": "jefe, esconder, panico, trabajo, clase, hoja de calculo, tapadera, silenciar, atajo, escapar",
 		"keywordsDemo": "falso, ejemplo, prueba, vista previa, simulacion",
 		"aboutSetting": "Acerca de {setting}",
@@ -951,7 +954,8 @@
 		"feature2Body": "Abre la transmisión de cada partido en su propia pestaña y luego vincula esa pestaña al partido en ArenaSwap.",
 		"feature3Title": "Tú tienes el control",
 		"feature3Body": "Desactiva el cambio cuando quieras. En Ajustes puedes elegir cada cuánto cambia ArenaSwap y cuánto espera entre un cambio y otro.",
-		"gotIt": "Entendido"
+		"gotIt": "Entendido",
+		"importBackup": "¿Tienes un archivo de copia? Sáltate la configuración e impórtalo"
 	},
 	"flowStepper": {
 		"step": "Paso $1 de $2"
@@ -1450,5 +1454,63 @@
 			"shutouts": "Blanqueada",
 			"overtimeLosses": "Derrota en tiempo extra"
 		}
+	},
+	"backup": {
+		"open": "Crear copia o restaurar…",
+		"syncedSection": "Se sincroniza con tu navegador",
+		"syncedExplainer": "Todos los ajustes de {name}, siempre que la sincronización esté activada en tu navegador.",
+		"exportTitle": "Exporta tu configuración",
+		"exportProfile": "Perfil",
+		"exportButton": "Descargar copia",
+		"exportFileHint": "Se guarda como {fileName}.",
+		"exportFailed": "Eso no se ha empaquetado. Inténtalo otra vez.",
+		"rowLeagues": "Ligas activas",
+		"rowFavorites": "Equipos favoritos",
+		"rowScoring": "Modo de puntuación",
+		"rowRoster": "Plantilla de Fantasy",
+		"yourSetup": "Tu configuración",
+		"none": "Ninguno",
+		"noChange": "Sin cambios"
+	},
+	"backupImport": {
+		"title": "Importa tu configuración",
+		"dropTitle": "Suelta una copia aquí",
+		"chooseFile": "Elegir un archivo",
+		"fromFile": "Del archivo",
+		"problemUnreadable": "Nuestras fuentes pusieron ese archivo a contraluz y no lograron descifrar ni una palabra. Prueba con una exportación nueva.",
+		"problemNotOurs": "Es un archivo perfectamente válido, pero no es de los nuestros. Elige uno que hayas exportado desde ArenaSwap.",
+		"problemTooNew": "Este archivo viene de una versión más reciente de ArenaSwap. Actualiza la extensión y vuelve a intentarlo.",
+		"problemSaveFailed": "Eso no se ha guardado. Inténtalo otra vez.",
+		"fileMeta": "Perfil \"{name}\", exportado el {date}.",
+		"fileMetaUndated": "Perfil \"{name}\".",
+		"addAsNew": "Agregar como perfil nuevo",
+		"replaceWarning": "Reemplazar cambia todos los ajustes de {name} por los del archivo.",
+		"replace": "Reemplazar {name}",
+		"applying": "Haciendo la mudanza…",
+		"startOver": "Elegir otro archivo",
+		"doneTitle": "{name} ya se mudó por completo.",
+		"closeTab": "Cerrar pestaña"
+	},
+	"profiles": {
+		"section": "Perfiles",
+		"inUse": "En uso",
+		"more": "Más para {name}",
+		"rename": "Cambiar nombre",
+		"export": "Exportar",
+		"delete": "Eliminar",
+		"new": "Perfil nuevo",
+		"newTitle": "Perfil nuevo",
+		"renameTitle": "Cambiar nombre del perfil",
+		"deleteTitle": "¿Eliminar {name}?",
+		"deleteBody": "Sus ajustes y su plantilla de Fantasy se van con él. Expórtalo antes para guardar una copia.",
+		"nameLabel": "Nombre",
+		"defaultName": "Perfil {count}",
+		"nameTaken": "Ya tienes un perfil llamado {name}.",
+		"copyCurrent": "Copiar {name}",
+		"startFresh": "Empezar de cero",
+		"save": "Guardar",
+		"cancel": "Cancelar",
+		"switchedToast": "Cambiaste a {name}.",
+		"changeFailed": "Eso no se ha guardado. Inténtalo otra vez."
 	}
 }

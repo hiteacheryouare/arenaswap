@@ -722,6 +722,87 @@
 		border-top:  1px solid var(--as-bg-1);
 	}
 
+	// Read-only rows want the stack's rule without its room, which is sized for sliders.
+	.backup-summary > * + * {
+		margin-top:  0.3rem;
+		padding-top: 0.3rem;
+		border-top:  1px solid var(--as-bg-1);
+	}
+
+	.profile-list {
+		display:        flex;
+		flex-direction: column;
+		gap:            0.25rem;
+	}
+
+	.profile-row {
+		display:       flex;
+		align-items:   center;
+		border-radius: 0.35rem;
+		background:    var(--as-bg-1);
+		border:        1px solid var(--as-bg-2);
+
+		&[data-active='true'] { border-color: color-mix(in srgb, var(--as-primary-base) 55%, transparent); }
+	}
+
+	.profile-row-switch {
+		display:     flex;
+		flex:        1 1 auto;
+		align-items: center;
+		gap:         0.5rem;
+		min-width:   0;
+		padding:     0.4rem 0.6rem;
+		border:      0;
+		background:  transparent;
+		color:       var(--as-fg-body);
+		text-align:  start;
+
+		&:not([aria-current]):hover .profile-row-name { color: var(--as-primary-base); }
+
+		&:focus-visible {
+			outline:        1px solid bs.$primary;
+			outline-offset: -1px;
+			border-radius:  0.35rem;
+		}
+	}
+
+	.profile-row-icon {
+		flex-shrink: 0;
+		color:       var(--as-fg-3);
+
+		[aria-current] > & { color: var(--as-primary-base); }
+	}
+
+	.profile-row-name {
+		overflow:      hidden;
+		font-size:     0.78rem;
+		font-weight:   600;
+		white-space:   nowrap;
+		text-overflow: ellipsis;
+		transition:    color m.$motion-quick m.$motion-ease;
+	}
+
+	.profile-row-more {
+		padding:     0.2rem 0.55rem;
+		color:       var(--as-fg-3);
+		line-height: 1;
+
+		&:hover:not(:disabled) { color: var(--as-fg-body); }
+	}
+
+	// Sized to the 320px popup, on the same raised surface as the menus.
+	.profile-dialog {
+		--as-dialog-bg:           var(--as-bg-1);
+		--as-dialog-border-color: var(--as-bg-2);
+		--as-dialog-margin:       1rem;
+		--as-dialog-padding:      0.85rem 1rem;
+		--as-dialog-header-padding: 0.85rem 1rem 0;
+		--as-dialog-header-border-width: 0;
+		--as-dialog-footer-padding: 0 1rem 0.85rem;
+		--as-dialog-footer-border-width: 0;
+		--as-dialog-footer-gap:   0.4rem;
+	}
+
 	.setup-header {
 		display:       flex;
 		align-items:   center;

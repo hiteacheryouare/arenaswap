@@ -266,6 +266,8 @@
 		"groupDisplayDesc": "Cosa mostra l'elenco delle partite e che aspetto ha ArenaSwap.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Dove parcheggiarti quando tutte le partite si calmano.",
+		"groupBackup": "Profili e backup",
+		"groupBackupDesc": "Passa da una configurazione all'altra, oppure portane una su un altro browser.",
 		"bonusesSection": "Boost",
 		"whenToSwitchSection": "Quando cambiare",
 		"tabsSection": "Schede",
@@ -303,6 +305,7 @@
 		"keywordsStandby": "riserva, riempitivo, inattivo, backup, silenzio",
 		"keywordsStandbyThreshold": "punteggio, soglia, limite, sotto, silenzio",
 		"keywordsStandbyTab": "scheda, finestra, pagina, destinazione",
+		"keywordsBackup": "profili, profilo, cambia, passa, configurazione, impostazioni, nuovo, rinomina, elimina, cancella, backup, copia, esporta, importa, esportazione, importazione, sincronizza, sync, file, trasferire, ripristina, sposta, scarica, carica",
 		"keywordsBossDecoy": "capo, nascondere, panico, lavoro, scuola, foglio di calcolo, copertura, muto, scorciatoia, fuga",
 		"keywordsDemo": "finto, esempio, test, anteprima, prova",
 		"aboutSetting": "Info su {setting}",
@@ -951,7 +954,8 @@
 		"feature2Body": "Apri la diretta di ogni partita nella sua scheda, poi collega quella scheda alla partita in ArenaSwap.",
 		"feature3Title": "Il controllo resta tuo",
 		"feature3Body": "Disattiva il cambio quando vuoi. Nelle Impostazioni scegli ogni quanto ArenaSwap cambia e quanto aspetta tra un cambio e l'altro.",
-		"gotIt": "Capito"
+		"gotIt": "Capito",
+		"importBackup": "Hai un file di backup? Salta la configurazione e importalo"
 	},
 	"flowStepper": {
 		"step": "Passo $1 di $2"
@@ -1450,5 +1454,63 @@
 			"shutouts": "Porta inviolata",
 			"overtimeLosses": "Sconfitta in overtime"
 		}
+	},
+	"backup": {
+		"open": "Backup o ripristino…",
+		"syncedSection": "Si sincronizza con il browser",
+		"syncedExplainer": "Tutte le impostazioni di {name}, quando la sincronizzazione è attiva nel browser.",
+		"exportTitle": "Esporta le tue impostazioni",
+		"exportProfile": "Profilo",
+		"exportButton": "Scarica il backup",
+		"exportFileHint": "Si salva come {fileName}.",
+		"exportFailed": "Non si è impacchettato. Riprova.",
+		"rowLeagues": "Leghe attive",
+		"rowFavorites": "Squadre preferite",
+		"rowScoring": "Modalità di punteggio",
+		"rowRoster": "Rosa Fantasy",
+		"yourSetup": "Le tue impostazioni",
+		"none": "Nessuno",
+		"noChange": "Nessuna modifica"
+	},
+	"backupImport": {
+		"title": "Importa le tue impostazioni",
+		"dropTitle": "Trascina qui un backup",
+		"chooseFile": "Scegli un file",
+		"fromFile": "Dal file",
+		"problemUnreadable": "Le nostre fonti hanno guardato quel file in controluce e non sono riuscite a decifrare nemmeno una parola. Prova con un'esportazione nuova.",
+		"problemNotOurs": "È un file perfettamente valido, ma non è dei nostri. Scegline uno esportato da ArenaSwap.",
+		"problemTooNew": "Questo file arriva da una versione più recente di ArenaSwap. Aggiorna l'estensione e riprova.",
+		"problemSaveFailed": "Non è stato salvato. Riprova.",
+		"fileMeta": "Profilo \"{name}\", esportato il {date}.",
+		"fileMetaUndated": "Profilo \"{name}\".",
+		"addAsNew": "Aggiungi come nuovo profilo",
+		"replaceWarning": "Sostituire scambia tutte le impostazioni di {name} con quelle del file.",
+		"replace": "Sostituisci {name}",
+		"applying": "Trasloco in corso…",
+		"startOver": "Scegli un altro file",
+		"doneTitle": "Trasloco di {name} completato.",
+		"closeTab": "Chiudi scheda"
+	},
+	"profiles": {
+		"section": "Profili",
+		"inUse": "In uso",
+		"more": "Altro per {name}",
+		"rename": "Rinomina",
+		"export": "Esporta",
+		"delete": "Elimina",
+		"new": "Nuovo profilo",
+		"newTitle": "Nuovo profilo",
+		"renameTitle": "Rinomina profilo",
+		"deleteTitle": "Eliminare {name}?",
+		"deleteBody": "Le sue impostazioni e la sua rosa Fantasy se ne vanno con lui. Esportalo prima per tenerne una copia.",
+		"nameLabel": "Nome",
+		"defaultName": "Profilo {count}",
+		"nameTaken": "Hai già un profilo chiamato {name}.",
+		"copyCurrent": "Copia {name}",
+		"startFresh": "Ricomincia da zero",
+		"save": "Salva",
+		"cancel": "Annulla",
+		"switchedToast": "Passato a {name}.",
+		"changeFailed": "Non è stato salvato. Riprova."
 	}
 }

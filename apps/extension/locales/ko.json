@@ -266,6 +266,8 @@
 		"groupDisplayDesc": "경기 목록에 표시할 내용과 ArenaSwap의 외관이에요.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "모든 경기가 조용해졌을 때 이동할 곳이에요.",
+		"groupBackup": "프로필 및 백업",
+		"groupBackupDesc": "설정을 전환하거나 다른 브라우저로 가져가요.",
 		"bonusesSection": "부스트",
 		"whenToSwitchSection": "전환 시점",
 		"tabsSection": "탭",
@@ -303,6 +305,7 @@
 		"keywordsStandby": "대기, 백업, 예비, 조용함",
 		"keywordsStandbyThreshold": "점수, 기준점, 제한, 이하, 조용함",
 		"keywordsStandbyTab": "탭, 창, 페이지, 목적지",
+		"keywordsBackup": "프로필, 전환, 바꾸기, 설정, 새로 만들기, 이름 변경, 삭제, 백업, 내보내기, 가져오기, 동기화, 싱크, 파일, 이전, 복원, 이동, 다운로드, 업로드",
 		"keywordsBossDecoy": "상사, 숨기기, 비상, 회사, 수업, 스프레드시트, 위장, 음소거, 단축키, 탈출",
 		"keywordsDemo": "가짜, 샘플, 테스트, 미리보기, 더미",
 		"aboutSetting": "{setting} 안내",
@@ -951,7 +954,8 @@
 		"feature2Body": "경기마다 스트림을 각자의 탭에서 열고, ArenaSwap에서 그 탭을 경기에 연결하세요.",
 		"feature3Title": "컨트롤은 항상 당신의 몫이에요",
 		"feature3Body": "언제든 전환을 끌 수 있어요. 설정에서 ArenaSwap이 얼마나 자주 전환할지, 전환 사이에 얼마나 기다릴지 고를 수 있어요.",
-		"gotIt": "확인"
+		"gotIt": "확인",
+		"importBackup": "백업 파일이 있나요? 설정을 건너뛰고 가져오기"
 	},
 	"flowStepper": {
 		"step": "$1/$2단계"
@@ -1450,5 +1454,63 @@
 			"shutouts": "영봉",
 			"overtimeLosses": "연장전 패배"
 		}
+	},
+	"backup": {
+		"open": "백업 또는 복원…",
+		"syncedSection": "브라우저와 동기화돼요",
+		"syncedExplainer": "브라우저에서 동기화가 켜져 있으면 {name}의 모든 설정이 동기화돼요.",
+		"exportTitle": "설정 내보내기",
+		"exportProfile": "프로필",
+		"exportButton": "백업 다운로드",
+		"exportFileHint": "{fileName} 이름으로 저장돼요.",
+		"exportFailed": "파일로 묶지 못했어요. 다시 한번 해 보세요.",
+		"rowLeagues": "켜 둔 리그",
+		"rowFavorites": "응원팀",
+		"rowScoring": "점수 모드",
+		"rowRoster": "판타지 로스터",
+		"yourSetup": "내 설정",
+		"none": "없음",
+		"noChange": "변경 없음"
+	},
+	"backupImport": {
+		"title": "설정 가져오기",
+		"dropTitle": "여기에 백업을 놓으세요",
+		"chooseFile": "파일 고르기",
+		"fromFile": "파일 내용",
+		"problemUnreadable": "저희 정보원이 그 파일을 불빛에 비춰 봤지만 한 글자도 알아보지 못했어요. 새로 내보내서 다시 해 보세요.",
+		"problemNotOurs": "파일 자체는 멀쩡하지만 저희 것은 아니에요. ArenaSwap에서 내보낸 파일을 골라 주세요.",
+		"problemTooNew": "이 파일은 더 새로운 ArenaSwap에서 만들어졌어요. 확장 프로그램을 업데이트한 뒤 다시 해 보세요.",
+		"problemSaveFailed": "저장하지 못했어요. 다시 한번 해 보세요.",
+		"fileMeta": "프로필 \"{name}\", {date}에 내보냄.",
+		"fileMetaUndated": "프로필 \"{name}\".",
+		"addAsNew": "새 프로필로 추가",
+		"replaceWarning": "바꾸기를 누르면 {name}의 모든 설정이 파일의 설정으로 교체돼요.",
+		"replace": "{name} 바꾸기",
+		"applying": "이사 중…",
+		"startOver": "다른 파일 고르기",
+		"doneTitle": "{name}의 이사가 모두 끝났어요.",
+		"closeTab": "탭 닫기"
+	},
+	"profiles": {
+		"section": "프로필",
+		"inUse": "사용 중",
+		"more": "{name} 더 보기",
+		"rename": "이름 변경",
+		"export": "내보내기",
+		"delete": "삭제",
+		"new": "새 프로필",
+		"newTitle": "새 프로필",
+		"renameTitle": "프로필 이름 변경",
+		"deleteTitle": "{name} 프로필을 삭제할까요?",
+		"deleteBody": "설정과 판타지 로스터도 함께 사라져요. 먼저 내보내서 사본을 챙겨 두세요.",
+		"nameLabel": "이름",
+		"defaultName": "프로필 {count}",
+		"nameTaken": "이미 {name} 프로필이 있어요.",
+		"copyCurrent": "{name} 복사",
+		"startFresh": "처음부터 시작",
+		"save": "저장",
+		"cancel": "취소",
+		"switchedToast": "{name} 프로필로 전환했어요.",
+		"changeFailed": "저장하지 못했어요. 다시 한번 해 보세요."
 	}
 }

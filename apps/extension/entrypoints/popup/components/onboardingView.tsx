@@ -15,12 +15,15 @@ interface onboardingViewProps {
 	leagueLogos: LeagueLogoMap;
 	onComplete: (leagues: LeagueId[], favorites: string[]) => void;
 	onStartWalkthrough?: (leagues: LeagueId[], favorites: string[]) => void;
+	// A fresh profile goes straight to the pickers and back out again, with no welcome either side.
+	startStep?: 1 | 2;
+	onLeave?: () => void;
 }
 
 const defaultLeagues: LeagueId[] = ['nba', 'nfl', 'nhl', 'mlb'];
 
-const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboardingViewProps) => {
-	const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough, startStep = 1, onLeave }: onboardingViewProps) => {
+	const [step, setStep] = useState<1 | 2 | 3 | 4>(startStep);
 	const theme = useDocumentTheme();
 	const [selectedLeagues, setSelectedLeagues] = useState<Set<LeagueId>>(() => new Set(defaultLeagues));
 	const [selectedFavorites, setSelectedFavorites] = useState<Set<string>>(new Set());
@@ -81,8 +84,14 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 	};
 
 	const finish = (withFavorites: boolean) => {
-		setPendingLeagues([...selectedLeagues].toSorted((a, b) => leagueOrder[a] - leagueOrder[b]));
-		setPendingFavorites(withFavorites ? [...selectedFavorites] : []);
+		const leagues = [...selectedLeagues].toSorted((a, b) => leagueOrder[a] - leagueOrder[b]);
+		const favorites = withFavorites ? [...selectedFavorites] : [];
+		if (startStep !== 1) {
+			onComplete(leagues, favorites);
+			return;
+		}
+		setPendingLeagues(leagues);
+		setPendingFavorites(favorites);
 		setStep(4);
 	};
 
@@ -99,7 +108,9 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 						leagueLogos={leagueLogos}
 						onToggleLeague={onToggleLeague}
 						onToggleSport={onToggleSport}
-						onBack={() => setStep(1)}
+						onBack={() => (startStep === 1 ? setStep(1) : onLeave?.())}
+						step={step - startStep + 1}
+						totalSteps={4 - startStep}
 						onNext={() => { void onNext(); }}
 					/>
 				)}
@@ -112,6 +123,8 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough }: onboard
 						onToggleFavorite={onToggleFavorite}
 						onBack={() => setStep(2)}
 						onRetry={() => { void onNext(); }}
+						step={step - startStep + 1}
+						totalSteps={4 - startStep}
 						onSkip={() => finish(false)}
 						onDone={() => finish(true)}
 					/>

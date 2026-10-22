@@ -14,6 +14,8 @@ interface onboardingLeaguePickerProps {
 	onToggleSport: (sport: SportType, selectAll: boolean) => void;
 	onBack: () => void;
 	onNext: () => void;
+	step?: number;
+	totalSteps?: number;
 }
 
 const sportEmojis: Record<SportType, string> = {
@@ -41,13 +43,15 @@ const onboardingLeaguePicker = ({
 	onToggleSport,
 	onBack,
 	onNext,
+	step = 2,
+	totalSteps = 3,
 }: onboardingLeaguePickerProps) => (
 	<div className='popup-container'>
 		<div className='d-flex align-items-center mb-1'>
 			<button className='btn btn-link btn-sm p-0 fg-secondary small' onClick={onBack}>
 				<i className='bi bi-arrow-left me-1' />{i18n.t('leaguePicker.back')}
 			</button>
-			<FlowStepper step={2} total={3} className='ms-auto' />
+			<FlowStepper step={step} total={totalSteps} className='ms-auto' />
 		</div>
 		<div className='fw-bold lh-xs mb-5 fs-lg popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('leaguePicker.title')}</div>
 

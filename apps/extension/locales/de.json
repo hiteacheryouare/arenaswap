@@ -266,6 +266,8 @@
 		"groupDisplayDesc": "Was die Spielliste zeigt und wie ArenaSwap aussieht.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Wohin du kommst, wenn alle Spiele einschlafen.",
+		"groupBackup": "Profile & Backup",
+		"groupBackupDesc": "Wechsle zwischen Setups oder nimm eins in einen anderen Browser mit.",
 		"bonusesSection": "Boosts",
 		"whenToSwitchSection": "Wann wechseln",
 		"tabsSection": "Tabs",
@@ -303,6 +305,7 @@
 		"keywordsStandby": "ruckfall, ausweich, leerlauf, reserve, ruhig",
 		"keywordsStandbyThreshold": "wert, grenze, limit, unter, ruhig",
 		"keywordsStandbyTab": "tab, fenster, seite, ziel",
+		"keywordsBackup": "profile, profil, wechseln, umschalten, setup, neu, umbenennen, loschen, backup, sicherung, export, import, sync, datei, ubertragen, wiederherstellen, umziehen, download, herunterladen, upload, hochladen",
 		"keywordsBossDecoy": "chef, verstecken, panik, arbeit, schule, tabelle, tarnung, stumm, tastenkürzel, flucht",
 		"keywordsDemo": "fake, beispiel, test, vorschau, sandkasten, attrappe",
 		"aboutSetting": "Info zu {setting}",
@@ -951,7 +954,8 @@
 		"feature2Body": "Öffne den Stream jedes Spiels in einem eigenen Tab und verknüpfe ihn in ArenaSwap mit dem Spiel.",
 		"feature3Title": "Du behältst die Kontrolle",
 		"feature3Body": "Schalte das Wechseln jederzeit aus. In den Einstellungen bestimmst du, wie oft ArenaSwap wechselt und wie lange es dazwischen wartet.",
-		"gotIt": "Verstanden"
+		"gotIt": "Verstanden",
+		"importBackup": "Hast du eine Backup-Datei? Einrichtung überspringen und importieren"
 	},
 	"flowStepper": {
 		"step": "Schritt $1 von $2"
@@ -1450,5 +1454,63 @@
 			"shutouts": "Shutout",
 			"overtimeLosses": "Niederlage nach Verlängerung"
 		}
+	},
+	"backup": {
+		"open": "Sichern oder wiederherstellen…",
+		"syncedSection": "Sync mit deinem Browser",
+		"syncedExplainer": "Jede Einstellung in {name}, sobald Sync in deinem Browser eingeschaltet ist.",
+		"exportTitle": "Dein Setup exportieren",
+		"exportProfile": "Profil",
+		"exportButton": "Backup herunterladen",
+		"exportFileHint": "Wird als {fileName} gespeichert.",
+		"exportFailed": "Das ließ sich nicht einpacken. Versuch es gleich nochmal.",
+		"rowLeagues": "Aktive Ligen",
+		"rowFavorites": "Lieblingsteams",
+		"rowScoring": "Wertungsmodus",
+		"rowRoster": "Fantasy-Kader",
+		"yourSetup": "Dein Setup",
+		"none": "Keine",
+		"noChange": "Keine Änderung"
+	},
+	"backupImport": {
+		"title": "Dein Setup importieren",
+		"dropTitle": "Backup hier ablegen",
+		"chooseFile": "Datei wählen",
+		"fromFile": "Aus der Datei",
+		"problemUnreadable": "Unsere Quellen haben die Datei gegen das Licht gehalten und kein einziges Wort entziffern können. Versuch es mit einem frischen Export.",
+		"problemNotOurs": "Das ist eine einwandfreie Datei, nur keine von uns. Wähle eine, die du aus ArenaSwap exportiert hast.",
+		"problemTooNew": "Diese Datei stammt aus einer neueren ArenaSwap-Version. Aktualisiere die Erweiterung und versuch es dann nochmal.",
+		"problemSaveFailed": "Das wurde nicht gespeichert. Versuch es gleich nochmal.",
+		"fileMeta": "Profil \"{name}\", exportiert am {date}.",
+		"fileMetaUndated": "Profil \"{name}\".",
+		"addAsNew": "Als neues Profil hinzufügen",
+		"replaceWarning": "Ersetzen tauscht jede Einstellung in {name} gegen die aus der Datei aus.",
+		"replace": "{name} ersetzen",
+		"applying": "Zieht ein…",
+		"startOver": "Andere Datei wählen",
+		"doneTitle": "{name} ist komplett eingezogen.",
+		"closeTab": "Tab schließen"
+	},
+	"profiles": {
+		"section": "Profile",
+		"inUse": "Aktiv",
+		"more": "Mehr für {name}",
+		"rename": "Umbenennen",
+		"export": "Exportieren",
+		"delete": "Löschen",
+		"new": "Neues Profil",
+		"newTitle": "Neues Profil",
+		"renameTitle": "Profil umbenennen",
+		"deleteTitle": "{name} löschen?",
+		"deleteBody": "Seine Einstellungen und sein Fantasy-Kader sind dann weg. Exportiere es vorher, um eine Kopie zu behalten.",
+		"nameLabel": "Name",
+		"defaultName": "Profil {count}",
+		"nameTaken": "Du hast schon ein Profil namens {name}.",
+		"copyCurrent": "{name} kopieren",
+		"startFresh": "Neu anfangen",
+		"save": "Speichern",
+		"cancel": "Abbrechen",
+		"switchedToast": "Zu {name} gewechselt.",
+		"changeFailed": "Das wurde nicht gespeichert. Versuch es gleich nochmal."
 	}
 }

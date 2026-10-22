@@ -78,4 +78,22 @@ describe('onboarding', () => {
 		cy.contains('Step 1 of 3').should('not.exist');
 		cy.contains('.game-card', sixersThunder.homeTeam.abbreviation).should('be.visible');
 	});
+
+	it('lets somebody with a backup skip setup for the import tab', () => {
+		cy.get('#onboardingImport').click();
+		cy.background().its('openedUrls').should('deep.equal', ['chrome-extension://arenaswap-e2e/settingsBackup.html#import']);
+	});
+
+	// An import writes prefs but may carry the flag as false, from a browser that never finished
+	// onboarding. Stored prefs are what the popup goes on, so it still skips straight to the games.
+	it('goes straight to the games after an import, whatever the file said about onboarding', () => {
+		cy.openPopup({
+			state: liveState(),
+			local: { onboardingCompleted: false },
+			sync: { prefs: { enabledLeagues: ['nba'] } },
+		});
+
+		cy.contains('Step 1 of 3').should('not.exist');
+		cy.contains('.game-card', sixersThunder.homeTeam.abbreviation).should('be.visible');
+	});
 });

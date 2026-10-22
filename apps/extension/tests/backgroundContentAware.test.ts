@@ -74,6 +74,7 @@ const startWorker = async (prefs: Partial<UserPreferences>, whistleAt?: number) 
 	(globalThis as { defineBackground?: unknown }).defineBackground = (fn: () => void) => fn();
 	(globalThis as { browser?: unknown }).browser = {
 		storage: {
+			onChanged: { addListener: () => {} },
 			sync: store({ prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...prefs }) }),
 			session: store({ tabRegistry: registry }),
 			local: store({ demoMode: false }),

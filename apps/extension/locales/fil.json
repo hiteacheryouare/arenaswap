@@ -266,6 +266,8 @@
 		"groupDisplayDesc": "Kung ano ang ipinapakita ng listahan ng laro, at kung ano ang itsura ng ArenaSwap.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Kung saan ka ipa-park kapag tahimik na ang lahat ng laro.",
+		"groupBackup": "Mga Profile at Backup",
+		"groupBackupDesc": "Magpalit ng setup, o dalhin ang isa sa ibang browser.",
 		"bonusesSection": "Mga Boost",
 		"whenToSwitchSection": "Kailan Lilipat",
 		"tabsSection": "Mga Tab",
@@ -303,6 +305,7 @@
 		"keywordsStandby": "fallback, backup, tahimik, standby",
 		"keywordsStandbyThreshold": "score, cutoff, limit, ibaba, tahimik",
 		"keywordsStandbyTab": "tab, window, page, patutunguhan",
+		"keywordsBackup": "profile, mga profile, magpalit, palit, switch, setup, bago, new, palitan ang pangalan, rename, burahin, delete, backup, kopya, export, import, sync, file, ilipat, ibalik, i-download, i-upload",
 		"keywordsBossDecoy": "boss, magtago, panic, trabaho, eskwela, spreadsheet, pekeng pahina, mute, shortcut, takas",
 		"keywordsDemo": "fake, sample, test, preview, sandbox, dummy",
 		"aboutSetting": "Tungkol sa {setting}",
@@ -951,7 +954,8 @@
 		"feature2Body": "Buksan ang stream ng bawat laro sa sarili nitong tab, tapos i-link ang tab na iyon sa laro sa ArenaSwap.",
 		"feature3Title": "Ikaw pa rin ang may Kontrol",
 		"feature3Body": "I-off ang paglipat kahit kailan. Sa Mga Setting, puwede mong piliin kung gaano kadalas lumipat at gaano katagal maghihintay ang ArenaSwap.",
-		"gotIt": "Gets Ko!"
+		"gotIt": "Gets Ko!",
+		"importBackup": "May backup file ka? Laktawan ang setup at i-import ito"
 	},
 	"flowStepper": {
 		"step": "Step $1 ng $2"
@@ -1450,5 +1454,63 @@
 			"shutouts": "Shutout",
 			"overtimeLosses": "Talo sa overtime"
 		}
+	},
+	"backup": {
+		"open": "I-back up o i-restore…",
+		"syncedSection": "Nagsi-sync sa browser mo",
+		"syncedExplainer": "Lahat ng setting sa {name}, basta naka-on ang sync sa browser mo.",
+		"exportTitle": "I-export ang setup mo",
+		"exportProfile": "Profile",
+		"exportButton": "I-download ang backup",
+		"exportFileHint": "Mase-save bilang {fileName}.",
+		"exportFailed": "Hindi ito nabalot. Subukan ulit.",
+		"rowLeagues": "Mga naka-on na liga",
+		"rowFavorites": "Mga paboritong team",
+		"rowScoring": "Scoring mode",
+		"rowRoster": "Fantasy roster",
+		"yourSetup": "Ang setup mo",
+		"none": "Wala",
+		"noChange": "Walang pagbabago"
+	},
+	"backupImport": {
+		"title": "I-import ang setup mo",
+		"dropTitle": "I-drop dito ang backup",
+		"chooseFile": "Pumili ng file",
+		"fromFile": "Mula sa file",
+		"problemUnreadable": "Itinapat ng mga source namin ang file na iyon sa ilaw at wala silang mabasang kahit isang salita. Subukan ang bagong export.",
+		"problemNotOurs": "Maayos naman ang file na iyan, hindi lang amin. Pumili ng na-export mo mula sa ArenaSwap.",
+		"problemTooNew": "Galing sa mas bagong ArenaSwap ang file na ito. I-update ang extension, tapos subukan ulit.",
+		"problemSaveFailed": "Hindi ito na-save. Subukan ulit.",
+		"fileMeta": "Profile \"{name}\", na-export noong {date}.",
+		"fileMetaUndated": "Profile \"{name}\".",
+		"addAsNew": "Idagdag bilang bagong profile",
+		"replaceWarning": "Papalitan nito ang bawat setting sa {name} ng mga nasa file.",
+		"replace": "Palitan ang {name}",
+		"applying": "Naglilipat…",
+		"startOver": "Pumili ng ibang file",
+		"doneTitle": "Nakalipat nang buo ang {name}.",
+		"closeTab": "Isara ang tab"
+	},
+	"profiles": {
+		"section": "Mga Profile",
+		"inUse": "Ginagamit",
+		"more": "Higit pa para sa {name}",
+		"rename": "Palitan ang pangalan",
+		"export": "I-export",
+		"delete": "Burahin",
+		"new": "Bagong profile",
+		"newTitle": "Bagong Profile",
+		"renameTitle": "Palitan ang Pangalan ng Profile",
+		"deleteTitle": "Burahin ang {name}?",
+		"deleteBody": "Kasama nitong mawawala ang mga setting at Fantasy roster nito. I-export muna para may kopya ka.",
+		"nameLabel": "Pangalan",
+		"defaultName": "Profile {count}",
+		"nameTaken": "May profile ka nang tinatawag na {name}.",
+		"copyCurrent": "Kopyahin ang {name}",
+		"startFresh": "Magsimula nang bago",
+		"save": "I-save",
+		"cancel": "Kanselahin",
+		"switchedToast": "Lumipat sa {name}.",
+		"changeFailed": "Hindi ito na-save. Subukan ulit."
 	}
 }

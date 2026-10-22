@@ -113,6 +113,9 @@ const defaultProps = {
 	onFantasyRulesReset: () => {},
 	fantasyRoster: [],
 	onFantasyRosterChange: () => {},
+	profiles: { profiles: [{ id: 'main', name: 'main' }], activeId: 'main' },
+	profilesBusy: false,
+	profileActions: { onSwitch: () => {}, onCreate: () => {}, onRename: () => {}, onDelete: () => {} },
 };
 
 const openGroup = (id: string) => cy.get(`#settingsGroup-${id}`).click();
@@ -148,7 +151,7 @@ describe('setupView index', () => {
 
 	it('lists every settings group with a description', () => {
 		cy.mount(<SetupView {...defaultProps} />);
-		cy.get('.settings-index-row').should('have.length', 6);
+		cy.get('.settings-index-row').should('have.length', 7);
 		cy.get('#settingsGroup-switching').find('.settings-index-desc').should('not.be.empty');
 	});
 
@@ -188,7 +191,7 @@ describe('setupView navigation', () => {
 		cy.mount(<SetupView {...defaultProps} onClose={spy} />);
 		openGroup('display');
 		cy.get('button.setup-header').click();
-		cy.get('.settings-index-row').should('have.length', 6);
+		cy.get('.settings-index-row').should('have.length', 7);
 		cy.get('@onClose').should('not.have.been.called');
 	});
 
@@ -230,6 +233,9 @@ describe('setupView search', () => {
 			scoringMode: 'custom',
 			leagueModes: { nfl: 'fantasy', nhl: 'blowouts' },
 		};
+		// The Backup & Sync page reads this device's flags out of storage as it opens.
+		const emptyArea = { get: (defaults: Record<string, unknown>) => Promise.resolve(defaults) };
+		(window as unknown as Record<string, unknown>).browser = { storage: { sync: emptyArea, local: emptyArea } };
 		settingsEntries.filter(entry => entry.controlId).forEach(entry => {
 			cy.mount(<SetupView {...defaultProps} prefs={everyModePrefs} />);
 			openGroup(entry.group);
@@ -299,7 +305,7 @@ describe('setupView search', () => {
 		cy.contains('.settings-index-row', 'Switch cooldown').click();
 		cy.get('button.setup-header').click();
 		cy.get('#settingsSearch').should('have.value', '');
-		cy.get('.settings-index-row').should('have.length', 6);
+		cy.get('.settings-index-row').should('have.length', 7);
 	});
 });
 

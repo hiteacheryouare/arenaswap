@@ -266,6 +266,8 @@
 		"groupDisplayDesc": "比赛列表显示什么，以及 ArenaSwap 的外观。",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "所有比赛都冷场时把您停在哪里。",
+		"groupBackup": "个人资料与备份",
+		"groupBackupDesc": "切换设置，或把设置带到另一个浏览器。",
 		"bonusesSection": "加成",
 		"whenToSwitchSection": "切换时机",
 		"tabsSection": "标签页",
@@ -303,6 +305,7 @@
 		"keywordsStandby": "备用, 后备, 空闲, 替补, 冷场",
 		"keywordsStandbyThreshold": "分数, 阈值, 下限, 低于, 冷场",
 		"keywordsStandbyTab": "标签页, 窗口, 页面, 目标",
+		"keywordsBackup": "个人资料, 配置文件, 档案, 切换, 设置, 新建, 重命名, 删除, 备份, 导出, 导入, 同步, 文件, 迁移, 恢复, 转移, 下载, 上传",
 		"keywordsBossDecoy": "老板, 隐藏, 紧急, 工作, 上课, 电子表格, 掩护, 静音, 快捷键, 逃跑",
 		"keywordsDemo": "虚构, 示例, 测试, 预览, 沙盒",
 		"aboutSetting": "关于{setting}",
@@ -951,7 +954,8 @@
 		"feature2Body": "把每场比赛的直播流开在各自的标签页，再在 ArenaSwap 中把该标签页绑定到对应比赛。",
 		"feature3Title": "您始终掌握控制权",
 		"feature3Body": "随时可以关闭切换。在设置中，您可以选择 ArenaSwap 切换的频繁程度，以及两次切换之间等待多久。",
-		"gotIt": "明白了"
+		"gotIt": "明白了",
+		"importBackup": "有备份文件？跳过设置，直接导入"
 	},
 	"flowStepper": {
 		"step": "第 $1 步，共 $2 步"
@@ -1450,5 +1454,63 @@
 			"shutouts": "零封",
 			"overtimeLosses": "加时失利"
 		}
+	},
+	"backup": {
+		"open": "备份或恢复…",
+		"syncedSection": "随浏览器同步",
+		"syncedExplainer": "{name} 中的所有设置，只要浏览器已开启同步。",
+		"exportTitle": "导出您的设置",
+		"exportProfile": "个人资料",
+		"exportButton": "下载备份",
+		"exportFileHint": "将保存为 {fileName}。",
+		"exportFailed": "没能打包成功，请再试一次。",
+		"rowLeagues": "已开启的联赛",
+		"rowFavorites": "收藏球队",
+		"rowScoring": "评分模式",
+		"rowRoster": "梦幻阵容",
+		"yourSetup": "您的设置",
+		"none": "无",
+		"noChange": "无变化"
+	},
+	"backupImport": {
+		"title": "导入您的设置",
+		"dropTitle": "把备份拖到这里",
+		"chooseFile": "选择文件",
+		"fromFile": "文件内容",
+		"problemUnreadable": "我们的线人把那个文件举到光下端详，一个字也没认出来。请重新导出一份再试。",
+		"problemNotOurs": "这个文件本身完全没问题，只是不是我们家的。请选择一个从 ArenaSwap 导出的文件。",
+		"problemTooNew": "这个文件来自更新版本的 ArenaSwap。请先更新扩展程序，然后再试一次。",
+		"problemSaveFailed": "没能保存成功，请再试一次。",
+		"fileMeta": "个人资料「{name}」，导出于 {date}。",
+		"fileMetaUndated": "个人资料「{name}」。",
+		"addAsNew": "添加为新个人资料",
+		"replaceWarning": "替换会把 {name} 中的所有设置换成文件里的设置。",
+		"replace": "替换 {name}",
+		"applying": "正在搬家…",
+		"startOver": "选择其他文件",
+		"doneTitle": "{name} 搬家完成，全部就位。",
+		"closeTab": "关闭标签页"
+	},
+	"profiles": {
+		"section": "个人资料",
+		"inUse": "使用中",
+		"more": "{name} 的更多操作",
+		"rename": "重命名",
+		"export": "导出",
+		"delete": "删除",
+		"new": "新建个人资料",
+		"newTitle": "新建个人资料",
+		"renameTitle": "重命名个人资料",
+		"deleteTitle": "删除 {name}？",
+		"deleteBody": "它的设置和梦幻阵容也会一并删除。请先导出，留一份副本。",
+		"nameLabel": "名称",
+		"defaultName": "个人资料 {count}",
+		"nameTaken": "您已经有一个名为 {name} 的个人资料了。",
+		"copyCurrent": "复制 {name}",
+		"startFresh": "从头开始",
+		"save": "保存",
+		"cancel": "取消",
+		"switchedToast": "已切换到 {name}。",
+		"changeFailed": "没能保存成功，请再试一次。"
 	}
 }

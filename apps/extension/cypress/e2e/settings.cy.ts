@@ -9,7 +9,7 @@ describe('settings round-trip', () => {
 
 	it('reaches the settings index from the games list and back again', () => {
 		openSettings();
-		cy.get('.settings-index-row').should('have.length', 6);
+		cy.get('.settings-index-row').should('have.length', 7);
 
 		cy.get('button.setup-header').click();
 		cy.contains('.popup-section-title', 'Live Games').should('be.visible');
@@ -21,7 +21,7 @@ describe('settings round-trip', () => {
 		cy.get('#sensitivity-range').should('exist');
 
 		cy.get('button.setup-header').click();
-		cy.get('.settings-index-row').should('have.length', 6);
+		cy.get('.settings-index-row').should('have.length', 7);
 	});
 
 	it('persists a sensitivity change to storage and the background', () => {
@@ -235,5 +235,46 @@ describe('the theme setting', () => {
 
 		cy.then(() => flipScheme(true));
 		html().should('have.attr', 'data-bs-theme', 'dark');
+	});
+});
+
+describe('profiles', () => {
+	beforeEach(() => cy.openPopup({ ...onboarded, state: liveState() }));
+
+	const newFreshProfile = (name: string) => {
+		openSettings();
+		openGroup('backup');
+		cy.get('#profileNew').click();
+		cy.get('#profileName').clear().type(name);
+		cy.get('#profileFresh').click();
+		cy.contains('Step 1 of 2').should('be.visible');
+		cy.contains('Which sports do you watch?').should('be.visible');
+	};
+
+	it('starts a fresh profile at the league picker and lands on its games', () => {
+		newFreshProfile('Weekend');
+		cy.contains('button', 'Next').click();
+		cy.contains('Step 2 of 2', { timeout: 15_000 }).should('be.visible');
+		cy.contains('button', 'Done').click();
+
+		cy.contains('.toast', 'Switched to Weekend.').should('be.visible');
+		cy.contains('.popup-section-title', 'Live Games').should('be.visible');
+		cy.background().should(background => {
+			expect(background.prefs?.enabledLeagues).to.have.members(['nba', 'nfl', 'nhl', 'mlb']);
+			expect(background.storage.sync.get('activeProfile')).to.have.property('name', 'Weekend');
+		});
+	});
+
+	it('backs out of a fresh profile into settings, then switches back to the old setup', () => {
+		newFreshProfile('Weekend');
+		cy.contains('button', 'Back').click();
+		openGroup('backup');
+		cy.contains('[aria-current="true"]', 'Weekend').should('exist');
+		cy.background().its('prefs.enabledLeagues').should('deep.equal', []);
+
+		cy.get('#profileSwitch-main').click();
+		cy.contains('.toast', 'Switched to main.').should('be.visible');
+		cy.get('#profileSwitch-main').should('have.attr', 'aria-current', 'true');
+		cy.background().its('prefs.enabledLeagues').should('deep.equal', onboardedPrefs().enabledLeagues);
 	});
 });

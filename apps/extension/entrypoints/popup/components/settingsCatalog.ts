@@ -2,7 +2,7 @@ import { i18n, type GeneratedI18nStructure } from '#i18n';
 import type { ScoringModeChoice } from '@arenaswap/core/types';
 import { foldForSearch } from '../../../utils/searchText';
 
-export type settingsGroupId = 'switching' | 'scoring' | 'favorites' | 'leagues' | 'display' | 'standby';
+export type settingsGroupId = 'switching' | 'scoring' | 'favorites' | 'leagues' | 'display' | 'standby' | 'backup';
 
 // i18n.t is overloaded, so Parameters<> on it collapses to never. Narrowing the generated
 // structure gives the catalog a real key type. Named substitutions are reported alongside
@@ -37,6 +37,7 @@ export const settingsGroups: readonly settingsGroup[] = [
 	{ id: 'leagues', icon: 'trophy', labelKey: 'setup.groupLeagues', descriptionKey: 'setup.groupLeaguesDesc' },
 	{ id: 'display', icon: 'eye', labelKey: 'setup.groupDisplay', descriptionKey: 'setup.groupDisplayDesc' },
 	{ id: 'standby', icon: 'broadcast', labelKey: 'setup.groupStandby', descriptionKey: 'setup.groupStandbyDesc' },
+	{ id: 'backup', icon: 'people', labelKey: 'setup.groupBackup', descriptionKey: 'setup.groupBackupDesc' },
 ] as const;
 
 export const settingsEntries: readonly settingsEntry[] = [
@@ -84,6 +85,8 @@ export const settingsEntries: readonly settingsEntry[] = [
 	{ group: 'standby', labelKey: 'setup.enableStandby', keywordsKey: 'setup.keywordsStandby', controlId: 'standbyStreamToggle' },
 	{ group: 'standby', labelKey: 'setup.standbyBelow', keywordsKey: 'setup.keywordsStandbyThreshold', controlId: 'standbyThresholdSlider' },
 	{ group: 'standby', labelKey: 'setup.standbyTab', keywordsKey: 'setup.keywordsStandbyTab', controlId: 'standbyTabSelect' },
+	{ group: 'backup', labelKey: 'profiles.new', keywordsKey: 'setup.keywordsBackup', controlId: 'profileNew' },
+	{ group: 'backup', labelKey: 'backup.open', keywordsKey: 'setup.keywordsBackup', controlId: 'backupOpen' },
 ] as const;
 
 export const normalize = foldForSearch;

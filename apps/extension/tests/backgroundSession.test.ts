@@ -82,6 +82,7 @@ const startWorker = async ({ games, openTabIds, activeTabId, atMs }: StartOption
 	(globalThis as { defineBackground?: unknown }).defineBackground = (fn: () => void) => fn();
 	(globalThis as { browser?: unknown }).browser = {
 		storage: {
+			onChanged: { addListener: () => {} },
 			sync: {
 				get: jest.fn().mockImplementation((request: unknown) => Promise.resolve(readStore(syncStore, request))),
 				set: jest.fn().mockImplementation((patch: Record<string, unknown>) => {

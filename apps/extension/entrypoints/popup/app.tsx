@@ -33,6 +33,17 @@ import {
 import { finishedTabNoticeKey, normalizeFinishedTabNotice } from '../../utils/finishedTabs';
 import { loadStoredUserPreferencesWithPresence, persistStoredUserPreferences } from '../../utils/prefsStorage';
 import { loadFantasyRoster, saveFantasyRoster } from '../../utils/fantasyRosterStorage';
+import {
+	createProfile,
+	defaultProfileId,
+	activeProfileSyncKey,
+	defaultProfileName,
+	deleteProfile,
+	followSyncedProfile,
+	renameProfile,
+	switchProfile,
+	type profileList,
+} from '../../utils/profiles';
 import { toggleModeSignal, withFantasyRule, withLeagueMode, withoutFantasySport } from '../../utils/scoringPrefs';
 import { nextTemperatureUnit } from '../../utils/temperatureUnitCycle';
 import { useTheme } from '../../utils/theme';
@@ -59,6 +70,10 @@ const onSetGameBoost = (gameId: string, boost: number) => {
 const openGuide = () => {
 	void browser.tabs.create({ url: browser.runtime.getURL('/guide.html') });
 };
+
+const defaultProfiles: profileList = { profiles: [{ id: defaultProfileId, name: defaultProfileName }], activeId: defaultProfileId };
+
+const activeProfileName = (list: profileList) => list.profiles.find(profile => profile.id === list.activeId)?.name ?? '';
 
 const isScoreUpdateMessage = (value: unknown): value is { type: 'SCORES_UPDATED' } => (
 	typeof value === 'object'
@@ -87,6 +102,9 @@ export default () => {
 	const [demoSeason, setDemoSeason] = useState<demoSeason>('real');
 	const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
 	const [walkthroughActive, setWalkthroughActive] = useState(false);
+	const [profiles, setProfiles] = useState<profileList>(defaultProfiles);
+	const [profilesBusy, setProfilesBusy] = useState(false);
+	const [freshProfileSetup, setFreshProfileSetup] = useState(false);
 	const [standbyOnboardingDone, setStandbyOnboardingDone] = useState(false);
 	const [standbyStreamTabId, setStandbyStreamTabId] = useState<number | null>(null);
 	const [dismissedSuggestions, setDismissedSuggestions] = useState<string[]>([]);
@@ -244,8 +262,9 @@ export default () => {
 
 	useEffect(() => {
 		const init = async () => {
-			// Both reads land before the first paint, so they go out together rather than one
-			// awaiting the other.
+			// A profile switch made in another browser is settled first, or the prefs read below
+			// would belong to the profile this browser is about to set aside.
+			setProfiles(await followSyncedProfile().catch(() => defaultProfiles));
 			const [{ prefs: normalizedPrefs, hasStored: hasStoredPrefs }, localResult, storedRoster] = await Promise.all([
 				loadStoredUserPreferencesWithPresence(),
 				browser.storage.local.get({
@@ -371,6 +390,66 @@ export default () => {
 			mutate(refreshed, { revalidate: false });
 			if (!settledRef.current) { settledRef.current = true; setSettled(true); }
 		})();
+	};
+
+	const adoptLiveSetup = async () => {
+		const [nextPrefs, nextRoster] = await Promise.all([loadStoredUserPreferencesWithPresence(), loadFantasyRoster().catch(() => [])]);
+		prefsRef.current = nextPrefs.prefs;
+		fantasyRosterRef.current = nextRoster;
+		setPrefs(nextPrefs.prefs);
+		setFantasyRoster(nextRoster);
+		// A switch is not an edit, so closing settings afterwards doesn't claim anything was saved.
+		settingsOnOpenRef.current = settingsSnapshot();
+	};
+
+	// Queued behind any save still on its way, so the setup set aside is the one on screen.
+	const runProfileChange = (change: () => Promise<profileList>, toast?: (list: profileList) => string) => {
+		setProfilesBusy(true);
+		const done = prefsSyncRef.current.catch(() => {}).then(async () => {
+			const list = await change();
+			setProfiles(list);
+			await adoptLiveSetup();
+			if (toast) showToast(toast(list), 'success');
+		});
+		prefsSyncRef.current = done;
+		void done.catch(() => showToast(i18n.t('profiles.changeFailed'), 'error')).finally(() => setProfilesBusy(false));
+		return done;
+	};
+
+	const profileActions = {
+		onSwitch: (id: string) => {
+			void runProfileChange(() => switchProfile(id), list => i18n.t('profiles.switchedToast', { name: activeProfileName(list) }));
+		},
+		onCreate: (name: string, fresh: boolean) => {
+			const blank = fresh ? { prefs: { ...createDefaultUserPreferences(), theme: prefsRef.current.theme }, fantasyRoster: [] } : undefined;
+			void runProfileChange(() => createProfile(name, blank), fresh ? undefined : list => i18n.t('profiles.switchedToast', { name: activeProfileName(list) }))
+				.then(() => { if (fresh) setFreshProfileSetup(true); }, () => {});
+		},
+		onRename: (id: string, name: string) => {
+			void runProfileChange(() => renameProfile(id, name));
+		},
+		onDelete: (id: string) => {
+			void runProfileChange(() => deleteProfile(id));
+		},
+	};
+
+	// A popup left open while another browser switches profiles moves with it.
+	const followRemoteSwitchRef = useRef(() => {});
+	followRemoteSwitchRef.current = () => { void runProfileChange(followSyncedProfile); };
+	useEffect(() => {
+		const onStorageChanged = (changes: Record<string, unknown>, area: string) => {
+			if (area === 'sync' && activeProfileSyncKey in changes) followRemoteSwitchRef.current();
+		};
+		browser.storage.onChanged.addListener(onStorageChanged);
+		return () => browser.storage.onChanged.removeListener(onStorageChanged);
+	}, []);
+
+	const onFreshProfileComplete = (leagues: LeagueId[], favorites: string[]) => {
+		persistPrefs(currentPrefs => ({ ...currentPrefs, enabledLeagues: leagues, favoriteTeamIds: favorites }));
+		settingsOnOpenRef.current = settingsSnapshot();
+		setFreshProfileSetup(false);
+		showToast(i18n.t('profiles.switchedToast', { name: activeProfileName(profiles) }), 'success');
+		closeSetup();
 	};
 
 	const onToggleLeague = (leagueId: LeagueId) => {
@@ -534,6 +613,19 @@ export default () => {
 		);
 	}
 
+	if (freshProfileSetup) {
+		return (
+			<TranslationContext.Provider value={i18n.t}>
+				<OnboardingView
+					leagueLogos={leagueLogos}
+					startStep={2}
+					onComplete={onFreshProfileComplete}
+					onLeave={() => setFreshProfileSetup(false)}
+				/>
+			</TranslationContext.Provider>
+		);
+	}
+
 	if (walkthroughActive) {
 		return (
 			<TranslationContext.Provider value={i18n.t}>
@@ -615,6 +707,9 @@ export default () => {
 						onFantasyRulesReset={sport => persistPrefs(currentPrefs => ({ ...currentPrefs, fantasyScoring: withoutFantasySport(currentPrefs.fantasyScoring, sport) }))}
 						fantasyRoster={fantasyRoster}
 						onFantasyRosterChange={onFantasyRosterChange}
+						profiles={profiles}
+						profilesBusy={profilesBusy}
+						profileActions={profileActions}
 					/>
 				)}
 				{view === 'main' && (

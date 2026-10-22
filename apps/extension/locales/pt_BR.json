@@ -266,6 +266,8 @@
 		"groupDisplayDesc": "O que a lista de jogos mostra e a aparência do ArenaSwap.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Onde te deixar quando todos os jogos esfriam.",
+		"groupBackup": "Perfis e backup",
+		"groupBackupDesc": "Alterne entre configurações ou leve uma para outro navegador.",
 		"bonusesSection": "Impulsos",
 		"whenToSwitchSection": "Quando trocar",
 		"tabsSection": "Abas",
@@ -303,6 +305,7 @@
 		"keywordsStandby": "reserva, backup, ocioso, alternativa, parado",
 		"keywordsStandbyThreshold": "pontuacao, corte, limite, abaixo, parado",
 		"keywordsStandbyTab": "aba, janela, pagina, destino",
+		"keywordsBackup": "perfis, perfil, alternar, trocar, configuracao, novo, renomear, excluir, apagar, backup, copia, exportar, importar, sincronizar, sync, arquivo, transferir, restaurar, mover, baixar, enviar",
 		"keywordsBossDecoy": "chefe, esconder, panico, trabalho, aula, planilha, disfarce, silenciar, atalho, fugir",
 		"keywordsDemo": "falso, exemplo, teste, previa, simulacao",
 		"aboutSetting": "Sobre {setting}",
@@ -951,7 +954,8 @@
 		"feature2Body": "Abra o stream de cada jogo numa aba própria e vincule essa aba ao jogo no ArenaSwap.",
 		"feature3Title": "Você fica no controle",
 		"feature3Body": "Desligue as trocas quando quiser. Nas Configurações, você escolhe a frequência das trocas e o tempo de espera entre elas.",
-		"gotIt": "Entendido"
+		"gotIt": "Entendido",
+		"importBackup": "Tem um arquivo de backup? Pule a configuração e importe"
 	},
 	"flowStepper": {
 		"step": "Etapa $1 de $2"
@@ -1450,5 +1454,63 @@
 			"shutouts": "Jogo sem gols sofridos",
 			"overtimeLosses": "Derrota na prorrogação"
 		}
+	},
+	"backup": {
+		"open": "Fazer backup ou restaurar…",
+		"syncedSection": "Sincroniza com seu navegador",
+		"syncedExplainer": "Todas as configurações de {name}, sempre que a sincronização estiver ligada no navegador.",
+		"exportTitle": "Exporte suas configurações",
+		"exportProfile": "Perfil",
+		"exportButton": "Baixar backup",
+		"exportFileHint": "Salva como {fileName}.",
+		"exportFailed": "Isso não foi empacotado. Tente de novo.",
+		"rowLeagues": "Ligas ativas",
+		"rowFavorites": "Times favoritos",
+		"rowScoring": "Modo de pontuação",
+		"rowRoster": "Elenco do Fantasy",
+		"yourSetup": "Suas configurações",
+		"none": "Nenhum",
+		"noChange": "Sem alterações"
+	},
+	"backupImport": {
+		"title": "Importe suas configurações",
+		"dropTitle": "Solte um backup aqui",
+		"chooseFile": "Escolher um arquivo",
+		"fromFile": "Do arquivo",
+		"problemUnreadable": "Nossas fontes puseram esse arquivo contra a luz e não conseguiram decifrar nem uma palavra. Tente uma exportação nova.",
+		"problemNotOurs": "Esse arquivo está perfeito, só não é um dos nossos. Escolha um que você exportou do ArenaSwap.",
+		"problemTooNew": "Esse arquivo veio de uma versão mais nova do ArenaSwap. Atualize a extensão e tente de novo.",
+		"problemSaveFailed": "Isso não foi salvo. Tente de novo.",
+		"fileMeta": "Perfil \"{name}\", exportado em {date}.",
+		"fileMetaUndated": "Perfil \"{name}\".",
+		"addAsNew": "Adicionar como novo perfil",
+		"replaceWarning": "Substituir troca todas as configurações de {name} pelas do arquivo.",
+		"replace": "Substituir {name}",
+		"applying": "Fazendo a mudança…",
+		"startOver": "Escolher outro arquivo",
+		"doneTitle": "Mudança de {name} concluída.",
+		"closeTab": "Fechar aba"
+	},
+	"profiles": {
+		"section": "Perfis",
+		"inUse": "Em uso",
+		"more": "Mais opções para {name}",
+		"rename": "Renomear",
+		"export": "Exportar",
+		"delete": "Excluir",
+		"new": "Novo perfil",
+		"newTitle": "Novo perfil",
+		"renameTitle": "Renomear perfil",
+		"deleteTitle": "Excluir {name}?",
+		"deleteBody": "As configurações e o elenco do Fantasy vão junto. Exporte antes para guardar uma cópia.",
+		"nameLabel": "Nome",
+		"defaultName": "Perfil {count}",
+		"nameTaken": "Você já tem um perfil chamado {name}.",
+		"copyCurrent": "Copiar {name}",
+		"startFresh": "Começar do zero",
+		"save": "Salvar",
+		"cancel": "Cancelar",
+		"switchedToast": "Você mudou para {name}.",
+		"changeFailed": "Isso não foi salvo. Tente de novo."
 	}
 }

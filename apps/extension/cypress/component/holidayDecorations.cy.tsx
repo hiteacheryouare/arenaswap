@@ -259,6 +259,9 @@ const setupProps = {
 	onFantasyRulesReset: () => {},
 	fantasyRoster: [],
 	onFantasyRosterChange: () => {},
+	profiles: { profiles: [{ id: 'main', name: 'main' }], activeId: 'main' },
+	profilesBusy: false,
+	profileActions: { onSwitch: () => {}, onCreate: () => {}, onRename: () => {}, onDelete: () => {} },
 };
 
 describe('holiday decoration settings', () => {

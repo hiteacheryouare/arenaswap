@@ -266,6 +266,8 @@
 		"groupDisplayDesc": "What the game list shows, and how ArenaSwap looks.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Where to park you when every game goes quiet.",
+		"groupBackup": "Profiles & Backup",
+		"groupBackupDesc": "Switch setups, or take one to another browser.",
 		"bonusesSection": "Boosts",
 		"whenToSwitchSection": "When to Switch",
 		"tabsSection": "Tabs",
@@ -303,6 +305,7 @@
 		"keywordsStandby": "fallback, filler, idle, backup, quiet",
 		"keywordsStandbyThreshold": "score, cutoff, limit, below, quiet",
 		"keywordsStandbyTab": "tab, window, page, destination",
+		"keywordsBackup": "profiles, switch, setup, new, rename, delete, backup, export, import, sync, file, transfer, restore, move, download, upload",
 		"keywordsBossDecoy": "boss, hide, panic, work, school, spreadsheet, decoy, mute, shortcut, escape",
 		"keywordsDemo": "fake, sample, test, preview, sandbox, dummy",
 		"aboutSetting": "About {setting}",
@@ -951,7 +954,8 @@
 		"feature2Body": "Open each game's stream in its own tab, then link that tab to the game in ArenaSwap.",
 		"feature3Title": "You Stay in Control",
 		"feature3Body": "Turn switching off any time. In Settings, you can choose how often ArenaSwap switches and how long it waits between switches.",
-		"gotIt": "Got it"
+		"gotIt": "Got it",
+		"importBackup": "Have a backup file? Skip setup and import it"
 	},
 	"flowStepper": {
 		"step": "Step $1 of $2"
@@ -1450,5 +1454,63 @@
 			"shutouts": "Shutout",
 			"overtimeLosses": "Overtime loss"
 		}
+	},
+	"backup": {
+		"open": "Back up or restore…",
+		"syncedSection": "Syncs With Your Browser",
+		"syncedExplainer": "Every setting in {name}, whenever sync is on in your browser.",
+		"exportTitle": "Export Your Setup",
+		"exportProfile": "Profile",
+		"exportButton": "Download backup",
+		"exportFileHint": "Saves as {fileName}.",
+		"exportFailed": "That didn't pack up. Give it another go.",
+		"rowLeagues": "Leagues on",
+		"rowFavorites": "Favorite teams",
+		"rowScoring": "Scoring mode",
+		"rowRoster": "Fantasy roster",
+		"yourSetup": "Your Setup",
+		"none": "None",
+		"noChange": "No change"
+	},
+	"backupImport": {
+		"title": "Import Your Setup",
+		"dropTitle": "Drop a backup here",
+		"chooseFile": "Choose a file",
+		"fromFile": "From the File",
+		"problemUnreadable": "Our sources held that file up to the light and couldn't make out a word. Try a fresh export.",
+		"problemNotOurs": "That's a perfectly good file, just not one of ours. Pick one you exported from ArenaSwap.",
+		"problemTooNew": "This file came from a newer ArenaSwap. Update the extension, then try again.",
+		"problemSaveFailed": "That didn't save. Give it another go.",
+		"fileMeta": "Profile \"{name}\", exported {date}.",
+		"fileMetaUndated": "Profile \"{name}\".",
+		"addAsNew": "Add as a new profile",
+		"replaceWarning": "Replacing swaps every setting in {name} for the ones in the file.",
+		"replace": "Replace {name}",
+		"applying": "Moving in…",
+		"startOver": "Choose another file",
+		"doneTitle": "{name} is all moved in.",
+		"closeTab": "Close tab"
+	},
+	"profiles": {
+		"section": "Profiles",
+		"inUse": "In use",
+		"more": "More for {name}",
+		"rename": "Rename",
+		"export": "Export",
+		"delete": "Delete",
+		"new": "New profile",
+		"newTitle": "New Profile",
+		"renameTitle": "Rename Profile",
+		"deleteTitle": "Delete {name}?",
+		"deleteBody": "Its settings and Fantasy roster go with it. Export it first to keep a copy.",
+		"nameLabel": "Name",
+		"defaultName": "Profile {count}",
+		"nameTaken": "You already have a profile called {name}.",
+		"copyCurrent": "Copy {name}",
+		"startFresh": "Start fresh",
+		"save": "Save",
+		"cancel": "Cancel",
+		"switchedToast": "Switched to {name}.",
+		"changeFailed": "That didn't save. Give it another go."
 	}
 }

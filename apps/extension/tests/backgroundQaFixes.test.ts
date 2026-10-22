@@ -69,7 +69,7 @@ const startWorker = async (atMs: number) => {
 	tabsUpdate = jest.fn().mockResolvedValue(undefined);
 	(globalThis as { defineBackground?: unknown }).defineBackground = (fn: () => void) => fn();
 	(globalThis as { browser?: unknown }).browser = {
-		storage: { sync: storeApi(() => syncStore), session: storeApi(() => sessionStore), local: storeApi(() => localStore) },
+		storage: { onChanged: { addListener: () => {} }, sync: storeApi(() => syncStore), session: storeApi(() => sessionStore), local: storeApi(() => localStore) },
 		runtime: {
 			sendMessage: jest.fn().mockResolvedValue(undefined),
 			onMessage: { addListener: (handler: (msg: unknown) => unknown) => { onMessageHandler = handler; } },

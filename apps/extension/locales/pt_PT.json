@@ -266,6 +266,8 @@
 		"groupDisplayDesc": "O que a lista de jogos mostra e o aspeto do ArenaSwap.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Onde ficar quando todos os jogos arrefecem.",
+		"groupBackup": "Perfis e backup",
+		"groupBackupDesc": "Alterna entre configurações ou leva uma para outro navegador.",
 		"bonusesSection": "Impulsos",
 		"whenToSwitchSection": "Quando mudar",
 		"tabsSection": "Separadores",
@@ -303,6 +305,7 @@
 		"keywordsStandby": "reserva, backup, inativo, alternativa, parado",
 		"keywordsStandbyThreshold": "pontuacao, corte, limite, abaixo, parado",
 		"keywordsStandbyTab": "separador, janela, pagina, destino",
+		"keywordsBackup": "perfis, perfil, alternar, trocar, configuracao, novo, mudar nome, renomear, eliminar, apagar, backup, copia, exportar, importar, sincronizar, sync, ficheiro, transferir, restaurar, mover, descarregar, carregar",
 		"keywordsBossDecoy": "chefe, esconder, panico, trabalho, aula, folha de calculo, disfarce, silenciar, atalho, fugir",
 		"keywordsDemo": "falso, exemplo, teste, pre visualizacao, simulacao",
 		"aboutSetting": "Sobre {setting}",
@@ -951,7 +954,8 @@
 		"feature2Body": "Abre a transmissão de cada jogo num separador e associa-o ao jogo no ArenaSwap.",
 		"feature3Title": "Tu é que tens o controlo",
 		"feature3Body": "Desliga a mudança quando quiseres. Nas Definições, podes escolher a frequência das mudanças e o tempo de espera entre elas.",
-		"gotIt": "Percebido"
+		"gotIt": "Percebido",
+		"importBackup": "Tens um ficheiro de cópia? Salta a configuração e importa-o"
 	},
 	"flowStepper": {
 		"step": "Passo $1 de $2"
@@ -1450,5 +1454,63 @@
 			"shutouts": "Jogo sem golos sofridos",
 			"overtimeLosses": "Derrota no prolongamento"
 		}
+	},
+	"backup": {
+		"open": "Fazer backup ou restaurar…",
+		"syncedSection": "Sincroniza com o navegador",
+		"syncedExplainer": "Todas as definições de {name}, sempre que a sincronização estiver ativa no navegador.",
+		"exportTitle": "Exporta as tuas definições",
+		"exportProfile": "Perfil",
+		"exportButton": "Descarregar backup",
+		"exportFileHint": "Guarda como {fileName}.",
+		"exportFailed": "Isso não ficou embalado. Tenta outra vez.",
+		"rowLeagues": "Ligas ativas",
+		"rowFavorites": "Equipas favoritas",
+		"rowScoring": "Modo de pontuação",
+		"rowRoster": "Plantel Fantasy",
+		"yourSetup": "As tuas definições",
+		"none": "Nenhum",
+		"noChange": "Sem alterações"
+	},
+	"backupImport": {
+		"title": "Importa as tuas definições",
+		"dropTitle": "Larga um backup aqui",
+		"chooseFile": "Escolher um ficheiro",
+		"fromFile": "Do ficheiro",
+		"problemUnreadable": "As nossas fontes puseram esse ficheiro contra a luz e não decifraram uma única palavra. Tenta uma exportação nova.",
+		"problemNotOurs": "É um ficheiro perfeitamente bom, só não é dos nossos. Escolhe um que tenhas exportado do ArenaSwap.",
+		"problemTooNew": "Este ficheiro veio de uma versão mais recente do ArenaSwap. Atualiza a extensão e tenta outra vez.",
+		"problemSaveFailed": "Isso não ficou guardado. Tenta outra vez.",
+		"fileMeta": "Perfil \"{name}\", exportado em {date}.",
+		"fileMetaUndated": "Perfil \"{name}\".",
+		"addAsNew": "Adicionar como novo perfil",
+		"replaceWarning": "Substituir troca todas as definições de {name} pelas do ficheiro.",
+		"replace": "Substituir {name}",
+		"applying": "A fazer a mudança…",
+		"startOver": "Escolher outro ficheiro",
+		"doneTitle": "Mudança de {name} concluída.",
+		"closeTab": "Fechar separador"
+	},
+	"profiles": {
+		"section": "Perfis",
+		"inUse": "Em uso",
+		"more": "Mais opções para {name}",
+		"rename": "Renomear",
+		"export": "Exportar",
+		"delete": "Eliminar",
+		"new": "Novo perfil",
+		"newTitle": "Novo perfil",
+		"renameTitle": "Renomear perfil",
+		"deleteTitle": "Eliminar {name}?",
+		"deleteBody": "As definições e o plantel Fantasy vão com ele. Exporta-o primeiro para guardares uma cópia.",
+		"nameLabel": "Nome",
+		"defaultName": "Perfil {count}",
+		"nameTaken": "Já tens um perfil chamado {name}.",
+		"copyCurrent": "Copiar {name}",
+		"startFresh": "Começar de raiz",
+		"save": "Guardar",
+		"cancel": "Cancelar",
+		"switchedToast": "Mudaste para {name}.",
+		"changeFailed": "Isso não ficou guardado. Tenta outra vez."
 	}
 }

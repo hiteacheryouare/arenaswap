@@ -266,6 +266,8 @@
 		"groupDisplayDesc": "試合リストに表示する内容と、ArenaSwapの見た目。",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "どの試合も盛り上がらないときの待機先。",
+		"groupBackup": "プロフィールとバックアップ",
+		"groupBackupDesc": "設定を切り替えたり、ほかのブラウザに持ち運んだりできます。",
 		"bonusesSection": "ブースト",
 		"whenToSwitchSection": "切り替えのタイミング",
 		"tabsSection": "タブ",
@@ -303,6 +305,7 @@
 		"keywordsStandby": "待機, フォールバック, 予備, 代替, 静か",
 		"keywordsStandbyThreshold": "スコア, しきい値, 下限, 以下, 静か",
 		"keywordsStandbyTab": "タブ, ウィンドウ, ページ, 移動先",
+		"keywordsBackup": "プロフィール, 切り替え, 切替, 設定, セットアップ, 新規, 名前変更, 削除, バックアップ, エクスポート, インポート, 同期, ファイル, 移行, 復元, 引っ越し, ダウンロード, アップロード, 書き出し, 読み込み",
 		"keywordsBossDecoy": "上司, 隠す, 緊急, 仕事, 授業, スプレッドシート, ダミー, ミュート, ショートカット, 逃げる",
 		"keywordsDemo": "架空, サンプル, テスト, プレビュー, ダミー",
 		"aboutSetting": "{setting}について",
@@ -951,7 +954,8 @@
 		"feature2Body": "試合ごとの配信をそれぞれのタブで開き、そのタブをArenaSwapで試合にひも付けます。",
 		"feature3Title": "コントロールはあなたの手に",
 		"feature3Body": "切り替えはいつでもオフにできます。設定では、切り替えの頻度と、切り替えの間に空ける待ち時間を選べます。",
-		"gotIt": "了解"
+		"gotIt": "了解",
+		"importBackup": "バックアップファイルがありますか？設定をスキップして読み込む"
 	},
 	"flowStepper": {
 		"step": "ステップ $1 / $2"
@@ -1450,5 +1454,63 @@
 			"shutouts": "シャットアウト",
 			"overtimeLosses": "延長負け"
 		}
+	},
+	"backup": {
+		"open": "バックアップまたは復元…",
+		"syncedSection": "ブラウザと同期されるもの",
+		"syncedExplainer": "ブラウザの同期がオンのとき、{name}のすべての設定が同期されます。",
+		"exportTitle": "設定をエクスポート",
+		"exportProfile": "プロフィール",
+		"exportButton": "バックアップをダウンロード",
+		"exportFileHint": "{fileName}として保存されます。",
+		"exportFailed": "うまくまとめられませんでした。もう一度試してみてください。",
+		"rowLeagues": "オンのリーグ",
+		"rowFavorites": "お気に入りチーム",
+		"rowScoring": "スコアリングモード",
+		"rowRoster": "ファンタジーロスター",
+		"yourSetup": "あなたの設定",
+		"none": "なし",
+		"noChange": "変更なし"
+	},
+	"backupImport": {
+		"title": "設定をインポート",
+		"dropTitle": "バックアップをここにドロップ",
+		"chooseFile": "ファイルを選ぶ",
+		"fromFile": "ファイルの内容",
+		"problemUnreadable": "私たちの情報筋がそのファイルを光にかざしてみましたが、1語も読み取れませんでした。新しくエクスポートし直してみてください。",
+		"problemNotOurs": "ファイル自体はまったく問題ありませんが、うちのものではありません。ArenaSwapからエクスポートしたファイルを選んでください。",
+		"problemTooNew": "このファイルはより新しいArenaSwapで作られています。拡張機能を更新してから、もう一度試してください。",
+		"problemSaveFailed": "保存できませんでした。もう一度試してみてください。",
+		"fileMeta": "プロフィール「{name}」、{date}にエクスポート。",
+		"fileMetaUndated": "プロフィール「{name}」。",
+		"addAsNew": "新しいプロフィールとして追加",
+		"replaceWarning": "置き換えると、{name}の設定がすべてファイルの内容に入れ替わります。",
+		"replace": "{name}を置き換える",
+		"applying": "お引っ越し中…",
+		"startOver": "別のファイルを選ぶ",
+		"doneTitle": "{name}のお引っ越し完了です。",
+		"closeTab": "タブを閉じる"
+	},
+	"profiles": {
+		"section": "プロフィール",
+		"inUse": "使用中",
+		"more": "{name}のその他の操作",
+		"rename": "名前を変更",
+		"export": "エクスポート",
+		"delete": "削除",
+		"new": "新しいプロフィール",
+		"newTitle": "新しいプロフィール",
+		"renameTitle": "プロフィール名を変更",
+		"deleteTitle": "{name}を削除しますか？",
+		"deleteBody": "設定とファンタジーロスターも一緒に削除されます。先にエクスポートしてコピーを残しておきましょう。",
+		"nameLabel": "名前",
+		"defaultName": "プロフィール{count}",
+		"nameTaken": "「{name}」というプロフィールはすでにあります。",
+		"copyCurrent": "{name}をコピー",
+		"startFresh": "ゼロから始める",
+		"save": "保存",
+		"cancel": "キャンセル",
+		"switchedToast": "{name}に切り替えました。",
+		"changeFailed": "保存できませんでした。もう一度試してみてください。"
 	}
 }

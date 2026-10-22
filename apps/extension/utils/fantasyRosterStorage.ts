@@ -15,8 +15,13 @@ export const loadFantasyRoster = async (): Promise<FantasyRosterEntry[]> => {
 	return normalizeFantasyRoster(newer[fantasyRosterStorageKey] ?? local[fantasyRosterStorageKey]);
 };
 
+export const rosterPayload = (roster: readonly FantasyRosterEntry[], now = Date.now()) => ({
+	[fantasyRosterStorageKey]: normalizeFantasyRoster(roster),
+	[updatedAtKey]: now,
+});
+
 export const saveFantasyRoster = async (roster: FantasyRosterEntry[]): Promise<void> => {
-	const value = { [fantasyRosterStorageKey]: normalizeFantasyRoster(roster), [updatedAtKey]: Date.now() };
+	const value = rosterPayload(roster);
 	await Promise.all([
 		browser.storage.sync.set(value).catch(err => logWarn('Could not sync the fantasy roster.', err)),
 		browser.storage.local.set(value),

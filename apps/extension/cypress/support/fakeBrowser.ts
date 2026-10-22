@@ -150,6 +150,7 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 			// WXT's shim picks globalThis.browser only when runtime.id is truthy, so this is load-bearing.
 			id: 'arenaswap-e2e',
 			getManifest: () => ({ version: '2.0.0', manifest_version: 3 }),
+			getURL: (path: string) => `chrome-extension://arenaswap-e2e${path}`,
 			sendMessage: (message: { type: string; [key: string]: unknown }) => {
 				background.sent.push(message);
 				return Promise.resolve(handleMessage(message));
@@ -160,6 +161,7 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 			},
 		},
 		storage: {
+			onChanged: { addListener: () => {}, removeListener: () => {} },
 			local:   area(background.storage.local),
 			session: area(background.storage.session),
 			sync:    area(background.storage.sync),

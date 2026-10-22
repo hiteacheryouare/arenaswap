@@ -59,10 +59,13 @@ export const loadStoredUserPreferences = async (): Promise<UserPreferences> => (
 	(await loadStoredUserPreferencesWithPresence()).prefs
 );
 
+export const prefsPayload = (prefs: UserPreferences, now = Date.now()) => ({
+	prefs: normalizeUserPreferences(prefs),
+	[prefsStorageUpdatedAtKey]: now,
+});
+
 export const persistStoredUserPreferences = async (prefs: UserPreferences): Promise<void> => {
-	const normalized = normalizeUserPreferences(prefs);
-	const prefsUpdatedAt = Date.now();
-	const payload = { prefs: normalized, [prefsStorageUpdatedAtKey]: prefsUpdatedAt };
+	const payload = prefsPayload(prefs);
 
 	// Caught per store so a quota or availability failure in one still lets the other write.
 	await Promise.all([
