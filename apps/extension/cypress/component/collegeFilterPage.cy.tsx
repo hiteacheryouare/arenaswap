@@ -177,12 +177,12 @@ describe('collegeFilterPage', () => {
 	});
 
 	it('spins while the conference list is on its way', () => {
-		let fail: (reason: Error) => void = () => {};
+		let fail: ((reason: Error) => void) | undefined;
 		installStorage([]);
 		cy.get<sinon.SinonStub>('@fetch').invoke('returns', new Promise((_, reject) => { fail = reject; }));
 		cy.mount(<Harness leagueId='ncaaf' />);
 		cy.get('[role=status]').should('contain', 'Our scouts are fetching the conference list').find('.spinner-border').should('be.visible');
-		cy.then(() => fail(new Error('offline')));
+		cy.then(() => fail?.(new Error('offline')));
 		cy.get('[role=status]').should('contain', 'Our scouts came back empty-handed').find('.spinner-border').should('not.exist');
 	});
 
