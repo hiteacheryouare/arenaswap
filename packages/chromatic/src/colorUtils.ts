@@ -154,7 +154,7 @@ const pickPair = (away: matchupTeam, home: matchupTeam, awayPrimary: string, hom
 // where white leaves the bar: 0.1833 is where white drops under 4.5:1, but #111827 is already
 // under it there too, and between 0.1833 and 0.1993 — Atlanta's #E03A3E, the Chargers' #0080C6 —
 // the old threshold threw away the more legible white. Comparing follows a caller's own inks.
-export const readableInkOn = (background: string, light = '#ffffff', dark = '#111827'): string => {
+export const readableOnBlack = (background: string, light = '#ffffff', dark = '#111827'): string => {
 	if (!isHex(background)) return light;
 	const backdrop = luminance(background);
 	return contrastBetween(backdrop, luminance(dark)) > contrastBetween(backdrop, luminance(light))
@@ -167,7 +167,7 @@ export const readableInkOn = (background: string, light = '#ffffff', dark = '#11
 // wrong for the clubs whose published colour is a white or a silver, which would be named in white
 // on a white band.
 //
-// 3:1 rather than `readableInkOn`'s 4.5:1, which is the allowance the size of this type earns: at
+// 3:1 rather than `readableOnBlack`'s 4.5:1, which is the allowance the size of this type earns: at
 // the small-text bar a Carolina blue flips too, and inverting a card nobody struggled to read is a
 // worse answer than the one it replaces.
 const displayInkContrast = 3;

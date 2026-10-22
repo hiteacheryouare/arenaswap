@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
-import { isHex, readableInkOn } from '@arenaswap/chromatic';
+import { isHex, readableOnBlack } from '@arenaswap/chromatic';
 
 type crestState = 'pending' | 'loaded' | 'failed' | 'missing';
 
@@ -69,7 +69,7 @@ export const resolveCrestState = (logo: string | undefined, outcome: crestOutcom
 // call site's own neutral tone the way that tone beats the default.
 export const crestFill = (teamColor: string | undefined): CSSProperties | undefined => (
 	isHex(teamColor)
-		? { '--as-avatar-bg': teamColor, '--as-avatar-color': readableInkOn(teamColor) } as CSSProperties
+		? { '--as-avatar-bg': teamColor, '--as-avatar-color': readableOnBlack(teamColor) } as CSSProperties
 		: undefined
 );
 

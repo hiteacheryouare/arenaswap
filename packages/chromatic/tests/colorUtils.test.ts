@@ -1,5 +1,5 @@
 import { colorDifference } from '../src/colorMath';
-import { crestBacking, pendingSwitchCrest, resolveChartLineColors, readableInkOn, readableTeamInkOnCard, resolveTeamColorPair, teamDisplayInk, teamRowWash } from '../src/colorUtils';
+import { crestBacking, pendingSwitchCrest, resolveChartLineColors, readableOnBlack, readableTeamInkOnCard, resolveTeamColorPair, teamDisplayInk, teamRowWash } from '../src/colorUtils';
 
 // What `switchColorFromPixels` reads off each crest: a colour, or null for a crest with nothing in it
 // but its primary and white. A crest missing from here has not been read yet.
@@ -302,29 +302,29 @@ describe('teamDisplayInk', () => {
 
 // Drawn on a team's own colour at label size: the end zone name on the football strip, and the
 // pre-game leader rows in the popup.
-describe('readableInkOn', () => {
+describe('readableOnBlack', () => {
 	test('keeps white on the colours most of the league publishes', () => {
 		for (const navy of ['#0C2340', '#002D72', '#003594', '#4F2683', '#860038', '#C8102E']) {
-			expect(readableInkOn(navy)).toBe('#ffffff');
+			expect(readableOnBlack(navy)).toBe('#ffffff');
 		}
 	});
 
 	test('flips to the near-black on the colours white disappears into', () => {
 		for (const light of ['#FFB81C', '#FDBB30', '#FFFFFF', '#F1C40F', '#B1B3B3']) {
-			expect(readableInkOn(light)).toBe('#111827');
+			expect(readableOnBlack(light)).toBe('#111827');
 		}
 	});
 
 	test('takes the caller\'s own pair of inks', () => {
-		expect(readableInkOn('#0C2340', '#f8fafc', '#000000')).toBe('#f8fafc');
-		expect(readableInkOn('#FFB81C', '#f8fafc', '#000000')).toBe('#000000');
+		expect(readableOnBlack('#0C2340', '#f8fafc', '#000000')).toBe('#f8fafc');
+		expect(readableOnBlack('#FFB81C', '#f8fafc', '#000000')).toBe('#000000');
 	});
 
 	// A team with no colour reaches this as whatever string ESPN sent. The light ink is the right
 	// default because the surfaces it lands on in that state are dark.
 	test('takes the light ink on a background it cannot read', () => {
-		expect(readableInkOn('not-a-color')).toBe('#ffffff');
-		expect(readableInkOn('')).toBe('#ffffff');
+		expect(readableOnBlack('not-a-color')).toBe('#ffffff');
+		expect(readableOnBlack('')).toBe('#ffffff');
 	});
 
 	// The band this whole function turns on. 0.1833 is where *white* drops under 4.5:1, but
@@ -335,7 +335,7 @@ describe('readableInkOn', () => {
 	// Chargers' #0080C6 at 4.14:1 where white gives 4.28:1 — on the end zone carrying their name.
 	test('keeps white across the band where neither ink clears the small-text bar', () => {
 		for (const surface of ['#E03A3E', '#0080C6', '#777777', '#7b7b7b']) {
-			expect(readableInkOn(surface)).toBe('#ffffff');
+			expect(readableOnBlack(surface)).toBe('#ffffff');
 		}
 	});
 
@@ -344,7 +344,7 @@ describe('readableInkOn', () => {
 	// genuinely do read better in the near-black.
 	test('flips only once the near-black overtakes white, and not a shade before', () => {
 		for (const nowDark of ['#EF3B24', '#0085CA', '#008E97', '#7c7c7c']) {
-			expect(readableInkOn(nowDark)).toBe('#111827');
+			expect(readableOnBlack(nowDark)).toBe('#111827');
 		}
 	});
 
@@ -354,7 +354,7 @@ describe('readableInkOn', () => {
 	test('never hands back the less legible of its two inks, on any grey it can be given', () => {
 		for (let channel = 0; channel <= 255; channel++) {
 			const grey = `#${channel.toString(16).padStart(2, '0').repeat(3)}`;
-			const chosen = readableInkOn(grey);
+			const chosen = readableOnBlack(grey);
 			const rejected = chosen === '#ffffff' ? '#111827' : '#ffffff';
 			expect(contrastOn(chosen, grey)).toBeGreaterThanOrEqual(contrastOn(rejected, grey));
 		}
@@ -362,8 +362,8 @@ describe('readableInkOn', () => {
 
 	// Both ends, where the answer is not a judgement call at all.
 	test('takes the obvious ink at either end of the range', () => {
-		expect(readableInkOn('#000000')).toBe('#ffffff');
-		expect(readableInkOn('#FFFFFF')).toBe('#111827');
+		expect(readableOnBlack('#000000')).toBe('#ffffff');
+		expect(readableOnBlack('#FFFFFF')).toBe('#111827');
 		expect(contrastOn('#ffffff', '#000000')).toBeCloseTo(21, 10);
 	});
 
@@ -373,8 +373,8 @@ describe('readableInkOn', () => {
 	// non-hex impersonates pure black, beats #111827 on every surface there is, and is handed
 	// straight back into a `color` rule. Here that paints white type onto a white band.
 	test('cannot measure an ink that is not a hex, and returns the unreadable one anyway', () => {
-		expect(readableInkOn('#FFFFFF', 'white')).toBe('white');
-		expect(readableInkOn('#FFFFFF', 'var(--as-fg-body)')).toBe('var(--as-fg-body)');
+		expect(readableOnBlack('#FFFFFF', 'white')).toBe('white');
+		expect(readableOnBlack('#FFFFFF', 'var(--as-fg-body)')).toBe('var(--as-fg-body)');
 	});
 });
 
