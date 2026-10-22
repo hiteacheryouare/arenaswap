@@ -64,6 +64,17 @@ Instead, you must respect the existing design system. Look through the project a
 
 For more info, use the `avoiding-ai-slop` skill.
 
+## Copy Mistakes to Avoid:
+Never write **implementation narration**: copy about how ArenaSwap works under the hood, or why it was built the way it was, instead of what the user can do. Before writing a line of user-facing copy, ask: if this line were deleted, would the user lose anything they need to make a choice or take an action? If not, don't write it. This applies everywhere users read: the extension, the website, store listings, and READMEs.
+
+It shows up as:
+- **Justifying a design decision:** "Both open in their own tab, so a file dialog can't close this popup on you."
+- **Restating a heading, then reassuring:** "These don't sync, but your backup file brings them along."
+- **Describing plumbing the user can't act on:** which tab, window, storage area, cache, request or permission something uses; "We can't see that from in here."
+- **Filler and reassurance:** "Nothing changes until you say so", "Don't worry", "Handy for…", "Plus every other…"
+
+Do say what a control does and what will happen when it's pressed ("Replacing swaps every setting in this browser for the ones in the file"). Error messages say what went wrong and what to do next. Legal pages and store-reviewer permission justifications are exempt.
+
 ## Glossary
 When working in this project, its important to know how we use certain terms:
 

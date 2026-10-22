@@ -1,6 +1,6 @@
 {
 	"extName": "ArenaSwap — Auto-Switch sa Live na NFL, NBA, March Madness at MLB",
-	"extDescription": "Nanonood ng bawat live game sa 31 liga at awtomatikong inililipat ang browser tab mo sa pinaka-exciting, hanggang kada 6 na segundo.",
+	"extDescription": "Nanonood ng bawat live game sa 31 liga at awtomatikong inililipat ang browser tab mo sa pinaka-exciting, hanggang kada 12 na segundo.",
 	"bossCommandDescription": "Parating na ang boss: i-mute ang mga laro at lumipat sa pekeng pahina mo",
 	"app": {
 		"welcomeToast": "Maligayang pagdating sa ArenaSwap!",
@@ -201,7 +201,7 @@
 		"finishedTabFree": "I-free mula sa ArenaSwap",
 		"finishedTabClose": "Isara ang tab",
 		"finishedTabActiveExplainer": "Hindi gagalawin ang tab na pinapanood mo hanggang lumipat ka.",
-		"finishedTabCloseExplainer": "Ang huling tab sa isang window ay i-free na lang, para walang window na magsasara.",
+		"finishedTabCloseExplainer": "Ang huling tab sa isang window ay i-free na lang, hindi isasara.",
 		"bossDecoy": "Pekeng pahina",
 		"bossDecoyExplainer": "Kung saan ka dadalhin ng boss button: spreadsheet, doc, kahit anong mukhang abala. Imu-mute rin nito ang bawat tab na pinamamahalaan ng ArenaSwap at ipo-pause ang awtomatikong paglipat hanggang i-on mo ulit. Iwanang walang laman para sa blangkong tab.",
 		"bossDecoyInvalid": "Mukhang hindi iyan web address.",
@@ -214,7 +214,7 @@
 		"demoSeasonReal": "Ang totoong petsa",
 		"demoSeasonThanksgiving": "Linggo ng Thanksgiving",
 		"demoSeasonDecember": "Disyembre",
-		"demoSeasonExplainer": "Nakakaapekto lang sa holiday decorations para makita mo ang mga ito kahit wala sa season.",
+		"demoSeasonExplainer": "Holiday decorations lang ang binabago nito.",
 		"enableStandby": "I-enable ang Standby Stream",
 		"standbyBelow": "Standby sa ibaba ng",
 		"morePatient": "Mas matiyaga",
@@ -234,7 +234,7 @@
 		"holidayLights": "Ilaw",
 		"holidayLeaves": "Dahon",
 		"signalsSection": "PowerScore Signals",
-		"signalsExplainer": "Kapag in-off mo ang isang signal, uupo muna ito. Ia-adjust ang iba para 0–100 pa rin ang mga score.",
+		"signalsExplainer": "Kapag in-off mo ang isang signal, uupo muna ito.",
 		"signalLastActive": "Kailangang may kahit isang signal na nasa laro.",
 		"selectNone": "I-clear",
 		"selectAll": "Piliin lahat",
@@ -261,7 +261,7 @@
 		"groupFavoritesDesc": "Ang mga team na sinusundan mo ay nasa itaas ng listahan.",
 		"followedTeams": "Mga Team na Sinusundan Mo",
 		"groupLeagues": "Mga Liga",
-		"groupLeaguesDesc": "Ang mga liga lang na pipiliin mo ang tine-track at isinasaalang-alang para sa paglipat.",
+		"groupLeaguesDesc": "Piliin ang mga liga na pinapanood mo.",
 		"groupDisplay": "Display",
 		"groupDisplayDesc": "Kung ano ang ipinapakita ng listahan ng laro, at kung ano ang itsura ng ArenaSwap.",
 		"groupStandby": "Standby Stream",
@@ -315,7 +315,7 @@
 		"modeExplainerCustom": "Pumili ng mode para sa bawat liga.",
 		"leagueModes": "Mode kada liga",
 		"leagueModeLabel": "Mode ng {league}",
-		"modeFantasyLeagues": "Sakop ng Fantasy ang NFL, NBA, WNBA, MLB at NHL, kung saan galing ang mga player mo.",
+		"modeFantasyLeagues": "Sakop ng Fantasy ang NFL, NBA, WNBA, MLB at NHL.",
 		"fantasyBlend": "Gaano katindi ang angat ng mga player mo sa mga laro nila",
 		"fantasyBlendValue": "{percent}%",
 		"fantasyBlendLow": "Wala talaga",
@@ -344,7 +344,7 @@
 		"keywordsSituation": "fantasy, red zone, at bat, sa yelo, signal",
 		"keywordsProduction": "fantasy, points, stats, signal",
 		"keywordsExposure": "fantasy, player, roster, ilan, signal",
-		"fantasyBlendExplainer": "Idinadagdag ang Fantasy score ng mga player mo sa Classic score ng laro, kaya pataas lang ang mga laro nila."
+		"fantasyBlendExplainer": "Puwede lang iangat ng mga player mo ang isang laro, hindi ilubog."
 	},
 	"finishedTabs": {
 		"toastFreed": {
@@ -703,7 +703,6 @@
 		"sportTotal": "Kabuuan ng {sport}",
 		"cappedAt": "(naka-cap sa {max})",
 		"signalsNormalizedNote": "Na-adjust ulit para manatili sa 0–100 range kahit may naka-disable na signal",
-		"tooltipSignalsNormalized": "Kapag naka-off ang mga signal, itinataas nang proporsyonal ang natitirang mga signal para manatili ang buong 0–100 range ng score.",
 		"breakPenalty": "Penalty sa Commercial Break",
 		"favoriteBoost": "Boost ng Paborito",
 		"gameBoost": "Boost ng Laro",
@@ -711,11 +710,11 @@
 		"postseasonBoost": "Boost sa Postseason",
 		"signalOff": "Off",
 		"finalPowerScore": "Final na PowerScore",
-		"tooltipCloseness": "Kinukuha mula sa kasalukuyang point margin. Ang tie ang may pinakamataas na score; mas malaki ang margin, mas mababa ang score. Tumataas ang ceiling depende kung gaano na kalalim sa laro, kaya mas mahalaga ang parehong margin sa huli kaysa sa simula.",
-		"tooltipLateGame": "Pinagsasama ang kung gaano na kalalim ang laro at kung gaano kalapit ang score. Unti-unting tumataas sa buong huling period. Halos walang score dito ang mga blowout kahit anong oras pa. Nagdadagdag ng extra points kapag tied sa mga huling segundo, bilang paghahanda sa posibleng overtime.",
-		"tooltipMomentum": "Sinusukat ang net scoring ng isang team sa loob ng kamakailang score history window. Kung na-outscore ng isang team ang kalaban nang husto sa stretch na iyon, tumataas ang score dito. Bumababa pabalik sa zero kung walang dagdag na score sa paglipas ng oras.",
-		"tooltipLeadChanges": "Binibilang kung ilang beses nagpalit ang lead sa loob ng tinutukoy na history window. Walang score kung walang pagbabago; mas maraming flip, mas mataas ang score. Bumababa kung matagal nang walang bagong pagbabago.",
-		"tooltipComeback": "Inikukumpara ang score margin sa pinakamatandang punto sa window laban sa kasalukuyang margin. Kung nabawasan ng nahuhuling team ang agwat, dito nakabatay ang score sa kung gaano karami ang nabawi nila. Mas mahalaga ito sa huling bahagi ng laro; bumababa kung tumigil ang scoring.",
+		"tooltipCloseness": "Gaano kalapit ang score. Pinakamabigat ang tie, at mas bumibigat ang malapit na score habang lumalalim ang laro.",
+		"tooltipLateGame": "Gaano na kalapit ang dulo ng laro, basta dikit pa rin ang score. Tumataas ito sa huling period at pinakamataas kapag tied sa dulo. Halos hindi binibilang ang mga blowout.",
+		"tooltipMomentum": "Kung tuloy-tuloy na nag-i-score ang isang team. Mas marami ang na-outscore nila sa kalaban kamakailan, mas mataas ito. Bumababa kapag natigil ang scoring.",
+		"tooltipLeadChanges": "Gaano kadalas nagpalit ang lead kamakailan. Mas maraming palitan, mas mataas. Bumababa kapag hindi na nagpapalit.",
+		"tooltipComeback": "Kung nakakahabol ang team na nahuhuli. Habang mas marami ang nabawas nila sa agwat kamakailan, mas tumataas ito, at mas mabigat ito sa huling bahagi ng laro.",
 		"tooltipBreakPenalty": "Inilalapat habang namamataan ng aming mga source na nasa commercial break ang laro, gaya ng inning break, pitching change, o TV timeout.",
 		"tooltipVolatility": "Inilalapat kapag nanatiling malapit sa 50% ang live win probability (boost) o malayo rito (penalty).",
 		"tooltipFavoriteBoost": "Inilalapat kapag kasama sa matchup ang isa o higit pa sa mga paborito mong team.",
@@ -809,15 +808,15 @@
 		"signalProduction": "Fantasy Points",
 		"signalExposure": "Mga Player Mo",
 		"tooltipBlowoutMargin": "Kinukuha mula sa kung gaano kalayo ang lamang ng nangunguna. Wala hanggang magkalayo ang laro ng dalawang score, tapos tumataas papunta sa buong rout, at mas mahalaga habang mas late na.",
-		"tooltipSustained": "Gaano karami sa kamakailang stretch ang ginugol ng nangunguna na lampas dalawang score ang lamang. Mas mahalaga ang lead na binuo at napanatili kaysa sa lead na kakadating lang.",
+		"tooltipSustained": "Gaano karami sa kamakailang stretch ang ginugol ng nangunguna na lampas dalawang score ang lamang.",
 		"tooltipTiming": "Mas marami pang mapapanood sa rout na marami pang oras na natitira kaysa sa halos tapos na. Pinakamataas sa simula, wala na sa dulo.",
 		"tooltipPileOn": "Patuloy na lumalayo ang nangunguna at mas marami ang score kaysa sa kabila sa kamakailang stretch. Bumababa kapag tumigil ang scoring.",
 		"tooltipSituation": "Kung nasaan ang mga player mo ngayon: hawak ang bola, nasa red zone, nasa at bat, nasa mound. Ang pinakamainit na sitwasyon ang pinakamabigat at kaunti lang ang iba. Sa basketball at hockey, kung gaano kadikit at kalate na ang laro.",
 		"tooltipProduction": "Fantasy points na naiskor ng mga player mo kamakailan, ayon sa scoring rules mo. Bumababa habang tumatanda ang mga points.",
 		"tooltipExposure": "Ilan sa mga player mo ang nasa larong ito. Limang puntos bawat isa, hanggang tatlong player.",
 		"blendClassic": "Classic score",
-		"tooltipBlendBlowouts": "Hindi kailanman ibinababa ng Blowouts ang isang laro sa ilalim ng 30% ng Classic score nito, kaya may mapapanood pa rin kahit walang rout ngayong gabi.",
-		"tooltipBlendFantasy": "Nagsisimula ang Fantasy sa Classic score ng laro at idinadagdag ang Fantasy score ng mga player mo, sa bigat na itinakda sa Mga Setting. Kaya ng mga player mo na iangat ang laro, pero hindi ito ilulubog.",
+		"tooltipBlendBlowouts": "Hindi kailanman ibinababa ng Blowouts ang isang laro sa ilalim ng 30% ng Classic score nito.",
+		"tooltipBlendFantasy": "Ang Fantasy score ng mga player mo, idinadagdag sa bigat na itinakda sa Mga Setting.",
 		"goAheadRun": "Go-ahead run sa base",
 		"twoMinuteDrill": "Two-minute drill",
 		"redCard": "Red card",
@@ -946,11 +945,10 @@
 	},
 	"tabControl": {
 		"title": "Maligayang Pagdating sa ArenaSwap",
-		"subtitle": "Bago tayo mag-set up, ito ang aasahan mo.",
 		"feature1Title": "Awtomatikong Paglipat ng Tab",
 		"feature1Body": "Magbukas ng ilang laro sa magkakaibang tab. Kapag naging exciting ang isa, lilipat ang ArenaSwap sa tab nito.",
 		"feature2Title": "Ikaw ang Pipili ng Tab",
-		"feature2Body": "Buksan ang stream ng bawat laro sa sarili nitong tab, tapos i-link ang tab na iyon sa laro sa ArenaSwap. Mga tab na na-link mo lang ang kinokontrol.",
+		"feature2Body": "Buksan ang stream ng bawat laro sa sarili nitong tab, tapos i-link ang tab na iyon sa laro sa ArenaSwap.",
 		"feature3Title": "Ikaw pa rin ang may Kontrol",
 		"feature3Body": "I-off ang paglipat kahit kailan. Sa Mga Setting, puwede mong piliin kung gaano kadalas lumipat at gaano katagal maghihintay ang ArenaSwap.",
 		"gotIt": "Gets Ko!"
@@ -963,13 +961,12 @@
 	},
 	"stepToggle": {
 		"title": "Pag-on at Pag-off",
-		"subtitle": "On/off ng ArenaSwap ang switch na ito.",
 		"tryIt": "↑ subukan mo",
 		"statusActive": "Naglilipat ang ArenaSwap para sa'yo",
 		"statusPaused": "Naka-pause ang ArenaSwap",
 		"bodyBeforeOn": "Kapag ",
 		"bodyOn": "naka-on",
-		"bodyAfterOn": ", awtomatikong nililipat ng ArenaSwap ang mga tab mo papunta sa pinaka-exciting na live na laro. I-toggle ito off kahit kailan para bawiin ang kontrol.",
+		"bodyAfterOn": ", awtomatikong nililipat ng ArenaSwap ang mga tab mo papunta sa pinaka-exciting na live na laro. I-toggle ito off kahit kailan.",
 		"next": "Susunod"
 	},
 	"stepPowerScore": {
@@ -1010,7 +1007,7 @@
 		"subtitle": "Sa mga na-link na tab lang lilipat ang ArenaSwap.",
 		"assignPlaceholder": "— Mag-assign ng tab —",
 		"linkHint": "↑ piliin ang tab ng larong ito",
-		"body": "Buksan ang stream ng bawat laro sa sarili nitong browser tab. Tapos piliin ang tab na iyon sa menu ng game card. Sa mga na-link mong tab lang lilipat ang ArenaSwap.",
+		"body": "Buksan ang stream ng bawat laro sa sarili nitong browser tab. Tapos piliin ang tab na iyon sa menu ng game card.",
 		"back": "Bumalik",
 		"next": "Susunod"
 	},
@@ -1018,7 +1015,7 @@
 		"title": "Panoorin Itong Gumana",
 		"watchingCaption": "pinapanood ang laro ng Eagles…",
 		"reveal": "Nakita mo ba 'yon? 👀",
-		"revealBody": "Dumikit ang laro ng 76ers sa huling dalawang minuto, at tumalon ang PowerScore nito sa 89. Lumipat ang ArenaSwap sa tab nito. Walang kailangang i-click.",
+		"revealBody": "Dumikit ang laro ng 76ers sa huling dalawang minuto, at tumalon ang PowerScore nito sa 89. Lumipat ang ArenaSwap sa tab nito.",
 		"back": "Bumalik",
 		"next": "Susunod",
 		"watchingBadge": "WATCHING"
@@ -1026,7 +1023,7 @@
 	"stepFullScreen": {
 		"title": "Pag-Full Screen",
 		"subtitle": "Manatiling full screen sa bawat paglipat.",
-		"body": "Pindutin ang {shortcut} bago ang laro para i-full screen ang buong browser window. Mananatili itong ganoon sa bawat paglipat ng ArenaSwap. Nag-o-off ang sariling full screen button ng video player kapag nagpalit ng tab, kaya kung gagamitin mo ito, ibabalik ng ArenaSwap sa full screen ang window para sa'yo.",
+		"body": "Pindutin ang {shortcut} bago ang laro para i-full screen ang buong browser window. Sariling full screen button ng video player ang gamit mo? Ibabalik ng ArenaSwap sa full screen ang window pagkatapos ng bawat paglipat.",
 		"back": "Bumalik",
 		"next": "Susunod"
 	},
@@ -1043,7 +1040,7 @@
 		"sensitivityLabel": "Sensitivity ng Paglipat",
 		"sensitivityHelp": "Gaano pa ka-exciting dapat ang ibang laro bago lumipat doon ang ArenaSwap. Mas mataas, mas madalas lumipat.",
 		"cooldownLabel": "Cooldown ng Paglipat",
-		"cooldownHelp": "Pinakamaikling paghihintay sa pagitan ng dalawang paglipat, para hindi lipat nang lipat ang ArenaSwap.",
+		"cooldownHelp": "Pinakamaikling paghihintay sa pagitan ng dalawang paglipat.",
 		"moreLeagues": "+ marami pa sa Mga Setting → Mga Liga",
 		"back": "Bumalik",
 		"next": "Susunod"
@@ -1066,13 +1063,12 @@
 	},
 	"stepLeaguesFavorites": {
 		"title": "Mga Liga at Paborito",
-		"subtitle": "Dalawang paraan para piliin ang binabantayan ng ArenaSwap.",
 		"tabLeagues": "Mga Liga",
 		"tabFavorites": "Mga Paborito",
-		"leaguesExplain": "I-on ang isang liga at hahanapin ng ArenaSwap ang mga live na laro nito. Sa mga na-on mong liga lang lilipat ang ArenaSwap.",
-		"leaguesBody": "I-on ang bawat ligang gusto mong sundan sa Mga Setting → Mga Liga. Mas maraming naka-on, mas maraming laro ang mapagpipilian ng ArenaSwap.",
+		"leaguesExplain": "I-on ang isang liga at hahanapin ng ArenaSwap ang mga live na laro nito.",
+		"leaguesBody": "I-on ang bawat ligang gusto mong sundan sa Mga Setting → Mga Liga.",
 		"favoritesExplain": "I-star ang isang team at may boost sa PowerScore ang mga laro nito, kaya mas madalas lumipat doon ang ArenaSwap.",
-		"favoritesBody": "I-star ang mga paborito mong team sa game card o sa Mga Setting. Lalabas pa rin ang ibang laro; may kaunting boost lang ang mga team mo.",
+		"favoritesBody": "I-star ang mga paborito mong team sa game card o sa Mga Setting.",
 		"favoritesBonusHint": "Naka-on ang mga paborito mo. May PowerScore boost ang laro nila!",
 		"toggleAriaLabel": "I-toggle ang {label}",
 		"starAriaLabel": "I-star ang {team}",
@@ -1082,9 +1078,8 @@
 	},
 	"stepReAccess": {
 		"title": "Pagbalik Dito",
-		"subtitle": "Puwede mong ulitin ang tour kahit kailan.",
 		"callout": "ayan 'yun",
-		"body": "I-click ang ? button sa itaas ng ArenaSwap para ulitin ang tour. Handy ito kung gusto mong mag-refresh o ipakita sa kaibigan kung paano ito gumagana.",
+		"body": "I-click ang ? button sa itaas ng ArenaSwap para ulitin ang tour.",
 		"back": "Bumalik",
 		"next": "Tapos na"
 	},
@@ -1096,12 +1091,11 @@
 		"returnTitle": "Bumabalik ito Nang Mag-isa",
 		"returnBody": "Sa sandaling uminit ulit ang kahit anong laro pataas sa threshold mo, ililipat ka agad pabalik ng ArenaSwap.",
 		"chooseTitle": "Ikaw ang Pipili ng Standby Tab",
-		"chooseBody": "Buksan ang kahit anong stream na gusto mo sa isang tab, tapos piliin ito bilang standby na tab mo.",
+		"chooseBody": "Kahit anong stream na gusto mo.",
 		"next": "Susunod",
 		"setupTitle": "Paano I-set Up",
-		"setupSubtitle": "Dalawang bagay na i-configure sa ibaba.",
 		"thresholdTitle": "I-set ang Threshold Mo",
-		"thresholdBody": "Piliin kung gaano kababa dapat bumaba ang score bago mag-kick in ang standby. Mas mababa, mas matiyaga; mas mataas, mas mabilis mag-trigger.",
+		"thresholdBody": "Piliin kung gaano kababa dapat bumaba ang score bago mag-kick in ang standby.",
 		"designateTitle": "Magtakda ng Standby Tab",
 		"designateBody": "Buksan ang Standby Stream mo sa isang tab, bumalik dito, at piliin ito mula sa dropdown.",
 		"back": "Bumalik",
@@ -1127,7 +1121,7 @@
 	},
 	"notification": {
 		"standbyTitle": "Naka-park sa Standby Stream",
-		"standbyMessage": "Tumahimik ang lahat ng laro, kaya ipinark ka namin sa Standby Stream mo.",
+		"standbyMessage": "Tumahimik ang lahat ng laro.",
 		"switchedTitle": "Lumipat → {score}",
 		"switchedMessage": "Tara sa {venue}!",
 		"switchedMessageWithReason": "{reason}. Tara sa {venue}!",
@@ -1163,7 +1157,7 @@
 		"bannerAction": "Tingnan",
 		"bannerDismiss": "I-dismiss ang mga mungkahi",
 		"header": "Mga Iminumungkahing Tab",
-		"lede": "Alisan ng check ang mali naming na-detect. Ang dropdown sa bawat card ang may huling say pa rin.",
+		"lede": "Alisan ng check ang mali naming na-detect.",
 		"empty": "Wala sa mga bukas mong tab na mukhang isang laro mo ngayon.",
 		"rowLabel": "I-pair ang {tab} sa {away} vs {home}",
 		"apply": {
@@ -1194,7 +1188,6 @@
 			"t2": "I-click ang kahit anong game card para tingnan ang PowerScore breakdown nito.",
 			"t3": "Naghahalo ng sports? I-enable ang extra na liga sa Mga Setting para makapaglipat sa lahat ng ito nang sabay.",
 			"t4": "Astig ang mga giraffe at hedgehog. Ganun din ang panonood ng lahat ng laro nang sabay.",
-			"t5": "Mas gumagana nang maayos ang ArenaSwap kapag mas matagal mo itong pinapatakbo!",
 			"t6": "I-on ang switch notifications sa Mga Setting para makatanggap ng alerto tuwing may binabago ang ArenaSwap na tab.",
 			"t7": "Nanonood sa TV? Pindutin ang {shortcut} at mananatiling full screen ang bawat switch."
 		},
@@ -1213,7 +1206,7 @@
 			"t3": "Nagpapatakbo ang Demo Mode ng mga scripted na laro, kaya mata-tune mo ang settings mo nang hindi naghihintay ng totoong laro.",
 			"t4": "Itinatakda ng Sensitivity ng Paglipat kung gaano kalaking PowerScore lead ang kailangan bago lumipat ang ArenaSwap.",
 			"t5": "Binibigyan ng Boost sa Postseason ng extra weight ang mga playoff at championship game, kaya mas maraming switch ang napapanalunan ng pinakamalalaking sandali.",
-			"t6": "Gamitin ang seksyon ng PowerScore Signals para i-disable ang kahit anong signal na hindi mahalaga sa'yo — awtomatikong ire-rescale ng ArenaSwap ang lahat."
+			"t6": "Gamitin ang seksyon ng PowerScore Signals para i-disable ang kahit anong signal na hindi mahalaga sa'yo."
 		},
 		"detail": {
 			"t0": "Pinaghahalo ng PowerScore ang kalapitan ng score, pressure sa huling yugto, momentum, pagbabago ng lead, at comeback. Pagkatapos, inilalapat nito ang volatility boost o penalty base sa kung gaano ka-swing ang win probability.",
@@ -1234,17 +1227,17 @@
 	},
 	"cooldown": {
 		"label": "Cooldown ng Paglipat",
-		"explainer": "Nagtatakda ng pinakamaikling oras sa pagitan ng mga awtomatikong paglipat para mabawasan ang mabilisang pag-flip ng tab.",
+		"explainer": "Pinakamaikling paghihintay sa pagitan ng dalawang awtomatikong paglipat.",
 		"off": "Off"
 	},
 	"switchDelay": {
 		"label": "Delay ng Paglipat",
-		"explainer": "Naghihintay ng ganitong katagal bago isagawa ang isang paglipat, na nakakatulong kapag naiiwan ang stream sa live na data.",
+		"explainer": "Naghihintay ng ganitong katagal bago lumipat. Taasan ito kung naiiwan ang stream mo sa score.",
 		"off": "Off"
 	},
 	"contentAwareSwitching": {
 		"label": "Paglipat sa Break ng Laro",
-		"explainer": "Pinipigilan ang paglipat hanggang magkaroon ng break sa larong pinapanood mo, gaya ng dulo ng at-bat, pito, o dulo ng play, para walang maputol sa gitna ng aksyon. Bumibilang pa rin ang Delay ng Paglipat pagkatapos ng break."
+		"explainer": "Pinipigilan ang paglipat hanggang magkaroon ng break sa larong pinapanood mo, gaya ng dulo ng at-bat, pito, o dulo ng play. Bumibilang pa rin ang Delay ng Paglipat pagkatapos ng break."
 	},
 	"sensitivity": {
 		"label": "Sensitivity ng Paglipat",
@@ -1371,7 +1364,7 @@
 		"rosterFull": "Puno na ang roster mo. Mag-drop ng isa para magkaroon ng espasyo.",
 		"addPlayer": "Idagdag ang {name} sa roster mo",
 		"removePlayer": "Alisin ang {name} sa roster mo",
-		"addFailed": "Hindi naidagdag. I-tap para subukan ulit.",
+		"addFailed": "Hindi naidagdag. I-click para subukan ulit.",
 		"detailPair": "{first}, {second}",
 		"positionDst": "D/ST",
 		"positionPitcher": "Pitcher",

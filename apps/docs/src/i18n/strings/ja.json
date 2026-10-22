@@ -105,7 +105,7 @@
 		"hero": {
 			"titleLine1": "その瞬間を、",
 			"titleLine2": "もう見逃さない。",
-			"lede": "ArenaSwapは{leagues}のリーグにわたるすべてのライブ試合を監視し、最短6秒ごとに最も盛り上がっている試合へブラウザのタブを自動で切り替えます。",
+			"lede": "ArenaSwapは{leagues}のリーグにわたるすべてのライブ試合を監視し、最短12秒ごとに最も盛り上がっている試合へブラウザのタブを自動で切り替えます。",
 			"teamStrip": "{leagues}のリーグのすべてのチームに対応。あなたのチームも、もちろん。",
 			"captionSwitched": "ArenaSwapが{from}から{to}へ切り替えました。",
 			"captionWatching": "今、{game}を視聴中です。盤面で最も注目の試合です。",
@@ -156,7 +156,7 @@
 		},
 		"settings": {
 			"title": "あなたに合わせて調整。",
-			"copy": "感度が高すぎる？下げましょう。自分のチームは大好きだけど、一番盛り上がっている試合も見たい？ボーナスを追加。ちょっとビールを買いに行く？Standby Streamが画面に何かを映し続けます。ArenaSwapはあなたの必要に合わせて動きます。",
+			"copy": "感度が高すぎる？下げましょう。自分のチームは大好きだけど、一番盛り上がっている試合も見たい？ボーナスを追加。ちょっとビールを買いに行く？Standby Streamが画面に何かを映し続けます。",
 			"items": [
 				{
 					"name": "感度（1〜{levels}）",
@@ -340,7 +340,7 @@
 		"copy": "コピー",
 		"copied": "コピーしました",
 		"signalsHeading": "数値を構成する要素",
-		"signalsSub": "5つのシグナルが積み重なって、0から{max}のスコアになります。それぞれの上限を合計すると意図的に{max}を超えますが、合計には上限が設定されているため、接戦の試合は高く、大差の試合は低く抑えられます。スコアが高いほど、今この瞬間のドラマが大きいということです。",
+		"signalsSub": "5つのシグナルが積み重なって、0から{max}のスコアになります。接戦の試合は高く、大差の試合は低く抑えられます。",
 		"signalMax": "最大{max}",
 		"signals": [
 			{
@@ -376,9 +376,7 @@
 		"machineScoreCopy": "PowerScoreが各試合の盛り上がり度をライブで評価します。",
 		"machineSwitch": "切り替え",
 		"machineSwitchCopy": "タブが自動で最高の試合へ切り替わります。",
-		"liveLoadingCopy": "ライブ試合を取得し、PowerScoreを計算しています。",
 		"liveEmptyTitle": "現在ライブ試合はありません",
-		"liveEmptyCopy": "試合がライブになると、このセクションは自動的に更新され、対応するすべてのリーグのリアルタイムPowerScoreを表示します。",
 		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "あらゆるライブ試合を監視し採点するArenaSwap",
 		"machineNowWatching": "視聴中",
@@ -451,17 +449,11 @@
 		},
 		"setup": {
 			"groupSwitching": "切り替え",
-			"groupSwitchingDesc": "ArenaSwapがどれだけ積極的に良い試合へ移すか。",
 			"groupScoring": "スコアリング",
-			"groupScoringDesc": "PowerScoreを構成するシグナルと、ブーストの対象。",
 			"groupLeagues": "リーグ",
-			"groupLeaguesDesc": "追跡するリーグと、リーグごとにセクションを分けるかどうか。",
 			"groupDisplay": "表示",
-			"groupDisplayDesc": "メイン画面に表示する内容。",
 			"groupStandby": "Standby Stream",
-			"groupStandbyDesc": "どの試合も盛り上がらないときの待機先。",
 			"groupDemo": "デモモード",
-			"groupDemoDesc": "架空の試合で、切り替えの動きをいつでも確認できます。",
 			"switchNotifications": "切り替え通知",
 			"theme": "テーマ",
 			"themeLight": "ライト",

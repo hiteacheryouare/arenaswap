@@ -20,13 +20,13 @@ Turn on Demo mode from Settings:
 
 ## What you get
 
-ArenaSwap replaces the live scoreboard with 15 scripted games spread across 12 leagues. It scores them with the exact same PowerScore engine it uses on real games. These games ignore your league selection entirely and show up whether or not their leagues are enabled. Real league polling pauses while Demo mode is on. Scores and situations update every 15 seconds, the same rate ArenaSwap uses to poll real scoreboards. A demo game can build a lead, trade momentum, or mount a comeback, just like a real one.
+ArenaSwap replaces the live scoreboard with 15 scripted games spread across 12 leagues. It scores them with the exact same PowerScore engine it uses on real games. These games ignore your league selection entirely and show up whether or not their leagues are enabled. Scores and situations update every 15 seconds. A demo game can build a lead, trade momentum, or mount a comeback, just like a real one.
 
 Everything else works the way it does with real games. Assign a tab to a demo game the same way you would a live one. ArenaSwap switches, mutes, and unmutes tabs exactly as described in [How to watch multiple games at once](/arenaswap/docs/extension/watching-multiple-games/).
 
 ## Turn it off
 
-Turn the toggle back off, and ArenaSwap drops the scripted games. It resumes polling your enabled leagues and picks back up from wherever the real scoreboards are.
+Turn the toggle back off, and the scripted games disappear and your live games come back.
 
 ## Related
 

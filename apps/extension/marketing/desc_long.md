@@ -7,7 +7,7 @@ HOW IT WORKS
 ━━━━━━━━━━━━━━━━━━━━━━
 1. Open your streams. Pull up your games in separate browser tabs. ESPN+, Peacock, Paramount+, YouTube TV, Hulu, or any other browser-based stream works.
 2. Assign each tab once. Open the ArenaSwap popup, find each live game in the list, and connect it to its tab with a single dropdown.
-3. Walk away. ArenaSwap continuously scores every live game and switches you to the best one. It checks as often as every 6 seconds when things get tense, slower during quieter moments. The right tab is unmuted, the others are silenced so you always hear the right broadcast.
+3. Walk away. ArenaSwap continuously scores every live game and switches you to the best one. It checks as often as every 12 seconds when things get tense, slower during quieter moments. The right tab is unmuted, the others are silenced so you always hear the right broadcast.
 
 
 ━━━━━━━━━━━━━━━━━━━━━━
@@ -22,7 +22,7 @@ Every live game gets a 0–100 PowerScore built from five signals:
 - Lead Changes: back-and-forth chaos
 - Comeback Factor: teams climbing out of a hole
 
-The signals stack and the score is capped at 100, so a genuinely exciting game climbs into the 80s and 90s, while a blowout stays low. The score builds with the game instead of sitting at a flat baseline: an early or lopsided game scores low and tension ramps toward the final buzzer. Recent scoring spikes the live signals and then fades, so even low-scoring sports keep a moving graph instead of a flat line.
+A genuinely exciting game climbs into the 80s and 90s. A blowout stays low.
 
 Games that cut to commercial (inning breaks, pitching changes, TV timeouts) take a penalty, and halftimes score nothing, so you're never switched into an ad.
 
@@ -31,8 +31,6 @@ Every card in the popup shows a color-coded PowerScore bar so you can see the ex
 ━━━━━━━━━━━━━━━━━━━━━━
 SUPPORTED LEAGUES (31)
 ━━━━━━━━━━━━━━━━━━━━━━
-
-ArenaSwap monitors 31 leagues across six sports, and you can toggle any of them on or off.
 
 Coverage spans basketball, football, hockey, baseball and softball at the professional, college, and Olympic levels — the NBA and WNBA, the NFL, the NHL, MLB, and their college and international counterparts. This also includes soccer, reaching from North American clubs through Europe's top domestic leagues to the major international tournaments.
 
@@ -48,7 +46,6 @@ TUNED IN TO YOU
 - Switch Delay: buffer for when your stream lags behind live data.
 - Favorite Team Bonus: extra weight for games involving teams you care about. Per-league favorites supported.
 - Game Boost: manually raise any game's PowerScore to keep it on screen longer.
-- League filters: only monitor the sports you actually watch.
 - Pro tips: optional in-app hints to help you get the most out of the extension.
 - Switch notifications: browser notifications every time ArenaSwap makes a switch.
 
@@ -66,7 +63,7 @@ PRIVATE BY DEFAULT
 
 - No account. No login. No subscription.
 - No tracking, no analytics, no ads.
-- Live scores come directly from ESPN's public API. Everything else runs locally in your browser.
+- Live scores come from our sources, who keep their binoculars on every game.
 - 100% open source. Full code, including the PowerScore package, is on GitHub.
 
 

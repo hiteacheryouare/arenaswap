@@ -59,15 +59,13 @@ A roster is a list of players. Search for one by name, and add them from the res
 
 - **The search is forgiving.** It ignores accents and word order, matches the start of a surname, and puts up with a single typo in a longer word.
 - **Five leagues.** The NFL, NBA, WNBA, MLB, and NHL. A football roster can also hold a team defense, which is scored as a unit.
-- **Up to 50 players.** The roster stays on your device with your other settings. Searching sends the name you type to our sources to find matching players.
+- **Up to 50 players.** Searching sends the name you type to our sources to find matching players.
 
-Once a game with one of your players is live, ArenaSwap reads each rostered player's box-score line and turns it into fantasy points. The first total it sees for a player is taken as a baseline, so a player you picked up mid-game doesn't register as a sudden burst of scoring.
+Once a game with one of your players is live, ArenaSwap reads each rostered player's box-score line and turns it into fantasy points. Adding a player mid-game won't spike the score.
 
 ### Change the scoring rules
 
-Fantasy points need a scoring system. ArenaSwap starts with the usual one for each sport (a point per reception, 4 per passing touchdown, and so on in football), and every rule can be edited for football, basketball, baseball, and hockey. Each rule has a minimum and a maximum, so you can't set receptions to a hundred points. A saved value outside its bounds is ignored, and the default is used instead.
-
-Only the rules you change are saved. The rest keep their defaults.
+Fantasy points need a scoring system. ArenaSwap starts with the usual one for each sport (a point per reception, 4 per passing touchdown, and so on in football), and every rule can be edited for football, basketball, baseball, and hockey. Each rule has a minimum and a maximum, so you can't set receptions to a hundred points.
 
 ## Switch signals off, mode by mode
 

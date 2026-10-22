@@ -1,6 +1,6 @@
 {
 	"extName": "ArenaSwap — Automatischer Wechsel: Live-NFL, NBA, March Madness & MLB",
-	"extDescription": "Beobachtet jedes Live-Spiel in 31 Ligen und wechselt deinen Tab automatisch zum spannendsten – bis zu alle 6 Sekunden.",
+	"extDescription": "Beobachtet jedes Live-Spiel in 31 Ligen und wechselt deinen Tab automatisch zum spannendsten – bis zu alle 12 Sekunden.",
 	"bossCommandDescription": "Chef kommt: Spiele stumm schalten und zur Tarnseite wechseln",
 	"app": {
 		"welcomeToast": "Willkommen bei ArenaSwap!",
@@ -201,7 +201,7 @@
 		"finishedTabFree": "Aus ArenaSwap freigeben",
 		"finishedTabClose": "Tab schließen",
 		"finishedTabActiveExplainer": "Der Tab, den du dir gerade ansiehst, bleibt unberührt, bis du ihn verlässt.",
-		"finishedTabCloseExplainer": "Der letzte Tab eines Fensters wird stattdessen freigegeben, damit sich kein Fenster schließt.",
+		"finishedTabCloseExplainer": "Der letzte Tab eines Fensters wird freigegeben statt geschlossen.",
 		"bossDecoy": "Tarnseite",
 		"bossDecoyExplainer": "Wohin dich der Chef-kommt-Knopf bringt: eine Tabelle, ein Dokument, irgendwas, das beschäftigt aussieht. Er schaltet außerdem jeden Tab stumm, den ArenaSwap verwaltet, und pausiert das automatische Wechseln, bis du es wieder einschaltest. Leer gelassen öffnet sich ein leerer Tab.",
 		"bossDecoyInvalid": "Das sieht nicht nach einer Webadresse aus.",
@@ -214,7 +214,7 @@
 		"demoSeasonReal": "Das echte Datum",
 		"demoSeasonThanksgiving": "Thanksgiving-Woche",
 		"demoSeasonDecember": "Dezember",
-		"demoSeasonExplainer": "Betrifft nur den Festtagsschmuck, damit du ihn außerhalb der Saison sehen kannst.",
+		"demoSeasonExplainer": "Betrifft nur den Festtagsschmuck.",
 		"enableStandby": "Standby Stream aktivieren",
 		"standbyBelow": "Standby unter",
 		"morePatient": "Geduldiger",
@@ -234,7 +234,7 @@
 		"holidayLights": "Lichter",
 		"holidayLeaves": "Laub",
 		"signalsSection": "PowerScore-Signale",
-		"signalsExplainer": "Schaltest du ein Signal ab, setzt es aus. Die übrigen werden hochskaliert, damit die Punktzahlen weiter von 0 bis 100 reichen.",
+		"signalsExplainer": "Schaltest du ein Signal ab, setzt es aus.",
 		"signalLastActive": "Mindestens ein Signal muss im Spiel bleiben.",
 		"selectNone": "Alle abwählen",
 		"selectAll": "Alle auswählen",
@@ -261,7 +261,7 @@
 		"groupFavoritesDesc": "Teams, denen du folgst, bleiben oben in der Liste.",
 		"followedTeams": "Deine favorisierten Teams",
 		"groupLeagues": "Ligen",
-		"groupLeaguesDesc": "Nur die Ligen, die du auswählst, werden verfolgt und beim Wechseln berücksichtigt.",
+		"groupLeaguesDesc": "Wähle die Ligen, die du schaust.",
 		"groupDisplay": "Anzeige",
 		"groupDisplayDesc": "Was die Spielliste zeigt und wie ArenaSwap aussieht.",
 		"groupStandby": "Standby Stream",
@@ -315,7 +315,7 @@
 		"modeExplainerCustom": "Wähle für jede Liga einen Modus.",
 		"leagueModes": "Modus pro Liga",
 		"leagueModeLabel": "{league}-Modus",
-		"modeFantasyLeagues": "Fantasy deckt NFL, NBA, WNBA, MLB und NHL ab, die Ligen, aus denen deine Spieler kommen.",
+		"modeFantasyLeagues": "Fantasy deckt NFL, NBA, WNBA, MLB und NHL ab.",
 		"fantasyBlend": "Wie stark deine Spieler ihre Spiele nach oben ziehen",
 		"fantasyBlendValue": "{percent} %",
 		"fantasyBlendLow": "Gar nicht",
@@ -344,7 +344,7 @@
 		"keywordsSituation": "fantasy, red zone, am schlag, auf dem eis, signal",
 		"keywordsProduction": "fantasy, punkte, statistiken, signal",
 		"keywordsExposure": "fantasy, spieler, kader, wie viele, signal",
-		"fantasyBlendExplainer": "Der Fantasy-Wert deiner Spieler wird auf den Klassisch-Wert des Spiels draufgelegt, ihre Spiele gehen also nur nach oben."
+		"fantasyBlendExplainer": "Deine Spieler können ein Spiel nur anheben, nie versenken."
 	},
 	"finishedTabs": {
 		"toastFreed": {
@@ -703,7 +703,6 @@
 		"sportTotal": "{sport} gesamt",
 		"cappedAt": "(begrenzt auf {max})",
 		"signalsNormalizedNote": "Neu skaliert für den Bereich 0–100 bei deaktivierten Signalen",
-		"tooltipSignalsNormalized": "Wenn Signale deaktiviert werden, werden die verbleibenden Signale proportional hochskaliert, damit die Punktzahl ihren vollen Bereich von 0–100 behält.",
 		"breakPenalty": "Werbepausen-Strafe",
 		"favoriteBoost": "Favoritenboost",
 		"gameBoost": "Spielboost",
@@ -711,11 +710,11 @@
 		"postseasonBoost": "Postseason-Boost",
 		"signalOff": "Aus",
 		"finalPowerScore": "PowerScore gesamt",
-		"tooltipCloseness": "Wird anhand des aktuellen Punkteabstands berechnet. Ein Gleichstand bringt die höchste Wertung; größere Abstände erzielen progressiv niedrigere Werte. Die Obergrenze skaliert mit dem Spielfortschritt, sodass derselbe Abstand am Spielende mehr wert ist als am Anfang.",
-		"tooltipLateGame": "Kombiniert den Spielfortschritt mit der Nähe des Spielstands. Steigt linear über den letzten Spielabschnitt an. Kantersiege erzielen hier kaum Punkte, egal wie viel Zeit verbleibt. Gibt Extrapunkte, wenn das Spiel in den letzten Sekunden unentschieden steht — als Vorgriff auf eine Verlängerung.",
-		"tooltipMomentum": "Misst die Nettopunkte eines Teams in der jüngsten Verlaufshistorie. Wenn ein Team das andere um einen bestimmten Betrag übertroffen hat, wird das hier gewertet. Klingt mit der Zeit ab, wenn keine weiteren Punkte fallen.",
-		"tooltipLeadChanges": "Zählt, wie oft die Führung im Verlaufshistoriefenster gewechselt hat. Kein Wechsel ergibt null Punkte; ein oder mehrere Wechsel erzielen progressiv höhere Werte. Klingt ab, wenn eine Weile kein neuer Wechsel stattfindet.",
-		"tooltipComeback": "Vergleicht den Spielabstand am ältesten Punkt im Fenster mit dem aktuellen Abstand. Wenn das zurückliegende Team aufgeholt hat, wird gewertet, wie viel Boden es gutgemacht hat. Zählt mehr am Spielende; klingt ab, wenn die Punktewertung stockt.",
+		"tooltipCloseness": "Wie ausgeglichen der Stand ist. Gleichstand zählt am meisten, ein enger Stand zählt später im Spiel mehr.",
+		"tooltipLateGame": "Wie nah das Ende ist, solange das Spiel noch eng ist. Der Wert steigt im letzten Spielabschnitt, am meisten bei Gleichstand am Ende. Kantersiege zählen kaum.",
+		"tooltipMomentum": "Ob ein Team gerade eine Punkteserie hat. Je größer sein Punkteplus zuletzt war, desto höher der Wert. Er sinkt, wenn nicht mehr gepunktet wird.",
+		"tooltipLeadChanges": "Wie oft die Führung zuletzt gewechselt hat. Mehr Wechsel, höherer Wert. Er sinkt, wenn die Führung hält.",
+		"tooltipComeback": "Ob das zurückliegende Team aufholt. Je mehr Rückstand es zuletzt aufgeholt hat, desto höher der Wert, und er zählt später im Spiel mehr.",
 		"tooltipBreakPenalty": "Gilt, solange unsere Quellen das Spiel in einer Werbepause erspähen, etwa Inning-Pause, Pitcherwechsel oder TV-Auszeit.",
 		"tooltipVolatility": "Gilt, wenn die Live-Siegwahrscheinlichkeit nah bei 50 % geblieben ist (Boost) oder weit davon entfernt (Strafe).",
 		"tooltipFavoriteBoost": "Gilt, wenn mindestens eines deiner Lieblingsteams im Spiel ist.",
@@ -809,15 +808,15 @@
 		"signalProduction": "Fantasy-Punkte",
 		"signalExposure": "Deine Spieler",
 		"tooltipBlowoutMargin": "Wird danach bewertet, wie weit der Führende vorne liegt. Es gibt nichts, bis das Spiel zwei Scores auseinander ist, dann steigt der Wert Richtung Komplett-Klatsche und zählt umso mehr, je später es wird.",
-		"tooltipSustained": "Wie viel der jüngsten Phase der Führende mit mehr als zwei Scores vorne lag. Eine aufgebaute und gehaltene Führung schlägt eine, die gerade erst aufgetaucht ist.",
+		"tooltipSustained": "Wie viel der jüngsten Phase der Führende mit mehr als zwei Scores vorne lag.",
 		"tooltipTiming": "Eine Klatsche mit viel Restspielzeit bietet mehr Spektakel als eine, die fast vorbei ist. Am höchsten früh im Spiel, am Ende weg.",
 		"tooltipPileOn": "Der Führende zieht weiter davon und überbietet den Gegner in der jüngsten Phase. Klingt ab, wenn nicht mehr gepunktet wird.",
 		"tooltipSituation": "Wo deine Spieler gerade stehen: mit dem Ball, in der Red Zone, am Schlag, auf dem Wurfhügel. Die heißeste Situation zählt am meisten, die übrigen ein bisschen. Im Basketball und Eishockey zählt, wie eng und wie spät das Spiel ist.",
 		"tooltipProduction": "Fantasy-Punkte, die deine Spieler zuletzt nach deinen Wertungsregeln gesammelt haben. Klingt ab, je älter die Punkte werden.",
 		"tooltipExposure": "Wie viele deiner Spieler in diesem Spiel dabei sind. Fünf Punkte pro Spieler, bis zu drei Spielern.",
 		"blendClassic": "Klassisch-Wert",
-		"tooltipBlendBlowouts": "Der Modus Kantersiege lässt ein Spiel nie unter 30 % seines Klassisch-Werts fallen, damit auch ein Abend ohne Klatsche etwas zu bieten hat.",
-		"tooltipBlendFantasy": "Fantasy startet beim Klassisch-Wert des Spiels und legt den Fantasy-Wert deiner Spieler obendrauf, in der Gewichtung aus den Einstellungen. Deine Spieler können ein Spiel anheben, aber nie versenken.",
+		"tooltipBlendBlowouts": "Der Modus Kantersiege lässt ein Spiel nie unter 30 % seines Klassisch-Werts fallen.",
+		"tooltipBlendFantasy": "Der Fantasy-Wert deiner Spieler, addiert in der Gewichtung aus den Einstellungen.",
 		"goAheadRun": "Go-ahead-Run auf Base",
 		"twoMinuteDrill": "Two-Minute-Drill",
 		"redCard": "Rote Karte",
@@ -946,11 +945,10 @@
 	},
 	"tabControl": {
 		"title": "Willkommen bei ArenaSwap",
-		"subtitle": "Bevor wir alles einrichten: Das erwartet dich.",
 		"feature1Title": "Automatischer Tab-Wechsel",
 		"feature1Body": "Öffne mehrere Spiele in verschiedenen Tabs. Wird eines spannend, wechselt ArenaSwap für dich zu diesem Tab.",
 		"feature2Title": "Du wählst die Tabs",
-		"feature2Body": "Öffne den Stream jedes Spiels in einem eigenen Tab und verknüpfe ihn in ArenaSwap mit dem Spiel. Nur verknüpfte Tabs werden gesteuert.",
+		"feature2Body": "Öffne den Stream jedes Spiels in einem eigenen Tab und verknüpfe ihn in ArenaSwap mit dem Spiel.",
 		"feature3Title": "Du behältst die Kontrolle",
 		"feature3Body": "Schalte das Wechseln jederzeit aus. In den Einstellungen bestimmst du, wie oft ArenaSwap wechselt und wie lange es dazwischen wartet.",
 		"gotIt": "Verstanden"
@@ -963,13 +961,12 @@
 	},
 	"stepToggle": {
 		"title": "Ein- und Ausschalten",
-		"subtitle": "Dieser Schalter schaltet ArenaSwap ein und aus.",
 		"tryIt": "↑ ausprobieren",
 		"statusActive": "ArenaSwap wechselt für dich",
 		"statusPaused": "ArenaSwap ist pausiert",
 		"bodyBeforeOn": "Wenn ",
 		"bodyOn": "eingeschaltet",
-		"bodyAfterOn": ", wechselt ArenaSwap deine Tabs automatisch zum spannendsten Live-Spiel. Jederzeit ausschalten, um die Kontrolle zurückzubekommen.",
+		"bodyAfterOn": ", wechselt ArenaSwap deine Tabs automatisch zum spannendsten Live-Spiel. Jederzeit ausschalten.",
 		"next": "Weiter"
 	},
 	"stepPowerScore": {
@@ -1010,7 +1007,7 @@
 		"subtitle": "ArenaSwap wechselt nur zu verknüpften Tabs.",
 		"assignPlaceholder": "— Tab zuweisen —",
 		"linkHint": "↑ Tab mit diesem Spiel wählen",
-		"body": "Öffne den Stream jedes Spiels in einem eigenen Browser-Tab. Wähle diesen Tab dann im Menü auf der Spielkarte aus. ArenaSwap wechselt nur zwischen Tabs, die du verknüpft hast.",
+		"body": "Öffne den Stream jedes Spiels in einem eigenen Browser-Tab. Wähle diesen Tab dann im Menü auf der Spielkarte aus.",
 		"back": "Zurück",
 		"next": "Weiter"
 	},
@@ -1018,7 +1015,7 @@
 		"title": "Sieh es in Aktion",
 		"watchingCaption": "Du schaust das Eagles-Spiel…",
 		"reveal": "Hast du das gesehen? 👀",
-		"revealBody": "Das 76ers-Spiel wurde in den letzten zwei Minuten eng, und sein PowerScore stieg auf 89. ArenaSwap hat für dich zu seinem Tab gewechselt. Kein Klick nötig.",
+		"revealBody": "Das 76ers-Spiel wurde in den letzten zwei Minuten eng, und sein PowerScore stieg auf 89. ArenaSwap hat für dich zu seinem Tab gewechselt.",
 		"back": "Zurück",
 		"next": "Weiter",
 		"watchingBadge": "LÄUFT"
@@ -1026,7 +1023,7 @@
 	"stepFullScreen": {
 		"title": "Im Vollbild",
 		"subtitle": "Vollbild bleibt bei jedem Wechsel an.",
-		"body": "Drück {shortcut} vor dem Spiel, damit das ganze Browserfenster im Vollbild ist. So bleibt es bei jedem Wechsel von ArenaSwap. Der Vollbild-Button eines Video-Players schaltet sich beim Tab-Wechsel aus. Nutzt du ihn, stellt ArenaSwap das Fenster wieder auf Vollbild.",
+		"body": "Drück {shortcut} vor dem Spiel, damit das ganze Browserfenster im Vollbild ist. Nutzt du stattdessen den Vollbild-Button des Video-Players? ArenaSwap stellt das Fenster nach jedem Wechsel wieder auf Vollbild.",
 		"back": "Zurück",
 		"next": "Weiter"
 	},
@@ -1043,7 +1040,7 @@
 		"sensitivityLabel": "Wechselempfindlichkeit",
 		"sensitivityHelp": "Wie viel spannender ein anderes Spiel sein muss, bevor ArenaSwap dorthin wechselt. Höher heißt mehr Wechsel.",
 		"cooldownLabel": "Wechsel-Cooldown",
-		"cooldownHelp": "Die kürzeste Wartezeit zwischen zwei Wechseln, damit ArenaSwap nicht ständig hin und her wechselt.",
+		"cooldownHelp": "Die kürzeste Wartezeit zwischen zwei Wechseln.",
 		"moreLeagues": "+ mehr unter Einstellungen → Ligen",
 		"back": "Zurück",
 		"next": "Weiter"
@@ -1066,13 +1063,12 @@
 	},
 	"stepLeaguesFavorites": {
 		"title": "Ligen & Favoriten",
-		"subtitle": "Zwei Wege festzulegen, worauf ArenaSwap achtet.",
 		"tabLeagues": "Ligen",
 		"tabFavorites": "Favoriten",
-		"leaguesExplain": "Aktiviere eine Liga, und ArenaSwap sucht nach ihren Live-Spielen. Es wechselt nur zwischen Spielen aus aktivierten Ligen.",
-		"leaguesBody": "Schalte in Einstellungen → Ligen alle Ligen ein, die du verfolgen willst. Je mehr du einschaltest, desto mehr Spiele kann ArenaSwap auswählen.",
+		"leaguesExplain": "Aktiviere eine Liga, und ArenaSwap sucht nach ihren Live-Spielen.",
+		"leaguesBody": "Schalte in Einstellungen → Ligen alle Ligen ein, die du verfolgen willst.",
 		"favoritesExplain": "Favorisiere ein Team, dann bekommen seine Spiele einen PowerScore-Boost und ArenaSwap wechselt eher dorthin.",
-		"favoritesBody": "Favorisiere Teams auf einer Spielkarte oder in den Einstellungen. Andere Spiele bleiben sichtbar, deine Teams bekommen nur einen kleinen Boost.",
+		"favoritesBody": "Favorisiere Teams auf einer Spielkarte oder in den Einstellungen.",
 		"favoritesBonusHint": "Deine Favoriten sind an. Ihre Spiele bekommen einen PowerScore-Boost!",
 		"toggleAriaLabel": "{label} umschalten",
 		"starAriaLabel": "{team} favorisieren",
@@ -1082,9 +1078,8 @@
 	},
 	"stepReAccess": {
 		"title": "Zurück zur Tour",
-		"subtitle": "Du kannst die Tour jederzeit wiederholen.",
 		"callout": "genau der",
-		"body": "Klicke oben in ArenaSwap auf den ?-Knopf, um die Tour erneut zu sehen. Praktisch zum Auffrischen oder um einem Freund zu zeigen, wie es funktioniert.",
+		"body": "Klicke oben in ArenaSwap auf den ?-Knopf, um die Tour erneut zu sehen.",
 		"back": "Zurück",
 		"next": "Fertig"
 	},
@@ -1096,12 +1091,11 @@
 		"returnTitle": "Zurück geht's von selbst",
 		"returnBody": "Sobald ein Spiel wieder über deinen Schwellenwert steigt, wechselt ArenaSwap dich sofort zurück.",
 		"chooseTitle": "Du wählst den Standby-Tab",
-		"chooseBody": "Öffne den gewünschten Stream in einem Tab und wähle ihn dann als Standby-Tab aus.",
+		"chooseBody": "Jeder Stream, der dir gefällt.",
 		"next": "Weiter",
 		"setupTitle": "So richtest du es ein",
-		"setupSubtitle": "Zwei Dinge, die du unten konfigurieren musst.",
 		"thresholdTitle": "Schwellenwert festlegen",
-		"thresholdBody": "Wähle, wie tief die Punktzahlen fallen müssen, bevor der Standby aktiv wird. Niedriger = geduldiger; höher = früher auslösen.",
+		"thresholdBody": "Wähle, wie tief die Punktzahlen fallen müssen, bevor der Standby aktiv wird.",
 		"designateTitle": "Standby-Tab festlegen",
 		"designateBody": "Öffne deinen Standby Stream in einem Tab, komm hierher zurück und wähle ihn im Dropdown aus.",
 		"back": "Zurück",
@@ -1127,7 +1121,7 @@
 	},
 	"notification": {
 		"standbyTitle": "Auf dem Standby Stream geparkt",
-		"standbyMessage": "Alle Spiele sind eingeschlafen, also haben wir dich auf deinem Standby Stream geparkt.",
+		"standbyMessage": "Alle Spiele sind eingeschlafen.",
 		"switchedTitle": "Gewechselt → {score}",
 		"switchedMessage": "Auf geht's: {venue}!",
 		"switchedMessageWithReason": "{reason}. Auf geht's: {venue}!",
@@ -1163,7 +1157,7 @@
 		"bannerAction": "Mal reinschauen",
 		"bannerDismiss": "Vorschläge ausblenden",
 		"header": "Vorgeschlagene Tabs",
-		"lede": "Entferne das Häkchen bei allem, was wir falsch erkannt haben. Das Dropdown auf jeder Spielkarte hat trotzdem das letzte Wort.",
+		"lede": "Entferne das Häkchen bei allem, was wir falsch erkannt haben.",
 		"empty": "Nichts, was du offen hast, sieht nach einem Spiel auf deinem Spielplan aus.",
 		"rowLabel": "{tab} mit {away} bei {home} verknüpfen",
 		"apply": {
@@ -1194,7 +1188,6 @@
 			"t2": "Auf eine Spielkarte klicken, um in die PowerScore-Aufschlüsselung einzutauchen.",
 			"t3": "Mehrere Sportarten? Weitere Ligen in den Einstellungen aktivieren, damit ArenaSwap zwischen allen wechselt.",
 			"t4": "Giraffen und Igel sind toll. Alle Spiele gleichzeitig zu sehen auch.",
-			"t5": "ArenaSwap wird besser, je länger du es laufen lässt!",
 			"t6": "Wechselbenachrichtigungen in den Einstellungen aktivieren, um bei jedem Tab-Wechsel durch ArenaSwap eine Meldung zu erhalten.",
 			"t7": "Du schaust auf dem Fernseher? Drück {shortcut} und jeder Wechsel bleibt im Vollbild."
 		},
@@ -1213,7 +1206,7 @@
 			"t3": "Der Demo-Modus spielt geskriptete Spiele ab, damit du deine Einstellungen justieren kannst, ohne auf ein echtes zu warten.",
 			"t4": "Die Wechselempfindlichkeit legt fest, wie groß der PowerScore-Vorsprung sein muss, bevor ArenaSwap wechselt.",
 			"t5": "Der Postseason-Boost gibt Playoff- und Meisterschaftsspielen mehr Gewicht, damit die größten Momente öfter den Wechsel gewinnen.",
-			"t6": "Im Abschnitt PowerScore-Signale lassen sich einzelne Signale deaktivieren — ArenaSwap skaliert alles automatisch neu."
+			"t6": "Im Abschnitt PowerScore-Signale lassen sich einzelne Signale deaktivieren."
 		},
 		"detail": {
 			"t0": "Der PowerScore kombiniert Ausgeglichenheit, Schlussdruck, Schwung, Führungswechsel und Comebacks — dann wendet er einen Volatilitätsboost oder eine -strafe an, je nachdem, wie stark die Siegwahrscheinlichkeit schwankt.",
@@ -1234,17 +1227,17 @@
 	},
 	"cooldown": {
 		"label": "Wechsel-Cooldown",
-		"explainer": "Setzt die Mindestzeit zwischen automatischen Wechseln, um schnelles Tab-Flipping zu reduzieren.",
+		"explainer": "Die kürzeste Wartezeit zwischen zwei automatischen Wechseln.",
 		"off": "Aus"
 	},
 	"switchDelay": {
 		"label": "Wechselverzögerung",
-		"explainer": "Wartet diese Zeit, bevor ein Wechsel ausgeführt wird — nützlich, wenn Streams hinter den Live-Daten hinterherhinken.",
+		"explainer": "Wartet so lange, bevor gewechselt wird. Dreh es hoch, wenn dein Stream dem Spielstand hinterherhinkt.",
 		"off": "Aus"
 	},
 	"contentAwareSwitching": {
 		"label": "Wechsel bei Spielpause",
-		"explainer": "Hält einen Wechsel zurück, bis im Spiel, das du schaust, eine Spielpause eintritt, zum Beispiel das Ende eines At-Bats, ein Pfiff oder das Ende eines Spielzugs, damit nichts mitten in der Aktion abgeschnitten wird. Die Wechselverzögerung läuft nach der Pause trotzdem noch herunter."
+		"explainer": "Hält einen Wechsel zurück, bis im Spiel, das du schaust, eine Spielpause eintritt, zum Beispiel das Ende eines At-Bats, ein Pfiff oder das Ende eines Spielzugs. Die Wechselverzögerung läuft nach der Pause trotzdem noch herunter."
 	},
 	"sensitivity": {
 		"label": "Wechselempfindlichkeit",
@@ -1371,7 +1364,7 @@
 		"rosterFull": "Dein Kader ist voll. Entlasse jemanden, um Platz zu schaffen.",
 		"addPlayer": "{name} zu deinem Kader hinzufügen",
 		"removePlayer": "{name} aus deinem Kader entfernen",
-		"addFailed": "Hinzufügen hat nicht geklappt. Zum Wiederholen tippen.",
+		"addFailed": "Hinzufügen hat nicht geklappt. Zum Wiederholen klicken.",
 		"detailPair": "{first}, {second}",
 		"positionDst": "D/ST",
 		"positionPitcher": "Pitcher",

@@ -1,1 +1,1 @@
-ArenaSwap monitora le partite dal vivo in 31 leghe, le valuta con PowerScore e passa automaticamente alla scheda più avvincente, controllando anche ogni 6 secondi nei momenti di tensione.
+ArenaSwap monitora le partite dal vivo in 31 leghe, le valuta con PowerScore e passa automaticamente alla scheda più avvincente, controllando anche ogni 12 secondi nei momenti di tensione.

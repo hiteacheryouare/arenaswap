@@ -1,1 +1,1 @@
-ArenaSwap monitorea partidos en vivo de 31 ligas, los puntúa con PowerScore y cambia automáticamente tu pestaña del navegador a la más emocionante, revisando hasta cada 6 segundos en momentos de tensión.
+ArenaSwap monitorea partidos en vivo de 31 ligas, los puntúa con PowerScore y cambia automáticamente tu pestaña del navegador a la más emocionante, revisando hasta cada 12 segundos en momentos de tensión.

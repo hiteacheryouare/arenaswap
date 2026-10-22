@@ -105,7 +105,7 @@
 		"hero": {
 			"titleLine1": "不再错过",
 			"titleLine2": "精彩瞬间。",
-			"lede": "ArenaSwap 会监控 {leagues} 个联赛的所有直播比赛，并最快每 6 秒自动将您的浏览器标签页切换到最精彩的比赛。",
+			"lede": "ArenaSwap 会监控 {leagues} 个联赛的所有直播比赛，并最快每 12 秒自动将您的浏览器标签页切换到最精彩的比赛。",
 			"teamStrip": "支持 {leagues} 个联赛的每一支球队，也包括您支持的那一支。",
 			"captionSwitched": "ArenaSwap 已将您从 {from} 切换到了 {to}。",
 			"captionWatching": "您正在观看 {game}，这是当前最值得关注的比赛。",
@@ -156,7 +156,7 @@
 		},
 		"settings": {
 			"title": "为您量身调校。",
-			"copy": "灵敏度太高？调低一点。喜欢自己的球队，但也想看最精彩的比赛？加一个加成分。要出去买杯啤酒？Standby Stream 会让屏幕上始终有内容。ArenaSwap 会按照您需要的方式运行。",
+			"copy": "灵敏度太高？调低一点。喜欢自己的球队，但也想看最精彩的比赛？加一个加成分。要出去买杯啤酒？Standby Stream 会让屏幕上始终有内容。",
 			"items": [
 				{
 					"name": "灵敏度（1–{levels}）",
@@ -340,7 +340,7 @@
 		"copy": "复制",
 		"copied": "已复制",
 		"signalsHeading": "这个数字由什么构成",
-		"signalsSub": "五个信号叠加构成一个 0 到 {max} 的评分。它们各自的上限之和刻意超过了 {max}，而总分设有上限，因此胶着的比赛会冲得很高，一边倒的比赛则会保持较低。评分越高，代表此刻的看点越多。",
+		"signalsSub": "五个信号叠加构成一个 0 到 {max} 的评分。胶着的比赛会冲得很高，一边倒的比赛则会保持较低。",
 		"signalMax": "最高 {max}",
 		"signals": [
 			{
@@ -376,9 +376,7 @@
 		"machineScoreCopy": "PowerScore 会实时评估每场比赛有多精彩。",
 		"machineSwitch": "切换",
 		"machineSwitchCopy": "您的标签页会自动跳转到最精彩的比赛。",
-		"liveLoadingCopy": "正在获取直播比赛并计算 PowerScore。",
 		"liveEmptyTitle": "目前没有直播比赛",
-		"liveEmptyCopy": "当比赛开始直播时，本区域会自动刷新，并显示所有受支持联赛的实时 PowerScore。",
 		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "ArenaSwap 正在监控并为每场直播比赛评分",
 		"machineNowWatching": "正在观看",
@@ -451,17 +449,11 @@
 		},
 		"setup": {
 			"groupSwitching": "切换",
-			"groupSwitchingDesc": "ArenaSwap 有多积极把您带到更精彩的比赛。",
 			"groupScoring": "评分",
-			"groupScoringDesc": "哪些信号构成 PowerScore，以及什么能获得加成。",
 			"groupLeagues": "联赛",
-			"groupLeaguesDesc": "追踪哪些联赛，以及每个联赛是否单独分区。",
 			"groupDisplay": "显示",
-			"groupDisplayDesc": "主界面上显示的内容。",
 			"groupStandby": "Standby Stream",
-			"groupStandbyDesc": "所有比赛都冷场时把您停在哪里。",
 			"groupDemo": "演示模式",
-			"groupDemoDesc": "用虚构的比赛，随时看一次切换是怎么发生的。",
 			"switchNotifications": "切换通知",
 			"theme": "主题",
 			"themeLight": "浅色",

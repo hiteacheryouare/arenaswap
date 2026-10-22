@@ -25,10 +25,7 @@ const onboardingTabControl = ({ onNext }: onboardingTabControlProps) => {
 			<div className='onb-content-wrap d-flex flex-column'>
 				<FlowStepper step={1} total={3} className='justify-content-center mb-5' />
 
-				<div className='fw-bold lh-xs mb-3 fs-xl text-center popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('tabControl.title')}</div>
-				<div className='fg-secondary fs-md text-center mb-7 lh-md'>
-					{i18n.t('tabControl.subtitle')}
-				</div>
+				<div className='fw-bold lh-xs mb-7 fs-xl text-center popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('tabControl.title')}</div>
 
 				<div className='d-flex flex-column gap-5 mb-7'>
 					<div className='d-flex gap-5 align-items-start'>

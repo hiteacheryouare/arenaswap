@@ -105,7 +105,7 @@
 		"hero": {
 			"titleLine1": "Ne rate plus jamais",
 			"titleLine2": "le moment.",
-			"lede": "ArenaSwap surveille chaque match en direct dans {leagues} ligues et bascule automatiquement ton onglet de navigateur vers le plus palpitant, jusqu'à toutes les 6 secondes.",
+			"lede": "ArenaSwap surveille chaque match en direct dans {leagues} ligues et bascule automatiquement ton onglet de navigateur vers le plus palpitant, jusqu'à toutes les 12 secondes.",
 			"teamStrip": "Fonctionne avec chaque équipe dans {leagues} ligues. La tienne y compris.",
 			"captionSwitched": "ArenaSwap t'a fait passer de {from} à {to}.",
 			"captionWatching": "Tu regardes {game}, le meilleur match du moment.",
@@ -156,7 +156,7 @@
 		},
 		"settings": {
 			"title": "Réglé sur toi.",
-			"copy": "Sensibilité trop élevée ? Ralentis-la. Tu aimes ton équipe mais tu veux voir le meilleur match ? Ajoute un bonus. Tu fais un saut chercher une bière ? Standby Stream garde quelque chose à l'écran. ArenaSwap fonctionne exactement comme tu en as besoin.",
+			"copy": "Sensibilité trop élevée ? Ralentis-la. Tu aimes ton équipe mais tu veux voir le meilleur match ? Ajoute un bonus. Tu fais un saut chercher une bière ? Standby Stream garde quelque chose à l'écran.",
 			"items": [
 				{
 					"name": "Sensibilité (1–{levels})",
@@ -340,7 +340,7 @@
 		"copy": "Copier",
 		"copied": "Copié",
 		"signalsHeading": "Ce qui compose le nombre",
-		"signalsSub": "Cinq signaux s'empilent pour donner un score de 0 à {max}. Leurs plafonds s'additionnent volontairement à plus de {max}, et le total est plafonné, donc un match serré grimpe haut et une raclée reste bas. Un score plus élevé signifie plus de drame en ce moment même.",
+		"signalsSub": "Cinq signaux s'empilent pour donner un score de 0 à {max}. Un match serré grimpe haut, une raclée reste bas.",
 		"signalMax": "{max} max",
 		"signals": [
 			{
@@ -376,9 +376,7 @@
 		"machineScoreCopy": "PowerScore évalue en direct à quel point chaque match est palpitant.",
 		"machineSwitch": "Basculer",
 		"machineSwitchCopy": "Ton onglet saute automatiquement vers le meilleur match.",
-		"liveLoadingCopy": "Récupération des matchs en direct et calcul du PowerScore en cours.",
 		"liveEmptyTitle": "Aucun match en direct pour le moment",
-		"liveEmptyCopy": "Quand des matchs passeront en direct, cette section s'actualisera automatiquement et affichera des PowerScores en temps réel dans toutes les ligues prises en charge.",
 		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "ArenaSwap en train de regarder et noter chaque match en direct",
 		"machineNowWatching": "En train de regarder",
@@ -451,17 +449,11 @@
 		},
 		"setup": {
 			"groupSwitching": "Changement",
-			"groupSwitchingDesc": "L'empressement d'ArenaSwap à t'emmener vers un meilleur match.",
 			"groupScoring": "Notation",
-			"groupScoringDesc": "Les signaux qui alimentent le PowerScore et ce qui rapporte un bonus.",
 			"groupLeagues": "Ligues",
-			"groupLeaguesDesc": "Les ligues suivies et si chacune a sa propre section.",
 			"groupDisplay": "Affichage",
-			"groupDisplayDesc": "Ce qui apparaît sur l'écran principal.",
 			"groupStandby": "Standby Stream",
-			"groupStandbyDesc": "Où te garer quand tous les matchs s'endorment.",
 			"groupDemo": "Mode démo",
-			"groupDemoDesc": "Des matchs inventés, pour voir un changement quand tu veux.",
 			"switchNotifications": "Notifications de changement",
 			"theme": "Thème",
 			"themeLight": "Clair",

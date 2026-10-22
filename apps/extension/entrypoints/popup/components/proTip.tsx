@@ -16,7 +16,6 @@ const tipsByContext: Record<proTipContext, string[]> = {
 		i18n.t('proTip.general.t2'),
 		i18n.t('proTip.general.t3'),
 		i18n.t('proTip.general.t4'),
-		i18n.t('proTip.general.t5'),
 		i18n.t('proTip.general.t6'),
 		i18n.t('proTip.general.t7', { shortcut: fullScreenShortcut() }),
 	],

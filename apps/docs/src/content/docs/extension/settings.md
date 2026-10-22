@@ -26,7 +26,7 @@ Settings live behind the gear icon in the popup's top bar, grouped into six cate
 | Signals | All on | On/off for each signal in the mode | Whether a signal contributes to the score. Each mode keeps its own list: Classic's are Closeness, Late-game, Momentum, Lead changes, and Comeback. Blowouts' are Blowout margin, Sustained, Timing, and Pile-on. Fantasy's are Situation, Production, and Exposure. You only see the lists for modes you're using. |
 | Fantasy blend | 60% | 0 to 100% | How much of your players' Fantasy score is added on top of Classic. 0 is pure Classic. 100 adds the full Fantasy score. Only used when a game is scored in Fantasy. |
 | Fantasy roster | Empty | Up to 50 players | The players Fantasy follows. Add them by searching their name. Covers the NFL, NBA, WNBA, MLB, and NHL. |
-| Fantasy scoring rules | The usual defaults for each sport | Each rule has its own minimum and maximum | How many fantasy points each stat is worth, for football, basketball, baseball, and hockey. Only the rules you change are saved. |
+| Fantasy scoring rules | The usual defaults for each sport | Each rule has its own minimum and maximum | How many fantasy points each stat is worth, for football, basketball, baseball, and hockey. |
 | Favorite team bonus | 10 | 0 or higher | Points added once for each favorited team in a game. Doubled when both teams are favorited. Applies in every mode. |
 | Postseason boost | 8 | 0 or higher | The most a title-deciding game can add. Earlier rounds add a share of it: 75% for a semifinal, 50% for a quarterfinal, and 25% for anything before that. Applies in every mode except Blowouts, where a settled result is not worth chasing. |
 

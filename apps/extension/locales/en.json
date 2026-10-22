@@ -1,6 +1,6 @@
 {
 	"extName": "ArenaSwap — Auto-Switch Live NFL, NBA, March Madness & MLB Games",
-	"extDescription": "Watches every live game across 31 leagues and auto-switches your browser tab to the most exciting one, as fast as every 6 seconds.",
+	"extDescription": "Watches every live game across 31 leagues and auto-switches your browser tab to the most exciting one, as fast as every 12 seconds.",
 	"bossCommandDescription": "Boss is coming: mute the games and switch to your decoy page",
 	"app": {
 		"welcomeToast": "Welcome to ArenaSwap!",
@@ -201,7 +201,7 @@
 		"finishedTabFree": "Free it from ArenaSwap",
 		"finishedTabClose": "Close the tab",
 		"finishedTabActiveExplainer": "The tab you're watching is left alone until you move off it.",
-		"finishedTabCloseExplainer": "A window's last tab is freed instead, so no window closes on you.",
+		"finishedTabCloseExplainer": "A window's last tab is freed instead of closed.",
 		"bossDecoy": "Decoy page",
 		"bossDecoyExplainer": "Where the boss button takes you: a spreadsheet, a doc, anything that looks busy. It also mutes every tab ArenaSwap manages and pauses auto-switching until you turn it back on. Leave this empty for a blank tab.",
 		"bossDecoyInvalid": "That doesn't look like a web address.",
@@ -214,7 +214,7 @@
 		"demoSeasonReal": "The real date",
 		"demoSeasonThanksgiving": "Thanksgiving week",
 		"demoSeasonDecember": "December",
-		"demoSeasonExplainer": "Only affects the holiday decorations, so you can see them out of season.",
+		"demoSeasonExplainer": "Only changes the holiday decorations.",
 		"enableStandby": "Enable Standby Stream",
 		"standbyBelow": "Standby below",
 		"morePatient": "More patient",
@@ -234,7 +234,7 @@
 		"holidayLights": "Lights",
 		"holidayLeaves": "Leaves",
 		"signalsSection": "PowerScore Signals",
-		"signalsExplainer": "Switch a signal off and it sits out. The rest scale up so scores still run 0–100.",
+		"signalsExplainer": "Switch a signal off and it sits out.",
 		"signalLastActive": "At least one signal has to stay in the game.",
 		"selectNone": "Clear",
 		"selectAll": "Select all",
@@ -261,7 +261,7 @@
 		"groupFavoritesDesc": "Teams you follow stay at the top of the list.",
 		"followedTeams": "Teams You Follow",
 		"groupLeagues": "Leagues",
-		"groupLeaguesDesc": "Only the leagues you pick get tracked and considered for switching.",
+		"groupLeaguesDesc": "Pick the leagues you watch.",
 		"groupDisplay": "Display",
 		"groupDisplayDesc": "What the game list shows, and how ArenaSwap looks.",
 		"groupStandby": "Standby Stream",
@@ -315,7 +315,7 @@
 		"modeExplainerCustom": "Pick a mode for each league.",
 		"leagueModes": "Mode by league",
 		"leagueModeLabel": "{league} mode",
-		"modeFantasyLeagues": "Fantasy covers the NFL, NBA, WNBA, MLB and NHL, where your players come from.",
+		"modeFantasyLeagues": "Fantasy covers the NFL, NBA, WNBA, MLB and NHL.",
 		"fantasyBlend": "How much your players lift their games",
 		"fantasyBlendValue": "{percent}%",
 		"fantasyBlendLow": "Not at all",
@@ -344,7 +344,7 @@
 		"keywordsSituation": "fantasy, red zone, at bat, on the ice, signal",
 		"keywordsProduction": "fantasy, points, stats, signal",
 		"keywordsExposure": "fantasy, players, roster, how many, signal",
-		"fantasyBlendExplainer": "Your players' Fantasy score is added on top of the game's Classic score, so their games only ever go up."
+		"fantasyBlendExplainer": "Your players can only lift a game, never sink it."
 	},
 	"finishedTabs": {
 		"toastFreed": {
@@ -703,7 +703,6 @@
 		"sportTotal": "{sport} total",
 		"cappedAt": "(capped at {max})",
 		"signalsNormalizedNote": "Rescaled to keep the 0–100 range with signals off",
-		"tooltipSignalsNormalized": "When signals are turned off, the remaining signals are scaled up proportionally so the score keeps its full 0–100 range.",
 		"breakPenalty": "Commercial break penalty",
 		"favoriteBoost": "Favorite boost",
 		"gameBoost": "Game boost",
@@ -711,11 +710,11 @@
 		"postseasonBoost": "Postseason boost",
 		"signalOff": "Off",
 		"finalPowerScore": "Final PowerScore",
-		"tooltipCloseness": "Scored from the current point margin. A tie earns the most; wider margins score progressively lower. The ceiling scales with how far into the game you are, so the same margin is worth more late than early.",
-		"tooltipLateGame": "Combines how far into the game we are with how close the score is. Builds linearly across the final period. Blowouts score almost nothing here regardless of time. Adds extra points when the game is tied in the closing seconds, anticipating overtime.",
-		"tooltipMomentum": "Measures net scoring for one team across the recent score history window. If a team has outscored the other by a set amount during that stretch, this scores up. Decays toward zero as time passes without further scoring.",
-		"tooltipLeadChanges": "Counts how many times the lead has switched in the tracked history window. No changes scores nothing; one or more flips score progressively higher. Decays if time passes without another change.",
-		"tooltipComeback": "Compares the score margin at the oldest point in the window to the current margin. If the trailing team has closed the gap, this scores based on how much ground they've made up. Worth more later in the game; decays if scoring stops.",
+		"tooltipCloseness": "How close the score is. A tie counts the most, and a close score counts for more the later it gets.",
+		"tooltipLateGame": "How close the end is, as long as the game is still close. It climbs through the final period and climbs most when it's tied at the end. Blowouts barely count.",
+		"tooltipMomentum": "Whether one team is on a run. The more they've outscored the other team lately, the higher it goes. It fades when the scoring stops.",
+		"tooltipLeadChanges": "How often the lead has changed hands lately. More changes, higher score. It fades if the lead holds.",
+		"tooltipComeback": "Whether the team that's behind is catching up. The more ground they've made up lately, the higher it goes, and it counts for more late in the game.",
 		"tooltipBreakPenalty": "Applies while our sources spot the game on a commercial break, like an inning break, a pitching change or a TV timeout.",
 		"tooltipVolatility": "Applies when the live win probability has stayed near 50% (a boost) or far from it (a penalty).",
 		"tooltipFavoriteBoost": "Applies when one or more of your favorite teams are in the matchup.",
@@ -809,15 +808,15 @@
 		"signalProduction": "Fantasy points",
 		"signalExposure": "Your players",
 		"tooltipBlowoutMargin": "Scored from how far ahead the leader is. Nothing until the game is two scores apart, then it climbs toward a full rout, and counts for more the later it gets.",
-		"tooltipSustained": "How much of the recent stretch the leader has spent more than two scores up. A lead built and kept beats one that just showed up.",
+		"tooltipSustained": "How much of the recent stretch the leader has spent more than two scores up.",
 		"tooltipTiming": "A rout with plenty of game left has more beatdown to watch than one that's nearly over. Highest early, gone by the end.",
 		"tooltipPileOn": "The leader still pulling away, outscoring the other team across the recent stretch. Fades when the scoring stops.",
 		"tooltipSituation": "Where your players are right now: carrying the ball, in the red zone, at the plate, on the mound. The busiest one counts most and the rest a little. In basketball and hockey, it's how close and late the game is.",
 		"tooltipProduction": "Fantasy points your players have scored lately, by your scoring rules. Fades as the points get older.",
 		"tooltipExposure": "How many of your players are in this game. Five points each, up to three players.",
 		"blendClassic": "Classic score",
-		"tooltipBlendBlowouts": "Blowouts never drops a game below 30% of its Classic score, so a night without a rout still has something to watch.",
-		"tooltipBlendFantasy": "Fantasy starts from the game's Classic score and adds your players' Fantasy score on top, at the weight set in Settings. Your players can lift a game, never sink it.",
+		"tooltipBlendBlowouts": "Blowouts never drops a game below 30% of its Classic score.",
+		"tooltipBlendFantasy": "Your players' Fantasy score, added at the weight set in Settings.",
 		"goAheadRun": "Go-ahead run on base",
 		"twoMinuteDrill": "Two-minute drill",
 		"redCard": "Red card",
@@ -946,11 +945,10 @@
 	},
 	"tabControl": {
 		"title": "Welcome to ArenaSwap",
-		"subtitle": "Before we set things up, here's what to expect.",
 		"feature1Title": "Automatic Tab Switching",
 		"feature1Body": "Open a few games in different tabs. When one gets exciting, ArenaSwap switches to that tab for you.",
 		"feature2Title": "You Pick the Tabs",
-		"feature2Body": "Open each game's stream in its own tab, then link that tab to the game in ArenaSwap. Only tabs you link to ArenaSwap are controlled.",
+		"feature2Body": "Open each game's stream in its own tab, then link that tab to the game in ArenaSwap.",
 		"feature3Title": "You Stay in Control",
 		"feature3Body": "Turn switching off any time. In Settings, you can choose how often ArenaSwap switches and how long it waits between switches.",
 		"gotIt": "Got it"
@@ -963,13 +961,12 @@
 	},
 	"stepToggle": {
 		"title": "Turning It On & Off",
-		"subtitle": "This switch turns ArenaSwap on and off.",
 		"tryIt": "↑ try it",
 		"statusActive": "ArenaSwap is switching for you",
 		"statusPaused": "ArenaSwap is paused",
 		"bodyBeforeOn": "When ",
 		"bodyOn": "on",
-		"bodyAfterOn": ", ArenaSwap automatically switches your tabs to the most exciting live game. Toggle it off any time to take back control.",
+		"bodyAfterOn": ", ArenaSwap automatically switches your tabs to the most exciting live game. Toggle it off any time.",
 		"next": "Next"
 	},
 	"stepPowerScore": {
@@ -1010,7 +1007,7 @@
 		"subtitle": "ArenaSwap only switches to tabs you link.",
 		"assignPlaceholder": "— Assign a tab —",
 		"linkHint": "↑ pick the tab showing this game",
-		"body": "Open each game's stream in its own browser tab. Then pick that tab from the menu on the game's card. ArenaSwap only switches between tabs you've linked.",
+		"body": "Open each game's stream in its own browser tab. Then pick that tab from the menu on the game's card.",
 		"back": "Back",
 		"next": "Next"
 	},
@@ -1018,7 +1015,7 @@
 		"title": "Watch It Work",
 		"watchingCaption": "watching the Eagles game…",
 		"reveal": "Did you see that? 👀",
-		"revealBody": "The 76ers game got close in the last two minutes, and its PowerScore jumped to 89. ArenaSwap switched to its tab for you. No clicks needed.",
+		"revealBody": "The 76ers game got close in the last two minutes, and its PowerScore jumped to 89. ArenaSwap switched to its tab for you.",
 		"back": "Back",
 		"next": "Next",
 		"watchingBadge": "WATCHING"
@@ -1026,7 +1023,7 @@
 	"stepFullScreen": {
 		"title": "Going Full Screen",
 		"subtitle": "Stay full screen through every switch.",
-		"body": "Press {shortcut} before the game to make the whole browser window full screen. It stays that way every time ArenaSwap switches. A video player's own full screen button turns off when the tab changes, so if you use it, ArenaSwap puts the window back in full screen for you.",
+		"body": "Press {shortcut} before the game to make the whole browser window full screen. Using the video player's own full screen button instead? ArenaSwap puts the window back in full screen after every switch.",
 		"back": "Back",
 		"next": "Next"
 	},
@@ -1043,7 +1040,7 @@
 		"sensitivityLabel": "Switch sensitivity",
 		"sensitivityHelp": "How much more exciting another game has to be before ArenaSwap switches to it. Higher means more switches.",
 		"cooldownLabel": "Switch cooldown",
-		"cooldownHelp": "The shortest wait between two switches, so ArenaSwap doesn't keep flipping back and forth.",
+		"cooldownHelp": "The shortest wait between two switches.",
 		"moreLeagues": "+ more in Settings → Leagues",
 		"back": "Back",
 		"next": "Next"
@@ -1066,13 +1063,12 @@
 	},
 	"stepLeaguesFavorites": {
 		"title": "Leagues & Favorites",
-		"subtitle": "Two ways to choose what ArenaSwap pays attention to.",
 		"tabLeagues": "Leagues",
 		"tabFavorites": "Favorites",
-		"leaguesExplain": "Turn on a league and ArenaSwap looks for its live games. It only switches between games from leagues you've turned on.",
-		"leaguesBody": "Turn on every league you want to follow in Settings → Leagues. The more you turn on, the more games ArenaSwap can choose from.",
+		"leaguesExplain": "Turn on a league and ArenaSwap looks for its live games.",
+		"leaguesBody": "Turn on every league you want to follow in Settings → Leagues.",
 		"favoritesExplain": "Star a team and its games get a boost to their PowerScore, so ArenaSwap is more likely to switch to them.",
-		"favoritesBody": "Star your favorite teams on any game card or in Settings. Other games still show up. Your teams just get a small boost.",
+		"favoritesBody": "Star your favorite teams on any game card or in Settings.",
 		"favoritesBonusHint": "Your favorites are on. Their games get a PowerScore boost!",
 		"toggleAriaLabel": "Toggle {label}",
 		"starAriaLabel": "Star {team}",
@@ -1082,9 +1078,8 @@
 	},
 	"stepReAccess": {
 		"title": "Coming Back Here",
-		"subtitle": "You can watch this tour again any time.",
 		"callout": "that's the one",
-		"body": "Click the ? button at the top of ArenaSwap to see this tour again. It's handy for a refresher, or for showing a friend how it works.",
+		"body": "Click the ? button at the top of ArenaSwap to see this tour again.",
 		"back": "Back",
 		"next": "Done"
 	},
@@ -1096,12 +1091,11 @@
 		"returnTitle": "It Comes Back on Its Own",
 		"returnBody": "The moment any game heats back up above your threshold, ArenaSwap switches you right back.",
 		"chooseTitle": "You Choose the Standby Tab",
-		"chooseBody": "Open any stream you want in a tab, then pick it as your standby tab.",
+		"chooseBody": "Any stream you like.",
 		"next": "Next",
 		"setupTitle": "How to Set It Up",
-		"setupSubtitle": "Two things to configure below.",
 		"thresholdTitle": "Set Your Threshold",
-		"thresholdBody": "Choose how low scores need to drop before standby kicks in. Lower is more patient; higher triggers sooner.",
+		"thresholdBody": "Choose how low scores need to drop before standby kicks in.",
 		"designateTitle": "Designate a Standby Tab",
 		"designateBody": "Open your standby stream in a tab, come back here, and pick it from the dropdown.",
 		"back": "Back",
@@ -1127,7 +1121,7 @@
 	},
 	"notification": {
 		"standbyTitle": "Parked on Standby Stream",
-		"standbyMessage": "Every game went quiet, so we parked you on your Standby Stream.",
+		"standbyMessage": "Every game went quiet.",
 		"switchedTitle": "Switched → {score}",
 		"switchedMessage": "Off to {venue}!",
 		"switchedMessageWithReason": "{reason}. Off to {venue}!",
@@ -1163,7 +1157,7 @@
 		"bannerAction": "Take a look",
 		"bannerDismiss": "Dismiss suggestions",
 		"header": "Suggested Tabs",
-		"lede": "Uncheck anything we got wrong. The dropdown on each card still has the final say.",
+		"lede": "Uncheck anything we got wrong.",
 		"empty": "Nothing you have open looks like a game on your slate.",
 		"rowLabel": "Pair {tab} with {away} at {home}",
 		"apply": {
@@ -1194,7 +1188,6 @@
 			"t2": "Click any game card to dive into its PowerScore breakdown.",
 			"t3": "Mixing sports? Enable extra leagues in Settings to swap across all of them at once.",
 			"t4": "Giraffes and hedgehogs are cool. So is watching every game at once.",
-			"t5": "ArenaSwap works better the longer you let it run!",
 			"t6": "Turn on switch notifications in Settings to get an alert every time ArenaSwap changes your tab.",
 			"t7": "Watching on a TV? Press {shortcut} and every switch stays full screen."
 		},
@@ -1213,7 +1206,7 @@
 			"t3": "Demo Mode runs scripted games, so you can tune your settings without waiting for a real one.",
 			"t4": "Switch sensitivity sets how big a PowerScore lead it takes before ArenaSwap swaps.",
 			"t5": "The postseason boost gives playoff and championship games extra weight, so the biggest moments win more switches.",
-			"t6": "Use the PowerScore Signals section to disable any signal you don't care about — ArenaSwap rescales everything automatically."
+			"t6": "Use the PowerScore Signals section to disable any signal you don't care about."
 		},
 		"detail": {
 			"t0": "PowerScore mixes closeness, late-game pressure, momentum, lead changes, and comebacks. Then it applies a volatility boost or penalty based on how much the win probability swings.",
@@ -1234,17 +1227,17 @@
 	},
 	"cooldown": {
 		"label": "Switch cooldown",
-		"explainer": "Sets the minimum time between automatic switches to reduce rapid tab flipping.",
+		"explainer": "The shortest wait between two automatic switches.",
 		"off": "Off"
 	},
 	"switchDelay": {
 		"label": "Switch delay",
-		"explainer": "Waits this long before executing a switch, which helps when streams lag behind live data.",
+		"explainer": "Waits this long before switching. Turn it up if your stream runs behind the score.",
 		"off": "Off"
 	},
 	"contentAwareSwitching": {
 		"label": "Content-aware switching",
-		"explainer": "Holds a switch until the game you're watching hits a break in play, like the end of an at-bat, a whistle or the end of a play, so nothing gets cut off mid-action. Switch delay still counts down after the break."
+		"explainer": "Holds a switch until the game you're watching hits a break in play, like the end of an at-bat, a whistle or the end of a play. Switch delay still counts down after the break."
 	},
 	"sensitivity": {
 		"label": "Switch sensitivity",
@@ -1371,7 +1364,7 @@
 		"rosterFull": "Your roster's full. Drop someone to make room.",
 		"addPlayer": "Add {name} to your roster",
 		"removePlayer": "Remove {name} from your roster",
-		"addFailed": "Couldn't add them. Tap to try again.",
+		"addFailed": "Couldn't add them. Click to try again.",
 		"detailPair": "{first}, {second}",
 		"positionDst": "D/ST",
 		"positionPitcher": "Pitcher",

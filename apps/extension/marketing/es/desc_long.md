@@ -7,7 +7,7 @@ CÓMO FUNCIONA
 ━━━━━━━━━━━━━━━━━━━━━━
 1. Abre tus transmisiones. Abre tus partidos en pestañas separadas del navegador. ESPN+, Peacock, Paramount+, YouTube TV, Hulu o cualquier otra transmisión basada en navegador funciona.
 2. Asigna cada pestaña una vez. Abre el popup de ArenaSwap, busca cada partido en vivo en la lista y conéctalo a su pestaña con un solo menú desplegable.
-3. Despreocúpate. ArenaSwap puntúa continuamente cada partido en vivo y te cambia al mejor. Revisa hasta cada 6 segundos cuando las cosas se ponen tensas, y menos seguido en momentos más tranquilos. La pestaña correcta queda con sonido, y las demás se silencian para que siempre escuches la transmisión correcta.
+3. Despreocúpate. ArenaSwap puntúa continuamente cada partido en vivo y te cambia al mejor. Revisa hasta cada 12 segundos cuando las cosas se ponen tensas, y menos seguido en momentos más tranquilos. La pestaña correcta queda con sonido, y las demás se silencian para que siempre escuches la transmisión correcta.
 
 
 ━━━━━━━━━━━━━━━━━━━━━━
@@ -22,7 +22,7 @@ Cada partido en vivo recibe un PowerScore de 0 a 100 construido a partir de cinc
 - Cambios de ventaja: el vaivén caótico del marcador
 - Factor de remontada: equipos que están saliendo de un déficit
 
-Las señales se suman y el puntaje tiene un tope de 100, así que un partido realmente emocionante sube a los 80 o 90, mientras que una goleada se mantiene bajo. El puntaje crece con el partido en lugar de quedarse en una base plana: un partido temprano o desigual puntúa bajo, y la tensión aumenta hacia el pitido final. Las rachas de anotación recientes disparan las señales en vivo y luego se apagan, así que hasta los deportes de pocos puntos mantienen una gráfica en movimiento en lugar de una línea plana.
+Un partido realmente emocionante sube a los 80 o 90. Una goleada se mantiene baja.
 
 Los partidos que se van a comerciales (pausas entre entradas, cambios de pitcher, tiempos fuera de TV) reciben una penalización y los entretiempos no puntúan, para que nunca te cambien a un corte comercial.
 
@@ -31,8 +31,6 @@ Cada tarjeta en el popup muestra una barra de PowerScore codificada por color pa
 ━━━━━━━━━━━━━━━━━━━━━━
 LIGAS COMPATIBLES (31)
 ━━━━━━━━━━━━━━━━━━━━━━
-
-ArenaSwap monitorea 31 ligas en seis deportes, y puedes activar o desactivar cualquiera de ellas.
 
 La cobertura abarca baloncesto, fútbol americano, hockey, béisbol y sóftbol a nivel profesional, universitario y olímpico. Eso incluye a la NBA y la WNBA, la NFL, la NHL y la MLB, además de sus equivalentes universitarios e internacionales en cada deporte. También incluye fútbol, desde clubes norteamericanos hasta las principales ligas europeas y los grandes torneos internacionales.
 
@@ -47,7 +45,6 @@ AJUSTADO A TU MEDIDA
 - Retardo de cambio: margen para cuando tu transmisión va con retraso respecto a los datos en vivo.
 - Bonificación de equipo favorito: peso extra para los partidos con equipos que te importan. Se admite un favorito por liga.
 - Impulso del partido: sube manualmente el PowerScore de cualquier partido para mantenerlo en pantalla más tiempo.
-- Filtros de liga: sigue solo los deportes que realmente ves.
 - Consejos: sugerencias opcionales dentro de la app para sacarle el máximo provecho a la extensión.
 - Notificaciones de cambio: notificaciones del navegador cada vez que ArenaSwap hace un cambio.
 
@@ -65,7 +62,7 @@ PRIVADO POR DEFECTO
 
 - Sin cuenta. Sin inicio de sesión. Sin suscripción.
 - Sin rastreo, sin análisis, sin anuncios.
-- Los marcadores en vivo vienen directamente de la API pública de ESPN. Todo lo demás se ejecuta localmente en tu navegador.
+- Los marcadores en vivo vienen de nuestras fuentes, que tienen los binoculares puestos en cada partido.
 - 100% de código abierto. El código completo, incluido el paquete PowerScore, está en GitHub.
 
 

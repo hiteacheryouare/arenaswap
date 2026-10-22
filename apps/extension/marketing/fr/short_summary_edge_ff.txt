@@ -1,1 +1,1 @@
-ArenaSwap surveille les matchs en direct dans 31 ligues, les évalue avec PowerScore et bascule automatiquement ton onglet vers le plus captivant, en vérifiant jusqu'à toutes les 6 secondes dans les moments intenses.
+ArenaSwap surveille les matchs en direct dans 31 ligues, les évalue avec PowerScore et bascule automatiquement ton onglet vers le plus captivant, en vérifiant jusqu'à toutes les 12 secondes dans les moments intenses.

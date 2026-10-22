@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The copy stops explaining itself — 2026-10-21
+
+Lines that narrated how ArenaSwap works or why it was built that way are gone from the extension, the website, the store listings and the README, and AGENTS.md now forbids writing them ("Copy Mistakes to Avoid"). The store listing and site hero now say 12 seconds, the real fastest check since the 6-second floor was removed, and the long listing no longer names where the scores come from.
+
 ## The website has a light mode — 2026-10-21
 
 The site now follows the visitor's OS, and a button in the nav steps through Light, Dark and System. It goes to the opposite of the OS first, so the one click that changes nothing comes last; `lib/themeBoot.js` is inlined into the head so a light page never flashes dark. The browser hero, the popup, the charts and the settings panel are pinned dark with `data-bs-theme='dark'`, the footer and Machine scene swap to the black ArenaSwap and Lattice marks, and between 992 and 1199px the language button drops its name to make room.

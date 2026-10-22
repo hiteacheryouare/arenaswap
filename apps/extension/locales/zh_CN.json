@@ -1,6 +1,6 @@
 {
 	"extName": "ArenaSwap——自动切换 NFL、NBA、March Madness、MLB 直播",
-	"extDescription": "监控 31 个联赛的所有直播比赛，自动将您的标签页切换到最精彩的一场，最快每 6 秒判定一次。",
+	"extDescription": "监控 31 个联赛的所有直播比赛，自动将您的标签页切换到最精彩的一场，最快每 12 秒判定一次。",
 	"bossCommandDescription": "老板来了：静音所有比赛，并切换到掩护页面",
 	"app": {
 		"welcomeToast": "欢迎使用 ArenaSwap！",
@@ -201,7 +201,7 @@
 		"finishedTabFree": "从 ArenaSwap 释放",
 		"finishedTabClose": "关闭标签页",
 		"finishedTabActiveExplainer": "您正在观看的标签页在您离开前不会受到影响。",
-		"finishedTabCloseExplainer": "窗口中的最后一个标签页会被释放而不是关闭，这样窗口就不会被关掉。",
+		"finishedTabCloseExplainer": "窗口中的最后一个标签页会被释放而不是关闭。",
 		"bossDecoy": "掩护页面",
 		"bossDecoyExplainer": "按下「老板来了」后前往的页面：电子表格、文档，任何看起来很忙的东西都行。按下时还会静音 ArenaSwap 管理的所有标签页，并暂停自动切换，直到您重新打开。留空则打开一个空白标签页。",
 		"bossDecoyInvalid": "这看起来不像网址。",
@@ -214,7 +214,7 @@
 		"demoSeasonReal": "真实日期",
 		"demoSeasonThanksgiving": "感恩节当周",
 		"demoSeasonDecember": "十二月",
-		"demoSeasonExplainer": "仅影响节日装饰，方便您在非节日期间查看。",
+		"demoSeasonExplainer": "仅更改节日装饰。",
 		"enableStandby": "启用 Standby Stream",
 		"standbyBelow": "低于以下值时待机",
 		"morePatient": "更有耐心",
@@ -234,7 +234,7 @@
 		"holidayLights": "彩灯",
 		"holidayLeaves": "落叶",
 		"signalsSection": "PowerScore 信号",
-		"signalsExplainer": "关掉某个信号，它就坐上替补席。其余信号会重新缩放，分数仍在 0–100 之间。",
+		"signalsExplainer": "关掉某个信号，它就坐上替补席。",
 		"signalLastActive": "至少要留一个信号在场上。",
 		"selectNone": "清除",
 		"selectAll": "全选",
@@ -261,7 +261,7 @@
 		"groupFavoritesDesc": "您关注的球队会一直排在列表顶部。",
 		"followedTeams": "您关注的球队",
 		"groupLeagues": "联赛",
-		"groupLeaguesDesc": "只有您选择的联赛会被追踪，并参与切换的判断。",
+		"groupLeaguesDesc": "选择您观看的联赛。",
 		"groupDisplay": "显示",
 		"groupDisplayDesc": "比赛列表显示什么，以及 ArenaSwap 的外观。",
 		"groupStandby": "Standby Stream",
@@ -315,7 +315,7 @@
 		"modeExplainerCustom": "为每个联赛各选一种模式。",
 		"leagueModes": "按联赛设置模式",
 		"leagueModeLabel": "{league} 模式",
-		"modeFantasyLeagues": "梦幻模式涵盖 NFL、NBA、WNBA、MLB 和 NHL，您的球员就来自这些联赛。",
+		"modeFantasyLeagues": "梦幻模式涵盖 NFL、NBA、WNBA、MLB 和 NHL。",
 		"fantasyBlend": "您的球员能为比赛加多少分",
 		"fantasyBlendValue": "{percent}%",
 		"fantasyBlendLow": "完全不加",
@@ -344,7 +344,7 @@
 		"keywordsSituation": "梦幻, 红区, 击球, 冰上, 信号, fantasy",
 		"keywordsProduction": "梦幻, 得分, 数据, 信号, fantasy",
 		"keywordsExposure": "梦幻, 球员, 阵容, 多少人, 信号, fantasy",
-		"fantasyBlendExplainer": "您的球员的梦幻得分会叠加在比赛的经典得分之上，所以他们参加的比赛只会升，不会降。"
+		"fantasyBlendExplainer": "您的球员只会抬高一场比赛，不会拉低它。"
 	},
 	"finishedTabs": {
 		"toastFreed": {
@@ -703,7 +703,6 @@
 		"sportTotal": "{sport}总计",
 		"cappedAt": "（上限 {max}）",
 		"signalsNormalizedNote": "已重新缩放以在禁用信号时保持 0–100 范围",
-		"tooltipSignalsNormalized": "当某些信号被关闭后，剩余信号会按比例放大，使总分保持完整的 0–100 范围。",
 		"breakPenalty": "广告时段惩罚",
 		"favoriteBoost": "收藏球队加成",
 		"gameBoost": "比赛加成",
@@ -711,11 +710,11 @@
 		"postseasonBoost": "季后赛加成",
 		"signalOff": "已关闭",
 		"finalPowerScore": "最终 PowerScore",
-		"tooltipCloseness": "根据当前分差计算。平局得分最高；分差越大得分越低。上限随比赛进程增大，同样的分差在比赛末段比开局更值钱。",
-		"tooltipLateGame": "综合比赛进行时间与比分差距。在末节线性增长。大比分落后的比赛在此项几乎不得分。当比赛在最后几秒平局时给予额外加分，预判可能进入加时赛。",
-		"tooltipMomentum": "衡量一支球队在近期比分历史窗口内的净得分。若某队在此时段内的得分超出对手一定幅度，此项就会得分。之后若一直没有再得分，则随时间逐渐衰减至零。",
-		"tooltipLeadChanges": "统计历史窗口内领先权易手的次数。无易手不得分；一次或多次易手得分逐步提高。若一段时间内没有再次易手，得分将衰减。",
-		"tooltipComeback": "将窗口最早时间点的分差与当前分差进行比较。若落后方已缩小差距，则根据追回的幅度得分。比赛越晚期越值钱；得分停止后逐渐衰减。",
+		"tooltipCloseness": "比分有多接近。打平时得分最高，比分接近的话，比赛越往后得分越高。",
+		"tooltipLateGame": "比赛离结束有多近，前提是比赛仍然胶着。进入最后阶段后分数持续上升，临近结束时打平则升得最高。比分悬殊的比赛几乎不加分。",
+		"tooltipMomentum": "是否有一支球队正在打出一波连续得分。最近比对手多得的分越多，分数越高。得分停下来后会逐渐下降。",
+		"tooltipLeadChanges": "最近领先方换了几次。换得越多，分数越高。领先一直不变的话会逐渐下降。",
+		"tooltipComeback": "落后的球队是否在追分。最近追回的分差越大，分数越高，而且越接近比赛尾声，影响越大。",
 		"tooltipBreakPenalty": "在我们的线人发现比赛切入广告的期间适用，比如局间休息、换投手或电视暂停。",
 		"tooltipVolatility": "当实时胜率一直接近 50%（加成）或远离 50%（扣分）时适用。",
 		"tooltipFavoriteBoost": "当您收藏的球队中有一支或多支参赛时适用。",
@@ -809,15 +808,15 @@
 		"signalProduction": "梦幻得分",
 		"signalExposure": "您的球员",
 		"tooltipBlowoutMargin": "根据领先方领先多少计算。在比赛拉开到两个得分回合的差距之前不得分，之后逐步升向完全一边倒，比赛越晚权重越高。",
-		"tooltipSustained": "近期这段时间里，领先方有多少时间领先超过两个得分回合。辛苦建立并守住的领先，比转瞬即逝的领先更值钱。",
+		"tooltipSustained": "近期这段时间里，领先方有多少时间领先超过两个得分回合。",
 		"tooltipTiming": "比赛还有大把时间时的一边倒，比快要结束时的一边倒更有看头。开局最高，临近终场归零。",
 		"tooltipPileOn": "领先方是否还在继续拉开，即近期得分压过对手的程度。得分停下来就会回落。",
 		"tooltipSituation": "您的球员此刻所处的位置：持球推进、红区、站在击球区、站上投手丘。最活跃的那位权重最大，其余的占一小部分。篮球和冰球则看比赛有多胶着、有多接近尾声。",
 		"tooltipProduction": "您的球员近期按您的得分规则拿到的梦幻得分。得分越久远，数值越低。",
 		"tooltipExposure": "您有多少名球员在这场比赛中。每人 5 分，最多计 3 人。",
 		"blendClassic": "经典得分",
-		"tooltipBlendBlowouts": "一边倒模式不会让比赛的得分低于其经典得分的 30%，所以没有大比分的夜晚也照样有得看。",
-		"tooltipBlendFantasy": "梦幻模式以比赛的经典得分为基础，再按设置里的权重叠加您的球员的梦幻得分。您的球员只会抬高一场比赛，不会拉低它。",
+		"tooltipBlendBlowouts": "一边倒模式不会让比赛的得分低于其经典得分的 30%。",
+		"tooltipBlendFantasy": "您的球员的梦幻得分，按设置里的权重叠加。",
 		"goAheadRun": "反超跑者上垒",
 		"twoMinuteDrill": "两分钟进攻",
 		"redCard": "红牌",
@@ -946,11 +945,10 @@
 	},
 	"tabControl": {
 		"title": "欢迎使用 ArenaSwap",
-		"subtitle": "开始配置之前，先了解一下它的工作方式。",
 		"feature1Title": "自动切换标签页",
 		"feature1Body": "在不同标签页中打开几场比赛。当其中一场变得精彩时，ArenaSwap 会替您切换到那个标签页。",
 		"feature2Title": "标签页由您来选",
-		"feature2Body": "把每场比赛的直播流开在各自的标签页，再在 ArenaSwap 中把该标签页绑定到对应比赛。ArenaSwap 只会控制您绑定过的标签页。",
+		"feature2Body": "把每场比赛的直播流开在各自的标签页，再在 ArenaSwap 中把该标签页绑定到对应比赛。",
 		"feature3Title": "您始终掌握控制权",
 		"feature3Body": "随时可以关闭切换。在设置中，您可以选择 ArenaSwap 切换的频繁程度，以及两次切换之间等待多久。",
 		"gotIt": "明白了"
@@ -963,13 +961,12 @@
 	},
 	"stepToggle": {
 		"title": "开启与关闭",
-		"subtitle": "用这个开关来开启和关闭 ArenaSwap。",
 		"tryIt": "↑ 试试看",
 		"statusActive": "ArenaSwap 正在为您切换",
 		"statusPaused": "ArenaSwap 已暂停",
 		"bodyBeforeOn": "当",
 		"bodyOn": "开启",
-		"bodyAfterOn": "时，ArenaSwap 会自动将您的标签页切换到最精彩的直播比赛。随时关闭以恢复手动控制。",
+		"bodyAfterOn": "时，ArenaSwap 会自动将您的标签页切换到最精彩的直播比赛。随时关闭。",
 		"next": "下一步"
 	},
 	"stepPowerScore": {
@@ -1010,7 +1007,7 @@
 		"subtitle": "ArenaSwap 只会切换到您绑定的标签页。",
 		"assignPlaceholder": "— 分配标签页 —",
 		"linkHint": "↑ 选择正在播放这场比赛的标签页",
-		"body": "把每场比赛的直播流开在各自的浏览器标签页中。然后在比赛卡片的菜单里选择那个标签页。ArenaSwap 只会在您绑定过的标签页之间切换。",
+		"body": "把每场比赛的直播流开在各自的浏览器标签页中。然后在比赛卡片的菜单里选择那个标签页。",
 		"back": "返回",
 		"next": "下一步"
 	},
@@ -1018,7 +1015,7 @@
 		"title": "看它大显身手",
 		"watchingCaption": "正在看老鹰队的比赛……",
 		"reveal": "看到了吗？👀",
-		"revealBody": "76 人队的比赛在最后两分钟变得胶着，PowerScore 跳到了 89。ArenaSwap 替您切换到了它的标签页。不用点击。",
+		"revealBody": "76 人队的比赛在最后两分钟变得胶着，PowerScore 跳到了 89。ArenaSwap 替您切换到了它的标签页。",
 		"back": "返回",
 		"next": "下一步",
 		"watchingBadge": "观看中"
@@ -1026,7 +1023,7 @@
 	"stepFullScreen": {
 		"title": "进入全屏",
 		"subtitle": "每次切换后都保持全屏。",
-		"body": "比赛前按 {shortcut}，让整个浏览器窗口进入全屏。每次 ArenaSwap 切换后，窗口都会保持全屏。视频播放器自带的全屏按钮会在标签页切换时关闭，所以如果您用了它，ArenaSwap 会替您把窗口重新切回全屏。",
+		"body": "比赛前按 {shortcut}，让整个浏览器窗口进入全屏。改用视频播放器自带的全屏按钮？ArenaSwap 会在每次切换后把窗口重新切回全屏。",
 		"back": "返回",
 		"next": "下一步"
 	},
@@ -1043,7 +1040,7 @@
 		"sensitivityLabel": "切换灵敏度",
 		"sensitivityHelp": "决定另一场比赛要比当前这场精彩多少，ArenaSwap 才会切换过去。数值越高，切换越多。",
 		"cooldownLabel": "切换冷却",
-		"cooldownHelp": "两次切换之间最短的等待时间，避免 ArenaSwap 来回不停地切换。",
+		"cooldownHelp": "两次切换之间最短的等待时间。",
 		"moreLeagues": "+ 更多联赛见「设置 → 联赛」",
 		"back": "返回",
 		"next": "下一步"
@@ -1066,13 +1063,12 @@
 	},
 	"stepLeaguesFavorites": {
 		"title": "联赛与收藏",
-		"subtitle": "有两种方式可以选择 ArenaSwap 关注什么。",
 		"tabLeagues": "联赛",
 		"tabFavorites": "收藏",
-		"leaguesExplain": "开启一个联赛后，ArenaSwap 就会查找该联赛的直播比赛。它只会在您开启的联赛的比赛之间切换。",
-		"leaguesBody": "在设置 → 联赛中开启您想关注的所有联赛。开启得越多，ArenaSwap 可选的比赛就越多。",
+		"leaguesExplain": "开启一个联赛后，ArenaSwap 就会查找该联赛的直播比赛。",
+		"leaguesBody": "在设置 → 联赛中开启您想关注的所有联赛。",
 		"favoritesExplain": "收藏一支球队后，它的比赛会获得 PowerScore 加成，ArenaSwap 就更有可能切换到这些比赛。",
-		"favoritesBody": "在任意比赛卡片或设置中收藏您喜爱的球队。其他比赛仍会显示，您的球队只是多一点小小的加成。",
+		"favoritesBody": "在任意比赛卡片或设置中收藏您喜爱的球队。",
 		"favoritesBonusHint": "收藏已开启，这些球队的比赛会获得 PowerScore 加成！",
 		"toggleAriaLabel": "切换 {label}",
 		"starAriaLabel": "将 {team} 加入收藏",
@@ -1082,9 +1078,8 @@
 	},
 	"stepReAccess": {
 		"title": "随时回来看看",
-		"subtitle": "您随时可以重新观看这个引导教程。",
 		"callout": "就是这个",
-		"body": "点击 ArenaSwap 顶部的 ? 按钮，就能重新观看这个引导教程。想复习一下，或者给朋友演示用法时都很方便。",
+		"body": "点击 ArenaSwap 顶部的 ? 按钮，就能重新观看这个引导教程。",
 		"back": "返回",
 		"next": "完成"
 	},
@@ -1096,12 +1091,11 @@
 		"returnTitle": "它自己会回来",
 		"returnBody": "一旦任意比赛重新升温并超过阈值，ArenaSwap 会立刻将您切换回去。",
 		"chooseTitle": "由您选择待机标签页",
-		"chooseBody": "在标签页中打开您想看的任意直播流，然后把它设为待机标签页。",
+		"chooseBody": "任意您喜欢的直播流。",
 		"next": "下一步",
 		"setupTitle": "如何设置",
-		"setupSubtitle": "需要配置以下两项。",
 		"thresholdTitle": "设置阈值",
-		"thresholdBody": "选择分数需要低至多少才触发待机。阈值越低越有耐心；阈值越高触发越快。",
+		"thresholdBody": "选择分数需要低至多少才触发待机。",
 		"designateTitle": "指定待机标签页",
 		"designateBody": "在标签页中打开 Standby Stream，返回此处，在下拉菜单中选择它。",
 		"back": "返回",
@@ -1127,7 +1121,7 @@
 	},
 	"notification": {
 		"standbyTitle": "已停在 Standby Stream",
-		"standbyMessage": "所有比赛都归于平静，我们已为您停在 Standby Stream。",
+		"standbyMessage": "所有比赛都归于平静。",
 		"switchedTitle": "已切换 → {score}",
 		"switchedMessage": "出发前往 {venue}！",
 		"switchedMessageWithReason": "{reason}。出发前往 {venue}！",
@@ -1163,7 +1157,7 @@
 		"bannerAction": "查看",
 		"bannerDismiss": "忽略建议",
 		"header": "标签页建议",
-		"lede": "取消勾选我们猜错的选项。每张卡片上的下拉菜单仍拥有最终决定权。",
+		"lede": "取消勾选我们猜错的选项。",
 		"empty": "您打开的内容中，没有一项像您赛程上的比赛。",
 		"rowLabel": "将 {tab} 与 {away} 对阵 {home} 的比赛配对",
 		"apply": {
@@ -1194,7 +1188,6 @@
 			"t2": "点击任意比赛卡片，深入查看其 PowerScore 分解。",
 			"t3": "混看多种运动？在设置中开启更多联赛，一次涵盖所有赛事。",
 			"t4": "长颈鹿和刺猬很酷，同时看所有比赛也一样酷。",
-			"t5": "运行时间越长，ArenaSwap 表现越好！",
 			"t6": "在设置中开启切换通知，每次 ArenaSwap 切换标签页时都会收到提醒。",
 			"t7": "在电视上看球？按 {shortcut}，每次切换都保持全屏。"
 		},
@@ -1213,7 +1206,7 @@
 			"t3": "演示模式会播放预设的比赛，无需等待真实比赛即可调整设置。",
 			"t4": "切换灵敏度决定 ArenaSwap 切换前需要多大的 PowerScore 领先。",
 			"t5": "季后赛加成为季后赛和冠军赛额外加权，让最重要的时刻赢得更多切换。",
-			"t6": "使用 PowerScore 信号部分关闭您不关心的信号——ArenaSwap 会自动重新缩放。"
+			"t6": "使用 PowerScore 信号部分关闭您不关心的信号。"
 		},
 		"detail": {
 			"t0": "PowerScore 融合了接近度、关键时刻压力、势头、领先权易手和逆转，再根据胜率波动幅度给予波动加成或扣分。",
@@ -1234,17 +1227,17 @@
 	},
 	"cooldown": {
 		"label": "切换冷却",
-		"explainer": "设置自动切换之间的最短间隔，防止标签页来回乱跳。",
+		"explainer": "两次自动切换之间最短的等待时间。",
 		"off": "关闭"
 	},
 	"switchDelay": {
 		"label": "切换延迟",
-		"explainer": "在执行切换前等待指定时长，有助于应对直播流落后于实时数据的情况。",
+		"explainer": "切换前先等待这么长时间。如果您的直播流比比分慢，就调高一点。",
 		"off": "关闭"
 	},
 	"contentAwareSwitching": {
 		"label": "比赛间歇再切换",
-		"explainer": "等您正在观看的比赛出现间歇（如一个打席结束、哨声响起或一次进攻结束）后再切换，这样就不会在比赛进行到一半时被切走。切换延迟仍会在间歇之后继续倒计时。"
+		"explainer": "等您正在观看的比赛出现间歇（如一个打席结束、哨声响起或一次进攻结束）后再切换。切换延迟仍会在间歇之后继续倒计时。"
 	},
 	"sensitivity": {
 		"label": "切换灵敏度",
@@ -1371,7 +1364,7 @@
 		"rosterFull": "阵容已满。移除一位球员来腾出位置。",
 		"addPlayer": "将{name}加入您的阵容",
 		"removePlayer": "将{name}移出您的阵容",
-		"addFailed": "添加失败。点按重试。",
+		"addFailed": "添加失败。点击重试。",
 		"detailPair": "{first}，{second}",
 		"positionDst": "D/ST",
 		"positionPitcher": "投手",

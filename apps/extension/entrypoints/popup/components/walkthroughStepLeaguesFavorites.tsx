@@ -79,10 +79,7 @@ const walkthroughStepLeaguesFavorites = ({ onNext, onBack }: walkthroughStepLeag
 		<div className='popup-container d-flex flex-column'>
 			<FlowStepper step={8} total={9} className='pt-5 pb-3' />
 
-			<div className='fw-bold fs-lg text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepLeaguesFavorites.title')}</div>
-			<div className='fg-secondary small text-center mb-5 lh-md'>
-				{i18n.t('stepLeaguesFavorites.subtitle')}
-			</div>
+			<div className='fw-bold fs-lg text-center mb-5 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepLeaguesFavorites.title')}</div>
 
 			<div className='d-flex gap-1 mb-3'>
 				<button

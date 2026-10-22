@@ -105,7 +105,7 @@
 		"hero": {
 			"titleLine1": "Verpasse nie",
 			"titleLine2": "den Moment.",
-			"lede": "ArenaSwap beobachtet jedes Live-Spiel aus {leagues} Ligen und wechselt deinen Browser-Tab automatisch zum spannendsten – bis zu alle 6 Sekunden.",
+			"lede": "ArenaSwap beobachtet jedes Live-Spiel aus {leagues} Ligen und wechselt deinen Browser-Tab automatisch zum spannendsten – bis zu alle 12 Sekunden.",
 			"teamStrip": "Funktioniert mit jedem Team in {leagues} Ligen. Deins inklusive.",
 			"captionSwitched": "ArenaSwap hat dich von {from} weg und zu {to} hin gewechselt.",
 			"captionWatching": "Du schaust gerade {game}, das beste Spiel auf dem Brett.",
@@ -156,7 +156,7 @@
 		},
 		"settings": {
 			"title": "Auf dich abgestimmt.",
-			"copy": "Empfindlichkeit zu hoch? Drossle sie. Liebst dein Team, willst aber das beste Spiel sehen? Füg einen Bonus hinzu. Schnell Bier holen? Standby Stream hält etwas auf dem Bildschirm. ArenaSwap funktioniert genau so, wie du es brauchst.",
+			"copy": "Empfindlichkeit zu hoch? Drossle sie. Liebst dein Team, willst aber das beste Spiel sehen? Füg einen Bonus hinzu. Schnell Bier holen? Standby Stream hält etwas auf dem Bildschirm.",
 			"items": [
 				{
 					"name": "Empfindlichkeit (1–{levels})",
@@ -340,7 +340,7 @@
 		"copy": "Kopieren",
 		"copied": "Kopiert",
 		"signalsHeading": "Was in die Zahl einfließt",
-		"signalsSub": "Fünf Signale ergeben zusammen einen Wert von 0 bis {max}. Ihre Obergrenzen summieren sich absichtlich auf mehr als {max}, und die Summe wird gedeckelt, sodass ein enges Spiel hoch klettert und ein einseitiges Spiel niedrig bleibt. Ein höherer Wert bedeutet mehr Drama gerade jetzt.",
+		"signalsSub": "Fünf Signale ergeben zusammen einen Wert von 0 bis {max}. Ein enges Spiel klettert hoch, ein einseitiges Spiel bleibt niedrig.",
 		"signalMax": "max. {max}",
 		"signals": [
 			{
@@ -376,9 +376,7 @@
 		"machineScoreCopy": "PowerScore bewertet live, wie spannend jedes Spiel ist.",
 		"machineSwitch": "Wechseln",
 		"machineSwitchCopy": "Dein Tab springt automatisch zum besten Spiel.",
-		"liveLoadingCopy": "Live-Spiele werden abgerufen, PowerScore wird gerade berechnet.",
 		"liveEmptyTitle": "Gerade keine Live-Spiele",
-		"liveEmptyCopy": "Sobald Spiele live gehen, aktualisiert sich dieser Bereich automatisch und zeigt Echtzeit-PowerScores aus allen unterstützten Ligen.",
 		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "ArenaSwap beobachtet und bewertet jedes Live-Spiel",
 		"machineNowWatching": "Schaut gerade",
@@ -451,17 +449,11 @@
 		},
 		"setup": {
 			"groupSwitching": "Wechseln",
-			"groupSwitchingDesc": "Wie schnell ArenaSwap dich zu einem besseren Spiel bringt.",
 			"groupScoring": "Bewertung",
-			"groupScoringDesc": "Welche Signale in den PowerScore einfließen und was einen Boost bringt.",
 			"groupLeagues": "Ligen",
-			"groupLeaguesDesc": "Welche Ligen verfolgt werden und ob jede einen eigenen Abschnitt bekommt.",
 			"groupDisplay": "Anzeige",
-			"groupDisplayDesc": "Was auf dem Hauptbildschirm zu sehen ist.",
 			"groupStandby": "Standby Stream",
-			"groupStandbyDesc": "Wohin du kommst, wenn alle Spiele einschlafen.",
 			"groupDemo": "Demo-Modus",
-			"groupDemoDesc": "Erfundene Spiele, damit du einen Wechsel jederzeit sehen kannst.",
 			"switchNotifications": "Wechsel-Benachrichtigungen",
 			"theme": "Design",
 			"themeLight": "Hell",

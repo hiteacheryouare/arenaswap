@@ -105,7 +105,7 @@
 		"hero": {
 			"titleLine1": "그 순간을,",
 			"titleLine2": "놓치지 마세요.",
-			"lede": "ArenaSwap은 {leagues}개 리그의 모든 라이브 경기를 지켜보다가 최소 6초마다 가장 흥미진진한 경기로 브라우저 탭을 자동으로 전환해요.",
+			"lede": "ArenaSwap은 {leagues}개 리그의 모든 라이브 경기를 지켜보다가 최소 12초마다 가장 흥미진진한 경기로 브라우저 탭을 자동으로 전환해요.",
 			"teamStrip": "{leagues}개 리그의 모든 팀을 지원해요. 당신의 팀도 물론이죠.",
 			"captionSwitched": "ArenaSwap이 {from}에서 {to}(으)로 전환했어요.",
 			"captionWatching": "지금 {game}을(를) 시청 중이에요. 지금 가장 볼만한 경기예요.",
@@ -156,7 +156,7 @@
 		},
 		"settings": {
 			"title": "당신에게 맞춰 조율돼요.",
-			"copy": "민감도가 너무 높나요? 낮춰보세요. 우리 팀은 좋아하지만 제일 재미있는 경기도 보고 싶다면? 보너스를 추가하세요. 잠깐 맥주 사러 나간다면? Standby Stream이 화면에 뭔가를 계속 띄워둬요. ArenaSwap은 당신이 필요한 방식대로 작동해요.",
+			"copy": "민감도가 너무 높나요? 낮춰보세요. 우리 팀은 좋아하지만 제일 재미있는 경기도 보고 싶다면? 보너스를 추가하세요. 잠깐 맥주 사러 나간다면? Standby Stream이 화면에 뭔가를 계속 띄워둬요.",
 			"items": [
 				{
 					"name": "민감도 (1~{levels})",
@@ -340,7 +340,7 @@
 		"copy": "복사",
 		"copied": "복사됨",
 		"signalsHeading": "숫자를 구성하는 요소",
-		"signalsSub": "다섯 가지 시그널이 쌓여 0에서 {max}까지의 점수가 돼요. 각 시그널의 상한을 더하면 의도적으로 {max}를 넘지만, 합계에는 상한이 있어서 접전인 경기는 높이 올라가고 일방적인 경기는 낮게 유지돼요. 점수가 높을수록 지금 이 순간의 드라마가 크다는 뜻이에요.",
+		"signalsSub": "다섯 가지 시그널이 쌓여 0에서 {max}까지의 점수가 돼요. 접전인 경기는 높이 올라가고 일방적인 경기는 낮게 유지돼요.",
 		"signalMax": "최대 {max}",
 		"signals": [
 			{
@@ -376,9 +376,7 @@
 		"machineScoreCopy": "PowerScore가 각 경기가 얼마나 흥미진진한지 실시간으로 평가해요.",
 		"machineSwitch": "전환",
 		"machineSwitchCopy": "탭이 자동으로 가장 좋은 경기로 넘어가요.",
-		"liveLoadingCopy": "라이브 경기를 가져와 PowerScore를 계산하고 있어요.",
 		"liveEmptyTitle": "지금은 라이브 경기가 없어요",
-		"liveEmptyCopy": "경기가 라이브로 전환되면 이 섹션이 자동으로 새로고침되며 지원하는 모든 리그의 실시간 PowerScore를 보여줘요.",
 		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "모든 라이브 경기를 지켜보고 채점하는 ArenaSwap",
 		"machineNowWatching": "지금 보는 중",
@@ -451,17 +449,11 @@
 		},
 		"setup": {
 			"groupSwitching": "전환",
-			"groupSwitchingDesc": "ArenaSwap이 더 좋은 경기로 얼마나 적극적으로 전환할지 설정해요.",
 			"groupScoring": "점수 계산",
-			"groupScoringDesc": "PowerScore에 반영되는 시그널과 부스트를 받는 조건이에요.",
 			"groupLeagues": "리그",
-			"groupLeaguesDesc": "추적할 리그와 리그별 섹션 표시 여부를 설정해요.",
 			"groupDisplay": "화면 표시",
-			"groupDisplayDesc": "메인 화면에 표시되는 내용이에요.",
 			"groupStandby": "Standby Stream",
-			"groupStandbyDesc": "모든 경기가 조용해졌을 때 이동할 곳이에요.",
 			"groupDemo": "데모 모드",
-			"groupDemoDesc": "가상 경기로 원할 때 전환 동작을 확인할 수 있어요.",
 			"switchNotifications": "전환 알림",
 			"theme": "테마",
 			"themeLight": "라이트",

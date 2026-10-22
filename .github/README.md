@@ -59,8 +59,8 @@ ArenaSwap watches every live game across 31 leagues and automatically switches y
 
 ## Features
 
-- **Auto-Switch** — Rescores every live game as often as every 12 seconds, then switches to the best one and unmutes it
-- **PowerScore** — Real-time 0–100 excitement score built from 5 signals and 6 adjustments; switch off a signal you disagree with and the rest renormalize
+- **Auto-Switch** — Switches to the best live game and unmutes it
+- **PowerScore** — Real-time 0–100 excitement score built from 5 signals and 6 adjustments; switch off a signal you disagree with
 - **Guide** — A full-day timeline of every game with a heat curve, so you can see the good windows before they arrive
 - **Game detail** — Box score, standings, win probability, and PowerScore charted over time, plus the live at-bat, drive, and latest play
 - **Tab suggestions** — Spots the game streams already open in your tabs and offers to assign them for you

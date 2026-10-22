@@ -198,7 +198,7 @@ describe('an evening parked on the standby stream', () => {
 		expect(activations()).toEqual([standbyTabId]);
 		expect(notificationsCreate).toHaveBeenCalledWith('arenaswap-switch', expect.objectContaining({
 			title: 'Parked on Standby Stream',
-			message: 'Every game went quiet, so we parked you on your Standby Stream.',
+			message: 'Every game went quiet.',
 		}));
 	});
 

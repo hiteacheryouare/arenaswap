@@ -7,7 +7,7 @@ SO FUNKTIONIERT ES
 ━━━━━━━━━━━━━━━━━━━━━━
 1. Öffne deine Streams. Rufe deine Spiele in separaten Browser-Tabs auf. ESPN+, Peacock, Paramount+, YouTube TV, Hulu oder jeder andere browserbasierte Stream funktioniert.
 2. Weise jeden Tab einmal zu. Öffne das ArenaSwap-Popup, finde jedes Live-Spiel in der Liste und verbinde es mit seinem Tab über ein einziges Dropdown.
-3. Lehn dich zurück. ArenaSwap bewertet fortlaufend jedes Live-Spiel und wechselt dich zum besten. Es prüft in hitzigen Momenten bis zu alle 6 Sekunden, in ruhigeren Phasen seltener. Die Stummschaltung des richtigen Tabs wird aufgehoben, die anderen werden stummgeschaltet, damit du immer die richtige Übertragung hörst.
+3. Lehn dich zurück. ArenaSwap bewertet fortlaufend jedes Live-Spiel und wechselt dich zum besten. Es prüft in hitzigen Momenten bis zu alle 12 Sekunden, in ruhigeren Phasen seltener. Die Stummschaltung des richtigen Tabs wird aufgehoben, die anderen werden stummgeschaltet, damit du immer die richtige Übertragung hörst.
 
 
 ━━━━━━━━━━━━━━━━━━━━━━
@@ -22,7 +22,7 @@ Jedes Live-Spiel erhält einen PowerScore von 0–100, der sich aus fünf Signal
 - Führungswechsel: Hin und Her im Spielverlauf
 - Comeback-Faktor: Teams, die sich aus einem Rückstand herauskämpfen
 
-Die Signale addieren sich, und der Score ist bei 100 gedeckelt, sodass ein wirklich spannendes Spiel in die 80er und 90er klettert, während ein einseitiges Spiel niedrig bleibt. Der Score wächst mit dem Spielverlauf, statt auf einem flachen Grundwert zu verharren: Ein frühes oder einseitiges Spiel erhält einen niedrigen Wert, und die Spannung steigt Richtung Schlusspfiff. Aktuelle Punkteserien lassen die Live-Signale kurz ausschlagen und dann wieder abklingen, sodass selbst punktearme Sportarten eine bewegte Kurve statt einer Geraden behalten.
+Ein wirklich spannendes Spiel klettert in die 80er und 90er. Ein einseitiges Spiel bleibt niedrig.
 
 Spiele, die zur Werbung schalten (Inning-Pausen, Pitcherwechsel, TV-Auszeiten), bekommen einen Abzug, und Halbzeiten bringen null Punkte, damit du nie mitten in eine Werbepause wechselst.
 
@@ -31,8 +31,6 @@ Jede Karte im Popup zeigt einen farbcodierten PowerScore-Balken, damit du das Sp
 ━━━━━━━━━━━━━━━━━━━━━━
 UNTERSTÜTZTE LIGEN (31)
 ━━━━━━━━━━━━━━━━━━━━━━
-
-ArenaSwap überwacht 31 Ligen aus sechs Sportarten, und du kannst jede davon einzeln ein- oder ausschalten.
 
 Die Abdeckung reicht über Basketball, American Football, Eishockey, Baseball und Softball auf Profi-, College- und Olympia-Niveau. Dazu gehören die NBA und WNBA, die NFL, die NHL, die MLB sowie die jeweiligen College- und internationalen Pendants. Außerdem ist Fußball dabei, von nordamerikanischen Vereinen über Europas Top-Ligen bis zu den großen internationalen Turnieren.
 
@@ -47,7 +45,6 @@ GANZ AUF DICH EINGESTELLT
 - Wechselverzögerung: Puffer für den Fall, dass dein Stream hinter den Live-Daten hinterherhinkt.
 - Lieblingsteam-Bonus: zusätzliches Gewicht für Spiele mit Teams, die dir wichtig sind. Favoriten pro Liga werden unterstützt.
 - Spielboost: hebe den PowerScore eines beliebigen Spiels manuell an, damit es länger auf dem Bildschirm bleibt.
-- Liga-Filter: verfolge nur die Sportarten, die du tatsächlich schaust.
 - Profi-Tipps: optionale In-App-Hinweise, damit du das Meiste aus der Erweiterung herausholst.
 - Wechsel-Benachrichtigungen: Browser-Benachrichtigungen bei jedem Wechsel von ArenaSwap.
 
@@ -65,7 +62,7 @@ STANDARDMÄSSIG PRIVAT
 
 - Kein Konto. Kein Login. Kein Abo.
 - Kein Tracking, keine Analyse, keine Werbung.
-- Live-Ergebnisse kommen direkt aus der öffentlichen API von ESPN. Alles andere läuft lokal in deinem Browser.
+- Live-Ergebnisse kommen von unseren Quellen, die jedes Spiel mit dem Fernglas im Blick behalten.
 - 100 % Open Source. Der vollständige Code, einschließlich des PowerScore-Pakets, ist auf GitHub.
 
 

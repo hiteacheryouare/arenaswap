@@ -105,7 +105,7 @@
 		"hero": {
 			"titleLine1": "不再錯過",
 			"titleLine2": "精彩瞬間。",
-			"lede": "ArenaSwap 會監控 {leagues} 個聯盟的所有直播比賽，最快每 6 秒就自動把你的瀏覽器分頁切換到最精彩的比賽。",
+			"lede": "ArenaSwap 會監控 {leagues} 個聯盟的所有直播比賽，最快每 12 秒就自動把你的瀏覽器分頁切換到最精彩的比賽。",
 			"teamStrip": "支援 {leagues} 個聯盟裡的每一支球隊，當然也包括你支持的那一支。",
 			"captionSwitched": "ArenaSwap 已經把你從 {from} 切換到 {to}。",
 			"captionWatching": "你正在觀看 {game}，目前最值得看的比賽。",
@@ -156,7 +156,7 @@
 		},
 		"settings": {
 			"title": "為你量身調整。",
-			"copy": "靈敏度太高？調低一點。喜歡自己的球隊，但也想看最精彩的比賽？加一個加成。要出門買啤酒？Standby Stream 會讓螢幕上隨時有內容。ArenaSwap 會照你需要的方式運作。",
+			"copy": "靈敏度太高？調低一點。喜歡自己的球隊，但也想看最精彩的比賽？加一個加成。要出門買啤酒？Standby Stream 會讓螢幕上隨時有內容。",
 			"items": [
 				{
 					"name": "靈敏度（1–{levels}）",
@@ -340,7 +340,7 @@
 		"copy": "複製",
 		"copied": "已複製",
 		"signalsHeading": "這個數字是怎麼組成的",
-		"signalsSub": "五個訊號加總成一個 0 到 {max} 的分數。它們各自的上限加起來刻意超過 {max}，而總分設有上限，所以膠著的比賽會衝得很高，一面倒的比賽則會維持在低分。分數越高，代表現在這一刻的看點越多。",
+		"signalsSub": "五個訊號加總成一個 0 到 {max} 的分數。膠著的比賽會衝得很高，一面倒的比賽則會維持在低分。",
 		"signalMax": "最高 {max}",
 		"signals": [
 			{
@@ -376,9 +376,7 @@
 		"machineScoreCopy": "PowerScore 會即時評估每場比賽有多精彩。",
 		"machineSwitch": "切換",
 		"machineSwitchCopy": "你的分頁會自動跳到最精彩的比賽。",
-		"liveLoadingCopy": "正在取得直播比賽並計算 PowerScore。",
 		"liveEmptyTitle": "目前沒有直播比賽",
-		"liveEmptyCopy": "當比賽開始直播時，這個區塊會自動重新整理，並顯示所有支援聯盟的即時 PowerScore。",
 		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "ArenaSwap 正在監控並為每場直播比賽評分",
 		"machineNowWatching": "正在觀看",
@@ -451,17 +449,11 @@
 		},
 		"setup": {
 			"groupSwitching": "切換",
-			"groupSwitchingDesc": "ArenaSwap 有多積極把你帶到更精彩的比賽。",
 			"groupScoring": "評分",
-			"groupScoringDesc": "哪些信號會影響 PowerScore，以及哪些能獲得加成。",
 			"groupLeagues": "聯賽",
-			"groupLeaguesDesc": "追蹤哪些聯賽，以及每個聯賽是否各自獨立成區塊。",
 			"groupDisplay": "顯示",
-			"groupDisplayDesc": "主畫面上會出現什麼內容。",
 			"groupStandby": "Standby Stream",
-			"groupStandbyDesc": "所有比賽都冷場時，把你停在哪裡。",
 			"groupDemo": "示範模式",
-			"groupDemoDesc": "用虛構比賽，隨時看一次切換是怎麼發生的。",
 			"switchNotifications": "切換通知",
 			"theme": "主題",
 			"themeLight": "淺色",

@@ -190,7 +190,6 @@ const PowerScoreBreakdown = ({
 						<div className='powerscore-breakdown-row powerscore-breakdown-row-subtotal'>
 							<span className='d-flex align-items-center gap-1'>
 								{i18n.t('powerScore.signalsTotal')}
-								{isSignalNormalized && <SettingTooltipIcon text={i18n.t('powerScore.tooltipSignalsNormalized')} label={i18n.t('powerScore.signalsTotal')} />}
 							</span>
 							{isSignalNormalized ? (
 								<span className='d-flex align-items-center gap-1'>

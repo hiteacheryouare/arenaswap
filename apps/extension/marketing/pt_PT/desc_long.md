@@ -7,7 +7,7 @@ COMO FUNCIONA
 ━━━━━━━━━━━━━━━━━━━━━━
 1. Abre as tuas transmissões. Abre os teus jogos em separadores de navegador separados. ESPN+, Peacock, Paramount+, YouTube TV, Hulu ou qualquer outra transmissão baseada em navegador funciona.
 2. Associa cada separador uma vez. Abre o popup do ArenaSwap, encontra cada jogo em direto na lista e liga-o ao seu separador com um único menu suspenso.
-3. Descontrai. ArenaSwap pontua continuamente cada jogo em direto e muda-te para o melhor. Verifica a cada 6 segundos quando a tensão sobe, e mais devagar nos momentos mais calmos. O separador certo fica com som, os outros ficam silenciados, para ouvires sempre a transmissão certa.
+3. Descontrai. ArenaSwap pontua continuamente cada jogo em direto e muda-te para o melhor. Verifica a cada 12 segundos quando a tensão sobe, e mais devagar nos momentos mais calmos. O separador certo fica com som, os outros ficam silenciados, para ouvires sempre a transmissão certa.
 
 
 ━━━━━━━━━━━━━━━━━━━━━━
@@ -22,7 +22,7 @@ Cada jogo em direto recebe um PowerScore de 0 a 100 construído a partir de cinc
 - Mudanças de liderança: o caos de idas e vindas no marcador
 - Fator de recuperação: equipas a sair de um défice
 
-Os sinais somam-se e a pontuação tem um teto de 100, por isso um jogo verdadeiramente emocionante sobe para os 80 e 90, enquanto uma goleada fica baixa. A pontuação cresce com o jogo em vez de ficar numa base fixa: um jogo no início ou desequilibrado pontua baixo, e a tensão aumenta em direção ao apito final. As sequências de pontuação recentes disparam os sinais em direto e depois desaparecem, por isso até desportos de baixa pontuação mantêm um gráfico em movimento em vez de uma linha reta.
+Um jogo verdadeiramente emocionante sobe para os 80 e 90. Uma goleada fica baixa.
 
 Jogos que passam para publicidade (pausas entre entradas, trocas de lançador, descontos de tempo para a TV) recebem uma penalização, e o intervalo a meio do jogo não pontua, para nunca seres mudado para um intervalo publicitário.
 
@@ -31,8 +31,6 @@ Cada cartão no popup mostra uma barra de PowerScore com código de cores para v
 ━━━━━━━━━━━━━━━━━━━━━━
 LIGAS SUPORTADAS (31)
 ━━━━━━━━━━━━━━━━━━━━━━
-
-O ArenaSwap monitoriza 31 ligas em seis desportos, e podes ativar ou desativar qualquer uma delas.
 
 A cobertura abrange basquetebol, futebol americano, hóquei, basebol e softbol nos níveis profissional, universitário e olímpico. Isso inclui a NBA e a WNBA, a NFL, a NHL e a MLB, além dos respetivos equivalentes universitários e internacionais. Também inclui futebol, desde clubes norte-americanos até às principais ligas europeias e às grandes competições internacionais.
 
@@ -47,7 +45,6 @@ AJUSTADO A TI
 - Atraso de mudança: margem para quando a tua transmissão fica atrás dos dados em direto.
 - Bónus de equipa favorita: peso extra para jogos com equipas que te importam. Suporta favoritos por liga.
 - Impulso do jogo: aumenta manualmente o PowerScore de qualquer jogo para o manteres em ecrã mais tempo.
-- Filtros de liga: monitoriza só os desportos que realmente vês.
 - Dicas: sugestões opcionais dentro da aplicação para tirares o máximo partido da extensão.
 - Notificações de mudança: notificações do navegador sempre que o ArenaSwap faz uma mudança.
 
@@ -65,7 +62,7 @@ PRIVADO POR DEFEITO
 
 - Sem conta. Sem sessão. Sem subscrição.
 - Sem rastreio, sem análise, sem anúncios.
-- Os marcadores em direto vêm diretamente da API pública da ESPN. Todo o resto corre localmente no teu navegador.
+- Os marcadores em direto vêm das nossas fontes, que não tiram os binóculos de cima de nenhum jogo.
 - 100% código aberto. O código completo, incluindo o pacote PowerScore, está no GitHub.
 
 

@@ -1,6 +1,6 @@
 {
 	"extName": "ArenaSwap——自動切換 NFL、NBA、March Madness、MLB 直播",
-	"extDescription": "監控 31 個聯賽的所有直播比賽，自動把你的分頁切到最精彩的一場，最快每 6 秒判定一次。",
+	"extDescription": "監控 31 個聯賽的所有直播比賽，自動把你的分頁切到最精彩的一場，最快每 12 秒判定一次。",
 	"bossCommandDescription": "老闆來了：靜音所有比賽，並切換到掩護頁面",
 	"app": {
 		"welcomeToast": "歡迎使用 ArenaSwap！",
@@ -201,7 +201,7 @@
 		"finishedTabFree": "從 ArenaSwap 釋放",
 		"finishedTabClose": "關閉分頁",
 		"finishedTabActiveExplainer": "你正在看的分頁會保持不變，直到你切換走為止。",
-		"finishedTabCloseExplainer": "視窗裡的最後一個分頁會被釋放而不是關閉，這樣視窗就不會被關掉。",
+		"finishedTabCloseExplainer": "視窗裡的最後一個分頁會被釋放而不是關閉。",
 		"bossDecoy": "掩護頁面",
 		"bossDecoyExplainer": "按下「老闆來了」後前往的頁面：試算表、文件，任何看起來很忙的東西都行。按下時還會靜音 ArenaSwap 管理的所有分頁，並暫停自動切換，直到你重新開啟。留空則開啟一個空白分頁。",
 		"bossDecoyInvalid": "這看起來不像網址。",
@@ -214,7 +214,7 @@
 		"demoSeasonReal": "真實日期",
 		"demoSeasonThanksgiving": "感恩節當週",
 		"demoSeasonDecember": "十二月",
-		"demoSeasonExplainer": "僅影響節日裝飾，方便你在非節日期間查看。",
+		"demoSeasonExplainer": "僅更改節日裝飾。",
 		"enableStandby": "啟用 Standby Stream",
 		"standbyBelow": "低於此分數時待機",
 		"morePatient": "更有耐心",
@@ -234,7 +234,7 @@
 		"holidayLights": "彩燈",
 		"holidayLeaves": "落葉",
 		"signalsSection": "PowerScore 信號",
-		"signalsExplainer": "關掉某個信號，它就坐板凳。其餘信號會重新縮放，分數仍在 0–100 之間。",
+		"signalsExplainer": "關掉某個信號，它就坐板凳。",
 		"signalLastActive": "至少要留一個信號在場上。",
 		"selectNone": "清除",
 		"selectAll": "全選",
@@ -261,7 +261,7 @@
 		"groupFavoritesDesc": "你關注的球隊會一直排在列表最上方。",
 		"followedTeams": "你關注的球隊",
 		"groupLeagues": "聯賽",
-		"groupLeaguesDesc": "只有你選擇的聯賽會被追蹤，並納入切換的判斷。",
+		"groupLeaguesDesc": "選擇你觀看的聯賽。",
 		"groupDisplay": "顯示",
 		"groupDisplayDesc": "比賽列表顯示什麼，以及 ArenaSwap 的外觀。",
 		"groupStandby": "Standby Stream",
@@ -315,7 +315,7 @@
 		"modeExplainerCustom": "為每個聯賽各選一種模式。",
 		"leagueModes": "依聯賽設定模式",
 		"leagueModeLabel": "{league} 模式",
-		"modeFantasyLeagues": "夢幻模式涵蓋 NFL、NBA、WNBA、MLB 和 NHL，你的球員就來自這些聯賽。",
+		"modeFantasyLeagues": "夢幻模式涵蓋 NFL、NBA、WNBA、MLB 和 NHL。",
 		"fantasyBlend": "你的球員能為比賽加多少分",
 		"fantasyBlendValue": "{percent}%",
 		"fantasyBlendLow": "完全不加",
@@ -344,7 +344,7 @@
 		"keywordsSituation": "夢幻, 紅區, 打擊, 冰上, 信號, fantasy",
 		"keywordsProduction": "夢幻, 得分, 數據, 信號, fantasy",
 		"keywordsExposure": "夢幻, 球員, 陣容, 幾個人, 信號, fantasy",
-		"fantasyBlendExplainer": "你的球員的夢幻得分會疊加在比賽的經典得分之上，所以他們參與的比賽只會升，不會降。"
+		"fantasyBlendExplainer": "你的球員只會抬高一場比賽，不會拉低它。"
 	},
 	"finishedTabs": {
 		"toastFreed": {
@@ -703,7 +703,6 @@
 		"sportTotal": "{sport}總計",
 		"cappedAt": "（上限 {max}）",
 		"signalsNormalizedNote": "已重新校準，在信號停用時仍維持 0–100 的範圍",
-		"tooltipSignalsNormalized": "當某些信號被關閉時，剩餘信號會按比例放大，讓總分仍保有完整的 0–100 範圍。",
 		"breakPenalty": "廣告時段扣分",
 		"favoriteBoost": "收藏球隊加成",
 		"gameBoost": "比賽加成",
@@ -711,11 +710,11 @@
 		"postseasonBoost": "季後賽加成",
 		"signalOff": "已關閉",
 		"finalPowerScore": "最終 PowerScore",
-		"tooltipCloseness": "依當前分差計算。平局得分最高，分差越大得分越低。上限會隨比賽進度提高，同樣的分差在比賽末段比開局更值錢。",
-		"tooltipLateGame": "綜合比賽進行時間與分差計算。在最後一節呈線性成長；大幅落後的比賽在這項幾乎拿不到分。若比賽在最後幾秒仍平局，會額外加分，預先看好可能進入延長賽。",
-		"tooltipMomentum": "衡量一支球隊在近期比分歷史窗口內的淨得分。若某隊在此期間大幅拉開比分，這項就會得分；隨時間經過、沒有再得分則逐漸衰減。",
-		"tooltipLeadChanges": "統計歷史窗口內領先交替的次數。沒有交替則不得分；交替一次以上則得分逐步提高。若一段時間沒有再交替，得分會衰減。",
-		"tooltipComeback": "比較窗口最早時間點的分差與目前分差。若落後方已縮小差距，會依追回的幅度得分；比賽越晚期越值錢，若不再得分則逐漸衰減。",
+		"tooltipCloseness": "比分有多接近。打平時分數最高，比分接近的話，比賽越往後分數越高。",
+		"tooltipLateGame": "比賽離結束有多近，前提是比賽仍然膠著。進入最後階段後分數持續上升，接近結束時打平則升得最高。一面倒的比賽幾乎不加分。",
+		"tooltipMomentum": "是否有一支球隊正在打出一波連續得分。最近比對手多得的分越多，分數越高。得分停下來後會逐漸下降。",
+		"tooltipLeadChanges": "最近領先方換了幾次。換得越多，分數越高。領先一直沒變的話會逐漸下降。",
+		"tooltipComeback": "落後的球隊是否在追分。最近追回的分差越大，分數越高，而且越接近比賽尾聲，影響越大。",
 		"tooltipBreakPenalty": "在我們的線民發現比賽切入廣告的期間適用，像是局間休息、換投手或電視暫停。",
 		"tooltipVolatility": "當即時勝率一直接近 50%（加成）或遠離 50%（扣分）時適用。",
 		"tooltipFavoriteBoost": "當你收藏的球隊有一支或多支參賽時適用。",
@@ -809,15 +808,15 @@
 		"signalProduction": "夢幻得分",
 		"signalExposure": "你的球員",
 		"tooltipBlowoutMargin": "依領先方領先多少計算。在比賽拉開到兩個得分回合的差距之前不得分，之後逐步升向完全一面倒，比賽越晚權重越高。",
-		"tooltipSustained": "近期這段時間裡，領先方有多少時間領先超過兩個得分回合。辛苦建立並守住的領先，比轉瞬即逝的領先更值錢。",
+		"tooltipSustained": "近期這段時間裡，領先方有多少時間領先超過兩個得分回合。",
 		"tooltipTiming": "比賽還有大把時間時的一面倒，比快結束時的一面倒更有看頭。開局最高，接近終場歸零。",
 		"tooltipPileOn": "領先方是否還在繼續拉開，也就是近期得分壓過對手的程度。得分停下來就會回落。",
 		"tooltipSituation": "你的球員此刻所處的位置：持球推進、紅區、站上打擊區、站上投手丘。最活躍的那位權重最大，其餘的占一小部分。籃球和冰球則看比賽有多膠著、有多接近尾聲。",
 		"tooltipProduction": "你的球員近期依你的得分規則拿到的夢幻得分。得分越久遠，數值越低。",
 		"tooltipExposure": "有多少位你的球員在這場比賽中。每人 5 分，最多計 3 人。",
 		"blendClassic": "經典得分",
-		"tooltipBlendBlowouts": "一面倒模式不會讓比賽的得分低於其經典得分的 30%，所以沒有大比分的夜晚也照樣有得看。",
-		"tooltipBlendFantasy": "夢幻模式以比賽的經典得分為基礎，再依設定裡的權重疊加你的球員的夢幻得分。你的球員只會抬高一場比賽，不會拉低它。",
+		"tooltipBlendBlowouts": "一面倒模式不會讓比賽的得分低於其經典得分的 30%。",
+		"tooltipBlendFantasy": "你的球員的夢幻得分，依設定裡的權重疊加。",
 		"goAheadRun": "超前跑者上壘",
 		"twoMinuteDrill": "兩分鐘進攻",
 		"redCard": "紅牌",
@@ -946,11 +945,10 @@
 	},
 	"tabControl": {
 		"title": "歡迎使用 ArenaSwap",
-		"subtitle": "開始設定之前，先了解一下它的運作方式。",
 		"feature1Title": "自動切換分頁",
 		"feature1Body": "在不同分頁開啟幾場比賽。其中一場變得精彩時，ArenaSwap 會幫你切到那個分頁。",
 		"feature2Title": "分頁由你來選",
-		"feature2Body": "把每場比賽的直播開在各自的分頁，再到 ArenaSwap 把那個分頁連結到對應的比賽。ArenaSwap 只會控制你連結過的分頁。",
+		"feature2Body": "把每場比賽的直播開在各自的分頁，再到 ArenaSwap 把那個分頁連結到對應的比賽。",
 		"feature3Title": "掌控權始終在你手上",
 		"feature3Body": "隨時都能關閉切換。在設定中，你可以選擇 ArenaSwap 切換的頻率，以及兩次切換之間要等多久。",
 		"gotIt": "了解"
@@ -963,13 +961,12 @@
 	},
 	"stepToggle": {
 		"title": "開啟與關閉",
-		"subtitle": "用這個開關來開啟和關閉 ArenaSwap。",
 		"tryIt": "↑ 試試看",
 		"statusActive": "ArenaSwap 正在幫你切換",
 		"statusPaused": "ArenaSwap 已暫停",
 		"bodyBeforeOn": "當開關",
 		"bodyOn": "開啟",
-		"bodyAfterOn": "時，ArenaSwap 會自動把你的分頁切到最精彩的直播比賽。隨時關閉即可拿回手動控制權。",
+		"bodyAfterOn": "時，ArenaSwap 會自動把你的分頁切到最精彩的直播比賽。隨時關閉。",
 		"next": "下一步"
 	},
 	"stepPowerScore": {
@@ -1010,7 +1007,7 @@
 		"subtitle": "ArenaSwap 只會切換到你連結的分頁。",
 		"assignPlaceholder": "— 指派分頁 —",
 		"linkHint": "↑ 選擇正在播放這場比賽的分頁",
-		"body": "把每場比賽的直播開在各自的瀏覽器分頁。接著在比賽卡片的選單中選擇那個分頁。ArenaSwap 只會在你連結過的分頁之間切換。",
+		"body": "把每場比賽的直播開在各自的瀏覽器分頁。接著在比賽卡片的選單中選擇那個分頁。",
 		"back": "返回",
 		"next": "下一步"
 	},
@@ -1018,7 +1015,7 @@
 		"title": "看它大顯身手",
 		"watchingCaption": "正在看老鷹隊的比賽……",
 		"reveal": "有看到嗎？👀",
-		"revealBody": "76 人隊的比賽在最後兩分鐘變得膠著，PowerScore 跳到 89。ArenaSwap 幫你切到了它的分頁，不用點擊。",
+		"revealBody": "76 人隊的比賽在最後兩分鐘變得膠著，PowerScore 跳到 89。ArenaSwap 幫你切到了它的分頁。",
 		"back": "返回",
 		"next": "下一步",
 		"watchingBadge": "觀看中"
@@ -1026,7 +1023,7 @@
 	"stepFullScreen": {
 		"title": "進入全螢幕",
 		"subtitle": "每次切換後都保持全螢幕。",
-		"body": "比賽前按 {shortcut}，讓整個瀏覽器視窗進入全螢幕。每次 ArenaSwap 切換後，視窗都會保持全螢幕。影片播放器自己的全螢幕按鈕會在分頁切換時關閉，所以如果你用了它，ArenaSwap 會幫你把視窗重新切回全螢幕。",
+		"body": "比賽前按 {shortcut}，讓整個瀏覽器視窗進入全螢幕。改用影片播放器自己的全螢幕按鈕嗎？ArenaSwap 會在每次切換後把視窗重新切回全螢幕。",
 		"back": "返回",
 		"next": "下一步"
 	},
@@ -1043,7 +1040,7 @@
 		"sensitivityLabel": "切換靈敏度",
 		"sensitivityHelp": "決定另一場比賽要比目前這場精彩多少，ArenaSwap 才會切換過去。數值越高，切換越多。",
 		"cooldownLabel": "切換冷卻",
-		"cooldownHelp": "兩次切換之間最短的等待時間，避免 ArenaSwap 來回不停地切換。",
+		"cooldownHelp": "兩次切換之間最短的等待時間。",
 		"moreLeagues": "+ 更多聯賽見「設定 → 聯賽」",
 		"back": "返回",
 		"next": "下一步"
@@ -1066,13 +1063,12 @@
 	},
 	"stepLeaguesFavorites": {
 		"title": "聯賽與收藏",
-		"subtitle": "有兩種方式可以選擇 ArenaSwap 關注什麼。",
 		"tabLeagues": "聯賽",
 		"tabFavorites": "收藏",
-		"leaguesExplain": "開啟一個聯賽後，ArenaSwap 就會尋找該聯賽的直播比賽。它只會在你開啟的聯賽的比賽之間切換。",
-		"leaguesBody": "在設定 → 聯賽中開啟你想關注的所有聯賽。開啟得越多，ArenaSwap 可選的比賽就越多。",
+		"leaguesExplain": "開啟一個聯賽後，ArenaSwap 就會尋找該聯賽的直播比賽。",
+		"leaguesBody": "在設定 → 聯賽中開啟你想關注的所有聯賽。",
 		"favoritesExplain": "收藏一支球隊後，它的比賽會獲得 PowerScore 加成，ArenaSwap 就更有可能切換到這些比賽。",
-		"favoritesBody": "在任何比賽卡片或設定中收藏你喜愛的球隊。其他比賽仍會顯示，你的球隊只是多一點小小的加成。",
+		"favoritesBody": "在任何比賽卡片或設定中收藏你喜愛的球隊。",
 		"favoritesBonusHint": "收藏已開啟，這些球隊的比賽會獲得 PowerScore 加成！",
 		"toggleAriaLabel": "切換 {label}",
 		"starAriaLabel": "將 {team} 加入收藏",
@@ -1082,9 +1078,8 @@
 	},
 	"stepReAccess": {
 		"title": "隨時回來看看",
-		"subtitle": "你隨時都能再看一次這段導覽。",
 		"callout": "就是這個",
-		"body": "點一下 ArenaSwap 頂部的 ? 按鈕，就能再看一次這段導覽。想複習一下，或是教朋友怎麼使用時都很方便。",
+		"body": "點一下 ArenaSwap 頂部的 ? 按鈕，就能再看一次這段導覽。",
 		"back": "返回",
 		"next": "完成"
 	},
@@ -1096,12 +1091,11 @@
 		"returnTitle": "它會自己切回來",
 		"returnBody": "只要有比賽重新熱起來、超過門檻，ArenaSwap 就會立刻把你切回去。",
 		"chooseTitle": "由你選擇待機分頁",
-		"chooseBody": "把你想看的直播開在一個分頁，再把它設為待機分頁。",
+		"chooseBody": "任何你喜歡的直播都行。",
 		"next": "下一步",
 		"setupTitle": "怎麼設定",
-		"setupSubtitle": "以下兩項需要設定。",
 		"thresholdTitle": "設定你的門檻",
-		"thresholdBody": "選擇分數要低到什麼程度才會觸發待機。門檻越低越有耐心，越高則觸發得越快。",
+		"thresholdBody": "選擇分數要低到什麼程度才會觸發待機。",
 		"designateTitle": "指定一個待機分頁",
 		"designateBody": "把你的 Standby Stream 開在一個分頁，回到這裡，再從下拉選單中選擇它。",
 		"back": "返回",
@@ -1127,7 +1121,7 @@
 	},
 	"notification": {
 		"standbyTitle": "已停在 Standby Stream",
-		"standbyMessage": "所有比賽都冷了下來，所以先把你停在 Standby Stream。",
+		"standbyMessage": "所有比賽都冷了下來。",
 		"switchedTitle": "已切換 → {score}",
 		"switchedMessage": "出發前往 {venue}！",
 		"switchedMessageWithReason": "{reason}。出發前往 {venue}！",
@@ -1163,7 +1157,7 @@
 		"bannerAction": "查看",
 		"bannerDismiss": "忽略建議",
 		"header": "分頁建議",
-		"lede": "取消勾選我們猜錯的項目。每張卡片上的下拉選單依然握有最終決定權。",
+		"lede": "取消勾選我們猜錯的項目。",
 		"empty": "你打開的內容裡，沒有一個像你賽程上的比賽。",
 		"rowLabel": "將 {tab} 與 {away} 對戰 {home} 的比賽配對",
 		"apply": {
@@ -1194,7 +1188,6 @@
 			"t2": "點任何比賽卡片，深入查看它的 PowerScore 詳細分析。",
 			"t3": "同時看好幾種運動？在設定中開啟更多聯賽，一次涵蓋所有賽事。",
 			"t4": "長頸鹿和刺蝟都很酷，同時看所有比賽也一樣酷。",
-			"t5": "讓 ArenaSwap 跑得越久，表現就會越好！",
 			"t6": "在設定中開啟切換通知，ArenaSwap 每次切換分頁都會提醒你。",
 			"t7": "在電視上看球賽？按 {shortcut}，每次切換都維持全螢幕。"
 		},
@@ -1213,7 +1206,7 @@
 			"t3": "示範模式會播放預先排好的比賽，不用等真的比賽就能調整設定。",
 			"t4": "切換靈敏度決定 ArenaSwap 切換前需要多大的 PowerScore 領先。",
 			"t5": "季後賽加成會替季後賽和冠軍賽額外加權，讓最關鍵的時刻贏得更多切換。",
-			"t6": "在 PowerScore 信號區塊停用你不在乎的信號——ArenaSwap 會自動重新校準。"
+			"t6": "在 PowerScore 信號區塊停用你不在乎的信號。"
 		},
 		"detail": {
 			"t0": "PowerScore 綜合接近度、關鍵時刻壓力、氣勢、領先交替和逆轉，再依勝率的波動幅度給予波動加成或扣分。",
@@ -1234,17 +1227,17 @@
 	},
 	"cooldown": {
 		"label": "切換冷卻",
-		"explainer": "設定自動切換之間的最短間隔，避免分頁來回亂跳。",
+		"explainer": "兩次自動切換之間最短的等待時間。",
 		"off": "關閉"
 	},
 	"switchDelay": {
 		"label": "切換延遲",
-		"explainer": "在執行切換前等待這段時間，有助於應對直播落後即時數據的情況。",
+		"explainer": "切換前先等待這麼長的時間。如果你的直播比比分慢，就調高一點。",
 		"off": "關閉"
 	},
 	"contentAwareSwitching": {
 		"label": "比賽間歇再切換",
-		"explainer": "等你正在看的比賽出現間歇（例如一個打席結束、哨聲響起或一次進攻結束）再切換，這樣就不會在比賽進行到一半時被切走。切換延遲仍會在間歇之後繼續倒數。"
+		"explainer": "等你正在看的比賽出現間歇（例如一個打席結束、哨聲響起或一次進攻結束）再切換。切換延遲仍會在間歇之後繼續倒數。"
 	},
 	"sensitivity": {
 		"label": "切換靈敏度",

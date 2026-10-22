@@ -37,7 +37,7 @@ If two of your assigned games are close enough that the lead keeps trading back 
 
 ## Give a laggy stream room to catch up
 
-**Switch delay**, the third Switching setting, waits before carrying out a switch, from **Off** up to 3 minutes. Switch delay exists for streams that run behind the live data ArenaSwap reads.
+**Switch delay**, the third Switching setting, waits before carrying out a switch, from **Off** up to 3 minutes.
 
 If ArenaSwap keeps switching you to a game a few seconds before your feed shows the exciting play, add a delay. Your stream then has time to catch up first. A queued switch still re-checks the score right before it fires. You won't get sent to a game that cooled off while the switch waited.
 
@@ -50,7 +50,7 @@ If ArenaSwap keeps switching you to a game a few seconds before your feed shows 
 - **Basketball:** a whistle: a foul, a timeout, a violation, a substitution, or free throws.
 - **Hockey:** a whistle, a goal, or a penalty.
 
-If play doesn't stop in time, the switch goes ahead anyway: after 45 seconds in football, 90 in basketball and hockey, and 2 minutes in baseball. It doesn't wait at all when the game you're leaving is already at a timeout, a TV break or an intermission, when it's a blowout, or when the other game is at a deciding moment, like a walk-off chance or a last shot. Soccer, college football and college hockey switch straight away. Soccer plays straight through, and the college feeds our spotters send back arrive too late to time a break by.
+If play doesn't stop in time, the switch goes ahead anyway: after 45 seconds in football, 90 in basketball and hockey, and 2 minutes in baseball. It doesn't wait at all when the game you're leaving is already at a timeout, a TV break or an intermission, when it's a blowout, or when the other game is at a deciding moment, like a walk-off chance or a last shot. Soccer, college football and college hockey switch straight away. Soccer plays straight through.
 
 While a switch waits, the popup says which game is up next and what it's waiting for, and with switch notifications on, an "Up next" notification says the same. The switch's own notification replaces it and says it waited, or the notification disappears if the switch is called off. Switch delay still counts down after the break, so a stream that runs well behind gets its extra time too.
 

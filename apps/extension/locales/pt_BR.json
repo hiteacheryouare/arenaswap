@@ -1,6 +1,6 @@
 {
 	"extName": "ArenaSwap — Troca automática de NFL, NBA, March Madness e MLB ao vivo",
-	"extDescription": "Observa todo jogo ao vivo em 31 ligas e troca sua aba automaticamente para o mais emocionante, a cada 6 segundos se for preciso.",
+	"extDescription": "Observa todo jogo ao vivo em 31 ligas e troca sua aba automaticamente para o mais emocionante, a cada 12 segundos se for preciso.",
 	"bossCommandDescription": "O chefe vem aí: silencia os jogos e vai para a sua página de disfarce",
 	"app": {
 		"welcomeToast": "Bem-vindo ao ArenaSwap!",
@@ -201,7 +201,7 @@
 		"finishedTabFree": "Liberar a aba do ArenaSwap",
 		"finishedTabClose": "Fechar a aba",
 		"finishedTabActiveExplainer": "A aba que você está assistindo fica intocada até você sair dela.",
-		"finishedTabCloseExplainer": "Se for a última aba da janela, ela é liberada em vez de fechada, para a janela não fechar.",
+		"finishedTabCloseExplainer": "Se for a última aba da janela, ela é liberada em vez de fechada.",
 		"bossDecoy": "Página de disfarce",
 		"bossDecoyExplainer": "Para onde o botão \"o chefe vem aí\" te leva: uma planilha, um documento, qualquer coisa com cara de trabalho. Ele também silencia todas as abas que o ArenaSwap gerencia e pausa a troca automática até você ligar de novo. Deixe vazio para abrir uma aba em branco.",
 		"bossDecoyInvalid": "Isso não parece um endereço da web.",
@@ -214,7 +214,7 @@
 		"demoSeasonReal": "A data real",
 		"demoSeasonThanksgiving": "Semana de Ação de Graças",
 		"demoSeasonDecember": "Dezembro",
-		"demoSeasonExplainer": "Afeta só a decoração de fim de ano, para você vê-la fora de época.",
+		"demoSeasonExplainer": "Muda só a decoração de fim de ano.",
 		"enableStandby": "Ativar Standby Stream",
 		"standbyBelow": "Em espera abaixo de",
 		"morePatient": "Mais paciente",
@@ -234,7 +234,7 @@
 		"holidayLights": "Luzes",
 		"holidayLeaves": "Folhas",
 		"signalsSection": "Sinais do PowerScore",
-		"signalsExplainer": "Desligue um sinal e ele fica no banco. Os outros são reescalados pra pontuação continuar indo de 0 a 100.",
+		"signalsExplainer": "Desligue um sinal e ele fica no banco.",
 		"signalLastActive": "Pelo menos um sinal precisa continuar em jogo.",
 		"selectNone": "Limpar",
 		"selectAll": "Selecionar todas",
@@ -261,7 +261,7 @@
 		"groupFavoritesDesc": "Os times que você segue ficam no topo da lista.",
 		"followedTeams": "Times que você segue",
 		"groupLeagues": "Ligas",
-		"groupLeaguesDesc": "Apenas as ligas que você escolher são monitoradas e consideradas para a troca.",
+		"groupLeaguesDesc": "Escolha as ligas que você assiste.",
 		"groupDisplay": "Exibição",
 		"groupDisplayDesc": "O que a lista de jogos mostra e a aparência do ArenaSwap.",
 		"groupStandby": "Standby Stream",
@@ -315,7 +315,7 @@
 		"modeExplainerCustom": "Escolha um modo para cada liga.",
 		"leagueModes": "Modo por liga",
 		"leagueModeLabel": "Modo {league}",
-		"modeFantasyLeagues": "O Fantasy cobre NFL, NBA, WNBA, MLB e NHL, de onde vêm seus jogadores.",
+		"modeFantasyLeagues": "O Fantasy cobre NFL, NBA, WNBA, MLB e NHL.",
 		"fantasyBlend": "O quanto seus jogadores elevam os jogos deles",
 		"fantasyBlendValue": "{percent}%",
 		"fantasyBlendLow": "Nada",
@@ -344,7 +344,7 @@
 		"keywordsSituation": "fantasy, red zone, zona vermelha, rebatida, no gelo, sinal",
 		"keywordsProduction": "fantasy, pontos, estatisticas, sinal",
 		"keywordsExposure": "fantasy, jogadores, elenco, quantos, sinal",
-		"fantasyBlendExplainer": "A pontuação Fantasy dos seus jogadores é somada à pontuação Clássico do jogo, então os jogos deles só podem subir."
+		"fantasyBlendExplainer": "Seus jogadores só podem elevar um jogo, nunca afundá-lo."
 	},
 	"finishedTabs": {
 		"toastFreed": {
@@ -703,7 +703,6 @@
 		"sportTotal": "{sport}: total",
 		"cappedAt": "(limitado a {max})",
 		"signalsNormalizedNote": "Reescalado para manter o intervalo 0–100 com sinais desativados",
-		"tooltipSignalsNormalized": "Quando sinais são desativados, os sinais restantes são escalonados proporcionalmente para que a pontuação mantenha seu intervalo completo de 0–100.",
 		"breakPenalty": "Penalidade por intervalo comercial",
 		"favoriteBoost": "Impulso de favorito",
 		"gameBoost": "Impulso do jogo",
@@ -711,11 +710,11 @@
 		"postseasonBoost": "Impulso de pós-temporada",
 		"signalOff": "Desativado",
 		"finalPowerScore": "PowerScore final",
-		"tooltipCloseness": "Calculado a partir da diferença de pontos atual. Um empate vale o máximo; margens maiores pontuam progressivamente menos. O teto escala com o progresso do jogo, então a mesma margem vale mais no final do que no começo.",
-		"tooltipLateGame": "Combina o andamento do jogo com a proximidade do placar. Sobe linearmente ao longo do período final. Jogos desequilibrados pontuam quase nada aqui, independente do tempo. Adiciona pontos extras quando o jogo está empatado nos segundos finais, antecipando a prorrogação.",
-		"tooltipMomentum": "Mede a diferença líquida de pontuação de um time na janela de histórico mais recente. Se um time superou o outro acima de um limiar nesse período, pontua aqui. Decai para zero com o passar do tempo sem mais pontuação.",
-		"tooltipLeadChanges": "Conta quantas vezes a liderança mudou na janela de histórico. Sem mudanças não pontua; uma ou mais viradas pontuam progressivamente mais. Decai se o tempo passa sem outra mudança.",
-		"tooltipComeback": "Compara a margem no ponto mais antigo da janela com a margem atual. Se o time que perdia recuperou terreno, pontua com base em quanto recuperou. Vale mais no final do jogo; decai se a pontuação parar.",
+		"tooltipCloseness": "Quão equilibrado está o placar. O empate conta mais, e um placar apertado conta mais perto do fim do jogo.",
+		"tooltipLateGame": "O quanto o fim está perto, desde que o jogo siga equilibrado. Sobe ao longo do período final e sobe mais se estiver empatado no fim. Jogos com muita diferença quase não contam.",
+		"tooltipMomentum": "Se um time está pontuando em sequência. Quanto mais ele pontuou a mais que o outro há pouco, mais alto sobe. Diminui quando a pontuação para.",
+		"tooltipLeadChanges": "Quantas vezes a liderança mudou há pouco. Mais mudanças, mais pontos. Diminui se a liderança se mantém.",
+		"tooltipComeback": "Se o time que está perdendo está diminuindo a diferença. Quanto mais ele diminuiu há pouco, mais alto vai, e isso conta mais no fim do jogo.",
 		"tooltipBreakPenalty": "Vale enquanto nossas fontes percebem o jogo em intervalo comercial, como uma pausa entre entradas, uma troca de arremessador ou uma pausa para a TV.",
 		"tooltipVolatility": "Vale quando a probabilidade de vitória ao vivo ficou perto dos 50% (impulso) ou longe deles (penalidade).",
 		"tooltipFavoriteBoost": "Vale quando um ou mais dos seus times favoritos estão no confronto.",
@@ -809,15 +808,15 @@
 		"signalProduction": "Pontos de fantasy",
 		"signalExposure": "Seus jogadores",
 		"tooltipBlowoutMargin": "Pontuado conforme a vantagem do líder. Nada até o jogo ter duas posses de diferença; depois sobe rumo a um atropelo completo e vale mais quanto mais tarde for.",
-		"tooltipSustained": "Quanto do trecho recente o líder passou com mais de duas posses de vantagem. Uma vantagem construída e mantida vale mais que uma que acabou de aparecer.",
+		"tooltipSustained": "Quanto do trecho recente o líder passou com mais de duas posses de vantagem.",
 		"tooltipTiming": "Um atropelo com muito jogo pela frente tem mais pra ver do que um que já está acabando. Mais alto no começo, some no fim.",
 		"tooltipPileOn": "O líder continua abrindo e pontuando mais que o outro time no trecho recente. Perde força quando a pontuação para.",
 		"tooltipSituation": "Onde seus jogadores estão agora: com a bola, na red zone, na rebatida, no montinho. A situação mais quente vale mais e as outras um pouco. No basquete e no hóquei, vale o quanto o jogo está apertado e avançado.",
 		"tooltipProduction": "Pontos de fantasy que seus jogadores marcaram há pouco, pelas suas regras de pontuação. Perde força conforme os pontos envelhecem.",
 		"tooltipExposure": "Quantos dos seus jogadores estão neste jogo. Cinco pontos por jogador, até três jogadores.",
 		"blendClassic": "Pontuação clássica",
-		"tooltipBlendBlowouts": "O modo Atropelos nunca deixa um jogo cair abaixo de 30% da pontuação clássica, então uma noite sem atropelo ainda tem o que assistir.",
-		"tooltipBlendFantasy": "O Fantasy parte da pontuação clássica do jogo e soma a pontuação Fantasy dos seus jogadores, com o peso definido em Configurações. Seus jogadores podem elevar um jogo, nunca afundá-lo.",
+		"tooltipBlendBlowouts": "O modo Atropelos nunca deixa um jogo cair abaixo de 30% da pontuação clássica.",
+		"tooltipBlendFantasy": "A pontuação Fantasy dos seus jogadores, somada com o peso definido em Configurações.",
 		"goAheadRun": "Corrida da vantagem em base",
 		"twoMinuteDrill": "Two-minute drill",
 		"redCard": "Cartão vermelho",
@@ -946,11 +945,10 @@
 	},
 	"tabControl": {
 		"title": "Bem-vindo ao ArenaSwap",
-		"subtitle": "Antes de configurar tudo, veja o que esperar.",
 		"feature1Title": "Troca automática de abas",
 		"feature1Body": "Abra alguns jogos em abas diferentes. Quando um fica emocionante, o ArenaSwap troca pra essa aba por você.",
 		"feature2Title": "Você escolhe as abas",
-		"feature2Body": "Abra o stream de cada jogo numa aba própria e vincule essa aba ao jogo no ArenaSwap. O ArenaSwap só controla as abas que você vincular.",
+		"feature2Body": "Abra o stream de cada jogo numa aba própria e vincule essa aba ao jogo no ArenaSwap.",
 		"feature3Title": "Você fica no controle",
 		"feature3Body": "Desligue as trocas quando quiser. Nas Configurações, você escolhe a frequência das trocas e o tempo de espera entre elas.",
 		"gotIt": "Entendido"
@@ -963,13 +961,12 @@
 	},
 	"stepToggle": {
 		"title": "Ligar e desligar",
-		"subtitle": "Este botão liga e desliga o ArenaSwap.",
 		"tryIt": "↑ experimente",
 		"statusActive": "ArenaSwap está trocando por você",
 		"statusPaused": "ArenaSwap está pausado",
 		"bodyBeforeOn": "Quando está ",
 		"bodyOn": "ligado",
-		"bodyAfterOn": ", ArenaSwap troca automaticamente suas abas para o jogo ao vivo mais emocionante. Desligue quando quiser pra retomar o controle.",
+		"bodyAfterOn": ", ArenaSwap troca automaticamente suas abas para o jogo ao vivo mais emocionante. Desligue quando quiser.",
 		"next": "Próximo"
 	},
 	"stepPowerScore": {
@@ -1010,7 +1007,7 @@
 		"subtitle": "ArenaSwap só troca para abas que você vincula.",
 		"assignPlaceholder": "— Atribuir uma aba —",
 		"linkHint": "↑ escolha a aba que mostra este jogo",
-		"body": "Abra o stream de cada jogo numa aba própria do navegador. Depois escolha essa aba no menu do card do jogo. ArenaSwap só troca entre abas que você vinculou.",
+		"body": "Abra o stream de cada jogo numa aba própria do navegador. Depois escolha essa aba no menu do card do jogo.",
 		"back": "Voltar",
 		"next": "Próximo"
 	},
@@ -1018,7 +1015,7 @@
 		"title": "Veja em ação",
 		"watchingCaption": "assistindo o jogo dos Eagles…",
 		"reveal": "Viu isso? 👀",
-		"revealBody": "O jogo dos 76ers ficou apertado nos últimos dois minutos, e o PowerScore dele subiu para 89. ArenaSwap trocou para a aba dele por você. Sem precisar clicar.",
+		"revealBody": "O jogo dos 76ers ficou apertado nos últimos dois minutos, e o PowerScore dele subiu para 89. ArenaSwap trocou para a aba dele por você.",
 		"back": "Voltar",
 		"next": "Próximo",
 		"watchingBadge": "ASSISTINDO"
@@ -1026,7 +1023,7 @@
 	"stepFullScreen": {
 		"title": "Tela cheia",
 		"subtitle": "Fique em tela cheia em todas as trocas.",
-		"body": "Aperte {shortcut} antes do jogo pra colocar a janela inteira do navegador em tela cheia. Ela continua assim a cada troca do ArenaSwap. O botão de tela cheia do player desliga quando a aba muda, então, se você usar esse botão, o ArenaSwap põe a janela em tela cheia de novo pra você.",
+		"body": "Aperte {shortcut} antes do jogo pra colocar a janela inteira do navegador em tela cheia. Prefere usar o botão de tela cheia do player? O ArenaSwap põe a janela em tela cheia de novo depois de cada troca.",
 		"back": "Voltar",
 		"next": "Próximo"
 	},
@@ -1043,7 +1040,7 @@
 		"sensitivityLabel": "Sensibilidade de troca",
 		"sensitivityHelp": "O quanto outro jogo precisa ser mais emocionante para o ArenaSwap trocar pra ele. Mais sensibilidade, mais trocas.",
 		"cooldownLabel": "Cooldown entre trocas",
-		"cooldownHelp": "O menor tempo de espera entre duas trocas, para o ArenaSwap não ficar trocando toda hora.",
+		"cooldownHelp": "O menor tempo de espera entre duas trocas.",
 		"moreLeagues": "+ mais em Configurações → Ligas",
 		"back": "Voltar",
 		"next": "Próximo"
@@ -1066,13 +1063,12 @@
 	},
 	"stepLeaguesFavorites": {
 		"title": "Ligas e favoritos",
-		"subtitle": "Duas formas de escolher o que o ArenaSwap acompanha.",
 		"tabLeagues": "Ligas",
 		"tabFavorites": "Favoritos",
-		"leaguesExplain": "Ative uma liga e o ArenaSwap procura os jogos ao vivo dela. Ele só troca entre jogos das ligas que você ativou.",
-		"leaguesBody": "Ative todas as ligas que quiser acompanhar em Configurações → Ligas. Quanto mais ligas, mais jogos o ArenaSwap pode escolher.",
+		"leaguesExplain": "Ative uma liga e o ArenaSwap procura os jogos ao vivo dela.",
+		"leaguesBody": "Ative todas as ligas que quiser acompanhar em Configurações → Ligas.",
 		"favoritesExplain": "Favorite um time e os jogos dele ganham impulso no PowerScore, então o ArenaSwap troca mais para eles.",
-		"favoritesBody": "Favorite times em qualquer card de jogo ou nas Configurações. Os outros jogos continuam aparecendo; os seus só ganham um pequeno impulso.",
+		"favoritesBody": "Favorite times em qualquer card de jogo ou nas Configurações.",
 		"favoritesBonusHint": "Favoritos ativos: os jogos deles ganham impulso no PowerScore!",
 		"toggleAriaLabel": "Alternar {label}",
 		"starAriaLabel": "Favoritar {team}",
@@ -1082,9 +1078,8 @@
 	},
 	"stepReAccess": {
 		"title": "Como voltar aqui",
-		"subtitle": "Você pode rever este tour quando quiser.",
 		"callout": "esse é o botão",
-		"body": "Clique no botão ? no topo do ArenaSwap para ver este tour de novo. Ajuda a relembrar ou a mostrar a um amigo como funciona.",
+		"body": "Clique no botão ? no topo do ArenaSwap para ver este tour de novo.",
 		"back": "Voltar",
 		"next": "Pronto"
 	},
@@ -1096,12 +1091,11 @@
 		"returnTitle": "Volta sozinho",
 		"returnBody": "No momento em que qualquer jogo esquentar acima do seu limite, ArenaSwap te traz de volta.",
 		"chooseTitle": "Você escolhe a aba de espera",
-		"chooseBody": "Abra o stream que quiser em uma aba e escolha essa aba como sua aba de espera.",
+		"chooseBody": "Qualquer stream que você quiser.",
 		"next": "Próximo",
 		"setupTitle": "Como configurar",
-		"setupSubtitle": "Duas coisas pra configurar abaixo.",
 		"thresholdTitle": "Defina seu limite",
-		"thresholdBody": "Escolha o quão baixas as pontuações precisam cair antes de a espera ser ativada. Mais baixo é mais paciente; mais alto ativa mais cedo.",
+		"thresholdBody": "Escolha o quão baixas as pontuações precisam cair antes de a espera ser ativada.",
 		"designateTitle": "Designe uma aba de espera",
 		"designateBody": "Abra seu Standby Stream em uma aba, volte aqui e selecione-o no menu suspenso.",
 		"back": "Voltar",
@@ -1127,7 +1121,7 @@
 	},
 	"notification": {
 		"standbyTitle": "Estacionado no Standby Stream",
-		"standbyMessage": "Todos os jogos esfriaram, então estacionamos você no seu Standby Stream.",
+		"standbyMessage": "Todos os jogos esfriaram.",
 		"switchedTitle": "Trocado → {score}",
 		"switchedMessage": "Partiu {venue}!",
 		"switchedMessageWithReason": "{reason}. Partiu {venue}!",
@@ -1163,7 +1157,7 @@
 		"bannerAction": "Dar uma olhada",
 		"bannerDismiss": "Dispensar sugestões",
 		"header": "Abas sugeridas",
-		"lede": "Desmarque o que a gente errou. O menu suspenso de cada card ainda tem a palavra final.",
+		"lede": "Desmarque o que a gente errou.",
 		"empty": "Nada do que você tem aberto parece um jogo da sua grade.",
 		"rowLabel": "Vincular {tab} com {away} em {home}",
 		"apply": {
@@ -1194,7 +1188,6 @@
 			"t2": "Clique em qualquer card de jogo pra ver a análise do PowerScore.",
 			"t3": "Misturando esportes? Ative ligas extras nas Configurações pra trocar entre todas de uma vez.",
 			"t4": "Girafas e ouriços são demais. Ver todos os jogos ao mesmo tempo também.",
-			"t5": "ArenaSwap melhora quanto mais tempo você deixar rodando!",
 			"t6": "Ative as notificações de troca nas Configurações pra receber um alerta toda vez que o ArenaSwap mudar de aba.",
 			"t7": "Assistindo na TV? Aperte {shortcut} e toda troca continua em tela cheia."
 		},
@@ -1213,7 +1206,7 @@
 			"t3": "O Modo demonstração roda jogos roteirizados, pra você ajustar as configurações sem esperar um jogo de verdade.",
 			"t4": "A sensibilidade de troca define quanta vantagem de PowerScore é preciso antes de ArenaSwap trocar.",
 			"t5": "O impulso de pós-temporada dá mais peso a playoffs e finais, pra que os grandes momentos ganhem mais trocas.",
-			"t6": "Use a seção Sinais de PowerScore pra desativar os que não te interessam — o ArenaSwap recalibra tudo automaticamente."
+			"t6": "Use a seção Sinais de PowerScore pra desativar os que não te interessam."
 		},
 		"detail": {
 			"t0": "O PowerScore combina equilíbrio, pressão da fase final, dinâmica, mudanças de liderança e viradas. Depois aplica um impulso ou penalidade de volatilidade com base em quanto a probabilidade de vitória oscila.",
@@ -1234,17 +1227,17 @@
 	},
 	"cooldown": {
 		"label": "Cooldown entre trocas",
-		"explainer": "Define o tempo mínimo entre trocas automáticas para evitar troca rápida de abas.",
+		"explainer": "O menor tempo de espera entre duas trocas automáticas.",
 		"off": "Desativado"
 	},
 	"switchDelay": {
 		"label": "Atraso de troca",
-		"explainer": "Aguarda esse tempo antes de executar uma troca, o que ajuda quando os streams ficam atrás dos dados ao vivo.",
+		"explainer": "Aguarda esse tempo antes de trocar. Aumente se o seu stream estiver atrás do placar.",
 		"off": "Desativado"
 	},
 	"contentAwareSwitching": {
 		"label": "Troca nas pausas",
-		"explainer": "Segura uma troca até o jogo que você está assistindo chegar a uma pausa, como o fim de um turno ao bastão, um apito ou o fim de uma jogada, para nada ser cortado no meio da ação. A opção Atraso de troca continua contando depois da pausa."
+		"explainer": "Segura uma troca até o jogo que você está assistindo chegar a uma pausa, como o fim de um turno ao bastão, um apito ou o fim de uma jogada. A opção Atraso de troca continua contando depois da pausa."
 	},
 	"sensitivity": {
 		"label": "Sensibilidade de troca",
@@ -1371,7 +1364,7 @@
 		"rosterFull": "Seu elenco está cheio. Dispense alguém para abrir espaço.",
 		"addPlayer": "Adicionar {name} ao seu elenco",
 		"removePlayer": "Remover {name} do seu elenco",
-		"addFailed": "Não foi possível adicionar. Toque para tentar de novo.",
+		"addFailed": "Não foi possível adicionar. Clique para tentar de novo.",
 		"detailPair": "{first}, {second}",
 		"positionDst": "D/ST",
 		"positionPitcher": "Arremessador",

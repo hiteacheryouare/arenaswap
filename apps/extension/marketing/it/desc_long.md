@@ -7,7 +7,7 @@ COME FUNZIONA
 ━━━━━━━━━━━━━━━━━━━━━━
 1. Apri le tue dirette. Apri le tue partite in schede del browser separate. ESPN+, Peacock, Paramount+, YouTube TV, Hulu o qualsiasi altra diretta basata su browser funziona.
 2. Assegna ogni scheda una volta sola. Apri il popup di ArenaSwap, trova ogni partita dal vivo nell'elenco e collegala alla sua scheda con un unico menu a tendina.
-3. Rilassati. ArenaSwap valuta continuamente ogni partita dal vivo e ti passa alla migliore. Controlla anche ogni 6 secondi quando la tensione sale, meno spesso nei momenti più tranquilli. La scheda giusta viene riattivata con l'audio, le altre vengono silenziate, così senti sempre la telecronaca giusta.
+3. Rilassati. ArenaSwap valuta continuamente ogni partita dal vivo e ti passa alla migliore. Controlla anche ogni 12 secondi quando la tensione sale, meno spesso nei momenti più tranquilli. La scheda giusta viene riattivata con l'audio, le altre vengono silenziate, così senti sempre la telecronaca giusta.
 
 
 ━━━━━━━━━━━━━━━━━━━━━━
@@ -22,7 +22,7 @@ Ogni partita dal vivo riceve un PowerScore da 0 a 100 costruito da cinque segnal
 - Sorpassi: il caos degli avanti e indietro nel punteggio
 - Fattore rimonta: le squadre che risalgono da uno svantaggio
 
-I segnali si sommano e il punteggio ha un tetto di 100, quindi una partita davvero avvincente sale verso l'80-90, mentre una partita a senso unico resta bassa. Il punteggio cresce con la partita invece di restare su una base piatta: una partita iniziale o squilibrata segna basso, e la tensione sale verso la sirena finale. Le serie di punti recenti fanno impennare i segnali dal vivo per poi spegnersi, così anche gli sport a basso punteggio mantengono un grafico in movimento invece di una linea piatta.
+Una partita davvero avvincente sale verso l'80-90. Una partita a senso unico resta bassa.
 
 Le partite che vanno in pubblicità (pause tra gli inning, cambi di lanciatore, timeout TV) ricevono una penalità e l'intervallo di metà partita vale zero punti, così non vieni mai spostato in una pausa pubblicitaria.
 
@@ -31,8 +31,6 @@ Ogni scheda nel popup mostra una barra PowerScore con codice colore, così vedi 
 ━━━━━━━━━━━━━━━━━━━━━━
 LEGHE SUPPORTATE (31)
 ━━━━━━━━━━━━━━━━━━━━━━
-
-ArenaSwap monitora 31 leghe in sei sport, e puoi attivare o disattivare ognuna di esse.
 
 La copertura comprende basket, football americano, hockey su ghiaccio, baseball e softball a livello professionistico, universitario e olimpico. Questo include NBA e WNBA, NFL, NHL e MLB, oltre alle rispettive controparti universitarie e internazionali. C'è anche il calcio, dai club nordamericani ai principali campionati europei fino ai grandi tornei internazionali.
 
@@ -47,7 +45,6 @@ SINTONIZZATO SU DI TE
 - Ritardo di cambio: margine per quando la tua diretta è in ritardo rispetto ai dati in tempo reale.
 - Bonus squadra preferita: peso extra per le partite con le squadre che ti stanno a cuore. Supportato un preferito per lega.
 - Boost partita: alza manualmente il PowerScore di una partita per tenerla a schermo più a lungo.
-- Filtri di lega: monitora solo gli sport che segui davvero.
 - Consigli: suggerimenti opzionali nell'app per sfruttare al meglio l'estensione.
 - Notifiche di cambio: notifiche del browser ogni volta che ArenaSwap fa un cambio.
 
@@ -65,7 +62,7 @@ PRIVATO DI DEFAULT
 
 - Nessun account. Nessun login. Nessun abbonamento.
 - Nessun tracciamento, nessuna analisi, nessuna pubblicità.
-- I punteggi dal vivo arrivano direttamente dall'API pubblica di ESPN. Tutto il resto gira localmente nel tuo browser.
+- I punteggi dal vivo arrivano dalle nostre fonti, che tengono il binocolo puntato su ogni partita.
 - 100% open source. Il codice completo, incluso il pacchetto PowerScore, è su GitHub.
 
 

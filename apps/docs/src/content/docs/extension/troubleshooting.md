@@ -17,7 +17,7 @@ Most of what looks like a bug in ArenaSwap is a setting that isn't where you'd e
 
 If you see **Choose leagues to get started**, no league is enabled yet. ArenaSwap needs at least one before it can find anything to track. Click **Select Leagues in Settings**. Turn at least one on.
 
-If instead you see a quieter message like "It's a slow sports day," your enabled leagues genuinely have nothing live at the moment. The empty list isn't a bug. It's just the scoreboard. Click **Refresh** to check again. If you want games to work with regardless, open [Demo mode](/arenaswap/docs/extension/demo-mode/).
+If instead you see a quieter message like "It's a slow sports day," your enabled leagues genuinely have nothing live at the moment. Click **Refresh** to check again. If you want games to work with regardless, open [Demo mode](/arenaswap/docs/extension/demo-mode/).
 
 ## Why won't ArenaSwap switch tabs at all?
 

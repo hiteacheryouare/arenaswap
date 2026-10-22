@@ -1,6 +1,6 @@
 {
 	"extName": "ArenaSwap — NFL・NBA・March Madness・MLBのライブ自動切り替え",
-	"extDescription": "31リーグのライブ試合を監視し、最も盛り上がっている試合に自動でタブを切り替えます。最短6秒ごとに判定。",
+	"extDescription": "31リーグのライブ試合を監視し、最も盛り上がっている試合に自動でタブを切り替えます。最短12秒ごとに判定。",
 	"bossCommandDescription": "上司が来た: 試合をミュートして、ダミーのページに切り替えます",
 	"app": {
 		"welcomeToast": "ArenaSwapへようこそ！",
@@ -201,7 +201,7 @@
 		"finishedTabFree": "ArenaSwapから解放する",
 		"finishedTabClose": "タブを閉じる",
 		"finishedTabActiveExplainer": "視聴中のタブは、離れるまでそのままです。",
-		"finishedTabCloseExplainer": "ウィンドウの最後のタブは閉じずに解放されるので、ウィンドウが閉じることはありません。",
+		"finishedTabCloseExplainer": "ウィンドウの最後のタブは閉じずに解放されます。",
 		"bossDecoy": "ダミーページ",
 		"bossDecoyExplainer": "「上司が来た」ボタンで開くページです。スプレッドシートやドキュメントなど、忙しそうに見えるものをどうぞ。押すとArenaSwapが管理しているタブをすべてミュートし、オンに戻すまで自動切り替えを一時停止します。空のままなら新しい空白タブが開きます。",
 		"bossDecoyInvalid": "ウェブアドレスではないようです。",
@@ -214,7 +214,7 @@
 		"demoSeasonReal": "実際の日付",
 		"demoSeasonThanksgiving": "感謝祭の週",
 		"demoSeasonDecember": "12月",
-		"demoSeasonExplainer": "ホリデー装飾だけに影響します。季節外でも確認できます。",
+		"demoSeasonExplainer": "ホリデー装飾だけを切り替えます。",
 		"enableStandby": "Standby Streamを有効にする",
 		"standbyBelow": "スタンバイ閾値",
 		"morePatient": "より辛抱強く",
@@ -234,7 +234,7 @@
 		"holidayLights": "ライト",
 		"holidayLeaves": "落ち葉",
 		"signalsSection": "PowerScoreシグナル",
-		"signalsExplainer": "シグナルをオフにするとベンチ入り。残りがスケールされ、スコアは引き続き0〜100で表示されます。",
+		"signalsExplainer": "シグナルをオフにするとベンチ入り。",
 		"signalLastActive": "少なくとも1つのシグナルは試合に残してください。",
 		"selectNone": "クリア",
 		"selectAll": "すべて選択",
@@ -261,7 +261,7 @@
 		"groupFavoritesDesc": "フォローしているチームはリストの上部に表示されます。",
 		"followedTeams": "お気に入りチーム一覧",
 		"groupLeagues": "リーグ",
-		"groupLeaguesDesc": "選んだリーグのみが追跡され、切り替えの対象になります。",
+		"groupLeaguesDesc": "観ているリーグを選びましょう。",
 		"groupDisplay": "表示",
 		"groupDisplayDesc": "試合リストに表示する内容と、ArenaSwapの見た目。",
 		"groupStandby": "Standby Stream",
@@ -315,7 +315,7 @@
 		"modeExplainerCustom": "リーグごとにモードを選べます。",
 		"leagueModes": "リーグ別モード",
 		"leagueModeLabel": "{league}のモード",
-		"modeFantasyLeagues": "ファンタジーはNFL、NBA、WNBA、MLB、NHLが対象。あなたの選手はこのリーグから選べます。",
+		"modeFantasyLeagues": "ファンタジーはNFL、NBA、WNBA、MLB、NHLが対象です。",
 		"fantasyBlend": "選手が試合を押し上げる度合い",
 		"fantasyBlendValue": "{percent}%",
 		"fantasyBlendLow": "反映しない",
@@ -344,7 +344,7 @@
 		"keywordsSituation": "ファンタジー, レッドゾーン, 打席, 氷上, シグナル, fantasy",
 		"keywordsProduction": "ファンタジー, ポイント, スタッツ, シグナル, fantasy",
 		"keywordsExposure": "ファンタジー, 選手, ロスター, 何人, シグナル, fantasy",
-		"fantasyBlendExplainer": "あなたの選手のファンタジースコアが試合のクラシックスコアに上乗せされるので、その試合は上がることはあっても下がることはありません。"
+		"fantasyBlendExplainer": "あなたの選手は試合を押し上げることはあっても、下げることはありません。"
 	},
 	"finishedTabs": {
 		"toastFreed": {
@@ -703,7 +703,6 @@
 		"sportTotal": "{sport}合計",
 		"cappedAt": "（上限 {max}）",
 		"signalsNormalizedNote": "シグナル無効時に0〜100範囲を維持するよう再スケール",
-		"tooltipSignalsNormalized": "シグナルをオフにすると、残りのシグナルが比例してスケールアップされ、スコアは0〜100の全範囲を維持します。",
 		"breakPenalty": "コマーシャル中ペナルティ",
 		"favoriteBoost": "お気に入りブースト",
 		"gameBoost": "ゲームブースト",
@@ -711,11 +710,11 @@
 		"postseasonBoost": "ポストシーズンブースト",
 		"signalOff": "オフ",
 		"finalPowerScore": "最終PowerScore",
-		"tooltipCloseness": "現在の点差から算出されます。同点が最高得点で、差が広がるにつれ下がります。上限は試合の進行度に応じてスケールするため、同じ差でも序盤より終盤のほうが高得点です。",
-		"tooltipLateGame": "試合の進行度とスコアの接近度を組み合わせます。最終ピリオド全体で線形に増加します。大差の試合はここではほぼ加点されません。終盤に同点の場合は延長戦を見越してボーナスポイントが加算されます。",
-		"tooltipMomentum": "直近のスコア履歴ウィンドウでの一方のチームの正味得点を計測します。そのチームが設定量だけ相手を上回った場合に加点されます。その後は時間の経過とともにゼロに向かって減衰します。",
-		"tooltipLeadChanges": "追跡履歴ウィンドウ内でリードが入れ替わった回数を数えます。変化なしはゼロ点で、1回以上の入れ替わりは段階的に高得点になります。次の変化なしに時間が経過すると減衰します。",
-		"tooltipComeback": "ウィンドウ内の最も古い時点の点差と現在の点差を比較します。追いかけているチームが差を縮めた場合、縮めた量に応じて加点されます。試合終盤ほど価値が高く、得点が止まると減衰します。",
+		"tooltipCloseness": "点差の小ささです。同点がいちばん高く、接戦は終盤になるほど高く評価されます。",
+		"tooltipLateGame": "試合の終わりがどれだけ近いかです。接戦のときだけ高くなります。最終ピリオドに入ると上がり、終盤に同点だと最も上がります。大差の試合はほとんど上がりません。",
+		"tooltipMomentum": "一方のチームが連続得点で勢いに乗っているかどうかです。最近、相手より多く得点しているほど高くなります。得点が止まると下がっていきます。",
+		"tooltipLeadChanges": "最近、リードが何回入れ替わったかです。入れ替わりが多いほど高くなります。リードが守られると下がっていきます。",
+		"tooltipComeback": "負けているチームが追い上げているかどうかです。最近縮めた点差が大きいほど高くなり、試合の終盤ほど大きく加点されます。",
 		"tooltipBreakPenalty": "情報源が、イニング間の休止、投手交代、TVタイムアウトなどでゲームがコマーシャルに入ったと捉えている間、適用されます。",
 		"tooltipVolatility": "試合中の勝利確率が50%付近にとどまっているとき（ブースト）、または50%から大きく離れているとき（ペナルティ）に適用されます。",
 		"tooltipFavoriteBoost": "お気に入りのチームが1つ以上、対戦カードに入っているときに適用されます。",
@@ -809,15 +808,15 @@
 		"signalProduction": "ファンタジーポイント",
 		"signalExposure": "あなたの選手",
 		"tooltipBlowoutMargin": "リードしているチームの点差から算出されます。2スコア差になるまでは0点で、そこから完全な大差に向けて上昇し、試合が進むほど比重が増します。",
-		"tooltipSustained": "直近の期間のうち、リードチームが2スコア以上の差をつけていた割合です。一瞬のリードより、築いて守り切ったリードが高く評価されます。",
+		"tooltipSustained": "直近の期間のうち、リードチームが2スコア以上の差をつけていた割合です。",
 		"tooltipTiming": "試合が残っているうちの大差は、終わりかけの大差より見どころが多くなります。序盤が最大で、終盤にはゼロになります。",
 		"tooltipPileOn": "リードチームがさらに突き放しているかどうかです。直近の期間で相手を上回って得点しているほど高くなり、得点が止まると下がります。",
 		"tooltipSituation": "あなたの選手がいま置かれている状況です。ボール保持中、レッドゾーン、打席、マウンドなど。いちばん熱い1人が最も大きく、残りは少しだけ加算されます。バスケットボールとアイスホッケーでは、試合の接戦度と終盤度が基準になります。",
 		"tooltipProduction": "あなたのスコアリングルールで、選手が直近に稼いだファンタジーポイントです。時間が経つほど下がっていきます。",
 		"tooltipExposure": "この試合に出ているあなたの選手の数です。1人につき5点、最大3人まで。",
 		"blendClassic": "クラシックスコア",
-		"tooltipBlendBlowouts": "大差モードでは、試合のスコアがクラシックスコアの30%を下回ることはありません。大差の試合がない夜でも見る試合が残ります。",
-		"tooltipBlendFantasy": "ファンタジーは試合のクラシックスコアを土台に、設定で決めた比重であなたの選手のファンタジースコアを上乗せします。選手が試合を押し上げることはあっても、下げることはありません。",
+		"tooltipBlendBlowouts": "大差モードでは、試合のスコアがクラシックスコアの30%を下回ることはありません。",
+		"tooltipBlendFantasy": "あなたの選手のファンタジースコアを、設定で決めた比重で加えたものです。",
 		"goAheadRun": "勝ち越し走者が出塁",
 		"twoMinuteDrill": "2ミニッツ・ドリル",
 		"redCard": "レッドカード",
@@ -946,11 +945,10 @@
 	},
 	"tabControl": {
 		"title": "ArenaSwapへようこそ",
-		"subtitle": "設定を始める前に、何ができるかをご確認ください。",
 		"feature1Title": "タブの自動切り替え",
 		"feature1Body": "試合をいくつか、別々のタブで開いておきます。どれかが盛り上がると、ArenaSwapがそのタブに切り替えます。",
 		"feature2Title": "タブを選ぶのはあなた",
-		"feature2Body": "試合ごとの配信をそれぞれのタブで開き、そのタブをArenaSwapで試合にひも付けます。ArenaSwapが操作するのは、ひも付けたタブだけです。",
+		"feature2Body": "試合ごとの配信をそれぞれのタブで開き、そのタブをArenaSwapで試合にひも付けます。",
 		"feature3Title": "コントロールはあなたの手に",
 		"feature3Body": "切り替えはいつでもオフにできます。設定では、切り替えの頻度と、切り替えの間に空ける待ち時間を選べます。",
 		"gotIt": "了解"
@@ -963,13 +961,12 @@
 	},
 	"stepToggle": {
 		"title": "オン・オフの切り替え",
-		"subtitle": "このスイッチでArenaSwapのオン・オフを切り替えます。",
 		"tryIt": "↑ 試してみて",
 		"statusActive": "ArenaSwapが代わりに切り替え中",
 		"statusPaused": "ArenaSwapは一時停止中",
 		"bodyBeforeOn": "",
 		"bodyOn": "オン",
-		"bodyAfterOn": "のとき、ArenaSwapは最も盛り上がっているライブ試合へタブを自動的に切り替えます。コントロールを取り戻したいときはいつでもオフにできます。",
+		"bodyAfterOn": "のとき、ArenaSwapは最も盛り上がっているライブ試合へタブを自動的に切り替えます。いつでもオフにできます。",
 		"next": "次へ"
 	},
 	"stepPowerScore": {
@@ -1010,7 +1007,7 @@
 		"subtitle": "ArenaSwapが切り替えるのは、ひも付けたタブだけです。",
 		"assignPlaceholder": "— タブを割り当て —",
 		"linkHint": "↑ この試合を開いているタブを選ぶ",
-		"body": "試合ごとの配信を、それぞれ別のブラウザタブで開きます。次に、試合カードのメニューからそのタブを選びます。ArenaSwapが切り替えるのは、ひも付けたタブだけです。",
+		"body": "試合ごとの配信を、それぞれ別のブラウザタブで開きます。次に、試合カードのメニューからそのタブを選びます。",
 		"back": "戻る",
 		"next": "次へ"
 	},
@@ -1018,7 +1015,7 @@
 		"title": "動作を確認しよう",
 		"watchingCaption": "イーグルスの試合を観ています…",
 		"reveal": "見ましたか？ 👀",
-		"revealBody": "76ersの試合が最後の2分間で接戦になり、PowerScoreが89に跳ね上がりました。ArenaSwapがそのタブに切り替えました。クリックは不要です。",
+		"revealBody": "76ersの試合が最後の2分間で接戦になり、PowerScoreが89に跳ね上がりました。ArenaSwapがそのタブに切り替えました。",
 		"back": "戻る",
 		"next": "次へ",
 		"watchingBadge": "視聴中"
@@ -1026,7 +1023,7 @@
 	"stepFullScreen": {
 		"title": "全画面で観る",
 		"subtitle": "切り替えても、全画面のままです。",
-		"body": "試合の前に {shortcut} を押して、ブラウザのウィンドウ全体を全画面にします。ArenaSwapが切り替えても、そのまま全画面です。動画プレーヤー自身の全画面ボタンは、タブが変わると解除されます。使った場合は、ArenaSwapがウィンドウを全画面に戻します。",
+		"body": "試合の前に {shortcut} を押して、ブラウザのウィンドウ全体を全画面にします。代わりに動画プレーヤー自身の全画面ボタンを使いますか？ ArenaSwapが切り替えのたびにウィンドウを全画面に戻します。",
 		"back": "戻る",
 		"next": "次へ"
 	},
@@ -1043,7 +1040,7 @@
 		"sensitivityLabel": "切り替え感度",
 		"sensitivityHelp": "ほかの試合がどれだけ盛り上がったら、ArenaSwapがそこに切り替えるかを決めます。高くすると、切り替えが増えます。",
 		"cooldownLabel": "切り替えクールダウン",
-		"cooldownHelp": "2回の切り替えの間に空ける最短の待ち時間です。ArenaSwapが行ったり来たりを繰り返さないようにします。",
+		"cooldownHelp": "2回の切り替えの間に空ける最短の待ち時間です。",
 		"moreLeagues": "+ 設定 → リーグでさらに",
 		"back": "戻る",
 		"next": "次へ"
@@ -1066,13 +1063,12 @@
 	},
 	"stepLeaguesFavorites": {
 		"title": "リーグとお気に入り",
-		"subtitle": "ArenaSwapが注目する試合を選ぶ2つの方法です。",
 		"tabLeagues": "リーグ",
 		"tabFavorites": "お気に入り",
-		"leaguesExplain": "リーグをオンにすると、ArenaSwapがそのリーグのライブ試合を探します。切り替えの対象は、オンにしたリーグの試合だけです。",
-		"leaguesBody": "設定 → リーグで、観たいリーグをすべてオンにしましょう。オンにするほど、ArenaSwapが選べる試合が増えます。",
+		"leaguesExplain": "リーグをオンにすると、ArenaSwapがそのリーグのライブ試合を探します。",
+		"leaguesBody": "設定 → リーグで、観たいリーグをすべてオンにしましょう。",
 		"favoritesExplain": "チームにスターを付けると、その試合のPowerScoreにブーストが付き、ArenaSwapが切り替えやすくなります。",
-		"favoritesBody": "お気に入りチームは、試合カードか設定でスターを付けて登録します。ほかの試合も表示されます。お気に入りのチームに小さなブーストが付くだけです。",
+		"favoritesBody": "お気に入りチームは、試合カードか設定でスターを付けて登録します。",
 		"favoritesBonusHint": "お気に入りがオンです。その試合のPowerScoreにブーストが付きます！",
 		"toggleAriaLabel": "{label}を切り替え",
 		"starAriaLabel": "{team}をお気に入りに追加",
@@ -1082,9 +1078,8 @@
 	},
 	"stepReAccess": {
 		"title": "ここに戻る方法",
-		"subtitle": "このツアーはいつでも見直せます。",
 		"callout": "これです",
-		"body": "ArenaSwapの上部にある?ボタンをクリックすると、このツアーをもう一度見られます。おさらいしたいときや、友だちに使い方を見せたいときに便利です。",
+		"body": "ArenaSwapの上部にある?ボタンをクリックすると、このツアーをもう一度見られます。",
 		"back": "戻る",
 		"next": "完了"
 	},
@@ -1096,12 +1091,11 @@
 		"returnTitle": "自動で戻ってきます",
 		"returnBody": "どれかの試合がしきい値を超えて盛り上がった瞬間に、ArenaSwapがすぐに切り替え直します。",
 		"chooseTitle": "スタンバイタブはあなたが選ぶ",
-		"chooseBody": "好きなストリームをタブで開いて、スタンバイタブとして選んでください。",
+		"chooseBody": "好きなストリームならなんでも。",
 		"next": "次へ",
 		"setupTitle": "設定方法",
-		"setupSubtitle": "以下の2つを設定してください。",
 		"thresholdTitle": "しきい値を設定",
-		"thresholdBody": "スタンバイが有効になるスコアの低さを選びます。低いほど辛抱強く、高いほど早く切り替わります。",
+		"thresholdBody": "スタンバイが有効になるスコアの低さを選びます。",
 		"designateTitle": "スタンバイタブを指定",
 		"designateBody": "Standby Streamをタブで開いて、ここに戻りドロップダウンから選択してください。",
 		"back": "戻る",
@@ -1127,7 +1121,7 @@
 	},
 	"notification": {
 		"standbyTitle": "Standby Streamで待機中",
-		"standbyMessage": "すべての試合が静かになったので、Standby Streamに切り替えました。",
+		"standbyMessage": "すべての試合が静かになりました。",
 		"switchedTitle": "切り替え → {score}",
 		"switchedMessage": "{venue}へGO！",
 		"switchedMessageWithReason": "{reason}。{venue}へGO！",
@@ -1163,7 +1157,7 @@
 		"bannerAction": "見てみる",
 		"bannerDismiss": "おすすめを閉じる",
 		"header": "おすすめタブ",
-		"lede": "違っているものはチェックを外してください。各カードのドロップダウンが最終的な決定権を持っています。",
+		"lede": "違っているものはチェックを外してください。",
 		"empty": "開いているタブの中に、今日の試合っぽいものはありません。",
 		"rowLabel": "{tab}を{away} vs {home}の試合に組み合わせる",
 		"apply": {
@@ -1194,7 +1188,6 @@
 			"t2": "試合カードをクリックするとPowerScoreの内訳を確認できます。",
 			"t3": "複数スポーツをミックスしたい？設定で追加リーグを有効にすると、すべてを同時に切り替えられます。",
 			"t4": "キリンとハリネズミはクールです。すべての試合を同時に観るのも同様です。",
-			"t5": "ArenaSwapは使い続けるほど精度が上がります！",
 			"t6": "設定で切り替え通知をオンにすると、ArenaSwapがタブを切り替えるたびにアラートが届きます。",
 			"t7": "テレビで観戦中？ {shortcut} を押せば、切り替わっても全画面のままです。"
 		},
@@ -1213,7 +1206,7 @@
 			"t3": "デモモードでは台本どおりの試合が動くので、本物の試合を待たずに設定を調整できます。",
 			"t4": "切り替え感度は、ArenaSwapが切り替えるのに必要なPowerScoreの差を決めます。",
 			"t5": "ポストシーズンブーストはプレーオフや決勝の試合に重みを加え、大舞台がより多く切り替えを勝ち取れるようにします。",
-			"t6": "PowerScoreシグナルのセクションで不要なシグナルをオフにできます — ArenaSwapはすべて自動的に再スケーリングします。"
+			"t6": "PowerScoreシグナルのセクションで不要なシグナルをオフにできます。"
 		},
 		"detail": {
 			"t0": "PowerScoreは接戦度、終盤のプレッシャー、勢い、リード交代、追い上げを組み合わせ、勝利確率の変動に基づくボラティリティブーストまたはペナルティを適用します。",
@@ -1234,17 +1227,17 @@
 	},
 	"cooldown": {
 		"label": "切り替えクールダウン",
-		"explainer": "タブの高速連続切り替えを抑制するための自動切り替え間の最短時間を設定します。",
+		"explainer": "2回の自動切り替えの間に空ける最短の待ち時間です。",
 		"off": "オフ"
 	},
 	"switchDelay": {
 		"label": "切り替え遅延",
-		"explainer": "切り替えを実行する前にこの時間だけ待ちます。ストリームがライブデータより遅れている場合に役立ちます。",
+		"explainer": "切り替える前にこの時間だけ待ちます。ストリームがスコアより遅れているときは長めにしてください。",
 		"off": "オフ"
 	},
 	"contentAwareSwitching": {
 		"label": "プレーの切れ目で切り替え",
-		"explainer": "見ている試合にプレーの切れ目（打席の終わり、笛、プレーの終了など）が来るまで、切り替えを待ちます。プレーの途中で切り替わることはありません。切り替え遅延は、切れ目のあとにカウントダウンします。"
+		"explainer": "見ている試合にプレーの切れ目（打席の終わり、笛、プレーの終了など）が来るまで、切り替えを待ちます。切り替え遅延は、切れ目のあとにカウントダウンします。"
 	},
 	"sensitivity": {
 		"label": "切り替え感度",
@@ -1371,7 +1364,7 @@
 		"rosterFull": "ロスターがいっぱいです。誰かを外して枠を空けましょう。",
 		"addPlayer": "{name}をロスターに追加",
 		"removePlayer": "{name}をロスターから外す",
-		"addFailed": "追加できませんでした。タップして再試行。",
+		"addFailed": "追加できませんでした。クリックして再試行。",
 		"detailPair": "{first}、{second}",
 		"positionDst": "D/ST",
 		"positionPitcher": "投手",

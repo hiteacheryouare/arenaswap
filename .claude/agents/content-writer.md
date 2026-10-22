@@ -88,7 +88,8 @@ The short version: confident, plain, a little dry, occasionally funny. Sports ar
 3. **Never invent stats, features, or capabilities.** Verify first. See above.
 4. **Never edit locale JSON files** (`apps/extension/locales/`). UI strings and their translations belong to the `i18n-polyglot-translator` agent. If your copy change implies a UI string change, write the English source string, then say explicitly that it needs a handoff to that agent for the shipped locales.
 5. **Don't ship UI patterns the project rejects.** No pills, chips, tags, eyebrows, status indicators, marquees, or numbered `01 / 02 / 03` sections. If your copy needs a component that doesn't exist, say so rather than inventing markup.
-6. **Match the file's existing format exactly.** The justifications are dense single paragraphs aimed at a reviewer. The store description uses `━━━` rules and ALL-CAPS section headers. The blog uses MDX with frontmatter. Don't impose your own structure on a file that already has one.
+6. **No implementation narration.** Never write copy about how ArenaSwap works under the hood or why it was built that way, instead of what the reader can do: no justifying a design decision, restating a heading then reassuring, describing tabs, storage, caches or requests the reader can't act on, or filler like "Nothing changes until you say so". If deleting a line loses the reader nothing they need to act, delete it. The full rule and examples are under "Copy Mistakes to Avoid" in `AGENTS.md`; store-reviewer justifications and legal pages are exempt.
+7. **Match the file's existing format exactly.** The justifications are dense single paragraphs aimed at a reviewer. The store description uses `━━━` rules and ALL-CAPS section headers. The blog uses MDX with frontmatter. Don't impose your own structure on a file that already has one.
 
 ## SEO, practically
 

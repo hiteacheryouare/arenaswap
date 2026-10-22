@@ -33,13 +33,13 @@ Only a league you've enabled here gets tracked. You can revisit this list any ti
 
 ## Pick your teams
 
-ArenaSwap fetches the team list for the leagues you just picked and shows **Pick your teams**. Tap a team to star it. Starring gives a game a small scoring bonus whenever that team plays. ArenaSwap then favors that game over an equally exciting one between two teams you don't follow.
+Next is **Pick your teams**. Tap a team to star it. Starring gives a game a small scoring bonus whenever that team plays. ArenaSwap then favors that game over an equally exciting one between two teams you don't follow.
 
 Nothing here is required. Star as many teams as you want. Click **Done** when you're finished, or click **Skip** instead to move on without starring anyone.
 
 ## Take the tour, or jump right in
 
-You'll land on **You're all set!**. Click **Take the tour** for a guided walkthrough of PowerScore, tab assignment, and settings. Click **Jump right in** instead to go straight to the main screen. Either way, the tour isn't gone for good. The **?** button in the top bar replays it whenever you want.
+You'll land on **You're all set!**. Click **Take the tour** for a guided walkthrough of PowerScore, tab assignment, and settings. Click **Jump right in** instead to go straight to the main screen. The **?** button in the top bar replays it whenever you want.
 
 ## Open two streams
 
@@ -52,8 +52,6 @@ Back in the ArenaSwap popup, find each game's card. Use its **â€” Assign a tab â
 ## Watch it switch
 
 Leave both tabs open and let ArenaSwap run. As soon as one game's PowerScore pulls far enough ahead of the one you're watching, your browser jumps to that tab on its own. It unmutes the new tab and mutes the one you left. If you turned on **Switch notifications**, a banner tells you the score and why it switched.
-
-That's the whole loop. You register a stream, and ArenaSwap decides when it's worth your attention. You don't have to check in yourself.
 
 ## What's next
 

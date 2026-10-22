@@ -105,7 +105,7 @@
 		"hero": {
 			"titleLine1": "Nunca mais perca",
 			"titleLine2": "o momento.",
-			"lede": "O ArenaSwap observa cada jogo ao vivo em {leagues} ligas e muda automaticamente sua aba do navegador para o mais empolgante, a cada 6 segundos se preciso.",
+			"lede": "O ArenaSwap observa cada jogo ao vivo em {leagues} ligas e muda automaticamente sua aba do navegador para o mais empolgante, a cada 12 segundos se preciso.",
 			"teamStrip": "Funciona com todos os times de {leagues} ligas. O seu incluso.",
 			"captionSwitched": "O ArenaSwap trocou você de {from} para {to}.",
 			"captionWatching": "Você está assistindo {game}, o melhor jogo do momento.",
@@ -156,7 +156,7 @@
 		},
 		"settings": {
 			"title": "Sintonizado com você.",
-			"copy": "Sensibilidade muito alta? Diminua. Ama seu time mas quer ver o melhor jogo? Adicione um bônus. Vai dar uma saidinha para comprar cerveja? O Standby Stream mantém algo na tela. O ArenaSwap funciona do jeito que você precisar.",
+			"copy": "Sensibilidade muito alta? Diminua. Ama seu time mas quer ver o melhor jogo? Adicione um bônus. Vai dar uma saidinha para comprar cerveja? O Standby Stream mantém algo na tela.",
 			"items": [
 				{
 					"name": "Sensibilidade (1–{levels})",
@@ -340,7 +340,7 @@
 		"copy": "Copiar",
 		"copied": "Copiado",
 		"signalsHeading": "O que compõe o número",
-		"signalsSub": "Cinco sinais se somam em uma pontuação de 0 a {max}. Seus limites somam propositalmente mais que {max}, e o total tem um teto, então um jogo apertado sobe bastante e uma goleada fica baixa. Uma pontuação mais alta significa mais drama agora mesmo.",
+		"signalsSub": "Cinco sinais se somam em uma pontuação de 0 a {max}. Um jogo apertado sobe bastante, uma goleada fica baixa.",
 		"signalMax": "{max} máx.",
 		"signals": [
 			{
@@ -376,9 +376,7 @@
 		"machineScoreCopy": "O PowerScore avalia ao vivo quão empolgante é cada jogo.",
 		"machineSwitch": "Trocar",
 		"machineSwitchCopy": "Sua aba pula automaticamente para o melhor jogo.",
-		"liveLoadingCopy": "Buscando jogos ao vivo e calculando o PowerScore agora.",
 		"liveEmptyTitle": "Nenhum jogo ao vivo no momento",
-		"liveEmptyCopy": "Quando os jogos ficarem ao vivo, esta seção vai se atualizar automaticamente e mostrar PowerScores em tempo real de todas as ligas suportadas.",
 		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "O ArenaSwap observando e pontuando cada jogo ao vivo",
 		"machineNowWatching": "Assistindo agora",
@@ -451,17 +449,11 @@
 		},
 		"setup": {
 			"groupSwitching": "Trocas",
-			"groupSwitchingDesc": "O quanto o ArenaSwap corre para te levar a um jogo melhor.",
 			"groupScoring": "Pontuação",
-			"groupScoringDesc": "Quais sinais alimentam o PowerScore e o que rende um impulso.",
 			"groupLeagues": "Ligas",
-			"groupLeaguesDesc": "Quais ligas são monitoradas e se cada uma tem a sua própria seção.",
 			"groupDisplay": "Exibição",
-			"groupDisplayDesc": "O que aparece na tela principal.",
 			"groupStandby": "Standby Stream",
-			"groupStandbyDesc": "Onde te deixar quando todos os jogos esfriam.",
 			"groupDemo": "Modo demonstração",
-			"groupDemoDesc": "Jogos inventados, para ver uma troca acontecer na hora que quiser.",
 			"switchNotifications": "Notificações de troca",
 			"theme": "Tema",
 			"themeLight": "Claro",

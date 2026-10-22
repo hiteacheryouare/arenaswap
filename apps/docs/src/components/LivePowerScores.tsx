@@ -156,10 +156,8 @@ const fetchLiveGames = async (leagueIds: LeagueId[]): Promise<leagueSweep> => {
 
 interface Strings {
 	loading: string;
-	loadingCopy: string;
 	error: string;
 	emptyTitle: string;
-	emptyCopy: string;
 	scoreBadge: string;
 	live: string;
 }
@@ -296,10 +294,7 @@ const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string
 		if (loading) {
 			return (
 				<div className='feature-card'>
-					<div className='d-flex align-items-center gap-5'>
-						<div className='spinner-border text-[var(--color-primary)]' role='status' aria-label={strings.loading}></div>
-						<span className='section-sub mb-0'>{strings.loadingCopy}</span>
-					</div>
+					<div className='spinner-border text-[var(--color-primary)]' role='status' aria-label={strings.loading}></div>
 				</div>
 			);
 		}
@@ -315,8 +310,7 @@ const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string
 		if (cards.length === 0) {
 			return (
 				<div className='feature-card'>
-					<span className='fw-semibold mb-5 d-block'>{strings.emptyTitle}</span>
-					<p className='mb-0 section-sub'>{strings.emptyCopy}</p>
+					<span className='fw-semibold d-block'>{strings.emptyTitle}</span>
 				</div>
 			);
 		}

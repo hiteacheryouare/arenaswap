@@ -105,7 +105,7 @@
 		"hero": {
 			"titleLine1": "Huwag nang palampasin",
 			"titleLine2": "ang moment.",
-			"lede": "Binabantayan ng ArenaSwap ang bawat live game sa {leagues} liga at awtomatikong lumilipat ang browser tab mo papunta sa pinaka-exciting na laro, kahit tuwing 6 segundo lang.",
+			"lede": "Binabantayan ng ArenaSwap ang bawat live game sa {leagues} liga at awtomatikong lumilipat ang browser tab mo papunta sa pinaka-exciting na laro, kahit tuwing 12 segundo lang.",
 			"teamStrip": "Gumagana ito sa bawat team sa {leagues} liga. Kasama na ang sa'yo.",
 			"captionSwitched": "Nilipat ka ng ArenaSwap mula sa {from} papunta sa {to}.",
 			"captionWatching": "Pinapanood mo ngayon ang {game}, ang pinakamagandang laro sa board.",
@@ -156,7 +156,7 @@
 		},
 		"settings": {
 			"title": "Naka-tune sa'yo.",
-			"copy": "Sobrang taas ng sensitivity? Bagalan mo. Mahal mo ang team mo pero gusto mo rin makita ang best na laro? Magdagdag ng bonus. Aalis sandali para bumili ng inumin? Standby Stream ang bahalang mag-hold ng something sa screen. Gumagana ang ArenaSwap kung paano mo kailangan.",
+			"copy": "Sobrang taas ng sensitivity? Bagalan mo. Mahal mo ang team mo pero gusto mo rin makita ang best na laro? Magdagdag ng bonus. Aalis sandali para bumili ng inumin? Standby Stream ang bahalang mag-hold ng something sa screen.",
 			"items": [
 				{
 					"name": "Sensitivity (1–{levels})",
@@ -340,7 +340,7 @@
 		"copy": "Kopyahin",
 		"copied": "Nakopya",
 		"signalsHeading": "Ano ang bumubuo sa numero",
-		"signalsSub": "Limang signal ang nagsasama-sama papunta sa isang score na 0 hanggang {max}. Sinadyang mas mataas sa {max} ang kabuuan ng kani-kanilang ceiling, at may cap ang total, kaya ang isang close na laro ay aakyat nang mataas at ang isang blowout ay mananatiling mababa. Ang mas mataas na score ay nangangahulugang mas maraming drama sa ngayon.",
+		"signalsSub": "Limang signal ang nagsasama-sama papunta sa isang score na 0 hanggang {max}. Ang isang close na laro ay aakyat nang mataas, ang isang blowout ay mananatiling mababa.",
 		"signalMax": "{max} max",
 		"signals": [
 			{
@@ -376,9 +376,7 @@
 		"machineScoreCopy": "Sinusukat ng PowerScore, live, kung gaano ka-exciting ang bawat laro.",
 		"machineSwitch": "Lumipat",
 		"machineSwitchCopy": "Awtomatikong tumatalon ang tab mo papunta sa pinakamagandang laro.",
-		"liveLoadingCopy": "Kinukuha ang mga live na laro at kinakalkula ang PowerScore ngayon.",
 		"liveEmptyTitle": "Walang live na laro sa ngayon",
-		"liveEmptyCopy": "Kapag naging live na ang mga laro, awtomatikong mag-re-refresh ang section na ito at magpapakita ng real-time na PowerScore mula sa lahat ng suportadong liga.",
 		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "Ang ArenaSwap habang nanonood at nagbibigay ng score sa bawat live na laro",
 		"machineNowWatching": "Pinapanood ngayon",
@@ -451,17 +449,11 @@
 		},
 		"setup": {
 			"groupSwitching": "Paglipat",
-			"groupSwitchingDesc": "Kung gaano kasabik ang ArenaSwap na ilipat ka sa mas magandang laro.",
 			"groupScoring": "Scoring",
-			"groupScoringDesc": "Kung aling mga signal ang bumubuo sa PowerScore, at ano ang nagbibigay ng boost.",
 			"groupLeagues": "Mga Liga",
-			"groupLeaguesDesc": "Kung aling mga liga ang tine-track, at kung may sariling seksyon ba ang bawat isa.",
 			"groupDisplay": "Display",
-			"groupDisplayDesc": "Kung ano ang lumalabas sa main screen.",
 			"groupStandby": "Standby Stream",
-			"groupStandbyDesc": "Kung saan ka ipa-park kapag tahimik na ang lahat ng laro.",
 			"groupDemo": "Demo Mode",
-			"groupDemoDesc": "Mga scripted na laro, para mapanood mo kung paano nangyayari ang paglipat kahit kailan mo gusto.",
 			"switchNotifications": "Mga Abiso sa Paglipat",
 			"theme": "Theme",
 			"themeLight": "Light",

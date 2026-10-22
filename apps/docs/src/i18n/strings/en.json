@@ -105,7 +105,7 @@
 		"hero": {
 			"titleLine1": "Never miss",
 			"titleLine2": "the moment.",
-			"lede": "ArenaSwap watches every live game across {leagues} leagues and automatically switches your browser tab to the most exciting one, as fast as every 6 seconds.",
+			"lede": "ArenaSwap watches every live game across {leagues} leagues and automatically switches your browser tab to the most exciting one, as fast as every 12 seconds.",
 			"teamStrip": "Works with every team in {leagues} leagues. Yours included.",
 			"captionSwitched": "ArenaSwap moved you off {from} and onto {to}.",
 			"captionWatching": "You are watching {game}, the best game on the board.",
@@ -156,7 +156,7 @@
 		},
 		"settings": {
 			"title": "Tuned in to you.",
-			"copy": "Sensitivity too high? Slow it down. Love your team but want the best game? Add a bonus. Going on a beer run? Standby Stream keeps something on screen. ArenaSwap works however you need it to.",
+			"copy": "Sensitivity too high? Slow it down. Love your team but want the best game? Add a bonus. Going on a beer run? Standby Stream keeps something on screen.",
 			"items": [
 				{
 					"name": "Sensitivity (1–{levels})",
@@ -340,7 +340,7 @@
 		"copy": "Copy",
 		"copied": "Copied",
 		"signalsHeading": "What goes into the number",
-		"signalsSub": "Five signals stack into a score from 0 to {max}. Their ceilings add up to more than {max} on purpose and the total is capped, so a close game climbs high and a blowout stays low. A higher score means more drama right now.",
+		"signalsSub": "Five signals stack into a score from 0 to {max}. A close game climbs high, a blowout stays low.",
 		"signalMax": "{max} max",
 		"signals": [
 			{
@@ -376,9 +376,7 @@
 		"machineScoreCopy": "PowerScore rates how exciting each game is, live.",
 		"machineSwitch": "Switch",
 		"machineSwitchCopy": "Your tab jumps to the best game automatically.",
-		"liveLoadingCopy": "Pulling live games and computing PowerScore now.",
 		"liveEmptyTitle": "No live games right now",
-		"liveEmptyCopy": "When games go live, this section will auto-refresh and show real-time PowerScores across all supported leagues.",
 		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "ArenaSwap watching and scoring every live game",
 		"machineNowWatching": "Now watching",
@@ -451,17 +449,11 @@
 		},
 		"setup": {
 			"groupSwitching": "Switching",
-			"groupSwitchingDesc": "How eager ArenaSwap is to move you to a better game.",
 			"groupScoring": "Scoring",
-			"groupScoringDesc": "Which signals feed a PowerScore, and what earns a boost.",
 			"groupLeagues": "Leagues",
-			"groupLeaguesDesc": "Which leagues get tracked, and whether each one gets its own section.",
 			"groupDisplay": "Display",
-			"groupDisplayDesc": "What shows up on the main screen.",
 			"groupStandby": "Standby Stream",
-			"groupStandbyDesc": "Where to park you when every game goes quiet.",
 			"groupDemo": "Demo Mode",
-			"groupDemoDesc": "Scripted games, so you can watch a switch happen on demand.",
 			"switchNotifications": "Switch notifications",
 			"theme": "Theme",
 			"themeLight": "Light",
