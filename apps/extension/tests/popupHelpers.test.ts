@@ -1,3 +1,5 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import {
 	buildFinalComparator,
 	buildLeagueRank,
@@ -7,6 +9,7 @@ import {
 	fetchState,
 	formatTabLabel,
 	getRandomLoadingMessage,
+	getRandomStartsSoonMessage,
 	groupByLeague,
 	insertLeagueAtDefaultPosition,
 	isFavoriteTeamGame,
@@ -15,9 +18,10 @@ import {
 	moveLeague,
 	normalizeBackgroundState,
 	resolveSelectedDayIndex,
+	startsSoonMessageCounts,
 } from '../entrypoints/popup/popupHelpers';
 import { createFavoriteTeamKey, leagueConfigs } from '@arenaswap/core/constants';
-import type { Game, LeagueId } from '@arenaswap/core/types';
+import type { Game, LeagueId, SportType } from '@arenaswap/core/types';
 
 const mockSendMessage = (returnValue: unknown) => {
 	const fn = jest.fn().mockResolvedValueOnce(returnValue);
@@ -77,6 +81,43 @@ describe('getRandomLoadingMessage', () => {
 		const message = getRandomLoadingMessage();
 		expect(typeof message).toBe('string');
 		expect(message.length).toBeGreaterThan(0);
+	});
+});
+
+const localesDir = join(__dirname, '../locales');
+const readStartsSoon = (file: string) => (
+	JSON.parse(readFileSync(join(localesDir, file), 'utf8')) as { startsSoon: Record<string, Record<string, string>> }
+).startsSoon;
+const startsSoonShape = (lines: Record<string, Record<string, string>>) => Object.fromEntries(
+	Object.entries(lines).map(([group, entries]) => [group, Object.keys(entries)]),
+);
+
+const startsSoonLinesFor = (sportType: SportType): string[] => {
+	const total = startsSoonMessageCounts.any + startsSoonMessageCounts[sportType];
+	return Array.from({ length: total }, (_, index) => {
+		jest.spyOn(Math, 'random').mockReturnValue((index + 0.5) / total);
+		return getRandomStartsSoonMessage(sportType);
+	});
+};
+
+describe('getRandomStartsSoonMessage', () => {
+	afterEach(() => jest.restoreAllMocks());
+
+	const groups = readStartsSoon('en.json');
+
+	test('each group count matches the lines in the locale file', () => {
+		const counts = Object.fromEntries(Object.entries(groups).map(([group, lines]) => [group, Object.keys(lines).length]));
+		expect(counts).toEqual(startsSoonMessageCounts);
+	});
+
+	test.each(readdirSync(localesDir).filter(file => file.endsWith('.json')))('%s has every line English has', file => {
+		expect(startsSoonShape(readStartsSoon(file))).toEqual(startsSoonShape(groups));
+	});
+
+	const sportTypes = Object.keys(startsSoonMessageCounts).filter(group => group !== 'any') as SportType[];
+
+	test.each(sportTypes)('a %s game draws from the shared lines and its own sport\'s, and nothing else', sportType => {
+		expect(startsSoonLinesFor(sportType)).toEqual([...Object.values(groups.any!), ...Object.values(groups[sportType]!)]);
 	});
 });
 

@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## "Starts soon" gets the pregame jitters — 2026-10-22
+
+When a game's countdown hits zero before the game goes live, the detail hero now shows one random pregame line, picked when the view opens, in place of "Starts soon": 42 shared lines plus six to eight for the game's sport (`startsSoon.*` in the locales). A Cypress spec fails any line, in any language, that wraps past two lines in the hero; it waits for DM Sans first, because the narrower fallback font let long lines pass. The sticky bar keeps "Starts soon" because its slot can't fit a sentence, and `startsSoonMessageCounts` in `popupHelpers.ts` has to match the locale files, which a Jest test checks.
+
 ## Profiles — 2026-10-21
 
 Backup & Sync is now Profiles & Backup: named setups you click to switch between, each holding every setting and the Fantasy roster, with Rename, Export and Delete in a ⋯ menu and a New profile modal that copies the current one or starts fresh through the league and team pickers. Only the profile in use rides browser sync (`utils/profiles.ts` keeps the others in `storage.local`), so switching on one computer moves the others too, and each sets its own profile aside first. The backup tab can export any profile, and an imported file can be added as a new profile or replace the current one, taking the file's name.

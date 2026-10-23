@@ -1,11 +1,15 @@
+import { useState } from 'react';
+import type { SportType } from '@arenaswap/core/types';
 import { i18n } from '#i18n';
 import FlipScore from './flipScore';
 import { formatStartDateTime } from './gameCardShared';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import { countdownShowsSeconds, useStartCountdown } from './startCountdown';
+import { getRandomStartsSoonMessage } from '../popupHelpers';
 
 interface startCountdownDisplayProps {
 	startTime: string | undefined;
+	sportType: SportType;
 }
 
 interface segment {
@@ -17,12 +21,13 @@ interface segment {
 
 // Owns `useStartCountdown` rather than taking parts as a prop so a tick re-renders these few
 // spans and leaves the hero, the breakdown and the four ECharts canvases untouched.
-const startCountdownDisplay = ({ startTime }: startCountdownDisplayProps) => {
+const startCountdownDisplay = ({ startTime, sportType }: startCountdownDisplayProps) => {
 	const parts = useStartCountdown(startTime);
+	const [startsSoonMessage] = useState(() => getRandomStartsSoonMessage(sportType));
 	const locale = useDisplayLocale();
 
 	if (!parts || parts.remainingMs <= 0) {
-		return <div className='gd-countdown-soon'>{i18n.t('detail.startsSoon')}</div>;
+		return <div className='gd-countdown-soon'>{startsSoonMessage}</div>;
 	}
 
 	const segments: segment[] = countdownShowsSeconds(parts)

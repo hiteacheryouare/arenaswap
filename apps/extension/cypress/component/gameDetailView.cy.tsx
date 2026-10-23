@@ -247,23 +247,46 @@ describe('gameDetailView countdown', () => {
 		cy.get('.gd-countdown-zero').should('have.length', 2);
 	});
 
-	it('falls back to "Starts soon" once the clock runs out', () => {
+	const basketballStartsSoon = [...Object.values(en.startsSoon.any), ...Object.values(en.startsSoon.basketball)];
+
+	it('swaps the clock for a pre-game line from the game\'s sport once it runs out', () => {
 		mountDetail(makePreGame(0));
-		cy.get('.gd-countdown-soon').should('have.text', 'Starts soon');
+		cy.get('.gd-countdown-soon').should($el => {
+			expect(basketballStartsSoon).to.include($el.text());
+		});
 	});
 
 	// The fallback is a word, not a figure, so it takes the body face. Lekton is only for the
 	// countdown digits it replaces.
-	it('sets "Starts soon" in the body font rather than the scoreboard face', () => {
+	it('sets the pre-game line in the body font rather than the scoreboard face', () => {
 		mountDetail(makePreGame(0));
 		cy.get('.gd-countdown-soon').should($el => {
 			expect(face($el), 'countdown fallback face').to.equal('DM Sans');
 		});
 	});
 
-	it('falls back to "Starts soon" when no start time is scheduled', () => {
+	it('shows a pre-game line when no start time is scheduled', () => {
 		mountDetail({ ...makePreGame(0), startTime: undefined });
-		cy.get('.gd-countdown-soon').should('have.text', 'Starts soon');
+		cy.get('.gd-countdown-soon').should($el => {
+			expect(basketballStartsSoon).to.include($el.text());
+		});
+	});
+
+	it('fits every pre-game line on two lines inside the hero in every locale', () => {
+		mountDetail(makePreGame(0));
+		cy.document().then(doc => doc.fonts.load('700 1.5rem "DM Sans"'));
+		cy.get('.gd-countdown-soon').should(([el]: JQuery<HTMLElement>) => {
+			const lineHeight = parseFloat(getComputedStyle(el).lineHeight);
+			Object.entries(locales).forEach(([name, locale]) => {
+				Object.entries(locale.startsSoon).forEach(([group, lines]) => {
+					Object.entries(lines).forEach(([key, text]) => {
+						el.textContent = text;
+						expect(Math.round(el.getBoundingClientRect().height / lineHeight), `${name} ${group}.${key} line count`).to.be.at.most(2);
+						expect(el.scrollWidth, `${name} ${group}.${key} overflow`).to.be.at.most(el.clientWidth);
+					});
+				});
+			});
+		});
 	});
 
 	it('keeps the countdown on one line in every locale', () => {

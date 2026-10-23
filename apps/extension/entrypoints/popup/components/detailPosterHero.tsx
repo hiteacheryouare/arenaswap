@@ -82,7 +82,7 @@ const detailPosterHero = ({ game, seriesInfo, records, statusText, heroStyle, aw
 			{statusText && <div className='gd-poster-status'>{statusText}</div>}
 
 			{/* A postponed or delayed game has nobody holding to the old start, the sticky bar's rule too. */}
-			{!statusText && <StartCountdownDisplay startTime={game.startTime} />}
+			{!statusText && <StartCountdownDisplay startTime={game.startTime} sportType={game.sportType} />}
 
 			{seriesInfo && <SeriesDots info={seriesInfo} game={game} />}
 		</div>

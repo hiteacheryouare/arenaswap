@@ -1343,8 +1343,10 @@
 		.gd-countdown-soon {
 			font-size: 1.5rem;
 			font-weight: 700;
+			line-height: 1.2;
 			color: #ffffff;
 			text-align: center;
+			text-wrap: balance;
 			margin-top: 0.7rem;
 			text-shadow: 0 2px 12px rgba(3, 7, 12, 0.6);
 		}
