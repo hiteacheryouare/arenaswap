@@ -276,17 +276,28 @@ export const buildWinProbabilityOption = (
 
 const classicFields = modeSignalIds.classic satisfies readonly SignalName[];
 
-// Every signal any reading carries, in the order they first appear. A reading from before modes has
-// only the five flat Classic fields.
+// A reading from before modes has only the five flat Classic fields, and counts as Classic.
+const modeOf = (snapshot: PowerScoreSnapshot): string => snapshot.modeId ?? 'classic';
+
+const latestModeOf = (powerHistory: readonly PowerScoreSnapshot[]): string | undefined => {
+	const latest = powerHistory[powerHistory.length - 1];
+	return latest ? modeOf(latest) : undefined;
+};
+
+// Only the mode the game is scored under now, so switching mode and back leaves no stale keys.
+// Readings from another mode stay on the time axis as empty bars.
 export const contributionSignalIds = (powerHistory: readonly PowerScoreSnapshot[]): string[] => {
+	const latestMode = latestModeOf(powerHistory);
 	const ids = new Set<string>();
 	for (const snapshot of powerHistory) {
+		if (modeOf(snapshot) !== latestMode) continue;
 		for (const id of snapshot.signals ? Object.keys(snapshot.signals) : classicFields) ids.add(id);
 	}
 	return ids.size > 0 ? [...ids] : [...classicFields];
 };
 
-const signalValue = (snapshot: PowerScoreSnapshot, id: string): number => {
+const signalValue = (snapshot: PowerScoreSnapshot, id: string, latestMode: string | undefined): number => {
+	if (modeOf(snapshot) !== latestMode) return 0;
 	if (snapshot.signals) return snapshot.signals[id] ?? 0;
 	return (classicFields as readonly string[]).includes(id) ? snapshot[id as SignalName] : 0;
 };
@@ -299,13 +310,14 @@ export const buildComponentContributionOption = (
 	locale?: string,
 ): EChartsOption => {
 	const labels = powerHistory.map(point => formatTimeLabel(point.timestamp, locale));
+	const latestMode = latestModeOf(powerHistory);
 	return {
 		...baseOption(labels, palette, 24),
 		series: contributionSignalIds(powerHistory).map(id => ({
 			type: 'bar',
 			stack: 'signals',
 			name: signalLabel(id),
-			data: powerHistory.map(snapshot => signalValue(snapshot, id)),
+			data: powerHistory.map(snapshot => signalValue(snapshot, id, latestMode)),
 			itemStyle: { color: signalColorOf(id) },
 		})),
 	};

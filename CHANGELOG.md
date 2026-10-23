@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Switching modes back leaves no stale signal keys — 2026-10-23
+
+The Signals chart's key and bars now follow the mode of the game's newest reading, so turning Blowouts on and back off no longer leaves Margin, Lead held, Early rout and Piling on in the key. Readings from the other mode stay on the time axis as empty bars, and they fill back in if you switch back to that mode.
+
 ## "Starts soon" gets the pregame jitters — 2026-10-22
 
 When a game's countdown hits zero before the game goes live, the detail hero now shows one random pregame line, picked when the view opens, in place of "Starts soon": 42 shared lines plus six to eight for the game's sport (`startsSoon.*` in the locales). A Cypress spec fails any line, in any language, that wraps past two lines in the hero; it waits for DM Sans first, because the narrower fallback font let long lines pass. The sticky bar keeps "Starts soon" because its slot can't fit a sentence, and `startsSoonMessageCounts` in `popupHelpers.ts` has to match the locale files, which a Jest test checks.

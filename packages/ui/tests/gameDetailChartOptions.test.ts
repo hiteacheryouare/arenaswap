@@ -437,14 +437,21 @@ describe('buildComponentContributionOption across modes', () => {
 		]);
 	});
 
-	// A switch of mode mid-game keeps both sets of bars, each reading zero where it was not scored,
-	// and a reading from before modes counts as Classic.
-	test('draws every signal any reading carried when the mode changed mid-game', () => {
+	// A reading from before modes counts as Classic.
+	test('keys only the current mode, leaving the earlier mode\'s stretch empty', () => {
 		const history = [powerPoint(0), powerPoint(1, { modeId: 'classic', signals: { closeness: 30, lateGame: 0, momentum: 0, leadChanges: 0, comeback: 0 } }), blowout(2)];
-		expect(contributionSignalIds(history)).toEqual(['closeness', 'lateGame', 'momentum', 'leadChanges', 'comeback', 'blowoutMargin', 'sustained', 'timing', 'pileOn']);
+		expect(contributionSignalIds(history)).toEqual(['blowoutMargin', 'sustained', 'timing', 'pileOn']);
 		const option = buildComponentContributionOption(history);
-		expect(byName(option, 'Closeness').data).toEqual([20, 30, 0]);
+		expect(seriesOf(option).map(bar => bar.name)).toEqual(['Margin', 'Lead held', 'Early rout', 'Piling on']);
 		expect(byName(option, 'Margin').data).toEqual([0, 0, 41]);
+	});
+
+	test('drops Blowouts from the key after switching back to Classic', () => {
+		const history = [powerPoint(0), blowout(1), blowout(2), powerPoint(3), powerPoint(4)];
+		expect(contributionSignalIds(history)).toEqual(['closeness', 'lateGame', 'momentum', 'leadChanges', 'comeback']);
+		const option = buildComponentContributionOption(history);
+		expect(seriesOf(option).map(bar => bar.name)).toEqual(['Closeness', 'Late-game', 'Momentum', 'Lead changes', 'Comeback']);
+		expect(byName(option, 'Closeness').data).toEqual([20, 0, 0, 20, 20]);
 	});
 
 	test('falls back to Classic\'s five before any reading arrives', () => {
