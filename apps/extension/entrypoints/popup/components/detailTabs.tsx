@@ -1,6 +1,7 @@
 import { i18n } from '#i18n';
 import { useEffect, useLayoutEffect, useRef } from 'react';
-import { NavOverflow, Tab } from 'bootstrap';
+import NavOverflow from 'bootstrap/js/dist/nav-overflow.js';
+import Tab from 'bootstrap/js/dist/tab.js';
 
 export type DetailTabId = 'overview' | 'matchup' | 'box' | 'standings';
 

@@ -71,16 +71,24 @@ const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], slat
 		sync: { prefs: createDefaultUserPreferences(), prefsUpdatedAt: 0 },
 		local: { prefs: null, prefsUpdatedAt: 0 },
 	};
-	const storageListeners: ((changes: Record<string, unknown>, area: string) => void)[] = [];
+	const storageListeners: Record<'local' | 'sync', ((changes: Record<string, unknown>) => void)[]> = { local: [], sync: [] };
 	const storageArea = (area: 'local' | 'sync') => ({
 		get: () => Promise.resolve({ ...stored[area] }),
 		set: (values: Record<string, unknown>) => {
 			Object.assign(stored[area], values);
 			const changes = Object.fromEntries(Object.entries(values).map(([key, newValue]) => [key, { newValue }]));
-			storageListeners.forEach(listener => listener(changes, area));
+			storageListeners[area].forEach(listener => listener(changes));
 			return Promise.resolve();
 		},
+		onChanged: {
+			addListener: (listener: (changes: Record<string, unknown>) => void) => { storageListeners[area].push(listener); },
+			removeListener: (listener: (changes: Record<string, unknown>) => void) => {
+				const index = storageListeners[area].indexOf(listener);
+				if (index >= 0) storageListeners[area].splice(index, 1);
+			},
+		},
 	});
+	const areas = { sync: storageArea('sync'), local: storageArea('local') };
 
 	const win = window as unknown as Record<string, unknown>;
 	win.browser = {
@@ -103,17 +111,7 @@ const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], slat
 			},
 		},
 		i18n: { getUILanguage: () => 'en-US' },
-		storage: {
-			sync: storageArea('sync'),
-			local: storageArea('local'),
-			onChanged: {
-				addListener: (listener: (changes: Record<string, unknown>, area: string) => void) => { storageListeners.push(listener); },
-				removeListener: (listener: (changes: Record<string, unknown>, area: string) => void) => {
-					const index = storageListeners.indexOf(listener);
-					if (index >= 0) storageListeners.splice(index, 1);
-				},
-			},
-		},
+		storage: areas,
 	};
 
 	cy.mount(<App />);
@@ -130,7 +128,7 @@ const mountGuide = ({ deferSlate = false, games = [eagles, niners, sixers], slat
 		},
 		fail: () => { fault = 'rejects'; },
 		pushScoresUpdated: () => { listeners.forEach(listener => listener({ type: 'SCORES_UPDATED' })); },
-		savePrefsElsewhere: (prefs: UserPreferences) => { void storageArea('local').set({ prefs, prefsUpdatedAt: Date.now() + 1 }); },
+		savePrefsElsewhere: (prefs: UserPreferences) => { void areas.local.set({ prefs, prefsUpdatedAt: Date.now() + 1 }); },
 		storedPrefs: () => (stored.local.prefs as UserPreferences | null),
 		sentMessages,
 		slateRequests: () => sentMessages.filter(message => message.type === 'GET_GUIDE_SLATE').length,

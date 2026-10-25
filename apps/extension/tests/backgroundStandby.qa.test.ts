@@ -83,11 +83,12 @@ const startWorker = async ({ games, openTabIds, activeTabId, atMs }: StartOption
 	(globalThis as { browser?: unknown }).browser = {
 		storage: {
 			onChanged: { addListener: () => {} },
-			sync: storageArea(() => syncStore),
+			sync: { ...storageArea(() => syncStore), onChanged: { addListener: () => {} } },
 			session: storageArea(() => sessionStore),
 			local: storageArea(() => localStore),
 		},
 		runtime: {
+			getPlatformInfo: jest.fn().mockResolvedValue({}),
 			sendMessage: jest.fn().mockResolvedValue(undefined),
 			onMessage: { addListener: (h: (msg: unknown) => unknown) => { onMessageHandler = h; } },
 		},
@@ -105,6 +106,7 @@ const startWorker = async ({ games, openTabIds, activeTabId, atMs }: StartOption
 			getLastFocused: jest.fn().mockResolvedValue({ id: 1, state: 'normal' }),
 		},
 		commands: { onCommand: { addListener: () => {} } },
+		alarms: { create: jest.fn(), clear: jest.fn(), onAlarm: { addListener: () => {} } },
 		notifications: { create: notificationsCreate },
 		i18n: { getUILanguage: () => 'en-US' },
 	};

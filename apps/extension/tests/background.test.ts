@@ -40,6 +40,10 @@ const durationFetch = (): jest.Mock => (
 	(require('@arenaswap/sideline') as { fetchGameDurationMins: jest.Mock }).fetchGameDurationMins
 );
 
+const situationFetch = (): jest.Mock => (
+	(require('@arenaswap/sideline') as { fetchCompetitionSituation: jest.Mock }).fetchCompetitionSituation
+);
+
 const runtimeSendMessage = (): jest.Mock => (
 	(globalThis as unknown as { browser: { runtime: { sendMessage: jest.Mock } } }).browser.runtime.sendMessage
 );
@@ -152,7 +156,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 	(globalThis as { browser?: unknown }).browser = {
 		storage: {
 			onChanged: { addListener: () => {} },
-			sync: { get: storageSyncGet, set: storageSyncSet },
+			sync: { get: storageSyncGet, set: storageSyncSet, onChanged: { addListener: () => {} } },
 			session: {
 				get: jest.fn().mockResolvedValue({
 					tabRegistry: options.tabRegistry ?? [],
@@ -170,6 +174,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 			},
 		},
 		runtime: {
+			getPlatformInfo: jest.fn().mockResolvedValue({}),
 			sendMessage: jest.fn().mockResolvedValue(undefined),
 			onMessage: {
 				addListener: (h: (msg: unknown) => unknown) => { onMessageHandler = h; },
@@ -189,6 +194,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 		notifications: { create: notificationsCreate },
 		windows: { update: windowsUpdate, get: windowsGet, getLastFocused: windowsGetLastFocused },
 		commands: { onCommand: { addListener: jest.fn() } },
+		alarms: { create: jest.fn(), clear: jest.fn(), onAlarm: { addListener: () => {} } },
 		// A switch notification formats its reason in the UI language, as the popup's fake does.
 		i18n: { getUILanguage: () => 'en-US' },
 	};
@@ -574,12 +580,15 @@ describe('win probability read off the scoreboard', () => {
 		lastPlayId: 'play-1',
 	};
 
-	const loadWith = async (game: Game, storedSession?: Record<string, unknown>) => {
+	// `playMoves` has every poll after the first report a new play, as a game in progress does.
+	const loadWith = async (game: Game, storedSession?: Record<string, unknown>, playMoves = false) => {
 		await loadBackground({
 			prefs: { enabledLeagues: [game.league], notificationsEnabled: false },
 			fetchReturnValue: { games: [game], leagueLogos: {}, shedLeagues: [] },
 			storedSession,
 		});
+		let play = 1;
+		if (playMoves) fetchMock.mockImplementation(async () => ({ games: [{ ...game, lastPlayId: `play-${++play}` }], leagueLogos: {}, shedLeagues: [] }));
 	};
 
 	const sweepsLater = async (sweeps: number) => {
@@ -606,7 +615,7 @@ describe('win probability read off the scoreboard', () => {
 	});
 
 	test('a football game the scoreboard gives no line for keeps its summary every sweep', async () => {
-		await loadWith({ ...footballGame, homeWinProbability: undefined });
+		await loadWith({ ...footballGame, homeWinProbability: undefined }, undefined, true);
 		const winProbMock = summaryMock();
 
 		await sweepsLater(3);
@@ -621,7 +630,7 @@ describe('win probability read off the scoreboard', () => {
 			sportType: 'hockey',
 			homeTeam: { ...footballGame.homeTeam, score: 2 },
 			awayTeam: { ...footballGame.awayTeam, score: 1 },
-		});
+		}, undefined, true);
 		const winProbMock = summaryMock();
 
 		await sweepsLater(3);
@@ -629,8 +638,34 @@ describe('win probability read off the scoreboard', () => {
 	});
 
 	test('basketball keeps its summary every sweep, for the lead-change count in the box score', async () => {
-		await loadWith({ ...footballGame, id: 'nba-1', league: 'nba' as LeagueId, sportType: 'basketball' });
+		await loadWith({ ...footballGame, id: 'nba-1', league: 'nba' as LeagueId, sportType: 'basketball' }, undefined, true);
 		const winProbMock = summaryMock();
+
+		await sweepsLater(3);
+		expect(winProbMock).toHaveBeenCalledTimes(3);
+	});
+
+	test('a game stuck on the same play is not summarised again until the next one', async () => {
+		const stalled = { ...footballGame, id: 'nba-2', league: 'nba' as LeagueId, sportType: 'basketball' as const };
+		await loadWith(stalled, undefined, false);
+		const winProbMock = summaryMock();
+
+		await sweepsLater(3);
+		expect(winProbMock).toHaveBeenCalledTimes(1);
+
+		fetchMock.mockResolvedValue({ games: [{ ...stalled, lastPlayId: 'play-2' }], leagueLogos: {}, shedLeagues: [] });
+		jest.advanceTimersByTime(pollMaxEagerMs + 2000);
+		await drain();
+		await sweepsLater(1);
+		expect(winProbMock).toHaveBeenCalledTimes(2);
+	});
+
+	test('a summary that comes back without a line is asked for again on the same play', async () => {
+		const stalled = { ...footballGame, id: 'nba-3', league: 'nba' as LeagueId, sportType: 'basketball' as const };
+		await loadWith(stalled, undefined, false);
+		const winProbMock = (require('@arenaswap/sideline') as { fetchWinProbability: jest.Mock }).fetchWinProbability;
+		winProbMock.mockResolvedValue([]);
+		winProbMock.mockClear();
 
 		await sweepsLater(3);
 		expect(winProbMock).toHaveBeenCalledTimes(3);
@@ -655,7 +690,7 @@ describe('win probability read off the scoreboard', () => {
 		await sweepsLater(1);
 		expect(winProbMock).toHaveBeenCalledTimes(1);
 
-		fetchMock.mockResolvedValue({ games: [{ ...footballGame, homeWinProbability: undefined }], leagueLogos: {}, shedLeagues: [] });
+		fetchMock.mockResolvedValue({ games: [{ ...footballGame, homeWinProbability: undefined, lastPlayId: 'play-2' }], leagueLogos: {}, shedLeagues: [] });
 		jest.advanceTimersByTime(pollMaxEagerMs + 2000);
 		await drain(12);
 		await sweepsLater(1);
@@ -2978,5 +3013,227 @@ describe('college division filters', () => {
 			fetchReturnValue: { games: [baseballGame('in-conference', 'ecu'), baseballGame('elsewhere', 'lsu')], leagueLogos: {}, shedLeagues: [] },
 		});
 		expect(await idsIn()).toEqual(['in-conference']);
+	});
+});
+
+describe('the situation a poll reads', () => {
+	const hockeySituations = require('../../../packages/sideline/tests/fixtures/liveExtras/hockeySituations.json') as { nhlPowerPlay: { raw: unknown } };
+	const rink: Game = {
+		id: 'nhl-1',
+		league: 'nhl' as LeagueId,
+		sportType: 'hockey',
+		status: 'in',
+		homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 2 },
+		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 2 },
+		period: 2,
+		clockSeconds: 600,
+	};
+	const court: Game = { ...rink, id: 'nba-1', league: 'nba' as LeagueId, sportType: 'basketball', period: 3, clockSeconds: 300, lastPlayId: 'play-1' };
+
+	const scoreOf = async (gameId: string) => {
+		const state = await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string; scoringOpportunityBoost?: number; homeScore?: number }[]; games: Game[] };
+		return { score: state.scores.find(s => s.gameId === gameId), game: state.games.find(g => g.id === gameId) };
+	};
+
+	const poll = async () => {
+		jest.advanceTimersByTime(pollMaxEagerMs + 2000);
+		await drain(12);
+	};
+
+	test('counts toward the score of the poll that read it', async () => {
+		await loadBackground({ prefs: { enabledLeagues: ['nhl' as LeagueId] }, fetchReturnValue: { games: [rink], leagueLogos: {}, shedLeagues: [] } });
+		situationFetch().mockResolvedValue(hockeySituations.nhlPowerPlay.raw);
+
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+
+		expect((await scoreOf('nhl-1')).score?.scoringOpportunityBoost).toBeGreaterThan(0);
+	});
+
+	test('a basketball game is not asked again until the next play', async () => {
+		await loadBackground({ prefs: { enabledLeagues: ['nba' as LeagueId] }, fetchReturnValue: { games: [court], leagueLogos: {}, shedLeagues: [] } });
+		situationFetch().mockClear();
+
+		await poll();
+		await poll();
+		await poll();
+		expect(situationFetch()).toHaveBeenCalledTimes(1);
+
+		fetchMock.mockResolvedValue({ games: [{ ...court, lastPlayId: 'play-2' }], leagueLogos: {}, shedLeagues: [] });
+		await poll();
+		expect(situationFetch()).toHaveBeenCalledTimes(2);
+	});
+
+	test('one that never answers holds the poll for two seconds and no longer', async () => {
+		await loadBackground({ prefs: { enabledLeagues: ['nhl' as LeagueId] }, fetchReturnValue: { games: [rink], leagueLogos: {}, shedLeagues: [] } });
+		situationFetch().mockImplementation(() => new Promise(() => {}));
+		fetchMock.mockResolvedValue({ games: [{ ...rink, homeTeam: { ...rink.homeTeam, score: 3 } }], leagueLogos: {}, shedLeagues: [] });
+
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+		expect((await scoreOf('nhl-1')).game?.homeTeam.score).toBe(3);
+		const before = runtimeSendMessage().mock.calls.filter(([message]) => (message as { type: string }).type === 'SCORES_UPDATED').length;
+
+		jest.advanceTimersByTime(2_000);
+		await drain(12);
+		const after = runtimeSendMessage().mock.calls.filter(([message]) => (message as { type: string }).type === 'SCORES_UPDATED').length;
+		expect(after).toBe(before + 1);
+	});
+});
+
+describe('a quiet league with a game about to start', () => {
+	const startsAt = 1_800_000_000_000;
+	const scheduled: Game = {
+		id: 'nhl-later',
+		league: 'nhl' as LeagueId,
+		sportType: 'hockey',
+		status: 'pre',
+		homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 0 },
+		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 0 },
+		startTime: new Date(startsAt).toISOString(),
+	};
+
+	// A second at a time, so each poll reschedules from the moment it actually ran.
+	const pollsBy = async (atMs: number) => {
+		while (Date.now() < atMs) {
+			jest.advanceTimersByTime(Math.min(1_000, atMs - Date.now()));
+			await drain(4);
+		}
+		return fetchMock.mock.calls.length;
+	};
+
+	test('polls at the listed start instead of waiting out its beat, then at the live beat until it goes live', async () => {
+		// Two empty polls send a league dormant, which would otherwise next look three minutes on.
+		await loadBackground({
+			initialSystemTime: startsAt - 120_000,
+			prefs: { enabledLeagues: ['nhl' as LeagueId] },
+			fetchReturnValue: { games: [scheduled], leagueLogos: {}, shedLeagues: [] },
+		});
+
+		const beforeStart = await pollsBy(startsAt - 1_000);
+		expect(await pollsBy(startsAt + 500)).toBe(beforeStart + 1);
+		expect(await pollsBy(startsAt + pollMaxEagerMs + 1_000)).toBe(beforeStart + 2);
+	});
+});
+
+const lateGame = (id: string, home: number, away: number): Game => ({
+	id,
+	league: 'nba' as LeagueId,
+	sportType: 'basketball',
+	status: 'in',
+	homeTeam: { id: `${id}-h`, name: 'Home', abbreviation: 'HOM', score: home },
+	awayTeam: { id: `${id}-a`, name: 'Away', abbreviation: 'AWY', score: away },
+	period: 4,
+	clockSeconds: 60,
+});
+
+describe('one poll\'s pass over the tabs', () => {
+	const load = async (games: Game[]) => {
+		await loadBackground({
+			prefs: { enabled: true, enabledLeagues: ['nba' as LeagueId], cooldownSeconds: 0, sensitivity: 7, switchDelaySeconds: 0, notificationsEnabled: false },
+			tabRegistry: [{ gameId: 'close', tabId: 1 }, { gameId: 'rout', tabId: 2 }],
+			fetchReturnValue: { games, leagueLogos: {}, shedLeagues: [] },
+			openTabIds: [1, 2],
+			activeTabId: 1,
+		});
+		tabsQuery.mockClear();
+		runtimeSendMessage().mockClear();
+	};
+
+	const poll = async () => {
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+	};
+
+	test('looks at the tab strip once when it has nothing to switch to', async () => {
+		await load([lateGame('close', 98, 97), lateGame('rout', 120, 70)]);
+		await poll();
+
+		expect(tabsUpdate).not.toHaveBeenCalledWith(expect.any(Number), { active: true });
+		expect(tabsQuery).toHaveBeenCalledTimes(2);
+	});
+
+	test('switches before it saves the history or tells the popup', async () => {
+		await load([lateGame('close', 120, 70), lateGame('rout', 98, 97)]);
+		await poll();
+
+		const switchedAt = tabsUpdate.mock.invocationCallOrder[tabsUpdate.mock.calls.findIndex(([, change]) => (change as { active?: boolean }).active === true)];
+		const broadcastAt = runtimeSendMessage().mock.invocationCallOrder[runtimeSendMessage().mock.calls.findIndex(([message]) => (message as { type: string }).type === 'SCORES_UPDATED')];
+		const historyWriteAt = storageSessionSet.mock.invocationCallOrder[storageSessionSet.mock.calls.findIndex(([value]) => 'scoreHistory' in (value as object))];
+		expect(switchedAt).toBeDefined();
+		expect(switchedAt).toBeLessThan(broadcastAt!);
+		expect(switchedAt).toBeLessThan(historyWriteAt!);
+	});
+});
+
+const platformInfo = (): jest.Mock => (globalThis as unknown as { browser: { runtime: { getPlatformInfo: jest.Mock } } }).browser.runtime.getPlatformInfo;
+const alarmCreate = (): jest.Mock => (globalThis as unknown as { browser: { alarms: { create: jest.Mock } } }).browser.alarms.create;
+const alarmClear = (): jest.Mock => (globalThis as unknown as { browser: { alarms: { clear: jest.Mock } } }).browser.alarms.clear;
+
+describe('keeping the worker running between polls', () => {
+	const runFor = async (ms: number) => {
+		const until = Date.now() + ms;
+		while (Date.now() < until) {
+			jest.advanceTimersByTime(Math.min(1_000, until - Date.now()));
+			await drain(4);
+		}
+	};
+
+	test('stays up through a quiet league\'s few-minute beat', async () => {
+		const tonight: Game = {
+			id: 'later', league: 'nba' as LeagueId, sportType: 'basketball', status: 'pre',
+			homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 0 },
+			awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 0 },
+			startTime: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(),
+		};
+		await loadBackground({ prefs: { enabledLeagues: ['nba' as LeagueId] }, fetchReturnValue: { games: [tonight], leagueLogos: {}, shedLeagues: [] } });
+		await runFor(2 * 60_000);
+		platformInfo().mockClear();
+
+		await runFor(5 * 60_000);
+		expect(platformInfo().mock.calls.length).toBeGreaterThanOrEqual(14);
+	});
+
+	test('lets a league with nothing scheduled stop the worker, with no alarm to start it', async () => {
+		await loadBackground({ prefs: { enabledLeagues: ['nba' as LeagueId] } });
+		await runFor(2 * 60_000);
+		platformInfo().mockClear();
+		alarmCreate().mockClear();
+
+		await runFor(5 * 60_000);
+		expect(platformInfo()).not.toHaveBeenCalled();
+		expect(alarmCreate()).not.toHaveBeenCalled();
+		expect(alarmClear()).toHaveBeenLastCalledWith('arenaswap-wake');
+	});
+
+	test('sets the alarm for when a game days away comes within a day', async () => {
+		const startsAt = Date.now() + 3 * 24 * 60 * 60 * 1000;
+		await loadBackground({ prefs: { enabledLeagues: ['nba' as LeagueId] } });
+		lookahead().mockResolvedValue(startsAt);
+		await runFor(2 * 60_000);
+
+		const [, { when }] = alarmCreate().mock.calls.at(-1) as [string, { when: number }];
+		expect(when).toBe(startsAt - 24 * 60 * 60 * 1000);
+		platformInfo().mockClear();
+		await runFor(2 * 60_000);
+		expect(platformInfo()).not.toHaveBeenCalled();
+	});
+});
+
+describe('a fresh install with no leagues picked yet', () => {
+	test('does not report every league as refusing', async () => {
+		const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+		const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+		const nodeEnv = process.env.NODE_ENV;
+		// The logger is silent under Jest, and this is about what it says.
+		process.env.NODE_ENV = 'production';
+		try {
+			await loadBackground({ prefs: { enabledLeagues: [] } });
+		} finally {
+			process.env.NODE_ENV = nodeEnv;
+		}
+
+		const said = [...error.mock.calls, ...warn.mock.calls].map(args => args.join(' '));
+		expect(said.filter(line => line.includes('shed'))).toEqual([]);
 	});
 });

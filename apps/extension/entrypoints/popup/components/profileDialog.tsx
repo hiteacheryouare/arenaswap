@@ -1,4 +1,4 @@
-import { Dialog } from 'bootstrap';
+import Dialog from 'bootstrap/js/dist/dialog.js';
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { i18n } from '#i18n';
 import { isProfileNameTaken, normalizeProfileName, profileNameLimit, uniqueProfileName, type profileEntry } from '../../../utils/profiles';

@@ -69,8 +69,9 @@ const startWorker = async (atMs: number) => {
 	tabsUpdate = jest.fn().mockResolvedValue(undefined);
 	(globalThis as { defineBackground?: unknown }).defineBackground = (fn: () => void) => fn();
 	(globalThis as { browser?: unknown }).browser = {
-		storage: { onChanged: { addListener: () => {} }, sync: storeApi(() => syncStore), session: storeApi(() => sessionStore), local: storeApi(() => localStore) },
+		storage: { onChanged: { addListener: () => {} }, sync: { ...storeApi(() => syncStore), onChanged: { addListener: () => {} } }, session: storeApi(() => sessionStore), local: storeApi(() => localStore) },
 		runtime: {
+			getPlatformInfo: jest.fn().mockResolvedValue({}),
 			sendMessage: jest.fn().mockResolvedValue(undefined),
 			onMessage: { addListener: (handler: (msg: unknown) => unknown) => { onMessageHandler = handler; } },
 		},
@@ -90,6 +91,7 @@ const startWorker = async (atMs: number) => {
 			getLastFocused: jest.fn().mockResolvedValue({ id: 1, state: 'normal' }),
 		},
 		commands: { onCommand: { addListener: () => {} } },
+		alarms: { create: jest.fn(), clear: jest.fn(), onAlarm: { addListener: () => {} } },
 		notifications: { create: jest.fn().mockResolvedValue(undefined) },
 		i18n: { getUILanguage: () => 'en-US' },
 	};

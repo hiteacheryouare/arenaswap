@@ -1,4 +1,4 @@
-import { Menu } from 'bootstrap';
+import attachMenu from '../bootstrapMenu';
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 
 export interface selectDropdownOption<T extends string> {
@@ -27,6 +27,7 @@ interface selectDropdownProps<T extends string> {
 // state.
 const selectDropdown = <T extends string>({ value, options, onChange, id, disabled = false, labelId, ariaLabel }: selectDropdownProps<T>) => {
 	const toggleRef = useRef<HTMLButtonElement>(null);
+	const menuRef = useRef<HTMLDivElement>(null);
 	const ownId = useId();
 	const hiddenLabelId = `${ownId}-label`;
 	const valueId = `${ownId}-value`;
@@ -34,9 +35,8 @@ const selectDropdown = <T extends string>({ value, options, onChange, id, disabl
 	const current = options.find(option => option.value === value) ?? options[0];
 
 	useEffect(() => {
-		if (!toggleRef.current) return;
-		const menu = Menu.getOrCreateInstance(toggleRef.current);
-		return () => menu.dispose();
+		if (!toggleRef.current || !menuRef.current) return;
+		return attachMenu(toggleRef.current, menuRef.current);
 	}, []);
 
 	return (
@@ -56,7 +56,7 @@ const selectDropdown = <T extends string>({ value, options, onChange, id, disabl
 				{current?.icon && <i className={`bi ${current.icon} me-3`} aria-hidden='true' />}
 				<span id={valueId}>{current?.label}</span>
 			</button>
-			<div className='menu w-100 select-dropdown-menu'>
+			<div ref={menuRef} className='menu w-100 select-dropdown-menu'>
 				{options.map(option => (
 					<button
 						key={option.value}

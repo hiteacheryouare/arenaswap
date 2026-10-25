@@ -11,6 +11,7 @@ jest.mock('@arenaswap/sideline', () => ({
 	fetchGamesWithLeagueLogos: jest.fn(),
 	fetchNextScheduledStart: jest.fn().mockResolvedValue(null),
 	fetchWinProbability: jest.fn().mockResolvedValue([]),
+	fetchCompetitionSituation: jest.fn().mockResolvedValue({}),
 	fetchTeamMonoLogos: jest.fn().mockResolvedValue({}),
 }));
 
@@ -84,6 +85,7 @@ const startWorker = async ({ games, openTabIds, activeTabId, atMs }: StartOption
 		storage: {
 			onChanged: { addListener: () => {} },
 			sync: {
+				onChanged: { addListener: () => {} },
 				get: jest.fn().mockImplementation((request: unknown) => Promise.resolve(readStore(syncStore, request))),
 				set: jest.fn().mockImplementation((patch: Record<string, unknown>) => {
 					Object.assign(syncStore, patch);
@@ -106,6 +108,7 @@ const startWorker = async ({ games, openTabIds, activeTabId, atMs }: StartOption
 			},
 		},
 		runtime: {
+			getPlatformInfo: jest.fn().mockResolvedValue({}),
 			sendMessage: jest.fn().mockResolvedValue(undefined),
 			onMessage: { addListener: (h: (msg: unknown) => unknown) => { onMessageHandler = h; } },
 		},
@@ -123,6 +126,7 @@ const startWorker = async ({ games, openTabIds, activeTabId, atMs }: StartOption
 			getLastFocused: jest.fn().mockResolvedValue({ id: 1, state: 'normal' }),
 		},
 		commands: { onCommand: { addListener: (h: (command: string) => unknown) => { onCommandHandler = h; } } },
+		alarms: { create: jest.fn(), clear: jest.fn(), onAlarm: { addListener: () => {} } },
 		notifications: { create: jest.fn().mockResolvedValue(undefined) },
 	};
 

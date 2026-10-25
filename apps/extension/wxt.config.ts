@@ -63,7 +63,8 @@ export default defineConfig({
 	}),
 	// Array.prototype.toSorted is Chrome/Edge 110+ and Firefox 115+, and browser.storage.session is
 	// Firefox 115+ as well. Neither is polyfilled — build.target down-levels syntax, not built-ins —
-	// so these floors have to exclude the browsers the popup would crash on open.
+	// so these floors have to exclude the browsers the popup would crash on open. Firefox's is 121, the first
+	// to count an extension API call as activity, which the background's keepalive relies on (utils/keepAwake.ts).
 	manifest: ({ browser }) => ({
 		// The two strings a browser shows in its own extension list, and the two the stores put at
 		// the top of a listing, so they are the ones worth having in the reader's language. Both
@@ -82,13 +83,13 @@ export default defineConfig({
 		browser_specific_settings: {
 			gecko: {
 				id: 'arenaswap@hiteacheryouare.github.io',
-				strict_min_version: '115.0',
+				strict_min_version: '121.0',
 				data_collection_permissions: {
 					required: ['none'],
 				},
 			},
 		},
-		permissions: ['tabs', 'storage', 'notifications'],
+		permissions: ['tabs', 'storage', 'notifications', 'alarms'],
 		// Alt+Shift+X is in none of Chrome's, Edge's or Firefox's own shortcut lists on Windows, Linux
 		// or macOS. `commands` needs no entry in `permissions`.
 		commands: {

@@ -4,6 +4,8 @@ import { createWinProbabilityTracker, summaryStillNeeded, isWithinFinalRetention
 import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, fetchNextScheduledStart, scoreboardRefreshMs, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces } from '@arenaswap/sideline';
 import type { CommercialBreakEntry, HeldSwitch, PlayBreakSport } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
+import kickoffDelayMs from '../utils/kickoffPoll';
+import createKeepAwake from '../utils/keepAwake';
 import { gameEndRetentionMs, gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
 import type { gameEndRecords } from '../utils/gameEndTimes';
 import { isMonoLogoCacheFresh, missingMonoLogoLeagues, monoLogoCacheKey } from '../utils/monoLogoCache';
@@ -43,6 +45,7 @@ import {
 	pollIntervalMs,
 	pollDormantMinMs,
 	pollDormantMaxMs,
+	pollHebetudinousHorizonMs,
 	pollMaxEagerMs,
 	resolveLeagueLogoUrl,
 	sportTypeConfigMap,
@@ -91,6 +94,7 @@ const readStoredSwitchTime = (value: unknown, now: number): number => (
 const switchNotificationId = 'arenaswap-switch';
 const standingsRefreshMs = 30 * 60 * 1000;
 const blowoutSummaryIntervalMs = 180_000;
+const situationWaitMs = 2_000;
 
 const getOpenTabIds = async (): Promise<Set<number>> => {
 	const allTabs = await browser.tabs.query({});
@@ -105,6 +109,18 @@ const getActiveTabId = async (): Promise<number | undefined> => {
 	const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
 	return activeTab?.id;
 };
+
+interface tabSnapshot {
+	allTabs: Browser.tabs.Tab[];
+	activeTabId: number | undefined;
+}
+
+const readTabs = async (): Promise<tabSnapshot> => {
+	const [allTabs, activeTabId] = await Promise.all([browser.tabs.query({}), getActiveTabId()]);
+	return { allTabs, activeTabId };
+};
+
+const tabIdsOf = (tabs: tabSnapshot): Set<number> => new Set(tabs.allTabs.flatMap(tab => tab.id === undefined ? [] : [tab.id]));
 
 // Activating a tab in a window behind this one changes nothing anyone can see. And a player in full
 // screen drops out of it once its tab stops being the active one; only a click can put the new
@@ -296,6 +312,9 @@ export default defineBackground(() => {
 		});
 	};
 	const leagueTimers = new Map<string, ReturnType<typeof setTimeout>>();
+	const leagueWakeAt = new Map<LeagueId, number>();
+	const keepAwake = createKeepAwake({ beat: () => browser.runtime.getPlatformInfo(), alarms: browser.alarms });
+	const refreshKeepAwake = () => keepAwake(leagueWakeAt.size > 0 ? Math.min(...leagueWakeAt.values()) : null, demoMode);
 	const leagueFailureCounts = new Map<LeagueId, number>();
 	const leagueHealthyIntervalMs = new Map<LeagueId, number>();
 	const leagueNextIntervalMs = new Map<string, number>();
@@ -309,6 +328,10 @@ export default defineBackground(() => {
 	// timeouts for the cards.
 	const liveExtras = createLiveExtras();
 	const summaryFetchedAt = new Map<string, number>();
+	// The play each game's situation was last read after.
+	const situationPlayIds = new Map<string, string>();
+	// The play each game's summary was last read after. Its line, box score and fantasy points only move with a play.
+	const summaryPlayIds = new Map<string, string>();
 	const standingsFetchedAt = new Map<LeagueId, number>();
 	let winProbTimer: ReturnType<typeof setTimeout> | null = null;
 	// Bumped on every stop so a sweep that is already in flight cannot reschedule itself.
@@ -498,14 +521,15 @@ export default defineBackground(() => {
 		saveHushed: hushed => browser.storage.session.set({ [bossHushedKey]: hushed }),
 	});
 
-	const syncManagedTabMuteState = async (enabled: boolean) => {
+	// `tabs` is a poll's own look at the tab strip, so the pass makes one query instead of one per step.
+	const syncManagedTabMuteState = async (enabled: boolean, tabs?: tabSnapshot) => {
 		// The hush is the pause's mute. Prefs can come back on without an UPDATE_PREFS, from a
 		// storage reload or a worker restart, so this is where it ends rather than at one message.
 		if (enabled) await bossMode.release();
 		const managedTabIds = getManagedTabIds();
 		if (managedTabIds.length === 0 && mutedTabIds.size === 0) return;
 
-		const allTabs = await browser.tabs.query({});
+		const allTabs = tabs?.allTabs ?? await browser.tabs.query({});
 		const openTabIds = new Set(allTabs.flatMap(tab => tab.id === undefined ? [] : [tab.id]));
 		const mutedNow = new Map(allTabs.flatMap(tab => tab.id === undefined ? [] : [[tab.id, tab.mutedInfo?.muted] as const]));
 
@@ -518,7 +542,7 @@ export default defineBackground(() => {
 
 		let watchedTabId: number | undefined;
 		if (enabled && managedOpenTabIds.length > 0) {
-			const activeTabId = await getActiveTabId();
+			const activeTabId = tabs ? tabs.activeTabId : await getActiveTabId();
 			if (activeTabId !== undefined && managedOpenTabIds.includes(activeTabId)) {
 				watchedTabId = activeTabId;
 			}
@@ -652,21 +676,22 @@ export default defineBackground(() => {
 		});
 	};
 
-	const executeSwitch = async (tabId: number, gameId?: string, reason?: string, waitedFor?: PlayBreakSport) => {
-		if (await getActiveTabId() === tabId) return;
+	// True once the tab is showing and the mute state has been settled against it.
+	const executeSwitch = async (tabId: number, gameId?: string, reason?: string, waitedFor?: PlayBreakSport): Promise<boolean> => {
+		if (await getActiveTabId() === tabId) return false;
 
 		const [allTabs, watchedWindow] = await Promise.all([browser.tabs.query({}), browser.windows.getLastFocused()]);
 		const targetTab = allTabs.find(tab => tab.id === tabId);
 		// Read last, with nothing awaited before the update: a boss press during the queries above
 		// pauses auto-switching, and a switch that lands over the decoy would undo it.
-		if (!targetTab || !prefs.enabled) return;
+		if (!targetTab || !prefs.enabled) return false;
 
 		try {
 			await browser.tabs.update(tabId, { active: true });
 		} catch (err) {
 			// The tab closed between the query above and the update.
 			logWarn(`Failed to switch to tab ${tabId}.`, err);
-			return;
+			return false;
 		}
 		// Before the mute sync, which follows whichever window was focused last.
 		if (targetTab.windowId !== undefined) {
@@ -712,6 +737,7 @@ export default defineBackground(() => {
 				});
 			}
 		}
+		return true;
 	};
 
 	// Reads `currentScores` so a switch that waited out `switchDelaySeconds` re-targets against
@@ -844,7 +870,7 @@ export default defineBackground(() => {
 				upcomingDays: prefs.upcomingGamesDays,
 				includeFinal: prefs.keepFinalGames,
 			});
-			if (result.shedLeagues.length === prefs.enabledLeagues.length) {
+			if (prefs.enabledLeagues.length > 0 && result.shedLeagues.length === prefs.enabledLeagues.length) {
 				logWarn(`ESPN shed the whole slate (${result.shedLeagues.length} leagues); keeping what we have.`);
 				return;
 			}
@@ -947,19 +973,19 @@ export default defineBackground(() => {
 	// released it. Demo mode is excluded outright: its games reach 'post' on a script while the
 	// tabs registered to them are real, and mock-20 ships already final — so the first poll after
 	// turning the demo on would close a real tab for a game that was never played.
-	const settleFinishedTabs = async (finishedGames: Game[]) => {
+	const settleFinishedTabs = async (finishedGames: Game[], tabs: tabSnapshot) => {
 		if (prefs.finishedTabAction === 'keep' || demoMode) return;
-		if (finishedGames.length === 0 || tabRegistry.length === 0) return;
+		// A final stays on the board for hours after its tab was handed back, so most polls have nothing to settle.
+		const finishedGameIds = new Set(finishedGames.map(game => game.id));
+		if (!tabRegistry.some(reg => finishedGameIds.has(reg.gameId))) return;
 
-		const allTabs = await browser.tabs.query({});
-		const activeTabId = await getActiveTabId();
 		const resolutions = resolveFinishedTabs({
 			registry: tabRegistry,
 			action: prefs.finishedTabAction,
-			finishedGameIds: new Set(finishedGames.map(game => game.id)),
-			openTabIds: new Set(allTabs.flatMap(tab => tab.id === undefined ? [] : [tab.id])),
-			activeTabId: activeTabId ?? null,
-			...describeOpenWindows(allTabs),
+			finishedGameIds,
+			openTabIds: tabIdsOf(tabs),
+			activeTabId: tabs.activeTabId ?? null,
+			...describeOpenWindows(tabs.allTabs),
 		});
 		if (resolutions.length === 0) return;
 
@@ -1033,34 +1059,50 @@ export default defineBackground(() => {
 			favoriteTeamIds,
 		)));
 		currentScores = scores;
-		if (changedLeagueId !== null) refreshSituations(freshGames);
 		updateHistory(freshGames);
 		updatePowerScoreHistory(liveGames, scores, changedLeagueId);
 		const pruned = pruneStaleHistory(now);
+
+		// One look at the tab strip serves the whole pass, and the switch goes ahead of the history
+		// write and the broadcast, which nothing on screen is waiting on.
+		const tabs = getManagedTabIds().length > 0 || mutedTabIds.size > 0 ? await readTabs() : undefined;
+		if (tabs) await settleFinishedTabs(finishedGames, tabs);
+		const switched = await evaluateSwitch({ liveGames, scores, freshGames, now, allowTabSwitch, tabs });
+
 		// A league poll with nothing live in it changed none of the history, so it has nothing to write.
 		if (changedLeagueId === null || freshGames.length > 0 || pruned) persistHistoryToSession();
-
-		await settleFinishedTabs(finishedGames);
-
 		broadcastScoresUpdated();
+		// A switch has already settled the mute state against the tab it landed on.
+		if (!switched) await syncManagedTabMuteState(prefs.enabled, tabs);
+	};
 
-		await syncManagedTabMuteState(prefs.enabled);
+	interface switchPass {
+		liveGames: Game[];
+		scores: LiveScore[];
+		freshGames: Game[];
+		now: number;
+		allowTabSwitch: boolean;
+		tabs: tabSnapshot | undefined;
+	}
 
+	// True when it switched tabs there and then; a held or delayed switch lands later, on its own timer.
+	const evaluateSwitch = async ({ liveGames, scores, freshGames, now, allowTabSwitch, tabs }: switchPass): Promise<boolean> => {
 		if (!allowTabSwitch || !prefs.enabled || liveGames.length === 0) {
 			if (!prefs.enabled || liveGames.length === 0) {
 				clearPendingSwitch();
 			}
-			return;
+			return false;
 		}
 
-		const activeTabId = await getActiveTabId();
-		if (activeTabId === undefined) return;
+		// No snapshot means nothing is registered, so there is nothing to switch between.
+		if (!tabs || tabs.activeTabId === undefined) return false;
+		const activeTabId = tabs.activeTabId;
 
-		const openTabIds = await getOpenTabIds();
+		const openTabIds = tabIdsOf(tabs);
 		const liveRegistry = tabRegistry.filter(reg => openTabIds.has(reg.tabId));
 		const registeredGameIds = new Set(liveRegistry.map(reg => reg.gameId));
 		const registeredScores = scores.filter(s => registeredGameIds.has(s.gameId));
-		if (registeredScores.length === 0) return;
+		if (registeredScores.length === 0) return false;
 
 		const standbyDecision = computeStandbyStreamDecision({
 			standbyStreamEnabled: prefs.standbyStreamEnabled,
@@ -1078,14 +1120,13 @@ export default defineBackground(() => {
 			// The same rule chooseSwitchTarget applies: a game picked by hand holds for the cooldown,
 			// quiet or not.
 			const inCooldown = prefs.cooldownSeconds > 0 && Date.now() - lastSwitchTime <= prefs.cooldownSeconds * 1000;
-			if (inCooldown) return;
+			if (inCooldown) return false;
 			onStandbyStream = true;
-			await executeSwitch(standbyStreamTabId!);
-			return;
+			return executeSwitch(standbyStreamTabId!);
 		}
 		if (standbyDecision === 'stayOnStandby') {
 			clearPendingSwitch();
-			return;
+			return false;
 		}
 		if (standbyDecision === 'resume') onStandbyStream = false;
 
@@ -1099,28 +1140,27 @@ export default defineBackground(() => {
 			});
 			if (verdict.release) releaseHeldSwitch(verdict.waitedFor);
 			else heldSwitch = verdict.held;
-			return;
+			return false;
 		}
-		if (pendingSwitch) return;
+		if (pendingSwitch) return false;
 
 		const target = resolveSwitchTarget(openTabIds, activeTabId);
-		if (!target) return;
+		if (!target) return false;
 
 		const leaving = prefs.contentAwareSwitching && !demoMode ? liveGames.find(g => g.id === watchedGameId) : undefined;
 		const held = leaving ? holdSwitch(target, leaving, commercialBreaks.get(leaving.id), now, liveGames.find(g => g.id === target.gameId)) : null;
 		if (held) {
 			heldSwitch = held;
 			heldSwitchTimer = setTimeout(() => releaseHeldSwitch(), held.holdUntil - now);
-			broadcastScoresUpdated();
 			await announceHold(held);
-			return;
+			return false;
 		}
 
 		if (prefs.switchDelaySeconds > 0) {
 			queuePendingSwitch(target.gameId, target.tabId, target.reason);
-		} else {
-			await executeSwitch(target.tabId, target.gameId, target.reason);
+			return false;
 		}
+		return executeSwitch(target.tabId, target.gameId, target.reason);
 	};
 
 	const tick = async (allowTabSwitch = true) => {
@@ -1143,7 +1183,7 @@ export default defineBackground(() => {
 				const fetchResult = await fetchFilteredGames(enabledLeagues, { includeUpcoming: false, includeFinal: wantsFinalGames() });
 				// Every league refused is not an empty slate, it is no answer at all. Replacing `games`
 				// from it would clear a live list and report a quiet night to the popup.
-				if (fetchResult.shedLeagues.length === enabledLeagues.length) {
+				if (enabledLeagues.length > 0 && fetchResult.shedLeagues.length === enabledLeagues.length) {
 					logError(`ESPN shed all ${enabledLeagues.length} leagues; keeping the previous games.`);
 					slateShedLeagues = fetchResult.shedLeagues;
 					return;
@@ -1262,24 +1302,42 @@ export default defineBackground(() => {
 				const ceiling = liveInHand ? nextInterval : Math.max(nextInterval, leagueHealthyIntervalMs.get(leagueId) ?? 0);
 				nextInterval = computeRetryDelayMs(failures, ceiling, randomInRange(-2_000, 2_000));
 			}
+			// A quiet league knows when its next game starts, and polls then rather than on its next beat.
+			if (fetchSucceeded && mode !== 'eager') {
+				const kickoff = kickoffDelayMs(games.filter(g => g.league === leagueId), Date.now());
+				if (kickoff !== null) nextInterval = Math.min(nextInterval, Math.max(kickoff, 1_000));
+			}
 			leagueNextIntervalMs.set(leagueId, nextInterval);
-			scheduleLeagueTick(leagueId, nextInterval);
+			// A league with no game inside a day is not worth starting a stopped worker for every half hour.
+			// It wakes the worker once its next game is a day out, and otherwise waits for whatever starts it.
+			const nextStartMs = pollModeTracker.getNextStartMs(leagueId);
+			const wakeAt = mode !== 'hebetudinous' ? Date.now() + nextInterval : typeof nextStartMs === 'number' ? nextStartMs - pollHebetudinousHorizonMs : null;
+			scheduleLeagueTick(leagueId, nextInterval, wakeAt);
 		}
 
+		await refreshSituations(games.filter(g => g.league === leagueId && g.status === 'in'));
 		await afterFetch(leagueId, allowTabSwitch, finishedGames);
 	};
 
-	const scheduleLeagueTick = (leagueId: LeagueId, delayMs: number) => {
+	// `wakeAt` is when a stopped worker should be started again for this league, or null for never.
+	const scheduleLeagueTick = (leagueId: LeagueId, delayMs: number, wakeAt: number | null = Date.now() + delayMs) => {
 		const existing = leagueTimers.get(leagueId);
 		if (existing !== undefined) clearTimeout(existing);
 		leagueTimers.set(leagueId, setTimeout(() => {
+			// The poll reschedules itself, which is when the next due time is known.
+			leagueWakeAt.delete(leagueId);
 			tickLeague(leagueId, true).catch(err => logWarn(`The ${leagueId} poll hit a snag.`, err));
 		}, delayMs));
+		if (wakeAt === null) leagueWakeAt.delete(leagueId);
+		else leagueWakeAt.set(leagueId, wakeAt);
+		refreshKeepAwake();
 	};
 
 	const stopLeaguePolling = () => {
 		for (const timer of leagueTimers.values()) clearTimeout(timer);
 		leagueTimers.clear();
+		leagueWakeAt.clear();
+		refreshKeepAwake();
 	};
 
 	// Spreads each league's first tick across pollIntervalMs so they never all fire at once.
@@ -1301,25 +1359,28 @@ export default defineBackground(() => {
 		return inFlightRefresh;
 	};
 
-	// Fetched after scoring and read on the next poll: the power play and empty net it reports last
-	// minutes, and a game past its blowout margin has no use for either. Only from the league's own
-	// poll, so the empty-net check counts polls rather than re-scores, and only the NHL: college
-	// hockey's situation carries neither flag. Basketball's carries the timeouts its cards show,
-	// blowout or not.
-	const refreshSituations = (freshGames: Game[]) => {
+	// Read inside the league's own poll and ahead of its scoring, so the power play and empty net it
+	// reports count on the poll that saw them, and the empty-net check counts polls rather than
+	// re-scores. Only the NHL among hockey: college hockey's situation carries neither flag, and a game
+	// past its blowout margin has no use for either. Basketball's carries the timeouts its cards show,
+	// blowout or not, and those only move with a play.
+	const refreshSituations = async (leagueGames: Game[]): Promise<void> => {
 		if (demoMode) return;
 		const blowoutMargin = sportTypeConfigMap.hockey?.closenessMargins[2] ?? 3;
-		const wanted = freshGames.filter(game => !isPlayFrozen(game) && (game.sportType === 'basketball'
+		const wanted = leagueGames.filter(game => !isPlayFrozen(game) && (
+			(game.sportType === 'basketball' && (game.lastPlayId === undefined || situationPlayIds.get(game.id) !== game.lastPlayId))
 			|| (game.league === 'nhl' && Math.abs(game.homeTeam.score - game.awayTeam.score) <= blowoutMargin)));
-		const replies = wanted.map(game => fetchCompetitionSituation(game)
-			.then(situation => liveExtras.ingestSituation(game.id, situation))
-			.catch((err: unknown) => {
-				logWarn(`Failed to fetch the situation for ${game.id}.`, err);
-				return false;
-			}));
-		void Promise.all(replies).then(moved => {
-			if (moved.includes(true)) broadcastScoresUpdated();
-		});
+		if (wanted.length === 0) return;
+		const replies = Promise.all(wanted.map(game => fetchCompetitionSituation(game)
+			.then(situation => {
+				liveExtras.ingestSituation(game.id, situation);
+				if (game.lastPlayId !== undefined) situationPlayIds.set(game.id, game.lastPlayId);
+			})
+			.catch((err: unknown) => logWarn(`Failed to fetch the situation for ${game.id}.`, err))));
+		// A slow reply still lands, and counts from the next poll, rather than holding up this one's switch.
+		let giveUp: ReturnType<typeof setTimeout> | undefined;
+		await Promise.race([replies, new Promise<void>(resolve => { giveUp = setTimeout(resolve, situationWaitMs); })]);
+		clearTimeout(giveUp);
 	};
 
 	// Standings move only when games end, so half an hour is plenty.
@@ -1344,6 +1405,8 @@ export default defineBackground(() => {
 		return !blowout || liveExtras.hasRosteredPlayer(game) || now - (summaryFetchedAt.get(game.id) ?? 0) >= blowoutSummaryIntervalMs;
 	};
 
+	const summaryMoved = (game: Game): boolean => game.lastPlayId === undefined || summaryPlayIds.get(game.id) !== game.lastPlayId;
+
 	// One request per game, so this deliberately runs far slower than the scoreboard poll — a
 	// win-probability line moves on the scale of possessions, not seconds.
 	const refreshWinProbabilities = async (): Promise<void> => {
@@ -1352,6 +1415,9 @@ export default defineBackground(() => {
 		const liveIds = new Set(liveGames.map(g => g.id));
 		for (const gameId of winProbHistory.keys()) {
 			if (!liveIds.has(gameId)) winProbHistory.delete(gameId);
+		}
+		for (const playIds of [situationPlayIds, summaryPlayIds]) {
+			for (const gameId of playIds.keys()) if (!liveIds.has(gameId)) playIds.delete(gameId);
 		}
 		// An empty slate after a failed fetch must not wipe the lines read back from storage.
 		if (games.length > 0) winProbTracker.retainOnly(liveIds);
@@ -1372,13 +1438,14 @@ export default defineBackground(() => {
 			hasSummaryLine: winProbHistory.has(game.id),
 			hasRosteredPlayer: liveExtras.hasRosteredPlayer(game),
 		});
-		await Promise.all(liveGames.filter(game => summaryNeeded(game) && summaryDue(game, now)).map(async game => {
+		await Promise.all(liveGames.filter(game => summaryNeeded(game) && summaryDue(game, now) && summaryMoved(game)).map(async game => {
 			summaryFetchedAt.set(game.id, now);
 			try {
 				const line = await fetchWinProbability(game, { onSummary: summary => liveExtras.ingestSummary(game, summary, Date.now()) });
 				// ESPN returns [] during delays and brief interruptions even when earlier play
 				// produced a line; keep the last good one rather than dropping the signal.
 				if (line.length > 0) {
+					if (game.lastPlayId !== undefined) summaryPlayIds.set(game.id, game.lastPlayId);
 					winProbHistory.set(game.id, line);
 					winProbTracker.adopt(game.id, line);
 				}
@@ -1458,6 +1525,7 @@ export default defineBackground(() => {
 				// Routed through refreshScores so a slow tick cannot overlap the next one.
 				demoTimer = setInterval(() => void refreshScores(true), pollIntervalMs);
 			}
+			refreshKeepAwake();
 			return;
 		}
 
@@ -1520,8 +1588,8 @@ export default defineBackground(() => {
 	};
 
 	// Another browser switched profiles. Its setup is already in the synced prefs, so this one moves too.
-	browser.storage.onChanged.addListener((changes, area) => {
-		if (area !== 'sync' || !(activeProfileSyncKey in changes)) return;
+	browser.storage.sync.onChanged.addListener(changes => {
+		if (!(activeProfileSyncKey in changes)) return;
 		void stateReady.then(async () => {
 			await followSyncedProfile();
 			const [stored, roster] = await Promise.all([loadStoredUserPreferences(), loadFantasyRoster().catch(() => [])]);
@@ -1596,6 +1664,8 @@ export default defineBackground(() => {
 					stopWinProbabilityPolling();
 					winProbHistory.clear();
 					winProbTracker.clear();
+					summaryPlayIds.clear();
+					situationPlayIds.clear();
 					if (!demoTimer) {
 						// Routed through refreshScores so a slow tick cannot overlap the next one.
 						demoTimer = setInterval(() => void refreshScores(true), pollIntervalMs);
@@ -1672,6 +1742,10 @@ export default defineBackground(() => {
 			});
 		}
 	});
+
+	// Nothing to do here: an alarm only fires on a worker that had stopped, and starting it again is
+	// the point. Startup picks the polls back up.
+	browser.alarms.onAlarm.addListener(() => {});
 
 	browser.commands.onCommand.addListener(command => {
 		if (command !== bossCommandName) return;

@@ -93,15 +93,19 @@ const App = () => {
 	// The guide is a long-lived tab and the popup is where settings change, so it follows the stored
 	// copy rather than only the one it read on load.
 	useEffect(() => {
-		const onStorageChanged = (changes: Record<string, unknown>, area: string) => {
-			if ((area !== 'local' && area !== 'sync') || !('prefs' in changes)) return;
+		const onPrefsChanged = (changes: Record<string, unknown>) => {
+			if (!('prefs' in changes)) return;
 			void loadStoredUserPreferences().then(storedPrefs => {
 				prefsRef.current = storedPrefs;
 				setPrefs(storedPrefs);
 			});
 		};
-		browser.storage.onChanged.addListener(onStorageChanged);
-		return () => browser.storage.onChanged.removeListener(onStorageChanged);
+		browser.storage.local.onChanged.addListener(onPrefsChanged);
+		browser.storage.sync.onChanged.addListener(onPrefsChanged);
+		return () => {
+			browser.storage.local.onChanged.removeListener(onPrefsChanged);
+			browser.storage.sync.onChanged.removeListener(onPrefsChanged);
+		};
 	}, []);
 
 	// The background already broadcasts on every poll, so the guide rides that rather than polling

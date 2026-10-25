@@ -1,4 +1,4 @@
-import { Menu } from 'bootstrap';
+import attachMenu from '../bootstrapMenu';
 import { useEffect, useRef } from 'react';
 import { i18n } from '#i18n';
 import type { profileEntry } from '../../../utils/profiles';
@@ -15,11 +15,11 @@ interface profileRowProps {
 
 const profileRow = ({ profile, active, disabled, onSwitch, onRename, onExport, onDelete }: profileRowProps) => {
 	const toggleRef = useRef<HTMLButtonElement>(null);
+	const menuRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		if (!toggleRef.current) return;
-		const menu = Menu.getOrCreateInstance(toggleRef.current, { placement: 'bottom-end' });
-		return () => menu.dispose();
+		if (!toggleRef.current || !menuRef.current) return;
+		return attachMenu(toggleRef.current, menuRef.current, { placement: 'bottom-end' });
 	}, []);
 
 	return (
@@ -49,7 +49,7 @@ const profileRow = ({ profile, active, disabled, onSwitch, onRename, onExport, o
 				>
 					<i className='bi bi-three-dots' aria-hidden='true' />
 				</button>
-				<div className='menu'>
+				<div ref={menuRef} className='menu'>
 					<button type='button' className='menu-item' onClick={onRename}>
 						<i className='bi bi-pencil' aria-hidden='true' />
 						{i18n.t('profiles.rename')}

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 // Type-only, so it is erased at build and does not drag Bootstrap into this module's graph.
-import type { Tooltip } from 'bootstrap';
+import type Tooltip from 'bootstrap/js/dist/tooltip.js';
 
 interface hoverTooltipProps {
 	text: string;
@@ -25,7 +25,7 @@ const HoverTooltip = ({ text, className, inert, children }: hoverTooltipProps) =
 		let instance: Tooltip | null = null;
 		let unmounted = false;
 
-		void import('bootstrap').then(({ Tooltip }) => {
+		void import('bootstrap/js/dist/tooltip.js').then(({ default: Tooltip }) => {
 			if (unmounted) return;
 			// The tip is parented to <body>, so it outlives this subtree and has to be torn down by
 			// hand. Without `animation: false` that teardown is deferred behind a CSS transition and

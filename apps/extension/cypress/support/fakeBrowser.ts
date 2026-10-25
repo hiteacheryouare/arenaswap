@@ -143,6 +143,7 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 		},
 		remove: (key: string) => { store.delete(key); return Promise.resolve(); },
 		clear: () => { store.clear(); return Promise.resolve(); },
+		onChanged: { addListener: () => {}, removeListener: () => {} },
 	});
 
 	const fake = {
@@ -161,7 +162,6 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 			},
 		},
 		storage: {
-			onChanged: { addListener: () => {}, removeListener: () => {} },
 			local:   area(background.storage.local),
 			session: area(background.storage.session),
 			sync:    area(background.storage.sync),

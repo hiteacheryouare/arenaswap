@@ -1,4 +1,4 @@
-import { Range } from 'bootstrap';
+import Range from 'bootstrap/js/dist/range.js';
 import { useLayoutEffect, useRef, type InputHTMLAttributes, type ReactNode } from 'react';
 
 interface formRangeProps extends InputHTMLAttributes<HTMLInputElement> {

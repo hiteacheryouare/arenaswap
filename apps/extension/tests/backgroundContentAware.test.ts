@@ -10,6 +10,7 @@ jest.mock('@arenaswap/sideline', () => ({
 	fetchGamesWithLeagueLogos: jest.fn(),
 	fetchNextScheduledStart: jest.fn().mockResolvedValue(null),
 	fetchWinProbability: jest.fn().mockResolvedValue([]),
+	fetchCompetitionSituation: jest.fn().mockResolvedValue({}),
 	fetchTeamMonoLogos: jest.fn().mockResolvedValue({}),
 }));
 
@@ -75,11 +76,12 @@ const startWorker = async (prefs: Partial<UserPreferences>, whistleAt?: number) 
 	(globalThis as { browser?: unknown }).browser = {
 		storage: {
 			onChanged: { addListener: () => {} },
-			sync: store({ prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...prefs }) }),
+			sync: { ...store({ prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...prefs }) }), onChanged: { addListener: () => {} } },
 			session: store({ tabRegistry: registry }),
 			local: store({ demoMode: false }),
 		},
 		runtime: {
+			getPlatformInfo: jest.fn().mockResolvedValue({}),
 			sendMessage: runtimeSend,
 			onMessage: { addListener: (h: (msg: unknown) => unknown) => { onMessageHandler = h; } },
 		},
@@ -97,6 +99,7 @@ const startWorker = async (prefs: Partial<UserPreferences>, whistleAt?: number) 
 			getLastFocused: jest.fn().mockResolvedValue({ id: 1, state: 'normal' }),
 		},
 		commands: { onCommand: { addListener: () => {} } },
+		alarms: { create: jest.fn(), clear: jest.fn(), onAlarm: { addListener: () => {} } },
 		notifications: { create: notify, clear: clearNotice },
 		i18n: { getUILanguage: () => 'en' },
 	};

@@ -437,11 +437,11 @@ export default () => {
 	const followRemoteSwitchRef = useRef(() => {});
 	followRemoteSwitchRef.current = () => { void runProfileChange(followSyncedProfile); };
 	useEffect(() => {
-		const onStorageChanged = (changes: Record<string, unknown>, area: string) => {
-			if (area === 'sync' && activeProfileSyncKey in changes) followRemoteSwitchRef.current();
+		const onSyncChanged = (changes: Record<string, unknown>) => {
+			if (activeProfileSyncKey in changes) followRemoteSwitchRef.current();
 		};
-		browser.storage.onChanged.addListener(onStorageChanged);
-		return () => browser.storage.onChanged.removeListener(onStorageChanged);
+		browser.storage.sync.onChanged.addListener(onSyncChanged);
+		return () => browser.storage.sync.onChanged.removeListener(onSyncChanged);
 	}, []);
 
 	const onFreshProfileComplete = (leagues: LeagueId[], favorites: string[]) => {

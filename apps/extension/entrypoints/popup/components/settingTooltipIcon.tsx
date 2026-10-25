@@ -1,4 +1,4 @@
-import { Tooltip } from 'bootstrap';
+import Tooltip from 'bootstrap/js/dist/tooltip.js';
 import { useEffect, useRef } from 'react';
 import { i18n } from '#i18n';
 
