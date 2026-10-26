@@ -13,4 +13,6 @@ metadata:
 
 Also: `z.optional()` means "may be absent", not "may be null" — a `null` score fails the competitor even though the reader (`parseInt(score ?? '0')`) was written to cope with a missing one.
 
+**Update 2026-10-24:** the fully-drifted case is fixed (league is now shed). A new unknown `status.type.state` still folds to `post` and vanishes silently. See [[audit-20261024]].
+
 Related: [[feedback-coverage-setup]]
