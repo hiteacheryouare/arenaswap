@@ -50,6 +50,20 @@ const settleOverflow = (wrapper: HTMLElement) => {
 	}
 };
 
+// A folded tab has no box, so its underline goes under the menu button holding it.
+const placeUnderline = (wrapper: HTMLElement, list: HTMLElement) => {
+	const tab = list.querySelector<HTMLElement>(':scope > .nav-item > .nav-link.active');
+	const holder = tab && !tab.offsetParent ? wrapper.querySelector<HTMLElement>('.nav-overflow-toggle') : tab;
+	if (!holder?.offsetParent) {
+		list.style.removeProperty('--gd-tab-width');
+		return;
+	}
+	const strip = list.getBoundingClientRect();
+	const box = holder.getBoundingClientRect();
+	list.style.setProperty('--gd-tab-x', `${box.left - strip.left}px`);
+	list.style.setProperty('--gd-tab-width', `${box.width}px`);
+};
+
 const detailTabs = ({ tabs, tabId, paneId }: detailTabsProps) => {
 	const wrapperRef = useRef<HTMLDivElement>(null);
 	const listRef = useRef<HTMLUListElement>(null);
@@ -66,7 +80,10 @@ const detailTabs = ({ tabs, tabId, paneId }: detailTabsProps) => {
 		toggle?.setAttribute('aria-label', i18n.t('detail.moreTabs'));
 		toggle?.closest('.nav-item')?.setAttribute('role', 'presentation');
 
-		const settle = () => settleOverflow(wrapper);
+		const settle = () => {
+			settleOverflow(wrapper);
+			placeUnderline(wrapper, list);
+		};
 		// Observers are called in the order they were made, so this runs after each of the
 		// component's own passes.
 		const observer = new ResizeObserver(settle);
@@ -87,8 +104,13 @@ const detailTabs = ({ tabs, tabId, paneId }: detailTabsProps) => {
 		wrapper.addEventListener('click', pick);
 		wrapper.addEventListener('shown.bs.tab', refresh);
 		settle();
+		// Placed before the first paint without travelling there.
+		const ready = requestAnimationFrame(() => {
+			list.dataset.underline = 'ready';
+		});
 
 		return () => {
+			cancelAnimationFrame(ready);
 			observer.disconnect();
 			wrapper.removeEventListener('click', pick);
 			wrapper.removeEventListener('shown.bs.tab', refresh);

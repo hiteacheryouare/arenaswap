@@ -19,7 +19,7 @@ const toastContainer = ({ toasts, onDismiss }: toastContainerProps) => {
 			{toasts.map(toast => {
 				const { icon, label } = variantConfig[toast.variant] ?? variantConfig['info']!;
 				return (
-					<div key={toast.id} className='toast show toast-slide-up' role='alert' aria-live='assertive' aria-atomic='true'>
+					<div key={toast.id} className={`toast show toast-slide-up${toast.leaving ? ' is-leaving' : ''}`} role='alert' aria-live='assertive' aria-atomic='true'>
 						<div className='toast-header'>
 							<i className={`bi ${icon} me-3`} />
 							<strong className='me-auto'>{label}</strong>

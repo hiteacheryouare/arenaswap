@@ -213,6 +213,32 @@ describe('setupView navigation', () => {
 	});
 });
 
+const shown = () => cy.get('.popup-container');
+
+describe('setupView page motion', () => {
+	it('opens on the index in place, then slides each page in from the side it heads towards', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		shown().should('not.have.class', 'popup-slide-in');
+		openGroup('display');
+		shown().should('have.class', 'popup-slide-in').and('not.have.class', 'is-returning');
+		cy.get('button.setup-header').click();
+		shown().should('have.class', 'is-returning').and('have.css', 'animation-name', 'popupViewSlideIn');
+		shown().then(([page]) => {
+			expect(getComputedStyle(page!).getPropertyValue('--popup-slide-from').trim()).to.equal('-14px');
+		});
+	});
+
+	it('comes back from a college league picker towards its page, not the index', () => {
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, enabledLeagues: ['ncaab'] }} />);
+		openGroup('leagues');
+		cy.get('.college-league-open').first().click();
+		shown().should('not.have.class', 'is-returning');
+		cy.get('button.setup-header').click();
+		cy.get('.league-toggle-row').should('exist');
+		shown().should('have.class', 'is-returning');
+	});
+});
+
 describe('setupView search', () => {
 	it('lands on the setting a result names, not the top of its page', () => {
 		cy.mount(<SetupView {...defaultProps} />);

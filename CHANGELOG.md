@@ -9,6 +9,10 @@
 
 The background worker now stays up while a poll is due within five minutes (a `getPlatformInfo` heartbeat, which Chrome 110+ and Firefox 121+ count, so Firefox's floor is now 121) and sleeps on an `alarms` alarm otherwise, so a game going live is no longer missed until a tab event, and a quiet league polls at its next game's listed start; a fresh install with no leagues no longer logs every league as refusing. Each league poll now reads situations before it scores, waiting at most 2 s, skips situations and summaries when no new play has happened, switches before it saves history or broadcasts, and looks at the tab strip once. The popup's dropdown menus no longer leak the whole list on every view change (Bootstrap 6 alpha's `Menu.dispose` leaves its submenu handlers behind), storage listeners only hear the area they read, and Bootstrap's JS is imported a component at a time, 122 KB off the popup.
 
+## Motion where the popup used to jump — 2026-10-24
+
+Going back now slides in from the left, in the main views, the settings pages and the Up Next day pager, all driven by `useSlideDirection` in the popup. Toasts slide away, notices above the list fold in and out (unless they land with the list), the detail tabs share one underline that travels between them, base runners and count dots fade between states, and the card's PowerScore counts to each new value with `useCountTo`. `.popup-container` is now `overflow-x: hidden` so a sideways slide inside it can never make the popup scroll sideways.
+
 ## Switching modes back leaves no stale signal keys — 2026-10-23
 
 The Signals chart's key and bars now follow the mode of the game's newest reading, so turning Blowouts on and back off no longer leaves Margin, Lead held, Early rout and Piling on in the key. Readings from the other mode stay on the time axis as empty bars, and they fill back in if you switch back to that mode.

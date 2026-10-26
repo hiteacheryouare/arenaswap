@@ -898,6 +898,51 @@
 		}
 	}
 
+	// The notice's margin moves onto the wrapper so it folds away with the height.
+	.notice-reveal {
+		display:            grid;
+		grid-template-rows: 1fr;
+		margin-bottom:      0.5rem;
+
+		> .notice-reveal-body {
+			min-height: 0;
+
+			> .alert.popup-notice { margin-bottom: 0; }
+		}
+
+		&.is-entering { animation: noticeFoldIn m.$motion-base m.$motion-ease; }
+		&.is-leaving  { animation: noticeFoldOut m.$motion-base m.$motion-ease-in forwards; }
+
+		&.is-entering,
+		&.is-leaving {
+			> .notice-reveal-body { overflow: hidden; }
+		}
+
+		@include m.reduced-motion {
+			&.is-entering { animation-name: noticeFadeIn; }
+			&.is-leaving  { animation-name: noticeFadeOut; }
+		}
+	}
+
+	// The content is gone before the fold reaches it, and arrives once there is room for it.
+	@keyframes noticeFoldIn {
+		from { grid-template-rows: 0fr; margin-bottom: 0; opacity: 0; }
+		50%  { opacity: 0; }
+	}
+
+	@keyframes noticeFoldOut {
+		50% { opacity: 0; }
+		to  { grid-template-rows: 0fr; margin-bottom: 0; opacity: 0; }
+	}
+
+	@keyframes noticeFadeIn {
+		from { opacity: 0; }
+	}
+
+	@keyframes noticeFadeOut {
+		to { opacity: 0; }
+	}
+
 	.popup-notice-title {
 		font-size: 0.78rem;
 	}
@@ -1958,6 +2003,28 @@
 		// The rule the underline is drawn against, so an unselected tab reads as sitting on the same
 		// line rather than floating above nothing.
 		border-bottom: 1px solid var(--as-border-color);
+		position:      relative;
+
+		// One bar that travels to the open tab, placed by `detailTabs.tsx`, in place of each tab's border.
+		&::after {
+			content:        '';
+			position:       absolute;
+			left:           0;
+			bottom:         -1px;
+			width:          var(--gd-tab-width, 0);
+			height:         var(--as-nav-underline-border-width);
+			background:     var(--as-nav-underline-link-active-color);
+			transform:      translateX(var(--gd-tab-x, 0));
+			pointer-events: none;
+		}
+
+		&[data-underline='ready']::after {
+			transition: transform m.$motion-base m.$motion-ease, width m.$motion-base m.$motion-ease;
+
+			@include m.reduced-motion { transition: none; }
+		}
+
+		.nav-link.active { border-block-end-color: transparent; }
 
 		// Three labels across 320px read as one control when they divide the width evenly, and the
 		// underline then measures the tab rather than the word inside it. Not while the overflow is
@@ -1972,7 +2039,7 @@
 		&:has(> [data-bs-nav-overflow] > .active) .nav-overflow-toggle {
 			font-weight:         var(--as-font-weight-bold);
 			color:               var(--as-nav-underline-link-active-color);
-			border-bottom-color: currentcolor;
+			border-bottom-color: transparent;
 		}
 
 		.nav-overflow-icon svg {
@@ -2932,12 +2999,26 @@
 		to   { opacity: 1; transform: translateY(0); }
 	}
 
+	@keyframes toastSlideAway {
+		to { opacity: 0; transform: translateY(6px); }
+	}
+
+	@keyframes toastFadeAway {
+		to { opacity: 0; }
+	}
+
 	.toast-slide-up {
 		animation: toastSlideUp m.$motion-base m.$motion-ease forwards;
+
+		&.is-leaving {
+			animation: toastSlideAway m.$motion-quick m.$motion-ease-in forwards;
+			pointer-events: none;
+		}
 	}
 
 	@include m.reduced-motion {
 		.toast-slide-up { animation: none; }
+		.toast-slide-up.is-leaving { animation: toastFadeAway m.$motion-quick m.$motion-ease-in forwards; }
 	}
 
 	.popup-debug-panel {

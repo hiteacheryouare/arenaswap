@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
 import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 import { i18n } from '#i18n';
@@ -75,6 +76,46 @@ describe('liveGameCard PowerScore bar', () => {
 	it('displays total and max score', () => {
 		cy.mount(<LiveGameCard {...defaultProps} />);
 		cy.contains('42 / 100').should('exist');
+	});
+});
+
+// `rerender` mounts afresh, so the new score is pushed from inside the tree.
+const ScoreHarness = () => {
+	const [total, setTotal] = useState(42);
+	return (
+		<>
+			<button type='button' onClick={() => setTotal(82)}>Push</button>
+			<LiveGameCard {...defaultProps} excitementResult={{ ...baseResult, total }} />
+		</>
+	);
+};
+
+const sampleScore = () => new Cypress.Promise<number[]>(resolve => {
+	const seen: number[] = [];
+	const started = performance.now();
+	const sample = () => {
+		seen.push(parseInt(document.querySelector('.game-card-ps-score')!.textContent!, 10));
+		if (performance.now() - started < 700) requestAnimationFrame(sample);
+		else resolve(seen);
+	};
+	requestAnimationFrame(sample);
+});
+
+describe('liveGameCard PowerScore count', () => {
+	it('shows the score it opens on without counting up to it', () => {
+		cy.mount(<LiveGameCard {...defaultProps} />);
+		cy.get('.game-card-ps-score').should('have.text', '42 / 100');
+	});
+
+	it('counts through the numbers between a score and the next one', () => {
+		cy.mount(<ScoreHarness />);
+		cy.contains('button', 'Push').click();
+		cy.then(sampleScore).then(values => {
+			expect(values.some(value => value > 42 && value < 82), values.join()).to.equal(true);
+			expect(values.toSorted((a, b) => a - b), 'never runs backwards').to.deep.equal(values);
+			expect(values.at(-1)).to.equal(82);
+		});
+		cy.get('[role="progressbar"]').should('have.attr', 'aria-valuenow', '82');
 	});
 });
 

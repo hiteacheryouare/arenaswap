@@ -34,6 +34,7 @@ import type { demoSeason } from '../../../utils/holidayDecorations';
 import type { profileList } from '../../../utils/profiles';
 import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
 import { changedFantasyRuleCount } from '../../../utils/scoringPrefs';
+import useSlideDirection, { slideClassName } from '../useSlideDirection';
 
 // Both pages pull in code nothing else in the popup needs, so they load when opened.
 const FantasyRosterPage = lazy(() => import('./fantasyRosterPage'));
@@ -140,6 +141,8 @@ const setupView = ({
 	const subPageScrollTop = useRef<number | null>(null);
 	const [query, setQuery] = useState('');
 	const [showStandbyGuide, setShowStandbyGuide] = useState(false);
+	const onSubPage = (page === 'scoring' && scoringPage !== null) || (page === 'leagues' && collegeLeague !== null);
+	const slide = slideClassName(useSlideDirection(onSubPage ? 2 : page ? 1 : 0));
 
 	const modes = modesInUse(prefs);
 	const fantasyInUse = modes.includes('fantasy');
@@ -629,7 +632,7 @@ const setupView = ({
 	if (page === 'scoring' && scoringPage) {
 		const isRoster = scoringPage === 'roster';
 		return (
-			<div ref={pageRef} className={`popup-container${isRoster ? ' d-flex flex-column' : ''}`}>
+			<div key={`scoring-${scoringPage}`} ref={pageRef} className={`popup-container${isRoster ? ' d-flex flex-column' : ''}${slide}`}>
 				<button type='button' className='setup-header' onClick={() => setScoringPage(null)}>
 					<i className='bi bi-arrow-left' />
 					{isRoster ? i18n.t('setup.fantasyRoster') : i18n.t('setup.fantasyRules')}
@@ -654,7 +657,7 @@ const setupView = ({
 	if (page === 'leagues' && collegeLeague) {
 		const league = { ...leagueConfigMap[collegeLeague], id: collegeLeague };
 		return (
-			<div className='popup-container'>
+			<div key={`college-${collegeLeague}`} className={`popup-container${slide}`}>
 				<button type='button' className='setup-header' onClick={() => setCollegeLeague(null)}>
 					<i className='bi bi-arrow-left' />
 					{league.label}
@@ -676,7 +679,7 @@ const setupView = ({
 		// that has to keep its own search box in view, so it takes the column and scrolls inside it.
 		const scrollsWithin = page === 'favorites';
 		return (
-			<div ref={pageRef} className={`popup-container${scrollsWithin ? ' d-flex flex-column' : ''}`}>
+			<div key={page} ref={pageRef} className={`popup-container${scrollsWithin ? ' d-flex flex-column' : ''}${slide}`}>
 				<button type='button' className='setup-header' onClick={() => setPage(null)}>
 					<i className='bi bi-arrow-left' />
 					{group ? i18n.t(group.labelKey) : i18n.t('setup.header')}
@@ -687,7 +690,7 @@ const setupView = ({
 	}
 
 	return (
-		<div className='popup-container'>
+		<div key='index' className={`popup-container${slide}`}>
 			<button type='button' className='setup-header' onClick={onClose}>
 				<i className='bi bi-arrow-left' />
 				{i18n.t('setup.header')}

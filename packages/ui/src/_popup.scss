@@ -14,7 +14,7 @@
 	@keyframes popupViewSlideIn {
 		from {
 			opacity: 0;
-			transform: translateX(14px);
+			transform: translateX(var(--popup-slide-from, 14px));
 		}
 		to {
 			opacity: 1;
@@ -34,11 +34,25 @@
 	.popup-view-shell {
 		width: 100%;
 		height: 100%;
-		animation: popupViewSlideIn m.$motion-base m.$motion-ease;
 
 		// The view the popup opens on is where it starts, not somewhere it went, so it arrives in place.
 		&.is-opening-view {
 			animation: none;
+		}
+	}
+
+	.popup-view-shell,
+	.popup-slide-in {
+		animation: popupViewSlideIn m.$motion-base m.$motion-ease;
+
+		&.is-returning {
+			--popup-slide-from: -14px;
+		}
+
+		@include m.reduced-motion {
+			--popup-slide-from: 0px;
+
+			&.is-returning { --popup-slide-from: 0px; }
 		}
 	}
 
@@ -117,6 +131,7 @@
 		padding: 0.75rem;
 		background: var(--as-bg-body);
 		color: var(--as-fg-body);
+		overflow-x: hidden;
 		overflow-y: auto;
 	}
 

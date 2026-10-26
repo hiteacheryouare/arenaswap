@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode, RefObject } from 'react';
 import { i18n } from '#i18n';
 import type { Browser } from 'wxt/browser';
@@ -20,6 +20,7 @@ import PopupFooter from './popupFooter';
 import ProTip from './proTip';
 import EmptyGameState from './emptyGameState';
 import GameListHeader from './gameListHeader';
+import NoticeReveal from './noticeReveal';
 import ReviewPromptBanner from './reviewPromptBanner';
 import SuggestBanner from './suggestBanner';
 import UpcomingDayPager from './upcomingDayPager';
@@ -27,6 +28,7 @@ import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
 import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import useReorderGlide from '@arenaswap/ui/src/components/useReorderGlide';
+import useSlideDirection, { slideClassName } from '../useSlideDirection';
 import { buildFinalComparator, buildLeagueRank, buildLiveComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, resolveSelectedDayIndex } from '../popupHelpers';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import useRestoredScroll from '../useRestoredScroll';
@@ -54,6 +56,8 @@ interface gameSectionProps {
 	weatherPrefs: WeatherDisplayPrefs;
 	reveal: cardRevealPlan;
 	afterTitle?: ReactNode;
+	bodyKey?: string;
+	bodyClassName?: string;
 	dayNamedAbove?: boolean;
 	first?: boolean;
 }
@@ -114,6 +118,8 @@ const gameSection = ({
 	weatherPrefs,
 	reveal,
 	afterTitle,
+	bodyKey,
+	bodyClassName,
 	dayNamedAbove,
 	first,
 }: gameSectionProps) => {
@@ -152,14 +158,16 @@ const gameSection = ({
 		<div className='mt-3'>
 			<PopupSectionTitle first={first}>{title}</PopupSectionTitle>
 			{afterTitle}
-			{grouped
-				? groupByLeague(games).map(({ league, games: leagueGames }) => (
-					<div key={league}>
-						<LeagueSectionHeader league={league} logos={leagueLogos} />
-						{leagueGames.map(card)}
-					</div>
-				))
-				: games.map(card)}
+			<div key={bodyKey} className={bodyClassName}>
+				{grouped
+					? groupByLeague(games).map(({ league, games: leagueGames }) => (
+						<div key={league}>
+							<LeagueSectionHeader league={league} logos={leagueLogos} />
+							{leagueGames.map(card)}
+						</div>
+					))
+					: games.map(card)}
+			</div>
 		</div>
 	);
 };
@@ -252,6 +260,11 @@ const mainView = ({
 	const upcomingDays = useMemo(() => groupByDate(upcomingGames, locale), [upcomingGames, locale]);
 	const selectedDayIndex = resolveSelectedDayIndex(upcomingDays, selectedDayKey);
 	const selectedDay = upcomingDays[selectedDayIndex];
+	const daySlide = slideClassName(useSlideDirection(selectedDayIndex));
+	const [listShown, setListShown] = useState(!isLoading);
+	useEffect(() => {
+		if (!isLoading) setListShown(true);
+	}, [isLoading]);
 	const registeredGameIds = useMemo(() => new Set(registry.map(r => r.gameId)), [registry]);
 	const assignedLiveGames = useMemo(
 		() => liveGames.filter(g => registeredGameIds.has(g.id)).toSorted(sortGames),
@@ -323,34 +336,36 @@ const mainView = ({
 
 			<GameListHeader isLoading={isLoading} hasError={hasError} loadingMessage={loadingMessage} onRefresh={onRefresh} />
 
-			{suggestionCount > 0 && (
+			<NoticeReveal show={suggestionCount > 0} animate={listShown}>
 				<SuggestBanner
 					count={suggestionCount}
 					onReview={onReviewSuggestions}
 					onDismiss={onDismissSuggestions}
 				/>
-			)}
+			</NoticeReveal>
 			{/* The only banner here whose condition does not come from the fetch: eligibility is read
 			    out of storage.local and lands well before the slate does. The other two self-suppress
 			    because their inputs are empty until `data` arrives, so this one states the gate. It also
 			    waits its turn behind the suggest banner, so two notices never stack above the first game. */}
-			{!isLoading && !hasError && showReviewPrompt && suggestionCount === 0 && (
+			<NoticeReveal show={!isLoading && !hasError && showReviewPrompt && suggestionCount === 0} animate={listShown}>
 				<ReviewPromptBanner onDismiss={onDismissReviewPrompt} onLeaveReview={onLeaveReview} />
-			)}
+			</NoticeReveal>
 
-			{onStandbyStream && (
+			<NoticeReveal show={onStandbyStream} animate={listShown}>
 				<div className='alert popup-notice d-flex align-items-center gap-3' role='status' data-testid='standby-banner'>
 					<i className='bi bi-broadcast popup-notice-icon' aria-hidden='true' />
 					<span>{i18n.t('main.onStandbyStream')}</span>
 				</div>
-			)}
+			</NoticeReveal>
 
-			{heldGame && heldSwitch && (
-				<div className='alert popup-notice d-flex align-items-center gap-3' role='status' data-testid='held-switch-banner'>
-					<i className='bi bi-pause-circle popup-notice-icon' aria-hidden='true' />
-					<span>{i18n.t(`main.heldSwitch.${heldSwitch.sport}`, { game: matchupLabel(heldGame) })}</span>
-				</div>
-			)}
+			<NoticeReveal show={Boolean(heldGame && heldSwitch)} animate={listShown}>
+				{heldGame && heldSwitch && (
+					<div className='alert popup-notice d-flex align-items-center gap-3' role='status' data-testid='held-switch-banner'>
+						<i className='bi bi-pause-circle popup-notice-icon' aria-hidden='true' />
+						<span>{i18n.t(`main.heldSwitch.${heldSwitch.sport}`, { game: matchupLabel(heldGame) })}</span>
+					</div>
+				)}
+			</NoticeReveal>
 
 			<EmptyGameState
 				noLeaguesSelected={!isLoading && noLeaguesSelected}
@@ -380,6 +395,8 @@ const mainView = ({
 				weatherPrefs,
 				reveal,
 				dayNamedAbove: true,
+				bodyKey: selectedDay.key,
+				bodyClassName: daySlide,
 				afterTitle: (
 					<UpcomingDayPager
 						dayLabel={selectedDay.dateLabel}

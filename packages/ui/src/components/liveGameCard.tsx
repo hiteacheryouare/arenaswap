@@ -12,6 +12,7 @@ import InningHalfIcon from './inningHalfIcon';
 import type { GameCardDisplayProps } from './gameCardTypes';
 import { buildCardShellProps, buildGameCardSurface, CardDetailsButton, CardStatusRow, formatBreak, formatGameClock, formatPeriod, GameMeta, SeasonLabel, powerScoreColor, TeamColumn } from './gameCardShared';
 import { useT } from './i18nContext';
+import useCountTo from './useCountTo';
 import { StaleLeagueNote } from './staleLeagueNote';
 import useSwitchCrest from './useSwitchCrest';
 import { timeoutAllotment } from './timeoutDots';
@@ -19,6 +20,7 @@ import { timeoutAllotment } from './timeoutDots';
 const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, bettingPrefs, tabSlot, leagueSlot, interactive = true }: GameCardDisplayProps) => {
 	const t = useT();
 	useSwitchCrest(game?.awayTeam ?? {}, game?.homeTeam ?? {});
+	const shownPowerScore = useCountTo(excitementResult?.total ?? 0);
 	if (!game) return null;
 
 	const isOt = game.period > (leagueConfigMap[game.league]?.regularPeriods ?? 4);
@@ -133,7 +135,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 						/>
 					</div>
 					<span className='game-card-ps-score'>
-						{totalPowerScore} / {scoreMaxTotal}
+						{shownPowerScore} / {scoreMaxTotal}
 					</span>
 				</div>
 			)}

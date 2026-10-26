@@ -19,6 +19,27 @@ const englishLabels = [en.detail.tabOverview, en.detail.tabMatchup, en.box.headi
 // Longer than any locale ships today, so the strip has to fold whatever the translations do next.
 const longLabels = ['Spielübersicht', 'Direktvergleich', 'Spielstatistiken', 'Tabellenstände'];
 
+// The underline is the strip's ::after, so its box is read off its computed style.
+const underlineBox = (strip: HTMLElement) => {
+	const style = getComputedStyle(strip, '::after');
+	const rect = strip.getBoundingClientRect();
+	return {
+		left: rect.left + new DOMMatrixReadOnly(style.transform).m41,
+		width: parseFloat(style.width),
+		bottom: rect.bottom,
+		height: parseFloat(style.height),
+	};
+};
+
+const expectUnderlineUnder = (strip: HTMLElement, holder: Element) => {
+	const line = underlineBox(strip);
+	const box = holder.getBoundingClientRect();
+	expect(line.left, 'left edge').to.be.closeTo(box.left, 0.5);
+	expect(line.width, 'width').to.be.closeTo(box.width, 0.5);
+	expect(line.bottom, 'sits where the tab border did').to.be.closeTo(box.bottom, 0.5);
+	expect(line.height, 'thickness').to.be.greaterThan(1);
+};
+
 describe('the detail tab strip under Bootstrap nav overflow', () => {
 	it('keeps every tab in the strip, at equal widths, when the labels fit', () => {
 		mountStrip(englishLabels);
@@ -53,5 +74,29 @@ describe('the detail tab strip under Bootstrap nav overflow', () => {
 		mountStrip(longLabels);
 		cy.get('.gd-tabs [role="tab"]:visible').last().focus().trigger('keydown', { key: 'ArrowRight' });
 		cy.get('#tab-overview').should('have.class', 'active').and('have.focus');
+	});
+
+	it('draws one underline under the open tab, on the line its own border used to sit on', () => {
+		mountStrip(englishLabels);
+		cy.get('.gd-tabs').should(([strip]) => expectUnderlineUnder(strip!, strip!.querySelector('#tab-overview')!));
+		cy.get('#tab-overview').should('have.css', 'border-bottom-color', 'rgba(0, 0, 0, 0)');
+	});
+
+	it('slides the underline to the tab that was picked', () => {
+		mountStrip(englishLabels);
+		cy.get('.gd-tabs').should('have.attr', 'data-underline', 'ready');
+		cy.get('.gd-tabs').then(([strip]) => {
+			expect(getComputedStyle(strip!, '::after').transitionProperty).to.contain('transform');
+		});
+		cy.get('#tab-box').click();
+		cy.get('.gd-tabs').should(([strip]) => expectUnderlineUnder(strip!, strip!.querySelector('#tab-box')!));
+	});
+
+	it('puts the underline under the menu button while a folded tab is open', () => {
+		mountStrip(longLabels);
+		cy.get('.nav-overflow-toggle').click();
+		cy.get('.nav-overflow-menu .menu-item').last().click();
+		cy.get('.gd-tabs').should(([strip]) => expectUnderlineUnder(strip!, strip!.querySelector('.nav-overflow-toggle')!));
+		cy.get('.nav-overflow-toggle').should('have.css', 'border-bottom-color', 'rgba(0, 0, 0, 0)');
 	});
 });

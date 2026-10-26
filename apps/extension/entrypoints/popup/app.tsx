@@ -19,6 +19,7 @@ import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
 import { resolveOpenRevealMode, revealSettleMs, revealSkipOutMs, writeOpenRevealEnabled } from './cardReveal';
 import { isLeagueLogoCacheFresh, leagueLogoCacheKey, seededLeagueLogos } from './leagueLogoCache';
 import useToast from './useToast';
+import useSlideDirection from './useSlideDirection';
 import useBossShortcut from './useBossShortcut';
 import SuggestView from './components/suggestView';
 import {
@@ -86,6 +87,7 @@ export default () => {
 	const [view, setView] = useState<popupView>('main');
 	const [navigated, setNavigated] = useState(false);
 	if (!navigated && view !== 'main') setNavigated(true);
+	const viewSlide = useSlideDirection(view === 'main' ? 0 : 1);
 	const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
 	// Held here rather than inside MainView: the view shell is keyed on `view`, so anything the main
 	// view owns itself is thrown away the moment you open a game, a setting or the suggestion sheet.
@@ -640,7 +642,7 @@ export default () => {
 		<div className='popup-root'>
 			<canvas ref={confettiCanvasRef} className='popup-confetti-canvas' aria-hidden='true' />
 			<ToastContainer toasts={toasts} onDismiss={dismissToast} />
-			<div key={view} className={`popup-view-shell${navigated ? '' : ' is-opening-view'}`}>
+			<div key={view} className={`popup-view-shell${navigated ? '' : ' is-opening-view'}${viewSlide === 'back' ? ' is-returning' : ''}`}>
 				{view === 'setup' && (
 					<SetupView
 						prefs={prefs}
