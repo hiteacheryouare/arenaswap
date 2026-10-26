@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## "Ludicrous speed…" winds up before GO — 2026-10-25
+
+The Ludicrous Speed announcement drops its throbbing neon glow: the words slam down plain, the dots land one at a time, and the bridge lights its pilot lamps in a sweep and rattles harder until GO. The windup is its own phase in the script. In the cockpit the slam scales around the box's top-left corner, because `scale` wraps the centring `transform`.
+
 ## The worker stops falling asleep mid-slate — 2026-10-24
 
 The background worker now stays up while a poll is due within five minutes (a `getPlatformInfo` heartbeat, which Chrome 110+ and Firefox 121+ count, so Firefox's floor is now 121) and sleeps on an `alarms` alarm otherwise, so a game going live is no longer missed until a tab event, and a quiet league polls at its next game's listed start; a fresh install with no leagues no longer logs every league as refusing. Each league poll now reads situations before it scores, waiting at most 2 s, skips situations and summaries when no new play has happened, switches before it saves history or broadcasts, and looks at the tab strip once. The popup's dropdown menus no longer leak the whole list on every view change (Bootstrap 6 alpha's `Menu.dispose` leaves its submenu handlers behind), storage listeners only hear the area they read, and Bootstrap's JS is imported a component at a time, 122 KB off the popup.

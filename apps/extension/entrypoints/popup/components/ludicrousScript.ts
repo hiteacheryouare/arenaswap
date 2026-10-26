@@ -2,6 +2,7 @@ import { i18n } from '#i18n';
 
 export type Phase =
 	| 'prelaunch'
+	| 'windup'
 	| 'cruising'
 	| 'lightspeed'
 	| 'ridiculous'
@@ -60,7 +61,7 @@ export const buildScript = (): Beat[] => [
 	line(i18n.t('ludicrousSpeed.prelaunch.l11'), 1200, 'dialogue prelaunch'),
 	line(i18n.t('ludicrousSpeed.prelaunch.l12'), 1100, 'dialogue prelaunch'),
 
-	{ ms: 1500, display: { text: i18n.t('ludicrousSpeed.announce'), cls: 'announce' } },
+	{ ms: 1500, phase: 'windup', speed: 0.25, display: { text: i18n.t('ludicrousSpeed.announce'), cls: 'announce' } },
 
 	{ ms: 1300, view: 'rear', phase: 'cruising', speed: 5.5, display: { text: i18n.t('ludicrousSpeed.go'), cls: 'go' } },
 	{ ms: 1300, display: { text: '', cls: 'stars-only' } },

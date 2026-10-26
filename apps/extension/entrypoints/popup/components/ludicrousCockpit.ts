@@ -59,6 +59,7 @@ export const paintCockpitMullions = (ctx: CanvasRenderingContext2D, r: Rect): vo
 
 const phaseRank: Record<Phase, number> = {
 	prelaunch: 0,
+	windup: 0,
 	cruising: 1,
 	lightspeed: 1,
 	ridiculous: 2,
@@ -149,10 +150,16 @@ const paintButtonBlock = (ctx: CanvasRenderingContext2D, x: number, y: number, f
 	}
 };
 
-const paintPilotLamps = (ctx: CanvasRenderingContext2D, x: number, y: number, count: number, rank: number, frame: number): void => {
-	const litCount = Math.round((count * rank) / 3);
+// Frames between each lamp coming on while the ship winds up, so the row is full a beat before GO.
+const windupFramesPerLamp = 5;
+
+const paintPilotLamps = (ctx: CanvasRenderingContext2D, x: number, y: number, count: number, phase: Phase, phaseFrame: number, frame: number): void => {
+	const windingUp = phase === 'windup';
+	const litCount = windingUp
+		? Math.min(count, Math.floor(phaseFrame / windupFramesPerLamp) + 1)
+		: Math.round((count * phaseRank[phase]) / 3);
 	for (let i = 0; i < count; i += 1) {
-		const on = i < litCount && (frame + i * 9) % 90 > 12;
+		const on = i < litCount && (windingUp || (frame + i * 9) % 90 > 12);
 		ctx.beginPath();
 		ctx.arc(x + i * 13, y, 3.6, 0, Math.PI * 2);
 		ctx.fillStyle = on ? '#ffa519' : '#3a3730';
@@ -203,6 +210,7 @@ export const paintCockpitConsole = (
 	w: number,
 	h: number,
 	phase: Phase,
+	phaseFrame: number,
 	frame: number,
 	brakeArmed: boolean,
 	brakePulled: boolean,
@@ -221,7 +229,7 @@ export const paintCockpitConsole = (
 	ctx.fillStyle = 'rgba(255,255,255,0.16)';
 	ctx.fillRect(0, top, w, 1.5);
 
-	paintPilotLamps(ctx, 16, top + 12, 12, rank, frame);
+	paintPilotLamps(ctx, 16, top + 12, 12, phase, phaseFrame, frame);
 	paintSpeedPanels(ctx, w, top + 24, rank);
 
 	// Recessed well. The dialogue is DOM and lands inside this box.

@@ -87,7 +87,7 @@ describe('ludicrous speed overlay', () => {
 
 	it('cuts between the three cameras in the order the sequence calls for', () => {
 		// One entry per phase beat, read off the script so a beat added later cannot be skipped.
-		const views = ['rear', 'full', 'full', 'full', 'full', 'full', 'cockpit', 'rear'];
+		const views = ['cockpit', 'rear', 'full', 'full', 'full', 'full', 'full', 'cockpit', 'rear'];
 		expect(phaseBeats, 'one expected camera per phase beat').to.have.length(views.length);
 
 		mountOverlay();

@@ -43,9 +43,16 @@ const ludicrousStage = ({
 	});
 
 	const lastViewRef = useRef<View | null>(null);
+	const lastPhaseRef = useRef<Phase | null>(null);
+	const phaseStartRef = useRef(0);
 
 	const canvasRef = useLudicrousCanvas((ctx, { w, h, speed, phase, frame }) => {
 		const world = worldRef.current;
+
+		if (lastPhaseRef.current !== phase) {
+			lastPhaseRef.current = phase;
+			phaseStartRef.current = frame;
+		}
 
 		/* A cut is a cut. Only the cockpit fills the whole frame each pass — the other two lay a
 		   translucent veil down for star trails — so without an explicit clear the console ghosts
@@ -97,7 +104,7 @@ const ludicrousStage = ({
 			ctx.restore();
 
 			paintCockpitMullions(ctx, win);
-			paintCockpitConsole(ctx, w, h, phase, frame, brakeArmed, brakePulled);
+			paintCockpitConsole(ctx, w, h, phase, frame - phaseStartRef.current, frame, brakeArmed, brakePulled);
 			return;
 		}
 

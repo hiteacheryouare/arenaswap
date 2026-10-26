@@ -38,6 +38,7 @@ export const makeStars = (n: number): Star[] => Array.from({ length: n }, makeSt
 // the tartan tunnel at ludicrous speed.
 const starTint: Record<Phase, [number, number, number]> = {
 	prelaunch: [0.78, 0.86, 1],
+	windup: [0.78, 0.86, 1],
 	cruising: [0.94, 0.96, 1],
 	lightspeed: [0.94, 0.94, 1],
 	ridiculous: [1, 1, 1],

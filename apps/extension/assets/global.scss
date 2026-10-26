@@ -4,6 +4,7 @@
 // no difference to either. Sass comments rather than CSS ones, so this note does not ship.
 @use '@arenaswap/ui/src/fonts';
 @use '@arenaswap/ui/src/motion' as m;
+@use 'sass:math';
 // Element resets sit in Bootstrap's reboot layer, under its components: a class rule has to keep
 // beating `button { color: inherit }`, as it did when nothing was layered.
 @layer reboot {
@@ -139,7 +140,8 @@
 		text-shadow: 0 0 12px #000, 0 2px 8px rgba(0, 0, 0, 0.9);
 	}
 
-	/* LUDICROUS SPEED... — dramatic announcement, stars still slow */
+	/* LUDICROUS SPEED… — slammed down, then the dots land one at a time while the whole bridge
+	   rattles harder and harder until GO. The rattle runs the length of the windup beat. */
 	.ls-text.announce {
 		font-size: 1.45rem;
 		font-weight: 900;
@@ -147,8 +149,20 @@
 		text-transform: uppercase;
 		white-space: nowrap;
 		color: #fff;
-		text-shadow: 0 0 18px #ff4500, 0 0 36px #ff8c00, 0 0 60px #ff0000;
-		animation: lsSpeedPulse 0.35s ease-in-out infinite alternate;
+		text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85);
+		animation:
+			lsSlam 0.26s cubic-bezier(0.2, 0.9, 0.3, 1) both,
+			lsRattle 1.5s linear both;
+	}
+
+	.ls-overlay:has(> .ls-text.announce) > .ls-canvas {
+		animation: lsRattle 1.5s linear both;
+	}
+
+	.ls-dots {
+		display: inline-block;
+		clip-path: inset(0 100% 0 0);
+		animation: lsDotsTick 0.9s steps(3, jump-start) 0.4s forwards;
 	}
 
 	/* GO! — the command; stars explode the instant this appears */
@@ -303,7 +317,13 @@
 		}
 
 		.ls-text.dialogue { font-size: 0.86rem; }
-		.ls-text.announce { font-size: 1.15rem; }
+		// `scale` applies around the centring `transform` rather than after it, so the slam has to
+		// grow from where that transform puts the middle of the text: the box's own top-left corner.
+		.ls-text.announce {
+			font-size: 1.15rem;
+			width: max-content;
+			transform-origin: 0 0;
+		}
 		.ls-text.speedsign { display: none; }
 
 		.ls-emergency-brake {
@@ -382,9 +402,27 @@
 		to   { opacity: 1; scale: 1; }
 	}
 
-	@keyframes lsSpeedPulse {
-		from { scale: 1; opacity: 0.88; }
-		to   { scale: 1.04; opacity: 1; }
+	@keyframes lsSlam {
+		from { opacity: 0; scale: 1.5; }
+		55%  { opacity: 1; scale: 0.95; }
+		to   { opacity: 1; scale: 1; }
+	}
+
+	@keyframes lsDotsTick {
+		to { clip-path: inset(0); }
+	}
+
+	// Grows from still to a hard shudder, on a squared ramp so most of it arrives in the last half.
+	$rattle-steps: 36;
+	$rattle-peak: 3px;
+	@keyframes lsRattle {
+		@for $i from 0 through $rattle-steps {
+			$t: math.div($i, $rattle-steps);
+			$amp: $rattle-peak * $t * $t;
+			#{math.percentage($t)} {
+				translate: ($amp * math.sin($i * 2.4)) ($amp * math.cos($i * 3.7) * 0.6);
+			}
+		}
 	}
 
 	@keyframes lsShake {
@@ -420,6 +458,7 @@
 		}
 
 		.ls-text.announce,
+		.ls-overlay:has(> .ls-text.announce) > .ls-canvas,
 		.ls-text.go,
 		.ls-text.speedsign.ludicrous,
 		.ls-text.stop,

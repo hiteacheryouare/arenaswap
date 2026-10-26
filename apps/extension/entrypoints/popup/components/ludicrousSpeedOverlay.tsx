@@ -6,6 +6,15 @@ import { preloadLogoImages } from './ludicrousLeagueLogos';
 import { cockpitBrakeRect } from './ludicrousCockpit';
 import LudicrousStage from './ludicrousStage';
 
+const trailingEllipsis = /(…+|\.{3})$/;
+
+// The announcement's ellipsis is held back so its dots can land one at a time before GO.
+const renderDisplayText = ({ text, cls }: DisplayState) => {
+	const dots = cls === 'announce' ? text.match(trailingEllipsis)?.[0] : undefined;
+	if (!dots) return text;
+	return <>{text.slice(0, -dots.length)}<span className='ls-dots'>{dots}</span></>;
+};
+
 export default ({ onClose }: { onClose: () => void }) => {
 	const script = useMemo(buildScript, []);
 	const logoImages = useMemo(preloadLogoImages, []);
@@ -118,7 +127,7 @@ export default ({ onClose }: { onClose: () => void }) => {
 				logoImages={logoImages}
 				onMeasure={handleMeasure}
 			/>
-			<div className={`ls-text ${display.cls}`}>{display.text}</div>
+			<div className={`ls-text ${display.cls}`}>{renderDisplayText(display)}</div>
 			{brakeState !== 'hidden' && view === 'cockpit' && brakeStyle && (
 				<button
 					className={`ls-emergency-brake${brakeState === 'pressed' ? ' pressed' : ''}`}
