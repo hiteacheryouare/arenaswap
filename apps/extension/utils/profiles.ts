@@ -1,7 +1,7 @@
 import { normalizeUserPreferences } from '@arenaswap/core/constants';
 import { fantasyRosterStorageKey, logWarn, normalizeFantasyRoster } from '@arenaswap/core';
 import type { FantasyRosterEntry } from '@arenaswap/core';
-import type { UserPreferences } from '@arenaswap/core/types';
+import type { ExtensionMessage, UserPreferences } from '@arenaswap/core/types';
 import { writeOpenRevealEnabled } from '../entrypoints/popup/cardReveal';
 import { loadFantasyRoster, rosterPayload } from './fantasyRosterStorage';
 import { loadStoredUserPreferences, prefsPayload, prefsStorageUpdatedAtKey } from './prefsStorage';
@@ -211,7 +211,7 @@ const writeLiveSetup = async (entry: profileEntry, setup: profileSetup, local: R
 
 	globalThis.localStorage?.setItem(themeStorageKey, live.prefs.theme);
 	writeOpenRevealEnabled(live.prefs.openRevealEnabled);
-	await browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: live.prefs }).catch(() => {});
+	await browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: live.prefs } satisfies ExtensionMessage).catch(() => {});
 };
 
 export const switchProfile = async (id: string): Promise<profileList> => {

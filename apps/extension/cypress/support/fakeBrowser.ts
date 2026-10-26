@@ -1,4 +1,4 @@
-import type { BackgroundState, GuideSlate, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import type { BackgroundState, ExtensionMessage, GuideSlate, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 
 export interface fakeTab { id: number; title: string; url: string }
 
@@ -20,7 +20,7 @@ export interface fakeBackground {
 	registry: TabRegistration[];
 	demoMode: boolean;
 	standbyStreamTabId: number | null;
-	sent: { type: string; [key: string]: unknown }[];
+	sent: ExtensionMessage[];
 	openedUrls: string[];
 	guideSlate: GuideSlate;
 	storage: { local: Map<string, unknown>; session: Map<string, unknown>; sync: Map<string, unknown> };
@@ -86,19 +86,20 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 		},
 		pushScores: patch => {
 			background.state = { ...background.state, ...patch };
-			const message = { type: 'SCORES_UPDATED', ...background.state };
+			const message = { type: 'SCORES_UPDATED', ...background.state } satisfies ExtensionMessage;
 			for (const listener of listeners) listener(message);
 		},
 	};
 
 	// Stands in for the background service worker. The popup only ever reaches the outside world by
-	// radioing one of these seven message types, so this switchboard is the whole of its backend.
+	// sending an ExtensionMessage, so this switchboard is the whole of its backend. The switch is
+	// exhaustive: a message type added to or renamed in the union fails the Cypress typecheck here.
 	//
 	// It records rather than simulates: a message updates the matching `background` field and
 	// nothing else. Specs assert on those fields and drive visible change with cy.pushScores(),
 	// which keeps scoring logic in the real background where it belongs instead of drifting into a
 	// second copy here.
-	const handleMessage = (message: { type: string; [key: string]: unknown }): unknown => {
+	const handleMessage = (message: ExtensionMessage): unknown => {
 		switch (message.type) {
 			// Answering with anything else leaves the popup permanently empty: the reply goes through
 			// BackgroundStateSchema, which quietly falls back to an empty state.
@@ -106,23 +107,23 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 				return background.state;
 
 			case 'UPDATE_PREFS':
-				background.prefs = message.prefs as UserPreferences;
+				background.prefs = message.prefs;
 				return undefined;
 
 			case 'UPDATE_REGISTRY':
-				background.registry = message.tabRegistry as TabRegistration[];
+				background.registry = message.tabRegistry;
 				return undefined;
 
 			case 'SET_GAME_BOOST':
-				background.state.gameBoosts[message.gameId as string] = message.boost as number;
+				background.state.gameBoosts[message.gameId] = message.boost;
 				return undefined;
 
 			case 'SET_DEMO_MODE':
-				background.demoMode = message.enabled as boolean;
+				background.demoMode = message.enabled;
 				return undefined;
 
 			case 'SET_STANDBY_STREAM_TAB':
-				background.standbyStreamTabId = message.tabId as number | null;
+				background.standbyStreamTabId = message.tabId;
 				return undefined;
 
 			// The guide fetches its own slate rather than reading GET_STATE, because it draws finals
@@ -130,8 +131,18 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 			case 'GET_GUIDE_SLATE':
 				return background.guideSlate;
 
-			default:
+			case 'GET_DEBUG_STATE':
+				return null;
+
+			case 'BOSS_BUTTON':
+			case 'SCORES_UPDATED':
+			case 'GUIDE_SLATE_UPDATED':
 				return undefined;
+
+			default: {
+				const unhandled: never = message;
+				return unhandled;
+			}
 		}
 	};
 
@@ -152,7 +163,7 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 			id: 'arenaswap-e2e',
 			getManifest: () => ({ version: '2.0.0', manifest_version: 3 }),
 			getURL: (path: string) => `chrome-extension://arenaswap-e2e${path}`,
-			sendMessage: (message: { type: string; [key: string]: unknown }) => {
+			sendMessage: (message: ExtensionMessage) => {
 				background.sent.push(message);
 				return Promise.resolve(handleMessage(message));
 			},

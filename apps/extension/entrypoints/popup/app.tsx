@@ -3,7 +3,7 @@ import useSWR from 'swr';
 import { fetchGamesWithLeagueLogos } from '@arenaswap/sideline';
 import { allLeagueIds, createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences, withCollegeFilter } from '@arenaswap/core/constants';
 import type { FantasyRosterEntry } from '@arenaswap/core';
-import type { CollegeFilter, CollegeLeagueId, LeagueId, LeagueLogoMap, LeagueScheduleMap, PowerScoreSnapshot, ScoreSnapshot, SignalName, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import type { CollegeFilter, CollegeLeagueId, ExtensionMessage, LeagueId, LeagueLogoMap, LeagueScheduleMap, PowerScoreSnapshot, ScoreSnapshot, SignalName, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
@@ -65,7 +65,7 @@ const noSnapshots: ScoreSnapshot[] = [];
 const noPowerScoreSnapshots: PowerScoreSnapshot[] = [];
 
 const onSetGameBoost = (gameId: string, boost: number) => {
-	void browser.runtime.sendMessage({ type: 'SET_GAME_BOOST', gameId, boost });
+	void browser.runtime.sendMessage({ type: 'SET_GAME_BOOST', gameId, boost } satisfies ExtensionMessage);
 };
 
 const openGuide = () => {
@@ -358,7 +358,7 @@ export default () => {
 		setPrefs(normalized);
 		const syncPromise = prefsSyncRef.current.catch(() => {}).then(async () => {
 			await persistStoredUserPreferences(normalized);
-			await browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: normalized });
+			await browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: normalized } satisfies ExtensionMessage);
 		});
 		prefsSyncRef.current = syncPromise;
 		void syncPromise.catch(() => {});
@@ -372,7 +372,7 @@ export default () => {
 		prefsRef.current = paused;
 		setPrefs(paused);
 		prefsSyncRef.current.catch(() => {})
-			.then(() => browser.runtime.sendMessage({ type: 'BOSS_BUTTON' }))
+			.then(() => browser.runtime.sendMessage({ type: 'BOSS_BUTTON' } satisfies ExtensionMessage))
 			.catch(() => {})
 			.finally(() => window.close());
 	};
@@ -510,7 +510,7 @@ export default () => {
 	const onRegistryChange = (updated: TabRegistration[]) => {
 		setRegistry(updated);
 		void browser.storage.session.set({ tabRegistry: updated });
-		void browser.runtime.sendMessage({ type: 'UPDATE_REGISTRY', tabRegistry: updated });
+		void browser.runtime.sendMessage({ type: 'UPDATE_REGISTRY', tabRegistry: updated } satisfies ExtensionMessage);
 	};
 
 	// Every pair the sheet showed is recorded, not just the accepted ones. Leaving the rejected rows
@@ -546,7 +546,7 @@ export default () => {
 
 	const onSetStandbyTab = (tabId: number | null) => {
 		setStandbyStreamTabId(tabId);
-		void browser.runtime.sendMessage({ type: 'SET_STANDBY_STREAM_TAB', tabId });
+		void browser.runtime.sendMessage({ type: 'SET_STANDBY_STREAM_TAB', tabId } satisfies ExtensionMessage);
 	};
 
 	const onStandbyOnboardingDone = () => {
@@ -681,7 +681,7 @@ export default () => {
 						onToggleDemo={() => {
 							const next = !demoMode;
 							setDemoMode(next);
-							void browser.runtime.sendMessage({ type: 'SET_DEMO_MODE', enabled: next });
+							void browser.runtime.sendMessage({ type: 'SET_DEMO_MODE', enabled: next } satisfies ExtensionMessage);
 						}}
 						onDemoSeasonChange={season => {
 							setDemoSeason(season);

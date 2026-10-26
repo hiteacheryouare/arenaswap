@@ -2,6 +2,7 @@ import { BackgroundStateSchema } from '@arenaswap/core';
 import { estimatedWrapMs, isFavoriteTeamGame, leagueConfigs, leagueLabels } from '@arenaswap/core/constants';
 import type {
 	BackgroundState,
+	ExtensionMessage,
 	Game,
 	LeagueId,
 	SportType,
@@ -263,7 +264,7 @@ export const normalizeBackgroundState = (value: unknown): BackgroundState =>
 	BackgroundStateSchema.parse(value);
 
 export const fetchState = async (forceRefresh = false): Promise<BackgroundState> => {
-	const state = await browser.runtime.sendMessage({ type: 'GET_STATE', forceRefresh });
+	const state = await browser.runtime.sendMessage({ type: 'GET_STATE', forceRefresh } satisfies ExtensionMessage);
 	return normalizeBackgroundState(state);
 };
 

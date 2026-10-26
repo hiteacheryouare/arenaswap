@@ -1,7 +1,7 @@
 import { normalizeUserPreferences } from '@arenaswap/core/constants';
 import { normalizeFantasyRoster } from '@arenaswap/core';
 import type { FantasyRosterEntry } from '@arenaswap/core';
-import type { UserPreferences } from '@arenaswap/core/types';
+import type { ExtensionMessage, UserPreferences } from '@arenaswap/core/types';
 import { breakdownFoldsKey, type breakdownSectionId } from './breakdownFolds';
 import { isDemoSeason, type demoSeason } from './holidayDecorations';
 import {
@@ -187,7 +187,7 @@ export const applySettingsProfile = async (profile: settingsProfile): Promise<pr
 		demoSeason: device.demoSeason,
 	});
 	globalThis.localStorage?.setItem(breakdownFoldsKey, JSON.stringify(device.breakdownCollapsed));
-	if (wasDemoMode !== device.demoMode) await browser.runtime.sendMessage({ type: 'SET_DEMO_MODE', enabled: device.demoMode }).catch(() => {});
+	if (wasDemoMode !== device.demoMode) await browser.runtime.sendMessage({ type: 'SET_DEMO_MODE', enabled: device.demoMode } satisfies ExtensionMessage).catch(() => {});
 	return list;
 };
 

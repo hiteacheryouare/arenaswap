@@ -1,0 +1,437 @@
+{
+	"recordedAt": "2026-10-03T23:11:19.824Z",
+	"league": "ncaaf",
+	"source": "scripts/powerscore/recordings/2026-10-03/19-1791069077071.jsonl.gz, scoreboard line at ts 1791069079824; links, headlines and uids removed",
+	"event": {
+		"id": "401858247",
+		"date": "2026-10-03T19:30Z",
+		"name": "California Golden Bears at UNLV Rebels",
+		"shortName": "CAL @ UNLV",
+		"season": {
+			"year": 2026,
+			"type": 2,
+			"slug": "regular-season"
+		},
+		"week": {
+			"number": 5
+		},
+		"competitions": [
+			{
+				"id": "401858247",
+				"date": "2026-10-03T19:30Z",
+				"attendance": 0,
+				"type": {
+					"id": "1",
+					"abbreviation": "STD"
+				},
+				"timeValid": true,
+				"dateValid": true,
+				"neutralSite": false,
+				"conferenceCompetition": false,
+				"playByPlayAvailable": true,
+				"recent": true,
+				"venue": {
+					"id": "6501",
+					"fullName": "Allegiant Stadium",
+					"address": {
+						"city": "Las Vegas",
+						"state": "NV",
+						"country": "USA"
+					},
+					"indoor": true
+				},
+				"competitors": [
+					{
+						"id": "2439",
+						"type": "team",
+						"order": 0,
+						"homeAway": "home",
+						"team": {
+							"id": "2439",
+							"location": "UNLV",
+							"name": "Rebels",
+							"abbreviation": "UNLV",
+							"displayName": "UNLV Rebels",
+							"shortDisplayName": "UNLV",
+							"color": "cf0a2c",
+							"alternateColor": "cac8c8",
+							"isActive": true,
+							"venue": {
+								"id": "3914"
+							},
+							"logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2439.png",
+							"conferenceId": "17"
+						},
+						"score": "32",
+						"linescores": [
+							{
+								"value": 7,
+								"displayValue": "7",
+								"period": 1
+							},
+							{
+								"value": 17,
+								"displayValue": "17",
+								"period": 2
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 3
+							},
+							{
+								"value": 8,
+								"displayValue": "8",
+								"period": 4
+							}
+						],
+						"statistics": [],
+						"curatedRank": {
+							"current": 99
+						},
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "overall",
+								"type": "total",
+								"summary": "2-2"
+							},
+							{
+								"name": "Home",
+								"abbreviation": "Home",
+								"type": "homerecord",
+								"summary": "0-1"
+							},
+							{
+								"name": "Away",
+								"abbreviation": "Away",
+								"type": "awayrecord",
+								"summary": "2-1"
+							},
+							{
+								"name": "vs. Conf.",
+								"abbreviation": "CONF",
+								"type": "vsconf",
+								"summary": "1-0"
+							}
+						]
+					},
+					{
+						"id": "25",
+						"type": "team",
+						"order": 1,
+						"homeAway": "away",
+						"team": {
+							"id": "25",
+							"location": "California",
+							"name": "Golden Bears",
+							"abbreviation": "CAL",
+							"displayName": "California Golden Bears",
+							"shortDisplayName": "California",
+							"color": "041e42",
+							"alternateColor": "ffc72c",
+							"isActive": true,
+							"venue": {
+								"id": "3831"
+							},
+							"logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/25.png",
+							"conferenceId": "1"
+						},
+						"score": "25",
+						"linescores": [
+							{
+								"value": 7,
+								"displayValue": "7",
+								"period": 1
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 2
+							},
+							{
+								"value": 11,
+								"displayValue": "11",
+								"period": 3
+							},
+							{
+								"value": 7,
+								"displayValue": "7",
+								"period": 4
+							}
+						],
+						"statistics": [],
+						"curatedRank": {
+							"current": 99
+						},
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "overall",
+								"type": "total",
+								"summary": "2-2"
+							},
+							{
+								"name": "Home",
+								"abbreviation": "Home",
+								"type": "homerecord",
+								"summary": "1-2"
+							},
+							{
+								"name": "Away",
+								"abbreviation": "Away",
+								"type": "awayrecord",
+								"summary": "1-0"
+							},
+							{
+								"name": "vs. Conf.",
+								"abbreviation": "CONF",
+								"type": "vsconf",
+								"summary": "1-1"
+							}
+						]
+					}
+				],
+				"notes": [],
+				"situation": {
+					"lastPlay": {
+						"id": "401858247822",
+						"type": {
+							"id": "8",
+							"text": "Penalty",
+							"abbreviation": "PEN"
+						},
+						"text": "(06:32) Shotgun #11 J.Arnold pass incomplete deep left to #81 V.Carner thrown to CAL35 PENALTY CAL Pass Interference (#25 K.Hudson) 15 yards from UNLV38 to CAL47, 1ST DOWN. NO PLAY",
+						"scoreValue": 0,
+						"team": {
+							"id": "2439"
+						},
+						"probability": {
+							"tiePercentage": 0,
+							"homeWinPercentage": 0.8814,
+							"awayWinPercentage": 0.11860000000000004,
+							"secondsLeft": 389
+						},
+						"statYardage": 15,
+						"drive": {
+							"description": "1 play, 5 yards, 1:10",
+							"start": {
+								"yardLine": 48,
+								"text": "UNLV 48"
+							},
+							"timeElapsed": {
+								"displayValue": "1:10"
+							}
+						},
+						"start": {
+							"yardLine": 38,
+							"team": {
+								"id": "2439"
+							}
+						},
+						"end": {
+							"yardLine": 53,
+							"team": {
+								"id": "2439"
+							}
+						},
+						"athletesInvolved": [
+							{
+								"id": "5291092",
+								"fullName": "Vincent Carner",
+								"displayName": "Vincent Carner",
+								"shortName": "V. Carner",
+								"headshot": "https://a.espncdn.com/i/headshots/college-football/players/full/5291092.png",
+								"jersey": "81",
+								"position": "WR",
+								"team": {
+									"id": "2439"
+								}
+							}
+						]
+					},
+					"down": 1,
+					"yardLine": 53,
+					"distance": 10,
+					"downDistanceText": "1st & 10 at CAL 47",
+					"shortDownDistanceText": "1st & 10",
+					"possessionText": "CAL 47",
+					"isRedZone": false,
+					"homeTimeouts": 1,
+					"awayTimeouts": 0,
+					"possession": "2439"
+				},
+				"status": {
+					"clock": 386,
+					"displayClock": "6:26",
+					"period": 4,
+					"type": {
+						"id": "2",
+						"name": "STATUS_IN_PROGRESS",
+						"state": "in",
+						"completed": false,
+						"description": "In Progress",
+						"detail": "6:26 - 4th Quarter",
+						"shortDetail": "6:26 - 4th"
+					}
+				},
+				"broadcasts": [
+					{
+						"market": "national",
+						"names": [
+							"CBSSN"
+						]
+					}
+				],
+				"leaders": [
+					{
+						"name": "passingYards",
+						"displayName": "Passing Leader",
+						"shortDisplayName": "PASS",
+						"abbreviation": "PYDS",
+						"leaders": [
+							{
+								"displayValue": "19/27, 195 YDS, 1 TD, 1 INT",
+								"value": 195,
+								"athlete": {
+									"id": "5164313",
+									"fullName": "Jaron-Keawe Sagapolutele",
+									"displayName": "Jaron-Keawe Sagapolutele",
+									"shortName": "J. Sagapolutele",
+									"headshot": "https://a.espncdn.com/i/headshots/college-football/players/full/5164313.png",
+									"jersey": "3",
+									"position": {
+										"abbreviation": "QB"
+									},
+									"team": {
+										"id": "25"
+									},
+									"active": true
+								},
+								"team": {
+									"id": "25"
+								}
+							}
+						]
+					},
+					{
+						"name": "rushingYards",
+						"displayName": "Rushing Leader",
+						"shortDisplayName": "RUSH",
+						"abbreviation": "RYDS",
+						"leaders": [
+							{
+								"displayValue": "11 CAR, 85 YDS, 1 TD",
+								"value": 85,
+								"athlete": {
+									"id": "4870607",
+									"fullName": "Jackson Arnold",
+									"displayName": "Jackson Arnold",
+									"shortName": "J. Arnold",
+									"headshot": "https://a.espncdn.com/i/headshots/college-football/players/full/4870607.png",
+									"jersey": "11",
+									"position": {
+										"abbreviation": "QB"
+									},
+									"team": {
+										"id": "2439"
+									},
+									"active": true
+								},
+								"team": {
+									"id": "2439"
+								}
+							}
+						]
+					},
+					{
+						"name": "receivingYards",
+						"displayName": "Receiving Leader",
+						"shortDisplayName": "REC",
+						"abbreviation": "RECYDS",
+						"leaders": [
+							{
+								"displayValue": "3 REC, 102 YDS, 1 TD",
+								"value": 102,
+								"athlete": {
+									"id": "5217177",
+									"fullName": "Taimane Purcell",
+									"displayName": "Taimane Purcell",
+									"shortName": "T. Purcell",
+									"headshot": "https://a.espncdn.com/i/headshots/college-football/players/full/5217177.png",
+									"jersey": "22",
+									"position": {
+										"abbreviation": "TE"
+									},
+									"team": {
+										"id": "25"
+									},
+									"active": true
+								},
+								"team": {
+									"id": "25"
+								}
+							}
+						]
+					}
+				],
+				"format": {
+					"regulation": {
+						"periods": 4
+					}
+				},
+				"startDate": "2026-10-03T19:30Z",
+				"broadcast": "CBSSN",
+				"geoBroadcasts": [
+					{
+						"type": {
+							"id": "1",
+							"shortName": "TV"
+						},
+						"market": {
+							"id": "1",
+							"type": "National"
+						},
+						"media": {
+							"shortName": "CBSSN"
+						},
+						"lang": "en",
+						"region": "us"
+					}
+				],
+				"highlights": []
+			}
+		],
+		"weather": {
+			"displayValue": "1",
+			"temperature": 94,
+			"highTemperature": 94,
+			"conditionId": "Sunny",
+			"link": {
+				"language": "en-US",
+				"rel": [
+					"89118"
+				],
+				"href": "http://www.accuweather.com/en/us/allegiant-stadium-nv/89101/current-weather/209206_poi?lang=en-us",
+				"text": "Weather",
+				"shortText": "Weather",
+				"isExternal": true,
+				"isPremium": false
+			}
+		},
+		"status": {
+			"clock": 386,
+			"displayClock": "6:26",
+			"period": 4,
+			"type": {
+				"id": "2",
+				"name": "STATUS_IN_PROGRESS",
+				"state": "in",
+				"completed": false,
+				"description": "In Progress",
+				"detail": "6:26 - 4th Quarter",
+				"shortDetail": "6:26 - 4th"
+			}
+		}
+	}
+}

@@ -160,13 +160,7 @@ describe('the envelope itself', () => {
 		expect(parseScoreboard({ events: { '0': liveEvent() } }).events).toEqual([]);
 	});
 
-	/* The state worth knowing about most. If ESPN reshapes a field every event in a league carries,
-	   every event drops, and the answer is a successful fetch of zero games — which is exactly what
-	   a league in its off-season looks like. Nothing upstream can tell them apart: `shedLeagues`
-	   only names leagues that refused, so a fully drifted league is not shed, and the poller reads a
-	   successful tick with nothing live as a quiet league and walks it down to dormant. The count is
-	   the only thing that knows, and it goes to a console warning. */
-	test('a league that drifted entirely is a board of nothing, distinguishable only by the count', () => {
+	test('a league that drifted entirely parses to no events, and the count is what tells it from an empty board', () => {
 		const allDrifted = ['a', 'b', 'c'].map(id => liveEvent({ id, status: { period: '3' } }));
 		const result = parseScoreboard({ events: allDrifted });
 
@@ -179,6 +173,60 @@ describe('the envelope itself', () => {
 
 		expect(result.events).toHaveLength(1);
 		expect(result.leagues).toEqual([]);
+	});
+});
+
+/* A fully drifted league and a league in its off-season both parse to zero games. Read as an answer,
+   the drifted one would be walked down to dormant mid-game with a fresh "last updated" stamp, so it
+   has to come back as a league that did not answer: its live cards then age visibly instead. */
+describe('a league whose every event is unreadable', () => {
+	const fetchNba = (events: unknown[]) => (
+		mockScoreboard(events).fetchGamesWithLeagueLogos(['nba'] as LeagueId[], { includeUpcoming: false })
+	);
+	const allDrifted = ['a', 'b', 'c'].map(id => liveEvent({ id, status: { period: '3' } }));
+
+	test('is reported as shed rather than as a quiet night', async () => {
+		const result = await fetchNba(allDrifted);
+
+		expect(result.games).toEqual([]);
+		expect(result.shedLeagues).toEqual(['nba']);
+	});
+
+	test('is shed on the wide window too, when every day drifted', async () => {
+		const result = await mockScoreboard(allDrifted)
+			.fetchGamesWithLeagueLogos(['nba'] as LeagueId[], { includeUpcoming: true, upcomingDays: 3 });
+
+		expect(result.shedLeagues).toEqual(['nba']);
+	});
+
+	test('does not take a healthy league down with it', async () => {
+		jest.resetModules();
+		(globalThis as { fetch: typeof fetch }).fetch = jest.fn().mockImplementation(async (url: string) => ({
+			ok: true,
+			status: 200,
+			headers: new Headers(),
+			json: async () => ({ events: url.includes('/nba/') ? allDrifted : [liveEvent({ id: 'wnba-live' })] }),
+		} as Response)) as unknown as typeof fetch;
+		const api = require('../src/apiClient') as typeof import('../src/apiClient');
+
+		const result = await api.fetchGamesWithLeagueLogos(['nba', 'wnba'] as LeagueId[], { includeUpcoming: false });
+
+		expect(result.shedLeagues).toEqual(['nba']);
+		expect(result.games.map(game => game.id)).toEqual(['wnba-live']);
+	});
+
+	test('is not confused with one bad row, which still costs only that row', async () => {
+		const result = await fetchNba([liveEvent({ id: 'healthy' }), liveEvent({ id: 'drifted', status: { period: '3' } })]);
+
+		expect(result.shedLeagues).toEqual([]);
+		expect(result.games.map(game => game.id)).toEqual(['healthy']);
+	});
+
+	test('is not confused with an off-season board that has no events at all', async () => {
+		const result = await fetchNba([]);
+
+		expect(result.shedLeagues).toEqual([]);
+		expect(result.games).toEqual([]);
 	});
 });
 

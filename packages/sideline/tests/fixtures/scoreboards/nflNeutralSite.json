@@ -1,0 +1,454 @@
+{
+	"recordedAt": "2026-10-04T16:01:52.981Z",
+	"league": "nfl",
+	"source": "scripts/powerscore/recordings/2026-10-04/12-1791071042937.jsonl.gz, scoreboard line at ts 1791129712981; links, headlines and uids removed",
+	"event": {
+		"id": "401872965",
+		"date": "2026-10-04T13:30Z",
+		"name": "Indianapolis Colts at Washington Commanders",
+		"shortName": "IND VS WSH",
+		"season": {
+			"year": 2026,
+			"type": 2,
+			"slug": "regular-season"
+		},
+		"week": {
+			"number": 4
+		},
+		"competitions": [
+			{
+				"id": "401872965",
+				"date": "2026-10-04T13:30Z",
+				"attendance": 0,
+				"type": {
+					"id": "1",
+					"abbreviation": "STD"
+				},
+				"timeValid": true,
+				"neutralSite": true,
+				"conferenceCompetition": false,
+				"playByPlayAvailable": true,
+				"recent": true,
+				"venue": {
+					"id": "5534",
+					"fullName": "Tottenham Hotspur Stadium",
+					"address": {
+						"city": "London",
+						"country": "England"
+					},
+					"indoor": false
+				},
+				"competitors": [
+					{
+						"id": "28",
+						"type": "team",
+						"order": 0,
+						"homeAway": "home",
+						"team": {
+							"id": "28",
+							"location": "Washington",
+							"name": "Commanders",
+							"abbreviation": "WSH",
+							"displayName": "Washington Commanders",
+							"shortDisplayName": "Commanders",
+							"color": "5a1414",
+							"alternateColor": "ffb612",
+							"isActive": true,
+							"venue": {
+								"id": "3719"
+							},
+							"logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/wsh.png"
+						},
+						"score": "13",
+						"linescores": [
+							{
+								"value": 6,
+								"displayValue": "6",
+								"period": 1
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 2
+							},
+							{
+								"value": 7,
+								"displayValue": "7",
+								"period": 3
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 4
+							}
+						],
+						"statistics": [],
+						"curatedRank": {
+							"current": 99
+						},
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "Any",
+								"type": "total",
+								"summary": "1-2"
+							},
+							{
+								"name": "Home",
+								"type": "home",
+								"summary": "1-0"
+							},
+							{
+								"name": "Road",
+								"type": "road",
+								"summary": "0-2"
+							}
+						]
+					},
+					{
+						"id": "11",
+						"type": "team",
+						"order": 1,
+						"homeAway": "away",
+						"team": {
+							"id": "11",
+							"location": "Indianapolis",
+							"name": "Colts",
+							"abbreviation": "IND",
+							"displayName": "Indianapolis Colts",
+							"shortDisplayName": "Colts",
+							"color": "003b75",
+							"alternateColor": "ffffff",
+							"isActive": true,
+							"venue": {
+								"id": "3812"
+							},
+							"logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/ind.png"
+						},
+						"score": "20",
+						"linescores": [
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 1
+							},
+							{
+								"value": 10,
+								"displayValue": "10",
+								"period": 2
+							},
+							{
+								"value": 10,
+								"displayValue": "10",
+								"period": 3
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 4
+							}
+						],
+						"statistics": [],
+						"curatedRank": {
+							"current": 99
+						},
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "Any",
+								"type": "total",
+								"summary": "1-2"
+							},
+							{
+								"name": "Home",
+								"type": "home",
+								"summary": "1-1"
+							},
+							{
+								"name": "Road",
+								"type": "road",
+								"summary": "0-1"
+							}
+						]
+					}
+				],
+				"notes": [
+					{
+						"type": "event",
+						"headline": "NFL London Games"
+					}
+				],
+				"situation": {
+					"lastPlay": {
+						"id": "4018729653304",
+						"type": {
+							"id": "2",
+							"text": "End Period",
+							"abbreviation": "EP"
+						},
+						"text": "END QUARTER 3",
+						"scoreValue": 0,
+						"team": {
+							"id": "11"
+						},
+						"probability": {
+							"tiePercentage": 0,
+							"homeWinPercentage": 0.1289,
+							"awayWinPercentage": 0.8711,
+							"secondsLeft": 0
+						},
+						"statYardage": 0,
+						"drive": {
+							"description": "3 plays, 10 yards, 1:35",
+							"start": {
+								"yardLine": 52,
+								"text": "IND 48"
+							},
+							"timeElapsed": {
+								"displayValue": "1:35"
+							}
+						},
+						"start": {
+							"yardLine": 42,
+							"team": {
+								"id": "11"
+							}
+						},
+						"end": {
+							"yardLine": 42,
+							"team": {
+								"id": "11"
+							}
+						}
+					},
+					"down": 1,
+					"yardLine": 42,
+					"distance": 10,
+					"downDistanceText": "1st & 10 at WSH 42",
+					"shortDownDistanceText": "1st & 10",
+					"possessionText": "WSH 42",
+					"isRedZone": false,
+					"homeTimeouts": 3,
+					"awayTimeouts": 3,
+					"possession": "11"
+				},
+				"status": {
+					"clock": 900,
+					"displayClock": "15:00",
+					"period": 4,
+					"type": {
+						"id": "2",
+						"name": "STATUS_IN_PROGRESS",
+						"state": "in",
+						"completed": false,
+						"description": "In Progress",
+						"detail": "15:00 - 4th Quarter",
+						"shortDetail": "15:00 - 4th"
+					},
+					"isTBDFlex": false
+				},
+				"broadcasts": [
+					{
+						"market": "national",
+						"names": [
+							"NFL Net"
+						]
+					}
+				],
+				"leaders": [
+					{
+						"name": "passingYards",
+						"displayName": "Passing Leader",
+						"shortDisplayName": "PASS",
+						"abbreviation": "PYDS",
+						"leaders": [
+							{
+								"displayValue": "9/20, 139 YDS, 1 TD, 1 INT",
+								"value": 139,
+								"athlete": {
+									"id": "4432722",
+									"fullName": "Athan Kaliakmanis",
+									"displayName": "Athan Kaliakmanis",
+									"shortName": "A. Kaliakmanis",
+									"headshot": "https://a.espncdn.com/i/headshots/nfl/players/full/4432722.png",
+									"jersey": "16",
+									"position": {
+										"abbreviation": "QB"
+									},
+									"team": {
+										"id": "28"
+									},
+									"active": true
+								},
+								"team": {
+									"id": "28"
+								}
+							}
+						]
+					},
+					{
+						"name": "rushingYards",
+						"displayName": "Rushing Leader",
+						"shortDisplayName": "RUSH",
+						"abbreviation": "RYDS",
+						"leaders": [
+							{
+								"displayValue": "15 CAR, 63 YDS, 2 TD",
+								"value": 63,
+								"athlete": {
+									"id": "4242335",
+									"fullName": "Jonathan Taylor",
+									"displayName": "Jonathan Taylor",
+									"shortName": "J. Taylor",
+									"headshot": "https://a.espncdn.com/i/headshots/nfl/players/full/4242335.png",
+									"jersey": "28",
+									"position": {
+										"abbreviation": "RB"
+									},
+									"team": {
+										"id": "11"
+									},
+									"active": true
+								},
+								"team": {
+									"id": "11"
+								}
+							}
+						]
+					},
+					{
+						"name": "receivingYards",
+						"displayName": "Receiving Leader",
+						"shortDisplayName": "REC",
+						"abbreviation": "RECYDS",
+						"leaders": [
+							{
+								"displayValue": "2 REC, 57 YDS",
+								"value": 57,
+								"athlete": {
+									"id": "4361577",
+									"fullName": "Dyami Brown",
+									"displayName": "Dyami Brown",
+									"shortName": "D. Brown",
+									"headshot": "https://a.espncdn.com/i/headshots/nfl/players/full/4361577.png",
+									"jersey": "6",
+									"position": {
+										"abbreviation": "WR"
+									},
+									"team": {
+										"id": "28"
+									},
+									"active": true
+								},
+								"team": {
+									"id": "28"
+								}
+							}
+						]
+					}
+				],
+				"format": {
+					"regulation": {
+						"periods": 4
+					},
+					"overtime": {
+						"periods": 1
+					}
+				},
+				"startDate": "2026-10-04T13:30Z",
+				"broadcast": "NFL Net",
+				"geoBroadcasts": [
+					{
+						"type": {
+							"id": "1",
+							"shortName": "TV"
+						},
+						"market": {
+							"id": "1",
+							"type": "National"
+						},
+						"media": {
+							"shortName": "NFL Net",
+							"logo": "https://a.espncdn.com/guid/8281947e-bd6c-3a8a-9b1d-6fc957d1709a/logos/default.png",
+							"darkLogo": "https://a.espncdn.com/guid/8281947e-bd6c-3a8a-9b1d-6fc957d1709a/logos/default-dark.png"
+						},
+						"lang": "en",
+						"region": "us"
+					}
+				],
+				"highlights": []
+			}
+		],
+		"status": {
+			"clock": 900,
+			"displayClock": "15:00",
+			"period": 4,
+			"type": {
+				"id": "2",
+				"name": "STATUS_IN_PROGRESS",
+				"state": "in",
+				"completed": false,
+				"description": "In Progress",
+				"detail": "15:00 - 4th Quarter",
+				"shortDetail": "15:00 - 4th"
+			}
+		},
+		"tuneInPrompt": {
+			"id": "53640e5f574c0",
+			"isAutomated": false,
+			"title": "Availability News",
+			"description": "Tune-in Prompt 401872965",
+			"caption": "QB change: Marcus Mariota will start unexpectedly.",
+			"rating": "Unrated",
+			"shortText": "QB change: Marcus Mariota will start unexpectedly.",
+			"images": [
+				{
+					"href": "https://a.espncdn.com/i/headshots/nfl/players/full/2576980.png",
+					"alt": "Marcus Mariota"
+				}
+			],
+			"imageType": "playerHeadshot",
+			"backgroundImages": [
+				{
+					"href": "https://a.espncdn.com/i/teamlogos/nfl/500/wsh.png",
+					"width": 500,
+					"height": 500,
+					"rel": [
+						"full",
+						"default"
+					]
+				},
+				{
+					"href": "https://a.espncdn.com/i/teamlogos/nfl/500-dark/wsh.png",
+					"width": 500,
+					"height": 500,
+					"rel": [
+						"full",
+						"dark"
+					]
+				},
+				{
+					"href": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/wsh.png",
+					"width": 500,
+					"height": 500,
+					"rel": [
+						"full",
+						"scoreboard"
+					]
+				},
+				{
+					"href": "https://a.espncdn.com/i/teamlogos/nfl/500-dark/scoreboard/wsh.png",
+					"width": 500,
+					"height": 500,
+					"rel": [
+						"full",
+						"scoreboard",
+						"dark"
+					]
+				}
+			],
+			"color": "5a1414",
+			"alternateColor": "ffb612"
+		}
+	}
+}

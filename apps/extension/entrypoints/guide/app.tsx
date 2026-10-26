@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import { createDefaultUserPreferences, createFavoriteTeamKey, isFavoriteTeamGame, normalizeUserPreferences } from '@arenaswap/core/constants';
-import type { BackgroundState, Game, GuideSlate, LeagueId, LeagueLogoMap, PowerScoreSnapshot, ScoreSnapshot, TeamMonoLogoMap, UserPreferences } from '@arenaswap/core/types';
+import type { BackgroundState, ExtensionMessage, Game, GuideSlate, LeagueId, LeagueLogoMap, PowerScoreSnapshot, ScoreSnapshot, TeamMonoLogoMap, UserPreferences } from '@arenaswap/core/types';
 import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 import ToggleSwitch from '@arenaswap/ui/src/components/toggleSwitch';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -23,7 +23,7 @@ import { displayLocale } from '../../utils/displayLocale';
 // The boost control in the drawer is the real one, not a decoration: a slider that moves and
 // changes nothing is worse than no slider.
 const setGameBoost = (gameId: string, boost: number) => {
-	void browser.runtime.sendMessage({ type: 'SET_GAME_BOOST', gameId, boost });
+	void browser.runtime.sendMessage({ type: 'SET_GAME_BOOST', gameId, boost } satisfies ExtensionMessage);
 };
 
 const startMs = (game: Game): number => (game.startTime ? new Date(game.startTime).getTime() : Number.NaN);
@@ -67,7 +67,7 @@ const App = () => {
 	// minute so that the broadcasts after every poll cannot each cost a wide fetch.
 	const loadSlate = useCallback(async (force = false) => {
 		try {
-			const reply = await browser.runtime.sendMessage({ type: 'GET_GUIDE_SLATE', ...(force ? { force } : {}) }) as GuideSlate | undefined;
+			const reply = await browser.runtime.sendMessage({ type: 'GET_GUIDE_SLATE', ...(force ? { force } : {}) } satisfies ExtensionMessage) as GuideSlate | undefined;
 			if (!reply) throw new Error('The background did not answer.');
 			setSlate(reply);
 			setSlateFailed(false);
@@ -202,7 +202,7 @@ const App = () => {
 		prefsRef.current = next;
 		setPrefs(next);
 		void persistStoredUserPreferences(next)
-			.then(() => browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: next }))
+			.then(() => browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: next } satisfies ExtensionMessage))
 			.catch(() => {});
 	};
 

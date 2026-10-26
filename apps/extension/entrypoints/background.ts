@@ -290,7 +290,7 @@ export default defineBackground(() => {
 		const next = { ...endRecords };
 		for (const { id, endedAt } of ended) next[id] = { ...next[id], endedAt };
 		storeEndRecords(next);
-		browser.runtime.sendMessage({ type: 'GUIDE_SLATE_UPDATED' }).catch(() => {});
+		browser.runtime.sendMessage({ type: 'GUIDE_SLATE_UPDATED' } satisfies ExtensionMessage).catch(() => {});
 	};
 
 	const history = new Map<string, ScoreSnapshot[]>();
@@ -486,7 +486,7 @@ export default defineBackground(() => {
 	});
 
 	const broadcastScoresUpdated = () => {
-		browser.runtime.sendMessage({ type: 'SCORES_UPDATED', ...buildBackgroundState() }).catch(() => {});
+		browser.runtime.sendMessage({ type: 'SCORES_UPDATED', ...buildBackgroundState() } satisfies ExtensionMessage).catch(() => {});
 	};
 
 

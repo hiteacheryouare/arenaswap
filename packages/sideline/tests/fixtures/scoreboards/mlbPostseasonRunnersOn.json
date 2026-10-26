@@ -1,0 +1,900 @@
+{
+	"recordedAt": "2026-10-04T00:53:13.454Z",
+	"league": "mlb",
+	"source": "scripts/powerscore/recordings/2026-10-03/20-1791071042937.jsonl.gz, scoreboard line at ts 1791075193454; links, headlines and uids removed",
+	"event": {
+		"id": "401907985",
+		"date": "2026-10-03T22:30Z",
+		"name": "New York Yankees at Tampa Bay Rays",
+		"shortName": "NYY @ TB",
+		"season": {
+			"year": 2026,
+			"type": 3,
+			"slug": "post-season"
+		},
+		"competitions": [
+			{
+				"id": "401907985",
+				"date": "2026-10-03T22:30Z",
+				"attendance": 0,
+				"type": {
+					"id": "15",
+					"abbreviation": "QTR"
+				},
+				"timeValid": true,
+				"neutralSite": false,
+				"conferenceCompetition": true,
+				"playByPlayAvailable": true,
+				"recent": true,
+				"wasSuspended": false,
+				"venue": {
+					"id": "31",
+					"fullName": "Tropicana Field",
+					"address": {
+						"city": "St. Petersburg",
+						"state": "Florida"
+					},
+					"indoor": true
+				},
+				"competitors": [
+					{
+						"id": "30",
+						"type": "team",
+						"order": 0,
+						"homeAway": "home",
+						"team": {
+							"id": "30",
+							"location": "Tampa Bay",
+							"name": "Rays",
+							"abbreviation": "TB",
+							"displayName": "Tampa Bay Rays",
+							"shortDisplayName": "Rays",
+							"color": "092c5c",
+							"alternateColor": "8fbce6",
+							"isActive": true,
+							"logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/tb.png"
+						},
+						"score": "1",
+						"linescores": [
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 1
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 2
+							},
+							{
+								"value": 1,
+								"displayValue": "1",
+								"period": 3
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 4
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 5
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 6
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 7
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 8
+							}
+						],
+						"statistics": [
+							{
+								"name": "hits",
+								"abbreviation": "H",
+								"displayValue": "5"
+							},
+							{
+								"name": "runs",
+								"abbreviation": "R",
+								"displayValue": "1"
+							},
+							{
+								"name": "avg",
+								"abbreviation": "AVG",
+								"displayValue": ".179"
+							},
+							{
+								"name": "saves",
+								"abbreviation": "SV",
+								"displayValue": "0"
+							},
+							{
+								"name": "losses",
+								"abbreviation": "L",
+								"displayValue": "0"
+							},
+							{
+								"name": "wins",
+								"abbreviation": "W",
+								"displayValue": "0"
+							},
+							{
+								"name": "ERA",
+								"abbreviation": "ERA",
+								"displayValue": "0.00"
+							},
+							{
+								"name": "errors",
+								"abbreviation": "E",
+								"displayValue": "0"
+							}
+						],
+						"leaders": [
+							{
+								"name": "avg",
+								"displayName": "Batting Average",
+								"shortDisplayName": "BA",
+								"abbreviation": "AVG",
+								"leaders": [
+									{
+										"displayValue": "1-4",
+										"value": 0.25,
+										"athlete": {
+											"id": "33481",
+											"fullName": "Yandy Diaz",
+											"displayName": "Yandy Diaz",
+											"shortName": "Y. Diaz",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/33481.png",
+											"jersey": "2",
+											"position": {
+												"abbreviation": "DH"
+											},
+											"team": {
+												"id": "30"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "30"
+										}
+									}
+								]
+							},
+							{
+								"name": "homeRuns",
+								"displayName": "Home Runs",
+								"shortDisplayName": "HR",
+								"abbreviation": "HR",
+								"leaders": [
+									{
+										"displayValue": "1-4, HR, RBI, R",
+										"value": 1,
+										"athlete": {
+											"id": "40810",
+											"fullName": "Jonathan Aranda",
+											"displayName": "Jonathan Aranda",
+											"shortName": "J. Aranda",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/40810.png",
+											"jersey": "8",
+											"position": {
+												"abbreviation": "1B"
+											},
+											"team": {
+												"id": "30"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "30"
+										}
+									}
+								]
+							},
+							{
+								"name": "RBIs",
+								"displayName": "Runs Batted In",
+								"shortDisplayName": "RBI",
+								"abbreviation": "RBI",
+								"leaders": [
+									{
+										"displayValue": "1-4, HR, RBI, R",
+										"value": 1,
+										"athlete": {
+											"id": "40810",
+											"fullName": "Jonathan Aranda",
+											"displayName": "Jonathan Aranda",
+											"shortName": "J. Aranda",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/40810.png",
+											"jersey": "8",
+											"position": {
+												"abbreviation": "1B"
+											},
+											"team": {
+												"id": "30"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "30"
+										}
+									}
+								]
+							},
+							{
+								"name": "MLBRating",
+								"displayName": "MLB Rating",
+								"shortDisplayName": "RAT",
+								"abbreviation": "RAT",
+								"leaders": [
+									{
+										"displayValue": "8.0 IP, 0 ER, H, 10 K, 2 BB",
+										"value": 88,
+										"athlete": {
+											"id": "42584",
+											"fullName": "Drew Rasmussen",
+											"displayName": "Drew Rasmussen",
+											"shortName": "D. Rasmussen",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/42584.png",
+											"jersey": "57",
+											"position": {
+												"abbreviation": "SP"
+											},
+											"team": {
+												"id": "30"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "30"
+										}
+									}
+								]
+							},
+							{
+								"name": "MLBRating",
+								"displayName": "MLB Rating",
+								"shortDisplayName": "MLB",
+								"abbreviation": "MLB",
+								"leaders": [
+									{
+										"displayValue": "1-4, HR, RBI, R",
+										"value": 65.25,
+										"athlete": {
+											"id": "40810",
+											"fullName": "Jonathan Aranda",
+											"displayName": "Jonathan Aranda",
+											"shortName": "J. Aranda",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/40810.png",
+											"jersey": "8",
+											"position": {
+												"abbreviation": "1B"
+											},
+											"team": {
+												"id": "30"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "30"
+										}
+									}
+								]
+							}
+						],
+						"probables": [
+							{
+								"name": "probableStartingPitcher",
+								"displayName": "Probable Starting Pitcher",
+								"shortDisplayName": "Starter",
+								"abbreviation": "SP",
+								"playerId": 42584,
+								"athlete": {
+									"id": "42584",
+									"fullName": "Drew Rasmussen",
+									"displayName": "Drew Rasmussen",
+									"shortName": "D. Rasmussen",
+									"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/42584.png",
+									"jersey": "57",
+									"position": "SP",
+									"team": {
+										"id": "30"
+									}
+								},
+								"statistics": [],
+								"record": ""
+							}
+						],
+						"hits": 5,
+						"errors": 0,
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "Total",
+								"type": "total",
+								"summary": "98-64"
+							},
+							{
+								"name": "Home",
+								"abbreviation": "Home",
+								"type": "home",
+								"summary": "55-26"
+							},
+							{
+								"name": "Road",
+								"abbreviation": "AWAY",
+								"type": "road",
+								"summary": "43-38"
+							}
+						]
+					},
+					{
+						"id": "10",
+						"type": "team",
+						"order": 1,
+						"homeAway": "away",
+						"team": {
+							"id": "10",
+							"location": "New York",
+							"name": "Yankees",
+							"abbreviation": "NYY",
+							"displayName": "New York Yankees",
+							"shortDisplayName": "Yankees",
+							"color": "132448",
+							"alternateColor": "c4ced4",
+							"isActive": true,
+							"logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/nyy.png"
+						},
+						"score": "0",
+						"linescores": [
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 1
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 2
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 3
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 4
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 5
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 6
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 7
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 8
+							}
+						],
+						"statistics": [
+							{
+								"name": "hits",
+								"abbreviation": "H",
+								"displayValue": "1"
+							},
+							{
+								"name": "runs",
+								"abbreviation": "R",
+								"displayValue": "0"
+							},
+							{
+								"name": "avg",
+								"abbreviation": "AVG",
+								"displayValue": ".042"
+							},
+							{
+								"name": "saves",
+								"abbreviation": "SV",
+								"displayValue": "0"
+							},
+							{
+								"name": "losses",
+								"abbreviation": "L",
+								"displayValue": "0"
+							},
+							{
+								"name": "wins",
+								"abbreviation": "W",
+								"displayValue": "0"
+							},
+							{
+								"name": "ERA",
+								"abbreviation": "ERA",
+								"displayValue": "1.17"
+							},
+							{
+								"name": "errors",
+								"abbreviation": "E",
+								"displayValue": "0"
+							}
+						],
+						"leaders": [
+							{
+								"name": "avg",
+								"displayName": "Batting Average",
+								"shortDisplayName": "BA",
+								"abbreviation": "AVG",
+								"leaders": [
+									{
+										"displayValue": "1-3, 2B, K",
+										"value": 0.3333333432674408,
+										"athlete": {
+											"id": "4683349",
+											"fullName": "Austin Wells",
+											"displayName": "Austin Wells",
+											"shortName": "A. Wells",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/4683349.png",
+											"jersey": "28",
+											"position": {
+												"abbreviation": "C"
+											},
+											"team": {
+												"id": "10"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "10"
+										}
+									}
+								]
+							},
+							{
+								"name": "homeRuns",
+								"displayName": "Home Runs",
+								"shortDisplayName": "HR",
+								"abbreviation": "HR",
+								"leaders": [
+									{
+										"displayValue": "0-2",
+										"value": 0,
+										"athlete": {
+											"id": "33247",
+											"fullName": "Ryan McMahon",
+											"displayName": "Ryan McMahon",
+											"shortName": "R. McMahon",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/33247.png",
+											"jersey": "19",
+											"position": {
+												"abbreviation": "3B"
+											},
+											"team": {
+												"id": "10"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "10"
+										}
+									}
+								]
+							},
+							{
+								"name": "RBIs",
+								"displayName": "Runs Batted In",
+								"shortDisplayName": "RBI",
+								"abbreviation": "RBI",
+								"leaders": [
+									{
+										"displayValue": "0-2",
+										"value": 0,
+										"athlete": {
+											"id": "33247",
+											"fullName": "Ryan McMahon",
+											"displayName": "Ryan McMahon",
+											"shortName": "R. McMahon",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/33247.png",
+											"jersey": "19",
+											"position": {
+												"abbreviation": "3B"
+											},
+											"team": {
+												"id": "10"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "10"
+										}
+									}
+								]
+							},
+							{
+								"name": "MLBRating",
+								"displayName": "MLB Rating",
+								"shortDisplayName": "RAT",
+								"abbreviation": "RAT",
+								"leaders": [
+									{
+										"displayValue": "1-3, 2B, K",
+										"value": 61.25,
+										"athlete": {
+											"id": "4683349",
+											"fullName": "Austin Wells",
+											"displayName": "Austin Wells",
+											"shortName": "A. Wells",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/4683349.png",
+											"jersey": "28",
+											"position": {
+												"abbreviation": "C"
+											},
+											"team": {
+												"id": "10"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "10"
+										}
+									}
+								]
+							},
+							{
+								"name": "MLBRating",
+								"displayName": "MLB Rating",
+								"shortDisplayName": "MLB",
+								"abbreviation": "MLB",
+								"leaders": [
+									{
+										"displayValue": "1-3, 2B, K",
+										"value": 61.25,
+										"athlete": {
+											"id": "4683349",
+											"fullName": "Austin Wells",
+											"displayName": "Austin Wells",
+											"shortName": "A. Wells",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/4683349.png",
+											"jersey": "28",
+											"position": {
+												"abbreviation": "C"
+											},
+											"team": {
+												"id": "10"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "10"
+										}
+									}
+								]
+							}
+						],
+						"probables": [
+							{
+								"name": "probableStartingPitcher",
+								"displayName": "Probable Starting Pitcher",
+								"shortDisplayName": "Starter",
+								"abbreviation": "SP",
+								"playerId": 32081,
+								"athlete": {
+									"id": "32081",
+									"fullName": "Gerrit Cole",
+									"displayName": "Gerrit Cole",
+									"shortName": "G. Cole",
+									"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/32081.png",
+									"jersey": "45",
+									"position": "SP",
+									"team": {
+										"id": "10"
+									}
+								},
+								"statistics": [],
+								"record": ""
+							}
+						],
+						"hits": 1,
+						"errors": 0,
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "Total",
+								"type": "total",
+								"summary": "93-68"
+							},
+							{
+								"name": "Home",
+								"abbreviation": "Home",
+								"type": "home",
+								"summary": "46-34"
+							},
+							{
+								"name": "Road",
+								"abbreviation": "AWAY",
+								"type": "road",
+								"summary": "47-34"
+							}
+						]
+					}
+				],
+				"notes": [
+					{
+						"type": "event",
+						"headline": "ALDS - Game 1"
+					}
+				],
+				"situation": {
+					"lastPlay": {
+						"id": "4019079851504010001",
+						"type": {
+							"id": "1",
+							"text": "Start Batter/Pitcher",
+							"alternativeText": "Now at bat",
+							"type": "start-batterpitcher"
+						},
+						"text": "Paul Blackburn pitches to Liam Hicks",
+						"scoreValue": 0,
+						"team": {
+							"id": "30"
+						},
+						"atBatId": "4019079851504",
+						"summaryType": "A",
+						"athletesInvolved": []
+					},
+					"balls": 0,
+					"strikes": 0,
+					"outs": 2,
+					"onFirst": true,
+					"pitcher": {
+						"playerId": 32776,
+						"period": 8,
+						"athlete": {
+							"id": "32776",
+							"fullName": "Paul Blackburn",
+							"displayName": "Paul Blackburn",
+							"shortName": "P. Blackburn",
+							"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/32776.png",
+							"jersey": "58",
+							"position": "RP",
+							"team": {
+								"id": "10"
+							}
+						},
+						"projections": {
+							"$ref": "http://sports.core.api.espn.pvt/v2/sports/baseball/leagues/mlb/events/401907985/competitions/401907985/competitors/10/roster/32776/projections?lang=en&region=us"
+						},
+						"summary": "1.2 IP, 0 ER, 0 H, BB"
+					},
+					"batter": {
+						"playerId": 4725251,
+						"period": 8,
+						"athlete": {
+							"id": "4725251",
+							"fullName": "Liam Hicks",
+							"displayName": "Liam Hicks",
+							"shortName": "L. Hicks",
+							"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/4725251.png",
+							"jersey": "34",
+							"position": "C",
+							"team": {
+								"id": "30"
+							}
+						},
+						"projections": {
+							"$ref": "http://sports.core.api.espn.pvt/v2/sports/baseball/leagues/mlb/events/401907985/competitions/401907985/competitors/30/roster/4725251/projections?lang=en&region=us"
+						},
+						"summary": "1-3, 2B"
+					},
+					"onSecond": false,
+					"onThird": false
+				},
+				"status": {
+					"clock": 0,
+					"displayClock": "0:00",
+					"period": 8,
+					"type": {
+						"id": "2",
+						"name": "STATUS_IN_PROGRESS",
+						"state": "in",
+						"completed": false,
+						"description": "In Progress",
+						"detail": "Bottom 8th",
+						"shortDetail": "Bot 8th"
+					}
+				},
+				"broadcasts": [
+					{
+						"market": "national",
+						"names": [
+							"TBS",
+							"truTV"
+						]
+					}
+				],
+				"leaders": [
+					{
+						"name": "MLBRating",
+						"displayName": "MLB Rating",
+						"shortDisplayName": "RAT",
+						"abbreviation": "RAT",
+						"leaders": [
+							{
+								"displayValue": "8.0 IP, 0 ER, H, 10 K, 2 BB",
+								"value": 88,
+								"athlete": {
+									"id": "42584",
+									"fullName": "Drew Rasmussen",
+									"displayName": "Drew Rasmussen",
+									"shortName": "D. Rasmussen",
+									"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/42584.png",
+									"jersey": "57",
+									"position": {
+										"abbreviation": "SP"
+									},
+									"team": {
+										"id": "30"
+									},
+									"active": true
+								},
+								"team": {
+									"id": "30"
+								}
+							},
+							{
+								"displayValue": "1-4, HR, RBI, R",
+								"value": 65.25,
+								"athlete": {
+									"id": "40810",
+									"fullName": "Jonathan Aranda",
+									"displayName": "Jonathan Aranda",
+									"shortName": "J. Aranda",
+									"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/40810.png",
+									"jersey": "8",
+									"position": {
+										"abbreviation": "1B"
+									},
+									"team": {
+										"id": "30"
+									},
+									"active": true
+								},
+								"team": {
+									"id": "30"
+								}
+							}
+						]
+					}
+				],
+				"format": {
+					"regulation": {
+						"periods": 9
+					}
+				},
+				"startDate": "2026-10-03T22:30Z",
+				"series": {
+					"type": "playoff",
+					"title": "Playoff Series",
+					"summary": "",
+					"completed": false,
+					"totalCompetitions": 5,
+					"competitors": [
+						{
+							"id": "30",
+							"wins": 0,
+							"ties": 0,
+							"href": "http://sports.core.api.espn.pvt/v2/sports/baseball/leagues/mlb/seasons/2026/teams/30?lang=en&region=us"
+						},
+						{
+							"id": "10",
+							"wins": 0,
+							"ties": 0,
+							"href": "http://sports.core.api.espn.pvt/v2/sports/baseball/leagues/mlb/seasons/2026/teams/10?lang=en&region=us"
+						}
+					]
+				},
+				"outsText": "2 Outs",
+				"broadcast": "TBS/truTV",
+				"geoBroadcasts": [
+					{
+						"type": {
+							"id": "5",
+							"shortName": "Radio"
+						},
+						"market": {
+							"id": "1",
+							"type": "National"
+						},
+						"media": {
+							"shortName": "ERADM"
+						},
+						"lang": "en",
+						"region": "us"
+					},
+					{
+						"type": {
+							"id": "1",
+							"shortName": "TV"
+						},
+						"market": {
+							"id": "1",
+							"type": "National"
+						},
+						"media": {
+							"shortName": "TBS"
+						},
+						"lang": "en",
+						"region": "us"
+					},
+					{
+						"type": {
+							"id": "1",
+							"shortName": "TV"
+						},
+						"market": {
+							"id": "1",
+							"type": "National"
+						},
+						"media": {
+							"shortName": "truTV"
+						},
+						"lang": "en",
+						"region": "us"
+					}
+				],
+				"highlights": []
+			}
+		],
+		"weather": {
+			"displayValue": "7",
+			"temperature": 86,
+			"highTemperature": 86,
+			"conditionId": "Cloudy",
+			"link": {
+				"language": "en-US",
+				"rel": [
+					"33705"
+				],
+				"href": "http://www.accuweather.com/en/us/tropicana-field-fl/33712/current-weather/44502_poi?lang=en-us",
+				"text": "Weather",
+				"shortText": "Weather",
+				"isExternal": true,
+				"isPremium": false
+			}
+		},
+		"status": {
+			"clock": 0,
+			"displayClock": "0:00",
+			"period": 8,
+			"type": {
+				"id": "2",
+				"name": "STATUS_IN_PROGRESS",
+				"state": "in",
+				"completed": false,
+				"description": "In Progress",
+				"detail": "Bottom 8th",
+				"shortDetail": "Bot 8th"
+			}
+		}
+	}
+}

@@ -818,6 +818,9 @@ const fetchScoreboard = async (url: string, leagueId: LeagueId, warnKey: string 
 		parsed.droppedEvents,
 		() => `Skipped ${parsed.droppedEvents} unparseable ${leagueId} event(s); kept ${parsed.events.length}.`,
 	);
+	// A board where every event failed to parse has changed shape under us. Read as an answer it is
+	// indistinguishable from a quiet night, so it fails the way an unanswered league does.
+	if (parsed.events.length === 0 && parsed.droppedEvents > 0) throw new LeagueFetchError(leagueId);
 	return parsed;
 };
 

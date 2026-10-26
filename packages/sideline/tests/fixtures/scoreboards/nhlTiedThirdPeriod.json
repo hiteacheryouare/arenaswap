@@ -1,0 +1,823 @@
+{
+	"recordedAt": "2026-10-04T01:28:06.117Z",
+	"league": "nhl",
+	"source": "scripts/powerscore/recordings/2026-10-03/21-1791071042937.jsonl.gz, scoreboard line at ts 1791077286117; links, headlines and uids removed",
+	"event": {
+		"id": "401892435",
+		"date": "2026-10-03T23:00Z",
+		"name": "Carolina Hurricanes at Philadelphia Flyers",
+		"shortName": "CAR @ PHI",
+		"season": {
+			"year": 2027,
+			"type": 2,
+			"slug": "regular-season"
+		},
+		"competitions": [
+			{
+				"id": "401892435",
+				"date": "2026-10-03T23:00Z",
+				"attendance": 0,
+				"type": {
+					"id": "1",
+					"abbreviation": "STD"
+				},
+				"timeValid": true,
+				"neutralSite": false,
+				"playByPlayAvailable": true,
+				"recent": true,
+				"venue": {
+					"id": "1845",
+					"fullName": "Xfinity Mobile Arena",
+					"address": {
+						"city": "Philadelphia",
+						"state": "PA",
+						"country": "USA"
+					},
+					"indoor": true
+				},
+				"competitors": [
+					{
+						"id": "15",
+						"type": "team",
+						"order": 0,
+						"homeAway": "home",
+						"team": {
+							"id": "15",
+							"location": "Philadelphia",
+							"name": "Flyers",
+							"abbreviation": "PHI",
+							"displayName": "Philadelphia Flyers",
+							"shortDisplayName": "Flyers",
+							"color": "fe5823",
+							"isActive": true,
+							"venue": {
+								"id": "1845"
+							},
+							"logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/phi.png"
+						},
+						"score": "2",
+						"linescores": [
+							{
+								"value": 1,
+								"displayValue": "1",
+								"period": 1
+							},
+							{
+								"value": 1,
+								"displayValue": "1",
+								"period": 2
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 3
+							}
+						],
+						"statistics": [
+							{
+								"name": "saves",
+								"abbreviation": "SV",
+								"displayValue": "34"
+							},
+							{
+								"name": "savePct",
+								"abbreviation": "SV%",
+								"displayValue": ".944"
+							},
+							{
+								"name": "goals",
+								"abbreviation": "G",
+								"displayValue": "2"
+							},
+							{
+								"name": "ytdGoals",
+								"abbreviation": "YTDG",
+								"displayValue": "4"
+							},
+							{
+								"name": "assists",
+								"abbreviation": "A",
+								"displayValue": "3"
+							},
+							{
+								"name": "points",
+								"abbreviation": "PTS",
+								"displayValue": "5"
+							}
+						],
+						"leaders": [
+							{
+								"name": "goals",
+								"displayName": "Goals",
+								"shortDisplayName": "Goals",
+								"abbreviation": "G",
+								"leaders": [
+									{
+										"displayValue": "1",
+										"value": 1,
+										"athlete": {
+											"id": "4392072",
+											"fullName": "Owen Tippett",
+											"displayName": "Owen Tippett",
+											"shortName": "O. Tippett",
+											"headshot": "https://a.espncdn.com/i/headshots/nhl/players/full/4392072.png",
+											"jersey": "74",
+											"position": {
+												"abbreviation": "RW"
+											},
+											"team": {
+												"id": "15"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "15"
+										},
+										"statistics": [
+											{
+												"name": "saves",
+												"displayName": "Saves",
+												"shortDisplayName": "Saves",
+												"description": "Total saves.",
+												"abbreviation": "SV",
+												"value": 0,
+												"displayValue": "0"
+											},
+											{
+												"name": "savePct",
+												"displayName": "Save Percentage",
+												"shortDisplayName": "Save Percentage",
+												"description": "Percentage of shots saved.",
+												"abbreviation": "SV%",
+												"value": 0,
+												"displayValue": ".000"
+											},
+											{
+												"name": "plusMinus",
+												"displayName": "Plus/Minus Rating",
+												"shortDisplayName": "Plus/Minus",
+												"description": "Plus/Minus Rating",
+												"abbreviation": "+/-",
+												"value": 1,
+												"displayValue": "1"
+											},
+											{
+												"name": "goals",
+												"displayName": "Goals",
+												"shortDisplayName": "Goals",
+												"description": "Total goals scored.",
+												"abbreviation": "G",
+												"value": 1,
+												"displayValue": "1"
+											},
+											{
+												"name": "ytdGoals",
+												"displayName": "Year to Date Goals",
+												"shortDisplayName": "Year to Date Goals",
+												"description": "Year to date goals/",
+												"abbreviation": "YTDG",
+												"value": 1,
+												"displayValue": "1"
+											},
+											{
+												"name": "assists",
+												"displayName": "Assists",
+												"shortDisplayName": "Assists",
+												"description": "Total goal assists.",
+												"abbreviation": "A",
+												"value": 0,
+												"displayValue": "0"
+											},
+											{
+												"name": "points",
+												"displayName": "Points",
+												"shortDisplayName": "Points",
+												"description": "Points",
+												"abbreviation": "PTS",
+												"value": 1,
+												"displayValue": "1"
+											}
+										]
+									},
+									{
+										"displayValue": "1",
+										"value": 1,
+										"athlete": {
+											"id": "5149170",
+											"fullName": "Matvei Michkov",
+											"displayName": "Matvei Michkov",
+											"shortName": "M. Michkov",
+											"headshot": "https://a.espncdn.com/i/headshots/nhl/players/full/5149170.png",
+											"jersey": "39",
+											"position": {
+												"abbreviation": "RW"
+											},
+											"team": {
+												"id": "15"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "15"
+										},
+										"statistics": [
+											{
+												"name": "saves",
+												"displayName": "Saves",
+												"shortDisplayName": "Saves",
+												"description": "Total saves.",
+												"abbreviation": "SV",
+												"value": 0,
+												"displayValue": "0"
+											},
+											{
+												"name": "savePct",
+												"displayName": "Save Percentage",
+												"shortDisplayName": "Save Percentage",
+												"description": "Percentage of shots saved.",
+												"abbreviation": "SV%",
+												"value": 0,
+												"displayValue": ".000"
+											},
+											{
+												"name": "plusMinus",
+												"displayName": "Plus/Minus Rating",
+												"shortDisplayName": "Plus/Minus",
+												"description": "Plus/Minus Rating",
+												"abbreviation": "+/-",
+												"value": 0,
+												"displayValue": "0"
+											},
+											{
+												"name": "goals",
+												"displayName": "Goals",
+												"shortDisplayName": "Goals",
+												"description": "Total goals scored.",
+												"abbreviation": "G",
+												"value": 1,
+												"displayValue": "1"
+											},
+											{
+												"name": "ytdGoals",
+												"displayName": "Year to Date Goals",
+												"shortDisplayName": "Year to Date Goals",
+												"description": "Year to date goals/",
+												"abbreviation": "YTDG",
+												"value": 1,
+												"displayValue": "1"
+											},
+											{
+												"name": "assists",
+												"displayName": "Assists",
+												"shortDisplayName": "Assists",
+												"description": "Total goal assists.",
+												"abbreviation": "A",
+												"value": 0,
+												"displayValue": "0"
+											},
+											{
+												"name": "points",
+												"displayName": "Points",
+												"shortDisplayName": "Points",
+												"description": "Points",
+												"abbreviation": "PTS",
+												"value": 1,
+												"displayValue": "1"
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "assists",
+								"displayName": "Assists",
+								"shortDisplayName": "Assists",
+								"abbreviation": "A",
+								"leaders": [
+									{
+										"displayValue": "1",
+										"value": 1,
+										"athlete": {
+											"id": "4565230",
+											"fullName": "Trevor Zegras",
+											"displayName": "Trevor Zegras",
+											"shortName": "T. Zegras",
+											"headshot": "https://a.espncdn.com/i/headshots/nhl/players/full/4565230.png",
+											"jersey": "46",
+											"position": {
+												"abbreviation": "C"
+											},
+											"team": {
+												"id": "15"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "15"
+										}
+									}
+								]
+							},
+							{
+								"name": "points",
+								"displayName": "Points",
+								"shortDisplayName": "Points",
+								"abbreviation": "PTS",
+								"leaders": [
+									{
+										"displayValue": "1",
+										"value": 1,
+										"athlete": {
+											"id": "4392072",
+											"fullName": "Owen Tippett",
+											"displayName": "Owen Tippett",
+											"shortName": "O. Tippett",
+											"headshot": "https://a.espncdn.com/i/headshots/nhl/players/full/4392072.png",
+											"jersey": "74",
+											"position": {
+												"abbreviation": "RW"
+											},
+											"team": {
+												"id": "15"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "15"
+										}
+									}
+								]
+							}
+						],
+						"probables": [
+							{
+								"name": "probableStartingGoalie",
+								"displayName": "Probable Starting Goalie",
+								"shortDisplayName": "Starter",
+								"abbreviation": "SG",
+								"playerId": 4271575,
+								"athlete": {
+									"id": "4271575",
+									"fullName": "Joseph Woll",
+									"displayName": "Joseph Woll",
+									"shortName": "J. Woll",
+									"headshot": "https://a.espncdn.com/i/headshots/nhl/players/full/4271575.png",
+									"jersey": "53",
+									"position": "G",
+									"team": {
+										"id": "15"
+									}
+								},
+								"status": {
+									"id": "102",
+									"name": "Confirmed",
+									"type": "confirmed",
+									"abbreviation": "Confirmed"
+								},
+								"statistics": [],
+								"record": ""
+							}
+						],
+						"curatedRank": {
+							"current": 99
+						},
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "TOTAL",
+								"type": "total",
+								"summary": "0-1-1"
+							},
+							{
+								"name": "Home",
+								"abbreviation": "HOME",
+								"type": "home",
+								"summary": "0-1-0"
+							},
+							{
+								"name": "Road",
+								"abbreviation": "AWAY",
+								"type": "road",
+								"summary": "0-0-1"
+							}
+						]
+					},
+					{
+						"id": "7",
+						"type": "team",
+						"order": 1,
+						"homeAway": "away",
+						"team": {
+							"id": "7",
+							"location": "Carolina",
+							"name": "Hurricanes",
+							"abbreviation": "CAR",
+							"displayName": "Carolina Hurricanes",
+							"shortDisplayName": "Hurricanes",
+							"color": "e30426",
+							"isActive": true,
+							"venue": {
+								"id": "999"
+							},
+							"logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/car.png"
+						},
+						"score": "2",
+						"linescores": [
+							{
+								"value": 1,
+								"displayValue": "1",
+								"period": 1
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 2
+							},
+							{
+								"value": 1,
+								"displayValue": "1",
+								"period": 3
+							}
+						],
+						"statistics": [
+							{
+								"name": "saves",
+								"abbreviation": "SV",
+								"displayValue": "15"
+							},
+							{
+								"name": "savePct",
+								"abbreviation": "SV%",
+								"displayValue": ".882"
+							},
+							{
+								"name": "goals",
+								"abbreviation": "G",
+								"displayValue": "2"
+							},
+							{
+								"name": "ytdGoals",
+								"abbreviation": "YTDG",
+								"displayValue": "4"
+							},
+							{
+								"name": "assists",
+								"abbreviation": "A",
+								"displayValue": "4"
+							},
+							{
+								"name": "points",
+								"abbreviation": "PTS",
+								"displayValue": "6"
+							}
+						],
+						"leaders": [
+							{
+								"name": "goals",
+								"displayName": "Goals",
+								"shortDisplayName": "Goals",
+								"abbreviation": "G",
+								"leaders": [
+									{
+										"displayValue": "2",
+										"value": 2,
+										"athlete": {
+											"id": "3904173",
+											"fullName": "Sebastian Aho",
+											"displayName": "Sebastian Aho",
+											"shortName": "S. Aho",
+											"headshot": "https://a.espncdn.com/i/headshots/nhl/players/full/3904173.png",
+											"jersey": "20",
+											"position": {
+												"abbreviation": "C"
+											},
+											"team": {
+												"id": "7"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "7"
+										},
+										"statistics": [
+											{
+												"name": "saves",
+												"displayName": "Saves",
+												"shortDisplayName": "Saves",
+												"description": "Total saves.",
+												"abbreviation": "SV",
+												"value": 0,
+												"displayValue": "0"
+											},
+											{
+												"name": "savePct",
+												"displayName": "Save Percentage",
+												"shortDisplayName": "Save Percentage",
+												"description": "Percentage of shots saved.",
+												"abbreviation": "SV%",
+												"value": 0,
+												"displayValue": ".000"
+											},
+											{
+												"name": "plusMinus",
+												"displayName": "Plus/Minus Rating",
+												"shortDisplayName": "Plus/Minus",
+												"description": "Plus/Minus Rating",
+												"abbreviation": "+/-",
+												"value": 0,
+												"displayValue": "0"
+											},
+											{
+												"name": "goals",
+												"displayName": "Goals",
+												"shortDisplayName": "Goals",
+												"description": "Total goals scored.",
+												"abbreviation": "G",
+												"value": 2,
+												"displayValue": "2"
+											},
+											{
+												"name": "ytdGoals",
+												"displayName": "Year to Date Goals",
+												"shortDisplayName": "Year to Date Goals",
+												"description": "Year to date goals/",
+												"abbreviation": "YTDG",
+												"value": 3,
+												"displayValue": "3"
+											},
+											{
+												"name": "assists",
+												"displayName": "Assists",
+												"shortDisplayName": "Assists",
+												"description": "Total goal assists.",
+												"abbreviation": "A",
+												"value": 0,
+												"displayValue": "0"
+											},
+											{
+												"name": "points",
+												"displayName": "Points",
+												"shortDisplayName": "Points",
+												"description": "Points",
+												"abbreviation": "PTS",
+												"value": 2,
+												"displayValue": "2"
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "assists",
+								"displayName": "Assists",
+								"shortDisplayName": "Assists",
+								"abbreviation": "A",
+								"leaders": [
+									{
+										"displayValue": "2",
+										"value": 2,
+										"athlete": {
+											"id": "4352683",
+											"fullName": "Andrei Svechnikov",
+											"displayName": "Andrei Svechnikov",
+											"shortName": "A. Svechnikov",
+											"headshot": "https://a.espncdn.com/i/headshots/nhl/players/full/4352683.png",
+											"jersey": "37",
+											"position": {
+												"abbreviation": "LW"
+											},
+											"team": {
+												"id": "7"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "7"
+										}
+									}
+								]
+							},
+							{
+								"name": "points",
+								"displayName": "Points",
+								"shortDisplayName": "Points",
+								"abbreviation": "PTS",
+								"leaders": [
+									{
+										"displayValue": "2",
+										"value": 2,
+										"athlete": {
+											"id": "3904173",
+											"fullName": "Sebastian Aho",
+											"displayName": "Sebastian Aho",
+											"shortName": "S. Aho",
+											"headshot": "https://a.espncdn.com/i/headshots/nhl/players/full/3904173.png",
+											"jersey": "20",
+											"position": {
+												"abbreviation": "C"
+											},
+											"team": {
+												"id": "7"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "7"
+										}
+									}
+								]
+							}
+						],
+						"probables": [
+							{
+								"name": "probableStartingGoalie",
+								"displayName": "Probable Starting Goalie",
+								"shortDisplayName": "Starter",
+								"abbreviation": "SG",
+								"playerId": 4565259,
+								"athlete": {
+									"id": "4565259",
+									"fullName": "Pyotr Kochetkov",
+									"displayName": "Pyotr Kochetkov",
+									"shortName": "P. Kochetkov",
+									"headshot": "https://a.espncdn.com/i/headshots/nhl/players/full/4565259.png",
+									"jersey": "52",
+									"position": "G",
+									"team": {
+										"id": "7"
+									}
+								},
+								"status": {
+									"id": "102",
+									"name": "Confirmed",
+									"type": "confirmed",
+									"abbreviation": "Confirmed"
+								},
+								"statistics": [],
+								"record": ""
+							}
+						],
+						"curatedRank": {
+							"current": 99
+						},
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "TOTAL",
+								"type": "total",
+								"summary": "0-1-1"
+							},
+							{
+								"name": "Home",
+								"abbreviation": "HOME",
+								"type": "home",
+								"summary": "0-1-1"
+							},
+							{
+								"name": "Road",
+								"abbreviation": "AWAY",
+								"type": "road",
+								"summary": "0-0-0"
+							}
+						]
+					}
+				],
+				"notes": [],
+				"situation": {
+					"lastPlay": {
+						"id": "401892435000009320",
+						"type": {
+							"id": "507",
+							"text": "Missed",
+							"abbreviation": "shot-missed"
+						},
+						"text": "Mike Reilly Missed Shot Wide Right",
+						"scoreValue": 0,
+						"team": {
+							"id": "7"
+						},
+						"athletesInvolved": [
+							{
+								"id": "2563077",
+								"fullName": "Mike Reilly",
+								"displayName": "Mike Reilly",
+								"shortName": "M. Reilly",
+								"headshot": "https://a.espncdn.com/i/headshots/nhl/players/full/2563077.png",
+								"jersey": "6",
+								"position": "D",
+								"team": {
+									"id": "7"
+								}
+							}
+						]
+					}
+				},
+				"status": {
+					"clock": 349,
+					"displayClock": "5:49",
+					"period": 3,
+					"type": {
+						"id": "2",
+						"name": "STATUS_IN_PROGRESS",
+						"state": "in",
+						"completed": false,
+						"description": "In Progress",
+						"detail": "5:49 - 3rd Period",
+						"shortDetail": "5:49 - 3rd"
+					}
+				},
+				"broadcasts": [
+					{
+						"market": "national",
+						"names": [
+							"ESPN+"
+						]
+					},
+					{
+						"market": "home",
+						"names": [
+							"NBC Sports Phil"
+						]
+					},
+					{
+						"market": "away",
+						"names": [
+							"CARNHL"
+						]
+					}
+				],
+				"format": {
+					"regulation": {
+						"periods": 3
+					}
+				},
+				"startDate": "2026-10-03T23:00Z",
+				"broadcast": "ESPN+",
+				"geoBroadcasts": [
+					{
+						"type": {
+							"id": "4",
+							"shortName": "Streaming"
+						},
+						"market": {
+							"id": "1",
+							"type": "National"
+						},
+						"media": {
+							"shortName": "ESPN+",
+							"logo": "https://a.espncdn.com/guid/322a7e47-3cdb-3b5c-ab1b-678e1f2c27e5/logos/default.png",
+							"darkLogo": "https://a.espncdn.com/guid/322a7e47-3cdb-3b5c-ab1b-678e1f2c27e5/logos/default-dark.png"
+						},
+						"lang": "en",
+						"region": "us"
+					},
+					{
+						"type": {
+							"id": "1",
+							"shortName": "TV"
+						},
+						"market": {
+							"id": "2",
+							"type": "Home"
+						},
+						"media": {
+							"shortName": "NBC Sports Phil"
+						},
+						"lang": "en",
+						"region": "us"
+					},
+					{
+						"type": {
+							"id": "1",
+							"shortName": "TV"
+						},
+						"market": {
+							"id": "3",
+							"type": "Away"
+						},
+						"media": {
+							"shortName": "CARNHL"
+						},
+						"lang": "en",
+						"region": "us"
+					}
+				],
+				"highlights": []
+			}
+		],
+		"status": {
+			"clock": 349,
+			"displayClock": "5:49",
+			"period": 3,
+			"type": {
+				"id": "2",
+				"name": "STATUS_IN_PROGRESS",
+				"state": "in",
+				"completed": false,
+				"description": "In Progress",
+				"detail": "5:49 - 3rd Period",
+				"shortDetail": "5:49 - 3rd"
+			}
+		}
+	}
+}
