@@ -133,11 +133,23 @@ const warnOnDroppedCountChange = (key: string, dropped: number, buildMessage: ()
 };
 
 
-const parseStatus = (state: string): Game['status'] => {
+const warnedUnknownStates = new Set<string>();
+
+// A state ESPN has never sent before is read from the rest of the status, so the game stays on the
+// slate: scheduled games arrive with period 0, and `completed` is the feed's own word on a final.
+const parseStatus = (status: EspnEvent['competitions'][number]['status']): Game['status'] | undefined => {
+	const state = status.type?.state;
+	if (!state?.trim()) return undefined;
 	const normalized = state.trim().toLowerCase();
 	if (normalized === 'pre' || normalized === 'scheduled') return 'pre';
 	if (normalized === 'in' || normalized === 'in_progress' || normalized === 'inprogress' || normalized === 'live') return 'in';
-	return 'post';
+	if (normalized === 'post') return 'post';
+	if (!warnedUnknownStates.has(state)) {
+		warnedUnknownStates.add(state);
+		logWarn(`Unrecognised game state "${state}" (${status.type?.name ?? 'no name'}); reading it from the period and completed flag.`);
+	}
+	if (status.type?.completed === true) return 'post';
+	return (status.period ?? 0) > 0 ? 'in' : 'pre';
 };
 
 // ESPN files its scoreboard by US Eastern calendar date, not by UTC: a 2026-09-04T02:10Z first
@@ -665,7 +677,8 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 	// A suspended match arrives as `post` with `completed: false` and usually resumes within the
 	// hour, so it stays live and delayed. Baseball is the exception: a suspended game resumes on a
 	// later day, and reading it as finished is the closer answer until then.
-	const parsedState = parseStatus(status.type?.state ?? 'post');
+	const parsedState = parseStatus(status);
+	if (!parsedState) return null;
 	const isSuspendedMidGame = parsedState === 'post' && status.type?.completed === false && isDelayed && !isInningSport;
 	const state = isSuspendedMidGame ? 'in' : parsedState;
 	const situation = comp.situation;

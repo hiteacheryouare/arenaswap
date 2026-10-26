@@ -12,7 +12,10 @@ import type { LeagueId } from '@arenaswap/core';
 export type DeadIntervalKind =
 	| 'inningBreak' | 'pitchingChange' | 'review' | 'delay' | 'gap'
 	| 'intermission' | 'periodEnd' | 'twoMinuteWarning' | 'tvTimeout' | 'teamTimeout'
-	| 'afterScore' | 'afterKickoff' | 'afterPunt' | 'afterGoal';
+	| 'afterScore' | 'afterKickoff' | 'afterPunt' | 'afterGoal'
+	// The feed entered the plays that end it late, all under one timestamp, so how long play really
+	// stopped is unknown.
+	| 'unrecorded';
 
 export interface Play {
 	at: number;
@@ -21,6 +24,9 @@ export interface Play {
 	typeKey: string;
 	text: string;
 	summaryType?: string;
+	period?: number;
+	// Seconds on the game clock.
+	clock?: number;
 }
 
 export interface DeadInterval {
@@ -40,6 +46,8 @@ interface RawPlay {
 	type?: { text?: string; type?: string; abbreviation?: string };
 	sequenceNumber?: string | number;
 	summaryType?: string;
+	period?: { number?: number };
+	clock?: { displayValue?: string };
 }
 
 interface RawSummary {
@@ -48,6 +56,14 @@ interface RawSummary {
 }
 
 export const playByPlayPath = (directory: string, league: LeagueId, gameId: string): string => join(directory, `${league}-${gameId}.json`);
+
+// "11:08", or "17.7" under a minute.
+const clockSeconds = (display: string | undefined): number | undefined => {
+	if (!display) return undefined;
+	const [minutes, seconds] = display.includes(':') ? display.split(':') : ['0', display];
+	const value = (Number(minutes) * 60) + Number(seconds);
+	return Number.isFinite(value) ? value : undefined;
+};
 
 export const readPlays = (file: string): Play[] => {
 	if (!existsSync(file)) return [];
@@ -64,6 +80,8 @@ export const readPlays = (file: string): Play[] => {
 			typeKey: play.type?.type ?? play.type?.abbreviation ?? '',
 			text: play.text ?? '',
 			summaryType: play.summaryType,
+			period: play.period?.number,
+			clock: clockSeconds(play.clock?.displayValue),
 			sequence: Number(play.sequenceNumber ?? 0),
 		}))
 		.toSorted((a, b) => a.at - b.at || a.sequence - b.sequence)
@@ -80,6 +98,24 @@ export const isAction = (sport: string, play: Play): boolean => {
 	if (sport === 'basketball') return type === 'jumpball' || !/timeout|substitution|end period|end game|challenge|review|instant replay|jumpball/.test(type);
 	if (sport === 'hockey') return !hockeyDeadTypes.has(type) && !play.text.toLowerCase().includes('timeout');
 	return true;
+};
+
+// A stoppage logs a handful of plays under one timestamp with the clock stopped. A backfill logs a
+// whole stretch of play under one, the clock running through it.
+const backfillGameSeconds = 60;
+
+const backfilledStamps = (plays: Play[]): Set<number> => {
+	const clocks = new Map<string, { at: number; clocks: number[] }>();
+	for (const play of plays) {
+		if (play.clock === undefined) continue;
+		const key = `${play.at}/${play.period}`;
+		const group = clocks.get(key) ?? { at: play.at, clocks: [] };
+		group.clocks.push(play.clock);
+		clocks.set(key, group);
+	}
+	return new Set([...clocks.values()]
+		.filter(group => Math.max(...group.clocks) - Math.min(...group.clocks) > backfillGameSeconds)
+		.map(group => group.at));
 };
 
 const describe = (plays: Play[]): string => plays.map(play => `${play.type}: ${play.text}`.toLowerCase()).join(' | ');
@@ -116,10 +152,12 @@ const labelClockSport = (sport: string, after: Play, inner: Play[], durationMs: 
 export const deadIntervals = (sport: string, plays: Play[]): { intervals: DeadInterval[]; action: Play[] } => {
 	const action = plays.filter(play => isAction(sport, play));
 	const baseball = sport === 'baseball' || sport === 'softball';
+	const backfilled = backfilledStamps(plays);
 	const intervals = action.slice(1).flatMap((next, index): DeadInterval[] => {
 		const after = action[index]!;
 		const durationMs = next.at - after.at;
 		if (durationMs < minimumGapMs) return [];
+		if (backfilled.has(next.at)) return [{ start: after.at, end: next.at, kind: 'unrecorded', after }];
 		// Inning markers are logged at the third out's own timestamp, so baseball takes ties.
 		const inner = baseball
 			? plays.filter(play => play !== after && play !== next && play.at >= after.at && play.at <= next.at)

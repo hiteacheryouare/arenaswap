@@ -46,7 +46,7 @@ export interface ScoreOptions {
 	// Moves the truth later by the feed's lag, to score against what the feed could have known.
 	shiftMs?: number;
 	// Clock sports: halftimes and intermissions are already frozen by the status, so they and the
-	// minute either side of them are left out.
+	// minute either side of them are left out. Unrecorded stretches always are.
 	excludeIntermissions: boolean;
 }
 
@@ -56,10 +56,16 @@ const median = (values: number[]): number | undefined => {
 	return Math.round(sorted[Math.floor(sorted.length / 2)]!);
 };
 
-const flaggedRuns = (polls: PollFlag[]): { start: number; end: number; kind?: string }[] => {
+// Polls inside an excluded interval are already gone, so a run also ends where one sat between two
+// polls; otherwise flags either side of halftime would join into one run spanning it.
+const flaggedRuns = (polls: PollFlag[], separated: (from: number, to: number) => boolean): { start: number; end: number; kind?: string }[] => {
 	const runs: { start: number; end: number; kind?: string }[] = [];
 	let current: { start: number; end: number; kind?: string } | undefined;
 	for (const poll of polls) {
+		if (current && separated(current.end, poll.at)) {
+			runs.push(current);
+			current = undefined;
+		}
 		if (poll.kind && current) current.end = poll.at;
 		else if (poll.kind) current = { start: poll.at, end: poll.at, kind: poll.kind };
 		else if (current) {
@@ -71,17 +77,24 @@ const flaggedRuns = (polls: PollFlag[]): { start: number; end: number; kind?: st
 	return runs;
 };
 
-const prepare = (trace: GameTrace, options: ScoreOptions): { polls: PollFlag[]; intervals: DeadInterval[] } | undefined => {
+interface Prepared {
+	polls: PollFlag[];
+	intervals: DeadInterval[];
+	excluded: DeadInterval[];
+}
+
+const prepare = (trace: GameTrace, options: ScoreOptions): Prepared | undefined => {
 	const shift = options.shiftMs ?? 0;
 	const shifted = trace.intervals.map(interval => ({ ...interval, start: interval.start + shift, end: interval.end + shift }));
-	const intermissions = options.excludeIntermissions ? shifted.filter(interval => interval.kind === 'intermission') : [];
-	const intervals = options.excludeIntermissions ? shifted.filter(interval => interval.kind !== 'intermission') : shifted;
+	const isExcluded = (interval: DeadInterval) => interval.kind === 'unrecorded' || (options.excludeIntermissions && interval.kind === 'intermission');
+	const excluded = shifted.filter(isExcluded);
+	const intervals = shifted.filter(interval => !isExcluded(interval));
 	const first = trace.action[0];
 	const last = trace.action[trace.action.length - 1];
 	if (!first || !last) return undefined;
 	const polls = trace.polls.filter(poll => poll.at >= first.at + shift && poll.at <= last.at + shift
-		&& !intermissions.some(interval => poll.at >= interval.start - 60_000 && poll.at <= interval.end + 60_000));
-	return polls.length > 0 ? { polls, intervals } : undefined;
+		&& !excluded.some(interval => poll.at >= interval.start - 60_000 && poll.at <= interval.end + 60_000));
+	return polls.length > 0 ? { polls, intervals, excluded } : undefined;
 };
 
 export const scoreBreaks = (traces: GameTrace[], options: ScoreOptions): BreakScore => {
@@ -101,7 +114,7 @@ export const scoreBreaks = (traces: GameTrace[], options: ScoreOptions): BreakSc
 	for (const trace of traces) {
 		const prepared = prepare(trace, options);
 		if (!prepared) continue;
-		const { polls, intervals } = prepared;
+		const { polls, intervals, excluded } = prepared;
 		games++;
 		hours += (polls[polls.length - 1]!.at - polls[0]!.at) / 3_600_000;
 		const inside = (at: number) => intervals.some(interval => at >= interval.start && at <= interval.end);
@@ -128,7 +141,8 @@ export const scoreBreaks = (traces: GameTrace[], options: ScoreOptions): BreakSc
 			if (release) releases.push((release.at - interval.end) / 1000);
 		}
 
-		for (const run of flaggedRuns(polls)) {
+		const separated = (from: number, to: number) => excluded.some(interval => from < interval.start && to > interval.end);
+		for (const run of flaggedRuns(polls, separated)) {
 			runs++;
 			const tally = byKind[run.kind ?? ''] ??= { runs: 0, falseAlarms: 0 };
 			tally.runs++;

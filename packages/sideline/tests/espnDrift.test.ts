@@ -120,25 +120,30 @@ describe('the three places one bad value costs more than its own row', () => {
 });
 
 describe('a state ESPN has not used before', () => {
-	/* `parseStatus` folds everything it does not recognise into `post`, and `post` is the state the
-	   default slate filters out. So a new `state` string produces no error and no dropped-event
-	   count — the games simply stop appearing, mid-game, while the payload parses cleanly the whole
-	   time. Driven through the real fetch path rather than the parser alone, because the loss is
-	   only visible at the far end. */
-	test('a live game reaches the slate, and the same game in an unknown state does not', async () => {
-		const known = mockScoreboard([liveEvent()]);
-		const before = await known.fetchGamesWithLeagueLogos(['nba'] as LeagueId[], { includeUpcoming: false });
+	/* Reading an unrecognised `state` as `post` used to drop the game from the slate mid-game, with no
+	   error and no dropped-event count. It is read from the period and `completed` flag instead.
+	   Driven through the real fetch path, because the loss was only visible at the far end. */
+	const slateFor = async (status: Record<string, unknown>, options = { includeUpcoming: false }) => {
+		const client = mockScoreboard([liveEvent({ status })]);
+		return (await client.fetchGamesWithLeagueLogos(['nba'] as LeagueId[], options)).games.map(game => game.status);
+	};
 
-		expect(before.games.map(game => game.status)).toContain('in');
-
-		const unknown = mockScoreboard([liveEvent({ status: { type: { state: 'in_review' } } })]);
-		const after = await unknown.fetchGamesWithLeagueLogos(['nba'] as LeagueId[], { includeUpcoming: false });
-
-		expect(after.games).toEqual([]);
-		expect(after.shedLeagues).toEqual([]);
+	test('a game already under way stays live', async () => {
+		expect(await slateFor({ period: 3, type: { state: 'in_review', completed: false } })).toEqual(['in']);
 	});
 
-	test('the payload itself parses cleanly, so nothing counts the loss', () => {
+	test('a game before its first period is upcoming', async () => {
+		expect(await slateFor({ period: 0, type: { state: 'warmups', completed: false } })).toEqual(['pre']);
+	});
+
+	test('a game is final only when the feed says it is completed', () => {
+		const { parseScoreboardEvents } = mockScoreboard([]);
+		const read = (completed: boolean) => parseScoreboardEvents({ events: [liveEvent({ status: { period: 4, type: { state: 'certified', completed } } })] }, 'nba')[0]?.status;
+
+		expect([read(true), read(false)]).toEqual(['post', 'in']);
+	});
+
+	test('the payload itself parses cleanly, so nothing counts it as dropped', () => {
 		const result = parseScoreboard({ events: [liveEvent({ status: { type: { state: 'in_review' } } })] });
 
 		expect(result.droppedEvents).toBe(0);

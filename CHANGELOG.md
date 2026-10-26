@@ -9,6 +9,10 @@
 
 The background worker now stays up while a poll is due within five minutes (a `getPlatformInfo` heartbeat, which Chrome 110+ and Firefox 121+ count, so Firefox's floor is now 121) and sleeps on an `alarms` alarm otherwise, so a game going live is no longer missed until a tab event, and a quiet league polls at its next game's listed start; a fresh install with no leagues no longer logs every league as refusing. Each league poll now reads situations before it scores, waiting at most 2 s, skips situations and summaries when no new play has happened, switches before it saves history or broadcasts, and looks at the tab strip once. The popup's dropdown menus no longer leak the whole list on every view change (Bootstrap 6 alpha's `Menu.dispose` leaves its submenu handlers behind), storage listeners only hear the area they read, and Bootstrap's JS is imported a component at a time, 122 KB off the popup.
 
+## A game in a state we've never seen stays on the slate — 2026-10-24
+
+An unrecognised game state is now read from the period and the feed's `completed` flag instead of being taken as final, so the game no longer vanishes mid-game; a status with no state at all is dropped as malformed. Team switch colours re-measure when `blendSteps` changes. The break scorer no longer joins flags either side of halftime into one false alarm, and it leaves out a stretch the feed backfilled under one timestamp (`unrecorded`, three NBA preseason gaps worth 71 minutes); powerscore-tools now runs in `npm test`.
+
 ## A league that stops parsing reads as stale, not quiet — 2026-10-24
 
 A scoreboard whose every event fails to parse now counts as a league that didn't answer, so its live cards show their age and its polling isn't walked down to dormant mid-game. Every popup and background message is now checked against `ExtensionMessage`, the Cypress fake included, and new tests cover real scoreboard captures for each sport, locale parity, favorite-team confetti and the PowerScore calibration tools.

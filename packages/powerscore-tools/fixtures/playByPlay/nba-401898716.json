@@ -1,0 +1,4234 @@
+{
+	"plays": [
+		{
+			"id": "401898716373",
+			"sequenceNumber": "373",
+			"wallclock": "2026-10-06T03:31:15Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "De'Andre Hunter enters the game for Emanuel Sharp",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "12:00"
+			}
+		},
+		{
+			"id": "401898716374",
+			"sequenceNumber": "374",
+			"wallclock": "2026-10-06T03:31:15Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Precious Achiuwa enters the game for Dylan Cardwell",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "12:00"
+			}
+		},
+		{
+			"id": "401898716377",
+			"sequenceNumber": "377",
+			"wallclock": "2026-10-06T03:31:15Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Kevon Looney enters the game for Adou Thiero",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "12:00"
+			}
+		},
+		{
+			"id": "401898716378",
+			"sequenceNumber": "378",
+			"wallclock": "2026-10-06T03:31:15Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Matisse Thybulle enters the game for Sandro Mamukelashvili",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "12:00"
+			}
+		},
+		{
+			"id": "401898716380",
+			"sequenceNumber": "380",
+			"wallclock": "2026-10-06T03:31:15Z",
+			"type": {
+				"text": "Delay of Game"
+			},
+			"text": "delay of game violation",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "12:00"
+			}
+		},
+		{
+			"id": "401898716381",
+			"sequenceNumber": "381",
+			"wallclock": "2026-10-06T03:31:27Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Matisse Thybulle misses 25-foot three point jumper",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "11:48"
+			}
+		},
+		{
+			"id": "401898716382",
+			"sequenceNumber": "382",
+			"wallclock": "2026-10-06T03:31:27Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Nique Clifford defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "11:48"
+			}
+		},
+		{
+			"id": "401898716383",
+			"sequenceNumber": "383",
+			"wallclock": "2026-10-06T03:31:41Z",
+			"type": {
+				"text": "Shooting Foul"
+			},
+			"text": "Bronny James shooting foul",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "11:33"
+			}
+		},
+		{
+			"id": "401898716385",
+			"sequenceNumber": "385",
+			"wallclock": "2026-10-06T03:32:15Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Maxime Raynaud makes free throw 1 of 2",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "11:33"
+			}
+		},
+		{
+			"id": "401898716386",
+			"sequenceNumber": "386",
+			"wallclock": "2026-10-06T03:32:35Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Maxime Raynaud makes free throw 2 of 2",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "11:33"
+			}
+		},
+		{
+			"id": "401898716387",
+			"sequenceNumber": "387",
+			"wallclock": "2026-10-06T03:32:59Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Ziaire Williams makes 23-foot three point jumper (Bronny James assists)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "11:11"
+			}
+		},
+		{
+			"id": "401898716389",
+			"sequenceNumber": "389",
+			"wallclock": "2026-10-06T03:33:14Z",
+			"type": {
+				"text": "Personal Foul"
+			},
+			"text": "Quentin Grimes personal foul",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "10:56"
+			}
+		},
+		{
+			"id": "401898716391",
+			"sequenceNumber": "391",
+			"wallclock": "2026-10-06T03:33:14Z",
+			"type": {
+				"text": "Free Throw - 1 of 3"
+			},
+			"text": "misses free throw 1 of 3",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "10:56"
+			}
+		},
+		{
+			"id": "401898716392",
+			"sequenceNumber": "392",
+			"wallclock": "2026-10-06T03:33:14Z",
+			"type": {
+				"text": "Ref-Initiated Review (Overturned)"
+			},
+			"text": "(10:56) [Lakers] REF-INITIATED REVIEW (CALL OVERTURNED)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "10:56"
+			}
+		},
+		{
+			"id": "401898716395",
+			"sequenceNumber": "395",
+			"wallclock": "2026-10-06T03:37:09Z",
+			"type": {
+				"text": "Pullup Jump Shot"
+			},
+			"text": "Darius Acuff Jr. misses 18-foot pullup jump shot",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "10:47"
+			}
+		},
+		{
+			"id": "401898716396",
+			"sequenceNumber": "396",
+			"wallclock": "2026-10-06T03:37:09Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Bronny James defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "10:47"
+			}
+		},
+		{
+			"id": "401898716397",
+			"sequenceNumber": "397",
+			"wallclock": "2026-10-06T03:37:16Z",
+			"type": {
+				"text": "Step Back Jump Shot"
+			},
+			"text": "Bronny James makes 25-foot three point step back jumpshot (Matisse Thybulle assists)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "10:40"
+			}
+		},
+		{
+			"id": "401898716399",
+			"sequenceNumber": "399",
+			"wallclock": "2026-10-06T03:37:31Z",
+			"type": {
+				"text": "Turnaround Fade Away Jump Shot"
+			},
+			"text": "Precious Achiuwa makes 6-foot two point shot",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "10:25"
+			}
+		},
+		{
+			"id": "401898716401",
+			"sequenceNumber": "401",
+			"wallclock": "2026-10-06T03:37:59Z",
+			"type": {
+				"text": "Shooting Foul"
+			},
+			"text": "Precious Achiuwa shooting foul",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "10:08"
+			}
+		},
+		{
+			"id": "401898716403",
+			"sequenceNumber": "403",
+			"wallclock": "2026-10-06T03:38:27Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Ziaire Williams makes free throw 1 of 2",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "10:08"
+			}
+		},
+		{
+			"id": "401898716404",
+			"sequenceNumber": "404",
+			"wallclock": "2026-10-06T03:38:50Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Ziaire Williams makes free throw 2 of 2",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "10:08"
+			}
+		},
+		{
+			"id": "401898716406",
+			"sequenceNumber": "406",
+			"wallclock": "2026-10-06T03:38:27Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Emanuel Sharp enters the game for Precious Achiuwa",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "10:08"
+			}
+		},
+		{
+			"id": "401898716407",
+			"sequenceNumber": "407",
+			"wallclock": "2026-10-06T03:39:06Z",
+			"type": {
+				"text": "Driving Floating Jump Shot"
+			},
+			"text": "Darius Acuff Jr. misses driving floating jump shot",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:54"
+			}
+		},
+		{
+			"id": "401898716408",
+			"sequenceNumber": "408",
+			"wallclock": "2026-10-06T03:39:06Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Bronny James defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:54"
+			}
+		},
+		{
+			"id": "401898716412",
+			"sequenceNumber": "412",
+			"wallclock": "2026-10-06T03:39:18Z",
+			"type": {
+				"text": "Driving Layup Shot"
+			},
+			"text": "Matisse Thybulle misses driving layup",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:42"
+			}
+		},
+		{
+			"id": "401898716413",
+			"sequenceNumber": "413",
+			"wallclock": "2026-10-06T03:39:18Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Maxime Raynaud defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:42"
+			}
+		},
+		{
+			"id": "401898716414",
+			"sequenceNumber": "414",
+			"wallclock": "2026-10-06T03:39:23Z",
+			"type": {
+				"text": "Running Jump Shot"
+			},
+			"text": "Emanuel Sharp misses 25-foot running jump shot",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:37"
+			}
+		},
+		{
+			"id": "401898716415",
+			"sequenceNumber": "415",
+			"wallclock": "2026-10-06T03:39:23Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Kevon Looney defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:37"
+			}
+		},
+		{
+			"id": "401898716416",
+			"sequenceNumber": "416",
+			"wallclock": "2026-10-06T03:39:35Z",
+			"type": {
+				"text": "Pullup Jump Shot"
+			},
+			"text": "Bronny James misses 25-foot three point pullup jump shot",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:25"
+			}
+		},
+		{
+			"id": "401898716417",
+			"sequenceNumber": "417",
+			"wallclock": "2026-10-06T03:39:35Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Kevon Looney offensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:25"
+			}
+		},
+		{
+			"id": "401898716418",
+			"sequenceNumber": "418",
+			"wallclock": "2026-10-06T03:39:39Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Quentin Grimes misses 27-foot three point jumper",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:21"
+			}
+		},
+		{
+			"id": "401898716419",
+			"sequenceNumber": "419",
+			"wallclock": "2026-10-06T03:39:39Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Nique Clifford defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:21"
+			}
+		},
+		{
+			"id": "401898716420",
+			"sequenceNumber": "420",
+			"wallclock": "2026-10-06T03:39:46Z",
+			"type": {
+				"text": "Running Layup Shot"
+			},
+			"text": "Emanuel Sharp misses running layup",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:14"
+			}
+		},
+		{
+			"id": "401898716421",
+			"sequenceNumber": "421",
+			"wallclock": "2026-10-06T03:39:46Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Maxime Raynaud offensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:14"
+			}
+		},
+		{
+			"id": "401898716422",
+			"sequenceNumber": "422",
+			"wallclock": "2026-10-06T03:39:49Z",
+			"type": {
+				"text": "Layup Shot Putback"
+			},
+			"text": "Maxime Raynaud misses two point shot",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:11"
+			}
+		},
+		{
+			"id": "401898716423",
+			"sequenceNumber": "423",
+			"wallclock": "2026-10-06T03:39:49Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Kevon Looney defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:11"
+			}
+		},
+		{
+			"id": "401898716424",
+			"sequenceNumber": "424",
+			"wallclock": "2026-10-06T03:39:56Z",
+			"type": {
+				"text": "Shooting Foul"
+			},
+			"text": "Darius Acuff Jr. shooting foul",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:04"
+			}
+		},
+		{
+			"id": "401898716426",
+			"sequenceNumber": "426",
+			"wallclock": "2026-10-06T03:40:21Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Quentin Grimes makes free throw 1 of 2",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:04"
+			}
+		},
+		{
+			"id": "401898716427",
+			"sequenceNumber": "427",
+			"wallclock": "2026-10-06T03:40:36Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Quentin Grimes makes free throw 2 of 2",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "9:04"
+			}
+		},
+		{
+			"id": "401898716428",
+			"sequenceNumber": "428",
+			"wallclock": "2026-10-06T03:40:54Z",
+			"type": {
+				"text": "Personal Foul"
+			},
+			"text": "Bronny James personal foul",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "8:49"
+			}
+		},
+		{
+			"id": "401898716430",
+			"sequenceNumber": "430",
+			"wallclock": "2026-10-06T03:41:28Z",
+			"type": {
+				"text": "Personal Foul"
+			},
+			"text": "Ziaire Williams personal foul",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "8:41"
+			}
+		},
+		{
+			"id": "401898716433",
+			"sequenceNumber": "433",
+			"wallclock": "2026-10-06T03:41:28Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Daeqwon Plowden enters the game for De'Andre Hunter",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "8:41"
+			}
+		},
+		{
+			"id": "401898716435",
+			"sequenceNumber": "435",
+			"wallclock": "2026-10-06T03:42:03Z",
+			"type": {
+				"text": "Shooting Foul"
+			},
+			"text": "Bronny James shooting foul",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "8:35"
+			}
+		},
+		{
+			"id": "401898716437",
+			"sequenceNumber": "437",
+			"wallclock": "2026-10-06T03:42:33Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Emanuel Sharp makes free throw 1 of 2",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "8:35"
+			}
+		},
+		{
+			"id": "401898716438",
+			"sequenceNumber": "438",
+			"wallclock": "2026-10-06T03:42:50Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Emanuel Sharp makes free throw 2 of 2",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "8:35"
+			}
+		},
+		{
+			"id": "401898716439",
+			"sequenceNumber": "439",
+			"wallclock": "2026-10-06T03:43:10Z",
+			"type": {
+				"text": "Fade Away Jump Shot"
+			},
+			"text": "Bronny James misses 15-foot fade away jump shot",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "8:20"
+			}
+		},
+		{
+			"id": "401898716440",
+			"sequenceNumber": "440",
+			"wallclock": "2026-10-06T03:43:10Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Daeqwon Plowden defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "8:20"
+			}
+		},
+		{
+			"id": "401898716442",
+			"sequenceNumber": "442",
+			"wallclock": "2026-10-06T03:43:41Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Maxime Raynaud misses 13-foot jumper",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "8:05"
+			}
+		},
+		{
+			"id": "401898716443",
+			"sequenceNumber": "443",
+			"wallclock": "2026-10-06T03:43:41Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Emanuel Sharp offensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "8:05"
+			}
+		},
+		{
+			"id": "401898716444",
+			"sequenceNumber": "444",
+			"wallclock": "2026-10-06T03:43:47Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Maxime Raynaud misses 26-foot three point jumper",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "7:59"
+			}
+		},
+		{
+			"id": "401898716445",
+			"sequenceNumber": "445",
+			"wallclock": "2026-10-06T03:43:47Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Lakers defensive team rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "7:59"
+			}
+		},
+		{
+			"id": "401898716447",
+			"sequenceNumber": "447",
+			"wallclock": "2026-10-06T03:44:11Z",
+			"type": {
+				"text": "Driving Floating Jump Shot"
+			},
+			"text": "Ziaire Williams misses driving floating jump shot",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "7:44"
+			}
+		},
+		{
+			"id": "401898716448",
+			"sequenceNumber": "448",
+			"wallclock": "2026-10-06T03:44:11Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Kevon Looney offensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "7:44"
+			}
+		},
+		{
+			"id": "401898716449",
+			"sequenceNumber": "449",
+			"wallclock": "2026-10-06T03:44:14Z",
+			"type": {
+				"text": "Tip Shot"
+			},
+			"text": "Kevon Looney misses tip shot",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "7:41"
+			}
+		},
+		{
+			"id": "401898716450",
+			"sequenceNumber": "450",
+			"wallclock": "2026-10-06T03:44:14Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Daeqwon Plowden defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "7:41"
+			}
+		},
+		{
+			"id": "401898716451",
+			"sequenceNumber": "451",
+			"wallclock": "2026-10-06T03:44:18Z",
+			"type": {
+				"text": "Running Jump Shot"
+			},
+			"text": "Emanuel Sharp misses 25-foot running jump shot",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "7:37"
+			}
+		},
+		{
+			"id": "401898716452",
+			"sequenceNumber": "452",
+			"wallclock": "2026-10-06T03:44:18Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Maxime Raynaud offensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "7:37"
+			}
+		},
+		{
+			"id": "401898716453",
+			"sequenceNumber": "453",
+			"wallclock": "2026-10-06T03:44:20Z",
+			"type": {
+				"text": "Tip Dunk Shot"
+			},
+			"text": "Maxime Raynaud makes tip in dunk",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "7:34"
+			}
+		},
+		{
+			"id": "401898716454",
+			"sequenceNumber": "454",
+			"wallclock": "2026-10-06T03:44:33Z",
+			"type": {
+				"text": "Personal Foul"
+			},
+			"text": "Emanuel Sharp personal foul",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "7:22"
+			}
+		},
+		{
+			"id": "401898716457",
+			"sequenceNumber": "457",
+			"wallclock": "2026-10-06T03:44:33Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Dylan Cardwell enters the game for Maxime Raynaud",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "7:22"
+			}
+		},
+		{
+			"id": "401898716458",
+			"sequenceNumber": "458",
+			"wallclock": "2026-10-06T03:45:06Z",
+			"type": {
+				"text": "Step Back Jump Shot"
+			},
+			"text": "Quentin Grimes makes 25-foot three point step back jumpshot",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "7:11"
+			}
+		},
+		{
+			"id": "401898716459",
+			"sequenceNumber": "459",
+			"wallclock": "2026-10-06T03:45:24Z",
+			"type": {
+				"text": "Pullup Jump Shot"
+			},
+			"text": "Nique Clifford makes 12-foot pullup jump shot",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "6:53"
+			}
+		},
+		{
+			"id": "401898716460",
+			"sequenceNumber": "460",
+			"wallclock": "2026-10-06T03:45:39Z",
+			"type": {
+				"text": "Bad Pass\nTurnover"
+			},
+			"text": "Bronny James bad pass\nturnover (Dylan Cardwell steals)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "6:39"
+			}
+		},
+		{
+			"id": "401898716462",
+			"sequenceNumber": "462",
+			"wallclock": "2026-10-06T03:45:41Z",
+			"type": {
+				"text": "Running Dunk Shot"
+			},
+			"text": "Dylan Cardwell makes running dunk",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "6:36"
+			}
+		},
+		{
+			"id": "401898716463",
+			"sequenceNumber": "463",
+			"wallclock": "2026-10-06T03:45:42Z",
+			"type": {
+				"text": "Full Timeout"
+			},
+			"text": "Lakers Full timeout",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "6:35"
+			}
+		},
+		{
+			"id": "401898716466",
+			"sequenceNumber": "466",
+			"wallclock": "2026-10-06T03:45:42Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Jake LaRavia enters the game for Matisse Thybulle",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "6:35"
+			}
+		},
+		{
+			"id": "401898716467",
+			"sequenceNumber": "467",
+			"wallclock": "2026-10-06T03:45:42Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Cameron Carr enters the game for Ziaire Williams",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "6:35"
+			}
+		},
+		{
+			"id": "401898716468",
+			"sequenceNumber": "468",
+			"wallclock": "2026-10-06T03:49:06Z",
+			"type": {
+				"text": "Out of Bounds - Lost Ball Turnover"
+			},
+			"text": "Kevon Looney out of bounds lost ball turnover",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "6:15"
+			}
+		},
+		{
+			"id": "401898716469",
+			"sequenceNumber": "469",
+			"wallclock": "2026-10-06T03:49:28Z",
+			"type": {
+				"text": "Shooting Foul"
+			},
+			"text": "Cameron Carr shooting foul",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "6:04"
+			}
+		},
+		{
+			"id": "401898716471",
+			"sequenceNumber": "471",
+			"wallclock": "2026-10-06T03:49:52Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Darius Acuff Jr. makes free throw 1 of 2",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "6:04"
+			}
+		},
+		{
+			"id": "401898716472",
+			"sequenceNumber": "472",
+			"wallclock": "2026-10-06T03:50:14Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Darius Acuff Jr. makes free throw 2 of 2",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "6:04"
+			}
+		},
+		{
+			"id": "401898716474",
+			"sequenceNumber": "474",
+			"wallclock": "2026-10-06T03:49:52Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Adou Thiero enters the game for Quentin Grimes",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "6:04"
+			}
+		},
+		{
+			"id": "401898716475",
+			"sequenceNumber": "475",
+			"wallclock": "2026-10-06T03:50:29Z",
+			"type": {
+				"text": "Driving Layup Shot"
+			},
+			"text": "Dylan Cardwell blocks Kevon Looney 's 4-foot driving layup",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "5:52"
+			}
+		},
+		{
+			"id": "401898716477",
+			"sequenceNumber": "477",
+			"wallclock": "2026-10-06T03:50:29Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Lakers offensive team rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "5:52"
+			}
+		},
+		{
+			"id": "401898716479",
+			"sequenceNumber": "479",
+			"wallclock": "2026-10-06T03:50:29Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Sandro Mamukelashvili enters the game for Kevon Looney",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "5:52"
+			}
+		},
+		{
+			"id": "401898716480",
+			"sequenceNumber": "480",
+			"wallclock": "2026-10-06T03:51:12Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Bronny James misses 16-foot jumper",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "5:50"
+			}
+		},
+		{
+			"id": "401898716481",
+			"sequenceNumber": "481",
+			"wallclock": "2026-10-06T03:51:12Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Dylan Cardwell defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "5:50"
+			}
+		},
+		{
+			"id": "401898716482",
+			"sequenceNumber": "482",
+			"wallclock": "2026-10-06T03:51:18Z",
+			"type": {
+				"text": "Running Layup Shot"
+			},
+			"text": "Jake LaRavia blocks Darius Acuff Jr. 's 4-foot running layup",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "5:43"
+			}
+		},
+		{
+			"id": "401898716484",
+			"sequenceNumber": "484",
+			"wallclock": "2026-10-06T03:51:18Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Kings offensive team rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "5:43"
+			}
+		},
+		{
+			"id": "401898716485",
+			"sequenceNumber": "485",
+			"wallclock": "2026-10-06T03:51:49Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Emanuel Sharp makes 28-foot three point jumper (Darius Acuff Jr. assists)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "5:34"
+			}
+		},
+		{
+			"id": "401898716487",
+			"sequenceNumber": "487",
+			"wallclock": "2026-10-06T03:52:02Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Sandro Mamukelashvili misses 24-foot three point jumper",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "5:21"
+			}
+		},
+		{
+			"id": "401898716488",
+			"sequenceNumber": "488",
+			"wallclock": "2026-10-06T03:52:02Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Nique Clifford defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "5:21"
+			}
+		},
+		{
+			"id": "401898716665",
+			"sequenceNumber": "665",
+			"wallclock": "2026-10-06T03:52:10Z",
+			"type": {
+				"text": "Bad Pass\nTurnover"
+			},
+			"text": "Darius Acuff Jr. bad pass\nturnover (Sandro Mamukelashvili steals)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "5:13"
+			}
+		},
+		{
+			"id": "401898716491",
+			"sequenceNumber": "491",
+			"wallclock": "2026-10-06T03:52:15Z",
+			"type": {
+				"text": "Running Layup Shot"
+			},
+			"text": "Cameron Carr makes running layup (Sandro Mamukelashvili assists)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "5:08"
+			}
+		},
+		{
+			"id": "401898716493",
+			"sequenceNumber": "493",
+			"wallclock": "2026-10-06T03:52:38Z",
+			"type": {
+				"text": "Lost Ball Turnover"
+			},
+			"text": "Darius Acuff Jr. lost ball turnover (Cameron Carr steals)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "4:45"
+			}
+		},
+		{
+			"id": "401898716495",
+			"sequenceNumber": "495",
+			"wallclock": "2026-10-06T03:52:43Z",
+			"type": {
+				"text": "Running Layup Shot"
+			},
+			"text": "Cameron Carr misses running layup",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "4:40"
+			}
+		},
+		{
+			"id": "401898716496",
+			"sequenceNumber": "496",
+			"wallclock": "2026-10-06T03:52:43Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Daeqwon Plowden defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "4:40"
+			}
+		},
+		{
+			"id": "401898716497",
+			"sequenceNumber": "497",
+			"wallclock": "2026-10-06T03:52:49Z",
+			"type": {
+				"text": "Running Layup Shot"
+			},
+			"text": "Nique Clifford makes running layup (Daeqwon Plowden assists)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "4:34"
+			}
+		},
+		{
+			"id": "401898716499",
+			"sequenceNumber": "499",
+			"wallclock": "2026-10-06T03:53:14Z",
+			"type": {
+				"text": "Lost Ball Turnover"
+			},
+			"text": "Sandro Mamukelashvili lost ball turnover (Emanuel Sharp steals)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "4:09"
+			}
+		},
+		{
+			"id": "401898716503",
+			"sequenceNumber": "503",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Jaden Hardy enters the game for Bronny James",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "4:09"
+			}
+		},
+		{
+			"id": "401898716506",
+			"sequenceNumber": "506",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Alex Karaban enters the game for Nique Clifford",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "4:09"
+			}
+		},
+		{
+			"id": "401898716717",
+			"sequenceNumber": "717",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Lost Ball Turnover"
+			},
+			"text": "Emanuel Sharp lost ball turnover (Adou Thiero steals)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "4:09"
+			}
+		},
+		{
+			"id": "401898716596",
+			"sequenceNumber": "596",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Personal Foul"
+			},
+			"text": "Darius Acuff Jr. personal foul",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "4:02"
+			}
+		},
+		{
+			"id": "401898716511",
+			"sequenceNumber": "511",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Elfrid Payton enters the game for Darius Acuff Jr.",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "4:01"
+			}
+		},
+		{
+			"id": "401898716512",
+			"sequenceNumber": "512",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Adou Thiero misses 23-foot three point jumper",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "3:54"
+			}
+		},
+		{
+			"id": "401898716513",
+			"sequenceNumber": "513",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Dylan Cardwell defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "3:54"
+			}
+		},
+		{
+			"id": "401898716514",
+			"sequenceNumber": "514",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Step Back Jump Shot"
+			},
+			"text": "Emanuel Sharp misses 27-foot three point step back jumpshot",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "3:34"
+			}
+		},
+		{
+			"id": "401898716515",
+			"sequenceNumber": "515",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Dylan Cardwell offensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "3:34"
+			}
+		},
+		{
+			"id": "401898716516",
+			"sequenceNumber": "516",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Cutting Layup Shot"
+			},
+			"text": "Alex Karaban makes 3-foot layup (Dylan Cardwell assists)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "3:30"
+			}
+		},
+		{
+			"id": "401898716518",
+			"sequenceNumber": "518",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Shooting Foul"
+			},
+			"text": "Jaden Hardy shooting foul",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "3:30"
+			}
+		},
+		{
+			"id": "401898716520",
+			"sequenceNumber": "520",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Free Throw - 1 of 1"
+			},
+			"text": "Alex Karaban makes free throw 1 of 1",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "3:30"
+			}
+		},
+		{
+			"id": "401898716521",
+			"sequenceNumber": "521",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Jaden Hardy makes 25-foot three point jumper (Cameron Carr assists)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "3:19"
+			}
+		},
+		{
+			"id": "401898716523",
+			"sequenceNumber": "523",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Personal Foul"
+			},
+			"text": "Cameron Carr personal foul",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "3:08"
+			}
+		},
+		{
+			"id": "401898716525",
+			"sequenceNumber": "525",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Daeqwon Plowden makes free throw 1 of 2",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "3:08"
+			}
+		},
+		{
+			"id": "401898716526",
+			"sequenceNumber": "526",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Daeqwon Plowden makes free throw 2 of 2",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "3:08"
+			}
+		},
+		{
+			"id": "401898716527",
+			"sequenceNumber": "527",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Pullup Bank Jump Shot"
+			},
+			"text": "Cameron Carr makes 25-foot three point shot (Jaden Hardy assists)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "2:52"
+			}
+		},
+		{
+			"id": "401898716529",
+			"sequenceNumber": "529",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Personal Foul"
+			},
+			"text": "Jaden Hardy personal foul",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "2:32"
+			}
+		},
+		{
+			"id": "401898716531",
+			"sequenceNumber": "531",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Full Timeout"
+			},
+			"text": "Kings Full timeout",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "2:32"
+			}
+		},
+		{
+			"id": "401898716532",
+			"sequenceNumber": "532",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Daeqwon Plowden makes free throw 1 of 2",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "2:32"
+			}
+		},
+		{
+			"id": "401898716533",
+			"sequenceNumber": "533",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Daeqwon Plowden misses free throw 2 of 2",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "2:32"
+			}
+		},
+		{
+			"id": "401898716534",
+			"sequenceNumber": "534",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Adou Thiero defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "2:32"
+			}
+		},
+		{
+			"id": "401898716535",
+			"sequenceNumber": "535",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Offensive Charge"
+			},
+			"text": "Jake LaRavia offensive charge",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "2:17"
+			}
+		},
+		{
+			"id": "401898716537",
+			"sequenceNumber": "537",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Challenge"
+			},
+			"text": "Kings Coach's Challenge",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "2:17"
+			}
+		},
+		{
+			"id": "401898716539",
+			"sequenceNumber": "539",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Coach's Challenge (Overturned)"
+			},
+			"text": "(02:17) [Lakers] COACH'S CHALLENGE (CALL OVERTURNED) [Lakers] retain their timeout",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "2:17"
+			}
+		},
+		{
+			"id": "401898716542",
+			"sequenceNumber": "542",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Offensive Foul Turnover"
+			},
+			"text": "Jake LaRavia offensive foul turnover",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "2:17"
+			}
+		},
+		{
+			"id": "401898716543",
+			"sequenceNumber": "543",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Offensive Foul"
+			},
+			"text": "Dylan Cardwell offensive foul",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "2:05"
+			}
+		},
+		{
+			"id": "401898716546",
+			"sequenceNumber": "546",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Offensive Foul Turnover"
+			},
+			"text": "Dylan Cardwell offensive foul turnover",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "2:05"
+			}
+		},
+		{
+			"id": "401898716547",
+			"sequenceNumber": "547",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Driving Layup Shot"
+			},
+			"text": "Sandro Mamukelashvili makes driving layup (Cameron Carr assists)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "1:49"
+			}
+		},
+		{
+			"id": "401898716549",
+			"sequenceNumber": "549",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Alex Karaban misses 26-foot three point jumper",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "1:38"
+			}
+		},
+		{
+			"id": "401898716550",
+			"sequenceNumber": "550",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Elfrid Payton offensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "1:38"
+			}
+		},
+		{
+			"id": "401898716551",
+			"sequenceNumber": "551",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Daeqwon Plowden misses 25-foot three point jumper",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "1:33"
+			}
+		},
+		{
+			"id": "401898716552",
+			"sequenceNumber": "552",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Adou Thiero defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "1:33"
+			}
+		},
+		{
+			"id": "401898716553",
+			"sequenceNumber": "553",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Running Jump Shot"
+			},
+			"text": "Cameron Carr makes 25-foot running jump shot (Sandro Mamukelashvili assists)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "1:24"
+			}
+		},
+		{
+			"id": "401898716555",
+			"sequenceNumber": "555",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Reverse Layup Shot"
+			},
+			"text": "Dylan Cardwell misses reverse layup",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "1:06"
+			}
+		},
+		{
+			"id": "401898716556",
+			"sequenceNumber": "556",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Dylan Cardwell offensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "1:06"
+			}
+		},
+		{
+			"id": "401898716557",
+			"sequenceNumber": "557",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Daeqwon Plowden misses 26-foot three point jumper",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "56.5"
+			}
+		},
+		{
+			"id": "401898716558",
+			"sequenceNumber": "558",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Cameron Carr defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "56.5"
+			}
+		},
+		{
+			"id": "401898716559",
+			"sequenceNumber": "559",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Cameron Carr misses 25-foot three point jumper",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "49.9"
+			}
+		},
+		{
+			"id": "401898716560",
+			"sequenceNumber": "560",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Elfrid Payton defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "49.9"
+			}
+		},
+		{
+			"id": "401898716561",
+			"sequenceNumber": "561",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Cutting Dunk Shot"
+			},
+			"text": "Daeqwon Plowden makes 3-foot dunk (Alex Karaban assists)",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "42.4"
+			}
+		},
+		{
+			"id": "401898716563",
+			"sequenceNumber": "563",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Sandro Mamukelashvili misses 27-foot three point jumper",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "32.7"
+			}
+		},
+		{
+			"id": "401898716564",
+			"sequenceNumber": "564",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Daeqwon Plowden defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "32.7"
+			}
+		},
+		{
+			"id": "401898716569",
+			"sequenceNumber": "569",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Step Back Jump Shot"
+			},
+			"text": "Daeqwon Plowden misses 24-foot three point step back jumpshot",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "7.5"
+			}
+		},
+		{
+			"id": "401898716570",
+			"sequenceNumber": "570",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Cameron Carr defensive rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "7.5"
+			}
+		},
+		{
+			"id": "401898716571",
+			"sequenceNumber": "571",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Turnaround Fade Away Jump Shot"
+			},
+			"text": "Sandro Mamukelashvili misses 22-foot two point shot",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "0.0"
+			}
+		},
+		{
+			"id": "401898716572",
+			"sequenceNumber": "572",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Lakers offensive team rebound",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "0.0"
+			}
+		},
+		{
+			"id": "401898716573",
+			"sequenceNumber": "573",
+			"wallclock": "2026-10-06T04:07:25Z",
+			"type": {
+				"text": "End Period"
+			},
+			"text": "End of the 3rd Quarter",
+			"period": {
+				"number": 3
+			},
+			"clock": {
+				"displayValue": "0.0"
+			}
+		},
+		{
+			"id": "401898716577",
+			"sequenceNumber": "577",
+			"wallclock": "2026-10-06T04:10:13Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Maxime Raynaud enters the game for Dylan Cardwell",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "12:00"
+			}
+		},
+		{
+			"id": "401898716578",
+			"sequenceNumber": "578",
+			"wallclock": "2026-10-06T04:10:13Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Nique Clifford enters the game for Emanuel Sharp",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "12:00"
+			}
+		},
+		{
+			"id": "401898716582",
+			"sequenceNumber": "582",
+			"wallclock": "2026-10-06T04:10:13Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Jarred Vanderbilt enters the game for Sandro Mamukelashvili",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "12:00"
+			}
+		},
+		{
+			"id": "401898716583",
+			"sequenceNumber": "583",
+			"wallclock": "2026-10-06T04:10:13Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Chris Manon enters the game for Jaden Hardy",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "12:00"
+			}
+		},
+		{
+			"id": "401898716584",
+			"sequenceNumber": "584",
+			"wallclock": "2026-10-06T04:10:13Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Dalton Knecht enters the game for Adou Thiero",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "12:00"
+			}
+		},
+		{
+			"id": "401898716589",
+			"sequenceNumber": "589",
+			"wallclock": "2026-10-06T04:10:33Z",
+			"type": {
+				"text": "Shooting Foul"
+			},
+			"text": "Jarred Vanderbilt shooting foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "11:40"
+			}
+		},
+		{
+			"id": "401898716591",
+			"sequenceNumber": "591",
+			"wallclock": "2026-10-06T04:11:03Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Nique Clifford makes free throw 1 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "11:40"
+			}
+		},
+		{
+			"id": "401898716592",
+			"sequenceNumber": "592",
+			"wallclock": "2026-10-06T04:11:03Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Nique Clifford misses free throw 2 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "11:40"
+			}
+		},
+		{
+			"id": "401898716593",
+			"sequenceNumber": "593",
+			"wallclock": "2026-10-06T04:11:03Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Chris Manon defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "11:40"
+			}
+		},
+		{
+			"id": "401898716594",
+			"sequenceNumber": "594",
+			"wallclock": "2026-10-06T04:11:35Z",
+			"type": {
+				"text": "Pullup Jump Shot"
+			},
+			"text": "Cameron Carr makes 18-foot pullup jump shot (Jake LaRavia assists)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "11:22"
+			}
+		},
+		{
+			"id": "401898716599",
+			"sequenceNumber": "599",
+			"wallclock": "2026-10-06T04:11:50Z",
+			"type": {
+				"text": "Floating Jump Shot"
+			},
+			"text": "Maxime Raynaud misses 6-foot floating jump shot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "11:06"
+			}
+		},
+		{
+			"id": "401898716600",
+			"sequenceNumber": "600",
+			"wallclock": "2026-10-06T04:11:50Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Jarred Vanderbilt defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "11:06"
+			}
+		},
+		{
+			"id": "401898716602",
+			"sequenceNumber": "602",
+			"wallclock": "2026-10-06T04:12:21Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Cameron Carr misses 20-foot jumper",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "10:56"
+			}
+		},
+		{
+			"id": "401898716603",
+			"sequenceNumber": "603",
+			"wallclock": "2026-10-06T04:12:21Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Elfrid Payton defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "10:56"
+			}
+		},
+		{
+			"id": "401898716604",
+			"sequenceNumber": "604",
+			"wallclock": "2026-10-06T04:12:43Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Nique Clifford misses 25-foot three point jumper",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "10:34"
+			}
+		},
+		{
+			"id": "401898716605",
+			"sequenceNumber": "605",
+			"wallclock": "2026-10-06T04:12:43Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Chris Manon defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "10:34"
+			}
+		},
+		{
+			"id": "401898716606",
+			"sequenceNumber": "606",
+			"wallclock": "2026-10-06T04:12:50Z",
+			"type": {
+				"text": "Shooting Foul"
+			},
+			"text": "Elfrid Payton shooting foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "10:27"
+			}
+		},
+		{
+			"id": "401898716608",
+			"sequenceNumber": "608",
+			"wallclock": "2026-10-06T04:13:20Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Chris Manon makes free throw 1 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "10:27"
+			}
+		},
+		{
+			"id": "401898716609",
+			"sequenceNumber": "609",
+			"wallclock": "2026-10-06T04:13:20Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Chris Manon misses free throw 2 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "10:27"
+			}
+		},
+		{
+			"id": "401898716610",
+			"sequenceNumber": "610",
+			"wallclock": "2026-10-06T04:13:20Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Daeqwon Plowden defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "10:27"
+			}
+		},
+		{
+			"id": "401898716612",
+			"sequenceNumber": "612",
+			"wallclock": "2026-10-06T04:14:16Z",
+			"type": {
+				"text": "Turnaround Jump Shot"
+			},
+			"text": "Alex Karaban misses 13-foot turnaround jump shot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "10:01"
+			}
+		},
+		{
+			"id": "401898716613",
+			"sequenceNumber": "613",
+			"wallclock": "2026-10-06T04:14:16Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Maxime Raynaud offensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "10:01"
+			}
+		},
+		{
+			"id": "401898716614",
+			"sequenceNumber": "614",
+			"wallclock": "2026-10-06T04:14:18Z",
+			"type": {
+				"text": "Layup Shot Putback"
+			},
+			"text": "Jake LaRavia blocks Maxime Raynaud 's 3-foot two point shot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "9:59"
+			}
+		},
+		{
+			"id": "401898716616",
+			"sequenceNumber": "616",
+			"wallclock": "2026-10-06T04:14:18Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Dalton Knecht defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "9:59"
+			}
+		},
+		{
+			"id": "401898716617",
+			"sequenceNumber": "617",
+			"wallclock": "2026-10-06T04:14:22Z",
+			"type": {
+				"text": "Lost Ball Turnover"
+			},
+			"text": "Dalton Knecht lost ball turnover (Daeqwon Plowden steals)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "9:54"
+			}
+		},
+		{
+			"id": "401898716619",
+			"sequenceNumber": "619",
+			"wallclock": "2026-10-06T04:14:26Z",
+			"type": {
+				"text": "Bad Pass\nTurnover"
+			},
+			"text": "Alex Karaban bad pass\nturnover (Jake LaRavia steals)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "9:51"
+			}
+		},
+		{
+			"id": "401898716621",
+			"sequenceNumber": "621",
+			"wallclock": "2026-10-06T04:14:29Z",
+			"type": {
+				"text": "Driving Layup Shot"
+			},
+			"text": "Jarred Vanderbilt makes driving layup (Jake LaRavia assists)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "9:47"
+			}
+		},
+		{
+			"id": "401898716623",
+			"sequenceNumber": "623",
+			"wallclock": "2026-10-06T04:14:35Z",
+			"type": {
+				"text": "Shooting Foul"
+			},
+			"text": "Cameron Carr shooting foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "9:42"
+			}
+		},
+		{
+			"id": "401898716625",
+			"sequenceNumber": "625",
+			"wallclock": "2026-10-06T04:15:08Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Nique Clifford makes free throw 1 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "9:42"
+			}
+		},
+		{
+			"id": "401898716626",
+			"sequenceNumber": "626",
+			"wallclock": "2026-10-06T04:15:35Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Nique Clifford makes free throw 2 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "9:42"
+			}
+		},
+		{
+			"id": "401898716628",
+			"sequenceNumber": "628",
+			"wallclock": "2026-10-06T04:15:08Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Emanuel Sharp enters the game for Daeqwon Plowden",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "9:42"
+			}
+		},
+		{
+			"id": "401898716631",
+			"sequenceNumber": "631",
+			"wallclock": "2026-10-06T04:15:08Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "William Kyle III enters the game for Jake LaRavia",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "9:42"
+			}
+		},
+		{
+			"id": "401898716632",
+			"sequenceNumber": "632",
+			"wallclock": "2026-10-06T04:15:08Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Jaden Hardy enters the game for Cameron Carr",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "9:42"
+			}
+		},
+		{
+			"id": "401898716633",
+			"sequenceNumber": "633",
+			"wallclock": "2026-10-06T04:15:43Z",
+			"type": {
+				"text": "Personal Foul"
+			},
+			"text": "Nique Clifford personal foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "9:36"
+			}
+		},
+		{
+			"id": "401898716635",
+			"sequenceNumber": "635",
+			"wallclock": "2026-10-06T04:16:08Z",
+			"type": {
+				"text": "Step Back Jump Shot"
+			},
+			"text": "Jaden Hardy misses 26-foot three point step back jumpshot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "9:31"
+			}
+		},
+		{
+			"id": "401898716636",
+			"sequenceNumber": "636",
+			"wallclock": "2026-10-06T04:16:08Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Nique Clifford defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "9:31"
+			}
+		},
+		{
+			"id": "401898716637",
+			"sequenceNumber": "637",
+			"wallclock": "2026-10-06T04:16:25Z",
+			"type": {
+				"text": "Driving Floating Jump Shot"
+			},
+			"text": "Elfrid Payton misses driving floating jump shot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "9:14"
+			}
+		},
+		{
+			"id": "401898716638",
+			"sequenceNumber": "638",
+			"wallclock": "2026-10-06T04:16:25Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Dalton Knecht defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "9:14"
+			}
+		},
+		{
+			"id": "401898716640",
+			"sequenceNumber": "640",
+			"wallclock": "2026-10-06T04:16:58Z",
+			"type": {
+				"text": "Bad Pass\nTurnover"
+			},
+			"text": "Jarred Vanderbilt bad pass\nturnover (Alex Karaban steals)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "8:58"
+			}
+		},
+		{
+			"id": "401898716642",
+			"sequenceNumber": "642",
+			"wallclock": "2026-10-06T04:17:04Z",
+			"type": {
+				"text": "Running Layup Shot"
+			},
+			"text": "Maxime Raynaud makes running layup (Nique Clifford assists)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "8:51"
+			}
+		},
+		{
+			"id": "401898716644",
+			"sequenceNumber": "644",
+			"wallclock": "2026-10-06T04:17:19Z",
+			"type": {
+				"text": "Driving Layup Shot"
+			},
+			"text": "Jaden Hardy makes driving layup",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "8:37"
+			}
+		},
+		{
+			"id": "401898716645",
+			"sequenceNumber": "645",
+			"wallclock": "2026-10-06T04:17:22Z",
+			"type": {
+				"text": "Out of Bounds - Bad Pass Turnover"
+			},
+			"text": "Maxime Raynaud out of bounds bad pass turnover",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "8:34"
+			}
+		},
+		{
+			"id": "401898716647",
+			"sequenceNumber": "647",
+			"wallclock": "2026-10-06T04:17:22Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Dylan Cardwell enters the game for Elfrid Payton",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "8:34"
+			}
+		},
+		{
+			"id": "401898716648",
+			"sequenceNumber": "648",
+			"wallclock": "2026-10-06T04:17:58Z",
+			"type": {
+				"text": "Offensive Charge"
+			},
+			"text": "Chris Manon offensive charge",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "8:25"
+			}
+		},
+		{
+			"id": "401898716650",
+			"sequenceNumber": "650",
+			"wallclock": "2026-10-06T04:17:58Z",
+			"type": {
+				"text": "Offensive Foul Turnover"
+			},
+			"text": "Chris Manon offensive foul turnover",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "8:25"
+			}
+		},
+		{
+			"id": "401898716651",
+			"sequenceNumber": "651",
+			"wallclock": "2026-10-06T04:18:29Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Emanuel Sharp misses 26-foot three point jumper",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "8:14"
+			}
+		},
+		{
+			"id": "401898716652",
+			"sequenceNumber": "652",
+			"wallclock": "2026-10-06T04:18:29Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Lakers defensive team rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "8:14"
+			}
+		},
+		{
+			"id": "401898716653",
+			"sequenceNumber": "653",
+			"wallclock": "2026-10-06T04:18:30Z",
+			"type": {
+				"text": "Loose Ball Foul"
+			},
+			"text": "Maxime Raynaud loose ball foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "8:12"
+			}
+		},
+		{
+			"id": "401898716655",
+			"sequenceNumber": "655",
+			"wallclock": "2026-10-06T04:19:00Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Jarred Vanderbilt misses 24-foot three point jumper",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "8:01"
+			}
+		},
+		{
+			"id": "401898716656",
+			"sequenceNumber": "656",
+			"wallclock": "2026-10-06T04:19:00Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Chris Manon offensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "8:01"
+			}
+		},
+		{
+			"id": "401898716657",
+			"sequenceNumber": "657",
+			"wallclock": "2026-10-06T04:19:07Z",
+			"type": {
+				"text": "Tip Shot"
+			},
+			"text": "Chris Manon misses tip shot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "7:54"
+			}
+		},
+		{
+			"id": "401898716658",
+			"sequenceNumber": "658",
+			"wallclock": "2026-10-06T04:19:07Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Alex Karaban defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "7:54"
+			}
+		},
+		{
+			"id": "401898716659",
+			"sequenceNumber": "659",
+			"wallclock": "2026-10-06T04:19:07Z",
+			"type": {
+				"text": "Out of Bounds - Bad Pass Turnover"
+			},
+			"text": "Emanuel Sharp out of bounds bad pass turnover",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "7:54"
+			}
+		},
+		{
+			"id": "401898716660",
+			"sequenceNumber": "660",
+			"wallclock": "2026-10-06T04:19:28Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Jarred Vanderbilt misses 24-foot three point jumper",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "7:44"
+			}
+		},
+		{
+			"id": "401898716661",
+			"sequenceNumber": "661",
+			"wallclock": "2026-10-06T04:19:28Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Dylan Cardwell defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "7:44"
+			}
+		},
+		{
+			"id": "401898716662",
+			"sequenceNumber": "662",
+			"wallclock": "2026-10-06T04:19:37Z",
+			"type": {
+				"text": "Layup Running Reverse"
+			},
+			"text": "Maxime Raynaud makes two point shot (Emanuel Sharp assists)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "7:36"
+			}
+		},
+		{
+			"id": "401898716664",
+			"sequenceNumber": "664",
+			"wallclock": "2026-10-06T04:19:37Z",
+			"type": {
+				"text": "Full Timeout"
+			},
+			"text": "Lakers Full timeout",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "7:36"
+			}
+		},
+		{
+			"id": "401898716667",
+			"sequenceNumber": "667",
+			"wallclock": "2026-10-06T04:23:04Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Jaden Hardy makes 22-foot three point jumper (William Kyle III assists)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "7:18"
+			}
+		},
+		{
+			"id": "401898716669",
+			"sequenceNumber": "669",
+			"wallclock": "2026-10-06T04:23:04Z",
+			"type": {
+				"text": "Shooting Foul"
+			},
+			"text": "Emanuel Sharp shooting foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "7:18"
+			}
+		},
+		{
+			"id": "401898716671",
+			"sequenceNumber": "671",
+			"wallclock": "2026-10-06T04:23:04Z",
+			"type": {
+				"text": "Free Throw - 1 of 1"
+			},
+			"text": "Jaden Hardy misses free throw 1 of 1",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "7:18"
+			}
+		},
+		{
+			"id": "401898716672",
+			"sequenceNumber": "672",
+			"wallclock": "2026-10-06T04:23:04Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Nique Clifford defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "7:18"
+			}
+		},
+		{
+			"id": "401898716673",
+			"sequenceNumber": "673",
+			"wallclock": "2026-10-06T04:23:47Z",
+			"type": {
+				"text": "Hook Shot"
+			},
+			"text": "Dylan Cardwell misses 9-foot hook shot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "7:02"
+			}
+		},
+		{
+			"id": "401898716674",
+			"sequenceNumber": "674",
+			"wallclock": "2026-10-06T04:23:47Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Jarred Vanderbilt defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "7:02"
+			}
+		},
+		{
+			"id": "401898716675",
+			"sequenceNumber": "675",
+			"wallclock": "2026-10-06T04:23:58Z",
+			"type": {
+				"text": "Lost Ball Turnover"
+			},
+			"text": "Jaden Hardy lost ball turnover (Emanuel Sharp steals)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "6:51"
+			}
+		},
+		{
+			"id": "401898716677",
+			"sequenceNumber": "677",
+			"wallclock": "2026-10-06T04:24:00Z",
+			"type": {
+				"text": "Running Alley Oop Dunk Shot"
+			},
+			"text": "Maxime Raynaud makes 2-foot dunk (Alex Karaban assists)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "6:49"
+			}
+		},
+		{
+			"id": "401898716679",
+			"sequenceNumber": "679",
+			"wallclock": "2026-10-06T04:24:13Z",
+			"type": {
+				"text": "Shooting Foul"
+			},
+			"text": "Dylan Cardwell shooting foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "6:36"
+			}
+		},
+		{
+			"id": "401898716681",
+			"sequenceNumber": "681",
+			"wallclock": "2026-10-06T04:24:42Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Chris Manon makes free throw 1 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "6:36"
+			}
+		},
+		{
+			"id": "401898716682",
+			"sequenceNumber": "682",
+			"wallclock": "2026-10-06T04:24:42Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Chris Manon misses free throw 2 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "6:36"
+			}
+		},
+		{
+			"id": "401898716684",
+			"sequenceNumber": "684",
+			"wallclock": "2026-10-06T04:24:42Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Cameron Carr enters the game for Jarred Vanderbilt",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "6:36"
+			}
+		},
+		{
+			"id": "401898716686",
+			"sequenceNumber": "686",
+			"wallclock": "2026-10-06T04:24:42Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Alex Karaban defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "6:36"
+			}
+		},
+		{
+			"id": "401898716687",
+			"sequenceNumber": "687",
+			"wallclock": "2026-10-06T04:25:29Z",
+			"type": {
+				"text": "Pullup Jump Shot"
+			},
+			"text": "Emanuel Sharp misses 26-foot three point pullup jump shot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "6:12"
+			}
+		},
+		{
+			"id": "401898716688",
+			"sequenceNumber": "688",
+			"wallclock": "2026-10-06T04:25:29Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Chris Manon defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "6:12"
+			}
+		},
+		{
+			"id": "401898716689",
+			"sequenceNumber": "689",
+			"wallclock": "2026-10-06T04:25:33Z",
+			"type": {
+				"text": "Personal Foul"
+			},
+			"text": "Alex Karaban personal foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "6:08"
+			}
+		},
+		{
+			"id": "401898716691",
+			"sequenceNumber": "691",
+			"wallclock": "2026-10-06T04:26:02Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Chris Manon makes free throw 1 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "6:08"
+			}
+		},
+		{
+			"id": "401898716692",
+			"sequenceNumber": "692",
+			"wallclock": "2026-10-06T04:26:26Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Chris Manon makes free throw 2 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "6:08"
+			}
+		},
+		{
+			"id": "401898716694",
+			"sequenceNumber": "694",
+			"wallclock": "2026-10-06T04:26:02Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Daeqwon Plowden enters the game for Maxime Raynaud",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "6:08"
+			}
+		},
+		{
+			"id": "401898716696",
+			"sequenceNumber": "696",
+			"wallclock": "2026-10-06T04:26:40Z",
+			"type": {
+				"text": "Basket from Below Turnover"
+			},
+			"text": "Dylan Cardwell basket from below turnover",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "5:56"
+			}
+		},
+		{
+			"id": "401898716697",
+			"sequenceNumber": "697",
+			"wallclock": "2026-10-06T04:27:13Z",
+			"type": {
+				"text": "Offensive Foul"
+			},
+			"text": "Jaden Hardy offensive foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "5:46"
+			}
+		},
+		{
+			"id": "401898716699",
+			"sequenceNumber": "699",
+			"wallclock": "2026-10-06T04:27:13Z",
+			"type": {
+				"text": "Offensive Foul Turnover"
+			},
+			"text": "Jaden Hardy offensive foul turnover",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "5:46"
+			}
+		},
+		{
+			"id": "401898716700",
+			"sequenceNumber": "700",
+			"wallclock": "2026-10-06T04:27:41Z",
+			"type": {
+				"text": "Personal Foul"
+			},
+			"text": "Chris Manon personal foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "5:38"
+			}
+		},
+		{
+			"id": "401898716702",
+			"sequenceNumber": "702",
+			"wallclock": "2026-10-06T04:28:07Z",
+			"type": {
+				"text": "Fade Away Jump Shot"
+			},
+			"text": "Daeqwon Plowden misses 9-foot fade away jump shot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "5:31"
+			}
+		},
+		{
+			"id": "401898716703",
+			"sequenceNumber": "703",
+			"wallclock": "2026-10-06T04:28:07Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "William Kyle III defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "5:31"
+			}
+		},
+		{
+			"id": "401898716704",
+			"sequenceNumber": "704",
+			"wallclock": "2026-10-06T04:28:16Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Cameron Carr makes 23-foot three point jumper (Dalton Knecht assists)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "5:23"
+			}
+		},
+		{
+			"id": "401898716706",
+			"sequenceNumber": "706",
+			"wallclock": "2026-10-06T04:28:26Z",
+			"type": {
+				"text": "Offensive Foul"
+			},
+			"text": "Daeqwon Plowden offensive foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "5:12"
+			}
+		},
+		{
+			"id": "401898716708",
+			"sequenceNumber": "708",
+			"wallclock": "2026-10-06T04:28:26Z",
+			"type": {
+				"text": "Offensive Foul Turnover"
+			},
+			"text": "Daeqwon Plowden offensive foul turnover",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "5:12"
+			}
+		},
+		{
+			"id": "401898716710",
+			"sequenceNumber": "710",
+			"wallclock": "2026-10-06T04:28:26Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Jarred Vanderbilt enters the game for William Kyle III",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "5:12"
+			}
+		},
+		{
+			"id": "401898716711",
+			"sequenceNumber": "711",
+			"wallclock": "2026-10-06T04:29:14Z",
+			"type": {
+				"text": "Offensive Foul"
+			},
+			"text": "Chris Manon offensive foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "5:00"
+			}
+		},
+		{
+			"id": "401898716713",
+			"sequenceNumber": "713",
+			"wallclock": "2026-10-06T04:29:14Z",
+			"type": {
+				"text": "Offensive Foul Turnover"
+			},
+			"text": "Chris Manon offensive foul turnover",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "5:00"
+			}
+		},
+		{
+			"id": "401898716714",
+			"sequenceNumber": "714",
+			"wallclock": "2026-10-06T04:29:51Z",
+			"type": {
+				"text": "Shooting Foul"
+			},
+			"text": "Jarred Vanderbilt shooting foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "4:39"
+			}
+		},
+		{
+			"id": "401898716716",
+			"sequenceNumber": "716",
+			"wallclock": "2026-10-06T04:33:21Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Daeqwon Plowden makes free throw 1 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "4:39"
+			}
+		},
+		{
+			"id": "401898716719",
+			"sequenceNumber": "719",
+			"wallclock": "2026-10-06T04:29:51Z",
+			"type": {
+				"text": "Full Timeout"
+			},
+			"text": "Kings Full timeout",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "4:39"
+			}
+		},
+		{
+			"id": "401898716720",
+			"sequenceNumber": "720",
+			"wallclock": "2026-10-06T04:33:35Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Daeqwon Plowden makes free throw 2 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "4:39"
+			}
+		},
+		{
+			"id": "401898716721",
+			"sequenceNumber": "721",
+			"wallclock": "2026-10-06T04:33:50Z",
+			"type": {
+				"text": "Bad Pass\nTurnover"
+			},
+			"text": "Jarred Vanderbilt bad pass\nturnover (Alex Karaban steals)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "4:26"
+			}
+		},
+		{
+			"id": "401898716723",
+			"sequenceNumber": "723",
+			"wallclock": "2026-10-06T04:34:06Z",
+			"type": {
+				"text": "Driving Layup Shot"
+			},
+			"text": "Emanuel Sharp misses driving layup",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "4:10"
+			}
+		},
+		{
+			"id": "401898716724",
+			"sequenceNumber": "724",
+			"wallclock": "2026-10-06T04:34:06Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Dylan Cardwell offensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "4:10"
+			}
+		},
+		{
+			"id": "401898716725",
+			"sequenceNumber": "725",
+			"wallclock": "2026-10-06T04:34:07Z",
+			"type": {
+				"text": "Layup Shot Putback"
+			},
+			"text": "Chris Manon blocks Dylan Cardwell's two point shot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "4:08"
+			}
+		},
+		{
+			"id": "401898716727",
+			"sequenceNumber": "727",
+			"wallclock": "2026-10-06T04:34:07Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Cameron Carr defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "4:08"
+			}
+		},
+		{
+			"id": "401898716728",
+			"sequenceNumber": "728",
+			"wallclock": "2026-10-06T04:34:12Z",
+			"type": {
+				"text": "Running Dunk Shot"
+			},
+			"text": "Jarred Vanderbilt makes 1-foot running dunk (Chris Manon assists)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "4:03"
+			}
+		},
+		{
+			"id": "401898716730",
+			"sequenceNumber": "730",
+			"wallclock": "2026-10-06T04:34:33Z",
+			"type": {
+				"text": "Cutting Layup Shot"
+			},
+			"text": "Daeqwon Plowden misses layup",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "3:43"
+			}
+		},
+		{
+			"id": "401898716731",
+			"sequenceNumber": "731",
+			"wallclock": "2026-10-06T04:34:33Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Jaden Hardy defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "3:43"
+			}
+		},
+		{
+			"id": "401898716732",
+			"sequenceNumber": "732",
+			"wallclock": "2026-10-06T04:34:39Z",
+			"type": {
+				"text": "Running Jump Shot"
+			},
+			"text": "Cameron Carr misses 27-foot running jump shot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "3:37"
+			}
+		},
+		{
+			"id": "401898716733",
+			"sequenceNumber": "733",
+			"wallclock": "2026-10-06T04:34:39Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Chris Manon offensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "3:37"
+			}
+		},
+		{
+			"id": "401898716734",
+			"sequenceNumber": "734",
+			"wallclock": "2026-10-06T04:34:46Z",
+			"type": {
+				"text": "Tip Shot"
+			},
+			"text": "Chris Manon makes tip shot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "3:29"
+			}
+		},
+		{
+			"id": "401898716735",
+			"sequenceNumber": "735",
+			"wallclock": "2026-10-06T04:35:03Z",
+			"type": {
+				"text": "Pullup Bank Jump Shot"
+			},
+			"text": "Nique Clifford makes 9-foot two point shot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "3:16"
+			}
+		},
+		{
+			"id": "401898716736",
+			"sequenceNumber": "736",
+			"wallclock": "2026-10-06T04:35:03Z",
+			"type": {
+				"text": "Shooting Foul"
+			},
+			"text": "Chris Manon shooting foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "3:16"
+			}
+		},
+		{
+			"id": "401898716738",
+			"sequenceNumber": "738",
+			"wallclock": "2026-10-06T04:35:03Z",
+			"type": {
+				"text": "Free Throw - 1 of 1"
+			},
+			"text": "Nique Clifford makes free throw 1 of 1",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "3:16"
+			}
+		},
+		{
+			"id": "401898716739",
+			"sequenceNumber": "739",
+			"wallclock": "2026-10-06T04:35:57Z",
+			"type": {
+				"text": "Step Back Jump Shot"
+			},
+			"text": "Jaden Hardy misses 26-foot three point step back jumpshot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "2:57"
+			}
+		},
+		{
+			"id": "401898716740",
+			"sequenceNumber": "740",
+			"wallclock": "2026-10-06T04:35:57Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Dylan Cardwell defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "2:57"
+			}
+		},
+		{
+			"id": "401898716741",
+			"sequenceNumber": "741",
+			"wallclock": "2026-10-06T04:35:58Z",
+			"type": {
+				"text": "Lost Ball Turnover"
+			},
+			"text": "Dylan Cardwell lost ball turnover (Chris Manon steals)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "2:55"
+			}
+		},
+		{
+			"id": "401898716743",
+			"sequenceNumber": "743",
+			"wallclock": "2026-10-06T04:35:58Z",
+			"type": {
+				"text": "Shooting Foul"
+			},
+			"text": "Dylan Cardwell shooting foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "2:55"
+			}
+		},
+		{
+			"id": "401898716745",
+			"sequenceNumber": "745",
+			"wallclock": "2026-10-06T04:36:28Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Chris Manon makes free throw 1 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "2:55"
+			}
+		},
+		{
+			"id": "401898716746",
+			"sequenceNumber": "746",
+			"wallclock": "2026-10-06T04:36:42Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Chris Manon makes free throw 2 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "2:55"
+			}
+		},
+		{
+			"id": "401898716747",
+			"sequenceNumber": "747",
+			"wallclock": "2026-10-06T04:37:03Z",
+			"type": {
+				"text": "Pullup Jump Shot"
+			},
+			"text": "Nique Clifford misses 13-foot pullup jump shot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "2:36"
+			}
+		},
+		{
+			"id": "401898716748",
+			"sequenceNumber": "748",
+			"wallclock": "2026-10-06T04:37:03Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Kings offensive team rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "2:36"
+			}
+		},
+		{
+			"id": "401898716749",
+			"sequenceNumber": "749",
+			"wallclock": "2026-10-06T04:37:04Z",
+			"type": {
+				"text": "Loose Ball Foul"
+			},
+			"text": "Jarred Vanderbilt loose ball foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "2:35"
+			}
+		},
+		{
+			"id": "401898716751",
+			"sequenceNumber": "751",
+			"wallclock": "2026-10-06T04:37:04Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Dylan Cardwell misses free throw 1 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "2:35"
+			}
+		},
+		{
+			"id": "401898716752",
+			"sequenceNumber": "752",
+			"wallclock": "2026-10-06T04:37:04Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Kings offensive team rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "2:35"
+			}
+		},
+		{
+			"id": "401898716753",
+			"sequenceNumber": "753",
+			"wallclock": "2026-10-06T04:37:47Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Dylan Cardwell makes free throw 2 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "2:35"
+			}
+		},
+		{
+			"id": "401898716754",
+			"sequenceNumber": "754",
+			"wallclock": "2026-10-06T04:37:58Z",
+			"type": {
+				"text": "Bad Pass\nTurnover"
+			},
+			"text": "Jaden Hardy bad pass\nturnover (Dylan Cardwell steals)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "2:25"
+			}
+		},
+		{
+			"id": "401898716756",
+			"sequenceNumber": "756",
+			"wallclock": "2026-10-06T04:38:04Z",
+			"type": {
+				"text": "Driving Dunk Shot"
+			},
+			"text": "Daeqwon Plowden makes 1-foot driving dunk (Emanuel Sharp assists)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "2:19"
+			}
+		},
+		{
+			"id": "401898716758",
+			"sequenceNumber": "758",
+			"wallclock": "2026-10-06T04:38:27Z",
+			"type": {
+				"text": "Pullup Jump Shot"
+			},
+			"text": "Dalton Knecht misses 27-foot three point pullup jump shot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "1:57"
+			}
+		},
+		{
+			"id": "401898716759",
+			"sequenceNumber": "759",
+			"wallclock": "2026-10-06T04:38:27Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Nique Clifford defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "1:57"
+			}
+		},
+		{
+			"id": "401898716760",
+			"sequenceNumber": "760",
+			"wallclock": "2026-10-06T04:38:36Z",
+			"type": {
+				"text": "Bad Pass\nTurnover"
+			},
+			"text": "Nique Clifford bad pass\nturnover (Cameron Carr steals)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "1:48"
+			}
+		},
+		{
+			"id": "401898716762",
+			"sequenceNumber": "762",
+			"wallclock": "2026-10-06T04:38:43Z",
+			"type": {
+				"text": "Jump Shot"
+			},
+			"text": "Jaden Hardy misses 25-foot three point jumper",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "1:41"
+			}
+		},
+		{
+			"id": "401898716763",
+			"sequenceNumber": "763",
+			"wallclock": "2026-10-06T04:38:43Z",
+			"type": {
+				"text": "Defensive Rebound"
+			},
+			"text": "Alex Karaban defensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "1:41"
+			}
+		},
+		{
+			"id": "401898716764",
+			"sequenceNumber": "764",
+			"wallclock": "2026-10-06T04:38:53Z",
+			"type": {
+				"text": "Running Layup Shot"
+			},
+			"text": "Emanuel Sharp makes running layup",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "1:32"
+			}
+		},
+		{
+			"id": "401898716765",
+			"sequenceNumber": "765",
+			"wallclock": "2026-10-06T04:39:00Z",
+			"type": {
+				"text": "Personal Foul"
+			},
+			"text": "Nique Clifford personal foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "1:25"
+			}
+		},
+		{
+			"id": "401898716767",
+			"sequenceNumber": "767",
+			"wallclock": "2026-10-06T04:39:29Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Cameron Carr makes free throw 1 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "1:25"
+			}
+		},
+		{
+			"id": "401898716768",
+			"sequenceNumber": "768",
+			"wallclock": "2026-10-06T04:39:45Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Cameron Carr makes free throw 2 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "1:25"
+			}
+		},
+		{
+			"id": "401898716769",
+			"sequenceNumber": "769",
+			"wallclock": "2026-10-06T04:40:05Z",
+			"type": {
+				"text": "Step Back Jump Shot"
+			},
+			"text": "Nique Clifford makes 26-foot three point step back jumpshot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "1:10"
+			}
+		},
+		{
+			"id": "401898716770",
+			"sequenceNumber": "770",
+			"wallclock": "2026-10-06T04:40:15Z",
+			"type": {
+				"text": "Bad Pass\nTurnover"
+			},
+			"text": "Chris Manon bad pass\nturnover (Dylan Cardwell steals)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "1:00"
+			}
+		},
+		{
+			"id": "401898716772",
+			"sequenceNumber": "772",
+			"wallclock": "2026-10-06T04:40:24Z",
+			"type": {
+				"text": "Offensive Charge"
+			},
+			"text": "Emanuel Sharp offensive charge",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "51.4"
+			}
+		},
+		{
+			"id": "401898716774",
+			"sequenceNumber": "774",
+			"wallclock": "2026-10-06T04:40:24Z",
+			"type": {
+				"text": "Offensive Foul Turnover"
+			},
+			"text": "Emanuel Sharp offensive foul turnover",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "51.4"
+			}
+		},
+		{
+			"id": "401898716776",
+			"sequenceNumber": "776",
+			"wallclock": "2026-10-06T04:40:24Z",
+			"type": {
+				"text": "Substitution"
+			},
+			"text": "Adam Flagler enters the game for Emanuel Sharp",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "51.4"
+			}
+		},
+		{
+			"id": "401898716777",
+			"sequenceNumber": "777",
+			"wallclock": "2026-10-06T04:41:24Z",
+			"type": {
+				"text": "Fade Away Jump Shot"
+			},
+			"text": "Chris Manon makes 9-foot fade away jump shot (Jarred Vanderbilt assists)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "36.1"
+			}
+		},
+		{
+			"id": "401898716779",
+			"sequenceNumber": "779",
+			"wallclock": "2026-10-06T04:41:34Z",
+			"type": {
+				"text": "Driving Layup Shot"
+			},
+			"text": "Nique Clifford makes driving layup",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "29.3"
+			}
+		},
+		{
+			"id": "401898716780",
+			"sequenceNumber": "780",
+			"wallclock": "2026-10-06T04:41:52Z",
+			"type": {
+				"text": "Shooting Foul"
+			},
+			"text": "Daeqwon Plowden shooting foul",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "14.1"
+			}
+		},
+		{
+			"id": "401898716782",
+			"sequenceNumber": "782",
+			"wallclock": "2026-10-06T04:42:20Z",
+			"type": {
+				"text": "Free Throw - 1 of 2"
+			},
+			"text": "Chris Manon makes free throw 1 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "14.1"
+			}
+		},
+		{
+			"id": "401898716783",
+			"sequenceNumber": "783",
+			"wallclock": "2026-10-06T04:42:34Z",
+			"type": {
+				"text": "Free Throw - 2 of 2"
+			},
+			"text": "Chris Manon makes free throw 2 of 2",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "14.1"
+			}
+		},
+		{
+			"id": "401898716784",
+			"sequenceNumber": "784",
+			"wallclock": "2026-10-06T04:42:48Z",
+			"type": {
+				"text": "Driving Floating Jump Shot"
+			},
+			"text": "Nique Clifford misses driving floating jump shot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "2.2"
+			}
+		},
+		{
+			"id": "401898716785",
+			"sequenceNumber": "785",
+			"wallclock": "2026-10-06T04:42:48Z",
+			"type": {
+				"text": "Offensive Rebound"
+			},
+			"text": "Nique Clifford offensive rebound",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "2.2"
+			}
+		},
+		{
+			"id": "401898716786",
+			"sequenceNumber": "786",
+			"wallclock": "2026-10-06T04:42:50Z",
+			"type": {
+				"text": "Layup Shot Putback"
+			},
+			"text": "Nique Clifford makes two point shot",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "0.1"
+			}
+		},
+		{
+			"id": "401898716788",
+			"sequenceNumber": "788",
+			"wallclock": "2026-10-06T04:42:50Z",
+			"type": {
+				"text": "Ref-Initiated Review (Supported)"
+			},
+			"text": "(00:00) [Lakers] REF-INITIATED REVIEW (REPLAY SUPPORTS CALL)",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "0.0"
+			}
+		},
+		{
+			"id": "401898716789",
+			"sequenceNumber": "789",
+			"wallclock": "2026-10-06T04:42:50Z",
+			"type": {
+				"text": "End Period"
+			},
+			"text": "End of the 4th Quarter",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "0.0"
+			}
+		},
+		{
+			"id": "401898716790",
+			"sequenceNumber": "790",
+			"wallclock": "2026-10-06T04:42:50Z",
+			"type": {
+				"text": "End Game"
+			},
+			"text": "End of Game",
+			"period": {
+				"number": 4
+			},
+			"clock": {
+				"displayValue": "0.0"
+			}
+		}
+	]
+}

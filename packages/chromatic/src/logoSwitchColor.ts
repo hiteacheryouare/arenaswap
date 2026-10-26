@@ -46,7 +46,7 @@ export const switchColorFromPixels = (pixels: Uint8ClampedArray, primary: string
 // Persisted for the same reason the crest verdicts are: a popup is a new document every time it
 // opens, and without this the card would paint its fallback and then change colour on every open.
 const storageKey = 'arenaswap.logoSwitchColors';
-const calibration = [sampleSize, minAlpha, crestInkGrouping, minShare, whiteLightness, nearPrimaryDifference, blendDifference].join('/');
+export const switchColorCalibration = [sampleSize, minAlpha, crestInkGrouping, minShare, whiteLightness, nearPrimaryDifference, blendSteps.join(), blendDifference].join('/');
 const cacheLimit = 1024;
 
 const readStored = (): Map<string, string | null> => {
@@ -56,7 +56,7 @@ const readStored = (): Map<string, string | null> => {
 		const parsed: unknown = JSON.parse(raw);
 		if (typeof parsed !== 'object' || parsed === null) return new Map();
 		const stored = parsed as { calibration?: unknown; colors?: unknown };
-		if (stored.calibration !== calibration || typeof stored.colors !== 'object' || stored.colors === null) return new Map();
+		if (stored.calibration !== switchColorCalibration || typeof stored.colors !== 'object' || stored.colors === null) return new Map();
 		return new Map(Object.entries(stored.colors as Record<string, unknown>)
 			.filter((entry): entry is [string, string | null] => typeof entry[1] === 'string' || entry[1] === null));
 	} catch {
@@ -77,7 +77,7 @@ const persist = (): void => {
 	persistHandle = setTimeout(() => {
 		persistHandle = undefined;
 		try {
-			globalThis.localStorage?.setItem(storageKey, JSON.stringify({ calibration, colors: Object.fromEntries(cache) }));
+			globalThis.localStorage?.setItem(storageKey, JSON.stringify({ calibration: switchColorCalibration, colors: Object.fromEntries(cache) }));
 		} catch {
 			// Storage full or unavailable. The cache still works for this document.
 		}
