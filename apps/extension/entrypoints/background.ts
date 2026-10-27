@@ -815,8 +815,6 @@ export default defineBackground(() => {
 		},
 		leaveTo: (tabId, gameId) => executeSwitch(tabId, gameId, currentScores.find(score => score.gameId === gameId)?.reason),
 		save: stored => browser.storage.session.set({ [multiviewStateKey]: stored }),
-		setTimer: (run, ms) => setTimeout(run, ms),
-		clearTimer: timer => clearTimeout(timer as ReturnType<typeof setTimeout>),
 	});
 
 	// Nothing is asked of the browser while the setting is off. The build check is the manifest's,
@@ -1737,7 +1735,7 @@ export default defineBackground(() => {
 		if (msg.type === 'MULTIVIEW_READY') {
 			const tabId = sender.tab?.id;
 			if (tabId === undefined) return;
-			return stateReady.then(() => multiview.markReady(tabId, msg.gameIds, Date.now()));
+			return stateReady.then(() => multiview.markReady(tabId, msg.gameIds));
 		}
 		if (msg.type === 'GET_STATE') {
 			if (msg.forceRefresh === true || games.length === 0) {

@@ -173,18 +173,20 @@ afterEach(() => {
 });
 
 describe('Multiview in the background', () => {
-	test('gets two hot games ready in a hidden tab, takes over once both play, and hands back when one cools', async () => {
+	test('switches to Multiview the moment two games are exciting, and hands back when one cools', async () => {
 		await startWorker([thriller('g2'), thriller('g3')], multiviewPrefs);
 		await poll();
 
 		expect(tabsCreate).toHaveBeenCalledWith(expect.objectContaining({ url: 'chrome-extension://x/multiview.html', active: false, windowId: 1, index: 2 }));
-		expect(activations()).toEqual([]);
-		// The frame rule is held to the Multiview tab alone.
+		// The frame rule is held to the Multiview tab alone, and is in place before the tab is shown.
 		expect(sessionRules).toHaveBeenCalledWith(expect.objectContaining({
 			addRules: [expect.objectContaining({ id: multiviewTabId, condition: { tabIds: [multiviewTabId], resourceTypes: ['sub_frame'] } })],
 		}));
 		expect(registerScripts).toHaveBeenCalledWith([expect.objectContaining({ js: ['multiviewFrame.js'], allFrames: true })]);
-		expect(lastMute(multiviewTabId)).toEqual({ muted: true });
+		expect(activations()).toEqual([multiviewTabId]);
+		expect(lastMute(multiviewTabId)).toEqual({ muted: false });
+		expect(lastMute(2)).toEqual({ muted: true });
+		expect(lastMute(3)).toEqual({ muted: true });
 
 		const lineup = await sendMessage({ type: 'GET_MULTIVIEW' }, multiviewTabId) as MultiviewLineup;
 		expect(lineup.boxes).toEqual([
@@ -194,11 +196,6 @@ describe('Multiview in the background', () => {
 		expect(await sendMessage({ type: 'GET_MULTIVIEW' }, 99)).toBeNull();
 
 		await sendMessage({ type: 'MULTIVIEW_READY', gameIds: ['g2', 'g3'] }, multiviewTabId);
-		expect(activations()).toEqual([multiviewTabId]);
-		expect(lastMute(multiviewTabId)).toEqual({ muted: false });
-		expect(lastMute(2)).toEqual({ muted: true });
-		expect(lastMute(3)).toEqual({ muted: true });
-
 		tabsUpdate.mockClear();
 		fetchMock.mockResolvedValue({ games: [thriller('g2'), runaway('g3')], leagueLogos: {}, shedLeagues: [] });
 		await poll();

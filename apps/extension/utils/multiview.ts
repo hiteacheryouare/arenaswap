@@ -7,9 +7,9 @@ export const multiviewPagePath = '/multiview.html';
 export const multiviewFrameScriptPath = '/multiviewFrame.js';
 export const multiviewFrameScriptId = 'multiview-frames';
 export const multiviewStateKey = 'multiviewState';
-// How long the streams get to start in the background before the takeover is called off.
+// How long Multiview waits for its first stream to start before handing the user back.
 export const multiviewReadyTimeoutMs = 60_000;
-// A set of games that could not get two streams going is left alone for this long.
+// A set of games that never got a stream going is left alone for this long.
 export const multiviewRetryMs = 10 * 60_000;
 
 // One prompt for every site, because the players inside a box usually live on other domains than
@@ -23,7 +23,6 @@ export const isMultiviewBuild = (manifest: { permissions?: string[] }): boolean 
 );
 
 interface multiviewSession {
-	phase: 'preparing' | 'showing';
 	tabId: number;
 	boxes: MultiviewBox[];
 	featuredGameId: string | null;
@@ -45,14 +44,13 @@ export interface multiviewPass {
 }
 
 export interface multiviewOutcome {
-	// While Multiview is getting ready or showing, ordinary switching stands down.
+	// While Multiview is open, ordinary switching stands down.
 	active: boolean;
 	// The mute state is already settled for this pass, by a switch or by the caller's own sync.
 	settled: boolean;
 }
 
 export interface multiviewDeps {
-	// Opens in the background, so the user keeps watching while the streams start.
 	createTab: (props: { url: string; windowId?: number; index?: number }) => Promise<number | undefined>;
 	removeTab: (tabId: number) => Promise<void>;
 	// Lets the boxes in that tab show sites that refuse to be framed, and puts the frame script in them.
@@ -64,8 +62,6 @@ export interface multiviewDeps {
 	// Switches to a game's own tab on the way out.
 	leaveTo: (tabId: number, gameId: string) => Promise<boolean>;
 	save: (stored: unknown) => Promise<void>;
-	setTimer: (run: () => void, ms: number) => unknown;
-	clearTimer: (timer: unknown) => void;
 }
 
 const idle: multiviewOutcome = { active: false, settled: false };
@@ -74,9 +70,8 @@ const failedSetKey = (gameIds: readonly string[]): string => gameIds.toSorted().
 
 const readSession = (stored: unknown): multiviewSession | null => {
 	const session = stored as Partial<multiviewSession> | null;
-	if (!session || typeof session.tabId !== 'number' || (session.phase !== 'preparing' && session.phase !== 'showing')) return null;
+	if (!session || typeof session.tabId !== 'number') return null;
 	return {
-		phase: session.phase,
 		tabId: session.tabId,
 		boxes: Array.isArray(session.boxes) ? session.boxes.filter(box => typeof box?.gameId === 'string' && typeof box.url === 'string') : [],
 		featuredGameId: typeof session.featuredGameId === 'string' ? session.featuredGameId : null,
@@ -86,14 +81,16 @@ const readSession = (stored: unknown): multiviewSession | null => {
 	};
 };
 
+// Multiview switches the moment it opens, and each box appears as its stream starts. Chrome holds
+// back video in a tab that has never been on screen, so streams cannot be got going out of sight.
 export const createMultiview = (deps: multiviewDeps) => {
 	let session: multiviewSession | null = null;
 	let games: Game[] = [];
 	// The last time the user closed Multiview themselves. It reopens once the cooldown has passed.
 	let closedAt = 0;
 	let failed: { key: string; at: number } | null = null;
-	let revealTimer: unknown = null;
-	let switchDelayMs = 0;
+	// When the games first qualified, so the Switch Delay is counted from there.
+	let qualifiedAt: number | null = null;
 
 	const lineup = (): MultiviewLineup => {
 		const boxedIds = new Set(session?.boxes.map(box => box.gameId));
@@ -106,14 +103,7 @@ export const createMultiview = (deps: multiviewDeps) => {
 
 	const persist = () => deps.save(session).catch(() => {});
 
-	const cancelRevealTimer = () => {
-		if (revealTimer === null) return;
-		deps.clearTimer(revealTimer);
-		revealTimer = null;
-	};
-
 	const end = async () => {
-		cancelRevealTimer();
 		if (!session) return;
 		const { tabId } = session;
 		session = null;
@@ -122,37 +112,15 @@ export const createMultiview = (deps: multiviewDeps) => {
 		await deps.removeTab(tabId).catch(() => {});
 	};
 
-	// Two playing streams and the Switch Delay served, and the user is taken over.
-	const maybeReveal = async (now: number): Promise<boolean> => {
-		if (session?.phase !== 'preparing' || session.readyGameIds.length < 2) return false;
-		const due = session.startedAt + switchDelayMs;
-		if (due > now) {
-			if (revealTimer === null) {
-				revealTimer = deps.setTimer(() => {
-					revealTimer = null;
-					void maybeReveal(due);
-				}, due - now);
-			}
-			return false;
-		}
-		const revealed = await deps.reveal(session.tabId, lineup());
-		if (revealed && session) {
-			session.phase = 'showing';
-			await persist();
-		}
-		return revealed;
-	};
-
-	const start = async (pass: multiviewPass, gameIds: string[], urlByGameId: Map<string, string>) => {
+	const start = async (pass: multiviewPass, gameIds: string[], urlByGameId: Map<string, string>): Promise<boolean> => {
 		const tabId = await deps.createTab({
 			url: multiviewPagePath,
 			windowId: pass.besideTab?.windowId,
 			index: pass.besideTab?.index === undefined ? undefined : pass.besideTab.index + 1,
 		});
-		if (tabId === undefined) return;
+		if (tabId === undefined) return false;
 		await deps.allowFrames(tabId);
 		session = {
-			phase: 'preparing',
 			tabId,
 			boxes: gameIds.map(gameId => ({ gameId, url: urlByGameId.get(gameId)! })),
 			featuredGameId: chooseFeatured({ gameIds, scores: pass.scores, current: null, sensitivity: pass.prefs.sensitivity, canChange: true }),
@@ -162,6 +130,7 @@ export const createMultiview = (deps: multiviewDeps) => {
 		};
 		await persist();
 		deps.broadcast(lineup());
+		return deps.reveal(tabId, lineup());
 	};
 
 	// The best registered game, frameable or not, is where the user lands when Multiview closes.
@@ -170,7 +139,7 @@ export const createMultiview = (deps: multiviewDeps) => {
 		const best = pass.candidates
 			.filter(candidate => totals.has(candidate.gameId))
 			.toSorted((a, b) => (totals.get(b.gameId) ?? 0) - (totals.get(a.gameId) ?? 0))[0];
-		const switched = best && session?.phase === 'showing' && pass.activeTabId === session.tabId
+		const switched = best && session && pass.activeTabId === session.tabId
 			? await deps.leaveTo(best.tabId, best.gameId)
 			: false;
 		await end();
@@ -179,7 +148,6 @@ export const createMultiview = (deps: multiviewDeps) => {
 
 	const update = async (pass: multiviewPass): Promise<multiviewOutcome> => {
 		games = pass.games;
-		switchDelayMs = pass.prefs.switchDelaySeconds * 1000;
 		const cooldownMs = pass.prefs.cooldownSeconds * 1000;
 		const plan = planMultiview({
 			candidates: pass.candidates,
@@ -192,16 +160,28 @@ export const createMultiview = (deps: multiviewDeps) => {
 		});
 
 		if (!session) {
-			if (!plan.open) return idle;
+			if (!plan.open) {
+				qualifiedAt = null;
+				return idle;
+			}
+			qualifiedAt ??= pass.now;
 			const cooledDown = pass.now - Math.max(pass.lastSwitchTime, closedAt) > cooldownMs;
-			const key = failedSetKey(plan.gameIds);
-			const retryHeld = failed !== null && failed.key === key && pass.now - failed.at < multiviewRetryMs;
-			if (!cooledDown || retryHeld) return idle;
-			await start(pass, plan.gameIds, plan.urlByGameId);
-			return { active: session !== null, settled: false };
+			const delayServed = pass.now - qualifiedAt >= pass.prefs.switchDelaySeconds * 1000;
+			const retryHeld = failed !== null && failed.key === failedSetKey(plan.gameIds) && pass.now - failed.at < multiviewRetryMs;
+			if (!cooledDown || !delayServed || retryHeld) return idle;
+			qualifiedAt = null;
+			const revealed = await start(pass, plan.gameIds, plan.urlByGameId);
+			return { active: session !== null, settled: revealed };
 		}
 
 		if (!plan.open) return { active: false, settled: await leave(pass) };
+
+		// Not one stream started, which is a box of sign-in pages or a service out of streams. The
+		// user goes back to their game, and these games are left alone for a while.
+		if (session.readyGameIds.length === 0 && pass.now - session.startedAt > multiviewReadyTimeoutMs) {
+			failed = { key: failedSetKey(plan.gameIds), at: pass.now };
+			return { active: false, settled: await leave(pass) };
+		}
 
 		const urlFor = (gameId: string) => session?.boxes.find(box => box.gameId === gameId)?.url ?? plan.urlByGameId.get(gameId)!;
 		session.boxes = plan.gameIds.map(gameId => ({ gameId, url: urlFor(gameId) }));
@@ -220,15 +200,6 @@ export const createMultiview = (deps: multiviewDeps) => {
 		await persist();
 		deps.broadcast(lineup());
 
-		if (session.phase === 'preparing') {
-			if (pass.now - session.startedAt > multiviewReadyTimeoutMs) {
-				failed = { key: failedSetKey(plan.gameIds), at: pass.now };
-				await end();
-				return idle;
-			}
-			return { active: true, settled: await maybeReveal(pass.now) };
-		}
-
 		// The user wandered off to another tab. Like any switch, they get the cooldown to do it in.
 		const away = pass.activeTabId !== session.tabId && pass.now - pass.lastSwitchTime > cooldownMs;
 		return { active: true, settled: away ? await deps.reveal(session.tabId, lineup()) : false };
@@ -236,18 +207,16 @@ export const createMultiview = (deps: multiviewDeps) => {
 
 	return {
 		update,
-		markReady: async (tabId: number, gameIds: string[], now: number) => {
+		markReady: async (tabId: number, gameIds: string[]) => {
 			if (session?.tabId !== tabId) return;
 			const boxed = new Set(session.boxes.map(box => box.gameId));
 			session.readyGameIds = gameIds.filter(gameId => boxed.has(gameId));
 			await persist();
-			await maybeReveal(now);
 		},
 		lineupFor: (tabId: number | undefined): MultiviewLineup | null => (session && session.tabId === tabId ? lineup() : null),
 		// The user closed it, or it closed while the worker was asleep.
 		forget: async (tabId: number, now: number) => {
 			if (session?.tabId !== tabId) return false;
-			cancelRevealTimer();
 			session = null;
 			closedAt = now;
 			await persist();
@@ -256,7 +225,6 @@ export const createMultiview = (deps: multiviewDeps) => {
 		},
 		stop: end,
 		tabId: (): number | null => session?.tabId ?? null,
-		isShowing: (): boolean => session?.phase === 'showing',
 		restore: (stored: unknown) => {
 			session = readSession(stored);
 		},

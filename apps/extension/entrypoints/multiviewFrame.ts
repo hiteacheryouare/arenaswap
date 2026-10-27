@@ -25,12 +25,19 @@ export default defineUnlistedScript({
 
 		let muted = true;
 		let answered = false;
+		const audibleVolume = new WeakMap<HTMLMediaElement, number>();
 
-		// Players reset their own mute, so it is put back whenever one plays or touches its volume.
+		// Silenced with the volume, never with `muted`: Chrome pauses muted video in a tab that is not
+		// showing, which is every box while Multiview gets ready. Players reset their own volume, so it
+		// is put back whenever one plays or touches it.
 		const enforceMute = () => {
 			for (const element of document.querySelectorAll<HTMLMediaElement>('video, audio')) {
-				if (element.muted === muted) continue;
-				element.muted = muted;
+				if (element.muted) element.muted = false;
+				if (muted && element.volume !== 0) {
+					audibleVolume.set(element, element.volume);
+					element.volume = 0;
+				}
+				if (!muted && element.volume === 0) element.volume = audibleVolume.get(element) ?? 1;
 				if (!muted && element.paused) element.play().catch(() => {});
 			}
 		};
