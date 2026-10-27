@@ -18,6 +18,7 @@
 @use '@arenaswap/ui/src/motion' as m;
 @use '@arenaswap/ui/src/popup';
 @use 'collegeFilter';
+@use 'multiviewGuide';
 @use 'scoringSettings';
 
 // A popup never scrolls the document, so the gutter v6 reserves would only narrow it on a mouse.

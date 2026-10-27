@@ -28,6 +28,7 @@ import SwitchDelaySlider from './switchDelaySlider';
 import TemperatureUnitToggle from './temperatureUnitToggle';
 import SelectDropdown from './selectDropdown';
 import StandbyStreamGuide from './standbyStreamGuide';
+import MultiviewGuide from './multiviewGuide';
 import TabFavicon from './tabFavicon';
 import { searchSettings, settingsGroups, type settingsGroupId } from './settingsCatalog';
 import type { demoSeason } from '../../../utils/holidayDecorations';
@@ -86,6 +87,8 @@ interface setupViewProps {
 	multiviewAvailable: boolean;
 	// On in prefs and the permission it needs still granted.
 	multiviewOn: boolean;
+	multiviewOnboardingDone: boolean;
+	onMultiviewOnboardingDone: () => void;
 	onToggleMultiview: () => void;
 	onMultiviewThresholdChange: (val: number) => void;
 	onMultiviewGamesChange: (games: UserPreferences['multiviewGames']) => void;
@@ -136,7 +139,8 @@ const setupView = ({
 	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder, onCollegeFilterChange,
 	onToggleGroupByLeague, onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onThemeChange, onUpcomingGamesDaysChange,
 	onToggleProTips, onToggleNotifications, bossShortcut, onBossDecoyChange, onToggleDemo, onDemoSeasonChange, onToggleStandbyStream, onStandbyThresholdChange,
-	onSetStandbyTab, onStandbyOnboardingDone, multiviewAvailable, multiviewOn, onToggleMultiview, onMultiviewThresholdChange,
+	onSetStandbyTab, onStandbyOnboardingDone, multiviewAvailable, multiviewOn, multiviewOnboardingDone, onMultiviewOnboardingDone,
+	onToggleMultiview, onMultiviewThresholdChange,
 	onMultiviewGamesChange, onMultiviewMaxBoxesChange, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onToggleOpenReveal,
 	onPostseasonBoostChange,
 	onToggleHolidayDecorations, onToggleHolidaySnow, onToggleHolidayLights, onToggleHolidayLeaves,
@@ -150,6 +154,7 @@ const setupView = ({
 	const subPageScrollTop = useRef<number | null>(null);
 	const [query, setQuery] = useState('');
 	const [showStandbyGuide, setShowStandbyGuide] = useState(false);
+	const [showMultiviewGuide, setShowMultiviewGuide] = useState(false);
 	const onSubPage = (page === 'scoring' && scoringPage !== null) || (page === 'leagues' && collegeLeague !== null);
 	const slide = slideClassName(useSlideDirection(onSubPage ? 2 : page ? 1 : 0));
 
@@ -236,6 +241,29 @@ const setupView = ({
 
 	if (showStandbyGuide) {
 		return <StandbyStreamGuide onDone={handleStandbyGuideDone} />;
+	}
+
+	// The guide explains the browser's permission prompt before it appears, so the first time
+	// Multiview is turned on, the toggle opens the guide and Continue is what asks.
+	const handleToggleMultiview = () => {
+		if (!multiviewOn && !multiviewOnboardingDone) {
+			setShowMultiviewGuide(true);
+			return;
+		}
+		onToggleMultiview();
+	};
+
+	if (showMultiviewGuide) {
+		return (
+			<MultiviewGuide
+				onAllow={() => {
+					onToggleMultiview();
+					onMultiviewOnboardingDone();
+					setShowMultiviewGuide(false);
+				}}
+				onNotNow={() => setShowMultiviewGuide(false)}
+			/>
+		);
 	}
 
 	const finishedTabExplainer = [
@@ -564,7 +592,7 @@ const setupView = ({
 		<>
 			<div className='d-flex justify-content-between align-items-center'>
 				<label className='fg-secondary setting-toggle-label' htmlFor='multiviewToggle'>{i18n.t('setup.enableMultiview')}</label>
-				<ToggleSwitch id='multiviewToggle' checked={multiviewOn} onChange={onToggleMultiview} disabled={!prefsLoaded} />
+				<ToggleSwitch id='multiviewToggle' checked={multiviewOn} onChange={handleToggleMultiview} disabled={!prefsLoaded} />
 			</div>
 
 			{multiviewOn && (

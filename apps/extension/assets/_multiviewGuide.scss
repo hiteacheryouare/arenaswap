@@ -1,0 +1,233 @@
+@use '@arenaswap/ui/src/motion' as m;
+@layer custom {
+
+	// Both mockups are set pieces on their own loop, so they keep their own clock rather than the
+	// motion scale's. Positions are percentages of the mockup, so they scale with the popup.
+	$story-loop: 7s;
+	$grid-loop: 9s;
+	$mock-navy: radial-gradient(120% 90% at 50% 110%, #12263f 0%, #08111f 60%);
+
+	.multiview-guide-story,
+	.multiview-guide-grid {
+		position: relative;
+		flex-shrink: 0;
+		overflow: hidden;
+		border-radius: var(--as-radius-5);
+	}
+
+	.multiview-guide-story {
+		aspect-ratio: 7 / 3;
+		background: var(--as-bg-1);
+	}
+
+	.multiview-guide-story-popup {
+		position: absolute;
+		left: 3%;
+		top: 10%;
+		width: 42%;
+		height: 80%;
+		border: 1px solid var(--as-border-color);
+		border-radius: 6px;
+		animation: multiview-guide-popup $story-loop m.$motion-ease infinite;
+	}
+
+	.multiview-guide-story-screen {
+		position: absolute;
+		left: 34%;
+		top: 18%;
+		width: 64%;
+		height: 64%;
+		background: $mock-navy;
+		border-radius: 6px;
+		animation: multiview-guide-screen $story-loop m.$motion-ease infinite;
+	}
+
+	.multiview-guide-story-card {
+		position: absolute;
+		overflow: hidden;
+		border-radius: 4px;
+		background: linear-gradient(90deg, var(--guide-left), var(--guide-right));
+		animation: $story-loop m.$motion-ease infinite;
+	}
+
+	.multiview-guide-story-card-a { animation-name: multiview-guide-card-a; }
+	.multiview-guide-story-card-b { animation-name: multiview-guide-card-b; }
+
+	// What turns a card into a box: the picture rises under the crest bar.
+	.multiview-guide-story-ground {
+		position: absolute;
+		inset: 22% 0 0;
+		background: var(--guide-ground);
+		animation: multiview-guide-ground $story-loop m.$motion-ease infinite;
+	}
+
+	.multiview-guide-story-score {
+		position: absolute;
+		right: 8%;
+		top: 50%;
+		color: #fff;
+		font-size: 0.7rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		transform: translateY(-50%);
+		text-shadow: 0 1px 2px rgb(3 7 12 / 0.45);
+	}
+
+	.multiview-guide-story-score-before { animation: multiview-guide-before $story-loop linear infinite; }
+	.multiview-guide-story-score-after { animation: multiview-guide-after $story-loop linear infinite; }
+
+	.multiview-guide-story-sound {
+		position: absolute;
+		left: 38%;
+		top: 38%;
+		color: #fff;
+		font-size: 0.75rem;
+		animation: multiview-guide-story-sound $story-loop m.$motion-ease infinite;
+	}
+
+	@keyframes multiview-guide-popup {
+		0%, 30% { opacity: 1; }
+		40%, 100% { opacity: 0; }
+	}
+
+	@keyframes multiview-guide-screen {
+		0%, 30% { opacity: 0; transform: scale(0.92); }
+		42%, 90% { opacity: 1; transform: scale(1); }
+		100% { opacity: 0; transform: scale(1); }
+	}
+
+	@keyframes multiview-guide-card-a {
+		0%, 30% { left: 7%; top: 20%; width: 34%; height: 26%; opacity: 1; }
+		44%, 90% { left: 36%; top: 30%; width: 29.5%; height: 40%; opacity: 1; }
+		100% { left: 36%; top: 30%; width: 29.5%; height: 40%; opacity: 0; }
+	}
+
+	@keyframes multiview-guide-card-b {
+		0%, 30% { left: 7%; top: 54%; width: 34%; height: 26%; opacity: 1; }
+		44%, 90% { left: 66.5%; top: 30%; width: 29.5%; height: 40%; opacity: 1; }
+		100% { left: 66.5%; top: 30%; width: 29.5%; height: 40%; opacity: 0; }
+	}
+
+	@keyframes multiview-guide-ground {
+		0%, 32% { transform: translateY(100%); }
+		46%, 100% { transform: translateY(0); }
+	}
+
+	@keyframes multiview-guide-before {
+		0%, 14% { opacity: 1; }
+		18%, 100% { opacity: 0; }
+	}
+
+	@keyframes multiview-guide-after {
+		0%, 14% { opacity: 0; }
+		18%, 32% { opacity: 1; }
+		38%, 100% { opacity: 0; }
+	}
+
+	@keyframes multiview-guide-story-sound {
+		0%, 46% { opacity: 0; transform: scale(0.6); }
+		52%, 90% { opacity: 1; transform: scale(1); }
+		100% { opacity: 0; transform: scale(1); }
+	}
+
+	.multiview-guide-grid {
+		aspect-ratio: 16 / 9;
+		background: $mock-navy;
+
+		&::before {
+			content: '';
+			position: absolute;
+			inset: -40% -120%;
+			background: linear-gradient(100deg, transparent 44%, rgb(247 92 3 / 0.18) 49.5%, transparent 56%);
+			animation: multiview-guide-sweep 5s ease-in-out infinite alternate;
+		}
+	}
+
+	@keyframes multiview-guide-sweep {
+		from { transform: translateX(-12%); }
+		to { transform: translateX(12%); }
+	}
+
+	.multiview-guide-box {
+		position: absolute;
+		display: flex;
+		padding: 1.5px;
+		animation: $grid-loop m.$motion-ease infinite;
+	}
+
+	.multiview-guide-box-a { animation-name: multiview-guide-box-a; }
+	.multiview-guide-box-b { animation-name: multiview-guide-box-b; }
+	.multiview-guide-box-c { animation-name: multiview-guide-box-c; }
+
+	.multiview-guide-box-face {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		overflow: hidden;
+		border-radius: 3px;
+		background: var(--guide-ground);
+	}
+
+	.multiview-guide-box-bar {
+		height: 0.45rem;
+		flex-shrink: 0;
+		background: linear-gradient(90deg, var(--guide-left), var(--guide-right));
+	}
+
+	// The sound always belongs to the big box, so it stays put while the boxes trade places under it.
+	.multiview-guide-grid-sound {
+		position: absolute;
+		color: #fff;
+		font-size: 0.8rem;
+		text-shadow: 0 1px 2px rgb(3 7 12 / 0.45);
+		animation: multiview-guide-grid-sound $grid-loop m.$motion-ease infinite;
+	}
+
+	@keyframes multiview-guide-box-a {
+		0% { left: 0; top: 25%; width: 50%; height: 50%; opacity: 0; }
+		6%, 30% { left: 0; top: 25%; width: 50%; height: 50%; opacity: 1; }
+		38%, 62% { left: 0; top: 0; width: 66.667%; height: 100%; opacity: 1; }
+		70%, 92% { left: 66.667%; top: 0; width: 33.333%; height: 50%; opacity: 1; }
+		100% { left: 66.667%; top: 0; width: 33.333%; height: 50%; opacity: 0; }
+	}
+
+	@keyframes multiview-guide-box-b {
+		0% { left: 50%; top: 25%; width: 50%; height: 50%; opacity: 0; }
+		6%, 30% { left: 50%; top: 25%; width: 50%; height: 50%; opacity: 1; }
+		38%, 62% { left: 66.667%; top: 0; width: 33.333%; height: 50%; opacity: 1; }
+		70%, 92% { left: 66.667%; top: 50%; width: 33.333%; height: 50%; opacity: 1; }
+		100% { left: 66.667%; top: 50%; width: 33.333%; height: 50%; opacity: 0; }
+	}
+
+	@keyframes multiview-guide-box-c {
+		0%, 32% { left: 66.667%; top: 50%; width: 33.333%; height: 50%; opacity: 0; transform: translateY(20%); }
+		40%, 62% { left: 66.667%; top: 50%; width: 33.333%; height: 50%; opacity: 1; transform: translateY(0); }
+		70%, 92% { left: 0; top: 0; width: 66.667%; height: 100%; opacity: 1; transform: translateY(0); }
+		100% { left: 0; top: 0; width: 66.667%; height: 100%; opacity: 0; transform: translateY(0); }
+	}
+
+	@keyframes multiview-guide-grid-sound {
+		0% { left: 3%; top: 33%; opacity: 0; }
+		6%, 30% { left: 3%; top: 33%; opacity: 1; }
+		38%, 92% { left: 3%; top: 8%; opacity: 1; }
+		100% { left: 3%; top: 8%; opacity: 0; }
+	}
+
+	// Still, the mockups hold the moment they are explaining: the boxes in place and the sound on the big one.
+	@include m.reduced-motion {
+		.multiview-guide-story-popup,
+		.multiview-guide-story-score-before,
+		.multiview-guide-story-score-after { animation: none; opacity: 0; }
+
+		.multiview-guide-story-screen,
+		.multiview-guide-story-card,
+		.multiview-guide-story-ground,
+		.multiview-guide-story-sound,
+		.multiview-guide-grid::before,
+		.multiview-guide-box,
+		.multiview-guide-grid-sound {
+			animation-delay: calc(-0.6 * #{$grid-loop});
+			animation-play-state: paused;
+		}
+	}
+}

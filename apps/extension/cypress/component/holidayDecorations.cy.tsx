@@ -241,6 +241,8 @@ const setupProps = {
 	onStandbyThresholdChange: () => {},
 	onSetStandbyTab: () => {},
 	onStandbyOnboardingDone: () => {},
+	multiviewOnboardingDone: true,
+	onMultiviewOnboardingDone: () => {},
 	multiviewAvailable: true,
 	multiviewOn: false,
 	onToggleMultiview: () => {},

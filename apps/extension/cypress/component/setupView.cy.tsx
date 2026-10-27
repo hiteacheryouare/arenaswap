@@ -99,6 +99,8 @@ const defaultProps = {
 	onStandbyThresholdChange: () => {},
 	onSetStandbyTab: () => {},
 	onStandbyOnboardingDone: () => {},
+	multiviewOnboardingDone: true,
+	onMultiviewOnboardingDone: () => {},
 	multiviewAvailable: true,
 	multiviewOn: false,
 	onToggleMultiview: () => {},
@@ -624,6 +626,12 @@ describe('setupView demo mode', () => {
 	});
 });
 
+// Nothing on a guide step may push the popup into scrolling.
+const fits = () => cy.get('.popup-container').should($container => {
+	expect($container[0].scrollHeight).to.be.at.most($container[0].clientHeight);
+	expect($container[0].scrollWidth).to.be.at.most($container[0].clientWidth);
+});
+
 describe('setupView multiview', () => {
 	it('leaves Multiview out of a build that does not have it, search included', () => {
 		cy.mount(<SetupView {...defaultProps} multiviewAvailable={false} />);
@@ -649,7 +657,7 @@ describe('setupView multiview', () => {
 		const onMultiviewMaxBoxesChange = cy.stub().as('boxes');
 		cy.mount(<SetupView {...defaultProps} multiviewOn onMultiviewGamesChange={onMultiviewGamesChange} onMultiviewMaxBoxesChange={onMultiviewMaxBoxesChange} />);
 		openGroup('multiview');
-		cy.get('#multiviewGamesSelect').choose('Every registered game');
+		cy.get('#multiviewGamesSelect').choose('All my games');
 		cy.get('@games').should('have.been.calledWith', 'all');
 		// React keeps its own copy of an input's value, so the value is set the way the browser sets it.
 		cy.get('#multiviewMaxBoxesSlider').then($input => {
@@ -660,12 +668,50 @@ describe('setupView multiview', () => {
 		cy.get('@boxes').should('have.been.calledWith', 6);
 	});
 
-	it('asks to turn on from the toggle', () => {
+	it('asks to turn on from the toggle once the guide has been seen', () => {
 		const onToggleMultiview = cy.stub().as('toggle');
 		cy.mount(<SetupView {...defaultProps} onToggleMultiview={onToggleMultiview} />);
 		openGroup('multiview');
 		cy.get('#multiviewToggle').click({ force: true });
 		cy.get('@toggle').should('have.been.calledOnce');
+	});
+
+	it('shows the guide the first time, and only asks from its Continue button', () => {
+		const onToggleMultiview = cy.stub().as('toggle');
+		const onMultiviewOnboardingDone = cy.stub().as('done');
+		cy.mount(<SetupView {...defaultProps} multiviewOnboardingDone={false} onToggleMultiview={onToggleMultiview} onMultiviewOnboardingDone={onMultiviewOnboardingDone} />);
+		openGroup('multiview');
+		cy.get('#multiviewToggle').click({ force: true });
+		cy.get('@toggle').should('not.have.been.called');
+		cy.contains('[data-step-title]', 'Multiview');
+		cy.contains('button', 'Next').click();
+		cy.contains('[data-step-title]', 'Your Browser Will Ask First');
+		cy.contains('Read and change all your data on all websites');
+		cy.get('#multiviewGuideAllow').click();
+		cy.get('@toggle').should('have.been.calledOnce');
+		cy.get('@done').should('have.been.calledOnce');
+		cy.get('#multiviewToggle').should('exist');
+	});
+
+	it('leaves Multiview off when the guide is turned down', () => {
+		const onToggleMultiview = cy.stub().as('toggle');
+		cy.mount(<SetupView {...defaultProps} multiviewOnboardingDone={false} onToggleMultiview={onToggleMultiview} />);
+		openGroup('multiview');
+		cy.get('#multiviewToggle').click({ force: true });
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Not Now').click();
+		cy.get('@toggle').should('not.have.been.called');
+		cy.get('#multiviewToggle').should('not.be.checked');
+	});
+
+	it('fits both guide steps in the popup', () => {
+		cy.mount(<SetupView {...defaultProps} multiviewOnboardingDone={false} />);
+		openGroup('multiview');
+		cy.get('#multiviewToggle').click({ force: true });
+		cy.document().then(doc => doc.fonts.ready);
+		fits();
+		cy.contains('button', 'Next').click();
+		fits();
 	});
 });
 

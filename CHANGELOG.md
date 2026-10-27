@@ -5,9 +5,9 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
-## Two hot games? Watch both in Multiview — 2026-10-27
+## Two exciting games? Watch both in Multiview — 2026-10-27
 
-On Chrome and Edge, when two or more registered games reach the Hot threshold (65 by default, picked by the sports analyst), ArenaSwap builds a RedZone-style Multiview tab in the background and switches to it once two streams are actually playing: the top game gets the big box and the only sound, and Multiview closes back to that game's tab when it's down to one. A session declarativeNetRequest rule held to that one tab strips the headers that stop sites being framed, and AMO forbids that outright, so the Firefox build has no Multiview and no new permissions (#230).
+On Chrome and Edge, when two or more registered games reach the threshold (65 by default, the sports analyst's pick), ArenaSwap switches you to a Multiview tab where each game's box appears as its stream starts, over a looping brand backdrop; the top game gets the big box and the only sound, and you go back to its own tab when it's down to one. Chrome won't start video in a tab that has never been on screen and pauses muted video in hidden ones, so Multiview opens in front and silences its other boxes by volume rather than mute; the first time it's turned on, a two-step guide explains it and the browser's permission prompt, and the Firefox build has none of it because AMO forbids relaxing security headers (#230).
 
 ## "Ludicrous speed…" winds up before GO — 2026-10-25
 

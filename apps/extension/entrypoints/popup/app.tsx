@@ -109,6 +109,7 @@ export default () => {
 	const [profilesBusy, setProfilesBusy] = useState(false);
 	const [freshProfileSetup, setFreshProfileSetup] = useState(false);
 	const [standbyOnboardingDone, setStandbyOnboardingDone] = useState(false);
+	const [multiviewOnboardingDone, setMultiviewOnboardingDone] = useState(false);
 	const [standbyStreamTabId, setStandbyStreamTabId] = useState<number | null>(null);
 	const [dismissedSuggestions, setDismissedSuggestions] = useState<string[]>([]);
 	const [reviewPromptState, setReviewPromptState] = useState<ReviewPromptState>(normalizeReviewPromptState(null));
@@ -275,6 +276,7 @@ export default () => {
 					demoSeason: 'real',
 					onboardingCompleted: null,
 					standbyOnboardingDone: false,
+					multiviewOnboardingDone: false,
 					[reviewPromptStorageKey]: null,
 				}),
 				loadFantasyRoster().catch(() => []),
@@ -287,6 +289,7 @@ export default () => {
 			setDemoMode(localResult.demoMode as boolean);
 			setDemoSeason(isDemoSeason(localResult.demoSeason) ? localResult.demoSeason : 'real');
 			setStandbyOnboardingDone(localResult.standbyOnboardingDone as boolean);
+			setMultiviewOnboardingDone(localResult.multiviewOnboardingDone === true);
 			setReviewPromptState(normalizeReviewPromptState(localResult[reviewPromptStorageKey]));
 
 			const onboardingFlag = localResult.onboardingCompleted === true;
@@ -560,6 +563,11 @@ export default () => {
 		void browser.storage.local.set({ standbyOnboardingDone: true });
 	};
 
+	const onMultiviewOnboardingDone = () => {
+		setMultiviewOnboardingDone(true);
+		void browser.storage.local.set({ multiviewOnboardingDone: true });
+	};
+
 	const settingsSnapshot = () => JSON.stringify([prefsRef.current, demoMode, demoSeason, standbyStreamTabId, fantasyRosterRef.current]);
 	const settingsOnOpenRef = useRef('');
 
@@ -699,6 +707,8 @@ export default () => {
 						onStandbyOnboardingDone={onStandbyOnboardingDone}
 						multiviewAvailable={multiviewToggle.available}
 						multiviewOn={multiviewToggle.on}
+						multiviewOnboardingDone={multiviewOnboardingDone}
+						onMultiviewOnboardingDone={onMultiviewOnboardingDone}
 						onToggleMultiview={multiviewToggle.toggle}
 						onMultiviewThresholdChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, multiviewThreshold: val }))}
 						onMultiviewGamesChange={choice => persistPrefs(currentPrefs => ({ ...currentPrefs, multiviewGames: choice }))}
