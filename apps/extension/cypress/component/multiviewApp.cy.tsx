@@ -156,8 +156,17 @@ describe('Multiview page', () => {
 		});
 	});
 
-	it('says what it is for when the background did not open it', () => {
+	it('says it is closed when the background did not open it', () => {
 		mountMultiview(null);
-		cy.get('.multiview-empty').should('contain.text', 'Multiview opens by itself');
+		cy.get('.multiview-empty').should('contain.text', 'This Multiview is closed');
+		cy.get('.multiview-backdrop').should('exist');
+	});
+
+	it('holds the logo up over the loop until the first stream plays', () => {
+		mountMultiview(lineupOf(2));
+		cy.get('.multiview-sweep').should('have.length', 2);
+		cy.get('.multiview-mark').should('not.have.class', 'multiview-mark-gone');
+		play('g1', 11);
+		cy.get('.multiview-mark').should('have.class', 'multiview-mark-gone');
 	});
 });

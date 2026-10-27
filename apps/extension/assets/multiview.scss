@@ -8,10 +8,79 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		position: relative;
 		width: 100%;
 		height: 100vh;
 		overflow: hidden;
-		background: #05070a;
+		background: radial-gradient(120% 90% at 50% 110%, #12263f 0%, #08111f 55%, #05090f 100%);
+	}
+
+	// A set piece, so it keeps its own slow clock rather than the motion scale's.
+	.multiview-backdrop {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+		pointer-events: none;
+	}
+
+	.multiview-sweep {
+		position: absolute;
+		inset: -40% -120%;
+		background: linear-gradient(100deg, transparent 44%, rgb(247 92 3 / 0.16) 49.5%, rgb(247 92 3 / 0.05) 52%, transparent 57%);
+		// Back and forth rather than round again, so a beam never leaves the screen dark or jumps back.
+		animation: multiview-sweep 13s ease-in-out infinite alternate;
+	}
+
+	.multiview-sweep-slow {
+		background: linear-gradient(80deg, transparent 40%, rgb(247 92 3 / 0.12) 47%, rgb(62 155 209 / 0.08) 52%, transparent 60%);
+		animation-duration: 19s;
+		animation-delay: -7s;
+	}
+
+	// The wordmark's tail: round-capped dashes, drifting the way the "swap" line reads. One dash is a
+	// fixed-size tile, so its caps stay round at any width, and the strip slides exactly one tile a loop.
+	$dash-tile: 80px;
+	.multiview-dashes {
+		position: absolute;
+		left: 0;
+		top: 78%;
+		width: calc(100% + #{$dash-tile});
+		height: 14px;
+		background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='14'%3E%3Cline x1='7' y1='7' x2='39' y2='7' stroke='white' stroke-opacity='0.07' stroke-width='14' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x;
+		background-size: $dash-tile 14px;
+		animation: multiview-dashes 3s linear infinite;
+	}
+
+	.multiview-mark {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: min(36rem, 52%);
+		opacity: 0.14;
+		transform: translate(-50%, -50%);
+		transition: opacity 0.6s ease;
+	}
+
+	.multiview-mark-gone {
+		opacity: 0;
+	}
+
+	// The layer is 3.4 screens wide, so 12% of it keeps each beam between the screen's edges.
+	@keyframes multiview-sweep {
+		from { transform: translateX(-12%); }
+		to { transform: translateX(12%); }
+	}
+
+	@keyframes multiview-dashes {
+		from { transform: translateX(-$dash-tile); }
+		to { transform: translateX(0); }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.multiview-sweep,
+		.multiview-dashes {
+			animation: none;
+		}
 	}
 
 	.multiview-grid {
@@ -32,12 +101,14 @@
 			var(--multiview-rows) * var(--multiview-bar-height) + (var(--multiview-rows) - 1) * var(--multiview-gap)
 			+ (var(--multiview-width) - (var(--multiview-columns) - 1) * var(--multiview-gap)) * var(--multiview-rows) * 9 / (var(--multiview-columns) * 16)
 		);
+		position: relative;
 		isolation: isolate;
 	}
 
 	.multiview-box {
 		position: relative;
 		z-index: 1;
+		transition: opacity 0.45s ease;
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
@@ -47,9 +118,11 @@
 		border-radius: var(--as-radius-3);
 	}
 
-	// Loading, under the big box and the size of it, until its stream plays.
+	// Loading, at the size of the big box and see-through until its stream plays. Transparent rather
+	// than off screen or hidden, which Chrome would take as a reason to hold its video back.
 	.multiview-box-staged {
 		z-index: 0;
+		opacity: 0;
 		pointer-events: none;
 	}
 
@@ -96,6 +169,8 @@
 	}
 
 	.multiview-empty {
+		position: relative;
+		align-self: flex-end;
 		margin: 0;
 		padding: 2rem;
 		color: var(--as-fg-3);

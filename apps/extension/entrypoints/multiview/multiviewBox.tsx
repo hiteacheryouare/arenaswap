@@ -6,8 +6,8 @@ import type { gridPlacement } from './multiviewLayout';
 interface multiviewBoxProps {
 	box: MultiviewBoxData;
 	game?: Game;
-	// Where it sits once its stream plays. Until then it waits underneath the big box, the size it
-	// will be shown at, so the player starts up as if it were on screen.
+	// Where it sits once its stream plays. Until then it loads see-through, the size of the big box,
+	// so the player starts up as if it were on screen.
 	placement?: gridPlacement;
 	stage: gridPlacement;
 }

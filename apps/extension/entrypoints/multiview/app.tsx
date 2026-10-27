@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react';
 import type { ExtensionMessage, MultiviewLineup } from '@arenaswap/core/types';
 import { useEffect, useMemo, useState } from 'react';
 import { browser } from 'wxt/browser';
+import MultiviewBackdrop from './multiviewBackdrop';
 import MultiviewBox from './multiviewBox';
 import { multiviewGridFor, placeBoxes } from './multiviewLayout';
 import useBoxFrames from './useBoxFrames';
@@ -50,7 +51,14 @@ const App = () => {
 	const gamesById = useMemo(() => new Map((lineup?.games ?? []).map(game => [game.id, game])), [lineup]);
 
 	if (lineup === undefined) return null;
-	if (lineup === null) return <p className='multiview-empty'>{i18n.t('multiview.empty')}</p>;
+	if (lineup === null) {
+		return (
+			<main className='multiview'>
+				<MultiviewBackdrop showMark />
+				<p className='multiview-empty'>{i18n.t('multiview.empty')}</p>
+			</main>
+		);
+	}
 
 	const grid = multiviewGridFor(shownIds.length);
 	const placements = placeBoxes(shownIds, featuredId);
@@ -58,6 +66,7 @@ const App = () => {
 
 	return (
 		<main className='multiview'>
+			<MultiviewBackdrop showMark={shownIds.length === 0} />
 			<div className='multiview-grid' style={{ '--multiview-columns': grid.columns, '--multiview-rows': grid.rows } as CSSProperties}>
 				{boxes.map(box => (
 					<MultiviewBox key={box.gameId} box={box} game={gamesById.get(box.gameId)} placement={placements.get(box.gameId)} stage={stage} />
