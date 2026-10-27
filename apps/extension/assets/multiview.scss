@@ -1,0 +1,104 @@
+@layer custom {
+	.multiview {
+		--multiview-bar-height: 1.75rem;
+		--multiview-gap: 4px;
+
+		// Sized off this box rather than the viewport, whose width counts a scrollbar the page never shows.
+		container-type: size;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 100vh;
+		overflow: hidden;
+		background: #05070a;
+	}
+
+	.multiview-grid {
+		// The widest the grid can be while every cell's picture stays 16:9 under its bar and the whole
+		// thing still fits the window's height.
+		--multiview-width: min(
+			100cqw,
+			(100cqh - var(--multiview-rows) * var(--multiview-bar-height) - (var(--multiview-rows) - 1) * var(--multiview-gap))
+			* var(--multiview-columns) * 16 / (var(--multiview-rows) * 9)
+			+ (var(--multiview-columns) - 1) * var(--multiview-gap)
+		);
+		display: grid;
+		grid-template-columns: repeat(var(--multiview-columns), minmax(0, 1fr));
+		grid-template-rows: repeat(var(--multiview-rows), minmax(0, 1fr));
+		gap: var(--multiview-gap);
+		width: var(--multiview-width);
+		height: calc(
+			var(--multiview-rows) * var(--multiview-bar-height) + (var(--multiview-rows) - 1) * var(--multiview-gap)
+			+ (var(--multiview-width) - (var(--multiview-columns) - 1) * var(--multiview-gap)) * var(--multiview-rows) * 9 / (var(--multiview-columns) * 16)
+		);
+		isolation: isolate;
+	}
+
+	.multiview-box {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+		min-height: 0;
+		overflow: hidden;
+		background: #000;
+		border-radius: var(--as-radius-3);
+	}
+
+	// Loading, under the big box and the size of it, until its stream plays.
+	.multiview-box-staged {
+		z-index: 0;
+		pointer-events: none;
+	}
+
+	.multiview-bar {
+		display: flex;
+		flex-shrink: 0;
+		align-items: center;
+		justify-content: space-between;
+		height: var(--multiview-bar-height);
+		padding: 0 0.5rem;
+		background-color: var(--as-bg-2);
+		font-weight: 700;
+		font-size: 0.8125rem;
+		letter-spacing: 0.02em;
+	}
+
+	.multiview-team {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+	}
+
+	.multiview-team-left {
+		color: var(--matchup-ink-left);
+		text-shadow: var(--matchup-shadow-left);
+	}
+
+	.multiview-team-right {
+		color: var(--matchup-ink-right);
+		text-shadow: var(--matchup-shadow-right);
+	}
+
+	.multiview-crest {
+		width: 1.25rem;
+		height: 1.25rem;
+		object-fit: contain;
+	}
+
+	.multiview-stream {
+		flex: 1;
+		width: 100%;
+		border: 0;
+		background: #000;
+	}
+
+	.multiview-empty {
+		margin: 0;
+		padding: 2rem;
+		color: var(--as-fg-3);
+		text-align: center;
+	}
+}
