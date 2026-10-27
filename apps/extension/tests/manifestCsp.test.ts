@@ -22,3 +22,32 @@ describe('extension page CSP', () => {
 		expect(manifest.content_security_policy.extension_pages).toMatch(/script-src 'self';/);
 	});
 });
+
+describe('Multiview permissions', () => {
+	interface permissionsManifest {
+		permissions: string[];
+		optional_permissions?: string[];
+		optional_host_permissions?: string[];
+		host_permissions: string[];
+	}
+	const manifestFor = (browser: string) => (config.manifest as (env: { browser: string }) => permissionsManifest)({ browser });
+
+	// AMO forbids relaxing a page's security headers at all.
+	test('leaves the Firefox build without them', () => {
+		const manifest = manifestFor('firefox');
+		expect(manifest.permissions).not.toContain('declarativeNetRequestWithHostAccess');
+		expect(manifest.permissions).not.toContain('scripting');
+		expect(manifest.optional_host_permissions).toBeUndefined();
+		expect(manifest.optional_permissions).toBeUndefined();
+	});
+
+	// Every site and the frame tree are asked for when Multiview is turned on, never at install.
+	test.each(['chrome', 'edge'])('asks %s for every site only as an optional permission', browser => {
+		const manifest = manifestFor(browser);
+		expect(manifest.permissions).toEqual(expect.arrayContaining(['declarativeNetRequestWithHostAccess', 'scripting']));
+		expect(manifest.optional_host_permissions).toEqual(['<all_urls>']);
+		expect(manifest.optional_permissions).toEqual(['webNavigation']);
+		expect(manifest.host_permissions).not.toContain('<all_urls>');
+		expect(manifest.permissions).not.toContain('webNavigation');
+	});
+});

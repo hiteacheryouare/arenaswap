@@ -134,9 +134,17 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 			case 'GET_DEBUG_STATE':
 				return null;
 
+			// Multiview is not in a build Cypress serves: the fake manifest carries none of its permissions.
+			case 'GET_MULTIVIEW':
+				return null;
+
 			case 'BOSS_BUTTON':
 			case 'SCORES_UPDATED':
 			case 'GUIDE_SLATE_UPDATED':
+			case 'MULTIVIEW_UPDATED':
+			case 'MULTIVIEW_READY':
+			case 'MULTIVIEW_FRAME_STATUS':
+			case 'MULTIVIEW_MUTE':
 				return undefined;
 
 			default: {

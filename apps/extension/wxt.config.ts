@@ -3,6 +3,12 @@ import pkg from '../../package.json';
 import bootstrapTokenPrefix from '@arenaswap/ui/src/bootstrapTokenPrefix';
 import { bossCommandName } from './utils/bossMode';
 
+// Multiview strips the headers that stop a site being framed, inside its own tab. AMO's policy
+// forbids relaxing them at all, so the Firefox build has no Multiview.
+const multiviewPermissions = (browser: string): string[] => (
+	browser === 'firefox' ? [] : ['declarativeNetRequestWithHostAccess', 'scripting']
+);
+
 const year = new Date().getFullYear();
 const version = pkg.version;
 const banner = `/*! ArenaSwap v${version} Copyright (c) ${year} Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */`;
@@ -89,7 +95,13 @@ export default defineConfig({
 				},
 			},
 		},
-		permissions: ['tabs', 'storage', 'notifications', 'alarms'],
+		permissions: ['tabs', 'storage', 'notifications', 'alarms', ...multiviewPermissions(browser)],
+		// Multiview asks for these when it is turned on, not at install. Every site, because the player
+		// inside a box usually lives on another domain than the page the user registered.
+		...(browser === 'firefox' ? {} : {
+			optional_host_permissions: ['<all_urls>'],
+			optional_permissions: ['webNavigation'],
+		}),
 		// Alt+Shift+X is in none of Chrome's, Edge's or Firefox's own shortcut lists on Windows, Linux
 		// or macOS. `commands` needs no entry in `permissions`.
 		commands: {

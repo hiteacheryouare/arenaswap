@@ -18,6 +18,8 @@ import {
 } from '../utils/finishedTabs';
 import { loadConferenceDirectory } from '../utils/collegeConferences';
 import { bossCommandName, bossHushedKey, createBossMode } from '../utils/bossMode';
+import { createMultiview, isMultiviewBuild, multiviewFrameScriptId, multiviewFrameScriptPath, multiviewPermissions, multiviewStateKey } from '../utils/multiview';
+import type { multiviewOutcome } from '../utils/multiview';
 import { loadStoredUserPreferences, persistStoredUserPreferences } from '../utils/prefsStorage';
 import { loadFantasyRoster } from '../utils/fantasyRosterStorage';
 import { activeProfileSyncKey, followSyncedProfile } from '../utils/profiles';
@@ -502,6 +504,9 @@ export default defineBackground(() => {
 		if (prefs.standbyStreamEnabled && standbyStreamTabId !== null) {
 			managedTabIds.push(standbyStreamTabId);
 		}
+		// The page mutes all but one of its own boxes. The tab itself is muted while it gets ready in the background.
+		const multiviewTabId = multiview.tabId();
+		if (multiviewTabId !== null) managedTabIds.push(multiviewTabId);
 		return [...new Set(managedTabIds)];
 	};
 
@@ -609,6 +614,8 @@ export default defineBackground(() => {
 	// resolveSwitchTarget whenever its game holds the top PowerScore, and every switch attempt
 	// then no-ops. Same for the standby tab, which otherwise answers `switchToStandby` forever.
 	const forgetClosedTab = async (tabId: number) => {
+		// Closed by the user. It opens again once the cooldown is over and two games are still hot.
+		if (await multiview.forget(tabId, Date.now())) await syncManagedTabMuteState(prefs.enabled);
 		const hadRegistration = tabRegistry.some(reg => reg.tabId === tabId);
 		const wasStandby = standbyStreamTabId === tabId;
 		const wasMuted = mutedTabIds.delete(tabId);
@@ -643,6 +650,7 @@ export default defineBackground(() => {
 			...tabRegistry.map(reg => reg.tabId),
 			...mutedTabIds,
 			...(standbyStreamTabId !== null ? [standbyStreamTabId] : []),
+			...(multiview.tabId() !== null ? [multiview.tabId()!] : []),
 		]);
 		for (const tabId of trackedTabIds) {
 			if (!openTabIds.has(tabId)) await forgetClosedTab(tabId);
@@ -676,8 +684,8 @@ export default defineBackground(() => {
 		});
 	};
 
-	// True once the tab is showing and the mute state has been settled against it.
-	const executeSwitch = async (tabId: number, gameId?: string, reason?: string, waitedFor?: PlayBreakSport): Promise<boolean> => {
+	// True once the tab is showing. The caller settles the mute state against it.
+	const landOnTab = async (tabId: number): Promise<boolean> => {
 		if (await getActiveTabId() === tabId) return false;
 
 		const [allTabs, watchedWindow] = await Promise.all([browser.tabs.query({}), browser.windows.getLastFocused()]);
@@ -701,6 +709,12 @@ export default defineBackground(() => {
 				logWarn(`Failed to bring the window for tab ${tabId} forward.`, err);
 			}
 		}
+		return true;
+	};
+
+	// True once the tab is showing and the mute state has been settled against it.
+	const executeSwitch = async (tabId: number, gameId?: string, reason?: string, waitedFor?: PlayBreakSport): Promise<boolean> => {
+		if (!await landOnTab(tabId)) return false;
 		// Parking on standby is not a switch the cooldown should count: it would hold the user there
 		// while a game that just woke up plays out.
 		if (gameId) setLastSwitchTime(Date.now());
@@ -738,6 +752,108 @@ export default defineBackground(() => {
 			}
 		}
 		return true;
+	};
+
+	const multiview = createMultiview({
+		createTab: async ({ url, windowId, index }) => (
+			await browser.tabs.create({ url: browser.runtime.getURL(url as '/multiview.html'), active: false, windowId, index })
+		).id,
+		removeTab: tabId => browser.tabs.remove(tabId),
+		// Scoped to the Multiview tab alone, so no other page loses the headers that keep it from being framed.
+		allowFrames: async tabId => {
+			await browser.declarativeNetRequest.updateSessionRules({
+				removeRuleIds: [tabId],
+				addRules: [{
+					id: tabId,
+					priority: 1,
+					action: {
+						type: 'modifyHeaders' as Browser.declarativeNetRequest.RuleActionType,
+						responseHeaders: [
+							{ header: 'x-frame-options', operation: 'remove' as Browser.declarativeNetRequest.HeaderOperation },
+							{ header: 'content-security-policy', operation: 'remove' as Browser.declarativeNetRequest.HeaderOperation },
+						],
+					},
+					condition: { tabIds: [tabId], resourceTypes: ['sub_frame' as Browser.declarativeNetRequest.ResourceType] },
+				}],
+			});
+			const registered = await browser.scripting.getRegisteredContentScripts({ ids: [multiviewFrameScriptId] });
+			if (registered.length > 0) return;
+			await browser.scripting.registerContentScripts([{
+				id: multiviewFrameScriptId,
+				js: [multiviewFrameScriptPath.slice(1)],
+				matches: ['<all_urls>'],
+				allFrames: true,
+				matchOriginAsFallback: true,
+				runAt: 'document_start',
+				persistAcrossSessions: false,
+			}]);
+		},
+		// Only one Multiview is ever open, so the frame script goes with its tab.
+		forbidFrames: async tabId => {
+			await browser.declarativeNetRequest.updateSessionRules({ removeRuleIds: [tabId] });
+			await browser.scripting.unregisterContentScripts({ ids: [multiviewFrameScriptId] }).catch(() => {});
+		},
+		broadcast: lineup => {
+			const tabId = multiview.tabId();
+			if (tabId === null) return;
+			browser.runtime.sendMessage({ type: 'MULTIVIEW_UPDATED', tabId, ...lineup } satisfies ExtensionMessage).catch(() => {});
+		},
+		reveal: async (tabId, lineup) => {
+			if (!await landOnTab(tabId)) return false;
+			setLastSwitchTime(Date.now());
+			await syncManagedTabMuteState(prefs.enabled);
+			if (prefs.notificationsEnabled) {
+				holdAnnounced = false;
+				await browser.notifications.create(switchNotificationId, {
+					type: 'basic',
+					iconUrl: 'icon/128.png',
+					title: i18n.t('notification.multiviewTitle'),
+					message: lineup.boxes.map(box => getGameLabel(box.gameId)).join(' · '),
+				});
+			}
+			return true;
+		},
+		leaveTo: (tabId, gameId) => executeSwitch(tabId, gameId, currentScores.find(score => score.gameId === gameId)?.reason),
+		save: stored => browser.storage.session.set({ [multiviewStateKey]: stored }),
+		setTimer: (run, ms) => setTimeout(run, ms),
+		clearTimer: timer => clearTimeout(timer as ReturnType<typeof setTimeout>),
+	});
+
+	// Nothing is asked of the browser while the setting is off. The build check is the manifest's,
+	// and the permission is one the user can take back at any time from the browser's own settings.
+	const multiviewReady = async (): Promise<boolean> => {
+		if (!prefs.multiviewEnabled || !prefs.enabled) return false;
+		if (!isMultiviewBuild(browser.runtime.getManifest())) return false;
+		return browser.permissions.contains(multiviewPermissions).catch(() => false);
+	};
+
+	const runMultiview = async (pass: switchPass, activeTabId: number, openTabIds: Set<number>): Promise<multiviewOutcome> => {
+		if (!await multiviewReady()) {
+			if (multiview.tabId() !== null) await multiview.stop();
+			return { active: false, settled: false };
+		}
+		const tabsById = new Map((pass.tabs?.allTabs ?? []).flatMap(tab => tab.id === undefined ? [] : [[tab.id, tab] as const]));
+		const watched = tabsById.get(activeTabId);
+		const outcome = await multiview.update({
+			candidates: tabRegistry
+				.filter(reg => openTabIds.has(reg.tabId))
+				.map(reg => ({ ...reg, url: tabsById.get(reg.tabId)?.url })),
+			scores: pass.scores,
+			games: pass.liveGames,
+			prefs,
+			activeTabId,
+			besideTab: watched && watched.id !== multiview.tabId() ? { windowId: watched.windowId, index: watched.index } : undefined,
+			lastSwitchTime,
+			now: pass.now,
+		});
+		// A tab opened on this pass is missing from the snapshot the rest of the poll mutes against,
+		// and it has to be silent from the start: the big box's sound would play over the game.
+		const openedTabId = multiview.tabId();
+		if (!outcome.settled && openedTabId !== null && !tabsById.has(openedTabId)) {
+			await syncManagedTabMuteState(prefs.enabled);
+			return { ...outcome, settled: true };
+		}
+		return outcome;
 	};
 
 	// Reads `currentScores` so a switch that waited out `switchDelaySeconds` re-targets against
@@ -1086,10 +1202,12 @@ export default defineBackground(() => {
 	}
 
 	// True when it switched tabs there and then; a held or delayed switch lands later, on its own timer.
-	const evaluateSwitch = async ({ liveGames, scores, freshGames, now, allowTabSwitch, tabs }: switchPass): Promise<boolean> => {
+	const evaluateSwitch = async (pass: switchPass): Promise<boolean> => {
+		const { liveGames, scores, freshGames, now, allowTabSwitch, tabs } = pass;
 		if (!allowTabSwitch || !prefs.enabled || liveGames.length === 0) {
 			if (!prefs.enabled || liveGames.length === 0) {
 				clearPendingSwitch();
+				if (multiview.tabId() !== null) await multiview.stop();
 			}
 			return false;
 		}
@@ -1102,7 +1220,17 @@ export default defineBackground(() => {
 		const liveRegistry = tabRegistry.filter(reg => openTabIds.has(reg.tabId));
 		const registeredGameIds = new Set(liveRegistry.map(reg => reg.gameId));
 		const registeredScores = scores.filter(s => registeredGameIds.has(s.gameId));
-		if (registeredScores.length === 0) return false;
+		if (registeredScores.length === 0) {
+			if (multiview.tabId() !== null) await multiview.stop();
+			return false;
+		}
+
+		// Ahead of standby and every ordinary switch, which all stand down while it gets ready or shows.
+		const multiviewResult = await runMultiview(pass, activeTabId, openTabIds);
+		if (multiviewResult.active || multiviewResult.settled) {
+			clearPendingSwitch();
+			return multiviewResult.settled;
+		}
 
 		const standbyDecision = computeStandbyStreamDecision({
 			standbyStreamEnabled: prefs.standbyStreamEnabled,
@@ -1485,7 +1613,7 @@ export default defineBackground(() => {
 
 	const stateReady = followSyncedProfile().catch(() => {}).then(() => Promise.all([
 		loadStoredUserPreferences(),
-		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, lastSwitchTime: 0, [bossHushedKey]: false, ...historyStorageDefaults }),
+		browser.storage.session.get({ tabRegistry: [], standbyStreamTabId: null, lastSwitchTime: 0, [bossHushedKey]: false, [multiviewStateKey]: null, ...historyStorageDefaults }),
 		browser.storage.local.get({ demoMode: false, [gameEndTimesKey]: {} }),
 		loadFantasyRoster().catch(() => []),
 	])).then(([storedPrefs, sessionResult, demoResult, roster]) => {
@@ -1495,6 +1623,7 @@ export default defineBackground(() => {
 		standbyStreamTabId = (sessionResult.standbyStreamTabId as number | null) ?? null;
 		lastSwitchTime = readStoredSwitchTime(sessionResult.lastSwitchTime, Date.now());
 		bossMode.restore(sessionResult[bossHushedKey]);
+		multiview.restore(sessionResult[multiviewStateKey]);
 		gameBoosts = normalizeGameBoosts(sessionResult.gameBoosts);
 		if (Array.isArray(sessionResult.mutedTabIds)) {
 			for (const tabId of sessionResult.mutedTabIds) {
@@ -1601,7 +1730,15 @@ export default defineBackground(() => {
 		}).catch(err => logWarn('Could not follow the synced profile.', err));
 	});
 
-	browser.runtime.onMessage.addListener((msg: ExtensionMessage) => {
+	browser.runtime.onMessage.addListener((msg: ExtensionMessage, sender: { tab?: { id?: number } }) => {
+		// The page's frames report to the page, which answers them. Answering here too would race it.
+		if (msg.type === 'MULTIVIEW_FRAME_STATUS') return;
+		if (msg.type === 'GET_MULTIVIEW') return stateReady.then(() => multiview.lineupFor(sender.tab?.id));
+		if (msg.type === 'MULTIVIEW_READY') {
+			const tabId = sender.tab?.id;
+			if (tabId === undefined) return;
+			return stateReady.then(() => multiview.markReady(tabId, msg.gameIds, Date.now()));
+		}
 		if (msg.type === 'GET_STATE') {
 			if (msg.forceRefresh === true || games.length === 0) {
 				return stateReady
@@ -1625,6 +1762,7 @@ export default defineBackground(() => {
 			return stateReady.then(async () => {
 				const change = adoptPrefs(normalizeUserPreferences(msg.prefs));
 				clearPendingSwitch();
+				if (multiview.tabId() !== null && !await multiviewReady()) await multiview.stop();
 				// The popup persists before it sends, and the GET_STATE recovery path relies on that,
 				// so writing again here would only double the storage.sync traffic against Chrome's
 				// 120-writes-per-minute ceiling.
