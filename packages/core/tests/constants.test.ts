@@ -49,6 +49,10 @@ describe('constants', () => {
 			bossDecoyUrl: '',
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,
+			multiviewEnabled: false,
+			multiviewThreshold: 65,
+			multiviewGames: 'hot',
+			multiviewMaxBoxes: 4,
 			bettingEnabled: false,
 			temperatureUnit: 'F',
 			romerUnlocked: false,
@@ -83,6 +87,14 @@ describe('constants', () => {
 	test('keeps a stored opening-animation choice', () => {
 		expect(normalizeUserPreferences({ openRevealEnabled: false }).openRevealEnabled).toBe(false);
 		expect(normalizeUserPreferences({ openRevealEnabled: 'false' }).openRevealEnabled).toBe(true);
+	});
+
+	test('keeps Multiview settings inside their ranges', () => {
+		const normalized = normalizeUserPreferences({ multiviewEnabled: true, multiviewThreshold: 140, multiviewGames: 'all', multiviewMaxBoxes: 12.4 });
+		expect(normalized).toMatchObject({ multiviewEnabled: true, multiviewThreshold: 100, multiviewGames: 'all', multiviewMaxBoxes: 8 });
+		expect(normalizeUserPreferences({ multiviewThreshold: -5, multiviewMaxBoxes: 1, multiviewGames: 'some' }))
+			.toMatchObject({ multiviewThreshold: 0, multiviewMaxBoxes: 2, multiviewGames: 'hot' });
+		expect(normalizeUserPreferences({ multiviewEnabled: 'yes' }).multiviewEnabled).toBe(false);
 	});
 
 	test('starts a fresh install on the mixed list and keeps league sections for anyone upgrading', () => {
@@ -163,6 +175,10 @@ describe('constants', () => {
 			bossDecoyUrl: '',
 			standbyStreamEnabled: false,
 			standbyStreamThreshold: 20,
+			multiviewEnabled: false,
+			multiviewThreshold: 65,
+			multiviewGames: 'hot',
+			multiviewMaxBoxes: 4,
 			bettingEnabled: false,
 			temperatureUnit: 'F',
 			romerUnlocked: false,

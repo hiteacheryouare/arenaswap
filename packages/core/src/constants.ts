@@ -126,6 +126,10 @@ export const pollIntermissionMs = 40_000;
 export const defaultSensitivity = 4 as const;
 export const defaultCooldownSecs = 45;
 export const defaultSwitchDelaySecs = 0;
+export const defaultMultiviewThreshold = 65;
+export const multiviewMaxBoxesMin = 2;
+export const multiviewMaxBoxesMax = 8;
+export const defaultMultiviewMaxBoxes = 4;
 export const defaultFavoriteTeamBonusPoints = 10;
 // The ceiling a title game is worth, not a flat bump: the round ladder pays quarters of it, so 8
 // gives 2/4/6/8 and every rung lands a whole point clear of the one below. At the previous default
@@ -352,6 +356,10 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	bossDecoyUrl: '',
 	standbyStreamEnabled: false,
 	standbyStreamThreshold: 20,
+	multiviewEnabled: false,
+	multiviewThreshold: defaultMultiviewThreshold,
+	multiviewGames: 'hot' as const,
+	multiviewMaxBoxes: defaultMultiviewMaxBoxes,
 	bettingEnabled: false,
 	temperatureUnit: 'F' as const,
 	romerUnlocked: false,
@@ -462,6 +470,14 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		standbyStreamThreshold: typeof candidate.standbyStreamThreshold === 'number' && isFinite(candidate.standbyStreamThreshold)
 			? Math.max(0, Math.min(100, Math.round(candidate.standbyStreamThreshold)))
 			: defaults.standbyStreamThreshold,
+		multiviewEnabled: typeof candidate.multiviewEnabled === 'boolean' ? candidate.multiviewEnabled : defaults.multiviewEnabled,
+		multiviewThreshold: typeof candidate.multiviewThreshold === 'number' && Number.isFinite(candidate.multiviewThreshold)
+			? Math.max(0, Math.min(100, Math.round(candidate.multiviewThreshold)))
+			: defaults.multiviewThreshold,
+		multiviewGames: candidate.multiviewGames === 'all' ? 'all' : 'hot',
+		multiviewMaxBoxes: typeof candidate.multiviewMaxBoxes === 'number' && Number.isFinite(candidate.multiviewMaxBoxes)
+			? Math.max(multiviewMaxBoxesMin, Math.min(multiviewMaxBoxesMax, Math.round(candidate.multiviewMaxBoxes)))
+			: defaults.multiviewMaxBoxes,
 		bettingEnabled: typeof candidate.bettingEnabled === 'boolean' ? candidate.bettingEnabled : defaults.bettingEnabled,
 		temperatureUnit: normalizeTemperatureUnit(candidate.temperatureUnit),
 		// A stored Rømer unit is itself proof the unlock happened, so the two can never

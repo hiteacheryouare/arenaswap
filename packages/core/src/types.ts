@@ -318,6 +318,13 @@ export interface UserPreferences {
 	standbyStreamEnabled: boolean;
 	// Switch to standby once every registered game falls below this.
 	standbyStreamThreshold: number;
+	// Chrome and Edge only. Stays off until the all-sites permission it needs has been granted.
+	multiviewEnabled: boolean;
+	// A registered game at or above this is hot, and two hot games open Multiview.
+	multiviewThreshold: number;
+	// Which registered games get a box once Multiview is open. It only opens for two hot ones either way.
+	multiviewGames: 'hot' | 'all';
+	multiviewMaxBoxes: number;
 	bettingEnabled: boolean;
 	temperatureUnit: 'F' | 'C' | 'Ro';
 	// Rømer is not offered by the settings list, so the toggle needs to know whether this user
@@ -519,6 +526,55 @@ export interface SetStandbyStreamTabMessage {
 	tabId: number | null;
 }
 
+export interface MultiviewBox {
+	gameId: string;
+	// The registered tab's address when the box was made. A box never chases a later change, since
+	// pointing an iframe somewhere new reloads the stream.
+	url: string;
+}
+
+export interface MultiviewLineup {
+	// In the order they joined, which is the order the rail fills.
+	boxes: MultiviewBox[];
+	// The game in the big box, which is the only one with sound.
+	featuredGameId: string | null;
+	games: Game[];
+}
+
+// Asked by the Multiview page, which gets null back if it is not the tab Multiview opened.
+export interface GetMultiviewMessage {
+	type: 'GET_MULTIVIEW';
+}
+
+export interface MultiviewUpdatedMessage extends MultiviewLineup {
+	type: 'MULTIVIEW_UPDATED';
+	// Every extension page hears it, so a Multiview page left over from an earlier session can tell it is not the one meant.
+	tabId: number;
+}
+
+// The page's games whose stream is playing, sent whenever that set changes.
+export interface MultiviewReadyMessage {
+	type: 'MULTIVIEW_READY';
+	gameIds: string[];
+}
+
+// From the script in every frame under the Multiview page to the page itself. The reply says
+// whether that frame should be muted.
+export interface MultiviewFrameStatusMessage {
+	type: 'MULTIVIEW_FRAME_STATUS';
+	// The box's own frame carries its game id as its name. Frames nested inside it have to be traced
+	// up to it instead.
+	name: string;
+	firstLevel: boolean;
+	playing: boolean;
+	time: number;
+}
+
+export interface MultiviewMuteMessage {
+	type: 'MULTIVIEW_MUTE';
+	muted: boolean;
+}
+
 export interface BossButtonMessage {
 	type: 'BOSS_BUTTON';
 }
@@ -589,4 +645,9 @@ export type ExtensionMessage =
 	| BossButtonMessage
 	| GetDebugStateMessage
 	| GetGuideSlateMessage
-	| GuideSlateUpdatedMessage;
+	| GuideSlateUpdatedMessage
+	| GetMultiviewMessage
+	| MultiviewUpdatedMessage
+	| MultiviewReadyMessage
+	| MultiviewFrameStatusMessage
+	| MultiviewMuteMessage;
