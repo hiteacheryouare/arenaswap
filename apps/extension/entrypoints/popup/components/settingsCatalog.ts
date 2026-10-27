@@ -2,7 +2,7 @@ import { i18n, type GeneratedI18nStructure } from '#i18n';
 import type { ScoringModeChoice } from '@arenaswap/core/types';
 import { foldForSearch } from '../../../utils/searchText';
 
-export type settingsGroupId = 'switching' | 'scoring' | 'favorites' | 'leagues' | 'display' | 'standby' | 'backup';
+export type settingsGroupId = 'switching' | 'scoring' | 'favorites' | 'leagues' | 'display' | 'standby' | 'multiview' | 'backup';
 
 // i18n.t is overloaded, so Parameters<> on it collapses to never. Narrowing the generated
 // structure gives the catalog a real key type. Named substitutions are reported alongside
@@ -37,6 +37,7 @@ export const settingsGroups: readonly settingsGroup[] = [
 	{ id: 'leagues', icon: 'trophy', labelKey: 'setup.groupLeagues', descriptionKey: 'setup.groupLeaguesDesc' },
 	{ id: 'display', icon: 'eye', labelKey: 'setup.groupDisplay', descriptionKey: 'setup.groupDisplayDesc' },
 	{ id: 'standby', icon: 'broadcast', labelKey: 'setup.groupStandby', descriptionKey: 'setup.groupStandbyDesc' },
+	{ id: 'multiview', icon: 'grid-1x2', labelKey: 'setup.groupMultiview', descriptionKey: 'setup.groupMultiviewDesc' },
 	{ id: 'backup', icon: 'people', labelKey: 'setup.groupBackup', descriptionKey: 'setup.groupBackupDesc' },
 ] as const;
 
@@ -85,6 +86,10 @@ export const settingsEntries: readonly settingsEntry[] = [
 	{ group: 'standby', labelKey: 'setup.enableStandby', keywordsKey: 'setup.keywordsStandby', controlId: 'standbyStreamToggle' },
 	{ group: 'standby', labelKey: 'setup.standbyBelow', keywordsKey: 'setup.keywordsStandbyThreshold', controlId: 'standbyThresholdSlider' },
 	{ group: 'standby', labelKey: 'setup.standbyTab', keywordsKey: 'setup.keywordsStandbyTab', controlId: 'standbyTabSelect' },
+	{ group: 'multiview', labelKey: 'setup.enableMultiview', keywordsKey: 'setup.keywordsMultiview', controlId: 'multiviewToggle' },
+	{ group: 'multiview', labelKey: 'setup.multiviewHotAt', keywordsKey: 'setup.keywordsMultiviewThreshold', controlId: 'multiviewThresholdSlider' },
+	{ group: 'multiview', labelKey: 'setup.multiviewGames', keywordsKey: 'setup.keywordsMultiviewGames', controlId: 'multiviewGamesSelect' },
+	{ group: 'multiview', labelKey: 'setup.multiviewMaxBoxes', keywordsKey: 'setup.keywordsMultiviewMaxBoxes', controlId: 'multiviewMaxBoxesSlider' },
 	{ group: 'backup', labelKey: 'profiles.new', keywordsKey: 'setup.keywordsBackup', controlId: 'profileNew' },
 	{ group: 'backup', labelKey: 'backup.open', keywordsKey: 'setup.keywordsBackup', controlId: 'backupOpen' },
 ] as const;
@@ -102,13 +107,15 @@ export interface settingsSearchResult {
 // Group text is matched per group, never folded into each entry's haystack: "bonus" appears in
 // the Scoring description, and mixing the two returned all five signals for it.
 // `available` is every mode whose controls are on screen; without it, nothing is left out.
-export const searchSettings = (query: string, available?: ReadonlySet<ScoringModeChoice>): settingsSearchResult[] => {
+// `hidden` is every group this build does not have.
+export const searchSettings = (query: string, available?: ReadonlySet<ScoringModeChoice>, hidden?: ReadonlySet<settingsGroupId>): settingsSearchResult[] => {
 	const needle = normalize(query);
 	if (!needle) return [];
 
-	const groupById = new Map(settingsGroups.map(group => [group.id, group]));
+	const shownGroups = settingsGroups.filter(group => !hidden?.has(group.id));
+	const groupById = new Map(shownGroups.map(group => [group.id, group]));
 
-	const groupHits = settingsGroups
+	const groupHits = shownGroups
 		.filter(group => normalize(`${i18n.t(group.labelKey)} ${i18n.t(group.descriptionKey)}`).includes(needle))
 		.map(group => ({ group, label: i18n.t(group.labelKey), sublabel: i18n.t(group.descriptionKey), labelKey: group.labelKey }));
 

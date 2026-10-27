@@ -323,6 +323,14 @@
 		"standbyBelow": "Standby below",
 		"morePatient": "More patient",
 		"switchesSooner": "Switches sooner",
+		"enableMultiview": "Enable Multiview",
+		"multiviewHotAt": "Hot at",
+		"multiviewMoreOften": "Opens more often",
+		"multiviewBigMomentsOnly": "Big moments only",
+		"multiviewGames": "Boxes for",
+		"multiviewGamesHot": "Hot games",
+		"multiviewGamesAll": "Every registered game",
+		"multiviewMaxBoxes": "Most games at once",
 		"standbyTab": "Standby tab",
 		"selectTab": "— Select a tab —",
 		"showBetting": "Show betting & odds",
@@ -370,6 +378,8 @@
 		"groupDisplayDesc": "What the game list shows, and how ArenaSwap looks.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Where to park you when every game goes quiet.",
+		"groupMultiview": "Multiview",
+		"groupMultiviewDesc": "Every hot game on one screen, when two heat up at once.",
 		"groupBackup": "Profiles & Backup",
 		"groupBackupDesc": "Switch setups, or take one to another browser.",
 		"bonusesSection": "Boosts",
@@ -409,6 +419,10 @@
 		"keywordsStandby": "fallback, filler, idle, backup, quiet",
 		"keywordsStandbyThreshold": "score, cutoff, limit, below, quiet",
 		"keywordsStandbyTab": "tab, window, page, destination",
+		"keywordsMultiview": "split screen, grid, side by side, quad, several, at once, boxes",
+		"keywordsMultiviewThreshold": "hot, score, cutoff, threshold, open",
+		"keywordsMultiviewGames": "boxes, games, all, hot, registered",
+		"keywordsMultiviewMaxBoxes": "boxes, limit, cap, most, how many",
 		"keywordsBackup": "profiles, switch, setup, new, rename, delete, backup, export, import, sync, file, transfer, restore, move, download, upload",
 		"keywordsBossDecoy": "boss, hide, panic, work, school, spreadsheet, decoy, mute, shortcut, escape",
 		"keywordsDemo": "fake, sample, test, preview, sandbox, dummy",
@@ -1209,6 +1223,9 @@
 		"back": "Back",
 		"gotIt": "Got it"
 	},
+	"multiview": {
+		"empty": "Multiview opens by itself when two of your games are hot at once."
+	},
 	"empty": {
 		"leaguesTitle": "Choose Leagues to Get Started",
 		"leaguesCopy": "Pick at least one league and ArenaSwap will start hunting for games.",
@@ -1230,6 +1247,7 @@
 	"notification": {
 		"standbyTitle": "Parked on Standby Stream",
 		"standbyMessage": "Every game went quiet.",
+		"multiviewTitle": "Switched → Multiview",
 		"switchedTitle": "Switched → {score}",
 		"switchedMessage": "Off to {venue}!",
 		"switchedMessageWithReason": "{reason}. Off to {venue}!",

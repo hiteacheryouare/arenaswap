@@ -323,6 +323,14 @@
 		"standbyBelow": "Standby unter",
 		"morePatient": "Geduldiger",
 		"switchesSooner": "Wechselt früher",
+		"enableMultiview": "Multiview aktivieren",
+		"multiviewHotAt": "Heiß ab",
+		"multiviewMoreOften": "Öffnet öfter",
+		"multiviewBigMomentsOnly": "Nur große Momente",
+		"multiviewGames": "Boxen für",
+		"multiviewGamesHot": "Heiße Spiele",
+		"multiviewGamesAll": "Jedes zugewiesene Spiel",
+		"multiviewMaxBoxes": "Max. Spiele gleichzeitig",
 		"standbyTab": "Standby-Tab",
 		"selectTab": "— Tab auswählen —",
 		"showBetting": "Wetten & Quoten anzeigen",
@@ -370,6 +378,8 @@
 		"groupDisplayDesc": "Was die Spielliste zeigt und wie ArenaSwap aussieht.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Wohin du kommst, wenn alle Spiele einschlafen.",
+		"groupMultiview": "Multiview",
+		"groupMultiviewDesc": "Alle heißen Spiele auf einem Screen, sobald zwei gleichzeitig heiß laufen.",
 		"groupBackup": "Profile & Backup",
 		"groupBackupDesc": "Wechsle zwischen Setups oder nimm eins in einen anderen Browser mit.",
 		"bonusesSection": "Boosts",
@@ -409,6 +419,10 @@
 		"keywordsStandby": "ruckfall, ausweich, leerlauf, reserve, ruhig",
 		"keywordsStandbyThreshold": "wert, grenze, limit, unter, ruhig",
 		"keywordsStandbyTab": "tab, fenster, seite, ziel",
+		"keywordsMultiview": "splitscreen, raster, grid, nebeneinander, mehrere, gleichzeitig, boxen",
+		"keywordsMultiviewThreshold": "heiss, wert, grenze, schwelle, offnen",
+		"keywordsMultiviewGames": "boxen, spiele, alle, heiss, zugewiesen",
+		"keywordsMultiviewMaxBoxes": "boxen, limit, maximum, hochstens, wie viele",
 		"keywordsBackup": "profile, profil, wechseln, umschalten, setup, neu, umbenennen, loschen, backup, sicherung, export, import, sync, datei, ubertragen, wiederherstellen, umziehen, download, herunterladen, upload, hochladen",
 		"keywordsBossDecoy": "chef, verstecken, panik, arbeit, schule, tabelle, tarnung, stumm, tastenkürzel, flucht",
 		"keywordsDemo": "fake, beispiel, test, vorschau, sandkasten, attrappe",
@@ -1209,6 +1223,9 @@
 		"back": "Zurück",
 		"gotIt": "Verstanden"
 	},
+	"multiview": {
+		"empty": "Multiview öffnet sich von selbst, sobald zwei deiner Spiele gleichzeitig heiß laufen."
+	},
 	"empty": {
 		"leaguesTitle": "Wähle Ligen zum Starten",
 		"leaguesCopy": "Wähle mindestens eine Liga, und ArenaSwap geht auf Spielejagd.",
@@ -1230,6 +1247,7 @@
 	"notification": {
 		"standbyTitle": "Auf dem Standby Stream geparkt",
 		"standbyMessage": "Alle Spiele sind eingeschlafen.",
+		"multiviewTitle": "Gewechselt → Multiview",
 		"switchedTitle": "Gewechselt → {score}",
 		"switchedMessage": "Auf geht's: {venue}!",
 		"switchedMessageWithReason": "{reason}. Auf geht's: {venue}!",

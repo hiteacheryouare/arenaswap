@@ -323,6 +323,14 @@
 		"standbyBelow": "スタンバイ閾値",
 		"morePatient": "より辛抱強く",
 		"switchesSooner": "早めに切り替え",
+		"enableMultiview": "Multiviewを有効にする",
+		"multiviewHotAt": "ホット閾値",
+		"multiviewMoreOften": "開きやすく",
+		"multiviewBigMomentsOnly": "大一番のみ",
+		"multiviewGames": "表示する試合",
+		"multiviewGamesHot": "ホットな試合",
+		"multiviewGamesAll": "割り当て済みの全試合",
+		"multiviewMaxBoxes": "同時表示の最大数",
 		"standbyTab": "スタンバイタブ",
 		"selectTab": "— タブを選択 —",
 		"showBetting": "ベッティング & オッズを表示",
@@ -370,6 +378,8 @@
 		"groupDisplayDesc": "試合リストに表示する内容と、ArenaSwapの見た目。",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "どの試合も盛り上がらないときの待機先。",
+		"groupMultiview": "Multiview",
+		"groupMultiviewDesc": "盛り上がっている試合をひとつの画面に。2試合が同時に熱くなったときに。",
 		"groupBackup": "プロフィールとバックアップ",
 		"groupBackupDesc": "設定を切り替えたり、ほかのブラウザに持ち運んだりできます。",
 		"bonusesSection": "ブースト",
@@ -409,6 +419,10 @@
 		"keywordsStandby": "待機, フォールバック, 予備, 代替, 静か",
 		"keywordsStandbyThreshold": "スコア, しきい値, 下限, 以下, 静か",
 		"keywordsStandbyTab": "タブ, ウィンドウ, ページ, 移動先",
+		"keywordsMultiview": "分割画面, グリッド, 並べて, 複数, 同時, マルチ画面",
+		"keywordsMultiviewThreshold": "ホット, スコア, しきい値, 下限, 開く",
+		"keywordsMultiviewGames": "試合, すべて, ホット, 割り当て",
+		"keywordsMultiviewMaxBoxes": "上限, 最大, 何試合, 数",
 		"keywordsBackup": "プロフィール, 切り替え, 切替, 設定, セットアップ, 新規, 名前変更, 削除, バックアップ, エクスポート, インポート, 同期, ファイル, 移行, 復元, 引っ越し, ダウンロード, アップロード, 書き出し, 読み込み",
 		"keywordsBossDecoy": "上司, 隠す, 緊急, 仕事, 授業, スプレッドシート, ダミー, ミュート, ショートカット, 逃げる",
 		"keywordsDemo": "架空, サンプル, テスト, プレビュー, ダミー",
@@ -1209,6 +1223,9 @@
 		"back": "戻る",
 		"gotIt": "了解"
 	},
+	"multiview": {
+		"empty": "2試合が同時に盛り上がると、Multiviewが自動で開きます。"
+	},
 	"empty": {
 		"leaguesTitle": "まずリーグを選んでください",
 		"leaguesCopy": "リーグを1つ以上選べば、ArenaSwapが試合を探し始めます。",
@@ -1230,6 +1247,7 @@
 	"notification": {
 		"standbyTitle": "Standby Streamで待機中",
 		"standbyMessage": "すべての試合が静かになりました。",
+		"multiviewTitle": "切り替え → Multiview",
 		"switchedTitle": "切り替え → {score}",
 		"switchedMessage": "{venue}へGO！",
 		"switchedMessageWithReason": "{reason}。{venue}へGO！",

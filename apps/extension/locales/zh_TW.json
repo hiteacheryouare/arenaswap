@@ -323,6 +323,14 @@
 		"standbyBelow": "低於此分數時待機",
 		"morePatient": "更有耐心",
 		"switchesSooner": "更快切換",
+		"enableMultiview": "啟用 Multiview",
+		"multiviewHotAt": "熱度達到",
+		"multiviewMoreOften": "更常開啟",
+		"multiviewBigMomentsOnly": "只限重大時刻",
+		"multiviewGames": "分格顯示",
+		"multiviewGamesHot": "熱門比賽",
+		"multiviewGamesAll": "所有已指派的比賽",
+		"multiviewMaxBoxes": "同時顯示的最多場數",
 		"standbyTab": "待機分頁",
 		"selectTab": "— 選擇分頁 —",
 		"showBetting": "顯示投注與賠率",
@@ -370,6 +378,8 @@
 		"groupDisplayDesc": "比賽列表顯示什麼，以及 ArenaSwap 的外觀。",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "所有比賽都冷場時，把你停在哪裡。",
+		"groupMultiview": "Multiview",
+		"groupMultiviewDesc": "兩場比賽同時升溫時，把所有熱門比賽放在同一個畫面。",
 		"groupBackup": "個人資料與備份",
 		"groupBackupDesc": "切換設定，或把設定帶到另一個瀏覽器。",
 		"bonusesSection": "加成",
@@ -409,6 +419,10 @@
 		"keywordsStandby": "備用, 後備, 閒置, 替補, 冷場",
 		"keywordsStandbyThreshold": "分數, 閾值, 下限, 低於, 冷場",
 		"keywordsStandbyTab": "分頁, 視窗, 頁面, 目標",
+		"keywordsMultiview": "分割畫面, 多畫面, 格狀, 並排, 同時, 多場",
+		"keywordsMultiviewThreshold": "熱門, 分數, 閾值, 下限, 開啟",
+		"keywordsMultiviewGames": "分格, 比賽, 全部, 熱門, 已指派",
+		"keywordsMultiviewMaxBoxes": "分格, 上限, 最多, 數量, 幾場",
 		"keywordsBackup": "個人資料, 設定檔, 切換, 設定, 新增, 重新命名, 刪除, 備份, 匯出, 匯入, 同步, 檔案, 轉移, 還原, 搬移, 下載, 上傳",
 		"keywordsBossDecoy": "老闆, 隱藏, 緊急, 工作, 上課, 試算表, 掩護, 靜音, 快速鍵, 逃跑",
 		"keywordsDemo": "虛構, 範例, 測試, 預覽, 沙盒",
@@ -1209,6 +1223,9 @@
 		"back": "返回",
 		"gotIt": "了解"
 	},
+	"multiview": {
+		"empty": "你的兩場比賽同時升溫時，Multiview 會自動開啟。"
+	},
 	"empty": {
 		"leaguesTitle": "選擇聯賽以開始使用",
 		"leaguesCopy": "至少選擇一個聯賽，ArenaSwap 就會開始搜尋比賽。",
@@ -1230,6 +1247,7 @@
 	"notification": {
 		"standbyTitle": "已停在 Standby Stream",
 		"standbyMessage": "所有比賽都冷了下來。",
+		"multiviewTitle": "已切換 → Multiview",
 		"switchedTitle": "已切換 → {score}",
 		"switchedMessage": "出發前往 {venue}！",
 		"switchedMessageWithReason": "{reason}。出發前往 {venue}！",

@@ -323,6 +323,14 @@
 		"standbyBelow": "Standby sotto",
 		"morePatient": "Più paziente",
 		"switchesSooner": "Cambia prima",
+		"enableMultiview": "Attiva Multiview",
+		"multiviewHotAt": "Calda da",
+		"multiviewMoreOften": "Si apre più spesso",
+		"multiviewBigMomentsOnly": "Solo momenti clou",
+		"multiviewGames": "Riquadri per",
+		"multiviewGamesHot": "Partite calde",
+		"multiviewGamesAll": "Ogni partita assegnata",
+		"multiviewMaxBoxes": "Massimo di partite insieme",
 		"standbyTab": "Scheda standby",
 		"selectTab": "— Seleziona una scheda —",
 		"showBetting": "Mostra scommesse e quote",
@@ -370,6 +378,8 @@
 		"groupDisplayDesc": "Cosa mostra l'elenco delle partite e che aspetto ha ArenaSwap.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Dove parcheggiarti quando tutte le partite si calmano.",
+		"groupMultiview": "Multiview",
+		"groupMultiviewDesc": "Tutte le partite calde su un solo schermo, quando due si accendono insieme.",
 		"groupBackup": "Profili e backup",
 		"groupBackupDesc": "Passa da una configurazione all'altra, oppure portane una su un altro browser.",
 		"bonusesSection": "Boost",
@@ -409,6 +419,10 @@
 		"keywordsStandby": "riserva, riempitivo, inattivo, backup, silenzio",
 		"keywordsStandbyThreshold": "punteggio, soglia, limite, sotto, silenzio",
 		"keywordsStandbyTab": "scheda, finestra, pagina, destinazione",
+		"keywordsMultiview": "schermo diviso, griglia, affiancate, piu, insieme, riquadri",
+		"keywordsMultiviewThreshold": "calda, punteggio, soglia, limite, apri",
+		"keywordsMultiviewGames": "riquadri, partite, tutte, calde, assegnate",
+		"keywordsMultiviewMaxBoxes": "riquadri, limite, massimo, quante",
 		"keywordsBackup": "profili, profilo, cambia, passa, configurazione, impostazioni, nuovo, rinomina, elimina, cancella, backup, copia, esporta, importa, esportazione, importazione, sincronizza, sync, file, trasferire, ripristina, sposta, scarica, carica",
 		"keywordsBossDecoy": "capo, nascondere, panico, lavoro, scuola, foglio di calcolo, copertura, muto, scorciatoia, fuga",
 		"keywordsDemo": "finto, esempio, test, anteprima, prova",
@@ -1209,6 +1223,9 @@
 		"back": "Indietro",
 		"gotIt": "Capito"
 	},
+	"multiview": {
+		"empty": "Multiview si apre da solo quando due delle tue partite sono calde insieme."
+	},
 	"empty": {
 		"leaguesTitle": "Scegli le leghe per iniziare",
 		"leaguesCopy": "Scegli almeno una lega e ArenaSwap si metterà a caccia di partite.",
@@ -1230,6 +1247,7 @@
 	"notification": {
 		"standbyTitle": "Parcheggiato sullo Standby Stream",
 		"standbyMessage": "Tutte le partite si sono calmate.",
+		"multiviewTitle": "Cambiato → Multiview",
 		"switchedTitle": "Cambiato → {score}",
 		"switchedMessage": "Destinazione {venue}!",
 		"switchedMessageWithReason": "{reason}. Destinazione {venue}!",

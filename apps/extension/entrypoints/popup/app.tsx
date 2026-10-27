@@ -21,6 +21,7 @@ import { isLeagueLogoCacheFresh, leagueLogoCacheKey, seededLeagueLogos } from '.
 import useToast from './useToast';
 import useSlideDirection from './useSlideDirection';
 import useBossShortcut from './useBossShortcut';
+import useMultiviewToggle from './useMultiviewToggle';
 import SuggestView from './components/suggestView';
 import {
 	applyTabSuggestions,
@@ -364,6 +365,11 @@ export default () => {
 		void syncPromise.catch(() => {});
 	};
 
+	const multiviewToggle = useMultiviewToggle(
+		prefs.multiviewEnabled,
+		enabled => persistPrefs(currentPrefs => ({ ...currentPrefs, multiviewEnabled: enabled })),
+	);
+
 	// Queued behind any preferences save still on its way, so an earlier UPDATE_PREFS carrying
 	// `enabled: true` cannot land after the press and switch auto-switching back on. The popup shows
 	// the pause itself in case the browser leaves it open behind the new tab.
@@ -691,6 +697,12 @@ export default () => {
 						onStandbyThresholdChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, standbyStreamThreshold: val }))}
 						onSetStandbyTab={onSetStandbyTab}
 						onStandbyOnboardingDone={onStandbyOnboardingDone}
+						multiviewAvailable={multiviewToggle.available}
+						multiviewOn={multiviewToggle.on}
+						onToggleMultiview={multiviewToggle.toggle}
+						onMultiviewThresholdChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, multiviewThreshold: val }))}
+						onMultiviewGamesChange={choice => persistPrefs(currentPrefs => ({ ...currentPrefs, multiviewGames: choice }))}
+						onMultiviewMaxBoxesChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, multiviewMaxBoxes: val }))}
 						onToggleBetting={() => persistPrefs(currentPrefs => ({ ...currentPrefs, bettingEnabled: !currentPrefs.bettingEnabled }))}
 						onToggleTemperatureUnit={() => persistPrefs(currentPrefs => ({ ...currentPrefs, temperatureUnit: nextTemperatureUnit(currentPrefs.temperatureUnit, currentPrefs.romerUnlocked) }))}
 						onUnlockRomer={() => persistPrefs(currentPrefs => ({ ...currentPrefs, romerUnlocked: true, temperatureUnit: 'Ro' }))}

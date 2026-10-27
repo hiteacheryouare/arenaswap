@@ -323,6 +323,14 @@
 		"standbyBelow": "Em espera abaixo de",
 		"morePatient": "Mais paciente",
 		"switchesSooner": "Muda mais cedo",
+		"enableMultiview": "Ativar Multiview",
+		"multiviewHotAt": "Quente a partir de",
+		"multiviewMoreOften": "Abre com mais frequência",
+		"multiviewBigMomentsOnly": "Só grandes momentos",
+		"multiviewGames": "Quadros para",
+		"multiviewGamesHot": "Jogos quentes",
+		"multiviewGamesAll": "Todos os jogos associados",
+		"multiviewMaxBoxes": "Máximo de jogos em simultâneo",
 		"standbyTab": "Separador de espera",
 		"selectTab": "— Seleciona um separador —",
 		"showBetting": "Mostrar apostas e odds",
@@ -370,6 +378,8 @@
 		"groupDisplayDesc": "O que a lista de jogos mostra e o aspeto do ArenaSwap.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Onde ficar quando todos os jogos arrefecem.",
+		"groupMultiview": "Multiview",
+		"groupMultiviewDesc": "Todos os jogos quentes num só ecrã, quando dois aquecem ao mesmo tempo.",
 		"groupBackup": "Perfis e backup",
 		"groupBackupDesc": "Alterna entre configurações ou leva uma para outro navegador.",
 		"bonusesSection": "Impulsos",
@@ -409,6 +419,10 @@
 		"keywordsStandby": "reserva, backup, inativo, alternativa, parado",
 		"keywordsStandbyThreshold": "pontuacao, corte, limite, abaixo, parado",
 		"keywordsStandbyTab": "separador, janela, pagina, destino",
+		"keywordsMultiview": "ecra dividido, grelha, lado a lado, varios, em simultaneo, quadros",
+		"keywordsMultiviewThreshold": "quente, pontuacao, corte, limite, abrir",
+		"keywordsMultiviewGames": "quadros, jogos, todos, quentes, associados",
+		"keywordsMultiviewMaxBoxes": "quadros, limite, maximo, quantos",
 		"keywordsBackup": "perfis, perfil, alternar, trocar, configuracao, novo, mudar nome, renomear, eliminar, apagar, backup, copia, exportar, importar, sincronizar, sync, ficheiro, transferir, restaurar, mover, descarregar, carregar",
 		"keywordsBossDecoy": "chefe, esconder, panico, trabalho, aula, folha de calculo, disfarce, silenciar, atalho, fugir",
 		"keywordsDemo": "falso, exemplo, teste, pre visualizacao, simulacao",
@@ -1209,6 +1223,9 @@
 		"back": "Voltar",
 		"gotIt": "Percebido"
 	},
+	"multiview": {
+		"empty": "O Multiview abre sozinho quando dois dos teus jogos estão quentes ao mesmo tempo."
+	},
 	"empty": {
 		"leaguesTitle": "Escolhe ligas para começar",
 		"leaguesCopy": "Escolhe pelo menos uma liga e o ArenaSwap começa à caça de jogos.",
@@ -1230,6 +1247,7 @@
 	"notification": {
 		"standbyTitle": "Estacionado no Standby Stream",
 		"standbyMessage": "Os jogos ficaram todos sossegados.",
+		"multiviewTitle": "Mudado → Multiview",
 		"switchedTitle": "Mudado → {score}",
 		"switchedMessage": "Rumo a {venue}!",
 		"switchedMessageWithReason": "{reason}. Rumo a {venue}!",

@@ -323,6 +323,14 @@
 		"standbyBelow": "Standby en dessous de",
 		"morePatient": "Plus patient",
 		"switchesSooner": "Change plus vite",
+		"enableMultiview": "Activer Multiview",
+		"multiviewHotAt": "Chaud dès",
+		"multiviewMoreOften": "S'ouvre plus souvent",
+		"multiviewBigMomentsOnly": "Grands moments seulement",
+		"multiviewGames": "Cases pour",
+		"multiviewGamesHot": "Matchs chauds",
+		"multiviewGamesAll": "Tous les matchs associés",
+		"multiviewMaxBoxes": "Max de matchs en même temps",
 		"standbyTab": "Onglet de standby",
 		"selectTab": "— Sélectionner un onglet —",
 		"showBetting": "Afficher les paris et les cotes",
@@ -370,6 +378,8 @@
 		"groupDisplayDesc": "Ce qu'affiche la liste des matchs et l'apparence d'ArenaSwap.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Où te garer quand tous les matchs s'endorment.",
+		"groupMultiview": "Multiview",
+		"groupMultiviewDesc": "Tous les matchs chauds sur un seul écran, quand deux s'enflamment en même temps.",
 		"groupBackup": "Profils et sauvegarde",
 		"groupBackupDesc": "Change de config, ou emmène-en une dans un autre navigateur.",
 		"bonusesSection": "Bonus",
@@ -409,6 +419,10 @@
 		"keywordsStandby": "repli, secours, inactif, reserve, calme",
 		"keywordsStandbyThreshold": "score, seuil, limite, en dessous, calme",
 		"keywordsStandbyTab": "onglet, fenetre, page, destination",
+		"keywordsMultiview": "ecran partage, grille, cote a cote, plusieurs, en meme temps, cases",
+		"keywordsMultiviewThreshold": "chaud, score, seuil, ouverture, ouvrir",
+		"keywordsMultiviewGames": "cases, matchs, tous, chauds, associes",
+		"keywordsMultiviewMaxBoxes": "cases, limite, plafond, maximum, combien",
 		"keywordsBackup": "profils, profil, changer, basculer, config, configuration, nouveau, renommer, supprimer, sauvegarde, backup, export, exporter, import, importer, synchro, synchronisation, sync, fichier, transfert, restaurer, deplacer, telecharger, envoyer",
 		"keywordsBossDecoy": "chef, cacher, panique, travail, cours, tableur, couverture, muet, raccourci, fuite",
 		"keywordsDemo": "faux, exemple, test, apercu, bac a sable",
@@ -1209,6 +1223,9 @@
 		"back": "Retour",
 		"gotIt": "Compris"
 	},
+	"multiview": {
+		"empty": "Multiview s'ouvre tout seul quand deux de tes matchs sont chauds en même temps."
+	},
 	"empty": {
 		"leaguesTitle": "Choisis des ligues pour commencer",
 		"leaguesCopy": "Choisis au moins une ligue et ArenaSwap partira à la chasse aux matchs.",
@@ -1230,6 +1247,7 @@
 	"notification": {
 		"standbyTitle": "Garé sur le Standby Stream",
 		"standbyMessage": "Tous les matchs se sont endormis.",
+		"multiviewTitle": "Basculé → Multiview",
 		"switchedTitle": "Basculé → {score}",
 		"switchedMessage": "Direction {venue} !",
 		"switchedMessageWithReason": "{reason}. Direction {venue} !",

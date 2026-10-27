@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { i18n } from '#i18n';
-import { isCollegeLeagueId, leagueConfigMap, resolveCollegeFilter } from '@arenaswap/core/constants';
+import { isCollegeLeagueId, leagueConfigMap, multiviewMaxBoxesMax, multiviewMaxBoxesMin, resolveCollegeFilter } from '@arenaswap/core/constants';
 import { modesInUse } from '@arenaswap/core';
 import type { FantasyRosterEntry } from '@arenaswap/core';
 import type { BuiltInModeId, CollegeFilter, CollegeLeagueId, FinishedTabAction, LeagueId, LeagueLogoMap, LeagueScheduleMap, ScoringModeChoice, SignalName, SportType, ThemePreference, UserPreferences } from '@arenaswap/core/types';
@@ -82,6 +82,14 @@ interface setupViewProps {
 	onStandbyThresholdChange: (val: number) => void;
 	onSetStandbyTab: (tabId: number | null) => void;
 	onStandbyOnboardingDone: () => void;
+	// False in the Firefox build, which has no Multiview.
+	multiviewAvailable: boolean;
+	// On in prefs and the permission it needs still granted.
+	multiviewOn: boolean;
+	onToggleMultiview: () => void;
+	onMultiviewThresholdChange: (val: number) => void;
+	onMultiviewGamesChange: (games: UserPreferences['multiviewGames']) => void;
+	onMultiviewMaxBoxesChange: (val: number) => void;
 	onToggleBetting: () => void;
 	onToggleTemperatureUnit: () => void;
 	onUnlockRomer: () => void;
@@ -128,7 +136,8 @@ const setupView = ({
 	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder, onCollegeFilterChange,
 	onToggleGroupByLeague, onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onThemeChange, onUpcomingGamesDaysChange,
 	onToggleProTips, onToggleNotifications, bossShortcut, onBossDecoyChange, onToggleDemo, onDemoSeasonChange, onToggleStandbyStream, onStandbyThresholdChange,
-	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onToggleOpenReveal,
+	onSetStandbyTab, onStandbyOnboardingDone, multiviewAvailable, multiviewOn, onToggleMultiview, onMultiviewThresholdChange,
+	onMultiviewGamesChange, onMultiviewMaxBoxesChange, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onToggleOpenReveal,
 	onPostseasonBoostChange,
 	onToggleHolidayDecorations, onToggleHolidaySnow, onToggleHolidayLights, onToggleHolidayLeaves,
 	onToggleSignal, onToggleModeSignal, onScoringModeChange, onLeagueModeChange, onFantasyBlendChange, onFantasyRuleChange,
@@ -148,7 +157,11 @@ const setupView = ({
 	const fantasyInUse = modes.includes('fantasy');
 	// Search only offers a mode's controls while they are on the page.
 	const availableModesKey = [...modes, prefs.scoringMode].join(',');
-	const results = useMemo(() => searchSettings(query, new Set(availableModesKey.split(',') as ScoringModeChoice[])), [query, availableModesKey]);
+	const hiddenGroups = useMemo(() => new Set<settingsGroupId>(multiviewAvailable ? [] : ['multiview']), [multiviewAvailable]);
+	const results = useMemo(
+		() => searchSettings(query, new Set(availableModesKey.split(',') as ScoringModeChoice[]), hiddenGroups),
+		[query, availableModesKey, hiddenGroups]
+	);
 	const noLeaguesSelected = prefsLoaded && prefs.enabledLeagues.length === 0;
 
 	const lastGroupRef = useRef<settingsGroupId | null>(null);
@@ -547,6 +560,74 @@ const setupView = ({
 		</>
 	);
 
+	const multiviewPage = () => (
+		<>
+			<div className='d-flex justify-content-between align-items-center'>
+				<label className='fg-secondary setting-toggle-label' htmlFor='multiviewToggle'>{i18n.t('setup.enableMultiview')}</label>
+				<ToggleSwitch id='multiviewToggle' checked={multiviewOn} onChange={onToggleMultiview} disabled={!prefsLoaded} />
+			</div>
+
+			{multiviewOn && (
+				<div className='mt-5 d-flex flex-column gap-5'>
+					<div>
+						<div className='d-flex justify-content-between align-items-baseline mb-1'>
+							<label className='fg-secondary setting-toggle-label' htmlFor='multiviewThresholdSlider'>
+								{i18n.t('setup.multiviewHotAt')}
+							</label>
+							<span className='fw-semibold setting-value-label'>{prefs.multiviewThreshold}</span>
+						</div>
+						<FormRange
+							id='multiviewThresholdSlider'
+							min={0}
+							max={100}
+							step={5}
+							value={prefs.multiviewThreshold}
+							onChange={e => onMultiviewThresholdChange(Number(e.target.value))}
+							disabled={!prefsLoaded}
+						/>
+						<div className='d-flex justify-content-between'>
+							<span className='setting-explainer'>{i18n.t('setup.multiviewMoreOften')}</span>
+							<span className='setting-explainer'>{i18n.t('setup.multiviewBigMomentsOnly')}</span>
+						</div>
+					</div>
+
+					<div>
+						<div className='fg-secondary setting-toggle-label mb-1'>{i18n.t('setup.multiviewGames')}</div>
+						<SelectDropdown
+							id='multiviewGamesSelect'
+							value={prefs.multiviewGames}
+							onChange={value => onMultiviewGamesChange(value === 'all' ? 'all' : 'hot')}
+							disabled={!prefsLoaded}
+							ariaLabel={i18n.t('setup.multiviewGames')}
+							options={[
+								{ value: 'hot', label: i18n.t('setup.multiviewGamesHot') },
+								{ value: 'all', label: i18n.t('setup.multiviewGamesAll') },
+							]}
+						/>
+					</div>
+
+					<div>
+						<div className='d-flex justify-content-between align-items-baseline mb-1'>
+							<label className='fg-secondary setting-toggle-label' htmlFor='multiviewMaxBoxesSlider'>
+								{i18n.t('setup.multiviewMaxBoxes')}
+							</label>
+							<span className='fw-semibold setting-value-label'>{prefs.multiviewMaxBoxes}</span>
+						</div>
+						<FormRange
+							id='multiviewMaxBoxesSlider'
+							min={multiviewMaxBoxesMin}
+							max={multiviewMaxBoxesMax}
+							step={1}
+							value={prefs.multiviewMaxBoxes}
+							onChange={e => onMultiviewMaxBoxesChange(Number(e.target.value))}
+							disabled={!prefsLoaded}
+						/>
+					</div>
+				</div>
+			)}
+		</>
+	);
+
 	const now = Date.now();
 	const leaguesPage = () => (
 		<>
@@ -624,6 +705,7 @@ const setupView = ({
 		leagues: leaguesPage,
 		display: displayPage,
 		standby: standbyPage,
+		multiview: multiviewPage,
 		backup: () => (
 			<BackupSyncPage prefs={prefs} fantasyRoster={fantasyRoster} profiles={profiles} profilesBusy={profilesBusy} profileActions={profileActions} />
 		),
@@ -734,7 +816,7 @@ const setupView = ({
 				)
 			) : (
 				<div className='settings-index'>
-					{settingsGroups.map(group => (
+					{settingsGroups.filter(group => !hiddenGroups.has(group.id)).map(group => (
 						<button
 							key={group.id}
 							type='button'

@@ -323,6 +323,14 @@
 		"standbyBelow": "대기 기준점",
 		"morePatient": "더 느긋하게",
 		"switchesSooner": "더 빠르게 전환",
+		"enableMultiview": "Multiview 활성화",
+		"multiviewHotAt": "핫 기준점",
+		"multiviewMoreOften": "더 자주 열기",
+		"multiviewBigMomentsOnly": "빅 모멘트만",
+		"multiviewGames": "표시할 경기",
+		"multiviewGamesHot": "핫한 경기",
+		"multiviewGamesAll": "할당된 모든 경기",
+		"multiviewMaxBoxes": "동시 최대 경기 수",
 		"standbyTab": "대기 탭",
 		"selectTab": "— 탭 선택 —",
 		"showBetting": "베팅 및 배당률 표시",
@@ -370,6 +378,8 @@
 		"groupDisplayDesc": "경기 목록에 표시할 내용과 ArenaSwap의 외관이에요.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "모든 경기가 조용해졌을 때 이동할 곳이에요.",
+		"groupMultiview": "Multiview",
+		"groupMultiviewDesc": "두 경기가 동시에 뜨거워지면, 핫한 경기를 한 화면에 모아 줘요.",
 		"groupBackup": "프로필 및 백업",
 		"groupBackupDesc": "설정을 전환하거나 다른 브라우저로 가져가요.",
 		"bonusesSection": "부스트",
@@ -409,6 +419,10 @@
 		"keywordsStandby": "대기, 백업, 예비, 조용함",
 		"keywordsStandbyThreshold": "점수, 기준점, 제한, 이하, 조용함",
 		"keywordsStandbyTab": "탭, 창, 페이지, 목적지",
+		"keywordsMultiview": "분할 화면, 그리드, 나란히, 여러 개, 동시, 멀티뷰",
+		"keywordsMultiviewThreshold": "핫, 점수, 기준점, 임계값, 열기",
+		"keywordsMultiviewGames": "경기, 전체, 핫, 할당",
+		"keywordsMultiviewMaxBoxes": "최대, 제한, 개수, 몇 개",
 		"keywordsBackup": "프로필, 전환, 바꾸기, 설정, 새로 만들기, 이름 변경, 삭제, 백업, 내보내기, 가져오기, 동기화, 싱크, 파일, 이전, 복원, 이동, 다운로드, 업로드",
 		"keywordsBossDecoy": "상사, 숨기기, 비상, 회사, 수업, 스프레드시트, 위장, 음소거, 단축키, 탈출",
 		"keywordsDemo": "가짜, 샘플, 테스트, 미리보기, 더미",
@@ -1209,6 +1223,9 @@
 		"back": "뒤로",
 		"gotIt": "확인"
 	},
+	"multiview": {
+		"empty": "두 경기가 동시에 뜨거워지면 Multiview가 저절로 열려요."
+	},
 	"empty": {
 		"leaguesTitle": "시작하려면 리그를 선택하세요",
 		"leaguesCopy": "리그를 하나 이상 고르면 ArenaSwap이 경기를 찾아 나서요.",
@@ -1230,6 +1247,7 @@
 	"notification": {
 		"standbyTitle": "Standby Stream에서 대기 중",
 		"standbyMessage": "모든 경기가 조용해졌어요.",
+		"multiviewTitle": "전환 → Multiview",
 		"switchedTitle": "전환 → {score}",
 		"switchedMessage": "{venue}에서 만나요!",
 		"switchedMessageWithReason": "{reason}. {venue}에서 만나요!",

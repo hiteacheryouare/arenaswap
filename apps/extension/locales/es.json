@@ -323,6 +323,14 @@
 		"standbyBelow": "En espera por debajo de",
 		"morePatient": "Más paciente",
 		"switchesSooner": "Cambia antes",
+		"enableMultiview": "Activar Multiview",
+		"multiviewHotAt": "Caliente desde",
+		"multiviewMoreOften": "Se abre más seguido",
+		"multiviewBigMomentsOnly": "Solo momentos grandes",
+		"multiviewGames": "Cuadros para",
+		"multiviewGamesHot": "Partidos calientes",
+		"multiviewGamesAll": "Todos los partidos asignados",
+		"multiviewMaxBoxes": "Máximo de partidos a la vez",
 		"standbyTab": "Pestaña de espera",
 		"selectTab": "— Selecciona una pestaña —",
 		"showBetting": "Mostrar apuestas y cuotas",
@@ -370,6 +378,8 @@
 		"groupDisplayDesc": "Lo que muestra la lista de partidos y cómo se ve ArenaSwap.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Dónde dejarte cuando todos los partidos se apagan.",
+		"groupMultiview": "Multiview",
+		"groupMultiviewDesc": "Todos los partidos calientes en una pantalla, cuando dos se prenden a la vez.",
 		"groupBackup": "Perfiles y copia",
 		"groupBackupDesc": "Cambia entre configuraciones o llévate una a otro navegador.",
 		"bonusesSection": "Impulsos",
@@ -409,6 +419,10 @@
 		"keywordsStandby": "respaldo, relleno, inactivo, reserva, tranquilo",
 		"keywordsStandbyThreshold": "puntuacion, corte, limite, debajo, tranquilo",
 		"keywordsStandbyTab": "pestana, ventana, pagina, destino",
+		"keywordsMultiview": "pantalla dividida, cuadricula, lado a lado, varios, a la vez, cuadros",
+		"keywordsMultiviewThreshold": "caliente, puntuacion, corte, umbral, abrir",
+		"keywordsMultiviewGames": "cuadros, partidos, todos, calientes, asignados",
+		"keywordsMultiviewMaxBoxes": "cuadros, limite, tope, maximo, cuantos",
 		"keywordsBackup": "perfiles, perfil, cambiar, configuracion, nuevo, renombrar, cambiar nombre, eliminar, borrar, copia, respaldo, backup, exportar, importar, sincronizar, sync, archivo, transferir, restaurar, mover, descargar, subir",
 		"keywordsBossDecoy": "jefe, esconder, panico, trabajo, clase, hoja de calculo, tapadera, silenciar, atajo, escapar",
 		"keywordsDemo": "falso, ejemplo, prueba, vista previa, simulacion",
@@ -1209,6 +1223,9 @@
 		"back": "Atrás",
 		"gotIt": "Entendido"
 	},
+	"multiview": {
+		"empty": "Multiview se abre solo cuando dos de tus partidos están calientes a la vez."
+	},
 	"empty": {
 		"leaguesTitle": "Elige ligas para empezar",
 		"leaguesCopy": "Elige al menos una liga y ArenaSwap empezará a buscar partidos.",
@@ -1230,6 +1247,7 @@
 	"notification": {
 		"standbyTitle": "Estacionado en Standby Stream",
 		"standbyMessage": "Todos los partidos se calmaron.",
+		"multiviewTitle": "Cambiado → Multiview",
 		"switchedTitle": "Cambiado → {score}",
 		"switchedMessage": "¡Rumbo a {venue}!",
 		"switchedMessageWithReason": "{reason}. ¡Rumbo a {venue}!",

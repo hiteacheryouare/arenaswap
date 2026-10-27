@@ -323,6 +323,14 @@
 		"standbyBelow": "低于以下值时待机",
 		"morePatient": "更有耐心",
 		"switchesSooner": "更快切换",
+		"enableMultiview": "启用 Multiview",
+		"multiviewHotAt": "热度达到",
+		"multiviewMoreOften": "更常开启",
+		"multiviewBigMomentsOnly": "仅限重大时刻",
+		"multiviewGames": "分格显示",
+		"multiviewGamesHot": "热门比赛",
+		"multiviewGamesAll": "所有已分配的比赛",
+		"multiviewMaxBoxes": "同时显示的最多场数",
 		"standbyTab": "待机标签页",
 		"selectTab": "— 选择标签页 —",
 		"showBetting": "显示投注与赔率",
@@ -370,6 +378,8 @@
 		"groupDisplayDesc": "比赛列表显示什么，以及 ArenaSwap 的外观。",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "所有比赛都冷场时把您停在哪里。",
+		"groupMultiview": "Multiview",
+		"groupMultiviewDesc": "两场比赛同时升温时，把所有热门比赛放在同一屏。",
 		"groupBackup": "个人资料与备份",
 		"groupBackupDesc": "切换设置，或把设置带到另一个浏览器。",
 		"bonusesSection": "加成",
@@ -409,6 +419,10 @@
 		"keywordsStandby": "备用, 后备, 空闲, 替补, 冷场",
 		"keywordsStandbyThreshold": "分数, 阈值, 下限, 低于, 冷场",
 		"keywordsStandbyTab": "标签页, 窗口, 页面, 目标",
+		"keywordsMultiview": "分屏, 多画面, 宫格, 并排, 同时, 多场",
+		"keywordsMultiviewThreshold": "热门, 分数, 阈值, 下限, 开启",
+		"keywordsMultiviewGames": "分格, 比赛, 全部, 热门, 已分配",
+		"keywordsMultiviewMaxBoxes": "分格, 上限, 最多, 数量, 几场",
 		"keywordsBackup": "个人资料, 配置文件, 档案, 切换, 设置, 新建, 重命名, 删除, 备份, 导出, 导入, 同步, 文件, 迁移, 恢复, 转移, 下载, 上传",
 		"keywordsBossDecoy": "老板, 隐藏, 紧急, 工作, 上课, 电子表格, 掩护, 静音, 快捷键, 逃跑",
 		"keywordsDemo": "虚构, 示例, 测试, 预览, 沙盒",
@@ -1209,6 +1223,9 @@
 		"back": "返回",
 		"gotIt": "明白了"
 	},
+	"multiview": {
+		"empty": "当您的两场比赛同时升温时，Multiview 会自动开启。"
+	},
 	"empty": {
 		"leaguesTitle": "选择联赛以开始使用",
 		"leaguesCopy": "至少选择一个联赛，ArenaSwap 就会开始搜寻比赛。",
@@ -1230,6 +1247,7 @@
 	"notification": {
 		"standbyTitle": "已停在 Standby Stream",
 		"standbyMessage": "所有比赛都归于平静。",
+		"multiviewTitle": "已切换 → Multiview",
 		"switchedTitle": "已切换 → {score}",
 		"switchedMessage": "出发前往 {venue}！",
 		"switchedMessageWithReason": "{reason}。出发前往 {venue}！",

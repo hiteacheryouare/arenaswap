@@ -36,6 +36,10 @@ const defaultPrefs: UserPreferences = {
 	bossDecoyUrl: '',
 	standbyStreamEnabled: false,
 	standbyStreamThreshold: 20,
+	multiviewEnabled: false,
+	multiviewThreshold: 65,
+	multiviewGames: 'hot' as const,
+	multiviewMaxBoxes: 4,
 	bettingEnabled: false,
 	temperatureUnit: 'F',
 	romerUnlocked: false,
@@ -95,6 +99,12 @@ const defaultProps = {
 	onStandbyThresholdChange: () => {},
 	onSetStandbyTab: () => {},
 	onStandbyOnboardingDone: () => {},
+	multiviewAvailable: true,
+	multiviewOn: false,
+	onToggleMultiview: () => {},
+	onMultiviewThresholdChange: () => {},
+	onMultiviewGamesChange: () => {},
+	onMultiviewMaxBoxesChange: () => {},
 	onToggleBetting: () => {},
 	onToggleTemperatureUnit: () => {},
 	onUnlockRomer: () => {},
@@ -151,7 +161,7 @@ describe('setupView index', () => {
 
 	it('lists every settings group with a description', () => {
 		cy.mount(<SetupView {...defaultProps} />);
-		cy.get('.settings-index-row').should('have.length', 7);
+		cy.get('.settings-index-row').should('have.length', 8);
 		cy.get('#settingsGroup-switching').find('.settings-index-desc').should('not.be.empty');
 	});
 
@@ -191,7 +201,7 @@ describe('setupView navigation', () => {
 		cy.mount(<SetupView {...defaultProps} onClose={spy} />);
 		openGroup('display');
 		cy.get('button.setup-header').click();
-		cy.get('.settings-index-row').should('have.length', 7);
+		cy.get('.settings-index-row').should('have.length', 8);
 		cy.get('@onClose').should('not.have.been.called');
 	});
 
@@ -263,7 +273,8 @@ describe('setupView search', () => {
 		const emptyArea = { get: (defaults: Record<string, unknown>) => Promise.resolve(defaults) };
 		(window as unknown as Record<string, unknown>).browser = { storage: { sync: emptyArea, local: emptyArea } };
 		settingsEntries.filter(entry => entry.controlId).forEach(entry => {
-			cy.mount(<SetupView {...defaultProps} prefs={everyModePrefs} />);
+			// Multiview's controls are only on its page while it is on.
+			cy.mount(<SetupView {...defaultProps} prefs={everyModePrefs} multiviewOn />);
 			openGroup(entry.group);
 			cy.get(`#${entry.controlId}`).should('exist');
 		});
@@ -331,7 +342,7 @@ describe('setupView search', () => {
 		cy.contains('.settings-index-row', 'Switch cooldown').click();
 		cy.get('button.setup-header').click();
 		cy.get('#settingsSearch').should('have.value', '');
-		cy.get('.settings-index-row').should('have.length', 7);
+		cy.get('.settings-index-row').should('have.length', 8);
 	});
 });
 
@@ -610,6 +621,51 @@ describe('setupView demo mode', () => {
 		cy.mount(<SetupView {...defaultProps} demoMode={true} />);
 		openGroup('switching');
 		cy.get('#demoToggle').should('be.checked');
+	});
+});
+
+describe('setupView multiview', () => {
+	it('leaves Multiview out of a build that does not have it, search included', () => {
+		cy.mount(<SetupView {...defaultProps} multiviewAvailable={false} />);
+		cy.get('#settingsGroup-multiview').should('not.exist');
+		cy.get('#settingsSearch').type('multiview');
+		cy.get('.settings-search-empty').should('exist');
+	});
+
+	it('only shows its controls while Multiview is on', () => {
+		cy.mount(<SetupView {...defaultProps} />);
+		openGroup('multiview');
+		cy.get('#multiviewToggle').should('exist');
+		cy.get('#multiviewThresholdSlider').should('not.exist');
+		cy.mount(<SetupView {...defaultProps} multiviewOn />);
+		openGroup('multiview');
+		cy.get('#multiviewThresholdSlider').should('have.value', '65');
+		cy.get('#multiviewMaxBoxesSlider').should('have.attr', 'min', '2').and('have.attr', 'max', '8');
+		cy.get('#multiviewGamesSelect').should('exist');
+	});
+
+	it('hands back the games choice, the threshold and the box cap', () => {
+		const onMultiviewGamesChange = cy.stub().as('games');
+		const onMultiviewMaxBoxesChange = cy.stub().as('boxes');
+		cy.mount(<SetupView {...defaultProps} multiviewOn onMultiviewGamesChange={onMultiviewGamesChange} onMultiviewMaxBoxesChange={onMultiviewMaxBoxesChange} />);
+		openGroup('multiview');
+		cy.get('#multiviewGamesSelect').choose('Every registered game');
+		cy.get('@games').should('have.been.calledWith', 'all');
+		// React keeps its own copy of an input's value, so the value is set the way the browser sets it.
+		cy.get('#multiviewMaxBoxesSlider').then($input => {
+			const input = $input[0] as HTMLInputElement;
+			Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(input, '6');
+			input.dispatchEvent(new Event('input', { bubbles: true }));
+		});
+		cy.get('@boxes').should('have.been.calledWith', 6);
+	});
+
+	it('asks to turn on from the toggle', () => {
+		const onToggleMultiview = cy.stub().as('toggle');
+		cy.mount(<SetupView {...defaultProps} onToggleMultiview={onToggleMultiview} />);
+		openGroup('multiview');
+		cy.get('#multiviewToggle').click({ force: true });
+		cy.get('@toggle').should('have.been.calledOnce');
 	});
 });
 

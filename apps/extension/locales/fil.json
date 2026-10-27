@@ -323,6 +323,14 @@
 		"standbyBelow": "Standby sa ibaba ng",
 		"morePatient": "Mas matiyaga",
 		"switchesSooner": "Mas mabilis lumipat",
+		"enableMultiview": "I-enable ang Multiview",
+		"multiviewHotAt": "Hot sa",
+		"multiviewMoreOften": "Mas madalas magbukas",
+		"multiviewBigMomentsOnly": "Malalaking moment lang",
+		"multiviewGames": "Boxes para sa",
+		"multiviewGamesHot": "Mga hot na laro",
+		"multiviewGamesAll": "Lahat ng naka-assign na laro",
+		"multiviewMaxBoxes": "Pinakamaraming laro nang sabay",
 		"standbyTab": "Standby na Tab",
 		"selectTab": "— Pumili ng tab —",
 		"showBetting": "Ipakita ang betting at odds",
@@ -370,6 +378,8 @@
 		"groupDisplayDesc": "Kung ano ang ipinapakita ng listahan ng laro, at kung ano ang itsura ng ArenaSwap.",
 		"groupStandby": "Standby Stream",
 		"groupStandbyDesc": "Kung saan ka ipa-park kapag tahimik na ang lahat ng laro.",
+		"groupMultiview": "Multiview",
+		"groupMultiviewDesc": "Lahat ng hot na laro sa iisang screen, kapag dalawa ang sabay na uminit.",
 		"groupBackup": "Mga Profile at Backup",
 		"groupBackupDesc": "Magpalit ng setup, o dalhin ang isa sa ibang browser.",
 		"bonusesSection": "Mga Boost",
@@ -409,6 +419,10 @@
 		"keywordsStandby": "fallback, backup, tahimik, standby",
 		"keywordsStandbyThreshold": "score, cutoff, limit, ibaba, tahimik",
 		"keywordsStandbyTab": "tab, window, page, patutunguhan",
+		"keywordsMultiview": "split screen, grid, magkatabi, marami, sabay, boxes",
+		"keywordsMultiviewThreshold": "hot, score, cutoff, threshold, buksan",
+		"keywordsMultiviewGames": "boxes, laro, lahat, hot, naka-assign",
+		"keywordsMultiviewMaxBoxes": "boxes, limit, pinakamarami, ilan",
 		"keywordsBackup": "profile, mga profile, magpalit, palit, switch, setup, bago, new, palitan ang pangalan, rename, burahin, delete, backup, kopya, export, import, sync, file, ilipat, ibalik, i-download, i-upload",
 		"keywordsBossDecoy": "boss, magtago, panic, trabaho, eskwela, spreadsheet, pekeng pahina, mute, shortcut, takas",
 		"keywordsDemo": "fake, sample, test, preview, sandbox, dummy",
@@ -1209,6 +1223,9 @@
 		"back": "Bumalik",
 		"gotIt": "Gets Ko!"
 	},
+	"multiview": {
+		"empty": "Kusang bumubukas ang Multiview kapag dalawa sa mga laro mo ang sabay na hot."
+	},
 	"empty": {
 		"leaguesTitle": "Pumili ng Liga Para Makapagsimula",
 		"leaguesCopy": "Pumili ng kahit isang liga at magsisimulang maghanap ng laro ang ArenaSwap.",
@@ -1230,6 +1247,7 @@
 	"notification": {
 		"standbyTitle": "Naka-park sa Standby Stream",
 		"standbyMessage": "Tumahimik ang lahat ng laro.",
+		"multiviewTitle": "Lumipat → Multiview",
 		"switchedTitle": "Lumipat → {score}",
 		"switchedMessage": "Tara sa {venue}!",
 		"switchedMessageWithReason": "{reason}. Tara sa {venue}!",
