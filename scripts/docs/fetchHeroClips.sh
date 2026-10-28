@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Regenerates apps/docs/public/video/ from Wikimedia Commons.
+# Regenerates apps/docs/public/video/ from Wikimedia Commons: the hero's clips and the Multiview demo's.
 #
 # The hero plays real game footage. Every clip below is public domain, CC0 or CC BY,
 # and the attribution the licences require is on /credits/. Nothing here runs in CI or
@@ -75,4 +75,40 @@ for clip in "${clips[@]}"; do
 		-i "$name.mp4" -frames:v 1 -vf "scale=480:-2" -q:v 6 -y "$name.jpg"
 
 	printf '%-11s %7s  %s\n' "$name" "$(du -h "$name.mp4" | cut -f1)" "$file"
+done
+
+# The home page's Multiview demo: four more games, none of them the hero's, cut to 16:9 because a
+# Multiview box is a 16:9 picture under its crest bar.
+#
+# name|commons path|file name|start|seconds|kept fraction of frame height|crf|cropped fraction off the top
+#
+# The extra field trims a club or broadcaster logo off the top of three of them. The baseball upload
+# is itself 360p, so Commons has no 480p transcode of it and the original is fetched instead.
+multiview=(
+	"soccer|c/c8|Rayan_scores_his_first_goal_for_AFC_Bournemouth_against_Aston_Villa_in_the_2025-26_Premier_League.webm|1.5|6.5|0.86|30|0.13"
+	"collegeFootball|d/d2|Oregon_vs._Washington_St_-_FOX_COLLEGE_FOOTBALL_HIGHLIGHTS.webm|8.5|7|0.84|30|0.10"
+	"wnba|6/65|Golden_State_Valkyries_at_Indiana_Fever_-_May_2026_-_Sarah_Stierch_44.webm|2.75|7|0.80|31|0.27"
+	"baseball|e/eb|Wetherholt_homerun_and_first_hit.webm.360p.webm|2.95|6.25|1|26|0"
+)
+
+mkdir -p multiview
+for clip in "${multiview[@]}"; do
+	IFS='|' read -r name dir file start secs keep crf top <<<"$clip"
+	src="$work/multiview-$name.webm"
+
+	url="$commons/transcoded/$dir/$file/$file.480p.vp9.webm"
+	[[ "$name" == baseball ]] && url="$commons/$dir/$file"
+	curl -sSfL -A "$ua" -o "$src" "$url"
+
+	ffmpeg -nostdin -hide_banner -loglevel error \
+		-ss "$start" -t "$secs" -i "$src" -an \
+		-vf "crop=iw:ih*($keep-$top):0:ih*$top,crop=ih*16/9:ih:(iw-ih*16/9)/2:0,scale=640:360,setsar=1,fps=24" \
+		-c:v libx264 -profile:v high -pix_fmt yuv420p \
+		-crf "$crf" -preset veryslow -movflags +faststart \
+		-y "multiview/$name.mp4"
+
+	ffmpeg -nostdin -hide_banner -loglevel error \
+		-i "multiview/$name.mp4" -frames:v 1 -vf "scale=480:-2" -q:v 6 -y "multiview/$name.jpg"
+
+	printf '%-15s %7s  %s\n' "$name" "$(du -h "multiview/$name.mp4" | cut -f1)" "$file"
 done

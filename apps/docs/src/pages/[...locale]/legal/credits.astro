@@ -5,14 +5,12 @@ import LegalTranslationNotice from '../../../components/LegalTranslationNotice.a
 import { localeRoutes } from '../../../i18n/locales';
 import { useTranslations } from '../../../i18n/ui';
 
-// The footage in the hero is real game footage, which means somebody filmed it. Two of the three
-// clips are under CC BY licences that require attribution, and this page is where that is said out
-// loud.
+// The footage in the hero and the Multiview demo is real game footage, which means somebody filmed
+// it. The CC BY clips require attribution, and this page is where that is said out loud.
 //
-// Each clip is a game in a league ArenaSwap tracks, which is why there are three rather than five: a
-// clip whose game the popup cannot describe has no business in a hero about the popup describing
-// what you are watching. A Mexican League baseball game and a UEFA Nations League match were cut for
-// exactly that reason.
+// Each clip is a game in a league ArenaSwap tracks: a clip whose game the popup cannot describe has
+// no business in a demo about describing what you are watching. A Mexican League baseball game and a
+// UEFA Nations League match were cut for exactly that reason.
 //
 // Kept as data rather than prose so scripts/docs/fetchHeroClips.sh and this list can be checked
 // against each other by eye.
@@ -50,6 +48,38 @@ const clips = [
 		licence: 'CC BY 3.0',
 		licenceUrl: 'https://creativecommons.org/licenses/by/3.0/',
 		source: 'https://commons.wikimedia.org/wiki/File:BSU_Men%27s_Hockey_To_Play_In_2019_Mariucci_Classic.webm',
+	},
+	{
+		sport: t('sport.soccer'),
+		what: 'Aston Villa at AFC Bournemouth, Vitality Stadium',
+		author: 'AFC Bournemouth',
+		licence: 'CC BY 4.0',
+		licenceUrl: 'https://creativecommons.org/licenses/by/4.0/',
+		source: 'https://commons.wikimedia.org/wiki/File:Rayan_scores_his_first_goal_for_AFC_Bournemouth_against_Aston_Villa_in_the_2025-26_Premier_League.webm',
+	},
+	{
+		sport: t('sport.football'),
+		what: 'Oregon at Washington State, Martin Stadium',
+		author: 'FOX Sports',
+		licence: 'CC BY 3.0',
+		licenceUrl: 'https://creativecommons.org/licenses/by/3.0/',
+		source: 'https://commons.wikimedia.org/wiki/File:Oregon_vs._Washington_St_-_FOX_COLLEGE_FOOTBALL_HIGHLIGHTS.webm',
+	},
+	{
+		sport: t('sport.basketball'),
+		what: 'Golden State Valkyries at Indiana Fever, Gainbridge Fieldhouse',
+		author: 'Sarah Stierch',
+		licence: 'CC0',
+		licenceUrl: 'https://creativecommons.org/publicdomain/zero/1.0/',
+		source: 'https://commons.wikimedia.org/wiki/File:Golden_State_Valkyries_at_Indiana_Fever_-_May_2026_-_Sarah_Stierch_44.webm',
+	},
+	{
+		sport: t('sport.baseball'),
+		what: 'Tampa Bay Rays at St. Louis Cardinals, Busch Stadium',
+		author: 'Johnmaxmena2',
+		licence: 'CC0',
+		licenceUrl: 'https://creativecommons.org/publicdomain/zero/1.0/',
+		source: 'https://commons.wikimedia.org/wiki/File:Wetherholt_homerun_and_first_hit.webm.360p.webm',
 	},
 ];
 ---
