@@ -1245,7 +1245,8 @@
 		"allow": "Continuar"
 	},
 	"multiview": {
-		"empty": "Este Multiview está fechado. Abre-se um novo quando dois dos teus jogos estiverem emocionantes ao mesmo tempo."
+		"empty": "Este Multiview está fechado. Abre-se um novo quando dois dos teus jogos estiverem emocionantes ao mesmo tempo.",
+		"soundOn": "Som ligado"
 	},
 	"empty": {
 		"leaguesTitle": "Escolhe ligas para começar",

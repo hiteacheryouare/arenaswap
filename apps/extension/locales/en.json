@@ -1245,7 +1245,8 @@
 		"allow": "Continue"
 	},
 	"multiview": {
-		"empty": "This Multiview is closed. A new one opens when two of your games are exciting at the same time."
+		"empty": "This Multiview is closed. A new one opens when two of your games are exciting at the same time.",
+		"soundOn": "Sound on"
 	},
 	"empty": {
 		"leaguesTitle": "Choose Leagues to Get Started",

@@ -1,6 +1,6 @@
 // The loop behind the boxes, in our colours the way a broadcast's studio loop is in theirs: two slow
-// sweeps of light and the wordmark's dashed line drifting across. The logo holds the middle until the
-// first stream starts.
+// sweeps of light and the wordmark's dashed line drifting across. The logo holds the middle while there
+// are no boxes to show.
 const MultiviewBackdrop = ({ showMark }: { showMark: boolean }) => (
 	<div className='multiview-backdrop' aria-hidden='true'>
 		<div className='multiview-sweep' />

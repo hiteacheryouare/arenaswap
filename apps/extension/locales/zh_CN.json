@@ -1245,7 +1245,8 @@
 		"allow": "继续"
 	},
 	"multiview": {
-		"empty": "此 Multiview 已关闭。当您的两场比赛同时变得精彩时，会开启新的 Multiview。"
+		"empty": "此 Multiview 已关闭。当您的两场比赛同时变得精彩时，会开启新的 Multiview。",
+		"soundOn": "声音已开启"
 	},
 	"empty": {
 		"leaguesTitle": "选择联赛以开始使用",

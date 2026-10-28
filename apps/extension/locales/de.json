@@ -1245,7 +1245,8 @@
 		"allow": "Weiter"
 	},
 	"multiview": {
-		"empty": "Dieses Multiview ist geschlossen. Ein neues öffnet sich, wenn zwei deiner Spiele gleichzeitig spannend sind."
+		"empty": "Dieses Multiview ist geschlossen. Ein neues öffnet sich, wenn zwei deiner Spiele gleichzeitig spannend sind.",
+		"soundOn": "Ton an"
 	},
 	"empty": {
 		"leaguesTitle": "Wähle Ligen zum Starten",

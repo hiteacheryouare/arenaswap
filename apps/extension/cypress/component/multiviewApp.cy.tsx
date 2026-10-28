@@ -27,7 +27,7 @@ const lineupOf = (count: number, featuredGameId = 'g1'): MultiviewLineup => ({
 
 interface multiviewHandle {
 	// One report from the frame named for `gameId`, as the frame script sends it. Resolves to the reply.
-	report: (gameId: string, frameId: number, time: number, playing?: boolean) => Promise<unknown>;
+	report: (gameId: string, frameId: number, time: number, playing?: boolean, paused?: boolean) => Promise<unknown>;
 	update: (lineup: MultiviewLineup) => void;
 	sent: { type: string;[key: string]: unknown }[];
 	mutes: { frameId: number; muted: boolean }[];
@@ -71,8 +71,8 @@ const mountMultiview = (lineup: MultiviewLineup | null) => {
 	if (lineup) cy.get('.multiview-box').should('have.length', lineup.boxes.length);
 
 	return cy.wrap<multiviewHandle>({
-		report: (gameId, frameId, time, playing = true) => Promise.all(listeners.map(listener => listener(
-			{ type: 'MULTIVIEW_FRAME_STATUS', name: gameId, firstLevel: true, playing, time },
+		report: (gameId, frameId, time, playing = true, paused = !playing) => Promise.all(listeners.map(listener => listener(
+			{ type: 'MULTIVIEW_FRAME_STATUS', name: gameId, firstLevel: true, playing, paused, time },
 			{ tab: { id: multiviewTabId }, frameId },
 		))).then(replies => replies.find(reply => reply !== undefined)),
 		update: next => listeners.forEach(listener => listener({ type: 'MULTIVIEW_UPDATED', tabId: multiviewTabId, ...next }, {})),
@@ -87,18 +87,76 @@ const play = (gameId: string, frameId: number) => cy.get<multiviewHandle>('@mult
 	await handle.report(gameId, frameId, 2);
 });
 
-const shownBoxes = () => cy.get('.multiview-box:not(.multiview-box-staged)');
+const shownBoxes = () => cy.get('.multiview-box');
+
+const offAir = (gameId: string) => cy.get(`[data-game-id="${gameId}"]`).should('have.attr', 'data-on-air', 'false')
+	.find('.multiview-off-air').should('not.have.class', 'multiview-off-air-gone');
+const onAir = (gameId: string) => cy.get(`[data-game-id="${gameId}"]`).should('have.attr', 'data-on-air', 'true')
+	.find('.multiview-off-air').should('have.class', 'multiview-off-air-gone');
+
+// The frame script reports once a second. This plays that out on the stopped clock.
+const reportEverySecond = (gameId: string, frameId: number, seconds: number, report: { from: number; advancing: boolean; playing?: boolean; paused?: boolean }) => {
+	for (let second = 1; second <= seconds; second++) {
+		cy.tick(1000);
+		cy.get<multiviewHandle>('@multiview').then(handle => handle.report(gameId, frameId, report.advancing ? report.from + second : report.from, report.playing ?? true, report.paused ?? false));
+	}
+};
+
+// Exactly one box carries the outline and the speaker, and it is this game's.
+const heard = (gameId: string) => {
+	cy.get('.multiview-box-audible iframe').should('have.length', 1).and('have.attr', 'name', gameId);
+	cy.get('[aria-label="Sound on"]').should('have.length', 1);
+	cy.get('.multiview-box-audible [aria-label="Sound on"]').should('have.length', 1);
+};
 
 describe('Multiview page', () => {
-	it('keeps every box out of sight until its stream is actually playing', () => {
+	it('puts every box in its place at once, each behind its off-air card until its stream plays', () => {
 		mountMultiview(lineupOf(3));
-		cy.get('.multiview-box-staged').should('have.length', 3);
+		['g1', 'g2', 'g3'].forEach(offAir);
+		cy.get('[data-game-id="g1"]').should('have.css', 'grid-column-start', '1');
+		cy.get('[data-game-id="g1"] .multiview-off-air-crest').should('have.length', 2);
 		cy.get<multiviewHandle>('@multiview').then(handle => handle.report('g1', 11, 5, true).then(() => handle.report('g1', 11, 5, true)));
 		// Playing with a clock that never moves is a spinner, not a stream.
-		cy.get('.multiview-box-staged').should('have.length', 3);
+		offAir('g1');
 		play('g2', 12);
-		shownBoxes().should('have.length', 1);
-		cy.get('.multiview-box-staged').should('have.length', 2).and('have.attr', 'aria-hidden', 'true');
+		onAir('g2');
+		offAir('g3');
+		cy.get('[data-game-id="g2"] .multiview-off-air').should('have.css', 'opacity', '0');
+	});
+
+	it('brings the card back while a stream stalls, and takes it away again when it picks up', () => {
+		cy.clock(0, ['Date', 'setInterval', 'clearInterval']);
+		mountMultiview(lineupOf(2));
+		play('g1', 11);
+		onAir('g1');
+		reportEverySecond('g1', 11, 2, { from: 2, advancing: false });
+		onAir('g1');
+		reportEverySecond('g1', 11, 2, { from: 2, advancing: false });
+		offAir('g1');
+		reportEverySecond('g1', 11, 1, { from: 2, advancing: true });
+		onAir('g1');
+	});
+
+	it('leaves a paused player on show, so whatever it paused for is not hidden', () => {
+		cy.clock(0, ['Date', 'setInterval', 'clearInterval']);
+		mountMultiview(lineupOf(2));
+		play('g1', 11);
+		reportEverySecond('g1', 11, 6, { from: 2, advancing: false, playing: false, paused: true });
+		onAir('g1');
+		// A frame that stops reporting has gone, paused or not.
+		cy.tick(4000);
+		offAir('g1');
+	});
+
+	it('shows a player that never starts after half a minute, in case it is waiting on a click or a sign-in', () => {
+		cy.clock(0, ['Date', 'setInterval', 'clearInterval', 'setTimeout', 'clearTimeout']);
+		mountMultiview(lineupOf(2));
+		cy.get<multiviewHandle>('@multiview').then(handle => handle.report('g2', 12, 0, false));
+		cy.tick(29_000);
+		offAir('g2');
+		cy.tick(2000);
+		onAir('g2');
+		onAir('g1');
 	});
 
 	it('tells the background which streams play, and gives the sound to the big box only', () => {
@@ -156,17 +214,45 @@ describe('Multiview page', () => {
 		});
 	});
 
+	it('slides a box from its old place into its new one', () => {
+		mountMultiview(lineupOf(3));
+		['g1', 'g2', 'g3'].forEach((gameId, index) => play(gameId, 11 + index));
+		shownBoxes().should('have.length', 3);
+
+		cy.get<multiviewHandle>('@multiview').then(handle => handle.update(lineupOf(3, 'g3')));
+		cy.get('[data-game-id="g3"]').should($moving => {
+			expect(getComputedStyle($moving[0]).transform).not.to.equal('none');
+		});
+		cy.get('.multiview-grid').then($grid => {
+			cy.get('[data-game-id="g3"]').should($settled => {
+				expect(getComputedStyle($settled[0]).transform).to.equal('none');
+				expect($settled[0].getBoundingClientRect().left).to.be.closeTo($grid[0].getBoundingClientRect().left, 1);
+			});
+		});
+	});
+
+	it('marks the box you can hear, and moves the mark with the sound', () => {
+		mountMultiview(lineupOf(3));
+		['g1', 'g2', 'g3'].forEach((gameId, index) => play(gameId, 11 + index));
+		heard('g1');
+		cy.get('.multiview-box-audible').should($box => {
+			expect(getComputedStyle($box[0], '::after').borderTopWidth).to.equal('3px');
+			expect(getComputedStyle($box[0], '::after').opacity).to.equal('1');
+		});
+
+		cy.get<multiviewHandle>('@multiview').then(handle => handle.update(lineupOf(3, 'g3')));
+		heard('g3');
+	});
+
 	it('says it is closed when the background did not open it', () => {
 		mountMultiview(null);
 		cy.get('.multiview-empty').should('contain.text', 'This Multiview is closed');
 		cy.get('.multiview-backdrop').should('exist');
 	});
 
-	it('holds the logo up over the loop until the first stream plays', () => {
+	it('leaves the middle of the loop to the boxes once there are any', () => {
 		mountMultiview(lineupOf(2));
 		cy.get('.multiview-sweep').should('have.length', 2);
-		cy.get('.multiview-mark').should('not.have.class', 'multiview-mark-gone');
-		play('g1', 11);
 		cy.get('.multiview-mark').should('have.class', 'multiview-mark-gone');
 	});
 });

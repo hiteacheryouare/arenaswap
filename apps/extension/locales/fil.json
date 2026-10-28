@@ -1245,7 +1245,8 @@
 		"allow": "Magpatuloy"
 	},
 	"multiview": {
-		"empty": "Sarado na ang Multiview na ito. May bubukas na bago kapag dalawa sa mga laro mo ang sabay na kapana-panabik."
+		"empty": "Sarado na ang Multiview na ito. May bubukas na bago kapag dalawa sa mga laro mo ang sabay na kapana-panabik.",
+		"soundOn": "Naka-on ang tunog"
 	},
 	"empty": {
 		"leaguesTitle": "Pumili ng Liga Para Makapagsimula",

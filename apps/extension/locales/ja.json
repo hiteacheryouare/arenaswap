@@ -1245,7 +1245,8 @@
 		"allow": "続ける"
 	},
 	"multiview": {
-		"empty": "このMultiviewは閉じています。2試合が同時に盛り上がると、新しいMultiviewが開きます。"
+		"empty": "このMultiviewは閉じています。2試合が同時に盛り上がると、新しいMultiviewが開きます。",
+		"soundOn": "音声オン"
 	},
 	"empty": {
 		"leaguesTitle": "まずリーグを選んでください",
