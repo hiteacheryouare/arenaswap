@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The site takes the store art's black and orange — 2026-10-28
+
+The website is redesigned around the store art: a pure black page, DM Sans Title Case headlines ending on the orange full stop, and a grainy airbrushed glow rising off the floor under the hero, the closing install, the PowerScore hero and the 404, with new home sections for Multiview (four new Commons clips), Standby Stream and "Free. Private. Open." and every headline rewritten in the store-art voice across all 12 languages. The brand lives in `packages/ui/src/_airbrush.scss`, which the backup and Multiview tabs now use too, and its tokens are declared unlayered on `html:root` because Bootstrap's own `:root` tokens come out of the build unlayered and beat anything in `@layer custom`; the popup keeps its palette, and the site's popup demos restore it with `popup-tokens`.
+
 ## Two exciting games? Watch both in Multiview — 2026-10-27
 
 On Chrome and Edge, when two or more registered games reach the threshold (65 by default, the sports analyst's pick), ArenaSwap switches you to a Multiview tab over a looping brand backdrop, where every game's box shows a team-colour card with both crests until its stream plays (and again if it stalls); the top game gets the big box and the only sound, marked by a speaker in its bar and an orange outline, boxes slide into their new places when the lead changes, and you go back to its own tab when it's down to one. Chrome won't start video in a tab that has never been on screen and pauses muted video in hidden ones, so Multiview opens in front and silences its other boxes by volume rather than mute; the first time it's turned on, a two-step animated guide explains it and the browser's permission prompt (the minifier had been flattening its animations to nothing), and the Firefox build has none of it because AMO forbids relaxing security headers (#230).
