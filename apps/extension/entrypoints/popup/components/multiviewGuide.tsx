@@ -47,7 +47,9 @@ const GridMockup = () => (
 				</div>
 			</div>
 		))}
-		<i className='bi bi-volume-up-fill multiview-guide-grid-sound' />
+		<div className='multiview-guide-grid-sound'>
+			<i className='bi bi-volume-up-fill' />
+		</div>
 	</div>
 );
 

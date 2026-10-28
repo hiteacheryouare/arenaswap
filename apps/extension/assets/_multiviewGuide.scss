@@ -47,11 +47,11 @@
 		overflow: hidden;
 		border-radius: 4px;
 		background: linear-gradient(90deg, var(--guide-left), var(--guide-right));
-		animation: $story-loop m.$motion-ease infinite;
 	}
 
-	.multiview-guide-story-card-a { animation-name: multiview-guide-card-a; }
-	.multiview-guide-story-card-b { animation-name: multiview-guide-card-b; }
+	// The minifier turns a shorthand with no name into `animation: none`, so each one names its own.
+	.multiview-guide-story-card-a { animation: multiview-guide-card-a $story-loop m.$motion-ease infinite; }
+	.multiview-guide-story-card-b { animation: multiview-guide-card-b $story-loop m.$motion-ease infinite; }
 
 	// What turns a card into a box: the picture rises under the crest bar.
 	.multiview-guide-story-ground {
@@ -76,12 +76,23 @@
 	.multiview-guide-story-score-before { animation: multiview-guide-before $story-loop linear infinite; }
 	.multiview-guide-story-score-after { animation: multiview-guide-after $story-loop linear infinite; }
 
+	.multiview-guide-story-card-a::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border: 1.5px solid var(--as-primary-base);
+		border-radius: inherit;
+		animation: multiview-guide-story-outline $story-loop m.$motion-ease infinite;
+	}
+
 	.multiview-guide-story-sound {
 		position: absolute;
-		left: 38%;
-		top: 38%;
+		left: 50.75%;
+		top: 34.4%;
 		color: #fff;
-		font-size: 0.75rem;
+		font-size: 0.5rem;
+		line-height: 1;
+		text-shadow: 0 1px 2px rgb(3 7 12 / 0.45);
 		animation: multiview-guide-story-sound $story-loop m.$motion-ease infinite;
 	}
 
@@ -125,9 +136,15 @@
 	}
 
 	@keyframes multiview-guide-story-sound {
-		0%, 46% { opacity: 0; transform: scale(0.6); }
-		52%, 90% { opacity: 1; transform: scale(1); }
-		100% { opacity: 0; transform: scale(1); }
+		0%, 46% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+		52%, 90% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+		100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+	}
+
+	@keyframes multiview-guide-story-outline {
+		0%, 46% { opacity: 0; }
+		52%, 90% { opacity: 1; }
+		100% { opacity: 0; }
 	}
 
 	.multiview-guide-grid {
@@ -152,12 +169,11 @@
 		position: absolute;
 		display: flex;
 		padding: 1.5px;
-		animation: $grid-loop m.$motion-ease infinite;
 	}
 
-	.multiview-guide-box-a { animation-name: multiview-guide-box-a; }
-	.multiview-guide-box-b { animation-name: multiview-guide-box-b; }
-	.multiview-guide-box-c { animation-name: multiview-guide-box-c; }
+	.multiview-guide-box-a { animation: multiview-guide-box-a $grid-loop m.$motion-ease infinite; }
+	.multiview-guide-box-b { animation: multiview-guide-box-b $grid-loop m.$motion-ease infinite; }
+	.multiview-guide-box-c { animation: multiview-guide-box-c $grid-loop m.$motion-ease infinite; }
 
 	.multiview-guide-box-face {
 		display: flex;
@@ -169,18 +185,33 @@
 	}
 
 	.multiview-guide-box-bar {
-		height: 0.45rem;
+		height: 0.6rem;
 		flex-shrink: 0;
 		background: linear-gradient(90deg, var(--guide-left), var(--guide-right));
 	}
 
-	// The sound always belongs to the big box, so it stays put while the boxes trade places under it.
+	// The sound always belongs to the big box, so its outline stays put while the boxes trade places under it.
 	.multiview-guide-grid-sound {
 		position: absolute;
-		color: #fff;
-		font-size: 0.8rem;
-		text-shadow: 0 1px 2px rgb(3 7 12 / 0.45);
+		display: flex;
+		justify-content: center;
+		padding: 1.5px;
 		animation: multiview-guide-grid-sound $grid-loop m.$motion-ease infinite;
+
+		&::before {
+			content: '';
+			position: absolute;
+			inset: 1.5px;
+			border: 1.5px solid var(--as-primary-base);
+			border-radius: 3px;
+		}
+
+		i {
+			color: #fff;
+			font-size: 0.5rem;
+			line-height: 0.6rem;
+			text-shadow: 0 1px 2px rgb(3 7 12 / 0.45);
+		}
 	}
 
 	@keyframes multiview-guide-box-a {
@@ -207,10 +238,10 @@
 	}
 
 	@keyframes multiview-guide-grid-sound {
-		0% { left: 3%; top: 33%; opacity: 0; }
-		6%, 30% { left: 3%; top: 33%; opacity: 1; }
-		38%, 92% { left: 3%; top: 8%; opacity: 1; }
-		100% { left: 3%; top: 8%; opacity: 0; }
+		0% { left: 0; top: 25%; width: 50%; height: 50%; opacity: 0; }
+		6%, 30% { left: 0; top: 25%; width: 50%; height: 50%; opacity: 1; }
+		38%, 92% { left: 0; top: 0; width: 66.667%; height: 100%; opacity: 1; }
+		100% { left: 0; top: 0; width: 66.667%; height: 100%; opacity: 0; }
 	}
 
 	// Still, the mockups hold the moment they are explaining: the boxes in place and the sound on the big one.
@@ -221,6 +252,7 @@
 
 		.multiview-guide-story-screen,
 		.multiview-guide-story-card,
+		.multiview-guide-story-card-a::after,
 		.multiview-guide-story-ground,
 		.multiview-guide-story-sound,
 		.multiview-guide-grid::before,
