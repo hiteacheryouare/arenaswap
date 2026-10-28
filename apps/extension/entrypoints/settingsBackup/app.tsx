@@ -74,6 +74,7 @@ const App = () => {
 
 	useEffect(() => {
 		document.title = `${i18n.t('setup.groupBackup')} · ArenaSwap`;
+		document.documentElement.lang = displayLocale();
 		const { section, profileId } = readBackupHash(location.hash);
 		void followSyncedProfile().catch(loadProfiles).then(list => {
 			setProfiles(list);
@@ -170,6 +171,7 @@ const App = () => {
 
 	return (
 		<div className='backup-page' onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+			<div className='backup-glow' aria-hidden='true' />
 			<header className='backup-header'>
 				<img src={fullLogoSrc(theme)} alt='ArenaSwap' className='backup-logo' />
 			</header>

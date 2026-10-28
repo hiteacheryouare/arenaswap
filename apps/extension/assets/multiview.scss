@@ -1,6 +1,12 @@
 @use '@arenaswap/ui/src/motion' as m;
+@use '@arenaswap/ui/src/airbrush';
+
 @layer custom {
+	@include airbrush.keyframes;
+
+	// A whole tab, so it takes the store art's brand, set on the page rather than :root.
 	.multiview {
+		@include airbrush.tokens;
 		--multiview-bar-height: 2.5rem;
 		--multiview-gap: 4px;
 
@@ -13,7 +19,7 @@
 		width: 100%;
 		height: 100vh;
 		overflow: hidden;
-		background: radial-gradient(120% 90% at 50% 110%, #12263f 0%, #08111f 55%, #05090f 100%);
+		background: var(--as-bg-body);
 	}
 
 	// A set piece, so it keeps its own slow clock rather than the motion scale's.
@@ -24,18 +30,13 @@
 		pointer-events: none;
 	}
 
-	.multiview-sweep {
-		position: absolute;
-		inset: -40% -120%;
-		background: linear-gradient(100deg, transparent 44%, rgb(247 92 3 / 0.16) 49.5%, rgb(247 92 3 / 0.05) 52%, transparent 57%);
-		// Back and forth rather than round again, so a beam never leaves the screen dark or jumps back.
-		animation: multiview-sweep 13s ease-in-out infinite alternate;
-	}
-
-	.multiview-sweep-slow {
-		background: linear-gradient(80deg, transparent 40%, rgb(247 92 3 / 0.12) 47%, rgb(62 155 209 / 0.08) 52%, transparent 60%);
-		animation-duration: 19s;
-		animation-delay: -7s;
+	// The window's bottom edge is a real edge, the way a store image's is, so the floor sits on it.
+	.multiview-glow {
+		@include airbrush.glow;
+		z-index: auto;
+		--glow-width: 75%;
+		--glow-height: 32%;
+		--glow-spill: 0rem;
 	}
 
 	// The wordmark's tail: round-capped dashes, drifting the way the "swap" line reads. One dash is a
@@ -66,19 +67,12 @@
 		opacity: 0;
 	}
 
-	// The layer is 3.4 screens wide, so 12% of it keeps each beam between the screen's edges.
-	@keyframes multiview-sweep {
-		from { transform: translateX(-12%); }
-		to { transform: translateX(12%); }
-	}
-
 	@keyframes multiview-dashes {
 		from { transform: translateX(-$dash-tile); }
 		to { transform: translateX(0); }
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.multiview-sweep,
 		.multiview-dashes,
 		.multiview-box {
 			animation: none;
@@ -209,7 +203,7 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		container-type: size;
-		background: radial-gradient(120% 90% at 50% 110%, #12263f 0%, #08111f 60%);
+		background: var(--as-bg-body);
 		pointer-events: none;
 		transition: opacity 0.45s ease;
 	}
@@ -249,18 +243,21 @@
 		filter: drop-shadow(0 1px 3px rgb(3 7 12 / 0.6));
 	}
 
-	// Without a game to paint it, the card is the logo alone on navy.
+	// Without a game to paint it, the card is the logo alone on black.
 	.multiview-off-air-mark:only-child {
 		top: 50%;
 		bottom: auto;
 		transform: translate(-50%, -50%);
 	}
 
+	// Above the glow rather than on it, where it would be pale text on bright orange.
 	.multiview-empty {
-		position: relative;
-		align-self: flex-end;
+		position: absolute;
+		top: 60%;
+		left: 0;
+		right: 0;
 		margin: 0;
-		padding: 2rem;
+		padding: 0 2rem;
 		color: var(--as-fg-3);
 		text-align: center;
 	}

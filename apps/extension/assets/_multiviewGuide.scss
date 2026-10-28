@@ -5,7 +5,8 @@
 	// motion scale's. Positions are percentages of the mockup, so they scale with the popup.
 	$story-loop: 7s;
 	$grid-loop: 9s;
-	$mock-navy: radial-gradient(120% 90% at 50% 110%, #12263f 0%, #08111f 60%);
+	// The Multiview page in miniature: black, with the glow rising off its bottom edge.
+	$mock-page: radial-gradient(70% 60% at 50% 100%, rgb(248 130 60 / 0.75), rgb(191 76 14 / 0.35) 45%, transparent 75%), #000;
 
 	.multiview-guide-story,
 	.multiview-guide-grid {
@@ -37,7 +38,7 @@
 		top: 18%;
 		width: 64%;
 		height: 64%;
-		background: $mock-navy;
+		background: $mock-page;
 		border-radius: 6px;
 		animation: multiview-guide-screen $story-loop m.$motion-ease infinite;
 	}
@@ -149,20 +150,7 @@
 
 	.multiview-guide-grid {
 		aspect-ratio: 16 / 9;
-		background: $mock-navy;
-
-		&::before {
-			content: '';
-			position: absolute;
-			inset: -40% -120%;
-			background: linear-gradient(100deg, transparent 44%, rgb(247 92 3 / 0.18) 49.5%, transparent 56%);
-			animation: multiview-guide-sweep 5s ease-in-out infinite alternate;
-		}
-	}
-
-	@keyframes multiview-guide-sweep {
-		from { transform: translateX(-12%); }
-		to { transform: translateX(12%); }
+		background: $mock-page;
 	}
 
 	.multiview-guide-box {

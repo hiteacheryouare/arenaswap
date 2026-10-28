@@ -252,7 +252,7 @@ describe('Multiview page', () => {
 
 	it('leaves the middle of the loop to the boxes once there are any', () => {
 		mountMultiview(lineupOf(2));
-		cy.get('.multiview-sweep').should('have.length', 2);
+		cy.get('.multiview-glow').should('have.length', 1);
 		cy.get('.multiview-mark').should('have.class', 'multiview-mark-gone');
 	});
 });
