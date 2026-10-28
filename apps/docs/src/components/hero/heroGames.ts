@@ -12,6 +12,8 @@ import type { Game } from '@arenaswap/core/types';
 // Team ids, abbreviations, colours and crests come from ESPN's own teams endpoint, which is where
 // the extension gets them too. The two hockey colours are the schools' own: ESPN returns empty
 // strings for college hockey, and a grey card would say more about ESPN's feed than about the game.
+// Minnesota State, Northern Arizona and Hawai'i play in their alternates: each crest is drawn in the
+// team's primary, so on a card painted in it the crest disappears.
 //
 // Nothing here is a PowerScore. The scores on the cards are computed at render time by
 // `computePowerScore` from the `powerscore` package — the same function the extension calls — over
@@ -115,7 +117,7 @@ export const heroGames: HeroGameScript[] = [
 			status: 'in',
 			venueName: 'Sanford Center',
 			broadcasts: ['FloHockey'],
-			awayTeam: { id: '2364', name: 'Minnesota State Mavericks', abbreviation: 'MNST', logo: ncaaLogo('2364'), color: '#582C83', alternateColor: '#FFC72C' },
+			awayTeam: { id: '2364', name: 'Minnesota State Mavericks', abbreviation: 'MNST', logo: ncaaLogo('2364'), color: '#FFC72C', alternateColor: '#582C83' },
 			homeTeam: { id: '132', name: 'Bemidji State Beavers', abbreviation: 'BST', logo: ncaaLogo('132'), color: '#00694E', alternateColor: '#FFFFFF' },
 		},
 		video: 'hockey',
@@ -145,8 +147,8 @@ export const heroGames: HeroGameScript[] = [
 			status: 'in',
 			venueName: 'Stan Sheriff Center',
 			broadcasts: ['Spectrum Sports'],
-			awayTeam: { id: '2464', name: 'Northern Arizona Lumberjacks', abbreviation: 'NAU', logo: ncaaLogo('2464'), color: '#003976', alternateColor: '#f1c40f' },
-			homeTeam: { id: '62', name: "Hawai'i Rainbow Warriors", abbreviation: 'HAW', logo: ncaaLogo('62'), color: '#005737', alternateColor: '#000000' },
+			awayTeam: { id: '2464', name: 'Northern Arizona Lumberjacks', abbreviation: 'NAU', logo: ncaaLogo('2464'), color: '#f1c40f', alternateColor: '#003976' },
+			homeTeam: { id: '62', name: "Hawai'i Rainbow Warriors", abbreviation: 'HAW', logo: ncaaLogo('62'), color: '#000000', alternateColor: '#005737' },
 		},
 		video: 'basketball',
 		poster: 'basketball',
