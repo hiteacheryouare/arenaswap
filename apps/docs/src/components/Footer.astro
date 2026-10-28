@@ -15,32 +15,19 @@ const t = useTranslations(locale);
 // being substituted into.
 const credit = tokenize(t('footer.madeWith'));
 ---
-<footer style="background:var(--color-bg);">
-	<div class="section-divider"></div>
-	<div class="container py-12">
+<footer class="site-footer">
+	<div class="container">
 
-		<!-- Brand band: ArenaSwap and the parent company, equal weight -->
-		<div class="footer-brand-band">
-			<a href={localePath(locale)} title="ArenaSwap" class="footer-brand-item">
-				<Image src={logoImg} alt="ArenaSwap" class="footer-arenaswap-mark for-dark" />
-				<Image src={logoImgBlack} alt="ArenaSwap" class="footer-arenaswap-mark for-light" />
-			</a>
-			<span class="footer-brand-rule" aria-hidden="true"></span>
-			<a href="https://latticeandcompany.github.io" title="Lattice &amp; Company" class="footer-brand-item latticeco-lockup">
-				<Image src={latticeMark} alt="" aria-hidden="true" class="latticeco-mark for-dark" />
-				<Image src={latticeMarkBlack} alt="" aria-hidden="true" class="latticeco-mark for-light" />
-				<span class="latticeco-word">Lattice <span class="latticeco-amp">&amp;</span> Company</span>
-			</a>
-		</div>
+		<div class="footer-top">
+			<div class="footer-brand">
+				<a href={localePath(locale)} title="ArenaSwap" class="footer-brand-item">
+					<Image src={logoImg} alt="ArenaSwap" class="footer-arenaswap-mark for-dark" />
+					<Image src={logoImgBlack} alt="ArenaSwap" class="footer-arenaswap-mark for-light" />
+				</a>
+				<p class="footer-tagline">{t('footer.tagline')}</p>
+			</div>
 
-		<p class="footer-tagline">{t('footer.tagline')}</p>
-
-		<div class="section-divider my-12"></div>
-
-		<div class="row g-12">
-
-			<!-- Product -->
-			<div class="col-12 md:col-4">
+			<div>
 				<p class="footer-col-label">{t('footer.product')}</p>
 				<ul class="list-unstyled footer-links">
 					<li><a href={localePath(locale, 'faq/')}>{t('nav.faq')}</a></li>
@@ -51,8 +38,7 @@ const credit = tokenize(t('footer.madeWith'));
 				</ul>
 			</div>
 
-			<!-- Legal -->
-			<div class="col-12 md:col-4">
+			<div>
 				<p class="footer-col-label">{t('footer.legal')}</p>
 				<ul class="list-unstyled footer-links">
 					<li><a href={localePath(locale, 'legal/privacy/')}>{t('footer.privacy')}</a></li>
@@ -62,35 +48,23 @@ const credit = tokenize(t('footer.madeWith'));
 				</ul>
 			</div>
 
-			<!-- Install -->
-			<div class="col-12 md:col-4">
+			<div>
 				<p class="footer-col-label">{t('footer.install')}</p>
 				<ul class="list-unstyled footer-links">
-					<li>
-						<a href={chromeWebStore}>
-							<i class="bi bi-browser-chrome me-3" style="font-size:0.85rem;"></i>{t('footer.chromeWebStore')}
-						</a>
-					</li>
-					<li>
-						<a href={firefoxAddons}>
-							<i class="bi bi-browser-firefox me-3" style="font-size:0.85rem;"></i>{t('footer.firefoxAddons')}
-						</a>
-					</li>
-					<li>
-						<a href={edgeAddons}>
-							<i class="bi bi-browser-edge me-3" style="font-size:0.85rem;"></i>{t('footer.edgeAddons')}
-						</a>
-					</li>
+					<li><a href={chromeWebStore}><i class="bi bi-browser-chrome" aria-hidden="true"></i>{t('footer.chromeWebStore')}</a></li>
+					<li><a href={firefoxAddons}><i class="bi bi-browser-firefox" aria-hidden="true"></i>{t('footer.firefoxAddons')}</a></li>
+					<li><a href={edgeAddons}><i class="bi bi-browser-edge" aria-hidden="true"></i>{t('footer.edgeAddons')}</a></li>
 				</ul>
 			</div>
-
 		</div>
 
-		<div class="section-divider my-12"></div>
-
-		<div class="d-flex flex-wrap justify-content-between align-items-center gap-5">
-			<a href={localePath(locale, 'legal/licenses/')} style="font-size:0.78rem;color:var(--color-muted);text-decoration:none;">{t('footer.iscLicense')}</a>
-			<div class="d-flex gap-5">
+		<div class="footer-bottom">
+			<a href="https://latticeandcompany.github.io" title="Lattice &amp; Company" class="footer-brand-item latticeco-lockup">
+				<Image src={latticeMark} alt="" aria-hidden="true" class="latticeco-mark for-dark" />
+				<Image src={latticeMarkBlack} alt="" aria-hidden="true" class="latticeco-mark for-light" />
+				<span class="latticeco-word">Lattice <span class="latticeco-amp">&amp;</span> Company</span>
+			</a>
+			<div class="footer-icons">
 				<a href="https://github.com/hiteacheryouare/arenaswap" title="GitHub" class="footer-icon-link"><i class="bi bi-github"></i></a>
 				<a href={chromeWebStore} title={t('footer.chromeWebStore')} class="footer-icon-link"><i class="bi bi-browser-chrome"></i></a>
 				<a href={firefoxAddons} title={t('footer.firefoxAddons')} class="footer-icon-link"><i class="bi bi-browser-firefox"></i></a>
@@ -101,12 +75,11 @@ const credit = tokenize(t('footer.madeWith'));
 		<p class="footer-disclaimer">
 			{t('footer.disclaimer')}
 			<a href={localePath(locale, 'legal/')}>{t('footer.legalNotices')}</a>.
+			<a href={localePath(locale, 'legal/licenses/')}>{t('footer.iscLicense')}</a>
 		</p>
-
-	</div>
-	<div class="footer-gradient-bar">
-		<span>{credit.map(part => (
+		<p class="footer-credit">{credit.map(part => (
 			typeof part === 'string' ? part : <a href="https://hiteacheryouare.github.io">Ryan Mullin</a>
-		))}</span>
+		))}</p>
+
 	</div>
 </footer>

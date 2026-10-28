@@ -3,10 +3,13 @@ import { leagueConfigs } from '@arenaswap/core/constants';
 import Shell from '../../layouts/Shell.astro';
 import HeroBand from '../../components/landing/HeroBand.astro';
 import TabsBand from '../../components/landing/TabsBand.astro';
-
 import ChartsBand from '../../components/landing/ChartsBand.astro';
+import MultiviewBand from '../../components/landing/MultiviewBand.astro';
 import LeaguesBand from '../../components/landing/LeaguesBand.astro';
 import SettingsBand from '../../components/landing/SettingsBand.astro';
+import StandbyBand from '../../components/landing/StandbyBand.astro';
+import FreeBand from '../../components/landing/FreeBand.astro';
+import ClosingBand from '../../components/landing/ClosingBand.astro';
 import { localeRoutes } from '../../i18n/locales';
 import { useTranslations } from '../../i18n/ui';
 
@@ -25,6 +28,10 @@ const t = useTranslations(locale);
 	<HeroBand />
 	<TabsBand />
 	<ChartsBand />
+	<MultiviewBand />
 	<LeaguesBand />
 	<SettingsBand />
+	<StandbyBand />
+	<FreeBand />
+	<ClosingBand />
 </Shell>

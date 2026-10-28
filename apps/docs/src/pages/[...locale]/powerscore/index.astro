@@ -3,6 +3,7 @@ import Shell from '../../../layouts/Shell.astro';
 import PowerScoreInstallCommands from '../../../components/PowerScoreInstallCommands.tsx';
 import LivePowerScores from '../../../components/LivePowerScores.tsx';
 import Machine from '../../../components/Machine.astro';
+import { signalColors } from '@arenaswap/ui/src/components/signalColors';
 import { localeRoutes } from '../../../i18n/locales';
 import { uiStrings, useTranslations } from '../../../i18n/ui';
 import {
@@ -31,13 +32,16 @@ interface Signal {
 
 // Ceilings imported rather than typed out. All five numbers here had been hand-written and had gone
 // stale: the page advertised 30/28/28/18/14 against shipped ceilings of 42/38/38/18/20.
+// Each bar is drawn to its ceiling's share of the largest one, in the signal's own chart colour.
 const maximums = [scoreMaxCloseness, scoreMaxLateGame, scoreMaxMomentum, scoreMaxLeadChanges, scoreMaxComeback];
-const tones = ['green', 'orange', 'blue', 'yellow', 'pink'];
+const largest = Math.max(...maximums);
+const colours = [signalColors.closeness, signalColors.lateGame, signalColors.momentum, signalColors.leadChanges, signalColors.comeback];
 
 const signals = t.list<Signal>('powerscore.signals').map((signal, index) => ({
 	...signal,
 	max: maximums[index],
-	tone: tones[index],
+	share: maximums[index] / largest,
+	colour: colours[index],
 }));
 
 // The token rotates through the league abbreviations and then lands on the word for a score, and
@@ -52,124 +56,79 @@ const taglineSuffix = t('powerscore.heroTaglineSuffix');
 	description={t('meta.powerscoreDescription')}
 	path='powerscore/'
 >
+	<section class='band band-hero band-centred ps-hero'>
+		<div class='glow' aria-hidden='true'></div>
+		<div class='container'>
+			<h1 class='display-xl ps-hero-heading'>
+				<span class='visually-hidden'>{taglinePrefix}{t('powerscore.heroRestingToken')}{t('powerscore.heroRestingSuffix')}</span>
+				<span aria-hidden='true'>{taglinePrefix}<span class='ps-rotating-phrase'><span id='ps-rotating-token' class='ps-rotating-token'>{supportedLeagues[0]}</span><span id='ps-rotating-suffix'>{taglineSuffix}</span></span></span>
+			</h1>
+			<p class='band-lede'>{t('powerscore.heroSub')}</p>
+			<div class='hero-actions'>
+				<a href='https://www.npmjs.com/package/powerscore' target='_blank' rel='noreferrer' class='btn btn-cta'>
+					<i class='bi bi-box-arrow-up-right me-3'></i>{t('powerscore.viewOnNpm')}
+				</a>
+				<a href='https://github.com/hiteacheryouare/arenaswap/tree/dev/packages/powerscore' target='_blank' rel='noreferrer' class='btn btn-outline-secondary-custom'>
+					<i class='bi bi-github me-3'></i>{t('powerscore.sourceOnGithub')}
+				</a>
+			</div>
+		</div>
+	</section>
 
-		<section class='ps-hero section-pad'>
-			<div class='ps-glow ps-glow-tl'></div>
-			<div class='ps-glow ps-glow-tr'></div>
-			<div class='ps-glow ps-glow-bl'></div>
-			<div class='ps-glow ps-glow-br'></div>
+	<section class='band'>
+		<div class='container'>
+			<div class='band-head'>
+				<h2 class='display-md'>{t('powerscore.installHeading')}</h2>
+			</div>
+			<PowerScoreInstallCommands
+				client:visible
+				copyLabel={t('powerscore.copy')}
+				copiedLabel={t('powerscore.copied')}
+			/>
+		</div>
+	</section>
 
-			<div class='container' style='position:relative; z-index:1;'>
-				<div class='row justify-content-center'>
-					<div class='xl:col-9 lg:col-10 text-center'>
-
-						<div class='ps-hero-bar'></div>
-
-						<h1 class='ps-hero-heading'>
-							<span class='ps-heading-wrap'>
-								<span class='ps-gradient-text' id='ps-gradient-text'>{t('powerscore.heroName')}</span><span
-								class='ps-solid-text' id='ps-solid-text' aria-hidden='true'>{t('powerscore.heroName')}</span>
-							</span><br/>
-							{/* The rotation is twelve league names a second and a half apart, which is a lot to have
-							    read aloud. Screen readers get the sentence it settles on instead. */}
-							<span class='visually-hidden'>{taglinePrefix}{t('powerscore.heroRestingToken')}{t('powerscore.heroRestingSuffix')}</span>
-							<span aria-hidden='true'>{taglinePrefix}<span class='ps-rotating-phrase'><span id='ps-rotating-token' class='ps-rotating-token'>{supportedLeagues[0]}</span><span id='ps-rotating-suffix'>{taglineSuffix}</span></span></span>
-						</h1>
-
-						<p class='ps-hero-sub'>{t('powerscore.heroSub')}</p>
-
-						<div class='ps-hero-ctas d-flex flex-wrap gap-5 justify-content-center'>
-							<a href='https://www.npmjs.com/package/powerscore' target='_blank' rel='noreferrer' class='btn btn-cta'>
-								<i class='bi bi-box-arrow-up-right me-3'></i>{t('powerscore.viewOnNpm')}
-							</a>
-							<a href='https://github.com/hiteacheryouare/arenaswap/tree/dev/packages/powerscore' target='_blank' rel='noreferrer' class='btn btn-outline-secondary-custom'>
-								<i class='bi bi-github me-3'></i>{t('powerscore.sourceOnGithub')}
-							</a>
+	<section class='band'>
+		<div class='container ps-signals'>
+			<div class='band-head'>
+				<h2 class='display-md'>{t('powerscore.signalsHeading')}</h2>
+				<p class='band-copy'>{t('powerscore.signalsSub', { max: scoreMaxTotal })}</p>
+			</div>
+			<ul class='ps-signal-list'>
+				{signals.map(signal => (
+					<li style={`--signal:${signal.colour};--share:${signal.share}`}>
+						<div class='ps-signal-head'>
+							<h3>{signal.name}</h3>
+							<span>{t('powerscore.signalMax', { max: signal.max })}</span>
 						</div>
+						<span class='ps-signal-bar' aria-hidden='true'></span>
+						<p>{signal.copy}</p>
+					</li>
+				))}
+			</ul>
+		</div>
+	</section>
 
-					</div>
-				</div>
+	<section id='live-scores' class='band'>
+		<div class='container'>
+			<div class='band-head'>
+				<h2 class='display-md'>{t('powerscore.liveHeading')}</h2>
 			</div>
-		</section>
+			<LivePowerScores
+				client:visible
+				strings={{
+					loading: t('powerscore.liveLoading'),
+					error: t('powerscore.liveError'),
+					emptyTitle: t('powerscore.liveEmptyTitle'),
+					scoreBadge: t('powerscore.liveScoreBadge'),
+					live: t('powerscore.liveNow'),
+				}}
+				ui={uiStrings(locale)}
+			/>
+		</div>
+	</section>
 
-		<section class='section-pad' style='background:color-mix(in srgb, var(--as-bg-1) 50%, transparent);'>
-			<div class='container'>
-				<div class='row g-7'>
-					<div class='col-12 reveal'>
-						<h2 class='section-title mb-7'>{t('powerscore.installHeading')}</h2>
-					</div>
-					<div class='col-12 reveal reveal-delay-1'>
-						<PowerScoreInstallCommands
-							client:visible
-							copyLabel={t('powerscore.copy')}
-							copiedLabel={t('powerscore.copied')}
-						/>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<section class='section-pad'>
-			<div class='container'>
-				<div class='row g-7'>
-					<div class='col-12 reveal'>
-						<h2 class='section-title mb-5'>{t('powerscore.signalsHeading')}</h2>
-						<p class='section-sub mb-7'>{t('powerscore.signalsSub', { max: scoreMaxTotal })}</p>
-					</div>
-					{signals.map((signal, index) => (
-						<div class={`md:col-6 xl:col-4 reveal${index > 0 ? ` reveal-delay-${index}` : ''}`}>
-							<div class={`feature-card ps-signal-card-${signal.tone}`}>
-								<h3>{signal.name}<span aria-hidden='true'> · </span>{t('powerscore.signalMax', { max: signal.max })}</h3>
-								<p>{signal.copy}</p>
-							</div>
-						</div>
-					))}
-				</div>
-			</div>
-		</section>
-
-		<div class='ps-gradient-bar'></div>
-
-		<section id='live-scores' class='section-pad' style='background:color-mix(in srgb, var(--as-bg-1) 50%, transparent);'>
-			<div class='container'>
-				<div class='row g-7'>
-					<div class='col-12 reveal'>
-						<h2 class='section-title mb-7'>{t('powerscore.liveHeading')}</h2>
-					</div>
-					<div class='col-12 reveal reveal-delay-1'>
-						<LivePowerScores
-							client:visible
-							strings={{
-								loading: t('powerscore.liveLoading'),
-								error: t('powerscore.liveError'),
-								emptyTitle: t('powerscore.liveEmptyTitle'),
-								scoreBadge: t('powerscore.liveScoreBadge'),
-								live: t('powerscore.liveNow'),
-							}}
-							ui={uiStrings(locale)}
-						/>
-					</div>
-				</div>
-			</div>
-		</section>
 	<Machine />
-
-	<script>
-		// One full gradient cycle (0.85s delay + 6s), then a crossfade to a random brand colour.
-		const psColors = ['#22c55e', '#F75C03', '#2274A5', '#F1C40F', '#D90368'];
-		const chosen = psColors[Math.floor(Math.random() * psColors.length)];
-
-		const gradientEl = document.getElementById('ps-gradient-text');
-		const solidEl = document.getElementById('ps-solid-text');
-
-		if (gradientEl && solidEl) {
-			solidEl.style.color = chosen;
-			setTimeout(() => {
-				gradientEl.classList.add('ps-exiting');
-				solidEl.style.opacity = '1';
-			}, 6850);
-		}
-	</script>
 
 	<script define:vars={{ supportedLeagues, restingToken: t('powerscore.heroRestingToken'), restingSuffix: t('powerscore.heroRestingSuffix') }}>
 		const psSupportedLeagues = supportedLeagues;

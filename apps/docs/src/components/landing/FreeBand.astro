@@ -1,0 +1,31 @@
+---
+import { currentLocale, tokenize, useTranslations } from '../../i18n/ui';
+
+interface Item {
+	title: string;
+	copy: string;
+}
+
+const t = useTranslations(currentLocale(Astro.currentLocale));
+const items = t.list<Item>('home.free.items');
+const repository = 'https://github.com/hiteacheryouare/arenaswap';
+---
+<section class='band' id='free'>
+	<div class='container'>
+		<div class='band-head'>
+			<h2 class='display-md'>{t('home.free.title')}</h2>
+		</div>
+		<ul class='free-list'>
+			{items.map(item => (
+				<li>
+					<h3>{item.title}</h3>
+					<p>
+						{tokenize(item.copy).map(part => (
+							typeof part === 'string' ? part : <a href={repository}>{t('home.free.githubLink')}</a>
+						))}
+					</p>
+				</li>
+			))}
+		</ul>
+	</div>
+</section>

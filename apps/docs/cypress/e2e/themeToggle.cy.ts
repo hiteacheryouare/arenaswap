@@ -12,8 +12,8 @@ const emulateScheme = (scheme: 'light' | 'dark') => {
 };
 
 const white = 'rgb(255, 255, 255)';
-const darkPage = 'rgb(13, 17, 23)';
-const darkCard = 'rgb(22, 27, 34)';
+const darkPage = 'rgb(0, 0, 0)';
+const darkCard = 'rgb(13, 13, 13)';
 
 const expectTheme = (theme: 'light' | 'dark') => {
 	cy.get('html').should('have.attr', 'data-bs-theme', theme);
@@ -100,10 +100,10 @@ describe('the site theme', () => {
 		});
 
 		cy.get('.lang-switch-trigger').click();
-		cy.get('.lang-switch-menu').should('have.css', 'background-color', 'rgb(243, 245, 248)');
+		cy.get('.lang-switch-menu').should('have.css', 'background-color', 'rgb(245, 245, 245)');
 		cy.get('.lang-switch-menu .menu-item:not(.active)').first().should($item => {
 			const style = getComputedStyle($item[0]);
-			expect(contrast('rgb(243, 245, 248)', style.color), 'menu item contrast').to.be.greaterThan(4.5);
+			expect(contrast('rgb(245, 245, 245)', style.color), 'menu item contrast').to.be.greaterThan(4.5);
 		});
 	});
 });

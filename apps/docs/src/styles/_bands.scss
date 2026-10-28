@@ -1,51 +1,36 @@
-// The landing page reads as a stack of full-width bands, one idea each, separated by a hairline
-// rather than by whitespace alone. Type is the only decoration: there is no illustration on the
-// page, so the headline sizes have to carry it.
+// The landing page: one idea per band on a black page, type doing the work, and the airbrush glow
+// only twice — under the hero and under the closing install, like the two ends of a store image.
 @use '@arenaswap/ui/src/motion' as m;
 @layer custom {
 
+	// The glows sit at z-index -1 and spill into the band below them, so the page, not each band, is
+	// the stacking context they are painted in.
+	#main {
+		position: relative;
+		z-index: 0;
+	}
+
 	.band {
-		padding: 3.5rem 0;
-		border-top: 1px solid var(--as-border-muted);
+		position: relative;
+		padding: clamp(5rem, 9vw, 8.5rem) 0;
+	}
 
-		&.band-quiet {
-			background: var(--band-quiet-bg);
+	.band-head {
+		max-width: 46rem;
+		margin-bottom: clamp(2.5rem, 5vw, 4rem);
+
+		.band-copy {
+			margin-top: 1.25rem;
 		}
+	}
 
-		&:first-child {
-			border-top: 0;
+	.band-centred .band-head {
+		margin-inline: auto;
+		text-align: center;
+
+		.band-copy {
+			margin-inline: auto;
 		}
-	}
-
-	.band-split {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto;
-		gap: 3.5rem;
-		align-items: center;
-	}
-
-	.band-hero {
-		padding: 6rem 0 3.5rem;
-	}
-
-	// Copy left, window right, weighted towards the window. It used to sit under the copy, which pushed
-	// the one thing on the page that shows the product doing anything most of the way below the fold.
-	//
-	// The weighting matters because the window holds a 320px popup at the popup's real size: the narrower
-	// the window, the more of it that popup occupies. At an even split it took a third of the width and
-	// all of the height, which is not what an extension popup looks like in a browser.
-	.hero-grid {
-		display: grid;
-		// The copy takes a comfortable measure and stops; the window takes everything left over. Sharing
-		// by ratio meant the window kept a fixed fraction of the page no matter how much room there was,
-		// so on a wide display both columns stayed cramped while the gutters got wider.
-		grid-template-columns: minmax(20rem, 26rem) minmax(0, 1fr);
-		gap: 2.5rem;
-		align-items: center;
-	}
-
-	.hero-copy {
-		max-width: 34rem;
 	}
 
 	// Bootstrap stops widening the container at 1320px, which on a large display leaves a third of the
@@ -63,27 +48,152 @@
 		}
 	}
 
+	// ─── Display type ────────────────────────────────────────────────────────────
+	// The store art's headlines: heavy, tight and short, ending on the orange full stop OrangeDots
+	// paints at runtime.
+	.display-xl,
+	.display-lg,
+	.display-md {
+		font-weight: 700;
+		color: var(--color-text);
+		text-wrap: balance;
+	}
+
+	.display-xl {
+		font-size: clamp(3rem, 5.4vw, 5.25rem);
+		letter-spacing: -0.045em;
+		line-height: 0.96;
+	}
+
+	.display-lg {
+		font-size: clamp(2.6rem, 5vw, 4.5rem);
+		letter-spacing: -0.042em;
+		line-height: 0.98;
+	}
+
+	.display-md {
+		font-size: clamp(2.1rem, 3.6vw, 3.25rem);
+		letter-spacing: -0.038em;
+		line-height: 1.02;
+	}
+
+	.band-lede {
+		font-size: clamp(1.125rem, 1.4vw, 1.3rem);
+		color: var(--as-fg-2);
+		line-height: 1.5;
+		max-width: 34em;
+		text-wrap: pretty;
+	}
+
+	.band-copy {
+		font-size: 1.0625rem;
+		color: var(--color-muted);
+		line-height: 1.6;
+		max-width: 36em;
+		text-wrap: pretty;
+
+		b {
+			color: var(--color-text);
+			font-weight: 600;
+		}
+	}
+
+	.band-note {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		margin-top: 1.25rem;
+		font-size: 0.9375rem;
+		color: var(--as-fg-4);
+
+		.bi {
+			font-size: 1.05rem;
+			color: var(--color-muted);
+		}
+	}
+
+	// ─── Hero ────────────────────────────────────────────────────────────────────
+	.band-hero {
+		padding: calc(64px + clamp(3rem, 6vw, 5.5rem)) 0 clamp(10rem, 16vw, 14rem);
+
+		.glow {
+			--glow-x: 62%;
+			--glow-width: 80%;
+			--glow-height: 30rem;
+			--glow-spill: 8rem;
+			--glow-lift: 8rem;
+		}
+
+		.band-lede {
+			margin-top: 1.6rem;
+		}
+
+		// The demo's caption sits in the glow, where muted grey would sink into the orange.
+		.browser-caption {
+			color: var(--color-text);
+		}
+	}
+
+	// Copy left, window right, weighted towards the window. The window holds a 320px popup at the
+	// popup's real size, so the narrower the window, the more of it that popup occupies.
+	.hero-grid {
+		display: grid;
+		grid-template-columns: minmax(22rem, 30rem) minmax(0, 1fr);
+		gap: clamp(2.5rem, 4vw, 4.5rem);
+		align-items: center;
+	}
+
 	// Side by side only where there is room for both. Below this the window was coming out at 534px with
 	// a 320px popup beside it, which is neither a browser nor a popup. Stacked, the window gets the whole
-	// container and the video is not cropped at all — it costs the fold at these widths, which is the
-	// better trade of the two.
+	// container and the video is not cropped at all.
 	@media (max-width: 1399.98px) {
 		.hero-grid {
 			grid-template-columns: minmax(0, 1fr);
-			gap: 2.5rem;
 		}
 
 		.hero-copy {
-			max-width: none;
+			max-width: 40rem;
+		}
+
+		.band-hero .glow {
+			--glow-x: 50%;
+			--glow-width: 90%;
+		}
+	}
+
+	@media (max-width: 767.98px) {
+		.band-hero .glow {
+			--glow-width: 150%;
+			--glow-height: 24rem;
+		}
+	}
+
+	.hero-actions {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem 1.25rem;
+		margin-top: 2.25rem;
+		flex-wrap: wrap;
+	}
+
+	.hero-actions-alt {
+		font-size: 0.9375rem;
+		color: var(--as-fg-2);
+
+		a {
+			color: var(--color-text);
+			text-decoration: underline;
+			text-decoration-color: color-mix(in srgb, var(--color-primary) 60%, transparent);
+			text-underline-offset: 3px;
 		}
 	}
 
 	// ─── Above the fold: who is covered ──────────────────────────────────────────
 	.team-strip {
 		display: block;
-		margin-top: 2.25rem;
+		margin-top: 2.75rem;
 		padding-top: 1.5rem;
-		border-top: 1px solid var(--as-border-muted);
+		border-top: 1px solid var(--as-border-color);
 		text-decoration: none;
 
 		&:hover .team-strip-label {
@@ -93,9 +203,9 @@
 
 	.team-strip-label {
 		display: block;
-		font-size: 0.8rem;
+		font-size: 0.875rem;
 		color: var(--color-muted);
-		margin-bottom: 0.85rem;
+		margin-bottom: 0.9rem;
 		transition: color m.$motion-instant m.$motion-ease;
 	}
 
@@ -103,10 +213,10 @@
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: 0.7rem;
+		gap: 0.75rem;
 
 		.crest {
-			--as-avatar-size: 1.8rem;
+			--as-avatar-size: 1.9rem;
 			// Held slightly back so no one crest shouts over the rest, and brought up together on hover.
 			opacity: 0.9;
 			transition: opacity m.$motion-instant m.$motion-ease;
@@ -121,200 +231,53 @@
 		opacity: 1;
 	}
 
-	// ─── Display type ────────────────────────────────────────────────────────────
-	// Two sizes only. The dot at the end of a headline is the brand's, painted orange by
-	// OrangeDots at runtime, so nothing here has to hardcode it.
-
-	.display-lg {
-		font-size: clamp(2.4rem, 5.2vw, 3.75rem);
-		font-weight: 700;
-		letter-spacing: -0.055em;
-		line-height: 0.99;
-	}
-
-	.display-md {
-		font-size: clamp(1.9rem, 3.6vw, 2.5rem);
-		font-weight: 700;
-		letter-spacing: -0.045em;
-		line-height: 1.05;
-	}
-
-	.band-lede {
-		font-size: 1.125rem;
-		color: light-dark(#313a45, #a7b0ba);
-		line-height: 1.55;
-		max-width: 42ch;
-	}
-
-	.band-copy {
-		font-size: 1rem;
-		color: var(--color-muted);
-		line-height: 1.7;
-		max-width: 46ch;
-
-		b {
-			color: var(--color-text);
-			font-weight: 600;
-		}
-	}
-
-	// ─── Hero headline block ─────────────────────────────────────────────────────
-	.hero-actions {
-		display: flex;
-		align-items: center;
-		gap: 1.1rem;
-		margin-top: 1.75rem;
-		flex-wrap: wrap;
-	}
-
-	.hero-actions-alt {
-		font-size: 0.875rem;
-		color: var(--color-muted);
-
-		a {
-			color: var(--color-text);
-			text-decoration: underline;
-			text-decoration-color: rgba(247, 92, 3, 0.55);
-			text-underline-offset: 3px;
-		}
-	}
-
 	// ─── The three steps ─────────────────────────────────────────────────────────
-	// An ordered list, and left as one: the order is the whole content, so the browser's own numbering
-	// is doing real work here rather than decorating three cards with 01/02/03.
+	// A real sequence, so the browser's own numbering stays.
 	.steps {
-		list-style: decimal;
+		list-style: none;
+		counter-reset: step;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: clamp(1.5rem, 3vw, 3rem);
 		margin: 0;
-		padding-left: 1.4rem;
-		counter-reset: none;
+		padding: 0;
+		text-align: center;
 
 		li {
-			padding: 0 0 1.1rem;
-		}
+			counter-increment: step;
+			padding-top: 1.5rem;
+			border-top: 1px solid var(--as-border-color);
 
-		li::marker {
-			font-size: 0.9rem;
-			color: var(--as-accent-ink);
+			&::before {
+				content: counter(step);
+				display: block;
+				margin-bottom: 0.75rem;
+				font-size: 0.9375rem;
+				font-weight: 700;
+				color: var(--as-accent-ink);
+			}
 		}
 
 		h3 {
-			font-size: 1.05rem;
-			font-weight: 600;
+			font-size: 1.375rem;
+			font-weight: 700;
 			letter-spacing: -0.02em;
 			color: var(--color-text);
 			margin: 0;
 		}
 
 		p {
-			font-size: 0.9rem;
+			font-size: 1rem;
 			color: var(--color-muted);
 			line-height: 1.6;
-			margin: 0.3rem 0 0;
-			max-width: 46ch;
+			margin: 0.5rem auto 0;
+			max-width: 30em;
 		}
 	}
 
-	// ─── Leagues ─────────────────────────────────────────────────────────────────
-	// A list grouped by sport, with each league's real mark. It replaced a marquee that slid 31
-	// logos past faster than anyone could read and repeated the NCAA crest eight times.
-
-	.leagues-head {
-		display: flex;
-		align-items: baseline;
-		gap: 1.75rem;
-		margin-bottom: 2rem;
-		flex-wrap: wrap;
-	}
-
-	.leagues-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
-		gap: 0 1.5rem;
-	}
-
-	.leagues-group {
-		border-top: 1px solid var(--color-border);
-		padding-top: 0.85rem;
-
-		h3 {
-			font-size: 0.85rem;
-			font-weight: 600;
-			color: var(--as-accent-ink);
-			margin-bottom: 0.7rem;
-		}
-
-		ul {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-		}
-
-		li {
-			display: flex;
-			align-items: center;
-			gap: 0.5rem;
-			font-size: 0.85rem;
-			color: var(--color-muted);
-			padding: 0.28rem 0;
-			line-height: 1.35;
-		}
-
-		// The plate is on the image rather than the box, so it goes with the image when the image fails.
-		.crest {
-			--as-avatar-size: 1.15rem;
-			--as-avatar-border-radius: 3px;
-		}
-
-		.crest > img {
-			padding: 1px;
-			// The light-ground artwork needs the plate only on a dark page.
-			background: light-dark(transparent, #e6edf3);
-		}
-	}
-
-	// An even split, for bands where both columns are text. `band-split` sizes its second column to
-	// its content, which is right beside a 320px panel and wrong beside a paragraph: it strands the
-	// copy against the right edge of the page.
-	.band-split-even {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 3.5rem;
-		align-items: start;
-	}
-
-	@media (max-width: 991.98px) {
-		.band-split-even {
+	@media (max-width: 767.98px) {
+		.steps {
 			grid-template-columns: minmax(0, 1fr);
-			gap: 1.5rem;
-		}
-	}
-
-	// ─── Settings ────────────────────────────────────────────────────────────────
-	// The six group names and descriptions are the extension's own, from locales/en.json.
-
-	.settings-groups {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-		gap: 0 1.6rem;
-		margin-top: 1.75rem;
-	}
-
-	.settings-group {
-		border-top: 1px solid var(--color-border);
-		padding: 0.95rem 1.6rem 1.25rem 0;
-
-		h3 {
-			font-size: 1.125rem;
-			font-weight: 700;
-			letter-spacing: -0.03em;
-			color: var(--color-text);
-		}
-
-		p {
-			font-size: 0.875rem;
-			color: var(--color-muted);
-			line-height: 1.55;
-			margin: 0.45rem 0 0;
 		}
 	}
 
@@ -323,7 +286,6 @@
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 1rem;
-		margin-top: 2rem;
 	}
 
 	@media (max-width: 767.98px) {
@@ -334,8 +296,8 @@
 
 	.chart-tile {
 		background: var(--color-card);
-		border: 1px solid var(--as-border-muted);
-		border-radius: 0.6rem;
+		border: 1px solid var(--as-border-subtle);
+		border-radius: 0.75rem;
 		padding: 0.9rem 1rem 0.7rem;
 	}
 
@@ -347,14 +309,223 @@
 		margin: 0 0 0.6rem;
 	}
 
+	// ─── Copy beside a picture ───────────────────────────────────────────────────
+	.band-split-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+		gap: clamp(2.5rem, 5vw, 5rem);
+		align-items: center;
+
+		.band-copy {
+			margin-top: 1.25rem;
+		}
+	}
+
 	@media (max-width: 991.98px) {
-		.band-split {
+		.band-split-grid {
 			grid-template-columns: minmax(0, 1fr);
-			gap: 2.25rem;
+		}
+	}
+
+	// ─── Multiview ───────────────────────────────────────────────────────────────
+	// The layout the extension uses for four games: the game with the sound big on the left, the
+	// other three stacked beside it, each under a crest bar in its teams' colours.
+	.multiview-demo {
+		display: grid;
+		grid-template-columns: 2fr 1fr;
+		grid-template-rows: repeat(3, auto);
+		gap: 0.5rem;
+		padding: 0.5rem;
+		border-radius: 1rem;
+		background: #050505;
+		box-shadow: 0 0 0 1px var(--as-border-subtle), 0 40px 120px -30px rgb(0 0 0 / 0.85);
+	}
+
+	.multiview-demo-box {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+		overflow: hidden;
+		border-radius: 0.6rem;
+		background: #000;
+
+		&:first-child {
+			grid-row: 1 / span 3;
 		}
 
-		.band-hero {
-			padding: 5.5rem 0 3rem;
+		&.is-audible::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border: 3px solid var(--color-primary);
+			border-radius: inherit;
+			pointer-events: none;
+		}
+	}
+
+	.multiview-demo-bar {
+		position: relative;
+		display: flex;
+		flex-shrink: 0;
+		align-items: center;
+		justify-content: space-between;
+		height: 2.5rem;
+		padding: 0 0.6rem;
+		background: linear-gradient(90deg, var(--left) 30%, var(--right) 70%);
+		color: #fff;
+		font-weight: 700;
+		font-size: 0.875rem;
+		letter-spacing: 0.02em;
+		text-shadow: 0 1px 2px rgb(0 0 0 / 0.5);
+
+		.crest {
+			--as-avatar-size: 1.6rem;
+			--as-avatar-bg: transparent;
+		}
+	}
+
+	.multiview-demo-team {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+	}
+
+	.multiview-demo-sound {
+		position: absolute;
+		left: 50%;
+		transform: translateX(-50%);
+		font-size: 1.15rem;
+	}
+
+	.multiview-demo-video {
+		flex: 1;
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		object-fit: cover;
+		background: #000;
+	}
+
+	.multiview-demo-box:first-child .multiview-demo-video {
+		aspect-ratio: auto;
+		height: 100%;
+	}
+
+	@media (max-width: 575.98px) {
+		.multiview-demo {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		.multiview-demo-box:first-child {
+			grid-column: 1 / -1;
+			grid-row: auto;
+
+			.multiview-demo-video {
+				aspect-ratio: 16 / 9;
+			}
+		}
+
+		.multiview-demo-box:last-child {
+			display: none;
+		}
+
+		.multiview-demo-bar {
+			font-size: 0.75rem;
+
+			.crest {
+				--as-avatar-size: 1.25rem;
+			}
+		}
+	}
+
+	// ─── Leagues ─────────────────────────────────────────────────────────────────
+	// A list grouped by sport, with each league's real mark.
+	.leagues-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+		gap: 0 1.5rem;
+	}
+
+	.leagues-group {
+		border-top: 1px solid var(--as-border-color);
+		padding-top: 0.9rem;
+
+		h3 {
+			font-size: 1rem;
+			font-weight: 700;
+			color: var(--color-text);
+			margin-bottom: 0.8rem;
+		}
+
+		ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		li {
+			display: flex;
+			align-items: center;
+			gap: 0.55rem;
+			font-size: 0.9rem;
+			color: var(--color-muted);
+			padding: 0.3rem 0;
+			line-height: 1.35;
+		}
+
+		// The plate is on the image rather than the box, so it goes with the image when the image fails.
+		.crest {
+			--as-avatar-size: 1.3rem;
+			--as-avatar-border-radius: 4px;
+		}
+
+		.crest > img {
+			padding: 1px;
+			// The light-ground artwork needs the plate only on a dark page.
+			background: light-dark(transparent, #f5f5f5);
+		}
+	}
+
+	// ─── Settings ────────────────────────────────────────────────────────────────
+	.settings-layout {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: clamp(2rem, 5vw, 5rem);
+		align-items: start;
+	}
+
+	.settings-groups {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 2rem 2.5rem;
+		margin: 0;
+	}
+
+	.settings-group {
+		dt {
+			font-size: 1.125rem;
+			font-weight: 700;
+			letter-spacing: -0.02em;
+			color: var(--color-text);
+		}
+
+		dd {
+			font-size: 1rem;
+			color: var(--color-muted);
+			line-height: 1.55;
+			margin: 0.35rem 0 0;
+		}
+	}
+
+	@media (max-width: 991.98px) {
+		.settings-layout {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	@media (max-width: 575.98px) {
+		.settings-groups {
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 
@@ -460,6 +631,166 @@
 	@media (max-width: 359.98px) {
 		.settings-panel-demo {
 			width: 100%;
+		}
+	}
+
+	// ─── Standby Stream ──────────────────────────────────────────────────────────
+	.standby-chart {
+		--chart-height: clamp(12rem, 24vw, 19rem);
+		position: relative;
+		max-width: 64rem;
+		margin: 0 auto;
+		padding: 1.5rem 0 2.75rem;
+
+		svg {
+			display: block;
+			width: 100%;
+			height: var(--chart-height);
+			overflow: visible;
+		}
+
+		figcaption span {
+			position: absolute;
+			font-size: 0.875rem;
+			font-weight: 600;
+			white-space: nowrap;
+		}
+	}
+
+	.standby-chart-band {
+		fill: color-mix(in srgb, var(--color-primary) 14%, transparent);
+	}
+
+	.standby-chart-line {
+		stroke: var(--color-primary);
+		stroke-width: 1.5;
+		stroke-dasharray: 6 6;
+		vector-effect: non-scaling-stroke;
+	}
+
+	.standby-chart-game {
+		fill: none;
+		stroke-width: 2.5;
+		stroke-linecap: round;
+		vector-effect: non-scaling-stroke;
+
+		&.is-game-0 {
+			stroke: var(--color-text);
+		}
+
+		&.is-game-1 {
+			stroke: color-mix(in srgb, var(--color-text) 55%, transparent);
+		}
+
+		&.is-game-2 {
+			stroke: color-mix(in srgb, var(--color-text) 30%, transparent);
+		}
+	}
+
+	.standby-chart-threshold {
+		left: 0;
+		top: calc(1.5rem + var(--threshold) * var(--chart-height) - 1.6rem);
+		color: var(--as-accent-ink);
+	}
+
+	.standby-chart-standby {
+		bottom: 0;
+		color: var(--as-accent-ink);
+	}
+
+	.standby-chart-back {
+		right: 0;
+		top: 0;
+		color: var(--color-muted);
+	}
+
+	@media (max-width: 575.98px) {
+		.standby-chart-threshold {
+			top: calc(1.5rem + var(--threshold) * var(--chart-height) + 0.4rem);
+		}
+
+		.standby-chart-standby {
+			left: auto !important;
+			right: 0;
+		}
+
+		.standby-chart-back {
+			display: none;
+		}
+	}
+
+	// ─── Free, private, open ─────────────────────────────────────────────────────
+	.free-list {
+		list-style: none;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: clamp(1.5rem, 3vw, 3rem);
+		margin: 0;
+		padding: 0;
+
+		li {
+			padding-top: 1.5rem;
+			border-top: 1px solid var(--as-border-color);
+		}
+
+		h3 {
+			font-size: 1.375rem;
+			font-weight: 700;
+			letter-spacing: -0.02em;
+			color: var(--color-text);
+			margin: 0;
+		}
+
+		p {
+			font-size: 1rem;
+			color: var(--color-muted);
+			line-height: 1.6;
+			margin: 0.5rem 0 0;
+		}
+
+		a {
+			color: var(--color-text);
+			text-decoration-color: color-mix(in srgb, var(--color-primary) 60%, transparent);
+			text-underline-offset: 3px;
+		}
+	}
+
+	@media (max-width: 767.98px) {
+		.free-list {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	// ─── Closing install ─────────────────────────────────────────────────────────
+	// The store art's layout: the words above, the light below them, and the light fading out before
+	// the footer.
+	.band-closing {
+		padding: clamp(5rem, 10vw, 8rem) 0 clamp(15rem, 26vw, 22rem);
+
+		.glow {
+			--glow-width: 70%;
+			--glow-height: 30rem;
+			--glow-spill: 7rem;
+			--glow-lift: 7rem;
+		}
+
+		.display-lg {
+			max-width: 12em;
+		}
+
+		.band-lede {
+			margin-top: 1.4rem;
+		}
+
+		.hero-actions-alt {
+			color: color-mix(in srgb, var(--color-text) 80%, transparent);
+		}
+	}
+
+	@media (max-width: 767.98px) {
+		.band-closing .glow {
+			--glow-width: 150%;
+			--glow-height: 22rem;
 		}
 	}
 }

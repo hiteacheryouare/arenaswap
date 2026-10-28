@@ -6,7 +6,7 @@ export const themeStorageKey = 'arenaswap.theme';
 
 const lightSchemeQuery = '(prefers-color-scheme: light)';
 
-const themeColors = { light: '#ffffff', dark: '#0d1117' };
+const themeColors = { light: '#ffffff', dark: '#000000' };
 
 export const readThemePreference = (): ThemePreference => {
 	const stored = localStorage.getItem(themeStorageKey);

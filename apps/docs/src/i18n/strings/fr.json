@@ -105,7 +105,7 @@
 		"hero": {
 			"titleLine1": "Ne rate plus jamais",
 			"titleLine2": "le moment.",
-			"lede": "ArenaSwap surveille chaque match en direct dans {leagues} ligues et bascule automatiquement ton onglet de navigateur vers le plus palpitant, jusqu'à toutes les 12 secondes.",
+			"lede": "ArenaSwap surveille chaque match en direct dans {leagues} ligues et bascule ton onglet sur le plus excitant, aussi souvent que toutes les 12 secondes.",
 			"teamStrip": "Fonctionne avec chaque équipe dans {leagues} ligues. La tienne y compris.",
 			"captionSwitched": "ArenaSwap t'a fait passer de {from} à {to}.",
 			"captionWatching": "Tu regardes {game}, le meilleur match du moment.",
@@ -116,30 +116,36 @@
 		"tabs": {
 			"titleLine1": "Configure une fois.",
 			"titleLine2": "Regarde tout.",
-			"copy": "Ouvre tes streams, assigne-les à des matchs, et pars tranquille. À partir de là, ArenaSwap gère chaque changement.",
 			"steps": [
 				{
 					"title": "Ouvre tes streams.",
-					"copy": "Ouvre tes matchs dans des onglets de navigateur séparés. Tout service de streaming qui tourne dans un navigateur fonctionne avec ArenaSwap."
+					"copy": "Ouvre tes matchs dans des onglets séparés. Tout stream qui passe dans un navigateur fonctionne."
 				},
 				{
 					"title": "Assigne chaque onglet.",
-					"copy": "Ouvre l'extension, trouve chaque match dans la liste, et relie-le au bon onglet avec un simple menu déroulant."
+					"copy": "Choisis chaque match dans la liste et relie-le à son onglet avec un seul menu déroulant."
 				},
 				{
 					"title": "Le meilleur match te trouve.",
-					"copy": "ArenaSwap note chaque match en direct et bascule automatiquement vers le plus palpitant. Toi, tu regardes."
+					"copy": "Éloigne-toi. ArenaSwap t'emmène sur le match le plus excitant et coupe le son des autres."
 				}
 			]
 		},
 		"charts": {
 			"title": "Vois pourquoi. À chaque fois.",
-			"copy": "Cinq signaux s'additionnent dans chaque score. Ouvre n'importe quel match et le détail est là, avec la tendance du PowerScore, l'historique du score et le graphique d'écart."
+			"copy": "Cinq signaux composent chaque PowerScore. Ouvre n'importe quel match pour le détail complet, la tendance et le graphique d'écart."
+		},
+		"multiview": {
+			"title": "Impossible de choisir ? Regarde-les tous.",
+			"copy": "Quand au moins deux de tes matchs deviennent excitants, Multiview les met tous sur un seul écran.",
+			"browsers": "Sur Chrome et Edge.",
+			"label": "Multiview avec quatre matchs excitants sur un seul écran, et le son sur le plus grand.",
+			"soundOn": "Son activé"
 		},
 		"leagues": {
 			"titleLine1": "Si c'est en direct,",
 			"titleLine2": "c'est couvert.",
-			"copy": "{sports} sports. Tous les niveaux de jeu. ArenaSwap surveille tout en même temps. Désactive ceux que tu ne regardes pas, et il arrête de les suivre.",
+			"copy": "{sports} sports et tous les niveaux de jeu, de la NBA à la Premier League en passant par les Jeux olympiques. Désactive ceux que tu ignores.",
 			"numerals": [
 				"Aucun",
 				"Un",
@@ -156,34 +162,64 @@
 		},
 		"settings": {
 			"title": "Réglé sur toi.",
-			"copy": "Sensibilité trop élevée ? Ralentis-la. Tu aimes ton équipe mais tu veux voir le meilleur match ? Ajoute un bonus. Tu fais un saut chercher une bière ? Standby Stream garde quelque chose à l'écran.",
+			"copy": "Décide à quel point ArenaSwap est exigeant, puis laisse-le faire le zapping.",
 			"items": [
 				{
 					"name": "Sensibilité (1–{levels})",
-					"copy": "L'écart de score nécessaire avant qu'ArenaSwap ne change."
+					"copy": "L'écart de score à partir duquel ArenaSwap bascule."
 				},
 				{
 					"name": "Délai entre les changements",
-					"copy": "Temps minimum entre deux changements. Empêche les allers-retours rapides entre onglets."
+					"copy": "Le temps minimum entre deux changements, pour ne jamais te faire basculer en pleine action."
 				},
 				{
 					"name": "Délai de changement",
-					"copy": "Attend avant de changer, pour quand ton stream retarde sur les données."
+					"copy": "Attend avant de basculer quand ton stream a du retard sur le score en direct."
 				},
 				{
 					"name": "Bonus d'équipe favorite",
 					"copy": "Des points en plus pour tout match où jouent tes équipes."
 				},
 				{
-					"name": "Standby Stream",
-					"copy": "Quand tous les matchs en direct s'endorment, ArenaSwap te gare sur un onglet de secours de ton choix."
+					"name": "Coup de boost",
+					"copy": "Augmente à la main le PowerScore d'un match pour le garder à l'écran."
 				},
 				{
-					"name": "Coup de boost",
-					"copy": "Augmente à la main le PowerScore d'un match pour le garder plus longtemps à l'écran."
+					"name": "Notifications de changement",
+					"copy": "Une notification du navigateur à chaque fois qu'ArenaSwap te fait changer."
 				}
 			],
 			"levelOf": "Niveau {level} sur {levels}"
+		},
+		"standby": {
+			"title": "Rien d'excitant ? On gère.",
+			"copy": "Quand tous les matchs passent sous le PowerScore que tu as fixé, ArenaSwap bascule sur un onglet de ton choix, comme une émission d'avant-match ou un flux de temps forts.",
+			"threshold": "Standby sous {score}",
+			"onStandby": "Sur ton onglet de standby",
+			"backToGame": "Retour au match",
+			"label": "Trois matchs passent sous la ligne de Standby Stream. ArenaSwap bascule sur ton onglet de standby, puis revient au match qui repasse au-dessus."
+		},
+		"free": {
+			"title": "Gratuit. Privé. Ouvert.",
+			"items": [
+				{
+					"title": "Aucune inscription.",
+					"copy": "Pas de compte, pas de connexion, pas de pub."
+				},
+				{
+					"title": "Tes réglages restent à toi.",
+					"copy": "Aucun suivi. Ce que tu regardes ne quitte jamais ton navigateur."
+				},
+				{
+					"title": "Rien à cacher.",
+					"copy": "ArenaSwap est gratuit et open source. Lis chaque ligne {link}."
+				}
+			],
+			"githubLink": "sur GitHub"
+		},
+		"closing": {
+			"title": "Le meilleur match de ce soir t'attend.",
+			"copy": "Ajoute ArenaSwap, ouvre tes streams et laisse le meilleur match te trouver."
 		}
 	},
 	"faq": {
@@ -333,14 +369,14 @@
 		"heroTaglineSuffix": ".",
 		"heroRestingToken": "partie",
 		"heroRestingSuffix": ".",
-		"heroSub": "PowerScore transforme n'importe quel match en direct en un score d'intensité de 0 à 100, mis à jour au fil du match. C'est le même moteur qu'utilise ArenaSwap pour choisir ce que tu regardes ensuite, et il s'installe tout seul.",
+		"heroSub": "PowerScore note n'importe quel match en direct de 0 à 100 selon son intensité, et suit le rythme à mesure que le match avance. Installe-le depuis npm et note les matchs dans ton propre projet.",
 		"viewOnNpm": "Voir sur npm",
 		"sourceOnGithub": "Code source sur GitHub",
-		"installHeading": "Installation en une commande",
+		"installHeading": "Installation en une commande.",
 		"copy": "Copier",
 		"copied": "Copié",
-		"signalsHeading": "Ce qui compose le nombre",
-		"signalsSub": "Cinq signaux s'empilent pour donner un score de 0 à {max}. Un match serré grimpe haut, une raclée reste bas.",
+		"signalsHeading": "Ce qui compose le nombre.",
+		"signalsSub": "Cinq signaux s'additionnent pour donner un score de 0 à {max}. Un match serré grimpe, un match plié reste bas.",
 		"signalMax": "{max} max",
 		"signals": [
 			{
@@ -364,19 +400,19 @@
 				"copy": "Une équipe menée qui revient de loin fait grimper le score."
 			}
 		],
-		"liveHeading": "PowerScores en direct",
+		"liveHeading": "PowerScores en direct.",
 		"liveLoading": "Chargement des PowerScores en direct",
 		"liveError": "Impossible de charger les données de match en direct pour le moment.",
 		"liveNow": "En direct",
 		"machineHeading": "Regarde-le en action.",
-		"machineSub": "ArenaSwap note chaque match en direct au fur et à mesure, puis place ton onglet sur le meilleur. Voici à quoi ça ressemble.",
+		"machineSub": "Chaque match en direct reçoit un PowerScore, et ton onglet atterrit sur le meilleur.",
 		"machineWatch": "Regarder",
 		"machineWatchCopy": "Chaque match en direct de chaque ligue que tu suis, en même temps.",
 		"machineScore": "Noter",
 		"machineScoreCopy": "PowerScore évalue en direct à quel point chaque match est palpitant.",
 		"machineSwitch": "Basculer",
 		"machineSwitchCopy": "Ton onglet saute automatiquement vers le meilleur match.",
-		"liveEmptyTitle": "Aucun match en direct pour le moment",
+		"liveEmptyTitle": "Aucun match en direct pour le moment.",
 		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "ArenaSwap en train de regarder et noter chaque match en direct",
 		"machineNowWatching": "En train de regarder",

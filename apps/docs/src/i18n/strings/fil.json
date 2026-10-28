@@ -105,7 +105,7 @@
 		"hero": {
 			"titleLine1": "Huwag nang palampasin",
 			"titleLine2": "ang moment.",
-			"lede": "Binabantayan ng ArenaSwap ang bawat live game sa {leagues} liga at awtomatikong lumilipat ang browser tab mo papunta sa pinaka-exciting na laro, kahit tuwing 12 segundo lang.",
+			"lede": "Binabantayan ng ArenaSwap ang bawat live game sa {leagues} liga at nililipat ang browser tab mo sa pinaka-exciting na laro, kasing-dalas ng bawat 12 segundo.",
 			"teamStrip": "Gumagana ito sa bawat team sa {leagues} liga. Kasama na ang sa'yo.",
 			"captionSwitched": "Nilipat ka ng ArenaSwap mula sa {from} papunta sa {to}.",
 			"captionWatching": "Pinapanood mo ngayon ang {game}, ang pinakamagandang laro sa board.",
@@ -116,30 +116,36 @@
 		"tabs": {
 			"titleLine1": "I-set once lang.",
 			"titleLine2": "Panoorin ang lahat.",
-			"copy": "Buksan ang mga stream mo, i-assign sa mga laro, at umalis ka na lang. Simula doon, ang ArenaSwap na ang bahala sa bawat paglipat.",
 			"steps": [
 				{
 					"title": "Buksan ang mga stream mo.",
-					"copy": "I-pull up ang mga laro mo sa magkakahiwalay na browser tab. Anumang streaming service na tumatakbo sa browser ay gagana sa ArenaSwap."
+					"copy": "Buksan ang mga laro mo sa magkakahiwalay na browser tab. Gagana ang kahit anong stream na pwedeng i-play sa browser."
 				},
 				{
 					"title": "I-assign ang bawat tab.",
-					"copy": "Buksan ang extension, hanapin ang bawat laro sa listahan, at ikonekta ito sa tamang tab gamit ang iisang dropdown."
+					"copy": "Piliin ang bawat laro mula sa listahan at i-link sa tab nito gamit ang isang dropdown."
 				},
 				{
 					"title": "Ang best na laro ang maghahanap sa'yo.",
-					"copy": "Nagbibigay ng score ang ArenaSwap sa bawat live na laro at awtomatikong lumilipat sa pinaka-exciting. Ikaw, manood ka na lang."
+					"copy": "Maglakad ka na palayo. Ililipat ka ng ArenaSwap sa pinaka-exciting na laro at i-mu-mute ang iba."
 				}
 			]
 		},
 		"charts": {
 			"title": "Makita kung bakit. Tuwing may laro.",
-			"copy": "Limang signal ang bumubuo sa bawat score. Buksan ang kahit anong laro at nandoon ang breakdown, kasama ang trend ng PowerScore, ang score history, at ang margin chart."
+			"copy": "Limang signal ang bumubuo sa bawat PowerScore. Buksan ang kahit anong laro para sa buong breakdown, ang trend, at ang margin chart."
+		},
+		"multiview": {
+			"title": "Hindi makapili? Panoorin silang lahat.",
+			"copy": "Kapag dalawa o higit pa sa mga laro mo ang naging exciting, ilalagay silang lahat ng Multiview sa iisang screen.",
+			"browsers": "Sa Chrome at Edge.",
+			"label": "Multiview na may apat na exciting na laro sa iisang screen, at may tunog sa pinakamalaki.",
+			"soundOn": "May tunog"
 		},
 		"leagues": {
 			"titleLine1": "Kung live,",
 			"titleLine2": "kasali ito.",
-			"copy": "{sports} sports. Bawat level ng laro. Sabay-sabay itong bina-bantayan ng ArenaSwap. Patayin ang mga hindi mo pinapanood at titigil na itong sundan ang mga iyon.",
+			"copy": "{sports} sports at bawat level ng laro, mula NBA hanggang Premier League hanggang Olympics. Patayin ang mga hindi mo sinusundan.",
 			"numerals": [
 				"Wala",
 				"Isa",
@@ -156,34 +162,64 @@
 		},
 		"settings": {
 			"title": "Naka-tune sa'yo.",
-			"copy": "Sobrang taas ng sensitivity? Bagalan mo. Mahal mo ang team mo pero gusto mo rin makita ang best na laro? Magdagdag ng bonus. Aalis sandali para bumili ng inumin? Standby Stream ang bahalang mag-hold ng something sa screen.",
+			"copy": "Ikaw ang magpapasya kung gaano kapili ang ArenaSwap, tapos hayaan mo na siyang maglipat.",
 			"items": [
 				{
 					"name": "Sensitivity (1–{levels})",
-					"copy": "Kung gaano kalaki ang dapat na agwat sa score bago lumipat ang ArenaSwap."
+					"copy": "Gaano kalaki dapat ang agwat ng score bago maglipat ang ArenaSwap."
 				},
 				{
 					"name": "Cooldown ng Paglipat",
-					"copy": "Minimum na oras sa pagitan ng mga paglipat. Pinipigilan ang mabilis na tab-flipping."
+					"copy": "Pinakamaikling pagitan ng mga paglipat, para hindi ka mapalipat sa gitna ng mainit na laro."
 				},
 				{
 					"name": "Delay ng Paglipat",
-					"copy": "Naghihintay bago lumipat, para sa mga pagkakataong huli ang stream mo sa data."
+					"copy": "Naghihintay bago maglipat kapag atrasado ang stream mo sa live score."
 				},
 				{
-					"name": "Bonus ng Paboritong Team",
-					"copy": "Extra points sa anumang laro na kasali ang mga team mo."
-				},
-				{
-					"name": "Standby Stream",
-					"copy": "Kapag tahimik na ang lahat ng live na laro, ipapark ka ng ArenaSwap sa fallback tab na pinili mo."
+					"name": "Boost ng Paboritong Team",
+					"copy": "Dagdag na points sa anumang laro na nilalaro ng mga team mo."
 				},
 				{
 					"name": "Boost ng Laro",
-					"copy": "Itaas nang manual ang PowerScore ng anumang laro para mas matagal itong manatili sa screen."
+					"copy": "Taasan nang mano-mano ang PowerScore ng kahit anong laro para manatili ito sa screen."
+				},
+				{
+					"name": "Mga Abiso sa Paglipat",
+					"copy": "Browser notification tuwing ililipat ka ng ArenaSwap."
 				}
 			],
 			"levelOf": "Level {level} ng {levels}"
+		},
+		"standby": {
+			"title": "Walang exciting? Kami na'ng bahala.",
+			"copy": "Kapag bumaba sa PowerScore na tinakda mo ang lahat ng laro, lilipat ang ArenaSwap sa tab na pinili mo, gaya ng pregame show o highlights feed.",
+			"threshold": "Standby kapag mas mababa sa {score}",
+			"onStandby": "Nasa standby tab mo",
+			"backToGame": "Balik sa laro",
+			"label": "Tatlong laro ang bumaba sa linya ng Standby Stream. Lilipat ang ArenaSwap sa standby tab mo, tapos babalik sa larong aakyat sa ibabaw nito."
+		},
+		"free": {
+			"title": "Libre. Pribado. Open.",
+			"items": [
+				{
+					"title": "Walang kailangang i-sign up.",
+					"copy": "Walang account, walang login, walang ads."
+				},
+				{
+					"title": "Sa'yo lang ang settings mo.",
+					"copy": "Walang tracking. Ang pinapanood mo ay hindi lumalabas sa browser mo."
+				},
+				{
+					"title": "Wala kaming tinatago.",
+					"copy": "Libre at open source ang ArenaSwap. Basahin ang bawat linya {link}."
+				}
+			],
+			"githubLink": "sa GitHub"
+		},
+		"closing": {
+			"title": "Naghihintay na ang pinakamagandang laro ngayong gabi.",
+			"copy": "I-add ang ArenaSwap, buksan ang mga stream mo, at hayaang hanapin ka ng best na laro."
 		}
 	},
 	"faq": {
@@ -333,14 +369,14 @@
 		"heroTaglineSuffix": " score.",
 		"heroRestingToken": "score",
 		"heroRestingSuffix": ".",
-		"heroSub": "Ginagawang excitement score na 0 hanggang 100 ng PowerScore ang anumang live na laro, na nag-a-update habang umuusad ang laro. Ito ang parehong engine na ginagamit ng ArenaSwap para piliin kung ano ang panonoorin mo susunod, at nag-i-install ito nang mag-isa.",
+		"heroSub": "Nire-rate ng PowerScore ang kahit anong live game mula 0 hanggang 100 kung gaano ito ka-exciting, at sumasabay ito habang umuusad ang laro. I-install mula sa npm at mag-score ng mga laro sa sarili mong project.",
 		"viewOnNpm": "Tingnan sa npm",
 		"sourceOnGithub": "Source sa GitHub",
-		"installHeading": "I-install gamit ang isang command",
+		"installHeading": "I-install gamit ang isang command.",
 		"copy": "Kopyahin",
 		"copied": "Nakopya",
-		"signalsHeading": "Ano ang bumubuo sa numero",
-		"signalsSub": "Limang signal ang nagsasama-sama papunta sa isang score na 0 hanggang {max}. Ang isang close na laro ay aakyat nang mataas, ang isang blowout ay mananatiling mababa.",
+		"signalsHeading": "Ano ang bumubuo sa numero.",
+		"signalsSub": "Limang signal ang nagsasama-sama para maging score na 0 hanggang {max}. Aakyat ang dikitang laro, mananatiling mababa ang blowout.",
 		"signalMax": "{max} max",
 		"signals": [
 			{
@@ -364,19 +400,19 @@
 				"copy": "Ang isang team na nasa likod na bumabawi ay nagpapataas ng score."
 			}
 		],
-		"liveHeading": "Live na PowerScore",
+		"liveHeading": "Live na PowerScore.",
 		"liveLoading": "Nilo-load ang live na PowerScore",
 		"liveError": "Hindi ma-load ang live game data sa ngayon.",
 		"liveNow": "Live",
 		"machineHeading": "Panoorin itong gumana.",
-		"machineSub": "Nagbibigay ng score ang ArenaSwap sa bawat live na laro habang nangyayari ito — tapos ilalagay ang tab mo sa pinakamaganda. Ganito ito ka-magmukha.",
+		"machineSub": "Bawat live game ay may PowerScore, at sa pinakamagaling lumalapag ang tab mo.",
 		"machineWatch": "Panoorin",
 		"machineWatchCopy": "Lahat ng live na laro sa bawat liga na sinusundan mo, sabay-sabay.",
 		"machineScore": "I-score",
 		"machineScoreCopy": "Sinusukat ng PowerScore, live, kung gaano ka-exciting ang bawat laro.",
 		"machineSwitch": "Lumipat",
 		"machineSwitchCopy": "Awtomatikong tumatalon ang tab mo papunta sa pinakamagandang laro.",
-		"liveEmptyTitle": "Walang live na laro sa ngayon",
+		"liveEmptyTitle": "Walang live na laro sa ngayon.",
 		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "Ang ArenaSwap habang nanonood at nagbibigay ng score sa bawat live na laro",
 		"machineNowWatching": "Pinapanood ngayon",

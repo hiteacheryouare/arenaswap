@@ -1,0 +1,70 @@
+---
+import Crest from '@arenaswap/ui/src/components/crest';
+import CrestSettle from '../CrestSettle.astro';
+import { multiviewGames } from './multiviewGames';
+import { currentLocale, useTranslations } from '../../i18n/ui';
+
+const t = useTranslations(currentLocale(Astro.currentLocale));
+const base = import.meta.env.BASE_URL;
+---
+<section class='band band-split' id='multiview'>
+	<div class='container band-split-grid'>
+		<div class='band-split-copy'>
+			<h2 class='display-md'>{t('home.multiview.title')}</h2>
+			<p class='band-copy'>{t('home.multiview.copy')}</p>
+			<p class='band-note'>
+				<i class='bi bi-browser-chrome' aria-hidden='true'></i>
+				<i class='bi bi-browser-edge' aria-hidden='true'></i>
+				<span>{t('home.multiview.browsers')}</span>
+			</p>
+		</div>
+
+		<div class='multiview-demo' role='img' aria-label={t('home.multiview.label')} data-crest-settle>
+			{multiviewGames.map((game, index) => (
+				<div class:list={['multiview-demo-box', { 'is-audible': index === 0 }]}>
+					<div class='multiview-demo-bar' style={`--left:${game.left.color};--right:${game.right.color}`}>
+						<span class='multiview-demo-team'>
+							<Crest logo={game.left.logo} abbreviation={game.left.abbreviation} teamColor={game.left.color} />
+							{game.left.abbreviation}
+						</span>
+						{index === 0 && <i class='bi bi-volume-up-fill multiview-demo-sound' aria-hidden='true'></i>}
+						<span class='multiview-demo-team'>
+							{game.right.abbreviation}
+							<Crest logo={game.right.logo} abbreviation={game.right.abbreviation} teamColor={game.right.color} />
+						</span>
+					</div>
+					<video
+						class='multiview-demo-video'
+						src={`${base}video/${game.video}.mp4`}
+						poster={`${base}video/${game.video}.jpg`}
+						muted
+						loop
+						playsinline
+						preload='none'
+						data-multiview-clip
+					></video>
+				</div>
+			))}
+		</div>
+	</div>
+</section>
+
+<CrestSettle />
+
+<!-- Four videos only play while the grid is on screen, and not at all for anyone who has asked the
+     browser for less motion: they see the first frame of each. -->
+<script>
+	const clips = [...document.querySelectorAll<HTMLVideoElement>('[data-multiview-clip]')];
+	const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+	const observer = new IntersectionObserver(entries => {
+		for (const entry of entries) {
+			const clip = entry.target as HTMLVideoElement;
+			if (entry.isIntersecting && !still.matches) {
+				clip.play().catch(() => {});
+			} else {
+				clip.pause();
+			}
+		}
+	}, { threshold: 0.25 });
+	clips.forEach(clip => observer.observe(clip));
+</script>

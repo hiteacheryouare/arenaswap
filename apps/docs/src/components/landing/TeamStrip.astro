@@ -23,7 +23,7 @@ const espnTeam = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.pn
 
 // Philadelphia first, which is where this is built, then Boston, which is the other half of the
 // footer. The rest are picked to read on a dark page as much as for being famous: the Cowboys' navy
-// star and the Yankees' navy monogram are both nearly invisible on #0d1117, so neither is here.
+// star and the Yankees' navy monogram are both nearly invisible on the black page, so neither is here.
 const teams = [
 	{ name: 'Philadelphia Eagles', abbr: 'PHI', logo: espnTeam('nfl/500/phi'), color: '#004C54' },
 	{ name: 'Philadelphia Phillies', abbr: 'PHI', logo: espnTeam('mlb/500/phi'), color: '#E81828' },

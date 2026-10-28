@@ -105,7 +105,7 @@
 		"hero": {
 			"titleLine1": "Nunca mais perca",
 			"titleLine2": "o momento.",
-			"lede": "O ArenaSwap observa cada jogo ao vivo em {leagues} ligas e muda automaticamente sua aba do navegador para o mais empolgante, a cada 12 segundos se preciso.",
+			"lede": "O ArenaSwap observa cada jogo ao vivo em {leagues} ligas e muda a aba do seu navegador para o mais emocionante, com a frequência de até uma troca a cada 12 segundos.",
 			"teamStrip": "Funciona com todos os times de {leagues} ligas. O seu incluso.",
 			"captionSwitched": "O ArenaSwap trocou você de {from} para {to}.",
 			"captionWatching": "Você está assistindo {game}, o melhor jogo do momento.",
@@ -116,30 +116,36 @@
 		"tabs": {
 			"titleLine1": "Configure uma vez.",
 			"titleLine2": "Assista a tudo.",
-			"copy": "Abra seus streams, vincule-os a jogos e pode sair tranquilo. A partir daí, o ArenaSwap cuida de cada troca.",
 			"steps": [
 				{
 					"title": "Abra seus streams.",
-					"copy": "Abra seus jogos em abas separadas do navegador. Qualquer serviço de streaming que rode em um navegador funciona com o ArenaSwap."
+					"copy": "Abra seus jogos em abas separadas do navegador. Qualquer stream que rode em um navegador funciona."
 				},
 				{
 					"title": "Vincule cada aba.",
-					"copy": "Abra a extensão, encontre cada jogo na lista e conecte-o à aba certa com um único menu suspenso."
+					"copy": "Escolha cada jogo na lista e vincule à aba dele com um único menu suspenso."
 				},
 				{
 					"title": "O melhor jogo encontra você.",
-					"copy": "O ArenaSwap pontua cada jogo ao vivo e muda automaticamente para o mais empolgante. Você só assiste."
+					"copy": "Pode sair de perto. O ArenaSwap leva você ao jogo mais emocionante e silencia o resto."
 				}
 			]
 		},
 		"charts": {
 			"title": "Veja o porquê. Toda vez.",
-			"copy": "Cinco sinais se somam em cada pontuação. Abra qualquer jogo e o detalhamento está lá, junto com a tendência do PowerScore, o histórico de placar e o gráfico de diferença."
+			"copy": "Cinco sinais formam cada PowerScore. Abra qualquer jogo para ver o detalhamento completo, a tendência e o gráfico de diferença."
+		},
+		"multiview": {
+			"title": "Não consegue escolher? Assista a todos.",
+			"copy": "Quando dois ou mais dos seus jogos esquentam, o Multiview coloca todos em uma só tela.",
+			"browsers": "No Chrome e no Edge.",
+			"label": "Multiview com quatro jogos emocionantes em uma só tela, e o som no maior deles.",
+			"soundOn": "Som ligado"
 		},
 		"leagues": {
 			"titleLine1": "Se está ao vivo,",
 			"titleLine2": "está coberto.",
-			"copy": "{sports} esportes. Todo nível de jogo. O ArenaSwap monitora todos ao mesmo tempo. Desative os que você não assiste e ele para de rastreá-los.",
+			"copy": "{sports} esportes e todos os níveis de jogo, da NBA à Premier League e às Olimpíadas. Desative os que você não acompanha.",
 			"numerals": [
 				"Nenhum",
 				"Um",
@@ -156,34 +162,64 @@
 		},
 		"settings": {
 			"title": "Sintonizado com você.",
-			"copy": "Sensibilidade muito alta? Diminua. Ama seu time mas quer ver o melhor jogo? Adicione um bônus. Vai dar uma saidinha para comprar cerveja? O Standby Stream mantém algo na tela.",
+			"copy": "Defina o quanto o ArenaSwap é exigente e deixe que ele faça as trocas.",
 			"items": [
 				{
 					"name": "Sensibilidade (1–{levels})",
-					"copy": "Quão grande precisa ser a diferença de pontuação antes de o ArenaSwap trocar."
+					"copy": "O tamanho da diferença no placar para o ArenaSwap trocar."
 				},
 				{
 					"name": "Cooldown entre trocas",
-					"copy": "Tempo mínimo entre trocas. Evita que as abas fiquem mudando rápido demais."
+					"copy": "O tempo mínimo entre trocas, para você nunca ser trocado no meio de uma jogada."
 				},
 				{
 					"name": "Atraso de troca",
-					"copy": "Espera antes de trocar, para quando seu stream está atrasado em relação aos dados."
+					"copy": "Espera antes de trocar quando seu stream está atrasado em relação ao placar ao vivo."
 				},
 				{
-					"name": "Bônus de time favorito",
+					"name": "Impulso de time favorito",
 					"copy": "Pontos extras para qualquer jogo em que seus times estejam jogando."
 				},
 				{
-					"name": "Standby Stream",
-					"copy": "Quando todos os jogos ao vivo esfriam, o ArenaSwap te deixa em uma aba reserva escolhida por você."
+					"name": "Impulso do jogo",
+					"copy": "Aumente o PowerScore de qualquer jogo manualmente para mantê-lo na tela."
 				},
 				{
-					"name": "Impulso do jogo",
-					"copy": "Aumente manualmente o PowerScore de um jogo para mantê-lo na tela por mais tempo."
+					"name": "Notificações de troca",
+					"copy": "Uma notificação do navegador sempre que o ArenaSwap muda você de jogo."
 				}
 			],
 			"levelOf": "Nível {level} de {levels}"
+		},
+		"standby": {
+			"title": "Nada emocionante? A gente cobre.",
+			"copy": "Quando todos os jogos ficam abaixo do PowerScore que você definiu, o ArenaSwap muda para uma aba que você escolhe, como um pré-jogo ou um canal de melhores momentos.",
+			"threshold": "Standby abaixo de {score}",
+			"onStandby": "Na sua aba de standby",
+			"backToGame": "De volta ao jogo",
+			"label": "Três jogos caem abaixo da linha do Standby Stream. O ArenaSwap vai para sua aba de standby e depois volta ao jogo que passa dela."
+		},
+		"free": {
+			"title": "Grátis. Privado. Aberto.",
+			"items": [
+				{
+					"title": "Nada para se cadastrar.",
+					"copy": "Sem conta, sem login, sem anúncios."
+				},
+				{
+					"title": "Suas configurações continuam suas.",
+					"copy": "Sem rastreamento. O que você assiste nunca sai do seu navegador."
+				},
+				{
+					"title": "Não temos nada a esconder.",
+					"copy": "O ArenaSwap é gratuito e de código aberto. Leia cada linha {link}."
+				}
+			],
+			"githubLink": "no GitHub"
+		},
+		"closing": {
+			"title": "O melhor jogo de hoje à noite está esperando.",
+			"copy": "Adicione o ArenaSwap, abra seus streams e deixe o melhor jogo encontrar você."
 		}
 	},
 	"faq": {
@@ -333,14 +369,14 @@
 		"heroTaglineSuffix": ".",
 		"heroRestingToken": "partida",
 		"heroRestingSuffix": ".",
-		"heroSub": "O PowerScore transforma qualquer jogo ao vivo em uma pontuação de emoção de 0 a 100, atualizada conforme o jogo avança. É o mesmo motor que o ArenaSwap usa para escolher o que você vai assistir a seguir, e ele se instala sozinho.",
+		"heroSub": "O PowerScore avalia qualquer jogo ao vivo de 0 a 100 pelo quanto ele é emocionante e acompanha o jogo conforme ele avança. Instale pelo npm e pontue jogos no seu próprio projeto.",
 		"viewOnNpm": "Ver no npm",
 		"sourceOnGithub": "Código-fonte no GitHub",
-		"installHeading": "Instale com um comando",
+		"installHeading": "Instale com um comando.",
 		"copy": "Copiar",
 		"copied": "Copiado",
-		"signalsHeading": "O que compõe o número",
-		"signalsSub": "Cinco sinais se somam em uma pontuação de 0 a {max}. Um jogo apertado sobe bastante, uma goleada fica baixa.",
+		"signalsHeading": "O que compõe o número.",
+		"signalsSub": "Cinco sinais se somam em uma pontuação de 0 a {max}. Um jogo disputado sobe, uma goleada fica baixa.",
 		"signalMax": "{max} máx.",
 		"signals": [
 			{
@@ -364,19 +400,19 @@
 				"copy": "Um time atrás no placar que se recupera aumenta a pontuação."
 			}
 		],
-		"liveHeading": "PowerScores ao vivo",
+		"liveHeading": "PowerScores ao vivo.",
 		"liveLoading": "Carregando PowerScores ao vivo",
 		"liveError": "Não é possível carregar dados de jogos ao vivo agora.",
 		"liveNow": "Ao vivo",
 		"machineHeading": "Veja funcionando.",
-		"machineSub": "O ArenaSwap pontua cada jogo ao vivo enquanto ele acontece — e coloca sua aba no melhor. Veja como é.",
+		"machineSub": "Cada jogo ao vivo recebe um PowerScore, e sua aba cai no melhor deles.",
 		"machineWatch": "Assistir",
 		"machineWatchCopy": "Cada jogo ao vivo de cada liga que você acompanha, ao mesmo tempo.",
 		"machineScore": "Pontuar",
 		"machineScoreCopy": "O PowerScore avalia ao vivo quão empolgante é cada jogo.",
 		"machineSwitch": "Trocar",
 		"machineSwitchCopy": "Sua aba pula automaticamente para o melhor jogo.",
-		"liveEmptyTitle": "Nenhum jogo ao vivo no momento",
+		"liveEmptyTitle": "Nenhum jogo ao vivo no momento.",
 		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "O ArenaSwap observando e pontuando cada jogo ao vivo",
 		"machineNowWatching": "Assistindo agora",

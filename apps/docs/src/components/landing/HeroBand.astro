@@ -11,13 +11,14 @@ const t = useTranslations(locale);
 const leagues = leagueConfigs.length;
 ---
 <section class='band band-hero' id='hero'>
+	<div class='glow' aria-hidden='true'></div>
 	<div class='container'>
 		<div class='hero-grid'>
 
 			<div class='hero-copy'>
-				<h1 class='display-lg'>{t('home.hero.titleLine1')}<br>{t('home.hero.titleLine2')}</h1>
+				<h1 class='display-xl'>{t('home.hero.titleLine1')}<br>{t('home.hero.titleLine2')}</h1>
 
-				<p class='band-lede' style='margin-top:1.35rem'>{t('home.hero.lede', { leagues })}</p>
+				<p class='band-lede'>{t('home.hero.lede', { leagues })}</p>
 
 				<div class='hero-actions'>
 					<InstallCta />

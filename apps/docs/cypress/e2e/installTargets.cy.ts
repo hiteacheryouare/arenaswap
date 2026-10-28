@@ -63,11 +63,14 @@ describe('the install button points at a store the visitor can install from', ()
 
 	// `applyAlternates` fills the two links in document order from a list that is always
 	// [the other two stores], so the name written into each link has to match the store behind it.
-	// A visitor who clicks "Edge" and lands on addons.mozilla.org has been lied to.
+	// A visitor who clicks "Edge" and lands on addons.mozilla.org has been lied to. The home page
+	// offers them twice, under the hero's install button and the closing one.
 	it('names each alternate store after the store it links to', () => {
 		visitAs('/', { agent: chromeAgent });
 
-		cy.get('[data-install-alternate]').should('have.length', 2);
+		cy.get('.hero-actions-alt').should('have.length', 2).each($row => {
+			expect($row.find('[data-install-alternate]'), 'alternates in one row').to.have.length(2);
+		});
 		cy.get('[data-install-alternate]').each($link => {
 			const expected = $link.text().trim() === 'Firefox' ? firefoxAddons : edgeAddons;
 			expect($link.attr('href'), `${$link.text().trim()} alternate target`).to.equal(expected);
@@ -77,8 +80,8 @@ describe('the install button points at a store the visitor can install from', ()
 	it('offers the other two stores, never the one you are already on', () => {
 		visitAs('/', { agent: firefoxAgent });
 
-		cy.get('[data-install-alternate]').then($links => {
-			const targets = [...$links].map(link => link.getAttribute('href'));
+		cy.get('.hero-actions-alt').each($row => {
+			const targets = [...$row.find('[data-install-alternate]')].map(link => link.getAttribute('href'));
 			expect(targets, 'Firefox is not offered to a Firefox visitor').to.not.include(firefoxAddons);
 			expect(targets).to.have.members([chromeWebStore, edgeAddons]);
 		});

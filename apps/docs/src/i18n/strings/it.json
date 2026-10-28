@@ -105,7 +105,7 @@
 		"hero": {
 			"titleLine1": "Non perdere mai più",
 			"titleLine2": "il momento.",
-			"lede": "ArenaSwap tiene d'occhio ogni partita dal vivo in {leagues} campionati e passa automaticamente la tua scheda del browser a quella più emozionante, anche ogni 12 secondi.",
+			"lede": "ArenaSwap tiene d'occhio ogni partita dal vivo in {leagues} campionati e porta la scheda del tuo browser su quella più emozionante, anche ogni 12 secondi.",
 			"teamStrip": "Funziona con ogni squadra in {leagues} campionati. Anche la tua.",
 			"captionSwitched": "ArenaSwap ti ha spostato da {from} a {to}.",
 			"captionWatching": "Stai guardando {game}, la partita migliore del momento.",
@@ -116,30 +116,36 @@
 		"tabs": {
 			"titleLine1": "Impostalo una volta.",
 			"titleLine2": "Guarda tutto.",
-			"copy": "Apri i tuoi stream, assegnali alle partite, e vai pure via. Da quel momento, ArenaSwap gestisce ogni cambio.",
 			"steps": [
 				{
 					"title": "Apri i tuoi stream.",
-					"copy": "Apri le tue partite in schede del browser separate. Qualsiasi servizio di streaming che gira in un browser funziona con ArenaSwap."
+					"copy": "Apri le tue partite in schede separate del browser. Funziona qualsiasi stream che si riproduca in un browser."
 				},
 				{
 					"title": "Assegna ogni scheda.",
-					"copy": "Apri l'estensione, trova ogni partita nell'elenco e collegala alla scheda giusta con un solo menu a tendina."
+					"copy": "Scegli ogni partita dall'elenco e collegala alla sua scheda con un menu a tendina."
 				},
 				{
 					"title": "La partita migliore ti trova.",
-					"copy": "ArenaSwap valuta ogni partita dal vivo e passa automaticamente a quella più emozionante. Tu ti limiti a guardare."
+					"copy": "Allontanati. ArenaSwap ti porta alla partita più emozionante e silenzia le altre."
 				}
 			]
 		},
 		"charts": {
 			"title": "Vedi perché. Ogni volta.",
-			"copy": "Cinque segnali si sommano in ogni punteggio. Apri una partita qualsiasi e il dettaglio è lì, insieme all'andamento del PowerScore, alla cronologia del punteggio e al grafico dello scarto."
+			"copy": "Cinque segnali compongono ogni PowerScore. Apri qualsiasi partita per l'analisi completa, l'andamento e il grafico del margine."
+		},
+		"multiview": {
+			"title": "Non riesci a scegliere? Guardale tutte.",
+			"copy": "Quando due o più delle tue partite si fanno emozionanti, Multiview le mette tutte su un solo schermo.",
+			"browsers": "Su Chrome ed Edge.",
+			"label": "Multiview con quattro partite emozionanti su un solo schermo e l'audio su quella più grande.",
+			"soundOn": "Audio attivo"
 		},
 		"leagues": {
 			"titleLine1": "Se è dal vivo,",
 			"titleLine2": "è coperto.",
-			"copy": "{sports} sport. Ogni livello di gioco. ArenaSwap li tiene tutti d'occhio insieme. Disattiva quelli che non guardi e smetterà di seguirli.",
+			"copy": "{sports} sport e ogni livello di gioco, dalla NBA alla Premier League alle Olimpiadi. Disattiva quelli che salti.",
 			"numerals": [
 				"Zero",
 				"Uno",
@@ -156,34 +162,64 @@
 		},
 		"settings": {
 			"title": "Sintonizzato su di te.",
-			"copy": "Sensibilità troppo alta? Rallentala. Ami la tua squadra ma vuoi vedere la partita migliore? Aggiungi un bonus. Esci un attimo a prendere una birra? Standby Stream tiene qualcosa sullo schermo.",
+			"copy": "Decidi quanto è esigente ArenaSwap, poi lascia che sia lui a cambiare.",
 			"items": [
 				{
 					"name": "Sensibilità (1–{levels})",
-					"copy": "Quanto deve essere ampio lo scarto di punteggio prima che ArenaSwap cambi."
+					"copy": "Quanto deve essere ampio il divario di punteggio perché ArenaSwap cambi."
 				},
 				{
 					"name": "Tempo di attesa tra i cambi",
-					"copy": "Tempo minimo tra un cambio e l'altro. Blocca i cambi rapidi tra schede."
+					"copy": "Il tempo minimo tra un cambio e l'altro, così non ti sposta mai nel bel mezzo di un'azione."
 				},
 				{
 					"name": "Ritardo di cambio",
-					"copy": "Aspetta prima di cambiare, per quando il tuo stream è in ritardo rispetto ai dati."
+					"copy": "Aspetta prima di cambiare quando il tuo stream è in ritardo rispetto al punteggio live."
 				},
 				{
-					"name": "Bonus squadra preferita",
+					"name": "Boost squadra preferita",
 					"copy": "Punti extra per ogni partita in cui giocano le tue squadre."
 				},
 				{
-					"name": "Standby Stream",
-					"copy": "Quando ogni partita dal vivo si calma, ArenaSwap ti parcheggia su una scheda di riserva a tua scelta."
+					"name": "Boost partita",
+					"copy": "Alza a mano il PowerScore di una partita per tenerla sullo schermo."
 				},
 				{
-					"name": "Boost partita",
-					"copy": "Alza a mano il PowerScore di una partita per tenerla sullo schermo più a lungo."
+					"name": "Notifiche di cambio",
+					"copy": "Una notifica del browser ogni volta che ArenaSwap ti sposta."
 				}
 			],
 			"levelOf": "Livello {level} di {levels}"
+		},
+		"standby": {
+			"title": "Niente di emozionante? Ci pensiamo noi.",
+			"copy": "Quando ogni partita scende sotto il PowerScore che hai impostato, ArenaSwap passa a una scheda a tua scelta, come un pre-partita o un feed di highlight.",
+			"threshold": "Standby sotto {score}",
+			"onStandby": "Sulla tua scheda di standby",
+			"backToGame": "Torna alla partita",
+			"label": "Tre partite scendono sotto la linea di Standby Stream. ArenaSwap passa alla tua scheda di standby, poi torna alla partita che la supera."
+		},
+		"free": {
+			"title": "Gratis. Privato. Aperto.",
+			"items": [
+				{
+					"title": "Niente a cui iscriversi.",
+					"copy": "Nessun account, nessun login, nessuna pubblicità."
+				},
+				{
+					"title": "Le tue impostazioni restano tue.",
+					"copy": "Nessun tracciamento. Ciò che guardi non lascia mai il tuo browser."
+				},
+				{
+					"title": "Non abbiamo niente da nascondere.",
+					"copy": "ArenaSwap è gratuito e open source. Leggi ogni riga {link}."
+				}
+			],
+			"githubLink": "su GitHub"
+		},
+		"closing": {
+			"title": "La migliore partita di stasera ti aspetta.",
+			"copy": "Aggiungi ArenaSwap, apri i tuoi stream e lascia che la partita migliore ti trovi."
 		}
 	},
 	"faq": {
@@ -333,14 +369,14 @@
 		"heroTaglineSuffix": ".",
 		"heroRestingToken": "partita",
 		"heroRestingSuffix": ".",
-		"heroSub": "PowerScore trasforma qualsiasi partita dal vivo in un punteggio di emozione da 0 a 100, aggiornato mentre la partita procede. È lo stesso motore che ArenaSwap usa per scegliere cosa guardare dopo, e si installa da solo.",
+		"heroSub": "PowerScore valuta da 0 a 100 quanto è emozionante qualsiasi partita dal vivo e tiene il passo mentre la partita avanza. Installalo da npm e assegna un punteggio alle partite nel tuo progetto.",
 		"viewOnNpm": "Vedi su npm",
 		"sourceOnGithub": "Codice sorgente su GitHub",
-		"installHeading": "Installazione con un comando",
+		"installHeading": "Installazione con un comando.",
 		"copy": "Copia",
 		"copied": "Copiato",
-		"signalsHeading": "Cosa compone il numero",
-		"signalsSub": "Cinque segnali si sommano in un punteggio da 0 a {max}. Una partita equilibrata sale molto, una goleada resta bassa.",
+		"signalsHeading": "Cosa compone il numero.",
+		"signalsSub": "Cinque segnali si sommano in un punteggio da 0 a {max}. Una partita equilibrata sale, una partita a senso unico resta bassa.",
 		"signalMax": "{max} max",
 		"signals": [
 			{
@@ -364,19 +400,19 @@
 				"copy": "Una squadra in svantaggio che risale fa salire il punteggio."
 			}
 		],
-		"liveHeading": "PowerScore dal vivo",
+		"liveHeading": "PowerScore dal vivo.",
 		"liveLoading": "Caricamento dei PowerScore dal vivo",
 		"liveError": "Al momento non è possibile caricare i dati delle partite dal vivo.",
 		"liveNow": "Dal vivo",
 		"machineHeading": "Guardalo funzionare.",
-		"machineSub": "ArenaSwap valuta ogni partita dal vivo mentre accade, poi mette la tua scheda su quella migliore. Ecco come funziona.",
+		"machineSub": "Ogni partita dal vivo riceve un PowerScore e la tua scheda atterra su quella migliore.",
 		"machineWatch": "Guarda",
 		"machineWatchCopy": "Ogni partita dal vivo di ogni campionato che segui, tutte insieme.",
 		"machineScore": "Valuta",
 		"machineScoreCopy": "PowerScore valuta dal vivo quanto è emozionante ogni partita.",
 		"machineSwitch": "Cambia",
 		"machineSwitchCopy": "La tua scheda salta automaticamente sulla partita migliore.",
-		"liveEmptyTitle": "Nessuna partita dal vivo al momento",
+		"liveEmptyTitle": "Nessuna partita dal vivo al momento.",
 		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "ArenaSwap che guarda e valuta ogni partita dal vivo",
 		"machineNowWatching": "In visione ora",

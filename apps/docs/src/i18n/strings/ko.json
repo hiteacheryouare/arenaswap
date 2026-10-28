@@ -105,7 +105,7 @@
 		"hero": {
 			"titleLine1": "그 순간을,",
 			"titleLine2": "놓치지 마세요.",
-			"lede": "ArenaSwap은 {leagues}개 리그의 모든 라이브 경기를 지켜보다가 최소 12초마다 가장 흥미진진한 경기로 브라우저 탭을 자동으로 전환해요.",
+			"lede": "ArenaSwap은 {leagues}개 리그의 모든 라이브 경기를 지켜보다가 최소 12초마다 가장 흥미진진한 경기로 브라우저 탭을 전환해요.",
 			"teamStrip": "{leagues}개 리그의 모든 팀을 지원해요. 당신의 팀도 물론이죠.",
 			"captionSwitched": "ArenaSwap이 {from}에서 {to}(으)로 전환했어요.",
 			"captionWatching": "지금 {game}을(를) 시청 중이에요. 지금 가장 볼만한 경기예요.",
@@ -116,30 +116,36 @@
 		"tabs": {
 			"titleLine1": "한 번만 설정하면.",
 			"titleLine2": "전부 다 볼 수 있어요.",
-			"copy": "스트림을 열고 경기에 연결한 다음, 자리를 비워도 괜찮아요. 그 이후의 모든 전환은 ArenaSwap이 처리해요.",
 			"steps": [
 				{
 					"title": "스트림을 여세요.",
-					"copy": "보고 싶은 경기를 각각 다른 브라우저 탭으로 여세요. 브라우저에서 실행되는 스트리밍 서비스라면 무엇이든 ArenaSwap과 함께 사용할 수 있어요."
+					"copy": "경기를 각각 다른 브라우저 탭에서 여세요. 브라우저에서 재생되는 스트림이라면 뭐든 괜찮아요."
 				},
 				{
 					"title": "각 탭을 연결하세요.",
-					"copy": "확장 프로그램을 열고, 목록에서 각 경기를 찾아, 드롭다운 하나로 올바른 탭에 연결하세요."
+					"copy": "목록에서 경기를 고르고 드롭다운 하나로 탭과 연결하세요."
 				},
 				{
 					"title": "최고의 경기가 당신을 찾아와요.",
-					"copy": "ArenaSwap이 모든 라이브 경기를 채점하고 가장 흥미진진한 경기로 자동 전환해요. 당신은 그냥 보기만 하면 돼요."
+					"copy": "그냥 자리를 뜨세요. ArenaSwap이 가장 흥미진진한 경기로 옮겨 주고 나머지는 음소거해요."
 				}
 			]
 		},
 		"charts": {
 			"title": "이유를, 매번 확인하세요.",
-			"copy": "다섯 가지 시그널이 더해져 각 점수가 완성돼요. 어떤 경기든 열어보면 세부 내역이 있고, PowerScore 추세, 점수 기록, 점수차 차트도 함께 확인할 수 있어요."
+			"copy": "다섯 가지 신호가 모여 PowerScore가 돼요. 경기를 열면 전체 내역, 추이, 점수 차 차트를 볼 수 있어요."
+		},
+		"multiview": {
+			"title": "고르기 어렵다면? 전부 보세요.",
+			"copy": "흥미진진한 경기가 둘 이상이면 Multiview가 한 화면에 모두 보여줘요.",
+			"browsers": "Chrome과 Edge에서 쓸 수 있어요.",
+			"label": "흥미진진한 경기 네 개가 한 화면에 있고, 가장 큰 경기에서 소리가 나는 Multiview.",
+			"soundOn": "소리 켜짐"
 		},
 		"leagues": {
 			"titleLine1": "라이브라면,",
 			"titleLine2": "다 챙겨드려요.",
-			"copy": "{sports}개 종목. 모든 레벨의 경기. ArenaSwap이 이 모든 걸 동시에 지켜봐요. 안 보는 종목은 꺼두면 더 이상 추적하지 않아요.",
+			"copy": "{sports}개 종목, 모든 레벨의 경기. NBA부터 프리미어리그, 올림픽까지요. 안 보는 종목은 꺼두세요.",
 			"numerals": [
 				"영",
 				"한",
@@ -156,34 +162,64 @@
 		},
 		"settings": {
 			"title": "당신에게 맞춰 조율돼요.",
-			"copy": "민감도가 너무 높나요? 낮춰보세요. 우리 팀은 좋아하지만 제일 재미있는 경기도 보고 싶다면? 보너스를 추가하세요. 잠깐 맥주 사러 나간다면? Standby Stream이 화면에 뭔가를 계속 띄워둬요.",
+			"copy": "ArenaSwap이 얼마나 까다로울지 정하고, 전환은 맡겨두세요.",
 			"items": [
 				{
 					"name": "민감도 (1~{levels})",
-					"copy": "ArenaSwap이 전환하기 전에 필요한 점수 차이의 크기예요."
+					"copy": "ArenaSwap이 전환하기까지 필요한 점수 차이의 크기예요."
 				},
 				{
 					"name": "전환 쿨다운",
-					"copy": "전환 사이의 최소 시간이에요. 탭이 빠르게 왔다갔다 하는 걸 막아줘요."
+					"copy": "전환 사이의 최소 간격이라서 공격 한창일 때 화면이 바뀌는 일이 없어요."
 				},
 				{
 					"name": "전환 지연",
-					"copy": "스트림이 데이터보다 늦을 때를 위해, 전환 전에 잠시 기다려요."
+					"copy": "스트림이 실시간 점수보다 늦을 때 전환을 잠시 기다려요."
 				},
 				{
-					"name": "응원팀 보너스",
-					"copy": "우리 팀이 출전하는 경기에 추가 점수를 줘요."
-				},
-				{
-					"name": "Standby Stream",
-					"copy": "모든 라이브 경기가 잠잠해지면, 직접 고른 대체 탭에 머물게 해줘요."
+					"name": "응원팀 부스트",
+					"copy": "응원팀이 뛰는 경기에 추가 점수를 줘요."
 				},
 				{
 					"name": "게임 부스트",
-					"copy": "특정 경기의 PowerScore를 직접 올려서 화면에 더 오래 유지시켜요."
+					"copy": "원하는 경기의 PowerScore를 직접 올려서 계속 화면에 띄워 두세요."
+				},
+				{
+					"name": "전환 알림",
+					"copy": "ArenaSwap이 탭을 옮길 때마다 브라우저 알림을 보내요."
 				}
 			],
 			"levelOf": "레벨 {level} / {levels}"
+		},
+		"standby": {
+			"title": "볼 만한 경기가 없나요? 저희가 챙길게요.",
+			"copy": "모든 경기가 설정한 PowerScore 아래로 떨어지면 ArenaSwap이 경기 전 방송이나 하이라이트 피드 같은 지정한 탭으로 전환해요.",
+			"threshold": "{score} 미만이면 Standby",
+			"onStandby": "대기 탭 보는 중",
+			"backToGame": "경기로 돌아가기",
+			"label": "경기 세 개가 Standby Stream 기준선 아래로 떨어져요. ArenaSwap이 대기 탭으로 이동했다가, 기준선을 넘어서는 경기로 다시 돌아가요."
+		},
+		"free": {
+			"title": "무료. 비공개. 오픈소스.",
+			"items": [
+				{
+					"title": "가입할 필요 없어요.",
+					"copy": "계정도, 로그인도, 광고도 없어요."
+				},
+				{
+					"title": "설정은 오롯이 당신 거예요.",
+					"copy": "추적은 없어요. 무엇을 보는지는 브라우저 밖으로 나가지 않아요."
+				},
+				{
+					"title": "숨길 게 없어요.",
+					"copy": "ArenaSwap은 무료 오픈소스예요. 모든 코드를 {link} 읽어볼 수 있어요."
+				}
+			],
+			"githubLink": "GitHub에서"
+		},
+		"closing": {
+			"title": "오늘 밤 최고의 경기가 기다리고 있어요.",
+			"copy": "ArenaSwap을 추가하고 스트림을 열면, 최고의 경기가 당신을 찾아와요."
 		}
 	},
 	"faq": {
@@ -333,14 +369,14 @@
 		"heroTaglineSuffix": " 점수 뒤에 숨은 점수.",
 		"heroRestingToken": "",
 		"heroRestingSuffix": "점수 뒤에 숨은 점수.",
-		"heroSub": "PowerScore는 모든 라이브 경기를 0에서 100까지의 흥미도 점수로 바꾸고, 경기가 진행되는 동안 계속 업데이트해요. ArenaSwap이 다음에 볼 경기를 고를 때 쓰는 것과 같은 엔진이며, 단독으로도 설치할 수 있어요.",
+		"heroSub": "PowerScore는 모든 라이브 경기를 얼마나 흥미진진한지 0에서 100까지로 평가하고, 경기가 흘러가는 대로 따라가요. npm으로 설치해서 내 프로젝트에서 경기를 채점해 보세요.",
 		"viewOnNpm": "npm에서 보기",
 		"sourceOnGithub": "GitHub 소스 코드",
-		"installHeading": "명령어 하나로 설치",
+		"installHeading": "명령어 하나로 설치.",
 		"copy": "복사",
 		"copied": "복사됨",
-		"signalsHeading": "숫자를 구성하는 요소",
-		"signalsSub": "다섯 가지 시그널이 쌓여 0에서 {max}까지의 점수가 돼요. 접전인 경기는 높이 올라가고 일방적인 경기는 낮게 유지돼요.",
+		"signalsHeading": "숫자를 구성하는 요소.",
+		"signalsSub": "다섯 가지 신호가 쌓여 0부터 {max}까지의 점수가 돼요. 접전은 올라가고, 일방적인 경기는 낮게 머물러요.",
 		"signalMax": "최대 {max}",
 		"signals": [
 			{
@@ -364,19 +400,19 @@
 				"copy": "뒤처지던 팀이 따라잡으면 점수가 올라가요."
 			}
 		],
-		"liveHeading": "라이브 PowerScore",
+		"liveHeading": "라이브 PowerScore.",
 		"liveLoading": "라이브 PowerScore 불러오는 중",
 		"liveError": "지금은 라이브 경기 데이터를 불러올 수 없어요.",
 		"liveNow": "라이브",
 		"machineHeading": "작동하는 모습을 보세요.",
-		"machineSub": "ArenaSwap은 모든 라이브 경기를 실시간으로 채점한 다음, 탭을 가장 좋은 경기로 옮겨줘요. 어떤 모습인지 보여드릴게요.",
+		"machineSub": "모든 라이브 경기에 PowerScore가 매겨지고, 탭은 가장 좋은 경기에 도착해요.",
 		"machineWatch": "관찰",
 		"machineWatchCopy": "팔로우 중인 모든 리그의 모든 라이브 경기를, 동시에.",
 		"machineScore": "채점",
 		"machineScoreCopy": "PowerScore가 각 경기가 얼마나 흥미진진한지 실시간으로 평가해요.",
 		"machineSwitch": "전환",
 		"machineSwitchCopy": "탭이 자동으로 가장 좋은 경기로 넘어가요.",
-		"liveEmptyTitle": "지금은 라이브 경기가 없어요",
+		"liveEmptyTitle": "지금은 라이브 경기가 없어요.",
 		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "모든 라이브 경기를 지켜보고 채점하는 ArenaSwap",
 		"machineNowWatching": "지금 보는 중",

@@ -4,37 +4,36 @@
 @use '@arenaswap/ui/src/motion' as m;
 @layer custom {
 
-	// For dates, outlines and other small secondary text. #6e7681 sat at 4.1:1 on the page, just under
-	// the 4.5:1 small text needs; this clears it at 5.1:1 and still reads a step quieter than muted.
-	// The light side is the palette's own faint ink, 6.0:1 on white.
-	$text-subtle: light-dark(#5a6472, #7d8590);
+	// For dates, outlines and other small secondary text: 5.6:1 on black and 5.3:1 on white, a step
+	// quieter than muted.
+	$text-subtle: light-dark(#6b6b6b, #8a8a8a);
 
 	.page-head {
 		// Clears the fixed header with room to breathe, on a page whose first element is a heading.
-		padding: 7rem 0 0;
+		padding: calc(64px + clamp(3.5rem, 7vw, 5.5rem)) 0 0;
 	}
 
 	.page-title {
-		font-size: clamp(2.1rem, 4.6vw, 3rem);
+		font-size: clamp(2.6rem, 5vw, 4.5rem);
 		font-weight: 700;
-		letter-spacing: -0.045em;
-		line-height: 1.02;
+		letter-spacing: -0.042em;
+		line-height: 0.98;
 		margin: 0;
 	}
 
 	.page-lede {
-		font-size: 1.05rem;
+		font-size: clamp(1.0625rem, 1.3vw, 1.2rem);
 		color: var(--color-muted);
-		line-height: 1.7;
-		margin: 0.9rem 0 0;
-		max-width: 62ch;
+		line-height: 1.6;
+		margin: 1.25rem 0 0;
+		max-width: 56ch;
 	}
 
 	.reading-shell {
 		display: grid;
 		grid-template-columns: 13rem minmax(0, 1fr);
-		gap: 3rem;
-		padding: 2.5rem 0 5rem;
+		gap: clamp(2.5rem, 5vw, 5rem);
+		padding: clamp(2.5rem, 5vw, 4rem) 0 clamp(5rem, 9vw, 8rem);
 		align-items: start;
 	}
 
@@ -398,10 +397,10 @@
 	}
 
 	.release-title {
-		font-size: clamp(2.1rem, 5vw, 3.35rem);
+		font-size: clamp(2.6rem, 5vw, 4.5rem);
 		font-weight: 700;
-		letter-spacing: -0.045em;
-		line-height: 1.04;
+		letter-spacing: -0.042em;
+		line-height: 0.98;
 		margin: 1.1rem auto 0;
 		max-width: 24ch;
 	}
@@ -655,10 +654,10 @@
 		margin-top: 0.5rem;
 		// Without the side nav the list would run the width of the container, leaving each rule about
 		// twice as long as the answer it sits under.
-		max-width: 76ch;
+		max-width: 52rem;
 
 		--as-accordion-padding-x: 0;
-		--as-accordion-padding-y: 1rem;
+		--as-accordion-padding-y: 1.5rem;
 		--as-accordion-body-padding-y: 0;
 		--as-accordion-bg: transparent;
 		--as-accordion-btn-bg: transparent;
@@ -674,9 +673,10 @@
 		> summary {
 			align-items: baseline;
 			gap: 0.75rem;
-			font-size: 1rem;
-			font-weight: 600;
-			letter-spacing: -0.015em;
+			font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+			font-weight: 700;
+			letter-spacing: -0.02em;
+			line-height: 1.25;
 			color: var(--color-text);
 			box-shadow: none;
 		}
@@ -688,11 +688,11 @@
 		}
 
 		> p {
-			font-size: 0.925rem;
+			font-size: 1.0625rem;
 			color: var(--color-muted);
 			line-height: 1.7;
-			margin: 0 0 1.15rem;
-			max-width: 74ch;
+			margin: 0 0 1.75rem;
+			max-width: 44rem;
 		}
 	}
 

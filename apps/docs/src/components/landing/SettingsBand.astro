@@ -9,9 +9,9 @@ import {
 } from '@arenaswap/core/constants';
 import { currentLocale, useTranslations } from '../../i18n/ui';
 
-// Individual settings rather than the six groups they live in: a group name tells you where a
-// control is filed, and what people want to know is what the control does. The panel beside them
-// shows the shipped defaults, imported so they cannot go stale the next time one is retuned.
+// Individual settings rather than the groups they live in: a group name tells you where a control is
+// filed, and what people want to know is what the control does. The panel beside them shows the
+// shipped defaults, imported so they cannot go stale the next time one is retuned.
 
 interface Setting {
 	name: string;
@@ -25,20 +25,19 @@ const settings = t.list<Setting>('home.settings.items');
 ---
 <section class='band' id='settings'>
 	<div class='container'>
-		<div class='band-split'>
-			<div>
-				<h2 class='display-md'>{t('home.settings.title')}</h2>
-				<p class='band-copy' style='margin-top:1.25rem'>{t('home.settings.copy')}</p>
-
-				<div class='settings-groups'>
-					{settings.map(setting => (
-						<div class='settings-group'>
-							<h3>{setting.name.split('{levels}').join(String(sensitivityLevels))}</h3>
-							<p>{setting.copy}</p>
-						</div>
-					))}
-				</div>
-			</div>
+		<div class='band-head'>
+			<h2 class='display-md'>{t('home.settings.title')}</h2>
+			<p class='band-copy'>{t('home.settings.copy')}</p>
+		</div>
+		<div class='settings-layout'>
+			<dl class='settings-groups'>
+				{settings.map(setting => (
+					<div class='settings-group'>
+						<dt>{setting.name.split('{levels}').join(String(sensitivityLevels))}</dt>
+						<dd>{setting.copy}</dd>
+					</div>
+				))}
+			</dl>
 
 			<!-- The panel is a piece of the extension rather than a picture of one, so its labels come
 			     from the same `ui` namespace the demo popups read: what it shows is what the installed

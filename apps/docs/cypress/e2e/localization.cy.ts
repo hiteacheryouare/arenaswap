@@ -144,7 +144,7 @@ describe('the language switcher', () => {
 	it('is themed for a dark page rather than left on Bootstrap defaults', () => {
 		cy.visit('/', { onBeforeLoad: pinDarkTheme });
 		cy.get('.lang-switch-trigger').click();
-		cy.get('.lang-switch-menu').should('have.css', 'background-color', 'rgb(22, 27, 34)');
+		cy.get('.lang-switch-menu').should('have.css', 'background-color', 'rgb(13, 13, 13)');
 		cy.get('.lang-switch-menu .menu-item.active').should('have.css', 'color', 'rgb(13, 17, 23)');
 	});
 

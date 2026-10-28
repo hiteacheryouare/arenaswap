@@ -5,11 +5,11 @@ import { currentLocale, useTranslations, uiStrings } from '../../i18n/ui';
 const locale = currentLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 ---
-<section class='band' id='powerscore'>
+<section class='band band-centred' id='powerscore'>
 	<div class='container'>
-		<div style='max-width:52ch'>
+		<div class='band-head'>
 			<h2 class='display-md'>{t('home.charts.title')}</h2>
-			<p class='band-copy' style='margin-top:0.85rem;max-width:58ch'>{t('home.charts.copy')}</p>
+			<p class='band-copy'>{t('home.charts.copy')}</p>
 		</div>
 		<DetailCharts client:visible strings={uiStrings(locale)} />
 	</div>

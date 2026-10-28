@@ -105,7 +105,7 @@
 		"hero": {
 			"titleLine1": "不再錯過",
 			"titleLine2": "精彩瞬間。",
-			"lede": "ArenaSwap 會監控 {leagues} 個聯盟的所有直播比賽，最快每 12 秒就自動把你的瀏覽器分頁切換到最精彩的比賽。",
+			"lede": "ArenaSwap 會監控 {leagues} 個聯盟的所有直播比賽，最快每 12 秒就自動把你的瀏覽器分頁切換到最精彩的一場。",
 			"teamStrip": "支援 {leagues} 個聯盟裡的每一支球隊，當然也包括你支持的那一支。",
 			"captionSwitched": "ArenaSwap 已經把你從 {from} 切換到 {to}。",
 			"captionWatching": "你正在觀看 {game}，目前最值得看的比賽。",
@@ -116,30 +116,36 @@
 		"tabs": {
 			"titleLine1": "只要設定一次。",
 			"titleLine2": "就能看遍所有比賽。",
-			"copy": "打開你的串流、指派給比賽，然後就可以放心離開。從此之後，每一次切換都交給 ArenaSwap 處理。",
 			"steps": [
 				{
 					"title": "打開你的串流。",
-					"copy": "在不同的瀏覽器分頁中打開你想看的比賽。任何能在瀏覽器裡執行的串流服務，都能搭配 ArenaSwap 使用。"
+					"copy": "在不同的瀏覽器分頁中打開你的比賽。只要能在瀏覽器中播放的串流都可以。"
 				},
 				{
 					"title": "指派每個分頁。",
-					"copy": "打開擴充功能，在清單中找到每場比賽，用一個下拉選單把它連結到正確的分頁。"
+					"copy": "從清單中選擇比賽，用一個下拉選單把它和對應的分頁連結起來。"
 				},
 				{
 					"title": "最精彩的比賽會自己找上你。",
-					"copy": "ArenaSwap 會為每場直播比賽評分，並自動切換到最精彩的一場。你只需要看就好。"
+					"copy": "放心走開。ArenaSwap 會帶你切到最精彩的比賽，並把其餘分頁靜音。"
 				}
 			]
 		},
 		"charts": {
 			"title": "每一次都能看到原因。",
-			"copy": "五個訊號加總成每一個分數。打開任何一場比賽，都能看到詳細的分解，還有 PowerScore 走勢、比分紀錄和分差圖表。"
+			"copy": "五個訊號組成每一個 PowerScore。打開任一場比賽，就能看到完整明細、變化趨勢和分差圖表。"
+		},
+		"multiview": {
+			"title": "選不出來？那就全部都看。",
+			"copy": "當你的兩場或更多比賽同時精彩起來，Multiview 會把它們放到同一個螢幕上。",
+			"browsers": "支援 Chrome 和 Edge。",
+			"label": "Multiview 在同一個螢幕上顯示四場精彩比賽，最大的一場開著聲音。",
+			"soundOn": "聲音已開"
 		},
 		"leagues": {
 			"titleLine1": "只要是直播，",
 			"titleLine2": "就都涵蓋在內。",
-			"copy": "{sports} 種運動，涵蓋所有等級的比賽。ArenaSwap 會同時監控這一切。關掉你不看的項目，它就不會再追蹤。",
+			"copy": "{sports} 種運動，涵蓋所有等級的比賽，從 NBA、英超到奧運。關掉你不看的項目就好。",
 			"numerals": [
 				"零",
 				"一",
@@ -156,34 +162,64 @@
 		},
 		"settings": {
 			"title": "為你量身調整。",
-			"copy": "靈敏度太高？調低一點。喜歡自己的球隊，但也想看最精彩的比賽？加一個加成。要出門買啤酒？Standby Stream 會讓螢幕上隨時有內容。",
+			"copy": "決定 ArenaSwap 有多挑剔，剩下的切換交給它。",
 			"items": [
 				{
 					"name": "靈敏度（1–{levels}）",
-					"copy": "ArenaSwap 切換前所需要的分數差距。"
+					"copy": "分差要多大，ArenaSwap 才會切換。"
 				},
 				{
 					"name": "切換冷卻",
-					"copy": "兩次切換之間的最短時間，避免分頁被快速反覆切換。"
+					"copy": "兩次切換之間的最短間隔，保證你不會在關鍵回合中途被切走。"
 				},
 				{
 					"name": "切換延遲",
-					"copy": "切換前先等一下，適合你的串流落後於資料時使用。"
+					"copy": "當你的串流落後於即時比分時，先等一等再切換。"
 				},
 				{
 					"name": "收藏球隊加成",
-					"copy": "為你支持球隊出賽的比賽加分。"
-				},
-				{
-					"name": "Standby Stream",
-					"copy": "當所有直播比賽都冷場時，ArenaSwap 會讓你停留在你選擇的備用分頁上。"
+					"copy": "你收藏的球隊參賽的任何比賽都會額外加分。"
 				},
 				{
 					"name": "比賽加成",
-					"copy": "手動提高某場比賽的 PowerScore，讓它在螢幕上停留更久。"
+					"copy": "手動提高任一場比賽的 PowerScore，讓它留在螢幕上。"
+				},
+				{
+					"name": "切換通知",
+					"copy": "ArenaSwap 每次幫你切換時，跳出一則瀏覽器通知。"
 				}
 			],
 			"levelOf": "第 {level} 級，共 {levels} 級"
+		},
+		"standby": {
+			"title": "沒有精彩比賽？有我們在。",
+			"copy": "當所有比賽都低於你設定的 PowerScore 時，ArenaSwap 會切換到你指定的分頁，例如賽前節目或精華串流。",
+			"threshold": "低於 {score} 時進入 Standby",
+			"onStandby": "正在你的 Standby 分頁",
+			"backToGame": "回到比賽",
+			"label": "三場比賽跌破 Standby Stream 的分數線。ArenaSwap 切到你的 Standby 分頁，接著回到升過分數線的那場比賽。"
+		},
+		"free": {
+			"title": "免費。私密。開源。",
+			"items": [
+				{
+					"title": "不用註冊。",
+					"copy": "沒有帳號，不用登入，沒有廣告。"
+				},
+				{
+					"title": "你的設定只屬於你。",
+					"copy": "沒有追蹤。你看什麼，永遠不會離開你的瀏覽器。"
+				},
+				{
+					"title": "我們沒什麼好隱瞞的。",
+					"copy": "ArenaSwap 免費且開源。每一行程式碼都可以{link}查看。"
+				}
+			],
+			"githubLink": "在 GitHub 上"
+		},
+		"closing": {
+			"title": "今晚最精彩的比賽正在等你。",
+			"copy": "加入 ArenaSwap，打開你的串流，讓最精彩的比賽來找你。"
 		}
 	},
 	"faq": {
@@ -333,14 +369,14 @@
 		"heroTaglineSuffix": "比分背後的比分。",
 		"heroRestingToken": "",
 		"heroRestingSuffix": "比分背後的比分。",
-		"heroSub": "PowerScore 會把任何一場直播比賽轉換成 0 到 100 的精彩度分數，並隨著比賽進行即時更新。這跟 ArenaSwap 用來挑選你接下來要看哪場比賽的引擎完全一樣，而且可以獨立安裝。",
+		"heroSub": "PowerScore 會依精彩程度為任何直播比賽打出 0 到 100 的分數，並隨著比賽進行即時更新。從 npm 安裝，就能在你自己的專案裡為比賽評分。",
 		"viewOnNpm": "在 npm 上查看",
 		"sourceOnGithub": "GitHub 上的原始碼",
-		"installHeading": "一個指令就能安裝",
+		"installHeading": "一個指令就能安裝。",
 		"copy": "複製",
 		"copied": "已複製",
-		"signalsHeading": "這個數字是怎麼組成的",
-		"signalsSub": "五個訊號加總成一個 0 到 {max} 的分數。膠著的比賽會衝得很高，一面倒的比賽則會維持在低分。",
+		"signalsHeading": "這個數字是怎麼組成的。",
+		"signalsSub": "五個訊號疊加成 0 到 {max} 的分數。膠著的比賽分數攀升，一面倒的比賽分數偏低。",
 		"signalMax": "最高 {max}",
 		"signals": [
 			{
@@ -364,19 +400,19 @@
 				"copy": "落後的一方奮起直追，會拉高分數。"
 			}
 		],
-		"liveHeading": "即時 PowerScore",
+		"liveHeading": "即時 PowerScore。",
 		"liveLoading": "正在載入即時 PowerScore",
 		"liveError": "目前無法載入即時比賽資料。",
 		"liveNow": "直播中",
 		"machineHeading": "看看它怎麼運作。",
-		"machineSub": "ArenaSwap 會即時為每場直播比賽評分，然後把你的分頁切換到最精彩的那場。它的運作方式就是這樣。",
+		"machineSub": "每場直播比賽都有一個 PowerScore，你的分頁會落在最精彩的那場。",
 		"machineWatch": "監控",
 		"machineWatchCopy": "同時監控你關注的每個聯盟的所有直播比賽。",
 		"machineScore": "評分",
 		"machineScoreCopy": "PowerScore 會即時評估每場比賽有多精彩。",
 		"machineSwitch": "切換",
 		"machineSwitchCopy": "你的分頁會自動跳到最精彩的比賽。",
-		"liveEmptyTitle": "目前沒有直播比賽",
+		"liveEmptyTitle": "目前沒有直播比賽。",
 		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "ArenaSwap 正在監控並為每場直播比賽評分",
 		"machineNowWatching": "正在觀看",

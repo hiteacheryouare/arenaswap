@@ -1,0 +1,40 @@
+---
+import { createDefaultUserPreferences } from '@arenaswap/core/constants';
+import { currentLocale, useTranslations } from '../../i18n/ui';
+
+const t = useTranslations(currentLocale(Astro.currentLocale));
+const threshold = createDefaultUserPreferences().standbyStreamThreshold;
+
+// Three games on a 0–100 PowerScore scale, drawn into a 1000×300 box. All three sink under the
+// shipped standby line, which is when the standby tab takes over, and the leader climbs back out.
+const height = 300;
+const y = (score: number) => height - (score / 100) * height;
+const thresholdY = y(threshold);
+const games = [
+	'M0,90 C120,80 210,120 300,190 S420,268 520,275 S640,270 700,250 S820,120 1000,96',
+	'M0,135 C140,128 240,160 330,215 S460,276 560,282 S700,284 780,276 S900,264 1000,262',
+	'M0,180 C130,170 230,190 320,236 S450,284 600,288 S800,286 1000,289',
+];
+const standbyFrom = 430;
+const standbyTo = 707;
+---
+<section class='band band-centred' id='standby'>
+	<div class='container'>
+		<div class='band-head'>
+			<h2 class='display-md'>{t('home.standby.title')}</h2>
+			<p class='band-copy'>{t('home.standby.copy')}</p>
+		</div>
+		<figure class='standby-chart' role='img' aria-label={t('home.standby.label')} style={`--threshold:${thresholdY / height}`}>
+			<svg viewBox={`0 0 1000 ${height}`} preserveAspectRatio='none' aria-hidden='true'>
+				<rect class='standby-chart-band' x={standbyFrom} y='0' width={standbyTo - standbyFrom} height={height} />
+				<line class='standby-chart-line' x1='0' x2='1000' y1={thresholdY} y2={thresholdY} />
+				{games.map((path, index) => <path class={`standby-chart-game is-game-${index}`} d={path} />)}
+			</svg>
+			<figcaption aria-hidden='true' data-no-dots>
+				<span class='standby-chart-threshold'>{t('home.standby.threshold', { score: threshold })}</span>
+				<span class='standby-chart-standby' style={`left:${standbyFrom / 10}%`}>{t('home.standby.onStandby')}</span>
+				<span class='standby-chart-back'>{t('home.standby.backToGame')}</span>
+			</figcaption>
+		</figure>
+	</div>
+</section>

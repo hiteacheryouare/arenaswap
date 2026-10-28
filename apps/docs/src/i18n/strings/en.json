@@ -1,6 +1,6 @@
 {
 	"meta": {
-		"homeTitle": "ArenaSwap — Never miss the moment.",
+		"homeTitle": "ArenaSwap — Never Miss the Moment.",
 		"homeDescription": "ArenaSwap watches every live game across {leagues} leagues and switches your browser tab to the most exciting one. Free, no account, no tracking.",
 		"faqTitle": "FAQ — ArenaSwap",
 		"faqDescription": "How ArenaSwap switches tabs, which leagues and streaming services it works with, what PowerScore measures, and what it does with your data.",
@@ -47,7 +47,7 @@
 		"docsBeingWritten": "Being written.",
 		"commonQuestions": "Common questions",
 		"nearbyArticles": "Nearby articles",
-		"releasesHeading": "Release notes.",
+		"releasesHeading": "Release Notes.",
 		"releasesMetaTitle": "Release notes — ArenaSwap",
 		"releasesMetaDescription": "What shipped in each version of ArenaSwap, and what it means if you're using it.",
 		"releasesRss": "Subscribe by RSS",
@@ -103,9 +103,9 @@
 	},
 	"home": {
 		"hero": {
-			"titleLine1": "Never miss",
-			"titleLine2": "the moment.",
-			"lede": "ArenaSwap watches every live game across {leagues} leagues and automatically switches your browser tab to the most exciting one, as fast as every 12 seconds.",
+			"titleLine1": "Never Miss",
+			"titleLine2": "the Moment.",
+			"lede": "ArenaSwap watches every live game across {leagues} leagues and switches your browser tab to the most exciting one, as often as every 12 seconds.",
 			"teamStrip": "Works with every team in {leagues} leagues. Yours included.",
 			"captionSwitched": "ArenaSwap moved you off {from} and onto {to}.",
 			"captionWatching": "You are watching {game}, the best game on the board.",
@@ -114,32 +114,38 @@
 			"browserLabel": "A browser with three live games open and ArenaSwap running"
 		},
 		"tabs": {
-			"titleLine1": "Set it once.",
-			"titleLine2": "Watch everything.",
-			"copy": "Open your streams, assign them to games, walk away. ArenaSwap handles every switch from that point on.",
+			"titleLine1": "Set It Once.",
+			"titleLine2": "Watch Everything.",
 			"steps": [
 				{
 					"title": "Open your streams.",
-					"copy": "Pull up your games in separate browser tabs. Any streaming service that runs in a browser works with ArenaSwap."
+					"copy": "Pull up your games in separate browser tabs. Any stream that plays in a browser works."
 				},
 				{
 					"title": "Assign each tab.",
-					"copy": "Open the extension, find each game in the list, and link it to the right tab with a single dropdown."
+					"copy": "Pick each game from the list and link it to its tab with one dropdown."
 				},
 				{
 					"title": "The best game finds you.",
-					"copy": "ArenaSwap scores every live game and switches to the most exciting one automatically. You just watch."
+					"copy": "Walk away. ArenaSwap moves you to the most exciting game and mutes the rest."
 				}
 			]
 		},
 		"charts": {
-			"title": "See why. Every time.",
-			"copy": "Five signals add up to every score. Open any game and the breakdown is there, along with the PowerScore trend, the score history and the margin chart."
+			"title": "See Why. Every Time.",
+			"copy": "Five signals add up to every PowerScore. Open any game for the full breakdown, the trend and the margin chart."
+		},
+		"multiview": {
+			"title": "Can't Pick? Watch Them All.",
+			"copy": "When two or more of your games get exciting, Multiview puts them all on one screen.",
+			"browsers": "On Chrome and Edge.",
+			"label": "Multiview with four exciting games on one screen, and the sound on the biggest one.",
+			"soundOn": "Sound on"
 		},
 		"leagues": {
-			"titleLine1": "If it's live,",
-			"titleLine2": "it's covered.",
-			"copy": "{sports} sports. Every level of play. ArenaSwap monitors them all at once. Turn off the ones you do not watch and it stops tracking them.",
+			"titleLine1": "If It's Live,",
+			"titleLine2": "It's Covered.",
+			"copy": "{sports} sports and every level of play, from the NBA to the Premier League to the Olympics. Turn off the ones you skip.",
 			"numerals": [
 				"No",
 				"One",
@@ -155,35 +161,65 @@
 			]
 		},
 		"settings": {
-			"title": "Tuned in to you.",
-			"copy": "Sensitivity too high? Slow it down. Love your team but want the best game? Add a bonus. Going on a beer run? Standby Stream keeps something on screen.",
+			"title": "Tuned In to You.",
+			"copy": "Decide how picky ArenaSwap is, then let it do the flipping.",
 			"items": [
 				{
 					"name": "Sensitivity (1–{levels})",
-					"copy": "How large a score gap needs to be before ArenaSwap switches."
+					"copy": "How big a score gap has to be before ArenaSwap switches."
 				},
 				{
 					"name": "Switch cooldown",
-					"copy": "Minimum time between switches. Stops rapid tab-flipping."
+					"copy": "The least time between switches, so you never get flipped mid-possession."
 				},
 				{
 					"name": "Switch delay",
-					"copy": "Waits before switching, for when your stream runs behind the data."
+					"copy": "Waits before switching when your stream runs behind the live score."
 				},
 				{
-					"name": "Favorite team bonus",
+					"name": "Favorite team boost",
 					"copy": "Extra points for any game your teams are playing in."
 				},
 				{
-					"name": "Standby Stream",
-					"copy": "When every live game goes quiet, ArenaSwap parks you on a fallback tab you pick."
+					"name": "Game boost",
+					"copy": "Raise any game's PowerScore by hand to keep it on screen."
 				},
 				{
-					"name": "Game boost",
-					"copy": "Raise any game's PowerScore by hand to keep it on screen longer."
+					"name": "Switch notifications",
+					"copy": "A browser notification each time ArenaSwap moves you."
 				}
 			],
 			"levelOf": "Level {level} of {levels}"
+		},
+		"standby": {
+			"title": "Nothing Exciting? We've Got You Covered.",
+			"copy": "When every game drops below the PowerScore you set, ArenaSwap switches to a tab you choose, like a pregame show or a highlights feed.",
+			"threshold": "Standby below {score}",
+			"onStandby": "On your standby tab",
+			"backToGame": "Back to the game",
+			"label": "Three games drop below the Standby Stream line. ArenaSwap moves to your standby tab, then back to the game that climbs over it."
+		},
+		"free": {
+			"title": "Free. Private. Open.",
+			"items": [
+				{
+					"title": "Nothing to sign up for.",
+					"copy": "No account, no login, no ads."
+				},
+				{
+					"title": "Your settings stay yours.",
+					"copy": "No tracking. What you watch never leaves your browser."
+				},
+				{
+					"title": "We have nothing to hide.",
+					"copy": "ArenaSwap is free and open source. Read every line {link}."
+				}
+			],
+			"githubLink": "on GitHub"
+		},
+		"closing": {
+			"title": "Tonight's Best Game Is Waiting.",
+			"copy": "Add ArenaSwap, open your streams, and let the best game find you."
 		}
 	},
 	"faq": {
@@ -226,8 +262,8 @@
 		]
 	},
 	"notFound": {
-		"title": "This one isn't on the schedule.",
-		"sub": "The page you're after was traded, retired, or never suited up in the first place.",
+		"title": "This One Isn't on the Schedule.",
+		"sub": "The page you're after was traded, retired, or never suited up.",
 		"requested": "Requested",
 		"backHome": "Back home",
 		"readReleases": "Read the release notes"
@@ -329,18 +365,18 @@
 	},
 	"powerscore": {
 		"heroName": "PowerScore.",
-		"heroTaglinePrefix": "The score behind every ",
-		"heroTaglineSuffix": " score.",
-		"heroRestingToken": "score",
+		"heroTaglinePrefix": "The Score Behind Every ",
+		"heroTaglineSuffix": " Score.",
+		"heroRestingToken": "Score",
 		"heroRestingSuffix": ".",
-		"heroSub": "PowerScore turns any live game into an excitement score from 0 to 100, updated as the game moves. It is the same engine ArenaSwap uses to pick what you watch next, and it installs on its own.",
+		"heroSub": "PowerScore rates any live game from 0 to 100 for how exciting it is, and keeps up as the game moves. Install it from npm and score games in your own project.",
 		"viewOnNpm": "View on npm",
 		"sourceOnGithub": "Source on GitHub",
-		"installHeading": "Install in one command",
+		"installHeading": "Install in One Command.",
 		"copy": "Copy",
 		"copied": "Copied",
-		"signalsHeading": "What goes into the number",
-		"signalsSub": "Five signals stack into a score from 0 to {max}. A close game climbs high, a blowout stays low.",
+		"signalsHeading": "What Goes Into the Number.",
+		"signalsSub": "Five signals stack into a score from 0 to {max}. A close game climbs, a blowout stays low.",
 		"signalMax": "{max} max",
 		"signals": [
 			{
@@ -364,19 +400,19 @@
 				"copy": "A trailing team clawing back raises the score."
 			}
 		],
-		"liveHeading": "Live PowerScores",
+		"liveHeading": "Live PowerScores.",
 		"liveLoading": "Loading live PowerScores",
 		"liveError": "Unable to load live game data right now.",
 		"liveNow": "Live",
-		"machineHeading": "Watch it work.",
-		"machineSub": "ArenaSwap scores every live game as it happens — then puts your tab on the best one. Here's what that looks like.",
+		"machineHeading": "Watch It Work.",
+		"machineSub": "Every live game gets a PowerScore, and your tab lands on the best one.",
 		"machineWatch": "Watch",
 		"machineWatchCopy": "Every live game in every league you follow, at once.",
 		"machineScore": "Score",
 		"machineScoreCopy": "PowerScore rates how exciting each game is, live.",
 		"machineSwitch": "Switch",
 		"machineSwitchCopy": "Your tab jumps to the best game automatically.",
-		"liveEmptyTitle": "No live games right now",
+		"liveEmptyTitle": "No Live Games Right Now.",
 		"liveScoreBadge": "PowerScore {score} / 100",
 		"machineAlt": "ArenaSwap watching and scoring every live game",
 		"machineNowWatching": "Now watching",
