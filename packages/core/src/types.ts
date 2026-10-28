@@ -567,6 +567,8 @@ export interface MultiviewFrameStatusMessage {
 	name: string;
 	firstLevel: boolean;
 	playing: boolean;
+	// Stopped by the player or the viewer, as opposed to waiting on data with its clock stuck.
+	paused: boolean;
 	time: number;
 }
 
