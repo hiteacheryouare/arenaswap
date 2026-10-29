@@ -1385,7 +1385,7 @@
 	},
 	"contentAwareSwitching": {
 		"label": "Wechsel bei Spielpause",
-		"explainer": "Hält einen Wechsel zurück, bis im Spiel, das du schaust, eine Spielpause eintritt, zum Beispiel das Ende eines At-Bats, ein Pfiff oder das Ende eines Spielzugs. Die Wechselverzögerung läuft nach der Pause trotzdem noch herunter."
+		"explainer": "Hält einen Wechsel zurück, bis im Spiel, das du schaust, eine Spielpause eintritt, zum Beispiel das Ende eines At-Bats, ein Pfiff oder das Ende eines Spielzugs. Beim Warten kann dir ein wichtiger Moment im Spiel entgehen, zu dem gleich gewechselt wird. Die Wechselverzögerung läuft nach der Pause trotzdem noch herunter."
 	},
 	"sensitivity": {
 		"label": "Wechselempfindlichkeit",

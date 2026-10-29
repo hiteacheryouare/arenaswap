@@ -1385,7 +1385,7 @@
 	},
 	"contentAwareSwitching": {
 		"label": "Content-aware switching",
-		"explainer": "Holds a switch until the game you're watching hits a break in play, like the end of an at-bat, a whistle or the end of a play. Switch delay still counts down after the break."
+		"explainer": "Holds a switch until the game you're watching hits a break in play, like the end of an at-bat, a whistle or the end of a play. While it waits, you may miss a key moment in the game it's switching to. Switch delay still counts down after the break."
 	},
 	"sensitivity": {
 		"label": "Switch sensitivity",

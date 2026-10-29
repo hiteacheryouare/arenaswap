@@ -1385,7 +1385,7 @@
 	},
 	"contentAwareSwitching": {
 		"label": "Cambio nelle pause",
-		"explainer": "Trattiene un cambio finché la partita che stai guardando non arriva a una pausa, come la fine di un turno di battuta, un fischio o la fine di un'azione. L'opzione Ritardo di cambio continua il conto alla rovescia dopo la pausa."
+		"explainer": "Trattiene un cambio finché la partita che stai guardando non arriva a una pausa, come la fine di un turno di battuta, un fischio o la fine di un'azione. Durante l'attesa potresti perderti un momento chiave della partita a cui stai per passare. L'opzione Ritardo di cambio continua il conto alla rovescia dopo la pausa."
 	},
 	"sensitivity": {
 		"label": "Sensibilità di cambio",

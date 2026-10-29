@@ -1385,7 +1385,7 @@
 	},
 	"contentAwareSwitching": {
 		"label": "Troca nas pausas",
-		"explainer": "Segura uma troca até o jogo que você está assistindo chegar a uma pausa, como o fim de um turno ao bastão, um apito ou o fim de uma jogada. A opção Atraso de troca continua contando depois da pausa."
+		"explainer": "Segura uma troca até o jogo que você está assistindo chegar a uma pausa, como o fim de um turno ao bastão, um apito ou o fim de uma jogada. Enquanto espera, você pode perder um momento importante do jogo para o qual vai trocar. A opção Atraso de troca continua contando depois da pausa."
 	},
 	"sensitivity": {
 		"label": "Sensibilidade de troca",

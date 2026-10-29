@@ -1385,7 +1385,7 @@
 	},
 	"contentAwareSwitching": {
 		"label": "Cambio en pausas del juego",
-		"explainer": "Retiene un cambio hasta que el juego que estás viendo llegue a una pausa, como el final de un turno al bate, un silbatazo o el final de una jugada. El ajuste Retardo de cambio sigue contando después de la pausa."
+		"explainer": "Retiene un cambio hasta que el juego que estás viendo llegue a una pausa, como el final de un turno al bate, un silbatazo o el final de una jugada. Mientras espera, podrías perderte un momento clave del juego al que vas a cambiar. El ajuste Retardo de cambio sigue contando después de la pausa."
 	},
 	"sensitivity": {
 		"label": "Sensibilidad de cambio",

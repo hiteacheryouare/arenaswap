@@ -342,7 +342,7 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	sensitivity: defaultSensitivity,
 	cooldownSeconds: defaultCooldownSecs,
 	switchDelaySeconds: defaultSwitchDelaySecs,
-	contentAwareSwitching: true,
+	contentAwareSwitching: false,
 	enabled: true,
 	enabledLeagues: [],
 	favoriteTeamIds: [],
@@ -450,9 +450,7 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		sensitivity: isSensitivityValue(candidate.sensitivity) ? candidate.sensitivity : defaults.sensitivity,
 		cooldownSeconds: normalizeSecondsPreference(candidate.cooldownSeconds, defaults.cooldownSeconds),
 		switchDelaySeconds: normalizeSecondsPreference(candidate.switchDelaySeconds, defaults.switchDelaySeconds),
-		// Saved prefs that predate the setting keep switching the moment a game wins, as they always
-		// have. Only a fresh install starts out waiting for a break in play.
-		contentAwareSwitching: typeof candidate.contentAwareSwitching === 'boolean' ? candidate.contentAwareSwitching : false,
+		contentAwareSwitching: typeof candidate.contentAwareSwitching === 'boolean' ? candidate.contentAwareSwitching : defaults.contentAwareSwitching,
 		enabled: typeof candidate.enabled === 'boolean' ? candidate.enabled : defaults.enabled,
 		enabledLeagues: hasEnabledLeaguesField ? parsedEnabledLeagues : allLeagueIds,
 		favoriteTeamIds: normalizeFavoriteTeamIds(candidate.favoriteTeamIds),

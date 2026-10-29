@@ -1385,7 +1385,7 @@
 	},
 	"contentAwareSwitching": {
 		"label": "Paglipat sa Break ng Laro",
-		"explainer": "Pinipigilan ang paglipat hanggang magkaroon ng break sa larong pinapanood mo, gaya ng dulo ng at-bat, pito, o dulo ng play. Bumibilang pa rin ang Delay ng Paglipat pagkatapos ng break."
+		"explainer": "Pinipigilan ang paglipat hanggang magkaroon ng break sa larong pinapanood mo, gaya ng dulo ng at-bat, pito, o dulo ng play. Habang naghihintay, baka ma-miss mo ang isang mahalagang sandali sa larong lilipatan mo. Bumibilang pa rin ang Delay ng Paglipat pagkatapos ng break."
 	},
 	"sensitivity": {
 		"label": "Sensitivity ng Paglipat",

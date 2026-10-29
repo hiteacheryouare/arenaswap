@@ -1385,7 +1385,7 @@
 	},
 	"contentAwareSwitching": {
 		"label": "Mudança nas pausas",
-		"explainer": "Retém uma mudança até o jogo que estás a ver chegar a uma pausa, como o fim de uma vez de bater, um apito ou o fim de uma jogada. A opção Atraso de mudança continua a contar depois da pausa."
+		"explainer": "Retém uma mudança até o jogo que estás a ver chegar a uma pausa, como o fim de uma vez de bater, um apito ou o fim de uma jogada. Enquanto espera, podes perder um momento importante do jogo para o qual vais mudar. A opção Atraso de mudança continua a contar depois da pausa."
 	},
 	"sensitivity": {
 		"label": "Sensibilidade de mudança",

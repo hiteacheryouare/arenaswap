@@ -35,7 +35,7 @@ describe('constants', () => {
 			sensitivity: 4,
 			cooldownSeconds: 45,
 			switchDelaySeconds: 0,
-			contentAwareSwitching: true,
+			contentAwareSwitching: false,
 			enabled: true,
 			enabledLeagues: [],
 			favoriteTeamIds: [],
@@ -104,8 +104,8 @@ describe('constants', () => {
 		expect(normalizeUserPreferences({ groupByLeague: true }).groupByLeague).toBe(true);
 	});
 
-	test('waits for a break in play on a fresh install and keeps switching straight away for anyone upgrading', () => {
-		expect(normalizeUserPreferences(undefined).contentAwareSwitching).toBe(true);
+	test('switches straight away unless content-aware switching was turned on', () => {
+		expect(normalizeUserPreferences(undefined).contentAwareSwitching).toBe(false);
 		expect(normalizeUserPreferences({ enabledLeagues: ['nba'] }).contentAwareSwitching).toBe(false);
 		expect(normalizeUserPreferences({ contentAwareSwitching: true }).contentAwareSwitching).toBe(true);
 	});

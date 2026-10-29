@@ -1385,7 +1385,7 @@
 	},
 	"contentAwareSwitching": {
 		"label": "Changement aux pauses",
-		"explainer": "Retient un changement jusqu’à ce que le match que tu regardes atteigne une pause, comme la fin d’un passage au bâton, un coup de sifflet ou la fin d’une action. Le réglage Délai de changement continue de décompter après la pause."
+		"explainer": "Retient un changement jusqu’à ce que le match que tu regardes atteigne une pause, comme la fin d’un passage au bâton, un coup de sifflet ou la fin d’une action. Pendant l’attente, tu risques de rater un moment clé du match vers lequel tu vas changer. Le réglage Délai de changement continue de décompter après la pause."
 	},
 	"sensitivity": {
 		"label": "Sensibilité de changement",
