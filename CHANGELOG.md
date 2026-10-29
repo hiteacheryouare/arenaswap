@@ -9,6 +9,10 @@
 
 Two Xfinity Stream boxes that started at the same moment both played the first box's game, because Xfinity redirected the second one. Boxes on the same site now start one at a time: the next starts once the one ahead plays, or after 15 seconds. As a safety net, a box that still lands on another box's address reloads its own game once. The queue lives in `boxQueue.ts`.
 
+## The backup tab drops its glow — 2026-10-28
+
+The Backup & Sync tab no longer draws the airbrushed orange glow along its bottom edge; it keeps the store art's black page and palette. Multiview still has its glow.
+
 ## Content-aware switching starts off — 2026-10-28
 
 Content-aware switching is now off by default, and its tooltip warns that waiting for a break can cost you a key moment in the game it's switching to, in all 12 languages. Anyone who already saved it on keeps it on; anyone without a saved value now switches straight away.

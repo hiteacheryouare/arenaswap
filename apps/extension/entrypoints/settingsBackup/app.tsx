@@ -171,7 +171,6 @@ const App = () => {
 
 	return (
 		<div className='backup-page' onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
-			<div className='backup-glow' aria-hidden='true' />
 			<header className='backup-header'>
 				<img src={fullLogoSrc(theme)} alt='ArenaSwap' className='backup-logo' />
 			</header>

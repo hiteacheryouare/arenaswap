@@ -1,38 +1,15 @@
 // The backup tab's own surface, sized for a full tab rather than the popup's 320px column. A whole
-// tab, so it takes the store art's brand: black, and the airbrush glow on the window's bottom edge.
+// tab, so it takes the store art's black.
 @use '@arenaswap/ui/src/motion' as m;
 @use '@arenaswap/ui/src/airbrush';
 
 @layer custom {
-	@include airbrush.keyframes;
-
 	// On the page rather than :root, which every other page and the component tests share.
 	.backup-page {
 		@include airbrush.tokens;
 		min-height: 100vh;
 		background: var(--as-bg-body);
 		color:      var(--as-fg-body);
-	}
-
-	// Fixed to the window, whose bottom edge is a real edge the way a store image's is, so the floor
-	// sits on it with no fade. Above the page's own background and under its content.
-	.backup-glow {
-		@include airbrush.glow;
-		position:       fixed;
-		inset:          0;
-		z-index:        auto;
-		--glow-width:   70%;
-		--glow-height:  min(24rem, 40vh);
-		--glow-spill:   0rem;
-	}
-
-	:root[data-bs-theme='light'] .backup-page {
-		@include airbrush.light-tokens;
-	}
-
-	.backup-header,
-	.backup-main {
-		position: relative;
 	}
 
 	.backup-header {
