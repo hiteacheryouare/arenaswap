@@ -2,8 +2,6 @@
 @use '@arenaswap/ui/src/airbrush';
 
 @layer custom {
-	@include airbrush.keyframes;
-
 	// A whole tab, so it takes the store art's brand, set on the page rather than :root.
 	.multiview {
 		@include airbrush.tokens;
@@ -30,52 +28,155 @@
 		pointer-events: none;
 	}
 
-	// The window's bottom edge is a real edge, the way a store image's is, so the floor sits on it.
-	.multiview-glow {
-		@include airbrush.glow;
-		z-index: auto;
-		--glow-width: 75%;
-		--glow-height: 32%;
-		--glow-spill: 0rem;
+	// One isolated layer over black, so the grain's overlay blend only ever shows on lit pixels.
+	.multiview-light {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+		isolation: isolate;
+		background: #000;
+
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background: airbrush.$grain 0 0 / 160px 160px;
+			mix-blend-mode: overlay;
+		}
 	}
 
-	// The wordmark's tail: round-capped dashes, drifting the way the "swap" line reads. One dash is a
-	// fixed-size tile, so its caps stay round at any width, and the strip slides exactly one tile a loop.
-	$dash-tile: 80px;
-	.multiview-dashes {
+	// Each beam is a stripe across a layer 3.4 screens wide, so 12% of travel keeps it on screen.
+	// Their sweeps and their dimming run on clocks that never line up, so the light never loops.
+	.multiview-beam {
+		--multiview-beam-strength: 0.62;
+
 		position: absolute;
+		inset: -40% -120%;
+		mix-blend-mode: plus-lighter;
+		animation:
+			multiview-sweep var(--multiview-sweep) ease-in-out var(--multiview-delay) infinite alternate,
+			multiview-breathe var(--multiview-breath) ease-in-out var(--multiview-delay) infinite alternate;
+	}
+
+	.multiview-beam-1 {
+		--multiview-sweep: 13s;
+		--multiview-breath: 7s;
+		--multiview-delay: 0s;
+		--multiview-dim: 0.7;
+		background: linear-gradient(100deg, transparent 43%, rgb(247 92 3 / 0.35) 47.5%, #f8823c 49.5%, rgb(247 92 3 / 0.4) 51.5%, transparent 56%);
+	}
+
+	.multiview-beam-2 {
+		--multiview-sweep: 19s;
+		--multiview-breath: 9s;
+		--multiview-delay: -7s;
+		--multiview-dim: 0.55;
+		background: linear-gradient(78deg, transparent 38%, rgb(191 76 14 / 0.4) 45%, #e9661e 48.5%, rgb(191 76 14 / 0.4) 52%, transparent 59%);
+	}
+
+	.multiview-beam-3 {
+		--multiview-sweep: 23s;
+		--multiview-breath: 6s;
+		--multiview-delay: -15s;
+		--multiview-dim: 0.45;
+		background: linear-gradient(118deg, transparent 47.5%, #ffa066 49.6%, transparent 51.5%);
+		animation-direction: alternate-reverse;
+	}
+
+	.multiview-beam-4 {
+		--multiview-sweep: 31s;
+		--multiview-breath: 11s;
+		--multiview-delay: -4s;
+		--multiview-dim: 0.6;
+		background: linear-gradient(64deg, transparent 30%, rgb(122 46 7 / 0.6) 42%, rgb(233 102 30 / 0.8) 49%, rgb(122 46 7 / 0.6) 56%, transparent 68%);
+		animation-direction: alternate-reverse;
+	}
+
+	@keyframes multiview-sweep {
+		from { transform: translateX(-12%); }
+		to { transform: translateX(12%); }
+	}
+
+	@keyframes multiview-breathe {
+		from { opacity: calc(var(--multiview-beam-strength) * var(--multiview-dim)); }
+		to { opacity: var(--multiview-beam-strength); }
+	}
+
+	// Earlier in the tree than the light's grain, so the grain lands on top of them.
+	.multiview-flight {
+		--multiview-flight-ink: #fff;
+
+		position: absolute;
+		inset: 0;
+	}
+
+	.multiview-flight-orange {
+		--multiview-flight-ink: var(--as-primary-base);
+	}
+
+	.multiview-flight-trail {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+	}
+
+	.multiview-flight-line,
+	.multiview-flight-reveal {
+		fill: none;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.multiview-flight-line {
+		stroke: var(--multiview-flight-ink);
+		stroke-width: 6px;
+	}
+
+	// The wordmark's "swap" line, in proportion to a 28px head.
+	.multiview-flight-dashes {
+		stroke-dasharray: 20 15;
+	}
+
+	.multiview-flight-reveal {
+		stroke: #fff;
+		stroke-width: 14px;
+	}
+
+	.multiview-flight-head {
+		position: absolute;
+		top: 0;
 		left: 0;
-		top: 78%;
-		width: calc(100% + #{$dash-tile});
-		height: 14px;
-		background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='14'%3E%3Cline x1='7' y1='7' x2='39' y2='7' stroke='white' stroke-opacity='0.07' stroke-width='14' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x;
-		background-size: $dash-tile 14px;
-		animation: multiview-dashes 3s linear infinite;
-	}
+		width: 21px;
+		height: 28px;
+		offset-anchor: 60% 50%;
+		offset-rotate: auto;
 
-	.multiview-mark {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		width: min(36rem, 52%);
-		opacity: 0.14;
-		transform: translate(-50%, -50%);
-		transition: opacity 0.6s ease;
-	}
+		svg {
+			display: block;
+			width: 100%;
+			height: 100%;
+			overflow: visible;
+		}
 
-	.multiview-mark-gone {
-		opacity: 0;
-	}
-
-	@keyframes multiview-dashes {
-		from { transform: translateX(-$dash-tile); }
-		to { transform: translateX(0); }
+		path {
+			fill: none;
+			stroke: var(--multiview-flight-ink);
+			stroke-width: 3.2;
+			stroke-linecap: round;
+			stroke-linejoin: round;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.multiview-dashes,
 		.multiview-box {
 			animation: none;
+		}
+
+		.multiview-beam {
+			animation: none;
+			opacity: var(--multiview-beam-strength);
 		}
 	}
 
@@ -250,15 +351,12 @@
 		transform: translate(-50%, -50%);
 	}
 
-	// Above the glow rather than on it, where it would be pale text on bright orange.
 	.multiview-empty {
-		position: absolute;
-		top: 60%;
-		left: 0;
-		right: 0;
+		position: relative;
 		margin: 0;
 		padding: 0 2rem;
-		color: var(--as-fg-3);
+		color: var(--as-fg-body);
 		text-align: center;
+		text-shadow: 0 1px 3px rgb(0 0 0 / 0.6);
 	}
 }

@@ -5,6 +5,11 @@ import '../../assets/multiview.scss';
 
 const multiviewTabId = 50;
 
+const emulateReducedMotion = (on: boolean) => Cypress.automation('remote:debugger:protocol', {
+	command: 'Emulation.setEmulatedMedia',
+	params: { features: on ? [{ name: 'prefers-reduced-motion', value: 'reduce' }] : [] },
+});
+
 const team = (id: string, abbreviation: string, color: string) => ({ id, name: abbreviation, abbreviation, score: 0, color });
 
 const games: Game[] = [
@@ -127,6 +132,10 @@ const heard = (gameId: string) => {
 };
 
 describe('Multiview page', () => {
+	afterEach(() => {
+		cy.wrap(emulateReducedMotion(false));
+	});
+
 	it('puts every box in its place at once, each behind its off-air card until its stream plays', () => {
 		mountMultiview(lineupOf(3));
 		['g1', 'g2', 'g3'].forEach(offAir);
@@ -300,9 +309,36 @@ describe('Multiview page', () => {
 		cy.get('.multiview-backdrop').should('exist');
 	});
 
-	it('leaves the middle of the loop to the boxes once there are any', () => {
+	it('sweeps four orange beams behind the boxes, each on its own clock, under the grain', () => {
 		mountMultiview(lineupOf(2));
-		cy.get('.multiview-glow').should('have.length', 1);
-		cy.get('.multiview-mark').should('have.class', 'multiview-mark-gone');
+		cy.get('.multiview-light .multiview-beam').should($beams => {
+			expect($beams).to.have.length(4);
+			const clocks = $beams.toArray().map(beam => getComputedStyle(beam).animationDuration);
+			expect(new Set(clocks).size).to.equal(4);
+			for (const beam of $beams.toArray()) expect(beam.getAnimations().every(animation => animation.playState === 'running')).to.equal(true);
+		});
+		cy.get('.multiview-light').should($light => expect(getComputedStyle($light[0], '::after').mixBlendMode).to.equal('overlay'));
+	});
+
+	it('flies the wordmark\'s arrows under the grain and clears each one once it lands', () => {
+		mountMultiview(lineupOf(2));
+		cy.get('.multiview-light .multiview-flight', { timeout: 4000 }).first().then($flight => {
+			const head = $flight.find('.multiview-flight-head')[0];
+			expect(head.getAnimations().map(animation => animation.playState)).to.deep.equal(['running']);
+			expect(getComputedStyle(head).offsetPath).to.match(/^path\(/);
+			expect(getComputedStyle($flight.find('.multiview-flight-line')[0]).strokeDasharray).to.not.equal('none');
+			for (const animation of $flight[0].getAnimations({ subtree: true })) animation.finish();
+		});
+		cy.get('.multiview-flight').should('have.length', 0);
+	});
+
+	it('holds the beams still and sends no arrows when motion is reduced', () => {
+		cy.wrap(emulateReducedMotion(true));
+		// Under a loaded run the emulation can reach the page after the mount reads it.
+		cy.window().should(win => expect(win.matchMedia('(prefers-reduced-motion: reduce)').matches).to.equal(true));
+		mountMultiview(lineupOf(2));
+		cy.wait(2500);
+		cy.get('.multiview-flight').should('not.exist');
+		cy.get('.multiview-beam').each($beam => expect($beam[0].getAnimations()).to.have.length(0));
 	});
 });

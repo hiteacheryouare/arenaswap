@@ -5,9 +5,17 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Multiview's backdrop sweeps orange beams again — 2026-10-28
+
+The airbrushed glow and faded logo behind the Multiview boxes are replaced by four orange beams sweeping across each other on black, each on its own sweep and dimming clock so the light never settles into a loop. The arrows and the store art's grain stay on top, the beams hold still under reduced motion, and the setup guide's picture of the page shows them too.
+
 ## Multiview boxes on one streaming site take turns loading — 2026-10-28
 
 Two Xfinity Stream boxes that started at the same moment both played the first box's game, because Xfinity redirected the second one. Boxes on the same site now start one at a time: the next starts once the one ahead plays, or after 15 seconds. As a safety net, a box that still lands on another box's address reloads its own game once. The queue lives in `boxQueue.ts`.
+
+## Multiview's backdrop flies the wordmark's arrows — 2026-10-28
+
+Behind the Multiview boxes, a solid or dashed wordmark arrow now comes in from a side every 8 to 15 seconds, zigzags along a margin or across the whole window at low opacity, and pulls its line in after it leaves, one at a time and none under reduced motion. It replaces the drifting dash strip, and the paths are planned in `multiviewFlights.ts` from the margins the grid leaves when each flight launches.
 
 ## Settings headers match the home page — 2026-10-28
 

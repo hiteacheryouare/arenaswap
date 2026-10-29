@@ -5,8 +5,12 @@
 	// motion scale's. Positions are percentages of the mockup, so they scale with the popup.
 	$story-loop: 7s;
 	$grid-loop: 9s;
-	// The Multiview page in miniature: black, with the glow rising off its bottom edge.
-	$mock-page: radial-gradient(70% 60% at 50% 100%, rgb(248 130 60 / 0.75), rgb(191 76 14 / 0.35) 45%, transparent 75%), #000;
+	// The Multiview page in miniature: orange beams crossing on black.
+	$mock-page:
+		linear-gradient(100deg, transparent 22%, rgb(248 130 60 / 0.55) 30%, transparent 38%),
+		linear-gradient(78deg, transparent 52%, rgb(233 102 30 / 0.5) 62%, transparent 72%),
+		linear-gradient(118deg, transparent 66%, rgb(255 160 102 / 0.45) 69%, transparent 72%),
+		#000;
 
 	.multiview-guide-story,
 	.multiview-guide-grid {

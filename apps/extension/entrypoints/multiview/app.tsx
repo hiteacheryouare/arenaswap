@@ -64,7 +64,7 @@ const App = () => {
 	if (lineup === null) {
 		return (
 			<main className='multiview'>
-				<MultiviewBackdrop showMark />
+				<MultiviewBackdrop grid={gridRef} />
 				<p className='multiview-empty'>{i18n.t('multiview.empty')}</p>
 			</main>
 		);
@@ -74,7 +74,7 @@ const App = () => {
 
 	return (
 		<main className='multiview'>
-			<MultiviewBackdrop showMark={boxIds.length === 0} />
+			<MultiviewBackdrop grid={gridRef} />
 			<div ref={gridRef} className='multiview-grid' style={{ '--multiview-columns': grid.columns, '--multiview-rows': grid.rows } as CSSProperties}>
 				{boxes.map(box => {
 					const placement = placements.get(box.gameId);
