@@ -17,6 +17,13 @@ export const secondsLeftInPeriod = (game: Game<string>, sport: SportTypeConfig, 
 
 export const isBaseball = (game: Game<string>): boolean => game.sportType === 'baseball' || game.sportType === 'softball';
 
+// The bases as bits, first base lowest: 0b101 is runners on first and third.
+export const baseMask = ({ first, second, third }: NonNullable<Game<string>['baseRunners']>): number => (
+	(first ? 1 : 0) | (second ? 2 : 0) | (third ? 4 : 0)
+);
+
+export const runnersOn = (mask: number): number => (mask & 1) + ((mask >> 1) & 1) + (mask >> 2);
+
 export const isPostseason = (game: Game<string>): boolean => game.seasonType === 'postseason' || game.postseasonRound !== undefined;
 
 export const ramp = (value: number, from: number, to: number): number => clamp((value - from) / (to - from), 0, 1);

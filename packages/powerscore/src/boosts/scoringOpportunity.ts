@@ -7,6 +7,7 @@ import {
 } from '../constants';
 import { isPlayFrozen } from '../progress';
 import { hockeyScoringOpportunity, hockeyScoringOpportunityDetails } from './hockey';
+import { baseMask, runnersOn } from './shared';
 import type { BoostDefinition, Game, ReasonFragment, SignalInput, SportTypeConfig } from '../types';
 
 // An unknown down (between plays, or a feed that doesn't report one) falls through to `other`, so a
@@ -36,22 +37,24 @@ export const computeScoringOpportunity = (input: SignalInput): number => {
 		const r = game.baseRunners;
 		// Runners can linger on the scoreboard for a poll after the third out.
 		if (!r || (game.outs ?? 0) >= 3) return 0;
-		return scoringOpportunityBaseRunnerBoosts[[r.first, r.second, r.third].filter(Boolean).length] ?? 0;
+		return scoringOpportunityBaseRunnerBoosts[runnersOn(baseMask(r))] ?? 0;
 	}
 	if (game.sportType === 'football' && game.isRedZone) return getRedZoneBoost(game, sport, margin);
 	if (game.sportType === 'hockey') return hockeyScoringOpportunity(input);
 	return 0;
 };
 
-const baseKeys: Record<string, string> = {
-	'100': 'runnerFirst',
-	'010': 'runnerSecond',
-	'001': 'runnerThird',
-	'110': 'runnersFirstSecond',
-	'101': 'runnersFirstThird',
-	'011': 'runnersSecondThird',
-	'111': 'basesLoaded',
-};
+// Indexed by baseMask.
+const baseKeys = [
+	'basesEmpty',
+	'runnerFirst',
+	'runnerSecond',
+	'runnersFirstSecond',
+	'runnerThird',
+	'runnersFirstThird',
+	'runnersSecondThird',
+	'basesLoaded',
+];
 
 const redZoneKey = (game: Game<string>): string => {
 	if (game.down === 4) return 'redZoneFourthDown';
@@ -67,7 +70,7 @@ const scoringOpportunityDetails = (input: SignalInput, points: number): ReasonFr
 		const r = game.baseRunners;
 		if ((game.outs ?? 0) >= 3) return [{ key: 'inningOver' }];
 		if (!r) return [];
-		return [{ key: baseKeys[[r.first, r.second, r.third].map(Number).join('')] ?? 'basesEmpty' }];
+		return [{ key: baseKeys[baseMask(r)]! }];
 	}
 	if (game.sportType === 'football') {
 		if (game.isRedZone === undefined) return [];

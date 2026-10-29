@@ -1,5 +1,5 @@
 import { goAheadRunTunables } from '../constants';
-import { isBaseball, isLive, none, ramp } from './shared';
+import { baseMask, isBaseball, isLive, none, ramp, runnersOn } from './shared';
 import type { BoostDefinition, ReasonFragment } from '../types';
 
 // On top of the runner count: the batting team has the go-ahead run on base (tied with anyone on,
@@ -13,8 +13,7 @@ export const goAheadRunBoost: BoostDefinition = {
 		if ((game.outs ?? 0) >= 3) return none;
 		const battingHome = !game.topOfInning;
 		const deficit = battingHome ? game.awayTeam.score - game.homeTeam.score : game.homeTeam.score - game.awayTeam.score;
-		const { first, second, third } = game.baseRunners;
-		const runners = [first, second, third].filter(Boolean).length;
+		const runners = runnersOn(baseMask(game.baseRunners));
 		const base = deficit >= 0 && deficit <= 2 && runners >= deficit + 1
 			? goAheadRunTunables.goAhead
 			: deficit >= 1 && deficit <= 3 && runners === deficit ? goAheadRunTunables.tyingRun : 0;

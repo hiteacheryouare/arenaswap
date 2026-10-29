@@ -63,6 +63,20 @@ describe('scoring opportunity names the situation, paying or not', () => {
 		expect(detailsOf(ballgame({ outs: 3, baseRunners: { first: true, second: true, third: true } }), 'scoringOpportunity')).toEqual([{ key: 'inningOver' }]);
 	});
 
+	test.each([
+		[false, false, false, 'basesEmpty', 0],
+		[true, false, false, 'runnerFirst', 3],
+		[false, true, false, 'runnerSecond', 3],
+		[false, false, true, 'runnerThird', 3],
+		[true, true, false, 'runnersFirstSecond', 6],
+		[true, false, true, 'runnersFirstThird', 6],
+		[false, true, true, 'runnersSecondThird', 6],
+		[true, true, true, 'basesLoaded', 10],
+	])('first %s, second %s, third %s reads %s and pays %i', (first, second, third, key, points) => {
+		const score = scoreGame(ballgame({ baseRunners: { first, second, third } }), {}, { mode: 'classic' });
+		expect(score.boosts.find(boost => boost.id === 'scoringOpportunity')).toMatchObject({ points, details: [{ key }] });
+	});
+
 	test('football names the team in the red zone, and says when the score is too wide to count', () => {
 		const redZone = (away: number, down: number) => game('football', 'nfl', 'KC', 'BUF', {
 			period: 3, clockSeconds: 400, homeTeam: { abbreviation: 'KC', score: 20 }, awayTeam: { abbreviation: 'BUF', score: away },

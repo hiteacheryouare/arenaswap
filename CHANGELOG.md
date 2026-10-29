@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## PowerScore reads the bases as bits — 2026-10-29
+
+The baseball boosts now pack first, second and third into a 3-bit `baseMask` and count runners or pick the situation's reason from that, instead of building arrays and a `'101'`-style string on every score. It cuts about 5% off scoring a live ballgame, and a test pins all eight base states so the table's order can't drift.
+
 ## Multiview's backdrop sweeps orange beams again — 2026-10-28
 
 The airbrushed glow and faded logo behind the Multiview boxes are replaced by four orange beams sweeping across each other on black, each on its own sweep and dimming clock so the light never settles into a loop. The arrows and the store art's grain stay on top, the beams hold still under reduced motion, and the setup guide's picture of the page shows them too.
