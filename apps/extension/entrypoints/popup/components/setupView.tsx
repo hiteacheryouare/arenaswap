@@ -742,7 +742,7 @@ const setupView = ({
 	if (page === 'scoring' && scoringPage) {
 		const isRoster = scoringPage === 'roster';
 		return (
-			<div key={`scoring-${scoringPage}`} ref={pageRef} className={`popup-container${isRoster ? ' d-flex flex-column' : ''}${slide}`}>
+			<div key={`scoring-${scoringPage}`} ref={pageRef} className={`popup-container settings-view${isRoster ? ' d-flex flex-column' : ''}${slide}`}>
 				<button type='button' className='setup-header' onClick={() => setScoringPage(null)}>
 					<i className='bi bi-arrow-left' />
 					{isRoster ? i18n.t('setup.fantasyRoster') : i18n.t('setup.fantasyRules')}
@@ -767,7 +767,7 @@ const setupView = ({
 	if (page === 'leagues' && collegeLeague) {
 		const league = { ...leagueConfigMap[collegeLeague], id: collegeLeague };
 		return (
-			<div key={`college-${collegeLeague}`} className={`popup-container${slide}`}>
+			<div key={`college-${collegeLeague}`} className={`popup-container settings-view${slide}`}>
 				<button type='button' className='setup-header' onClick={() => setCollegeLeague(null)}>
 					<i className='bi bi-arrow-left' />
 					{league.label}
@@ -789,7 +789,7 @@ const setupView = ({
 		// that has to keep its own search box in view, so it takes the column and scrolls inside it.
 		const scrollsWithin = page === 'favorites';
 		return (
-			<div key={page} ref={pageRef} className={`popup-container${scrollsWithin ? ' d-flex flex-column' : ''}${slide}`}>
+			<div key={page} ref={pageRef} className={`popup-container settings-view${scrollsWithin ? ' d-flex flex-column' : ''}${slide}`}>
 				<button type='button' className='setup-header' onClick={() => setPage(null)}>
 					<i className='bi bi-arrow-left' />
 					{group ? i18n.t(group.labelKey) : i18n.t('setup.header')}
@@ -800,7 +800,7 @@ const setupView = ({
 	}
 
 	return (
-		<div key='index' className={`popup-container${slide}`}>
+		<div key='index' className={`popup-container settings-view${slide}`}>
 			<button type='button' className='setup-header' onClick={onClose}>
 				<i className='bi bi-arrow-left' />
 				{i18n.t('setup.header')}

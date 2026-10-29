@@ -547,6 +547,11 @@
 		color:     var(--as-faint);
 	}
 
+	.settings-view .popup-section-label {
+		letter-spacing: -0.01em;
+		color:          var(--as-fg-body);
+	}
+
 	.settings-search {
 		margin-bottom: 0.75rem;
 		font-size:     0.72rem;
