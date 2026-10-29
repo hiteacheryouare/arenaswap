@@ -13,6 +13,10 @@ interface multiviewBoxProps {
 	// Has played at some point since the box opened.
 	played: boolean;
 	audible: boolean;
+	// Its turn to load has come. Until then the box holds its place behind the off-air card.
+	started: boolean;
+	// Its frame has ended up on another box's game.
+	stray: boolean;
 }
 
 // How long a box that has never played keeps its card before the player is shown anyway, in case
@@ -67,12 +71,16 @@ const OffAirCard = ({ game, onAir }: { game?: Game; onAir: boolean }) => {
 	);
 };
 
-const MultiviewBox = ({ box, game, placement, onAir, played, audible }: multiviewBoxProps) => {
+const MultiviewBox = ({ box, game, placement, onAir, played, audible, started, stray }: multiviewBoxProps) => {
 	const [waitedOut, setWaitedOut] = useState(false);
+	const [reloaded, setReloaded] = useState(false);
 	useEffect(() => {
+		if (!started) return;
 		const timer = setTimeout(() => setWaitedOut(true), neverPlayedMs);
 		return () => clearTimeout(timer);
-	}, []);
+	}, [started]);
+	// Once only, so a site that insists cannot keep the box reloading.
+	if (stray && !reloaded) setReloaded(true);
 	const showPicture = onAir || (waitedOut && !played);
 
 	return (
@@ -86,14 +94,15 @@ const MultiviewBox = ({ box, game, placement, onAir, played, audible }: multivie
 			<div className='multiview-picture'>
 				{/* The user's own logged-in stream, which has to play the way it does in its own tab. Its DRM and sign-in were only ever tried unsandboxed. */}
 				{/* oxlint-disable-next-line react/iframe-missing-sandbox */}
-				<iframe
+				{started && <iframe
+					key={reloaded ? 'reloaded' : 'first'}
 					className='multiview-stream'
 					name={box.gameId}
 					src={box.url}
 					allow={frameAllow}
 					allowFullScreen
 					title={game ? `${game.awayTeam.name} – ${game.homeTeam.name}` : box.url}
-				/>
+				/>}
 				<OffAirCard game={game} onAir={showPicture} />
 			</div>
 		</section>

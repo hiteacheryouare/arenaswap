@@ -33,11 +33,12 @@ const onAirAt = (frames: ReadonlyMap<number, frameState>, gameByFrameId: Readonl
 const sameIds = (a: ReadonlySet<string>, b: ReadonlySet<string>) => a.size === b.size && [...a].every(id => b.has(id));
 
 // Read off the reports the frame script sends from every frame in this tab: which boxes have ever
-// had a stream play, which are playing now, and which box the sound belongs to, answered back on
-// each report.
+// had a stream play, which are playing now, where each box's own frame has got to, and which box
+// the sound belongs to, answered back on each report.
 export default (tabId: number | null) => {
 	const [readyIds, setReadyIds] = useState<ReadonlySet<string>>(() => new Set());
 	const [onAirIds, setOnAirIds] = useState<ReadonlySet<string>>(() => new Set());
+	const [hrefs, setHrefs] = useState<ReadonlyMap<string, string>>(() => new Map());
 	const audibleRef = useRef<string | null>(null);
 	const gameByFrameId = useRef(new Map<number, string>());
 	const frames = useRef(new Map<number, frameState>());
@@ -74,6 +75,7 @@ export default (tabId: number | null) => {
 			const frameId = sender.frameId;
 			return resolveGame(frameId, message).then(gameId => {
 				if (!gameId) return {};
+				if (message.firstLevel) setHrefs(current => (current.get(gameId) === message.href ? current : new Map([...current, [gameId, message.href]])));
 				const now = Date.now();
 				const previous = frames.current.get(frameId);
 				// Playing is not enough: a player stuck on a spinner reports playing with a clock that never moves.
@@ -102,5 +104,5 @@ export default (tabId: number | null) => {
 		}
 	}, [tabId]);
 
-	return { readyIds, onAirIds, setAudible };
+	return { readyIds, onAirIds, hrefs, setAudible };
 };

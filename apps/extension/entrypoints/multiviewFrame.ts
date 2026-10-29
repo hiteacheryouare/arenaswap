@@ -48,6 +48,7 @@ export default defineUnlistedScript({
 				type: 'MULTIVIEW_FRAME_STATUS',
 				name: window.name,
 				firstLevel: window.parent === window.top,
+				href: location.href,
 				playing: video !== undefined && !video.paused && video.readyState >= 2,
 				paused: video?.paused ?? true,
 				time: video?.currentTime ?? 0,

@@ -566,6 +566,8 @@ export interface MultiviewFrameStatusMessage {
 	// up to it instead.
 	name: string;
 	firstLevel: boolean;
+	// Where the frame is now, which a site can move it away from after the box loads it.
+	href: string;
 	playing: boolean;
 	// Stopped by the player or the viewer, as opposed to waiting on data with its clock stuck.
 	paused: boolean;

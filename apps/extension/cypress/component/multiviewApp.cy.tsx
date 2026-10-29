@@ -1,4 +1,4 @@
-import type { Game, MultiviewLineup } from '@arenaswap/core/types';
+import type { Game, MultiviewFrameStatusMessage, MultiviewLineup } from '@arenaswap/core/types';
 import App from '../../entrypoints/multiview/app';
 import { makeGame } from '../support/fixtures';
 import '../../assets/multiview.scss';
@@ -25,9 +25,23 @@ const lineupOf = (count: number, featuredGameId = 'g1'): MultiviewLineup => ({
 	games: games.slice(0, count),
 });
 
+// Boxes on real-looking sites, so the page can tell which share one. Each site answers with a blank page.
+const lineupOnSites = (urls: string[]): MultiviewLineup => {
+	for (const hostname of new Set(urls.map(url => new URL(url).hostname))) {
+		cy.intercept({ hostname }, { headers: { 'content-type': 'text/html' }, body: '<body style="margin:0;background:#1b2a41"></body>' });
+	}
+	return {
+		boxes: urls.map((url, index) => ({ gameId: games[index].id, url })),
+		featuredGameId: 'g1',
+		games: games.slice(0, urls.length),
+	};
+};
+
 interface multiviewHandle {
 	// One report from the frame named for `gameId`, as the frame script sends it. Resolves to the reply.
 	report: (gameId: string, frameId: number, time: number, playing?: boolean, paused?: boolean) => Promise<unknown>;
+	// A report from a box's frame that has ended up at `href`, with nothing playing yet.
+	land: (gameId: string, frameId: number, href: string) => Promise<unknown>;
 	update: (lineup: MultiviewLineup) => void;
 	sent: { type: string;[key: string]: unknown }[];
 	mutes: { frameId: number; muted: boolean }[];
@@ -70,11 +84,14 @@ const mountMultiview = (lineup: MultiviewLineup | null) => {
 	// The frame listener goes up once the page knows its tab, which is when the boxes first render.
 	if (lineup) cy.get('.multiview-box').should('have.length', lineup.boxes.length);
 
+	const report = (status: Omit<MultiviewFrameStatusMessage, 'type' | 'firstLevel'>, frameId: number) => Promise.all(listeners.map(listener => listener(
+		{ type: 'MULTIVIEW_FRAME_STATUS', firstLevel: true, ...status },
+		{ tab: { id: multiviewTabId }, frameId },
+	))).then(replies => replies.find(reply => reply !== undefined));
+
 	return cy.wrap<multiviewHandle>({
-		report: (gameId, frameId, time, playing = true, paused = !playing) => Promise.all(listeners.map(listener => listener(
-			{ type: 'MULTIVIEW_FRAME_STATUS', name: gameId, firstLevel: true, playing, paused, time },
-			{ tab: { id: multiviewTabId }, frameId },
-		))).then(replies => replies.find(reply => reply !== undefined)),
+		report: (gameId, frameId, time, playing = true, paused = !playing) => report({ name: gameId, href: '', playing, paused, time }, frameId),
+		land: (gameId, frameId, href) => report({ name: gameId, href, playing: false, paused: true, time: 0 }, frameId),
 		update: next => listeners.forEach(listener => listener({ type: 'MULTIVIEW_UPDATED', tabId: multiviewTabId, ...next }, {})),
 		sent,
 		mutes,
@@ -157,6 +174,39 @@ describe('Multiview page', () => {
 		cy.tick(2000);
 		onAir('g2');
 		onAir('g1');
+	});
+
+	it('starts boxes on one streaming site one at a time, and a box on another site straight away', () => {
+		mountMultiview(lineupOnSites(['https://stream.test/live/mia', 'https://stream.test/live/nyj', 'https://other.test/watch/bos']));
+		cy.get('iframe[name="g1"]').should('have.attr', 'src', 'https://stream.test/live/mia');
+		cy.get('iframe[name="g3"]').should('have.attr', 'src', 'https://other.test/watch/bos');
+		cy.get('[data-game-id="g2"] iframe').should('not.exist');
+		offAir('g2');
+		play('g1', 11);
+		cy.get('iframe[name="g2"]').should('have.attr', 'src', 'https://stream.test/live/nyj');
+	});
+
+	it('starts the next box on a site anyway once the one ahead of it has had 15 seconds', () => {
+		cy.clock(0, ['Date', 'setInterval', 'clearInterval']);
+		mountMultiview(lineupOnSites(['https://stream.test/live/mia', 'https://stream.test/live/nyj']));
+		cy.tick(14_000);
+		cy.get('[data-game-id="g2"] iframe').should('not.exist');
+		cy.tick(1000);
+		cy.get('iframe[name="g2"]').should('have.attr', 'src', 'https://stream.test/live/nyj');
+	});
+
+	it('reloads a box once when its site moves it onto another box\'s game', () => {
+		mountMultiview(lineupOnSites(['https://stream.test/live/mia', 'https://other.test/watch/nyj']));
+		cy.get('iframe[name="g2"]').then($first => {
+			cy.get<multiviewHandle>('@multiview').then(handle => handle.land('g2', 12, 'https://stream.test/live/mia'));
+			cy.get('iframe[name="g2"]').should($second => expect($second[0]).not.to.equal($first[0]))
+				.and('have.attr', 'src', 'https://other.test/watch/nyj');
+		});
+		cy.get('iframe[name="g2"]').then($second => {
+			cy.get<multiviewHandle>('@multiview').then(handle => handle.land('g2', 13, 'https://stream.test/live/mia'));
+			cy.wait(500);
+			cy.get('iframe[name="g2"]').should($third => expect($third[0]).to.equal($second[0]));
+		});
 	});
 
 	it('tells the background which streams play, and gives the sound to the big box only', () => {

@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Multiview boxes on one streaming site take turns loading — 2026-10-28
+
+Two Xfinity Stream boxes that started at the same moment both played the first box's game, because Xfinity redirected the second one. Boxes on the same site now start one at a time: the next starts once the one ahead plays, or after 15 seconds. As a safety net, a box that still lands on another box's address reloads its own game once. The queue lives in `boxQueue.ts`.
+
 ## The site takes the store art's black and orange — 2026-10-28
 
 The website is redesigned around the store art: a pure black page, DM Sans Title Case headlines ending on the orange full stop, and a grainy airbrushed glow rising off the floor under the hero, the closing install, the PowerScore hero and the 404, with new home sections for Multiview (four new Commons clips), Standby Stream and "Free. Private. Open." and every headline rewritten in the store-art voice across all 12 languages. The brand lives in `packages/ui/src/_airbrush.scss`, which the backup and Multiview tabs now use too, and its tokens are declared unlayered on `html:root` because Bootstrap's own `:root` tokens come out of the build unlayered and beat anything in `@layer custom`; the popup keeps its palette, and the site's popup demos restore it with `popup-tokens`.

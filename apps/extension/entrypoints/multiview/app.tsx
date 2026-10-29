@@ -8,13 +8,14 @@ import MultiviewBox from './multiviewBox';
 import { multiviewGridFor, placeBoxes } from './multiviewLayout';
 import useBoxFrames from './useBoxFrames';
 import useBoxMoves from './useBoxMoves';
+import useBoxQueue from './useBoxQueue';
 
 const App = () => {
 	const [tabId, setTabId] = useState<number | null>(null);
 	// Undefined while asking. Null means the background did not open this tab, as when the browser
 	// brings an old one back on restart.
 	const [lineup, setLineup] = useState<MultiviewLineup | null | undefined>(undefined);
-	const { readyIds, onAirIds, setAudible } = useBoxFrames(tabId);
+	const { readyIds, onAirIds, hrefs, setAudible } = useBoxFrames(tabId);
 	const gridRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -36,8 +37,13 @@ const App = () => {
 		return () => browser.runtime.onMessage.removeListener(listener);
 	}, [tabId]);
 
-	const boxes = lineup?.boxes ?? [];
+	const boxes = useMemo(() => lineup?.boxes ?? [], [lineup]);
 	const boxIds = boxes.map(box => box.gameId);
+	const startedIds = useBoxQueue(boxes, readyIds);
+	const isStray = (gameId: string) => {
+		const href = hrefs.get(gameId);
+		return boxes.some(other => other.gameId !== gameId && other.url === href);
+	};
 	const readyKey = boxIds.filter(gameId => readyIds.has(gameId)).join(',');
 	const featuredId = lineup?.featuredGameId && boxIds.includes(lineup.featuredGameId) ? lineup.featuredGameId : boxIds[0] ?? null;
 
@@ -72,7 +78,7 @@ const App = () => {
 			<div ref={gridRef} className='multiview-grid' style={{ '--multiview-columns': grid.columns, '--multiview-rows': grid.rows } as CSSProperties}>
 				{boxes.map(box => {
 					const placement = placements.get(box.gameId);
-					return placement && <MultiviewBox key={box.gameId} box={box} game={gamesById.get(box.gameId)} placement={placement} onAir={onAirIds.has(box.gameId)} played={readyIds.has(box.gameId)} audible={box.gameId === featuredId} />;
+					return placement && <MultiviewBox key={box.gameId} box={box} game={gamesById.get(box.gameId)} placement={placement} onAir={onAirIds.has(box.gameId)} played={readyIds.has(box.gameId)} audible={box.gameId === featuredId} started={startedIds.has(box.gameId)} stray={isStray(box.gameId)} />;
 				})}
 			</div>
 		</main>
