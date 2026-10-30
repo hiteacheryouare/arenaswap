@@ -13,6 +13,11 @@ Every user-facing string in `apps/extension` must go through `i18n.t('<dotted.ke
 
 Related: [[review-popup-failure-map]]
 
+**`packages/ui` has its own key guard:** `packages/ui/tests/defaultStrings.test.ts` scans every `t(...)` in ui src
+and *fails* when the first argument holds no quoted dotted-key literal (ternaries of literals are fine). So any
+"index into a key table" refactor (`t(keys[i]!)`) breaks jest and also drops those keys from the defaultStrings
+fallback check. Caught 2026-10-29 on the baseDiamond bitmask change (reverted); run that one file whenever a ui `t()` call moves.
+
 **`pt_PT.json` spelling: CORRECTED 2026-10-21.** An earlier note said pt_PT used pre-1990-Agreement
 spelling ("Actualizar", "directo"). At HEAD e9d15c29 it uses the modern forms throughout ("Ativa" x6,
 "atualização" x4, "Desativado" x4, zero "actual-"/"activ-" hits). Do not flag "Ativado"/"Atualiza" in new
