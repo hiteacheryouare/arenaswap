@@ -80,3 +80,39 @@ describe('the drive lifting the game under Fantasy', () => {
 		expect(goalLine.modeId).toBe('fantasy');
 	});
 });
+
+// Detroit pitching the top of the sixth, up a run on Cleveland.
+const ballgame = (baseRunners?: Game['baseRunners']): Game => ({
+	id: 'b',
+	league: 'mlb',
+	sportType: 'baseball',
+	status: 'in',
+	period: 6,
+	clockSeconds: 0,
+	topOfInning: true,
+	outs: 1,
+	homeTeam: { score: 2, abbreviation: 'DET' },
+	awayTeam: { score: 1, abbreviation: 'CLE' },
+	...(baseRunners ? { baseRunners } : {}),
+});
+
+const pitcher: FantasyPlayerState = { id: 'p', name: 'Tarik Skubal', side: 'home', position: 'P', role: 'pitching' };
+
+describe('a pitcher on the mound', () => {
+	test.each([
+		[true, false, false],
+		[false, true, false],
+		[false, false, true],
+		[true, true, false],
+		[true, false, true],
+		[false, true, true],
+		[true, true, true],
+	])('works harder with first %s, second %s, third %s', (first, second, third) => {
+		expect(situation(ballgame({ first, second, third }), [pitcher])).toEqual({ points: 40, reason: { key: 'fantasyPitching', params: { name: 'Tarik Skubal' } } });
+	});
+
+	test('reads the bases empty, or unreported, as the quieter spot', () => {
+		expect(situation(ballgame({ first: false, second: false, third: false }), [pitcher]).points).toBe(30);
+		expect(situation(ballgame(), [pitcher]).points).toBe(30);
+	});
+});

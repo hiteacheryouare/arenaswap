@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Bit and logic swaps across the extension, kept only where they bench faster — 2026-10-29
+
+The college stale-feed window is now a 10-bit mask instead of an array rebuilt every play (~3.9×), series stakes look up a packed integer instead of a template-string key (~2.1×), and hex colours parse and print as one packed number (1.3–2×); the decisive-moment runner count, red-card counts and the mock-chart seed lose their throwaway arrays too. Each swap was benched against the old code and checked against it on every input, with new tests pinning the old behaviour first. Swaps that benched slower stay as they were: the base diamond's `if` ladder, the fantasy pitcher's `||`, `% 2` → `& 1`, `Math.floor` → `| 0`, and ternary pixel chroma.
+
 ## PowerScore reads the bases as bits — 2026-10-29
 
 The baseball boosts now pack first, second and third into a 3-bit `baseMask` and count runners or pick the situation's reason from that, instead of building arrays and a `'101'`-style string on every score. It cuts about 5% off scoring a live ballgame, and a test pins all eight base states so the table's order can't drift.
