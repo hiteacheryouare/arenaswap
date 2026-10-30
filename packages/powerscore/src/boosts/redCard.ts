@@ -6,7 +6,8 @@ import type { BoostDefinition, Game, ReasonFragment, RedCard, Side } from '../ty
 // The team a man down, if the cards aren't even.
 export const shorthandedSide = (game: Game<string>): Side | undefined => {
 	const cards = game.redCards ?? [];
-	const home = cards.filter(card => card.side === 'home').length;
+	let home = 0;
+	for (const card of cards) if (card.side === 'home') home++;
 	const away = cards.length - home;
 	if (home === away) return undefined;
 	return home > away ? 'home' : 'away';
@@ -44,11 +45,13 @@ export const redCardBoost: BoostDefinition = {
 		const { fullMinutes, fadeMinutes, secondCardFactor } = redCardTunables;
 		let best = 0;
 		let detail: ReasonFragment | undefined;
-		game.redCards.forEach((card, index) => {
+		let homeShown = 0;
+		let awayShown = 0;
+		game.redCards.forEach(card => {
+			const earlierForSameTeam = card.side === 'home' ? homeShown++ : awayShown++;
 			const since = minutesSince(card, minute, game.period);
 			if (since < 0 || since >= fadeMinutes) return;
 			const fade = since <= fullMinutes ? 1 : 1 - (since - fullMinutes) / (fadeMinutes - fullMinutes);
-			const earlierForSameTeam = game.redCards!.slice(0, index).filter(other => other.side === card.side).length;
 			const value = cardMagnitude(game, card) * fade * (earlierForSameTeam > 0 ? secondCardFactor : 1);
 			if (value <= best) return;
 			best = value;

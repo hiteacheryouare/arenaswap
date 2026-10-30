@@ -150,6 +150,21 @@ describe('stakes: a postseason series', () => {
 		expect(seriesStakes(0, 0, 1)).toBe(0);
 	});
 
+	// Rows are home wins, columns away wins. Best-of-nine has no elimination values of its own.
+	test.each([
+		[1, [[0]]],
+		[2, [[0]]],
+		[3, [[0, 5], [5, 8]]],
+		[4, [[0, 4], [4, 8]]],
+		[5, [[0, 0, 4], [0, 0, 6], [4, 6, 9]]],
+		[6, [[0, 0, 4], [0, 0, 4], [4, 4, 8]]],
+		[7, [[0, 0, 0, 4], [0, 0, 0, 5], [0, 0, 0, 7], [4, 5, 7, 10]]],
+		[8, [[0, 0, 0, 4], [0, 0, 0, 4], [0, 0, 0, 4], [4, 4, 4, 8]]],
+		[9, [[0, 0, 0, 0, 4], [0, 0, 0, 0, 4], [0, 0, 0, 0, 4], [0, 0, 0, 0, 4], [4, 4, 4, 4, 8]]],
+	])('every standing of a best-of-%i', (bestOf, grid) => {
+		expect(grid.map((row, home) => row.map((_, away) => seriesStakes(home, away, bestOf)))).toEqual(grid);
+	});
+
 	test('with the postseason boost, a first-round Game 7 outranks a Finals Game 1, and a Finals Game 7 is 18', () => {
 		const withPostseason = (series: SeriesState, postseasonRound: 0 | 3) => {
 			const score = scoreGame(playoffs(series, 3, { postseasonRound }), {}, { mode: 'classic', postseasonBoostPoints: 8 });

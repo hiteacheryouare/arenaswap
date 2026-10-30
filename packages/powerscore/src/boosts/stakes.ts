@@ -4,19 +4,28 @@ import type { BoostDefinition, Game, ReasonFragment, SeriesState, Side, TeamStak
 
 const decisiveValue: Record<number, number> = { 7: 10, 5: 9, 3: 8 };
 
-// Keyed "winner-wins-loser-wins" for the team facing elimination's opponent.
-const eliminationValue: Record<string, number> = { '7:3-2': 7, '7:3-1': 5, '7:3-0': 4, '5:2-1': 6, '5:2-0': 4, '3:1-0': 5 };
+const seriesKey = (bestOf: number, leader: number, trailer: number): number => (bestOf << 8) | (leader << 4) | trailer;
+
+// Keyed by series length, then the leader's wins, then the wins of the team facing elimination.
+const eliminationValue: Record<number, number> = {
+	[seriesKey(7, 3, 2)]: 7,
+	[seriesKey(7, 3, 1)]: 5,
+	[seriesKey(7, 3, 0)]: 4,
+	[seriesKey(5, 2, 1)]: 6,
+	[seriesKey(5, 2, 0)]: 4,
+	[seriesKey(3, 1, 0)]: 5,
+};
 
 const seriesStakes = (series: SeriesState): number => {
 	if (series.bestOf < 3) return 0;
-	const needed = Math.ceil(series.bestOf / 2);
+	const needed = (series.bestOf + 1) >> 1;
 	const homeOnBrink = series.homeWins === needed - 1;
 	const awayOnBrink = series.awayWins === needed - 1;
 	if (homeOnBrink && awayOnBrink) return decisiveValue[series.bestOf] ?? 8;
 	if (!homeOnBrink && !awayOnBrink) return 0;
 	const leader = Math.max(series.homeWins, series.awayWins);
 	const trailer = Math.min(series.homeWins, series.awayWins);
-	return eliminationValue[`${series.bestOf}:${leader}-${trailer}`] ?? 4;
+	return eliminationValue[seriesKey(series.bestOf, leader, trailer)] ?? 4;
 };
 
 // The scoreboard already shows the series record, so this says only what the game decides.
