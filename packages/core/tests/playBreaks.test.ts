@@ -168,6 +168,24 @@ describe('content-aware switching', () => {
 			expect(isDecisiveMoment({ ...down3, baseRunners: { first: true, second: true, third: false } })).toBe(true);
 		});
 
+		test.each([
+			[false, false, false, false],
+			[true, false, false, false],
+			[false, true, false, false],
+			[false, false, true, false],
+			[true, true, false, true],
+			[true, false, true, true],
+			[false, true, true, true],
+			[true, true, true, true],
+		])('down three in the ninth with first %s, second %s, third %s is decisive: %s', (first, second, third, decisive) => {
+			const down3 = game({
+				league: 'mlb', sportType: 'baseball', period: 9, topOfInning: false, clockSeconds: 0,
+				homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 1 }, awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 4 },
+				baseRunners: { first, second, third },
+			});
+			expect(isDecisiveMoment(down3)).toBe(decisive);
+		});
+
 		test('a fourth down in field goal range late in a one-score game is decisive', () => {
 			const drive = game({ league: 'nfl', sportType: 'football', period: 4, clockSeconds: 90, possessionTeamId: 'h', yardLine: 50, down: 3 });
 			expect(isDecisiveMoment(drive)).toBe(false);

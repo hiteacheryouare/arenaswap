@@ -128,6 +128,7 @@ The pieces the built-in modes are made of are exported too, so a custom mode can
 | `underdogProbability(line, sportType, league)` | The underdog's chance before the game, from a `PregameLine`. `undefined` when the line can't say. |
 | `postseasonBoostShare(round)` | The share of the postseason boost a round earns: 1, 0.75, 0.5, 0.25, or 0 with no round. |
 | `applyProgressFloor`, `findLeadChanges` | The two helpers behind closeness and lead changes. |
+| `baseMask(baseRunners)`, `runnersOn(mask)` | The bases as a 3-bit number, first base lowest (`0b101` is runners on first and third), and how many runners that is. |
 
 ## Reasons
 

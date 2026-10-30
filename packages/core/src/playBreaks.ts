@@ -1,4 +1,4 @@
-import { leagueConfigMap, sportTypeConfigMap } from 'powerscore';
+import { baseMask, leagueConfigMap, runnersOn, sportTypeConfigMap } from 'powerscore';
 import { hockeyFlowTypes, pitchTypes, type CommercialBreakEntry } from './commercialBreaks';
 import type { Game, LeagueId } from './types';
 
@@ -87,7 +87,7 @@ const baseballDecider = (game: Game): boolean => {
 	if (game.period < regularPeriods(game) || game.topOfInning === undefined) return false;
 	const [batting, fielding] = game.topOfInning ? [game.awayTeam, game.homeTeam] : [game.homeTeam, game.awayTeam];
 	const deficit = fielding.score - batting.score;
-	const runners = Object.values(game.baseRunners ?? {}).filter(Boolean).length;
+	const runners = game.baseRunners ? runnersOn(baseMask(game.baseRunners)) : 0;
 	return (deficit > 0 && deficit <= runners + 1) || (deficit === 0 && !game.topOfInning);
 };
 

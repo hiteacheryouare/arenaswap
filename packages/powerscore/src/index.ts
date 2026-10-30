@@ -12,6 +12,7 @@ export { upsetWatchBoost, upsetRoutBoost, underdogProbability } from './boosts/u
 export { stakesBoost } from './boosts/stakes';
 export { classicSignals, closenessSignal, lateGameSignal, momentumSignal, leadChangesSignal, comebackSignal, applyProgressFloor, findLeadChanges } from './signals/classic';
 export { scoringOpportunityBoost } from './boosts/scoringOpportunity';
+export { baseMask, runnersOn } from './boosts/shared';
 export { postseasonBoostShare } from './postseason';
 export { ordinal, renderReasonEnglish, renderReasonsEnglish } from './reasons';
 export { resolveLeagueConfig, resolveSportConfig } from './config';
