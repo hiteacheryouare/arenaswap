@@ -70,16 +70,12 @@ PowerScore is the scoring algorithm, published separately on npm and usable outs
 
 ## Voice
 
-Read `desc_long.md` and the existing blog post before writing anything. That is the voice, and matching it matters more than any rule below.
+**Read `.agents/VOICE.md` before writing anything.** It defines the ArenaSwap voice and the 0 to 10 spectrum it slides along, from loading lines to formal statements: where each surface starts, what slides toward formal, what humor is fair game, and punctuation and emoji rules. Decide where on the spectrum a piece sits before you start, and say where you put it in your report.
 
-The short version: confident, plain, a little dry, occasionally funny. Sports are fun and the copy knows it, but it never tries too hard. It respects the reader's time and assumes they are smart. It leads with the concrete thing that happens on their screen, not with a promise about their lifestyle.
+Then read the surrounding copy on the surface you're editing (`desc_long.md`, the site's `Hero.astro` and `Features.astro`, the blog) so the new lines sit next to the old ones without a seam.
 
-- **Specific over sweeping.** "Checks as often as every 6 seconds during tense moments" beats "lightning-fast updates."
-- **Short sentences do the heavy lifting.** Vary the rhythm, but when a sentence is carrying the point, let it be short.
-- **Second person, active voice.** The user does things. The extension does things. Nothing "is enabled."
 - **Earn every adjective.** Most of them are load-bearing for nobody.
 - **The tagline is "Never miss the moment."** Don't invent competing taglines without being asked.
-- **Emoji are allowed** where they aid scanning or land a joke, the way the league list in the store description uses them. Sparingly, and never in place of a real word.
 
 ## Hard rules
 

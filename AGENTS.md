@@ -1,5 +1,6 @@
 # ArenaSwap Agent Instructions
 For code style guidelines, read @.agents/CODESTYLE.md
+For how copy should sound, read @.agents/VOICE.md
 
 ## Overview
 ArenaSwap is a cross-browser extension that automatically switches tabs to the most exciting live sports game.
