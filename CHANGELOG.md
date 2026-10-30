@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Loading spinners spin like Bootstrap 5 again — 2026-10-29
+
+Bootstrap 6 shrank the spinner to 1em and slowed it to one turn a second, so `_bootstrap.scss` now sets v5's 2rem size, .25em border and .75s turn. The popup's loading spinner drops its own 1.5rem size and uses those defaults. The small inline spinners keep their sizes and just spin faster.
+
 ## A voice guide for every word ArenaSwap writes — 2026-10-29
 
 `.agents/VOICE.md` sets one ArenaSwap voice, drawn from research into Transit's and Slack's writing, and a 0 to 10 spectrum it slides along from loading lines to formal statements, with jokes, emoji and contractions fading out gradually rather than in tiers. Checked lines from both inspirations sit at each point on the spectrum next to where ArenaSwap differs from them, and the guide writes down that ArenaSwap is openly a Philadelphia fan, near the loose end only and never at another team's expense. The content-writer agent and `AGENTS.md` now point to it.

@@ -111,6 +111,14 @@ $link-hover-color: theme.pair(link-hover-color) !default;
 	$collapse-tokens:  (--transition-collapse-duration: m.$motion-slow, --transition-collapse-timing: m.$motion-ease) !default,
 	$progress-tokens:  (--progress-bar-transition: width m.$motion-slow m.$motion-ease) !default,
 
+	// v5's spinner. v6 shrank it to 1em and slowed it to a full second a turn.
+	$spinner-border-tokens: (
+		--spinner-width: 2rem,
+		--spinner-height: 2rem,
+		--spinner-border-width: .25em,
+		--spinner-animation-speed: .75s,
+	) !default,
+
 	// v6 dropped the 1.25 step v5 called lh-sm. Tight two-line labels throughout the popup use it.
 	$utilities: (
 		'line-height': (
