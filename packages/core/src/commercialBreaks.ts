@@ -34,10 +34,11 @@ export interface CommercialBreakEntry {
 	pitchedThisHalf?: boolean;
 	// NHL: the TV timeout marks (minutes remaining) already used, by period.
 	usedTvMarks?: Record<number, number[]>;
-	// College football: the scoreboard clock when the last play arrived, and whether it had moved
-	// for each of the most recent plays, newest last.
+	// College football: the scoreboard clock when the last play arrived, a bit for each of the most
+	// recent plays the clock sat still for (newest lowest), and how many plays that window holds.
 	clockAtLastPlay?: number;
-	clockMovedForPlays?: boolean[];
+	clockFrozenPlays?: number;
+	clockPlaysSeen?: number;
 	clockStall?: ClockStallEntry;
 }
 
@@ -117,19 +118,28 @@ const footballScoreTypes = /^(extra point (good|missed)|field goal good|two poin
 // The NFL logs its own TV timeouts, including the one after a score, so a score by itself isn't one.
 const proFootballRule: Rule = game => proFootballTvTypes[playType(game)];
 
-const isStaleFeed = (moved: boolean[] | undefined): boolean => (
-	moved !== undefined && moved.length >= staleFeedWindow && moved.filter(entry => !entry).length / moved.length >= staleFeedFrozenShare
+const staleFeedMask = (1 << staleFeedWindow) - 1;
+
+const bitCount = (bits: number): number => {
+	let count = 0;
+	for (let rest = bits; rest; count++) rest &= rest - 1;
+	return count;
+};
+
+const isStaleFeed = (entry: CommercialBreakEntry): boolean => (
+	(entry.clockPlaysSeen ?? 0) >= staleFeedWindow && bitCount(entry.clockFrozenPlays ?? 0) / staleFeedWindow >= staleFeedFrozenShare
 );
 
 // A college scoreboard whose clock stops moving between plays has stopped being kept live, and its
 // plays turn up a minute or more late: too late to time a break by. Only the end of a quarter is
 // trusted then.
 const trackCollegeClock = (game: Game, previous: CommercialBreakEntry, next: CommercialBreakEntry): boolean => {
-	if (!isNewPlay(game, previous)) return isStaleFeed(next.clockMovedForPlays);
+	if (!isNewPlay(game, previous)) return isStaleFeed(next);
 	const moved = previous.clockAtLastPlay === undefined || game.clockSeconds !== previous.clockAtLastPlay;
 	next.clockAtLastPlay = game.clockSeconds;
-	next.clockMovedForPlays = [...(previous.clockMovedForPlays ?? []), moved].slice(-staleFeedWindow);
-	return isStaleFeed(next.clockMovedForPlays);
+	next.clockFrozenPlays = (((previous.clockFrozenPlays ?? 0) << 1) | (moved ? 0 : 1)) & staleFeedMask;
+	next.clockPlaysSeen = Math.min((previous.clockPlaysSeen ?? 0) + 1, staleFeedWindow);
+	return isStaleFeed(next);
 };
 
 // No TV timeouts in the college feed, so a team timeout, the end of a quarter or the kick after a

@@ -371,6 +371,37 @@ describe('college football, from the plays a break follows', () => {
 	test('one whose clock has stopped being kept is too late to time a break by', () => {
 		expect(flagged(replay(polls(drive(false), college)))).toEqual([]);
 	});
+
+	// One character per play, the extra point last: 1 when the clock moved since the play before,
+	// 0 when it sat still. The first play always reads as moved, having nothing to compare with.
+	const playsFrom = (pattern: string): TextPoll[] => {
+		let clock = 900;
+		const rows = [...pattern].map((moved, index): TextPoll => {
+			if (moved === '1') clock -= 30;
+			const display = `${Math.floor(clock / 60)}:${String(clock % 60).padStart(2, '0')}`;
+			const last = index === pattern.length - 1;
+			return [index * 30, display, last ? 'pat' : `play-${index}`, last ? 'Extra Point Good' : 'Rush', last ? '(KICK)' : 'rush for 4 yards'];
+		});
+		const [seconds, ...rest] = rows.at(-1)!;
+		return [...rows, [seconds + 30, ...rest]];
+	};
+
+	test.each([
+		['11111111111', true],
+		['10000000000', false],
+		['11100000000', false],
+		['11110000000', true],
+		['10000000011', false],
+		['1000000000', false],
+		['100000000', true],
+		['100000000001', false],
+		['1000000000111', true],
+		['1010101010101', true],
+	])('plays %s: the extra point is timed as a break: %s', (pattern, timed) => {
+		const verdicts = replay(polls(playsFrom(pattern), college));
+		const pat = (pattern.length - 1) * 30;
+		expect(flagged(verdicts, 'scoreBreak')).toEqual(timed ? [pat, pat + 30] : []);
+	});
 });
 
 describe('leagues whose feed carries no plays keep the frozen clock', () => {
