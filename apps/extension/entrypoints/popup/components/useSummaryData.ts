@@ -150,9 +150,11 @@ type SummaryGameArg = Pick<Game, 'id' | 'league' | 'status' | 'sportType'> & {
 // Deterministic so mock charts do not change between renders.
 const lcgNext = (s: number): number => (s * 1664525 + 1013904223) & 0x7fffffff;
 
-const seedFromStr = (str: string): number => (
-	[...str].reduce((acc, c) => (acc * 31 + c.charCodeAt(0)) & 0x7fffffff, 7)
-);
+const seedFromStr = (str: string): number => {
+	let seed = 7;
+	for (const c of str) seed = (seed * 31 + c.charCodeAt(0)) & 0x7fffffff;
+	return seed;
+};
 
 const generateMockWinProbs = (gameId: string, homeScore: number, awayScore: number): number[] => {
 	let s = seedFromStr(gameId);
