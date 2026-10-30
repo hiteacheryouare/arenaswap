@@ -1,5 +1,6 @@
 import { pollWinProbabilityMs } from '@arenaswap/core';
 import { gameEndTimesKey } from '../utils/gameEndTimes';
+import { slateRefreshMs } from '../utils/slateMerge';
 import { monoLogoCacheKey, monoLogoCacheTtlMs } from '../utils/monoLogoCache';
 import { createDefaultUserPreferences, createFavoriteTeamKey, guideMinUpcomingDays, historyWindowMs, normalizeUserPreferences, pollDormantMaxMs, pollHebetudinousMaxMs, pollIntervalMs, pollLookaheadTtlMs, pollMaxEagerMs } from '@arenaswap/core/constants';
 import { chartHistory, coversWholeGame } from '../entrypoints/popup/components/wrapCoverage';
@@ -3235,5 +3236,59 @@ describe('a fresh install with no leagues picked yet', () => {
 
 		const said = [...error.mock.calls, ...warn.mock.calls].map(args => args.join(' '));
 		expect(said.filter(line => line.includes('shed'))).toEqual([]);
+	});
+});
+
+/* The keepalive lets the worker run for days, and the slate used to be fetched only at startup and
+   on a preference change. Once the Eastern day rolled over, the dateless poll stopped returning last
+   night's games, so the slate's `pre` copies were all that was left and Up Next paged back to them. */
+describe('a worker that stays up past midnight', () => {
+	const nbaOnly: Partial<UserPreferences> = { enabledLeagues: ['nba' as LeagueId], enabled: false, showUpcomingGames: true };
+	let slate: Game[];
+	let poll: Game[];
+
+	const wideFetches = () => fetchMock.mock.calls.filter(([, options]) => (options as { includeUpcoming?: boolean } | undefined)?.includeUpcoming === true).length;
+	const stateGames = async () => summary((await sendMessage({ type: 'GET_STATE' }) as { games: Game[] }).games);
+
+	beforeEach(async () => {
+		slate = [slateGame('tonight', 'nba', 'pre')];
+		poll = slate;
+		await loadBackground({ prefs: nbaOnly, initialSystemTime: 1_000_000, fetchReturnValue: { games: slate, leagueLogos: {} } });
+		fetchMock.mockImplementation(async (_leagues: LeagueId[], options?: { includeUpcoming?: boolean }) => ({
+			games: options?.includeUpcoming ? slate : poll,
+			leagueLogos: {},
+			shedLeagues: [],
+		}));
+	});
+
+	const rollOver = () => {
+		slate = [slateGame('tomorrow', 'nba', 'pre')];
+		poll = [];
+		jest.setSystemTime(1_000_000 + slateRefreshMs);
+	};
+
+	test('drops last night\'s kickoffs on the next league poll', async () => {
+		rollOver();
+		jest.advanceTimersByTime(pollDormantMaxMs + 2000);
+		await drain();
+
+		expect(await stateGames()).toEqual(['tomorrow:pre']);
+	});
+
+	test('drops last night\'s kickoffs on a popup refresh', async () => {
+		rollOver();
+		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
+
+		expect(await stateGames()).toEqual(['tomorrow:pre']);
+	});
+
+	test('asks for the slate again at most once an hour', async () => {
+		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
+		expect(wideFetches()).toBe(0);
+
+		rollOver();
+		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
+		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
+		expect(wideFetches()).toBe(1);
 	});
 });

@@ -449,8 +449,8 @@ describe('mainView game sections', () => {
 	// pinning. It now shows up as page order rather than row order: the earlier day pages first even
 	// though the NBA outranks the WNBA within a day.
 	it('sorts upcoming games by day before league priority', () => {
-		const todayGame = makeGame('today-wnba', 'pre', { league: 'wnba', startTime: '2026-05-27T23:00:00.000Z' });
-		const tomorrowGame = makeGame('tomorrow-nba', 'pre', { league: 'nba', startTime: '2026-05-28T20:30:00.000Z' });
+		const todayGame = makeGame('today-wnba', 'pre', { league: 'wnba', startTime: new Date(new Date().setHours(23, 0, 0, 0)).toISOString() });
+		const tomorrowGame = makeGame('tomorrow-nba', 'pre', { league: 'nba', startTime: tomorrowAt(20) });
 		cy.mount(<StatefulMainView games={[tomorrowGame, todayGame]} />);
 		cy.get('[data-testid="game-card-today-wnba"]').should('exist');
 		cy.get('[data-testid="game-card-tomorrow-nba"]').should('not.exist');

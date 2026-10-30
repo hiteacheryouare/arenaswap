@@ -13,6 +13,7 @@ import {
 	groupByLeague,
 	insertLeagueAtDefaultPosition,
 	isFavoriteTeamGame,
+	isInUpcomingWindow,
 	leagueOrder,
 	leaguesBySportType,
 	moveLeague,
@@ -490,6 +491,29 @@ describe('fetchState', () => {
 		const send = mockSendMessage(liveGameState);
 		await fetchState(true);
 		expect(send).toHaveBeenCalledWith({ type: 'GET_STATE', forceRefresh: true });
+	});
+});
+
+describe('isInUpcomingWindow', () => {
+	const now = new Date(2026, 9, 30, 0, 30);
+	const startingAt = (startTime: Date) => makeGame({ id: 'g', status: 'pre', startTime: startTime.toISOString() });
+
+	it('never offers a day before today', () => {
+		expect(isInUpcomingWindow(startingAt(new Date(2026, 9, 29, 19, 0)), 7, now)).toBe(false);
+	});
+
+	// Kicked off on time by the schedule, but still pregame: a delay, not a stale copy.
+	it('keeps a game from earlier today that has not started yet', () => {
+		expect(isInUpcomingWindow(startingAt(new Date(2026, 9, 30, 0, 5)), 7, now)).toBe(true);
+	});
+
+	it('stops at the Up Next range', () => {
+		expect(isInUpcomingWindow(startingAt(new Date(2026, 10, 2, 0, 0)), 3, now)).toBe(true);
+		expect(isInUpcomingWindow(startingAt(new Date(2026, 10, 2, 1, 0)), 3, now)).toBe(false);
+	});
+
+	it('keeps a game with no start time', () => {
+		expect(isInUpcomingWindow(makeGame({ id: 'g', status: 'pre' }), 7, now)).toBe(true);
 	});
 });
 

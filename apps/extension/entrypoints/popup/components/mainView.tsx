@@ -29,7 +29,7 @@ import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import useReorderGlide from '@arenaswap/ui/src/components/useReorderGlide';
 import useSlideDirection, { slideClassName } from '../useSlideDirection';
-import { buildFinalComparator, buildLeagueRank, buildLiveComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, resolveSelectedDayIndex } from '../popupHelpers';
+import { buildFinalComparator, buildLeagueRank, buildLiveComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, isInUpcomingWindow, resolveSelectedDayIndex } from '../popupHelpers';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import useRestoredScroll from '../useRestoredScroll';
 import { prefetchOnIntent } from './prefetchIntent';
@@ -236,10 +236,7 @@ const mainView = ({
 		() => buildFinalComparator(leagueRank, favoriteTeamIds, grouped),
 		[leagueRank, favoriteTeamIds, grouped],
 	);
-	const upcomingCutoffMs = useMemo(
-		() => Date.now() + prefs.upcomingGamesDays * 24 * 60 * 60 * 1000,
-		[prefs.upcomingGamesDays],
-	);
+	const openedAt = useMemo(() => new Date(), []);
 	const liveGames = useMemo(() => games.filter(g => g.status === 'in'), [games]);
 	// The background already drops a game once it has aged out of the retention window, so this is
 	// only a sort: most recently wrapped first, since that is the game you came looking for.
@@ -251,10 +248,9 @@ const mainView = ({
 	);
 	const upcomingGames = useMemo(
 		() => games
-			.filter(g => g.status === 'pre')
-			.filter(g => !g.startTime || new Date(g.startTime).getTime() <= upcomingCutoffMs)
+			.filter(g => g.status === 'pre' && isInUpcomingWindow(g, prefs.upcomingGamesDays, openedAt))
 			.toSorted(sortUpcomingGames),
-		[games, sortUpcomingGames, upcomingCutoffMs],
+		[games, sortUpcomingGames, prefs.upcomingGamesDays, openedAt],
 	);
 	// Grouping runs before any truncation, so what Up Next shows is always exactly one whole day.
 	const upcomingDays = useMemo(() => groupByDate(upcomingGames, locale), [upcomingGames, locale]);

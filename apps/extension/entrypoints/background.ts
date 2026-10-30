@@ -26,7 +26,7 @@ import { activeProfileSyncKey, followSyncedProfile } from '../utils/profiles';
 import { capitalizeReason, speakReason } from '../utils/powerScoreReason';
 import { displayLocale } from '../utils/displayLocale';
 import type { guideSlateOutcome } from '../utils/slateMerge';
-import { guideSlateTtlMs, keepRefusedLeagues, resolveGuideSlate, resolveGuideSlateFailure } from '../utils/slateMerge';
+import { guideSlateTtlMs, keepRefusedLeagues, resolveGuideSlate, resolveGuideSlateFailure, slateRefreshMs } from '../utils/slateMerge';
 import {
 	normalizeReviewPromptState,
 	recordSuccessfulReviewPromptSwitch,
@@ -173,6 +173,7 @@ export default defineBackground(() => {
 	// and replace a league's games wholesale, so anything the range fetch found that the dateless
 	// call cannot see has to be carried across each tick by hand.
 	let retainedFinalGames: Game[] = [];
+	let slateFetchedAt = 0;
 	/* The guide's own wider slate, from its own fetch — `refreshSlate` deliberately does not produce
 	   it, because reaching back far enough to cover the guide truncated the popup's future days
 	   against ESPN's server-side event cap. Held between opens rather than re-fetched on each one,
@@ -973,6 +974,7 @@ export default defineBackground(() => {
 	   finals for the guide spent that whole budget on a college football weekend's *past* games and
 	   left one day of future showing. The guide asks for its own superset again. */
 	const refreshSlate = async () => {
+		slateFetchedAt = Date.now();
 		if (!prefs.showUpcomingGames && !prefs.keepFinalGames) {
 			upcomingGames = [];
 			retainedFinalGames = [];
@@ -1008,6 +1010,16 @@ export default defineBackground(() => {
 		} catch (err) {
 			logWarn('Failed to fetch the slate.', err);
 		}
+	};
+
+	/* The keepalive lets the worker outlive its slate by days. Left alone, yesterday's kickoffs stay
+	   `pre` here after the Eastern rollover drops them from the dateless poll, and the popup offers
+	   a page of finished games as upcoming. */
+	const refreshStaleSlate = async () => {
+		if (Date.now() - slateFetchedAt < slateRefreshMs) return;
+		await refreshSlate();
+		const live = games.filter(g => g.status === 'in');
+		games = [...live, ...slateBeside(live, [...upcomingGames, ...liveRetainedFinals()])];
 	};
 
 	const holdGuideSlate = (outcome: guideSlateOutcome) => {
@@ -1304,6 +1316,7 @@ export default defineBackground(() => {
 				return acc;
 			}, {});
 		} else {
+			await refreshStaleSlate();
 			let fetched: Game[];
 			try {
 				const fetchResult = await fetchFilteredGames(enabledLeagues, { includeUpcoming: false, includeFinal: wantsFinalGames() });
@@ -1340,6 +1353,7 @@ export default defineBackground(() => {
 	const tickLeague = async (leagueId: LeagueId, allowTabSwitch: boolean) => {
 		let fetchSucceeded = false;
 		let finishedGames: Game[] = [];
+		await refreshStaleSlate();
 		try {
 			const fetchResult = await fetchFilteredGames([leagueId], { includeUpcoming: false, includeFinal: wantsFinalGames() });
 			// Thrown rather than merged: a shed league comes back with no games, and the tail of this

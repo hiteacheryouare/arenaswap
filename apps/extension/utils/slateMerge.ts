@@ -5,6 +5,9 @@ import type { Game, LeagueId } from '@arenaswap/core/types';
 // being added to the day — rather than any score or clock on screen.
 export const guideSlateTtlMs = 10 * 60 * 1000;
 
+// How long the popup's slate is trusted while the worker stays awake.
+export const slateRefreshMs = 60 * 60 * 1000;
+
 // How long a slate that lost leagues, or one every league refused, is trusted before the next open
 // asks again. Short, but not zero: every poll broadcast makes an open Guide ask, and a refusal that
 // was asked about again each time would add a wide fetch to the very quota that caused it.

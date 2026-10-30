@@ -207,6 +207,14 @@ export const buildFinalComparator = (
 	);
 };
 
+// Up Next starts at today's midnight: a pregame game from an earlier day is a stale copy of one that
+// has since been played, not a page worth flipping back to.
+export const isInUpcomingWindow = (game: Game, days: number, now: Date): boolean => {
+	if (!game.startTime) return true;
+	const kickoffMs = startMs(game);
+	return kickoffMs >= new Date(now).setHours(0, 0, 0, 0) && kickoffMs <= now.getTime() + days * 24 * 60 * 60 * 1000;
+};
+
 const toKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 
 const formatDateLabel = (dateStr: string, locale?: string): string => {
