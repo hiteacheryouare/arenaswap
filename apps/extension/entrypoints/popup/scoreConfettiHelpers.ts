@@ -1,6 +1,6 @@
 import { createFavoriteTeamKey, leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
-import { hexLuminance, isHex } from '@arenaswap/chromatic';
+import { hexLuminance, isHex, rgbToHex } from '@arenaswap/chromatic';
 
 interface liveGameSnapshot {
 	league: LeagueId;
@@ -39,18 +39,11 @@ const normalizeHexColor = (value: string | undefined): string | null => {
 	return `#${trimmed[1]}${trimmed[1]}${trimmed[2]}${trimmed[2]}${trimmed[3]}${trimmed[3]}`.toUpperCase();
 };
 
-const clampColorChannel = (value: number): number => (
-	Math.max(0, Math.min(255, Math.round(value)))
-);
-
-const toHexChannel = (value: number): string => (
-	clampColorChannel(value).toString(16).padStart(2, '0').toUpperCase()
-);
-
 const adjustHexShade = (hexColor: string, shadeOffset: number): string => {
-	const red = parseInt(hexColor.slice(1, 3), 16);
-	const green = parseInt(hexColor.slice(3, 5), 16);
-	const blue = parseInt(hexColor.slice(5, 7), 16);
+	const packed = parseInt(hexColor.slice(1), 16);
+	const red = packed >> 16;
+	const green = (packed >> 8) & 255;
+	const blue = packed & 255;
 	const target = shadeOffset >= 0 ? 255 : 0;
 	const amount = Math.abs(shadeOffset);
 
@@ -58,7 +51,7 @@ const adjustHexShade = (hexColor: string, shadeOffset: number): string => {
 	const shadedGreen = green + (target - green) * amount;
 	const shadedBlue = blue + (target - blue) * amount;
 
-	return `#${toHexChannel(shadedRed)}${toHexChannel(shadedGreen)}${toHexChannel(shadedBlue)}`;
+	return rgbToHex(shadedRed, shadedGreen, shadedBlue).toUpperCase();
 };
 
 export const createTeamColorShadePalette = (teamColor: string | undefined): string[] => {

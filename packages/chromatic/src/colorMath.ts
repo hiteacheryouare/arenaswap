@@ -23,12 +23,11 @@ export const hexToRgb = (value: string): Rgb | null => {
 	return { red: (packed >> 16) & 255, green: (packed >> 8) & 255, blue: packed & 255 };
 };
 
-const channelHex = (value: number): string => (
-	Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0')
-);
+const channelByte = (value: number): number => Math.max(0, Math.min(255, Math.round(value)));
 
+// The 1 above the top channel keeps a dark red's leading zeros, and is sliced back off.
 export const rgbToHex = (red: number, green: number, blue: number): string => (
-	`#${channelHex(red)}${channelHex(green)}${channelHex(blue)}`
+	`#${((1 << 24) | (channelByte(red) << 16) | (channelByte(green) << 8) | channelByte(blue)).toString(16).slice(1)}`
 );
 
 const channelLuminance = (value: number): number => {

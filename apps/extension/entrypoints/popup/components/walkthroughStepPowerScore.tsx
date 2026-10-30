@@ -110,9 +110,10 @@ const buildDots = (signals: readonly walkthroughSignal[]) =>
 	});
 
 const contrastText = (hex: string): string => {
-	const r = parseInt(hex.slice(1, 3), 16);
-	const g = parseInt(hex.slice(3, 5), 16);
-	const b = parseInt(hex.slice(5, 7), 16);
+	const packed = parseInt(hex.slice(1), 16);
+	const r = packed >> 16;
+	const g = (packed >> 8) & 255;
+	const b = packed & 255;
 	const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 	return lum > 0.55 ? '#111111' : '#ffffff';
 };

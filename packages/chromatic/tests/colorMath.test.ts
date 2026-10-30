@@ -82,6 +82,16 @@ describe('hexToRgb and rgbToHex', () => {
 	test('rounds a fractional channel rather than truncating it', () => {
 		expect(rgbToHex(0.6, 1.4, 2.5)).toBe('#010103');
 	});
+
+	test('carries every byte through every channel, leading zeros and all', () => {
+		for (let value = 0; value < 256; value++) {
+			const byte = value.toString(16).padStart(2, '0');
+			expect(rgbToHex(value, 0, 0)).toBe(`#${byte}0000`);
+			expect(rgbToHex(0, value, 0)).toBe(`#00${byte}00`);
+			expect(rgbToHex(0, 0, value)).toBe(`#0000${byte}`);
+			expect(hexToRgb(rgbToHex(value, 255 - value, value ^ 0x5a))).toEqual({ red: value, green: 255 - value, blue: value ^ 0x5a });
+		}
+	});
 });
 
 describe('isHex', () => {
