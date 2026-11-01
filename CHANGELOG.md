@@ -9,6 +9,10 @@
 
 Since the keepalive, the worker can stay up for days, and the slate it builds Up Next from was only fetched at startup or on a settings change, so after midnight last night's games came back from it still marked pregame. The worker now refetches the slate when a poll finds it an hour old, and Up Next drops any pregame game that started before today as a backstop.
 
+## The header glow follows soccer's home-first order — 2026-10-30
+
+The glow behind the popup header always put the away team's colour on the left, so a soccer top game drew its colours opposite the card below it. It now orders by `isHomeFirst` like the cards, and its properties are renamed `--glow-left` and `--glow-right` since they no longer mean away and home.
+
 ## Loading spinners spin like Bootstrap 5 again — 2026-10-29
 
 Bootstrap 6 shrank the spinner to 1em and slowed it to one turn a second, so `_bootstrap.scss` now sets v5's 2rem size, .25em border and .75s turn. The popup's loading spinner drops its own 1.5rem size and uses those defaults. The small inline spinners keep their sizes and just spin faster.

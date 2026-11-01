@@ -351,8 +351,8 @@ describe('mainView header glow', () => {
 			/>,
 		);
 		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
-			expect(glow.style.getPropertyValue('--glow-away').toLowerCase()).to.equal('#00471b');
-			expect(glow.style.getPropertyValue('--glow-home').toLowerCase()).to.equal('#860038');
+			expect(glow.style.getPropertyValue('--glow-left').toLowerCase()).to.equal('#00471b');
+			expect(glow.style.getPropertyValue('--glow-right').toLowerCase()).to.equal('#860038');
 			expect(getComputedStyle(glow).backgroundImage).to.contain('radial-gradient');
 		});
 		// Behind the header and the cards, not over them.
@@ -361,6 +361,21 @@ describe('mainView header glow', () => {
 			const box = header.getBoundingClientRect();
 			expect(document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)).to.not.equal(document.querySelector('.popup-glow'));
 			expect(glow.top).to.be.closeTo(box.top, 1);
+		});
+	});
+
+	it('puts the home colour on the left when soccer draws home first', () => {
+		const match = {
+			...makeGame('match'),
+			league: 'bundesliga' as const,
+			sportType: 'soccer' as const,
+			awayTeam: { id: 'm05', name: 'Mainz', abbreviation: 'M05', score: 0, color: '#C3141E' },
+			homeTeam: { id: 'elv', name: 'Elversberg', abbreviation: 'ELV', score: 3, color: '#000000' },
+		};
+		cy.mount(<MainView {...defaultProps} games={[match]} scores={[score('match', 17)]} />);
+		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
+			expect(glow.style.getPropertyValue('--glow-left').toLowerCase()).to.equal('#000000');
+			expect(glow.style.getPropertyValue('--glow-right').toLowerCase()).to.equal('#c3141e');
 		});
 	});
 
@@ -376,15 +391,15 @@ describe('mainView header glow', () => {
 			/>,
 		);
 		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
-			expect(glow.style.getPropertyValue('--glow-home').toLowerCase()).to.equal('#041e42');
+			expect(glow.style.getPropertyValue('--glow-right').toLowerCase()).to.equal('#041e42');
 		});
 	});
 
 	it('glows nothing when nothing is live', () => {
 		cy.mount(<MainView {...defaultProps} games={[makeGame('later', 'pre', { startTime: dayAt(0) })]} />);
 		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
-			expect(getComputedStyle(glow).getPropertyValue('--glow-away')).to.equal('rgba(0, 0, 0, 0)');
-			expect(getComputedStyle(glow).getPropertyValue('--glow-home')).to.equal('rgba(0, 0, 0, 0)');
+			expect(getComputedStyle(glow).getPropertyValue('--glow-left')).to.equal('rgba(0, 0, 0, 0)');
+			expect(getComputedStyle(glow).getPropertyValue('--glow-right')).to.equal('rgba(0, 0, 0, 0)');
 		});
 	});
 
@@ -398,15 +413,15 @@ describe('mainView header glow', () => {
 		});
 		cy.mount(<SteppingMainView frames={[{ games: [tinted('#0000ff')] }, { games: [tinted('#ff0000')] }]} />);
 		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
-			expect(getComputedStyle(glow).getPropertyValue('--glow-away')).to.equal('rgb(0, 0, 255)');
+			expect(getComputedStyle(glow).getPropertyValue('--glow-left')).to.equal('rgb(0, 0, 255)');
 		});
 		cy.get('[data-testid="fake-next"]').click();
 		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
-			const transition = glow.getAnimations().find(animation => (animation as CSSTransition).transitionProperty === '--glow-away');
-			expect(transition, 'a running transition on --glow-away').to.not.equal(undefined);
+			const transition = glow.getAnimations().find(animation => (animation as CSSTransition).transitionProperty === '--glow-left');
+			expect(transition, 'a running transition on --glow-left').to.not.equal(undefined);
 			transition!.pause();
 			transition!.currentTime = 350;
-			const midway = getComputedStyle(glow).getPropertyValue('--glow-away');
+			const midway = getComputedStyle(glow).getPropertyValue('--glow-left');
 			expect(midway).to.not.equal('rgb(0, 0, 255)');
 			expect(midway).to.not.equal('rgb(255, 0, 0)');
 		});

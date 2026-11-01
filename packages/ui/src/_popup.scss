@@ -137,13 +137,13 @@
 
 	// Registered so a change of top game, or the first game going live, eases between colours instead
 	// of snapping. An unregistered custom property is a string and cannot be interpolated.
-	@property --glow-away {
+	@property --glow-left {
 		syntax: '<color>';
 		inherits: false;
 		initial-value: transparent;
 	}
 
-	@property --glow-home {
+	@property --glow-right {
 		syntax: '<color>';
 		inherits: false;
 		initial-value: transparent;
@@ -158,10 +158,10 @@
 		z-index: -1;
 		height: 240px;
 		background:
-			radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--glow-away) var(--glow-share), transparent), transparent 70%),
-			radial-gradient(120% 100% at 100% 0%, color-mix(in srgb, var(--glow-home) var(--glow-share), transparent), transparent 70%);
+			radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--glow-left) var(--glow-share), transparent), transparent 70%),
+			radial-gradient(120% 100% at 100% 0%, color-mix(in srgb, var(--glow-right) var(--glow-share), transparent), transparent 70%);
 		pointer-events: none;
-		transition: --glow-away m.$motion-deliberate m.$motion-ease, --glow-home m.$motion-deliberate m.$motion-ease;
+		transition: --glow-left m.$motion-deliberate m.$motion-ease, --glow-right m.$motion-deliberate m.$motion-ease;
 
 		[data-bs-theme='light'] & {
 			--glow-share: 22%;
