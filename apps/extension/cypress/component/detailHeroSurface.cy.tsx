@@ -31,6 +31,8 @@ const heroStyle = {
 const markUrl = (side: string) => `https://a.espncdn.com/combiner/i?img=/guid/${side}/logos/primary_logo_white.png&w=120&h=120`;
 const mono: MonoLogos = { away: { white: markUrl('a') }, home: { white: markUrl('h') } };
 
+const loadFaceOf = (selector: string) => cy.get(selector).first().then(([el]: JQuery<HTMLElement>) => el!.ownerDocument.fonts.load(getComputedStyle(el!).font, el!.textContent || 'Abc'));
+
 const mountLive = (game: Game, monoLogos = mono, isDelayed = false, status: { text: string; clock?: string } = { text: 'Q2', clock: '5:00' }) => {
 	cy.mount(
 		<div style={{ width: '320px', background: '#0d1117', padding: '0.75rem' }}>
@@ -133,7 +135,7 @@ describe('the detail hero surface', () => {
 
 	it('wraps a long delay notice inside the status column, clear of both team names', () => {
 		mountLive(liveGame, mono, true, { text: 'Delayed - Lightning In The Area' });
-		cy.document().its('fonts.status').should('eq', 'loaded');
+		loadFaceOf('.game-detail-period');
 		cy.get('.game-detail-period').should(([status]: JQuery<HTMLElement>) => {
 			const box = status.getBoundingClientRect();
 			const labels = Array.from(status.closest('.game-detail-teams-row')!.querySelectorAll('.game-detail-team-name')) as HTMLElement[];
@@ -148,7 +150,7 @@ describe('the detail hero surface', () => {
 
 	it('wraps a long single-word club name inside its crest column', () => {
 		mountLive({ ...liveGame, homeTeam: { ...liveGame.homeTeam, name: 'Mönchengladbach' } });
-		cy.document().its('fonts.status').should('eq', 'loaded');
+		loadFaceOf('.game-detail-team-name');
 		cy.contains('.game-detail-team-name', 'Mönchengladbach').should(([name]: JQuery<HTMLElement>) => {
 			expect(name.scrollWidth).to.be.at.most(name.clientWidth);
 		});

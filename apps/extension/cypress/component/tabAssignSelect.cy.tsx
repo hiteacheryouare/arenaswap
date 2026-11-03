@@ -54,6 +54,8 @@ describe('tabAssignSelect favicons', () => {
 	});
 });
 
+const loadFaceOf = (selector: string) => cy.get(selector).first().then(([el]: JQuery<HTMLElement>) => el!.ownerDocument.fonts.load(getComputedStyle(el!).font, el!.textContent || 'Abc'));
+
 const longTitle = 'Celtics vs 76ers live stream Game 7 Eastern Conference Finals replay';
 
 describe('tabAssignSelect long titles', () => {
@@ -64,7 +66,7 @@ describe('tabAssignSelect long titles', () => {
 				<TabAssignSelect gameId='g1' openTabs={longTabs} registry={[{ tabId: 21, gameId: 'g1' }] as any} onChange={() => {}} formatTabLabel={tab => tab.title ?? ''} />
 			</div>,
 		);
-		cy.document().its('fonts.status').should('eq', 'loaded');
+		loadFaceOf('.form-control-caret');
 		cy.get('.form-control-caret').should(([button]: JQuery<HTMLElement>) => {
 			const value = button.querySelector('[id$="-value"]') as HTMLElement;
 			const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -88,7 +90,7 @@ describe('tabAssignSelect open list', () => {
 				</div>
 			</div>,
 		);
-		cy.document().its('fonts.status').should('eq', 'loaded');
+		loadFaceOf('.form-control-caret');
 		cy.get('.form-control-caret').click();
 		cy.get('.select-dropdown-menu.show').should(([menu]: JQuery<HTMLElement>) => {
 			const toggle = menu.parentElement!.querySelector('.form-control-caret')!.getBoundingClientRect();
@@ -110,7 +112,7 @@ describe('tabAssignSelect in-use hint', () => {
 				<TabAssignSelect gameId='g1' openTabs={tab} registry={[{ tabId: 41, gameId: 'g2' }] as any} onChange={() => {}} formatTabLabel={t => t.title ?? ''} />
 			</div>,
 		);
-		cy.document().its('fonts.status').should('eq', 'loaded');
+		loadFaceOf('.form-control-caret');
 		cy.get('.form-control-caret').click();
 		cy.get('.select-dropdown-menu.show .menu-item').eq(1).should(([item]: JQuery<HTMLElement>) => {
 			const label = item.querySelector('.text-truncate') as HTMLElement;
