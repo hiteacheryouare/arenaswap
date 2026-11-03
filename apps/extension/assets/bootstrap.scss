@@ -2394,10 +2394,7 @@
 		// park the bar 0.75rem down. Pulling it back by that padding pins it flush to the top.
 		top: calc(var(--gd-inset) * -1);
 		z-index: 5;
-		// The outer columns share what the centre leaves, so the matchup sits on the card's axis
-		// until Back or the status needs more than its half, and then pushes rather than overlaps.
-		display: grid;
-		grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
+		display: flex;
 		align-items: center;
 		// Fixed height in both states so the compact matchup fading in never shifts the layout.
 		height: 2.5rem;
@@ -2413,8 +2410,6 @@
 	// `:focus-visible` rules read these too, and with them undefined a press drew no fill and a
 	// keyboard focus drew no ring.
 	.game-detail-back-button {
-		grid-column: 1;
-		justify-self: start;
 		--as-btn-color:               var(--as-fg-body);
 		--as-btn-bg:                  var(--as-control-bg);
 		--as-btn-border-color:        var(--as-border-color);
@@ -2603,18 +2598,22 @@
 	}
 
 	.gd-bar-compact {
-		grid-column: 2;
+		position: absolute;
+		left: 50%;
+		top: 50%;
 		display: flex;
 		align-items: center;
 		gap: 0.3rem;
 		opacity: 0;
 		pointer-events: none;
-		transform: translateY(4px);
+		// Centred on the bar rather than laid out in the flex row, so the matchup stays on the
+		// card's axis no matter how wide the back button's label runs in a given locale.
+		transform: translate(-50%, calc(-50% + 4px));
 		transition: opacity m.$motion-base m.$motion-ease, transform m.$motion-base m.$motion-ease;
 
 		&.is-visible {
 			opacity: 1;
-			transform: none;
+			transform: translate(-50%, -50%);
 		}
 	}
 
@@ -2672,9 +2671,10 @@
 	}
 
 	.gd-bar-status {
-		grid-column: 3;
-		justify-self: end;
-		min-width: 0;
+		position: absolute;
+		right: 0.75rem;
+		top: 50%;
+		transform: translateY(-50%);
 		max-width: 5.5rem;
 		overflow: hidden;
 		text-overflow: ellipsis;
