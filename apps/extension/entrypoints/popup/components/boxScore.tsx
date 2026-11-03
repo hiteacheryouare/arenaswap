@@ -94,7 +94,7 @@ const PlayerRow = ({ athlete, columns, indent }: {
 }) => (
 	<tr>
 		<th scope='row' className={`gd-box-name${indent ? ' gd-box-name-sub' : ''}`}>
-			<span className='gd-box-player'>{athlete.name}</span>
+			<span className='gd-box-player' title={athlete.name}>{athlete.name}</span>
 			{athlete.position && <span className='gd-box-position'>{athlete.position}</span>}
 		</th>
 		{/* ESPN's reason is an English string — "COACH'S DECISION" — so the row says DNP and stops

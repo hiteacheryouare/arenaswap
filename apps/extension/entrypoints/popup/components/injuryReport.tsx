@@ -24,8 +24,8 @@ const InjuryRow = ({ injury, color }: { injury: InjuryEntry; color: string }) =>
 		<li className='gd-injury-row' style={{ backgroundImage: teamRowWash(color) }}>
 			<PlayerShot url={injury.headshot} name={injury.name} color={color} className='gd-pregame-leader-shot' />
 			<span className='gd-injury-player'>
-				<span className='gd-injury-name'>{injury.name}</span>
-				{detail && <span className='gd-injury-detail'>{detail}</span>}
+				<span className='gd-injury-name' title={injury.name}>{injury.name}</span>
+				{detail && <span className='gd-injury-detail' title={detail}>{detail}</span>}
 			</span>
 			<span className='gd-injury-status' data-status={injury.status}>{i18n.t(injuryStatusLabelKeys[injury.status])}</span>
 		</li>

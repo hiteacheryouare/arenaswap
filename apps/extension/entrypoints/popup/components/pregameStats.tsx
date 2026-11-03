@@ -66,7 +66,7 @@ const LeaderRow = ({ leader, team, color }: { leader?: TeamLeader; team: Team; c
 			<span className='gd-pregame-leader-team' style={{ color: readableTeamInkOnCard(color) }}>
 				{team.abbreviation}
 			</span>
-			<span className='gd-pregame-leader-player'>{leader.player}</span>
+			<span className='gd-pregame-leader-player' title={leader.player}>{leader.player}</span>
 			{/* Verbatim from ESPN. The football values carry their own English units and there is no
 			    version of "12 CAR, 68 YDS, 1 TD" we could assemble ourselves. */}
 			<span className='gd-pregame-leader-value'>{leader.value}</span>

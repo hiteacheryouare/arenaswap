@@ -35,10 +35,10 @@ const dueUpPanel = ({ game, awayColor, homeColor }: dueUpPanelProps) => {
 					<li key={`${index}-${hitter.name}`} className='gd-dueup-row d-flex align-items-center gap-3'>
 						<PlayerShot url={hitter.headshot} name={hitter.name} color={discColor} className='gd-pregame-leader-shot' />
 						<span className='gd-dueup-who d-flex align-items-baseline flex-grow-1 min-w-0'>
-							<span className='fantasy-player-name text-truncate'>{hitter.name}</span>
+							<span className='fantasy-player-name text-truncate' title={hitter.name}>{hitter.name}</span>
 							{hitter.position && <span className='fantasy-player-position flex-shrink-0'>{hitter.position}</span>}
 						</span>
-						{hitter.summary && <span className='fantasy-player-line gd-dueup-line text-truncate'>{hitter.summary}</span>}
+						{hitter.summary && <span className='fantasy-player-line gd-dueup-line text-truncate' title={hitter.summary}>{hitter.summary}</span>}
 					</li>
 				))}
 			</ul>

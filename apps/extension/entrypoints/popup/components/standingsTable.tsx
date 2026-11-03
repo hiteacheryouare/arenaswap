@@ -42,7 +42,7 @@ const TeamRow = ({ row, showRank, color }: rowProps) => {
 						teamColor={color}
 						loading='lazy'
 					/>
-					<span className='gd-standings-name' style={ink ? { color: ink } : undefined}>{row.name}</span>
+					<span className='gd-standings-name' title={row.name} style={ink ? { color: ink } : undefined}>{row.name}</span>
 				</span>
 			</th>
 			{row.values.map((value, index) => <td key={index}>{value}</td>)}

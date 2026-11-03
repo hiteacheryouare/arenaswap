@@ -98,6 +98,7 @@ describe('the due-up block', () => {
 		cy.get('.gd-dueup-row .fantasy-player-name').then($names => {
 			expect([...$names].map(name => name.textContent)).to.deep.equal(['Fernando Tatis Jr.', longName, 'Xander Bogaerts']);
 		});
+		cy.get('.gd-dueup-row .fantasy-player-name').eq(1).should('have.attr', 'title', longName);
 		cy.get('.gd-dueup-row .fantasy-player-position').then($positions => {
 			expect([...$positions].map(position => position.textContent)).to.deep.equal(['RF', 'DH', '3B']);
 		});

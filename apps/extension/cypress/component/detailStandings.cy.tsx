@@ -361,6 +361,7 @@ describe('standings table', () => {
 		openStandings(football);
 		// Philadelphia's #004C54 and Dallas's #003594, both already dark enough to keep.
 		cy.contains('.gd-standings-name', 'Philadelphia').should('have.css', 'color', 'rgb(0, 76, 84)');
+		cy.contains('.gd-standings-name', 'Dallas').should('have.attr', 'title', 'Dallas');
 		cy.contains('.gd-standings-name', 'Dallas').should('have.css', 'color', 'rgb(0, 53, 148)');
 	});
 

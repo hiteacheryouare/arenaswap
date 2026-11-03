@@ -513,6 +513,7 @@ describe('pre-game detail screen', () => {
 			cy.get('.gd-pregame-leader-row').should('have.length', 4);
 			cy.get('.gd-pregame-leader-value').eq(0).should('have.text', '28');
 			cy.get('.gd-pregame-leader-value').eq(1).should('have.text', '33');
+			cy.get('.gd-pregame-leader-player').eq(0).should('have.attr', 'title', 'K. Carpenter');
 		});
 
 		// The whole reason for the full-width row. A clipped stat is unreadable in a way a clipped

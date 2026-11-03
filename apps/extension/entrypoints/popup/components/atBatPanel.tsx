@@ -30,8 +30,8 @@ const AtBatSide = ({ player, roleLabel, side, teamColor }: {
 		</span>
 		<span className='gd-atbat-text'>
 			<span className='gd-atbat-role'>{roleLabel}</span>
-			<span className='gd-atbat-name'>{player.name}</span>
-			{player.summary && <span className='gd-atbat-line'>{player.summary}</span>}
+			<span className='gd-atbat-name' title={player.name}>{player.name}</span>
+			{player.summary && <span className='gd-atbat-line' title={player.summary}>{player.summary}</span>}
 		</span>
 	</div>
 );

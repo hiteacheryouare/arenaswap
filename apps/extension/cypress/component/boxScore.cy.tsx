@@ -400,6 +400,7 @@ describe('box score', () => {
 
 			cy.get('.gd-box-tabs').should('not.exist');
 			cy.get('.gd-box-players .gd-box-player').should('have.text', 'J. Hurts');
+			cy.get('.gd-box-players .gd-box-player').should('have.attr', 'title', 'J. Hurts');
 			// The home side is what rendered, so the home team is what the block may name.
 			cy.get('.gd-box-players .gd-box-line-abbr')
 				.should('have.length', 1)
