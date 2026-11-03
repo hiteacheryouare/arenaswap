@@ -99,3 +99,10 @@ describe('the margin that counts as a rout follows the sport', () => {
 		expect(blowouts(hockey(0, 5)).total).toBe(blowouts(hockey(5, 0)).total);
 	});
 });
+
+describe('a blowout with no period', () => {
+	test('timing contributes nothing when the period is unknown', () => {
+		const game = { ...nba(1, 0, 60, 30), period: undefined, clockSeconds: undefined } as Game;
+		expect(signal(blowouts(game), 'timing')).toBe(0);
+	});
+});

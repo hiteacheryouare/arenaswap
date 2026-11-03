@@ -36,7 +36,7 @@ export const computeSustained = ({ game, context, sport, margin }: SignalInput):
 
 // An early rout has more beatdown left to watch than one that is nearly over.
 export const computeTiming = ({ sport, progress, margin, game }: SignalInput): SignalOutput => {
-	if (margin <= sport.closenessMargins[2] || (game.period !== undefined && progress >= 1)) return none;
+	if (game.period == null || margin <= sport.closenessMargins[2] || progress >= 1) return none;
 	return { points: Math.round(25 * Math.pow(1 - clamp(progress, 0, 1), 0.7)) };
 };
 
