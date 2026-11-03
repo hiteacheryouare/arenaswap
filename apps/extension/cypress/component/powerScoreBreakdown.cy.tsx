@@ -44,6 +44,15 @@ describe('PowerScoreBreakdown signals', () => {
 		cy.get('[role="progressbar"]').should('have.length', 5);
 	});
 
+	it('names every signal bar after its row', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} />);
+		cy.get('[role="progressbar"]').each($bar => {
+			const name = $bar.attr('aria-label');
+			expect(name).to.not.equal('');
+			expect($bar.closest('.powerscore-signal-row').find('.powerscore-signal-name').text()).to.equal(name);
+		});
+	});
+
 	it('sets correct aria-valuenow on each signal bar', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} />);
 		const expected = [12, 8, 5, 3, 0];

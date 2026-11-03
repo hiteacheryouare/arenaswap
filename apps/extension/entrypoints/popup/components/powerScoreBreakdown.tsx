@@ -228,6 +228,7 @@ const PowerScoreBreakdown = ({
 									<div
 										className='progress-bar'
 										role='progressbar'
+										aria-label={label}
 										style={{ width: `${pct}%`, backgroundColor: color }}
 										aria-valuenow={row.points}
 										aria-valuemin={0}
