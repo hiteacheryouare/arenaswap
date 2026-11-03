@@ -76,6 +76,7 @@ let storageSessionSet: jest.Mock;
 let onMessageHandler!: (msg: unknown) => unknown;
 let onActivatedHandler: ((info: { tabId: number }) => unknown) | undefined;
 let onRemovedHandler: ((tabId: number) => unknown) | undefined;
+let onSyncChangedHandler: ((changes: Record<string, unknown>) => unknown) | undefined;
 
 // `windowIds` is opt-in: without it the tabs carry no windowId, which is what the browser never
 // does but every test written before tab closing existed assumes. Only the closing rules read it.
@@ -151,13 +152,18 @@ const loadBackground = async (options: LoadOptions = {}) => {
 	storageSessionSet = jest.fn().mockResolvedValue(undefined);
 	onActivatedHandler = undefined;
 	onRemovedHandler = undefined;
+	onSyncChangedHandler = undefined;
 	if (options.openTabIds) mockOpenTabIds(options.openTabIds, options.activeTabId ?? options.openTabIds[0]!, options.windowIds);
 
 	(globalThis as { defineBackground?: unknown }).defineBackground = (fn: () => void) => fn();
 	(globalThis as { browser?: unknown }).browser = {
 		storage: {
 			onChanged: { addListener: () => {} },
-			sync: { get: storageSyncGet, set: storageSyncSet, onChanged: { addListener: () => {} } },
+			sync: {
+				get: storageSyncGet,
+				set: storageSyncSet,
+				onChanged: { addListener: (h: (changes: Record<string, unknown>) => unknown) => { onSyncChangedHandler = h; } },
+			},
 			session: {
 				get: jest.fn().mockResolvedValue({
 					tabRegistry: options.tabRegistry ?? [],
@@ -1210,6 +1216,48 @@ describe('closed tab handling', () => {
 		});
 
 		expect((await getDebugState()).tabRegistry).toEqual(registry);
+	});
+});
+
+describe('settings synced from another browser', () => {
+	const load = async (prefs: Partial<UserPreferences>) => {
+		await loadBackground({
+			prefs,
+			tabRegistry: [{ gameId: 'thriller', tabId: 2 }],
+			fetchReturnValue: { games: [thriller], leagueLogos: {}, shedLeagues: [] },
+			openTabIds: [1, 2],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+	};
+
+	const syncChange = async (prefs: Partial<UserPreferences>, updatedAt: number) => {
+		storageSyncGet.mockResolvedValue({
+			prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...prefs }),
+			[prefsStorageUpdatedAtKey]: updatedAt,
+		});
+		onSyncChangedHandler?.({ prefs: {} });
+		await drain();
+	};
+
+	test('a running worker stops switching when another browser turns ArenaSwap off', async () => {
+		await load(switchingPrefs);
+
+		await syncChange({ ...switchingPrefs, enabled: false }, 2_000_000);
+		await runFirstPoll();
+
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
+	});
+
+	test('an echo of this browser\'s own prefs leaves a queued switch alone', async () => {
+		const prefs = { ...switchingPrefs, switchDelaySeconds: 60 };
+		await load(prefs);
+		await runFirstPoll();
+		expect((await getDebugState()).pendingSwitch).not.toBeNull();
+
+		await syncChange(prefs, 2_000_000);
+
+		expect((await getDebugState()).pendingSwitch).not.toBeNull();
 	});
 });
 

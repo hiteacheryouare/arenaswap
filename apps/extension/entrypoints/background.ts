@@ -1742,6 +1742,20 @@ export default defineBackground(() => {
 		}).catch(err => logWarn('Could not follow the synced profile.', err));
 	});
 
+	// Settings changed in another browser. This browser's own writes echo back here too, so an
+	// unchanged result is ignored rather than allowed to drop a queued switch.
+	browser.storage.sync.onChanged.addListener(changes => {
+		if (!('prefs' in changes) || activeProfileSyncKey in changes) return;
+		void stateReady.then(async () => {
+			const stored = await loadStoredUserPreferences();
+			if (JSON.stringify(stored) === JSON.stringify(prefs)) return;
+			const change = adoptPrefs(stored);
+			clearPendingSwitch();
+			await syncManagedTabMuteState(prefs.enabled);
+			await applyPrefsChange(change);
+		}).catch(err => logWarn('Could not apply the synced settings.', err));
+	});
+
 	browser.runtime.onMessage.addListener((msg: ExtensionMessage, sender: { tab?: { id?: number } }) => {
 		// The page's frames report to the page, which answers them. Answering here too would race it.
 		if (msg.type === 'MULTIVIEW_FRAME_STATUS') return;
