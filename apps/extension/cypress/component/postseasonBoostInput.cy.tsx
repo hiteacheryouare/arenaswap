@@ -23,14 +23,34 @@ describe('PostseasonBoostInput', () => {
 	it('calls onChange when value is updated', () => {
 		const spy = cy.spy().as('onChange');
 		cy.mount(<PostseasonBoostInput value={0} onChange={spy} />);
-		cy.get('#postseasonBoostInput').type('{selectall}5');
+		cy.get('#postseasonBoostInput').type('{selectall}5').blur();
 		cy.get('@onChange').should('have.been.calledWith', 5);
+	});
+
+	it('commits once, after typing pauses', () => {
+		const spy = cy.spy().as('onChange');
+		cy.clock();
+		cy.mount(<PostseasonBoostInput value={0} onChange={spy} />);
+		cy.get('#postseasonBoostInput').type('100');
+		cy.get('@onChange').should('not.have.been.called');
+		cy.tick(399);
+		cy.get('@onChange').should('not.have.been.called');
+		cy.tick(1);
+		cy.get('@onChange').should('have.been.calledOnceWith', 100);
+	});
+
+	it('commits at once on blur', () => {
+		const spy = cy.spy().as('onChange');
+		cy.clock();
+		cy.mount(<PostseasonBoostInput value={0} onChange={spy} />);
+		cy.get('#postseasonBoostInput').type('42').blur();
+		cy.get('@onChange').should('have.been.calledOnceWith', 42);
 	});
 
 	it('clamps negative values to 0', () => {
 		const spy = cy.spy().as('onChange');
 		cy.mount(<PostseasonBoostInput value={3} onChange={spy} />);
-		cy.get('#postseasonBoostInput').clear().type('-2');
+		cy.get('#postseasonBoostInput').clear().type('-2').blur();
 		cy.get('@onChange').should('have.been.calledWith', 0);
 	});
 });

@@ -24,6 +24,16 @@ describe('GameBoostInput', () => {
 		cy.get('@setBoost').should('have.been.calledWith', 'g1', 20);
 	});
 
+	it('commits spinner clicks in quick succession once', () => {
+		const spy = cy.spy().as('setBoost');
+		cy.clock();
+		cy.mount(<GameBoostInput gameId='g1' currentBoost={5} onSetGameBoost={spy} />);
+		cy.get('input[type="number"]').focus().type('{uparrow}{uparrow}{uparrow}');
+		cy.get('@setBoost').should('not.have.been.called');
+		cy.tick(400);
+		cy.get('@setBoost').should('have.been.calledOnceWith', 'g1', 8);
+	});
+
 	it('clamps negative input to 0', () => {
 		const spy = cy.spy().as('setBoost');
 		cy.mount(<GameBoostInput gameId='g1' currentBoost={5} onSetGameBoost={spy} />);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { boostPointsMax, clampBoostPoints } from '@arenaswap/core/constants';
 
 interface boostPointsInputProps {
@@ -11,12 +11,35 @@ interface boostPointsInputProps {
 	unit?: string;
 }
 
+// Every keystroke would otherwise write to synced storage, which allows 120 writes a minute, so the
+// number is committed once typing pauses, and at once on blur, Enter and unmount.
+const commitDelayMs = 400;
+
 // The field holds what was typed rather than the committed number, so it can sit empty while the
 // user retypes it. Without that, deleting "10" snapped straight back to "0" and typing 5 read "05".
+
 const boostPointsInput = ({ id, value, onChange, className, ariaLabel, unit }: boostPointsInputProps) => {
 	const [draft, setDraft] = useState<string | null>(null);
 
-	const settle = () => setDraft(null);
+	const pendingRef = useRef<number | null>(null);
+	const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+	const onChangeRef = useRef(onChange);
+	onChangeRef.current = onChange;
+
+	const flush = () => {
+		clearTimeout(timerRef.current);
+		if (pendingRef.current === null) return;
+		const points = pendingRef.current;
+		pendingRef.current = null;
+		onChangeRef.current(points);
+	};
+
+	useEffect(() => flush, []);
+
+	const settle = () => {
+		flush();
+		setDraft(null);
+	};
 	const unitId = `${id}-unit`;
 
 	const input = (
@@ -36,7 +59,9 @@ const boostPointsInput = ({ id, value, onChange, className, ariaLabel, unit }: b
 				}
 				const points = clampBoostPoints(Number(typed));
 				setDraft(Number(typed) > boostPointsMax ? String(points) : typed);
-				onChange(points);
+				pendingRef.current = points;
+				clearTimeout(timerRef.current);
+				timerRef.current = setTimeout(flush, commitDelayMs);
 			}}
 			onBlur={settle}
 			onKeyDown={e => {
