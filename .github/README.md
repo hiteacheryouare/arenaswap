@@ -21,7 +21,7 @@
 ![WXT](https://img.shields.io/badge/WXT-0.21-FF6B35?logo=googlechrome&logoColor=white)
 ![Astro](https://img.shields.io/badge/Astro-7-BC52EE?logo=astro&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-06B6D4?logo=tailwindcss&logoColor=white)
-![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-6-7952B3?logo=bootstrap&logoColor=white)
 [![jest tested](https://img.shields.io/badge/Jest-tested-eee.svg?logo=jest&labelColor=99424f)](https://github.com/jestjs/jest)
 ![Turborepo](https://img.shields.io/badge/Turborepo-2-EF4444?logo=turborepo&logoColor=white)
 ![npm](https://img.shields.io/badge/npm-12-CB3837?logo=npm&logoColor=white)
@@ -43,7 +43,7 @@
 
 ---
 
-ArenaSwap watches every live game across 31 leagues and automatically switches your browser tab to the most exciting one — powered by **PowerScore**, a real-time excitement algorithm built from closeness, momentum, lead changes, late-game pressure, and comebacks.
+ArenaSwap watches every live game across 31 leagues and automatically switches your browser tab to the most exciting one. It runs on **PowerScore**, a real-time excitement algorithm built from closeness, momentum, lead changes, late-game pressure, and comebacks.
 
 <div align="center">
   <img src="../apps/extension/marketing/img/demo-live-games.png" alt="Live Games view" width="150">
@@ -59,18 +59,18 @@ ArenaSwap watches every live game across 31 leagues and automatically switches y
 
 ## Features
 
-- **Auto-Switch** — Switches to the best live game and unmutes it
-- **PowerScore** — Real-time 0–100 excitement score built from 5 signals and 6 adjustments; switch off a signal you disagree with
-- **Guide** — A full-day timeline of every game with a heat curve, so you can see the good windows before they arrive
-- **Game detail** — Box score, standings, win probability, and PowerScore charted over time, plus the live at-bat, drive, and latest play
-- **Tab suggestions** — Spots the game streams already open in your tabs and offers to assign them for you
-- **Up Next** — Shows games up to 14 days out so you can assign tabs before kickoff
-- **Game Boost** — Manually pin any game to keep it on top
-- **Standby Stream** — Falls back to a tab you choose when every game goes quiet
-- **Leagues & Favorites** — Enable any of 31 leagues across 6 sports; star your teams for a built-in PowerScore bonus
-- **Tuning** — Sensitivity, switch cooldown, switch delay, postseason weighting, and optional switch notifications
-- **12 languages** — English, Spanish, French, German, Italian, Portuguese (BR and PT), Japanese, Korean, Filipino, and Chinese (Simplified and Traditional)
-- **Private by default** — No account, no tracking, no ads. Scores come straight from our sources (public scoreboards, no binoculars required); everything else runs locally
+- **Auto-Switch:** Switches to the best live game and unmutes it
+- **PowerScore:** Real-time 0–100 excitement score built from five signals and a set of boosts and penalties; switch off a signal you disagree with
+- **Guide:** A full-day timeline of every game with a heat curve, so you can see the good windows before they arrive
+- **Game detail:** Box score, standings, win probability, and PowerScore charted over time, plus the live at-bat, drive, and latest play
+- **Tab suggestions:** Spots the game streams already open in your tabs and offers to assign them for you
+- **Up Next:** Shows games up to 14 days out so you can assign tabs before kickoff
+- **Game Boost:** Manually pin any game to keep it on top
+- **Standby Stream:** Falls back to a tab you choose when every game goes quiet
+- **Leagues & Favorites:** Enable any of 31 leagues across 6 sports; star your teams for a built-in PowerScore bonus
+- **Tuning:** Sensitivity, switch cooldown, switch delay, postseason weighting, and optional switch notifications
+- **12 languages:** English, Spanish, French, German, Italian, Portuguese (BR and PT), Japanese, Korean, Filipino, and Chinese (Simplified and Traditional)
+- **Private by default:** No account, no tracking, no ads. Scores come straight from our sources (public scoreboards, no binoculars required); everything else runs locally
 
 ## Development
 
@@ -102,7 +102,7 @@ Turborepo monorepo:
 ```
 apps/
   extension/         → WXT browser extension (React + TypeScript)
-  docs/              → Astro site — docs, PowerScore reference, releases, FAQ, legal, in 12 locales
+  docs/              → Astro site: docs, PowerScore reference, releases, FAQ, legal, in 12 locales
   film/              → Ad films rendered frame by frame from the shipped popup and a recorded night
 packages/
   chromatic/         → Colour science shared by the extension and the site
