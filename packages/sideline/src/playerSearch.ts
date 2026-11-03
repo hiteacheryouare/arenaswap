@@ -95,7 +95,7 @@ export const parsePlayerSearch = (payload: unknown, query: string): PlayerSearch
 export const searchPlayers = async (query: string, init?: { signal?: AbortSignal }): Promise<PlayerSearchResult[]> => {
 	if (foldName(query).length < 2) return [];
 	await takeRequestSlot();
-	const res = await fetch(`https://site.api.espn.com/apis/search/v2?query=${encodeURIComponent(query)}&limit=25`, { headers: { Accept: 'application/json' }, signal: init?.signal });
+	const res = await fetch(`https://site.api.espn.com/apis/search/v2?query=${encodeURIComponent(query)}&limit=25`, { headers: { Accept: 'application/json' }, signal: init?.signal ?? requestSignal() });
 	if (!res.ok) throw new Error(`Player search failed: HTTP ${res.status}`);
 	return parsePlayerSearch(await res.json(), query);
 };

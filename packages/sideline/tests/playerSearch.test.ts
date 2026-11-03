@@ -1,4 +1,4 @@
-import { foldName, nameMatchScore, parsePlayerSearch, toFantasyPosition } from '../src/playerSearch';
+import { foldName, nameMatchScore, parsePlayerSearch, searchPlayers, toFantasyPosition } from '../src/playerSearch';
 
 const searchPayload = {
 	results: [
@@ -58,5 +58,18 @@ describe('player search', () => {
 		expect(toFantasyPosition('mlb', 'SP')).toBe('P');
 		expect(toFantasyPosition('mlb', 'CF')).toBe('H');
 		expect(toFantasyPosition('nba', 'C')).toBe('player');
+	});
+
+	test('gives a search with no caller signal a timeout signal', async () => {
+		const fetchMock = jest.fn(async () => ({ ok: true, json: async () => ({ results: [] }) }));
+		const realFetch = globalThis.fetch;
+		globalThis.fetch = fetchMock as unknown as typeof fetch;
+		try {
+			await searchPlayers('mahomes');
+		} finally {
+			globalThis.fetch = realFetch;
+		}
+		const init = (fetchMock.mock.calls[0] as unknown as [string, RequestInit])[1];
+		expect(init.signal).toBeInstanceOf(AbortSignal);
 	});
 });
