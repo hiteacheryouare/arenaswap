@@ -34,4 +34,26 @@ describe('the seconds sliders', () => {
 			cy.wrap(end).should('have.class', 'setting-explainer');
 		});
 	});
+
+	// The label group holds the label and its tooltip icon, beside the value.
+	const labelGroupOf = (id: string) => cy.get(`label[for="${id}"]`).parent();
+
+	it('keeps a long label clear of its value at 320px', () => {
+		cy.viewport(320, 560);
+		const cases = [
+			{ id: 'cooldown-range', mount: <CooldownSlider value={90} onChange={() => {}} /> },
+			{ id: 'switch-delay-range', mount: <SwitchDelaySlider value={30} onChange={() => {}} /> },
+		];
+		cases.forEach(({ id, mount }) => {
+			cy.mount(mount);
+			cy.document().then(doc => doc.fonts.load('600 10px "DM Sans"', 'Abc'));
+			labelGroupOf(id).should(([group]: JQuery<HTMLElement>) => {
+				const label = group!.querySelector('label')!;
+				label.textContent = 'Mindestwartezeit zwischen zwei Wechseln der Spiele';
+				const value = group!.parentElement!.querySelector('.setting-value-label')!;
+				expect(group!.getBoundingClientRect().right, `${id} label group ends before its value`)
+					.to.be.at.most(value.getBoundingClientRect().left);
+			});
+		});
+	});
 });

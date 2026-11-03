@@ -359,6 +359,21 @@ describe('setupView switching group', () => {
 		cy.contains('Controls how big the PowerScore gap').should('not.exist');
 		cy.contains(en.setup.demoModeExplainer).should('not.exist');
 	});
+
+	it('keeps the sensitivity label clear of its value at 7 in German', () => {
+		cy.viewport(320, 560);
+		cy.mount(<SetupView {...defaultProps} prefs={{ ...defaultPrefs, sensitivity: 7 }} />);
+		openGroup('switching');
+		cy.document().then(doc => doc.fonts.load('600 10px "DM Sans"', 'Abc'));
+
+		cy.get('label[for="sensitivity-range"]').parent().should(([group]: JQuery<HTMLElement>) => {
+			group!.querySelector('label')!.textContent = de.sensitivity.label;
+			const value = group!.parentElement!.querySelector('.setting-value-label')!;
+			value.textContent = de.sensitivity.valueLabel.replace('{label}', 'Ludicrous').replace('{gap}', '5');
+			expect(group!.getBoundingClientRect().right, 'label group ends before the value').to.be.at.most(value.getBoundingClientRect().left);
+			expect(value.getBoundingClientRect().right, 'value stays inside the row').to.be.at.most(group!.parentElement!.getBoundingClientRect().right);
+		});
+	});
 });
 
 describe('setupView display group', () => {

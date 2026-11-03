@@ -21,12 +21,12 @@ const cooldownSlider = ({ value, onChange }: cooldownSliderProps) => {
 
 	return (
 		<div>
-			<div className='d-flex justify-content-between align-items-center mb-1'>
-				<div className='d-flex align-items-center gap-1'>
+			<div className='d-flex justify-content-between align-items-center gap-2 mb-1'>
+				<div className='d-flex align-items-center gap-1 min-w-0'>
 					<label htmlFor='cooldown-range' className='fg-secondary setting-toggle-label'><i className='bi bi-clock me-1 fg-primary' />{i18n.t('cooldown.label')}</label>
 					<SettingTooltipIcon text={i18n.t('cooldown.explainer')} label={i18n.t('cooldown.label')} />
 				</div>
-				<span className='fw-semibold setting-value-label'>{formatCooldownSeconds(cooldownSteps[currentIdx]!)}</span>
+				<span className='fw-semibold setting-value-label text-end'>{formatCooldownSeconds(cooldownSteps[currentIdx]!)}</span>
 			</div>
 			<FormRange
 				id='cooldown-range'
