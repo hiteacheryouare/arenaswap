@@ -301,9 +301,19 @@ const isSensitivityValue = (value: unknown): value is UserPreferences['sensitivi
 	typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 7
 );
 
+// Mirrors the steps the cooldown and switch delay sliders offer.
+export const secondsSliderSteps: readonly number[] = [0, 15, 30, 45, 60, 90, 120, 180];
+
+// Ties go to the lower step.
+const snapToSliderStep = (value: number): number => (
+	secondsSliderSteps.reduce((nearest, step) => (
+		Math.abs(step - value) < Math.abs(nearest - value) ? step : nearest
+	))
+);
+
 const normalizeSecondsPreference = (value: unknown, fallback: number): number => (
 	typeof value === 'number' && Number.isFinite(value)
-		? Math.max(0, Math.round(value))
+		? snapToSliderStep(value)
 		: fallback
 );
 
@@ -439,12 +449,14 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 	if (!storedPrefs || typeof storedPrefs !== 'object') return defaults;
 
 	const candidate = storedPrefs as Partial<UserPreferences> & { enabledLeagues?: unknown; favoriteTeamIds?: unknown };
-	const hasEnabledLeaguesField = Object.prototype.hasOwnProperty.call(candidate, 'enabledLeagues');
 	// Order is the user's league display order, so it is preserved — but a repeated id would break
 	// the reorder UI's index math and duplicate React keys.
 	const parsedEnabledLeagues = Array.isArray(candidate.enabledLeagues)
 		? [...new Set(candidate.enabledLeagues.filter(isLeagueId))]
 		: [];
+	const parsedDisabledSignals = Array.isArray(candidate.disabledSignals)
+		? [...new Set((candidate.disabledSignals as unknown[]).filter((s): s is SignalName => allSignalNames.includes(s as SignalName)))]
+		: defaults.disabledSignals;
 
 	return {
 		sensitivity: isSensitivityValue(candidate.sensitivity) ? candidate.sensitivity : defaults.sensitivity,
@@ -452,7 +464,7 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		switchDelaySeconds: normalizeSecondsPreference(candidate.switchDelaySeconds, defaults.switchDelaySeconds),
 		contentAwareSwitching: typeof candidate.contentAwareSwitching === 'boolean' ? candidate.contentAwareSwitching : defaults.contentAwareSwitching,
 		enabled: typeof candidate.enabled === 'boolean' ? candidate.enabled : defaults.enabled,
-		enabledLeagues: hasEnabledLeaguesField ? parsedEnabledLeagues : allLeagueIds,
+		enabledLeagues: Array.isArray(candidate.enabledLeagues) ? parsedEnabledLeagues : allLeagueIds,
 		favoriteTeamIds: normalizeFavoriteTeamIds(candidate.favoriteTeamIds),
 		favoriteTeamBonusPoints: normalizeBoostPreference(candidate.favoriteTeamBonusPoints, defaults.favoriteTeamBonusPoints),
 		showUpcomingGames: typeof candidate.showUpcomingGames === 'boolean' ? candidate.showUpcomingGames : defaults.showUpcomingGames,
@@ -491,9 +503,8 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		upcomingGamesDays: typeof candidate.upcomingGamesDays === 'number' && Number.isFinite(candidate.upcomingGamesDays)
 			? Math.max(upcomingGamesDaysMin, Math.min(upcomingGamesDaysMax, Math.round(candidate.upcomingGamesDays)))
 			: defaults.upcomingGamesDays,
-		disabledSignals: Array.isArray(candidate.disabledSignals)
-			? (candidate.disabledSignals as unknown[]).filter((s): s is SignalName => allSignalNames.includes(s as SignalName))
-			: defaults.disabledSignals,
+		// Every signal off would switch none off, so a list like that is dropped rather than stored.
+		disabledSignals: parsedDisabledSignals.length < allSignalNames.length ? parsedDisabledSignals : defaults.disabledSignals,
 		scoringMode: normalizeScoringMode(candidate.scoringMode),
 		leagueModes: normalizeLeagueModes(candidate.leagueModes),
 		modeDisabledSignals: normalizeModeDisabledSignals(candidate.modeDisabledSignals),

@@ -1,5 +1,8 @@
 import {
 	allLeagueIds,
+	allSignalNames,
+	boostPointsMax,
+	clampBoostPoints,
 	createFavoriteTeamKey,
 	leagueConfigMap,
 	leagueLogoFallbacks,
@@ -335,5 +338,27 @@ describe('constants', () => {
 			expect(teamLogoOnColor('https://example.com/500/logo.png')).toBe('https://example.com/500/logo.png');
 			expect(teamLogoOnColor(undefined)).toBeUndefined();
 		});
+	});
+
+	test('treats every Classic signal switched off as none switched off, and collapses duplicates', () => {
+		expect(normalizeUserPreferences({ disabledSignals: [...allSignalNames] }).disabledSignals).toEqual([]);
+		expect(normalizeUserPreferences({ disabledSignals: ['closeness', 'closeness', 'momentum', 'bogus'] }).disabledSignals).toEqual(['closeness', 'momentum']);
+	});
+
+	test.each([[10, 15], [50, 45], [1e9, 180], [-5, 0], [52.5, 45]])('snaps a %s second cooldown and delay to %s', (stored, snapped) => {
+		const normalized = normalizeUserPreferences({ cooldownSeconds: stored, switchDelaySeconds: stored });
+		expect(normalized.cooldownSeconds).toBe(snapped);
+		expect(normalized.switchDelaySeconds).toBe(snapped);
+	});
+
+	test('reads a damaged league list as every league and a real empty list as none', () => {
+		for (const damaged of [null, 'nba', {}]) {
+			expect(normalizeUserPreferences({ enabledLeagues: damaged }).enabledLeagues).toEqual(allLeagueIds);
+		}
+		expect(normalizeUserPreferences({ enabledLeagues: [] }).enabledLeagues).toEqual([]);
+	});
+
+	test.each([[NaN, 0], [-5, 0], [2.6, 3], [boostPointsMax + 50, boostPointsMax]])('clamps %s boost points to %s', (value, clamped) => {
+		expect(clampBoostPoints(value)).toBe(clamped);
 	});
 });
