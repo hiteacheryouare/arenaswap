@@ -952,7 +952,7 @@
 		"tooltipGoAheadRun": "Vale quando o time que rebate tem em base a corrida da vantagem ou a do empate.",
 		"tooltipTwoMinuteDrill": "Vale quando um time perdendo por uma posse ou menos está avançando no fim do tempo.",
 		"tooltipRedCard": "Vale por dez minutos depois de um cartão vermelho num jogo empatado ou com um gol de diferença.",
-		"tooltipNoHitter": "Vale quando um time ainda está sem rebatidas válidas a partir da 6ª entrada (a 4ª no softbol).",
+		"tooltipNoHitter": "Vale quando um time ainda não tem nenhum hit a partir da 6ª entrada (a 4ª no softbol).",
 		"tooltipUpsetWatch": "Vale quando o azarão do pré-jogo está na frente, empatado ou a uma posse de diferença depois da metade.",
 		"tooltipUpsetRout": "Vale quando o azarão do pré-jogo está passando por cima do favorito.",
 		"tooltipStakes": "Vale quando o resultado decide algo: uma série, um confronto entre times ranqueados ou uma disputa de fim de temporada."
