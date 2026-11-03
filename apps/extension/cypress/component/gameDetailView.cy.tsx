@@ -747,6 +747,30 @@ describe('gameDetailView sticky bar', () => {
 	});
 });
 
+describe('gameDetailView sticky bar in a crowded row', () => {
+	it('keeps the matchup clear of Back and the status in en, de and fil', () => {
+		const college = makeLiveGame({
+			league: 'mens-college-basketball',
+			homeTeam: { id: '1', name: 'UNC Wilmington Seahawks', abbreviation: 'UNCW', score: 101 },
+			awayTeam: { id: '3', name: 'UConn Huskies', abbreviation: 'UCONN', score: 112 },
+		});
+		mountDetail(college, { excitementResult: excitement, powerScoreHistory });
+		cy.get('.popup-container').scrollTo('bottom');
+		cy.document().its('fonts.status').should('eq', 'loaded');
+		(['en', 'de', 'fil'] as const).forEach(name => {
+			cy.get('.game-detail-header').should(([header]: JQuery<HTMLElement>) => {
+				header.querySelector('.game-detail-back-button span')!.textContent = locales[name].detail.back;
+				header.querySelector('.gd-bar-status')!.textContent = locales[name].detail.endOfPeriod.replace('{period}', locales[name].gameCard.periodQuarter.replace('{count}', '3'));
+				const back = header.querySelector('.game-detail-back-button')!.getBoundingClientRect();
+				const compact = header.querySelector('.gd-bar-compact')!.getBoundingClientRect();
+				const status = header.querySelector('.gd-bar-status')!.getBoundingClientRect();
+				expect(back.right, `back clears the matchup in ${name}`).to.be.at.most(compact.left);
+				expect(compact.right, `matchup clears the status in ${name}`).to.be.at.most(status.left);
+			});
+		});
+	});
+});
+
 // Before a start the two scores are both 0 and stay 0 until first pitch, so the bar hands its
 // whole job to the abbreviations and the figures are noise. The countdown takes the slot the
 // live status text holds, which resolveStatusText leaves empty for a scheduled game.
