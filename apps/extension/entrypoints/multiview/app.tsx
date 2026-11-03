@@ -15,7 +15,6 @@ const App = () => {
 	// Undefined while asking. Null means the background did not open this tab, as when the browser
 	// brings an old one back on restart.
 	const [lineup, setLineup] = useState<MultiviewLineup | null | undefined>(undefined);
-	const { readyIds, onAirIds, hrefs, setAudible } = useBoxFrames(tabId);
 	const gridRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -39,6 +38,7 @@ const App = () => {
 
 	const boxes = useMemo(() => lineup?.boxes ?? [], [lineup]);
 	const boxIds = boxes.map(box => box.gameId);
+	const { readyIds, onAirIds, hrefs, setAudible } = useBoxFrames(tabId, boxIds);
 	const startedIds = useBoxQueue(boxes, readyIds);
 	const isStray = (gameId: string) => {
 		const href = hrefs.get(gameId);
