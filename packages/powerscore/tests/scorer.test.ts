@@ -800,9 +800,9 @@ describe('computePowerScore', () => {
 		expect(comebackFor({ period: 4, clockSeconds: 300 }, [65, 90], [101, 90])).toBe(comebackFor({ period: 4, clockSeconds: 300 }, [84, 90], [90, 90]));
 	});
 
-	test('a game that was never behind pays no comeback, even once it is level', () => {
-		const game = makeGame({ period: 4, clockSeconds: 300, homeTeam: { ...makeGame().homeTeam, score: 90 }, awayTeam: { ...makeGame().awayTeam, score: 90 } });
-		expect(computePowerScore(game, makeHistory([[84, 84], [87, 87], [90, 90]])).comeback).toBe(0);
+	test('a game that was never behind pays no comeback, even once it leads', () => {
+		const game = makeGame({ period: 4, clockSeconds: 300, homeTeam: { ...makeGame().homeTeam, score: 90 }, awayTeam: { ...makeGame().awayTeam, score: 96 } });
+		expect(computePowerScore(game, makeHistory([[84, 84], [87, 87], [90, 96]])).comeback).toBe(0);
 	});
 
 	test('a comeback built on a run is one sentence, and a level game takes the time instead of "Tied"', () => {
