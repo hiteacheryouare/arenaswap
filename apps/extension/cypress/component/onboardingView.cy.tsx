@@ -23,6 +23,7 @@ const teamsPayload = (entries: [string, string][]) => ({
 // answers with its own teams, which is what keeps the favorite buttons individually addressable.
 const stubTeamsFetch = () => {
 	cy.window().then(win => {
+		if ('restore' in win.fetch) return;
 		cy.stub(win, 'fetch').callsFake((input: unknown) => {
 			const url = String(input);
 			const leagueId = Object.keys(teamsByLeague).find(id => url.includes(`/${id}/`)) ?? 'nba';
