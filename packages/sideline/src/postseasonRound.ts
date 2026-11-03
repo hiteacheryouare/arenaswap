@@ -120,12 +120,16 @@ const roundRules: { pattern: RegExp; round: PostseasonRound }[] = [
 	// Not on the trophy path, but a medal game is a final in every way that matters to a viewer.
 	{ pattern: /\bbronze medal\b/i, round: 1 },
 	{ pattern: /\bworld series\b/i, round: 0 },
+	{ pattern: /\b(?:al|nl)cs\b/i, round: 1 },
+	{ pattern: /\b(?:american|national) league championship series\b/i, round: 1 },
+	{ pattern: /^(?:afc|nfc)\s+championship\b/i, round: 1 },
+	{ pattern: /\b(?:al|nl)ds\b/i, round: 2 },
+	{ pattern: /\b(?:american|national) league division series\b/i, round: 2 },
+	{ pattern: /^division series\b/i, round: 2 },
 	{ pattern: /\bchampionship (?:series|final|finals|game)\b/i, round: 0 },
 
 	{ pattern: /\bfinal four\b/i, round: 1 },
 	{ pattern: /\bfrozen four\b/i, round: 1 },
-	{ pattern: /\b(?:al|nl)cs\b/i, round: 1 },
-	{ pattern: /^(?:afc|nfc)\s+championship\b/i, round: 1 },
 	// Only the geographic qualifiers. "NBA Finals" and "WNBA Finals" are the title series, not a
 	// conference round, and including the league name here graded both of them a rung too low.
 	{ pattern: /^(?:east|west|eastern|western)\s+(?:conference\s+)?finals?\b/i, round: 1 },
@@ -133,7 +137,6 @@ const roundRules: { pattern: RegExp; round: PostseasonRound }[] = [
 	{ pattern: /^(?:east|west|eastern|western)\s+(?:conference\s+)?semi-?finals?\b/i, round: 2 },
 	{ pattern: /\bsemi-?finals?\b/i, round: 1 },
 
-	{ pattern: /\b(?:al|nl)ds\b/i, round: 2 },
 	{ pattern: /\bdivisional\b/i, round: 2 },
 	{ pattern: /\bquarter-?finals?\b/i, round: 2 },
 	// The NCAA tournament's second round is the round of 32, below the Sweet 16 that follows it.
