@@ -54,7 +54,7 @@ export const defaultStrings: Record<string, string> = {
 	'main.sectionUpNext': 'Up Next',
 	'main.enableToggleLabel': 'Enable auto-switching',
 	'main.onStandbyStream': 'On Standby Stream until something heats up',
-	'tabAssign.placeholder': '— Assign a tab —',
+	'tabAssign.placeholder': 'Assign a tab',
 	'detail.halftime': 'Halftime',
 	'detail.intermission': 'Intermission',
 	'detail.endOfPeriod': 'End of {period}',

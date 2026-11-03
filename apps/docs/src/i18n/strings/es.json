@@ -475,7 +475,7 @@
 			"onStandbyStream": "En Standby Stream hasta que algo se ponga bueno"
 		},
 		"tabAssign": {
-			"placeholder": "— Asigna una pestaña —"
+			"placeholder": "Asigna una pestaña"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScore a lo largo del tiempo",

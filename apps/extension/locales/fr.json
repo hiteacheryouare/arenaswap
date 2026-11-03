@@ -332,14 +332,14 @@
 		"multiviewGamesAll": "Tous mes matchs",
 		"multiviewMaxBoxes": "Max de cases",
 		"standbyTab": "Onglet de standby",
-		"selectTab": "— Sélectionner un onglet —",
+		"selectTab": "Sélectionner un onglet",
 		"showBetting": "Afficher les paris et les cotes",
 		"temperatureUnit": "Unité de température",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
 		"openReveal": "Animation d'ouverture",
-		"openRevealExplainer": "Chaque match apparaît en affiche quand tu ouvres ArenaSwap — la version longue une fois par jour, une plus rapide ensuite.",
+		"openRevealExplainer": "Chaque match apparaît en affiche quand tu ouvres ArenaSwap. Tu as droit à la version longue une fois par jour, et à une plus rapide ensuite.",
 		"holidayDecorations": "Décorations de fête",
 		"holidayDecorationsExplainer": "De la neige quand il neige au stade, des feuilles la semaine de Thanksgiving et des lumières tout décembre.",
 		"holidaySnow": "Neige",
@@ -1131,7 +1131,7 @@
 	"stepTabAssign": {
 		"title": "Associe des onglets aux matchs",
 		"subtitle": "ArenaSwap ne passe que sur les onglets associés.",
-		"assignPlaceholder": "— Associer un onglet —",
+		"assignPlaceholder": "Associer un onglet",
 		"linkHint": "↑ choisis l'onglet de ce match",
 		"body": "Ouvre le flux de chaque match dans son propre onglet. Choisis ensuite cet onglet dans le menu de la fiche du match.",
 		"back": "Retour",
@@ -1172,7 +1172,7 @@
 		"next": "Suivant"
 	},
 	"stepGameDetail": {
-		"title": "Plonge dans n'importe quel match",
+		"title": "Ouvre n'importe quel match",
 		"subtitle": "Clique sur un match pour voir ce qui compose son PowerScore.",
 		"tapHint": "clique pour ouvrir",
 		"detailPreviewTitle": "Décomposition du PowerScore",
@@ -1297,7 +1297,7 @@
 		}
 	},
 	"tabAssign": {
-		"placeholder": "— Associer un onglet —",
+		"placeholder": "Associer un onglet",
 		"inUse": " (en cours d'utilisation)"
 	},
 	"suggest": {
@@ -1337,7 +1337,7 @@
 		"general": {
 			"t0": "Utilise l'interrupteur en haut à droite pour mettre ArenaSwap en pause sans perdre tes paramètres.",
 			"t1": "ArenaSwap fonctionne mieux avec deux onglets de match ouverts ou plus en même temps.",
-			"t2": "Clique sur n'importe quelle fiche de match pour plonger dans sa décomposition PowerScore.",
+			"t2": "Clique sur n'importe quelle fiche de match pour voir comment son PowerScore se construit.",
 			"t3": "Tu mixes les sports ? Active plus de ligues dans Paramètres pour alterner entre toutes à la fois.",
 			"t4": "Les girafes et les hérissons, c'est cool. Regarder tous les matchs à la fois aussi.",
 			"t6": "Active les notifications de changement dans Paramètres pour recevoir une alerte à chaque fois qu'ArenaSwap change d'onglet.",
@@ -1349,7 +1349,7 @@
 			"t2": "Le PowerScore le plus élevé remporte le changement. Surveille la barre sur chaque fiche.",
 			"t3": "Active « Afficher les matchs à venir » dans Paramètres pour associer des onglets avant le début du match.",
 			"t4": "Pas encore de matchs en direct ? Le Mode démo dans Paramètres en met quelques-uns en scène pour voir ArenaSwap à l'œuvre.",
-			"t5": "Standby Stream maintient un onglet de secours en lecture quand tous les matchs se calment — active-le dans Paramètres."
+			"t5": "Standby Stream maintient un onglet de secours en lecture quand tous les matchs se calment. Active-le dans Paramètres."
 		},
 		"setup": {
 			"t0": "Baisse le délai entre les changements pour basculer plus vite dans une fin de match folle.",
@@ -1361,7 +1361,7 @@
 			"t6": "Utilise la section Signaux PowerScore pour désactiver ceux qui ne t'intéressent pas."
 		},
 		"detail": {
-			"t0": "PowerScore combine l'écart serré, la pression de fin de match, l'élan, les changements de tête et les remontées — puis applique un bonus ou une pénalité de volatilité selon les oscillations de la probabilité de victoire.",
+			"t0": "PowerScore combine l'écart serré, la pression de fin de match, l'élan, les changements de tête et les remontées. Il applique ensuite un bonus ou une pénalité de volatilité selon les oscillations de la probabilité de victoire.",
 			"t1": "Pause pub ? PowerScore pénalise le match jusqu'à la reprise du jeu, pour qu'ArenaSwap ne te bascule jamais sur une pub.",
 			"t2": "Les matchs 0–0 subissent une légère pénalité de PowerScore dans les sports où le 0–0 n'est pas palpitant.",
 			"t3": "Passe la souris sur les graphiques pour inspecter des moments précis du match.",
@@ -1416,7 +1416,7 @@
 		"announce": "LUDICROUS SPEED…",
 		"go": "GO !",
 		"stop": "STOP !",
-		"emergencyBrake": "⚠ FREIN D'URGENCE — NE JAMAIS UTILISER",
+		"emergencyBrake": "⚠ FREIN D'URGENCE : NE JAMAIS UTILISER",
 		"intro": {
 			"l1": "Préparez le vaisseau pour la vitesse de la lumière.",
 			"l2": "Non, non, la vitesse de la lumière est trop lente.",

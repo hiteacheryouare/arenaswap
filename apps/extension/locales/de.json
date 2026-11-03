@@ -332,14 +332,14 @@
 		"multiviewGamesAll": "Alle meine Spiele",
 		"multiviewMaxBoxes": "Max. Boxen",
 		"standbyTab": "Standby-Tab",
-		"selectTab": "— Tab auswählen —",
+		"selectTab": "Tab auswählen",
 		"showBetting": "Wetten & Quoten anzeigen",
 		"temperatureUnit": "Temperatureinheit",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
 		"openReveal": "Öffnungsanimation",
-		"openRevealExplainer": "Jedes Spiel erscheint als Duellposter, wenn du ArenaSwap öffnest — einmal am Tag die lange Version, danach eine kürzere.",
+		"openRevealExplainer": "Jedes Spiel erscheint als Duellposter, wenn du ArenaSwap öffnest. Einmal am Tag gibt es die lange Version, danach eine kürzere.",
 		"holidayDecorations": "Festtagsschmuck",
 		"holidayDecorationsExplainer": "Schnee fällt, wenn es im Stadion schneit, Laub in der Thanksgiving-Woche und Lichter den ganzen Dezember.",
 		"holidaySnow": "Schnee",
@@ -1131,7 +1131,7 @@
 	"stepTabAssign": {
 		"title": "Tabs mit Spielen verknüpfen",
 		"subtitle": "ArenaSwap wechselt nur zu verknüpften Tabs.",
-		"assignPlaceholder": "— Tab zuweisen —",
+		"assignPlaceholder": "Tab zuweisen",
 		"linkHint": "↑ Tab mit diesem Spiel wählen",
 		"body": "Öffne den Stream jedes Spiels in einem eigenen Browser-Tab. Wähle diesen Tab dann im Menü auf der Spielkarte aus.",
 		"back": "Zurück",
@@ -1172,7 +1172,7 @@
 		"next": "Weiter"
 	},
 	"stepGameDetail": {
-		"title": "Jedes Spiel im Detail",
+		"title": "Jedes Spiel öffnen",
 		"subtitle": "Klicke ein Spiel an und sieh, woraus sein PowerScore besteht.",
 		"tapHint": "klicken zum Öffnen",
 		"detailPreviewTitle": "PowerScore-Aufschlüsselung",
@@ -1297,7 +1297,7 @@
 		}
 	},
 	"tabAssign": {
-		"placeholder": "— Tab zuweisen —",
+		"placeholder": "Tab zuweisen",
 		"inUse": " (in Verwendung)"
 	},
 	"suggest": {
@@ -1330,14 +1330,14 @@
 	"postseasonBoost": {
 		"label": "Postseason-Boost",
 		"unit": "Pkt. max.",
-		"explainer": "Der Höchstwert, den ein Finale bringen kann. Frühere Runden erhalten einen Anteil davon – drei Viertel fürs Halbfinale, die Hälfte fürs Viertelfinale, ein Viertel für alles davor. Freundschaftsspiele bringen nichts."
+		"explainer": "Der Höchstwert, den ein Finale bringen kann. Frühere Runden erhalten einen Anteil davon: drei Viertel fürs Halbfinale, die Hälfte fürs Viertelfinale, ein Viertel für alles davor. Freundschaftsspiele bringen nichts."
 	},
 	"proTip": {
 		"label": "Profi-Tipp:",
 		"general": {
 			"t0": "Den Schalter oben rechts nutzen, um ArenaSwap zu pausieren, ohne die Einstellungen zu verlieren.",
 			"t1": "ArenaSwap funktioniert am besten mit zwei oder mehr offenen Spiel-Tabs gleichzeitig.",
-			"t2": "Auf eine Spielkarte klicken, um in die PowerScore-Aufschlüsselung einzutauchen.",
+			"t2": "Auf eine Spielkarte klicken, um zu sehen, wie sich ihr PowerScore zusammensetzt.",
 			"t3": "Mehrere Sportarten? Weitere Ligen in den Einstellungen aktivieren, damit ArenaSwap zwischen allen wechselt.",
 			"t4": "Giraffen und Igel sind toll. Alle Spiele gleichzeitig zu sehen auch.",
 			"t6": "Wechselbenachrichtigungen in den Einstellungen aktivieren, um bei jedem Tab-Wechsel durch ArenaSwap eine Meldung zu erhalten.",
@@ -1349,7 +1349,7 @@
 			"t2": "Der höhere PowerScore gewinnt den Wechsel. Achte auf den Balken auf jeder Karte.",
 			"t3": "\"Bevorstehende Spiele anzeigen\" in den Einstellungen aktivieren, um Tabs vor Spielbeginn zuzuweisen.",
 			"t4": "Noch keine Live-Spiele? Der Demo-Modus in den Einstellungen inszeniert ein paar, damit du ArenaSwap bei der Arbeit zusehen kannst.",
-			"t5": "Standby Stream hält einen Reserve-Tab am Laufen, wenn alle Spiele ruhig werden — in den Einstellungen aktivieren."
+			"t5": "Standby Stream hält einen Reserve-Tab am Laufen, sobald alle Spiele ruhig werden. Aktivieren kannst du ihn in den Einstellungen."
 		},
 		"setup": {
 			"t0": "Den Wechsel-Cooldown senken, um bei einem chaotischen Finish schneller zu wechseln.",
@@ -1361,13 +1361,13 @@
 			"t6": "Im Abschnitt PowerScore-Signale lassen sich einzelne Signale deaktivieren."
 		},
 		"detail": {
-			"t0": "Der PowerScore kombiniert Ausgeglichenheit, Schlussdruck, Schwung, Führungswechsel und Comebacks — dann wendet er einen Volatilitätsboost oder eine -strafe an, je nachdem, wie stark die Siegwahrscheinlichkeit schwankt.",
+			"t0": "Der PowerScore kombiniert Ausgeglichenheit, Schlussdruck, Schwung, Führungswechsel und Comebacks. Dann wendet er einen Volatilitätsboost oder eine -strafe an, je nachdem, wie stark die Siegwahrscheinlichkeit schwankt.",
 			"t1": "Werbepause? PowerScore zieht dem Spiel Punkte ab, bis es weitergeht, damit ArenaSwap dich nie in einen Werbeblock schaltet.",
 			"t2": "0:0-Spiele erhalten einen kleinen PowerScore-Abzug in Sportarten, in denen 0:0 nicht spannend ist.",
 			"t3": "Über die Diagramme hovern, um spezifische Spielmomente zu inspizieren.",
 			"t4": "Ein Lieblingsteam im Spiel fügt dem PowerScore Bonuspunkte hinzu.",
 			"t5": "Der PowerScore wächst mit dem Spielverlauf. Ein enges frühes Spiel steigert sich zum Schlusspfiff hin.",
-			"t6": "Gleichstand in der Schlussminute? PowerScore boostet wahrscheinliche Verlängerungen vorab — damit du die Schlusssirene nie verpasst.",
+			"t6": "Gleichstand in der Schlussminute? PowerScore boostet wahrscheinliche Verlängerungen vorab, damit du die Schlusssirene nie verpasst.",
 			"t7": "Wettquoten in den Einstellungen aktivieren, um Live-Quoten neben dem PowerScore jedes Spiels zu sehen."
 		}
 	},
@@ -1416,7 +1416,7 @@
 		"announce": "LUDICROUS SPEED…",
 		"go": "LOS!",
 		"stop": "HALT!",
-		"emergencyBrake": "⚠ NOTBREMSE — NIE BENUTZEN",
+		"emergencyBrake": "⚠ NOTBREMSE: NIE BENUTZEN",
 		"intro": {
 			"l1": "Schiff auf Lichtgeschwindigkeit vorbereiten.",
 			"l2": "Nein, nein, Lichtgeschwindigkeit ist zu langsam.",

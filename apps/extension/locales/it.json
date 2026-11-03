@@ -332,14 +332,14 @@
 		"multiviewGamesAll": "Tutte le mie partite",
 		"multiviewMaxBoxes": "Massimo di riquadri",
 		"standbyTab": "Scheda standby",
-		"selectTab": "— Seleziona una scheda —",
+		"selectTab": "Seleziona una scheda",
 		"showBetting": "Mostra scommesse e quote",
 		"temperatureUnit": "Unità di temperatura",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
 		"openReveal": "Animazione di apertura",
-		"openRevealExplainer": "Ogni partita arriva come una locandina della sfida quando apri ArenaSwap — la versione lunga una volta al giorno, una più rapida dopo.",
+		"openRevealExplainer": "Ogni partita arriva come una locandina della sfida quando apri ArenaSwap. La versione lunga una volta al giorno, una più rapida dopo.",
 		"holidayDecorations": "Decorazioni delle feste",
 		"holidayDecorationsExplainer": "Neve quando nevica allo stadio, foglie nella settimana del Ringraziamento e luci per tutto dicembre.",
 		"holidaySnow": "Neve",
@@ -1131,7 +1131,7 @@
 	"stepTabAssign": {
 		"title": "Collega le schede alle partite",
 		"subtitle": "ArenaSwap passa solo alle schede che colleghi.",
-		"assignPlaceholder": "— Assegna una scheda —",
+		"assignPlaceholder": "Assegna una scheda",
 		"linkHint": "↑ scegli la scheda di questa partita",
 		"body": "Apri la diretta di ogni partita in una scheda a parte. Poi scegli quella scheda dal menu sul riquadro della partita.",
 		"back": "Indietro",
@@ -1172,7 +1172,7 @@
 		"next": "Avanti"
 	},
 	"stepGameDetail": {
-		"title": "Approfondisci qualsiasi partita",
+		"title": "Apri qualsiasi partita",
 		"subtitle": "Fai clic su una partita per vedere cosa compone il PowerScore.",
 		"tapHint": "fai clic per aprire",
 		"detailPreviewTitle": "Dettaglio PowerScore",
@@ -1297,7 +1297,7 @@
 		}
 	},
 	"tabAssign": {
-		"placeholder": "— Assegna una scheda —",
+		"placeholder": "Assegna una scheda",
 		"inUse": " (in uso)"
 	},
 	"suggest": {
@@ -1349,7 +1349,7 @@
 			"t2": "Vince il cambio il PowerScore più alto. Tieni d'occhio la barra su ogni riquadro.",
 			"t3": "Attiva \"Mostra le partite in arrivo\" nelle Impostazioni per assegnare le schede prima che la partita inizi.",
 			"t4": "Ancora nessuna partita in diretta? La Modalità demo nelle Impostazioni ne mette in scena alcune per vedere ArenaSwap all'opera.",
-			"t5": "Standby Stream tiene attiva una scheda di riserva ogni volta che tutte le partite si calmano — attivalo nelle Impostazioni."
+			"t5": "Standby Stream tiene attiva una scheda di riserva ogni volta che tutte le partite si calmano. Attivalo nelle Impostazioni."
 		},
 		"setup": {
 			"t0": "Abbassa il tempo di attesa tra i cambi per cambiare più in fretta in un finale caotico.",
@@ -1416,7 +1416,7 @@
 		"announce": "LUDICROUS SPEED…",
 		"go": "VIA!",
 		"stop": "STOP!",
-		"emergencyBrake": "⚠ FRENO D'EMERGENZA — NON USARE MAI",
+		"emergencyBrake": "⚠ FRENO D'EMERGENZA: NON USARE MAI",
 		"intro": {
 			"l1": "Preparate la nave per la velocità della luce.",
 			"l2": "No, no, la velocità della luce è troppo lenta.",

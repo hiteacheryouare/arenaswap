@@ -332,14 +332,14 @@
 		"multiviewGamesAll": "我的所有比賽",
 		"multiviewMaxBoxes": "最多分格數",
 		"standbyTab": "待機分頁",
-		"selectTab": "— 選擇分頁 —",
+		"selectTab": "選擇分頁",
 		"showBetting": "顯示投注與賠率",
 		"temperatureUnit": "溫度單位",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
 		"openReveal": "開場動畫",
-		"openRevealExplainer": "開啟 ArenaSwap 時，每場比賽都會以對戰海報呈現——每天第一次是完整版，之後是精簡版。",
+		"openRevealExplainer": "開啟 ArenaSwap 時，每場比賽都會以對戰海報呈現。每天第一次是完整版，之後是精簡版。",
 		"holidayDecorations": "節日裝飾",
 		"holidayDecorationsExplainer": "比賽現場下雪時飄雪，感恩節當週飄落葉，整個十二月掛彩燈。",
 		"holidaySnow": "雪",
@@ -1131,7 +1131,7 @@
 	"stepTabAssign": {
 		"title": "把分頁連結到比賽",
 		"subtitle": "ArenaSwap 只會切換到你連結的分頁。",
-		"assignPlaceholder": "— 指派分頁 —",
+		"assignPlaceholder": "指派分頁",
 		"linkHint": "↑ 選擇正在播放這場比賽的分頁",
 		"body": "把每場比賽的直播開在各自的瀏覽器分頁。接著在比賽卡片的選單中選擇那個分頁。",
 		"back": "返回",
@@ -1172,7 +1172,7 @@
 		"next": "下一步"
 	},
 	"stepGameDetail": {
-		"title": "深入了解任何比賽",
+		"title": "打開任何比賽",
 		"subtitle": "點一下任何比賽，看看它的 PowerScore 是怎麼來的。",
 		"tapHint": "點一下開啟",
 		"detailPreviewTitle": "PowerScore 詳細分析",
@@ -1297,7 +1297,7 @@
 		}
 	},
 	"tabAssign": {
-		"placeholder": "— 指派分頁 —",
+		"placeholder": "指派分頁",
 		"inUse": "（使用中）"
 	},
 	"suggest": {
@@ -1337,7 +1337,7 @@
 		"general": {
 			"t0": "點一下右上角的開關，就能暫停 ArenaSwap 而不會丟失你的設定。",
 			"t1": "同時打開兩個以上的比賽分頁，ArenaSwap 效果最好。",
-			"t2": "點任何比賽卡片，深入查看它的 PowerScore 詳細分析。",
+			"t2": "點任何比賽卡片，查看它的 PowerScore 是怎麼算出來的。",
 			"t3": "同時看好幾種運動？在設定中開啟更多聯賽，一次涵蓋所有賽事。",
 			"t4": "長頸鹿和刺蝟都很酷，同時看所有比賽也一樣酷。",
 			"t6": "在設定中開啟切換通知，ArenaSwap 每次切換分頁都會提醒你。",
@@ -1349,7 +1349,7 @@
 			"t2": "PowerScore 較高的比賽會贏得切換。留意每張卡片上的長條。",
 			"t3": "在設定中開啟「顯示即將開賽的比賽」，就能提前指派好分頁。",
 			"t4": "還沒有直播比賽？設定中的示範模式會安排幾場，讓你看看 ArenaSwap 怎麼運作。",
-			"t5": "當所有比賽都冷場時，Standby Stream 會讓一個備用分頁繼續播放——在設定中啟用它。"
+			"t5": "當所有比賽都冷場時，Standby Stream 會讓一個備用分頁繼續播放。可在設定中啟用。"
 		},
 		"setup": {
 			"t0": "調低切換冷卻，在混亂的收尾階段切得更快。",
@@ -1416,7 +1416,7 @@
 		"announce": "LUDICROUS SPEED……",
 		"go": "衝！",
 		"stop": "停！",
-		"emergencyBrake": "⚠ 緊急煞車——絕對別用",
+		"emergencyBrake": "⚠ 緊急煞車：絕對別用",
 		"intro": {
 			"l1": "準備飛船，進入光速。",
 			"l2": "不不，光速太慢了。",

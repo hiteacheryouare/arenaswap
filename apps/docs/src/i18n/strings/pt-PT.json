@@ -475,7 +475,7 @@
 			"onStandbyStream": "No Standby Stream até algo aquecer"
 		},
 		"tabAssign": {
-			"placeholder": "— Associa um separador —"
+			"placeholder": "Associa um separador"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScore ao longo do tempo",

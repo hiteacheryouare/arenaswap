@@ -475,7 +475,7 @@
 			"onStandbyStream": "뭔가 뜨거워질 때까지 Standby Stream에서 대기 중"
 		},
 		"tabAssign": {
-			"placeholder": "— 탭 할당 —"
+			"placeholder": "탭 할당"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "시간별 PowerScore 추이",

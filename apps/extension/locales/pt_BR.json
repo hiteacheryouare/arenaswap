@@ -332,14 +332,14 @@
 		"multiviewGamesAll": "Todos os meus jogos",
 		"multiviewMaxBoxes": "Máximo de quadros",
 		"standbyTab": "Aba de espera",
-		"selectTab": "— Selecione uma aba —",
+		"selectTab": "Selecione uma aba",
 		"showBetting": "Mostrar apostas e odds",
 		"temperatureUnit": "Unidade de temperatura",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
 		"openReveal": "Animação de abertura",
-		"openRevealExplainer": "Cada jogo chega como um pôster do confronto quando você abre o ArenaSwap — a versão longa uma vez por dia, e uma mais rápida depois disso.",
+		"openRevealExplainer": "Cada jogo chega como um pôster do confronto quando você abre o ArenaSwap. A versão longa vem uma vez por dia, e uma mais rápida depois disso.",
 		"holidayDecorations": "Decoração de fim de ano",
 		"holidayDecorationsExplainer": "Neve quando neva no jogo, folhas na semana de Ação de Graças e luzes durante todo dezembro.",
 		"holidaySnow": "Neve",
@@ -1131,7 +1131,7 @@
 	"stepTabAssign": {
 		"title": "Vincule abas aos jogos",
 		"subtitle": "ArenaSwap só troca para abas que você vincula.",
-		"assignPlaceholder": "— Atribuir uma aba —",
+		"assignPlaceholder": "Atribuir uma aba",
 		"linkHint": "↑ escolha a aba que mostra este jogo",
 		"body": "Abra o stream de cada jogo numa aba própria do navegador. Depois escolha essa aba no menu do card do jogo.",
 		"back": "Voltar",
@@ -1172,7 +1172,7 @@
 		"next": "Próximo"
 	},
 	"stepGameDetail": {
-		"title": "Mergulhe em qualquer jogo",
+		"title": "Abra qualquer jogo",
 		"subtitle": "Clique em um jogo para ver o que compõe o PowerScore.",
 		"tapHint": "clique para abrir",
 		"detailPreviewTitle": "Análise do PowerScore",
@@ -1297,7 +1297,7 @@
 		}
 	},
 	"tabAssign": {
-		"placeholder": "— Atribuir uma aba —",
+		"placeholder": "Atribuir uma aba",
 		"inUse": " (em uso)"
 	},
 	"suggest": {
@@ -1330,7 +1330,7 @@
 	"postseasonBoost": {
 		"label": "Impulso de pós-temporada",
 		"unit": "pts máx.",
-		"explainer": "O máximo que uma final pode adicionar. As rodadas anteriores ganham uma parte disso — três quartos na semifinal, metade nas quartas de final, um quarto em qualquer rodada anterior. Jogos de exibição não somam nada."
+		"explainer": "O máximo que uma final pode adicionar. As rodadas anteriores ganham uma parte disso: três quartos na semifinal, metade nas quartas de final, um quarto em qualquer rodada anterior. Jogos de exibição não somam nada."
 	},
 	"proTip": {
 		"label": "Dica:",
@@ -1349,7 +1349,7 @@
 			"t2": "O PowerScore mais alto ganha a troca. Fique de olho na barra de cada card.",
 			"t3": "Ative \"Mostrar jogos futuros\" nas Configurações pra pré-atribuir abas antes do jogo começar.",
 			"t4": "Ainda sem jogos ao vivo? O Modo demonstração nas Configurações monta alguns pra você ver o ArenaSwap em ação.",
-			"t5": "O Standby Stream mantém uma aba reserva rodando quando todos os jogos esfriarem — ative nas Configurações."
+			"t5": "O Standby Stream mantém uma aba reserva rodando quando todos os jogos esfriarem. Ative nas Configurações."
 		},
 		"setup": {
 			"t0": "Reduza o cooldown entre trocas pra trocar mais rápido num final caótico.",
@@ -1416,7 +1416,7 @@
 		"announce": "LUDICROUS SPEED…",
 		"go": "VAI!",
 		"stop": "PARA!",
-		"emergencyBrake": "⚠ FREIO DE EMERGÊNCIA — NUNCA USAR",
+		"emergencyBrake": "⚠ FREIO DE EMERGÊNCIA: NUNCA USAR",
 		"intro": {
 			"l1": "Prepare a nave para a velocidade da luz.",
 			"l2": "Não, não, a velocidade da luz é lenta demais.",

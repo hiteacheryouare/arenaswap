@@ -332,14 +332,14 @@
 		"multiviewGamesAll": "Todos mis partidos",
 		"multiviewMaxBoxes": "Máximo de cuadros",
 		"standbyTab": "Pestaña de espera",
-		"selectTab": "— Selecciona una pestaña —",
+		"selectTab": "Selecciona una pestaña",
 		"showBetting": "Mostrar apuestas y cuotas",
 		"temperatureUnit": "Unidad de temperatura",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
 		"openReveal": "Animación de apertura",
-		"openRevealExplainer": "Cada partido llega como un póster del enfrentamiento cuando abres ArenaSwap — la versión larga una vez al día, y una más rápida después.",
+		"openRevealExplainer": "Cada partido llega como un póster del enfrentamiento cuando abres ArenaSwap. Tienes la versión larga una vez al día y una más rápida después.",
 		"holidayDecorations": "Decoración de temporada",
 		"holidayDecorationsExplainer": "Nieve cuando nieva en el partido, hojas la semana de Acción de Gracias y luces todo diciembre.",
 		"holidaySnow": "Nieve",
@@ -1131,7 +1131,7 @@
 	"stepTabAssign": {
 		"title": "Vincula pestañas a los partidos",
 		"subtitle": "ArenaSwap solo cambia a pestañas vinculadas.",
-		"assignPlaceholder": "— Asigna una pestaña —",
+		"assignPlaceholder": "Asigna una pestaña",
 		"linkHint": "↑ elige la pestaña de este partido",
 		"body": "Abre la transmisión de cada partido en su propia pestaña. Luego elige esa pestaña en el menú de la tarjeta del partido.",
 		"back": "Atrás",
@@ -1172,7 +1172,7 @@
 		"next": "Siguiente"
 	},
 	"stepGameDetail": {
-		"title": "Profundiza en cualquier partido",
+		"title": "Abre cualquier partido",
 		"subtitle": "Haz clic en un partido para ver qué compone su PowerScore.",
 		"tapHint": "haz clic para abrir",
 		"detailPreviewTitle": "Desglose del PowerScore",
@@ -1297,7 +1297,7 @@
 		}
 	},
 	"tabAssign": {
-		"placeholder": "— Asigna una pestaña —",
+		"placeholder": "Asigna una pestaña",
 		"inUse": " (en uso)"
 	},
 	"suggest": {
@@ -1349,7 +1349,7 @@
 			"t2": "Gana el cambio el PowerScore más alto. Fíjate en la barra de cada tarjeta.",
 			"t3": "Activa \"Mostrar próximos partidos\" en Ajustes para asignar pestañas antes de que empiece el partido.",
 			"t4": "¿Todavía no hay partidos en vivo? El Modo demostración en Ajustes monta unos cuantos para que veas a ArenaSwap en acción.",
-			"t5": "Standby Stream mantiene una pestaña de respaldo reproduciendo cuando todos los partidos se calman — actívalo en Ajustes."
+			"t5": "Standby Stream mantiene una pestaña de respaldo reproduciendo cuando todos los partidos se calman. Actívalo en Ajustes."
 		},
 		"setup": {
 			"t0": "Baja el tiempo de espera entre cambios para cambiar más rápido en un final caótico.",
@@ -1361,12 +1361,12 @@
 			"t6": "Usa la sección Señales de PowerScore para desactivar las que no te interesen."
 		},
 		"detail": {
-			"t0": "El PowerScore combina igualdad, presión de la recta final, racha, cambios de ventaja y remontadas — luego aplica un impulso o penalización de volatilidad según cuánto oscile la probabilidad de victoria.",
+			"t0": "El PowerScore combina igualdad, presión de la recta final, racha, cambios de ventaja y remontadas. Luego aplica un impulso o penalización de volatilidad según cuánto oscile la probabilidad de victoria.",
 			"t1": "¿Corte comercial? PowerScore le baja puntos al partido hasta que se reanude el juego, así ArenaSwap nunca te cambia a un anuncio.",
 			"t2": "Los partidos 0–0 reciben una pequeña penalización de PowerScore en los deportes donde el 0–0 no es emocionante.",
 			"t3": "Pasa el cursor sobre las gráficas para inspeccionar momentos concretos del partido.",
 			"t4": "Un equipo favorito en el enfrentamiento suma puntos extra al PowerScore.",
-			"t5": "El PowerScore crece a medida que avanza el partido — un duelo reñido temprano se dispara hacia el pitido final.",
+			"t5": "El PowerScore crece a medida que avanza el partido. Un duelo reñido temprano se dispara hacia el pitido final.",
 			"t6": "¿Empate en el último minuto? El PowerScore anticipa una probable prórroga para que nunca te pierdas el pitido final.",
 			"t7": "Activa las cuotas en Ajustes para ver las líneas en vivo junto al PowerScore de cada partido."
 		}
@@ -1416,7 +1416,7 @@
 		"announce": "LUDICROUS SPEED…",
 		"go": "¡VAMOS!",
 		"stop": "¡ALTO!",
-		"emergencyBrake": "⚠ FRENO DE EMERGENCIA — NUNCA USAR",
+		"emergencyBrake": "⚠ FRENO DE EMERGENCIA: NUNCA USAR",
 		"intro": {
 			"l1": "Prepare la nave para la velocidad de la luz.",
 			"l2": "No, no, la velocidad de la luz es demasiado lenta.",

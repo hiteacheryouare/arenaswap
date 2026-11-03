@@ -332,14 +332,14 @@
 		"multiviewGamesAll": "내 모든 경기",
 		"multiviewMaxBoxes": "최대 박스 수",
 		"standbyTab": "대기 탭",
-		"selectTab": "— 탭 선택 —",
+		"selectTab": "탭 선택",
 		"showBetting": "베팅 및 배당률 표시",
 		"temperatureUnit": "온도 단위",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
 		"openReveal": "오프닝 애니메이션",
-		"openRevealExplainer": "ArenaSwap을 열 때마다 모든 경기가 매치업 포스터로 표시돼요 — 하루에 한 번은 긴 버전, 그다음부터는 짧은 버전이에요.",
+		"openRevealExplainer": "ArenaSwap을 열 때마다 모든 경기가 매치업 포스터로 표시돼요. 하루에 한 번은 긴 버전, 그다음부터는 짧은 버전이에요.",
 		"holidayDecorations": "홀리데이 장식",
 		"holidayDecorationsExplainer": "경기장에 눈이 오면 눈, 추수감사절 주간에는 낙엽, 12월 내내 조명이 나타나요.",
 		"holidaySnow": "눈",
@@ -1131,7 +1131,7 @@
 	"stepTabAssign": {
 		"title": "탭을 경기에 연결하기",
 		"subtitle": "ArenaSwap은 연결한 탭으로만 전환해요.",
-		"assignPlaceholder": "— 탭 할당 —",
+		"assignPlaceholder": "탭 할당",
 		"linkHint": "↑ 이 경기를 보여 주는 탭 선택",
 		"body": "경기마다 스트림을 각자의 브라우저 탭에서 여세요. 그다음 경기 카드의 메뉴에서 그 탭을 고르세요.",
 		"back": "뒤로",
@@ -1172,7 +1172,7 @@
 		"next": "다음"
 	},
 	"stepGameDetail": {
-		"title": "어떤 경기든 자세히 살펴보세요",
+		"title": "어떤 경기든 열어 보세요",
 		"subtitle": "경기를 클릭하면 PowerScore에 무엇이 반영됐는지 볼 수 있어요.",
 		"tapHint": "클릭해서 열기",
 		"detailPreviewTitle": "PowerScore 세부 내역",
@@ -1297,7 +1297,7 @@
 		}
 	},
 	"tabAssign": {
-		"placeholder": "— 탭 할당 —",
+		"placeholder": "탭 할당",
 		"inUse": " (사용 중)"
 	},
 	"suggest": {
@@ -1349,7 +1349,7 @@
 			"t2": "PowerScore가 더 높은 경기가 전환에서 이겨요. 카드마다 있는 막대를 보세요.",
 			"t3": "설정에서 \"예정된 경기 표시\"를 켜면 경기 시작 전에 미리 탭을 할당할 수 있어요.",
 			"t4": "아직 진행 중인 경기가 없나요? 설정의 데모 모드가 경기 몇 개를 준비해서 ArenaSwap이 일하는 모습을 보여 줘요.",
-			"t5": "Standby Stream은 모든 경기가 조용해질 때 백업 탭을 재생해 줘요 — 설정에서 활성화하세요."
+			"t5": "Standby Stream은 모든 경기가 조용해질 때 백업 탭을 재생해 줘요. 설정에서 활성화하세요."
 		},
 		"setup": {
 			"t0": "전환 쿨다운을 낮추면 혼전 막판에 더 빠르게 전환해요.",
@@ -1416,7 +1416,7 @@
 		"announce": "LUDICROUS SPEED…",
 		"go": "발사!",
 		"stop": "멈춰!!",
-		"emergencyBrake": "⚠ 비상 브레이크 — 절대 사용 금지",
+		"emergencyBrake": "⚠ 비상 브레이크: 절대 사용 금지",
 		"intro": {
 			"l1": "우주선을 광속으로 준비시켜.",
 			"l2": "아니, 아니, 광속은 너무 느려.",

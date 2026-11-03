@@ -475,7 +475,7 @@
 			"onStandbyStream": "何かが盛り上がるまでStandby Streamで待機中"
 		},
 		"tabAssign": {
-			"placeholder": "— タブを割り当て —"
+			"placeholder": "タブを割り当て"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScoreの推移",

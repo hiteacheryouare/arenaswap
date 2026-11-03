@@ -475,7 +475,7 @@
 			"onStandbyStream": "Naka-Standby Stream hanggang may uminit"
 		},
 		"tabAssign": {
-			"placeholder": "— Mag-assign ng tab —"
+			"placeholder": "Mag-assign ng tab"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "Pag-usad ng PowerScore",

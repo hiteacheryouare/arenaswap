@@ -475,7 +475,7 @@
 			"onStandbyStream": "Im Standby Stream, bis es wieder heiß wird"
 		},
 		"tabAssign": {
-			"placeholder": "— Tab zuweisen —"
+			"placeholder": "Tab zuweisen"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScore über die Zeit",

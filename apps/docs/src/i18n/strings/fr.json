@@ -475,7 +475,7 @@
 			"onStandbyStream": "Sur Standby Stream jusqu'à ce que ça chauffe"
 		},
 		"tabAssign": {
-			"placeholder": "— Associer un onglet —"
+			"placeholder": "Associer un onglet"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScore dans le temps",

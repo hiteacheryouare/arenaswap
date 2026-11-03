@@ -332,14 +332,14 @@
 		"multiviewGamesAll": "Lahat ng laro ko",
 		"multiviewMaxBoxes": "Pinakamaraming box",
 		"standbyTab": "Standby na Tab",
-		"selectTab": "— Pumili ng tab —",
+		"selectTab": "Pumili ng tab",
 		"showBetting": "Ipakita ang betting at odds",
 		"temperatureUnit": "Yunit ng Temperatura",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
 		"openReveal": "Panimulang animation",
-		"openRevealExplainer": "Lalabas ang bawat laro bilang matchup poster kapag binubuksan mo ang ArenaSwap — ang mahabang bersyon minsan sa isang araw, tapos mas mabilis na bersyon pagkatapos noon.",
+		"openRevealExplainer": "Lalabas ang bawat laro bilang matchup poster kapag binubuksan mo ang ArenaSwap. Mahabang bersyon minsan sa isang araw, tapos mas mabilis na bersyon pagkatapos noon.",
 		"holidayDecorations": "Mga dekorasyon sa holiday",
 		"holidayDecorationsExplainer": "May snow kapag umuulan ng niyebe sa laro, dahon tuwing linggo ng Thanksgiving, at ilaw buong Disyembre.",
 		"holidaySnow": "Niyebe",
@@ -1131,7 +1131,7 @@
 	"stepTabAssign": {
 		"title": "I-link ang mga Tab sa mga Laro",
 		"subtitle": "Sa mga na-link na tab lang lilipat ang ArenaSwap.",
-		"assignPlaceholder": "— Mag-assign ng tab —",
+		"assignPlaceholder": "Mag-assign ng tab",
 		"linkHint": "↑ piliin ang tab ng larong ito",
 		"body": "Buksan ang stream ng bawat laro sa sarili nitong browser tab. Tapos piliin ang tab na iyon sa menu ng game card.",
 		"back": "Bumalik",
@@ -1172,7 +1172,7 @@
 		"next": "Susunod"
 	},
 	"stepGameDetail": {
-		"title": "Tuklasin ang Kahit Anong Laro",
+		"title": "Buksan ang Kahit Anong Laro",
 		"subtitle": "I-click ang laro para makita ang bumubuo sa PowerScore.",
 		"tapHint": "i-click para buksan",
 		"detailPreviewTitle": "Breakdown ng PowerScore",
@@ -1297,7 +1297,7 @@
 		}
 	},
 	"tabAssign": {
-		"placeholder": "— Mag-assign ng tab —",
+		"placeholder": "Mag-assign ng tab",
 		"inUse": " (ginagamit na)"
 	},
 	"suggest": {
@@ -1330,7 +1330,7 @@
 	"postseasonBoost": {
 		"label": "Boost sa Postseason",
 		"unit": "pts max",
-		"explainer": "Ito ang pinakamataas na maidaragdag ng championship game. May share ang mas maagang rounds — 75% sa semifinal, 50% sa quarterfinal, 25% sa kahit anong mas maagang round pa. Wala namang maidaragdag ang mga exhibition game."
+		"explainer": "Ito ang pinakamataas na maidaragdag ng championship game. May share ang mas maagang rounds: 75% sa semifinal, 50% sa quarterfinal, 25% sa kahit anong mas maagang round pa. Wala namang maidaragdag ang mga exhibition game."
 	},
 	"proTip": {
 		"label": "Pro Tip:",
@@ -1349,7 +1349,7 @@
 			"t2": "Ang mas mataas na PowerScore ang nananalo sa swap. Bantayan ang bar sa bawat card.",
 			"t3": "I-on ang \"Ipakita ang mga paparating na laro\" sa Mga Setting para maunang mag-assign ng tab bago pa magsimula ang laro.",
 			"t4": "Wala pang live na laro? Magse-set up ang Demo Mode sa Mga Setting ng ilan para makita mong gumagana ang ArenaSwap.",
-			"t5": "Pinapanatiling naka-play ng Standby Stream ang backup tab tuwing tumahimik ang lahat ng laro — i-enable ito sa Mga Setting."
+			"t5": "Pinapanatiling naka-play ng Standby Stream ang backup tab tuwing tumahimik ang lahat ng laro. I-enable ito sa Mga Setting."
 		},
 		"setup": {
 			"t0": "Babaan ang Cooldown ng Paglipat para mas mabilis lumipat sa magulong finish.",
@@ -1416,7 +1416,7 @@
 		"announce": "LUDICROUS SPEED…",
 		"go": "GO!",
 		"stop": "TIGIL!",
-		"emergencyBrake": "⚠ EMERGENCY BRAKE — HUWAG GAMITIN",
+		"emergencyBrake": "⚠ EMERGENCY BRAKE: HUWAG GAMITIN",
 		"intro": {
 			"l1": "Ihanda ang barko para sa light speed.",
 			"l2": "Hindi, hindi, masyadong mabagal ang light speed.",

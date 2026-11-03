@@ -475,7 +475,7 @@
 			"onStandbyStream": "No Standby Stream até algo esquentar"
 		},
 		"tabAssign": {
-			"placeholder": "— Atribuir uma aba —"
+			"placeholder": "Atribuir uma aba"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScore ao longo do tempo",

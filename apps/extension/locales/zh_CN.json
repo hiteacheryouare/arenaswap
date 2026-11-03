@@ -332,14 +332,14 @@
 		"multiviewGamesAll": "我的所有比赛",
 		"multiviewMaxBoxes": "最多分格数",
 		"standbyTab": "待机标签页",
-		"selectTab": "— 选择标签页 —",
+		"selectTab": "选择标签页",
 		"showBetting": "显示投注与赔率",
 		"temperatureUnit": "温度单位",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
 		"openReveal": "开场动画",
-		"openRevealExplainer": "打开 ArenaSwap 时，每场比赛都会以对阵海报呈现——每天首次是完整版，之后是精简版。",
+		"openRevealExplainer": "打开 ArenaSwap 时，每场比赛都会以对阵海报呈现。每天首次是完整版，之后是精简版。",
 		"holidayDecorations": "节日装饰",
 		"holidayDecorationsExplainer": "比赛现场下雪时飘雪，感恩节当周飘落叶，整个十二月挂彩灯。",
 		"holidaySnow": "雪",
@@ -1131,7 +1131,7 @@
 	"stepTabAssign": {
 		"title": "将标签页绑定到比赛",
 		"subtitle": "ArenaSwap 只会切换到您绑定的标签页。",
-		"assignPlaceholder": "— 分配标签页 —",
+		"assignPlaceholder": "分配标签页",
 		"linkHint": "↑ 选择正在播放这场比赛的标签页",
 		"body": "把每场比赛的直播流开在各自的浏览器标签页中。然后在比赛卡片的菜单里选择那个标签页。",
 		"back": "返回",
@@ -1172,7 +1172,7 @@
 		"next": "下一步"
 	},
 	"stepGameDetail": {
-		"title": "深入了解任意比赛",
+		"title": "打开任意比赛",
 		"subtitle": "点击任意比赛，查看它的 PowerScore 是怎么来的。",
 		"tapHint": "点击打开",
 		"detailPreviewTitle": "PowerScore 详细分析",
@@ -1297,7 +1297,7 @@
 		}
 	},
 	"tabAssign": {
-		"placeholder": "— 分配标签页 —",
+		"placeholder": "分配标签页",
 		"inUse": "（已占用）"
 	},
 	"suggest": {
@@ -1337,7 +1337,7 @@
 		"general": {
 			"t0": "点击右上角的开关，可在不丢失设置的情况下暂停 ArenaSwap。",
 			"t1": "同时打开两个或更多比赛标签页，ArenaSwap 效果最佳。",
-			"t2": "点击任意比赛卡片，深入查看其 PowerScore 分解。",
+			"t2": "点击任意比赛卡片，查看其 PowerScore 是怎么算出来的。",
 			"t3": "混看多种运动？在设置中开启更多联赛，一次涵盖所有赛事。",
 			"t4": "长颈鹿和刺猬很酷，同时看所有比赛也一样酷。",
 			"t6": "在设置中开启切换通知，每次 ArenaSwap 切换标签页时都会收到提醒。",
@@ -1349,7 +1349,7 @@
 			"t2": "PowerScore 更高的比赛赢得切换。留意每张卡片上的进度条。",
 			"t3": "在设置中开启「显示即将开赛的比赛」，提前分配好标签页。",
 			"t4": "还没有直播比赛？设置中的演示模式会安排几场，让您看看 ArenaSwap 如何运作。",
-			"t5": "当所有比赛都趋于平淡时，Standby Stream 会保持一个备用标签页继续播放——在设置中启用。"
+			"t5": "当所有比赛都趋于平淡时，Standby Stream 会保持一个备用标签页继续播放。可在设置中启用。"
 		},
 		"setup": {
 			"t0": "调低切换冷却，在混乱的收尾阶段切换得更快。",
@@ -1416,7 +1416,7 @@
 		"announce": "LUDICROUS SPEED……",
 		"go": "冲！",
 		"stop": "停！",
-		"emergencyBrake": "⚠ 紧急制动——永远别用",
+		"emergencyBrake": "⚠ 紧急制动：永远别用",
 		"intro": {
 			"l1": "准备飞船，进入光速。",
 			"l2": "不不，光速太慢了。",

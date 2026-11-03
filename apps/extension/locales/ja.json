@@ -332,14 +332,14 @@
 		"multiviewGamesAll": "自分のすべての試合",
 		"multiviewMaxBoxes": "ボックスの最大数",
 		"standbyTab": "スタンバイタブ",
-		"selectTab": "— タブを選択 —",
+		"selectTab": "タブを選択",
 		"showBetting": "ベッティング & オッズを表示",
 		"temperatureUnit": "温度単位",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
 		"openReveal": "オープニングアニメーション",
-		"openRevealExplainer": "ArenaSwapを開くたびに、試合が対戦ポスターとして表示されます — 1日1回はロングバージョン、それ以降は短めのバージョンです。",
+		"openRevealExplainer": "ArenaSwapを開くたびに、試合が対戦ポスターとして表示されます。1日1回はロングバージョン、それ以降は短めのバージョンです。",
 		"holidayDecorations": "ホリデー装飾",
 		"holidayDecorationsExplainer": "会場で雪が降れば雪、感謝祭の週には落ち葉、12月中はライトが表示されます。",
 		"holidaySnow": "雪",
@@ -1131,7 +1131,7 @@
 	"stepTabAssign": {
 		"title": "タブを試合にひも付ける",
 		"subtitle": "ArenaSwapが切り替えるのは、ひも付けたタブだけです。",
-		"assignPlaceholder": "— タブを割り当て —",
+		"assignPlaceholder": "タブを割り当て",
 		"linkHint": "↑ この試合を開いているタブを選ぶ",
 		"body": "試合ごとの配信を、それぞれ別のブラウザタブで開きます。次に、試合カードのメニューからそのタブを選びます。",
 		"back": "戻る",
@@ -1172,7 +1172,7 @@
 		"next": "次へ"
 	},
 	"stepGameDetail": {
-		"title": "試合の詳細を見る",
+		"title": "好きな試合を開く",
 		"subtitle": "試合をクリックすると、PowerScoreの中身がわかります。",
 		"tapHint": "クリックして開く",
 		"detailPreviewTitle": "PowerScore内訳",
@@ -1297,7 +1297,7 @@
 		}
 	},
 	"tabAssign": {
-		"placeholder": "— タブを割り当て —",
+		"placeholder": "タブを割り当て",
 		"inUse": "（使用中）"
 	},
 	"suggest": {
@@ -1349,7 +1349,7 @@
 			"t2": "PowerScoreが高い方がスワップに勝ちます。各カードのバーに注目。",
 			"t3": "設定で「近日開催の試合を表示」をオンにすると、試合開始前にタブを事前割り当てできます。",
 			"t4": "まだライブ試合がない？設定のデモモードが試合をいくつか用意するので、ArenaSwapの動きを見られます。",
-			"t5": "Standby Streamは、すべての試合が盛り上がりを欠いたときにバックアップタブを再生し続けます — 設定から有効にできます。"
+			"t5": "Standby Streamは、すべての試合が盛り上がりを欠いたときにバックアップタブを再生し続けます。設定から有効にできます。"
 		},
 		"setup": {
 			"t0": "切り替えクールダウンを下げると、混戦の終盤でより素早く切り替えます。",
@@ -1416,7 +1416,7 @@
 		"announce": "LUDICROUS SPEED…",
 		"go": "ゴー！",
 		"stop": "ストップ！",
-		"emergencyBrake": "⚠ 緊急ブレーキ — 絶対に使うな",
+		"emergencyBrake": "⚠ 緊急ブレーキ：絶対に使うな",
 		"intro": {
 			"l1": "宇宙船を光速に備えよ。",
 			"l2": "いや、光速では遅すぎる。",

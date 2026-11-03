@@ -475,7 +475,7 @@
 			"onStandbyStream": "On Standby Stream until something heats up"
 		},
 		"tabAssign": {
-			"placeholder": "— Assign a tab —"
+			"placeholder": "Assign a tab"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScore Over Time",

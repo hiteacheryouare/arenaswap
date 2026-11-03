@@ -475,7 +475,7 @@
 			"onStandbyStream": "在 Standby Stream 待命，等比賽升溫"
 		},
 		"tabAssign": {
-			"placeholder": "— 指派分頁 —"
+			"placeholder": "指派分頁"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScore 走勢",

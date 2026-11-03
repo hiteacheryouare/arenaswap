@@ -1,4 +1,5 @@
 import { bullsHeat, eaglesCowboys, liveState, makeScore, onboardedPrefs, openTabs, sixersThunder } from '../support/fixtures';
+import en from '../../locales/en.json';
 
 const onboarded = { local: { onboardingCompleted: true }, sync: { prefs: onboardedPrefs() } };
 const cardFor = (abbreviation: string) => cy.contains('.game-card', abbreviation);
@@ -36,7 +37,7 @@ describe('registering a tab and watching the lead change', () => {
 		tabPicker(sixersThunder.homeTeam.abbreviation).choose(openTabs[0].title);
 		cy.background().its('registry').should('have.length', 1);
 
-		tabPicker(sixersThunder.homeTeam.abbreviation).choose('— Assign a tab —');
+		tabPicker(sixersThunder.homeTeam.abbreviation).choose(en.tabAssign.placeholder);
 		cy.background().its('registry').should('deep.equal', []);
 	});
 

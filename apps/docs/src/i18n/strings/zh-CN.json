@@ -475,7 +475,7 @@
 			"onStandbyStream": "在 Standby Stream 待命，等比赛升温"
 		},
 		"tabAssign": {
-			"placeholder": "— 分配标签页 —"
+			"placeholder": "分配标签页"
 		},
 		"detail": {
 			"chartPowerScoreTitle": "PowerScore 走势",

@@ -332,14 +332,14 @@
 		"multiviewGamesAll": "All my games",
 		"multiviewMaxBoxes": "Most boxes",
 		"standbyTab": "Standby tab",
-		"selectTab": "— Select a tab —",
+		"selectTab": "Select a tab",
 		"showBetting": "Show betting & odds",
 		"temperatureUnit": "Temperature unit",
 		"temperatureUnitF": "°F",
 		"temperatureUnitC": "°C",
 		"temperatureUnitRomer": "°Rø",
 		"openReveal": "Opening animation",
-		"openRevealExplainer": "Every game arrives as a matchup poster when you open ArenaSwap — the long version once a day, a quicker one after that.",
+		"openRevealExplainer": "Every game arrives as a matchup poster when you open ArenaSwap. You get the long version once a day and a quicker one after that.",
 		"holidayDecorations": "Holiday decorations",
 		"holidayDecorationsExplainer": "Snow falls when it snows at the game, leaves the week of Thanksgiving, and lights all December.",
 		"holidaySnow": "Snow",
@@ -1131,7 +1131,7 @@
 	"stepTabAssign": {
 		"title": "Link Tabs to Games",
 		"subtitle": "ArenaSwap only switches to tabs you link.",
-		"assignPlaceholder": "— Assign a tab —",
+		"assignPlaceholder": "Assign a tab",
 		"linkHint": "↑ pick the tab showing this game",
 		"body": "Open each game's stream in its own browser tab. Then pick that tab from the menu on the game's card.",
 		"back": "Back",
@@ -1172,7 +1172,7 @@
 		"next": "Next"
 	},
 	"stepGameDetail": {
-		"title": "Dive Into Any Game",
+		"title": "Open Any Game",
 		"subtitle": "Click any game to see what's behind its PowerScore.",
 		"tapHint": "click to open",
 		"detailPreviewTitle": "PowerScore Breakdown",
@@ -1297,7 +1297,7 @@
 		}
 	},
 	"tabAssign": {
-		"placeholder": "— Assign a tab —",
+		"placeholder": "Assign a tab",
 		"inUse": " (in use)"
 	},
 	"suggest": {
@@ -1330,14 +1330,14 @@
 	"postseasonBoost": {
 		"label": "Postseason boost",
 		"unit": "pts max",
-		"explainer": "The most a title game can add. Earlier rounds earn a share — three quarters for a semifinal, half for a quarterfinal, a quarter for anything earlier. Exhibitions earn nothing."
+		"explainer": "The most a title game can add. Earlier rounds earn a share: three quarters for a semifinal, half for a quarterfinal, a quarter for anything earlier. Exhibitions earn nothing."
 	},
 	"proTip": {
 		"label": "Pro tip:",
 		"general": {
 			"t0": "Toggle the switch in the top right to pause ArenaSwap without losing your settings.",
 			"t1": "ArenaSwap works best with two or more game tabs open at once.",
-			"t2": "Click any game card to dive into its PowerScore breakdown.",
+			"t2": "Click any game card to see how its PowerScore adds up.",
 			"t3": "Mixing sports? Enable extra leagues in Settings to swap across all of them at once.",
 			"t4": "Giraffes and hedgehogs are cool. So is watching every game at once.",
 			"t6": "Turn on switch notifications in Settings to get an alert every time ArenaSwap changes your tab.",
@@ -1349,7 +1349,7 @@
 			"t2": "The higher PowerScore wins the swap. Watch the bar on each card.",
 			"t3": "Turn on \"Show upcoming games\" in Settings to pre-assign tabs before the game starts.",
 			"t4": "No live games yet? Demo Mode in Settings stages a few so you can watch ArenaSwap work.",
-			"t5": "Standby Stream keeps a backup tab playing whenever every game goes quiet — enable it in Settings."
+			"t5": "Standby Stream keeps a backup tab playing whenever every game goes quiet. Turn it on in Settings."
 		},
 		"setup": {
 			"t0": "Lower the switch cooldown to swap faster through a chaotic finish.",
@@ -1416,7 +1416,7 @@
 		"announce": "LUDICROUS SPEED…",
 		"go": "GO!",
 		"stop": "STOP!",
-		"emergencyBrake": "⚠ EMERGENCY BRAKE — NEVER USE",
+		"emergencyBrake": "⚠ EMERGENCY BRAKE: NEVER USE",
 		"intro": {
 			"l1": "Prepare ship for light speed.",
 			"l2": "No, no, light speed is too slow.",

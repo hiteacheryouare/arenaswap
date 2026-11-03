@@ -61,3 +61,19 @@ describe('store listing limits', () => {
 		expect([...String(strings.extDescription)].length).toBeLessThanOrEqual(132);
 	});
 });
+
+describe('em dashes', () => {
+	test.each(['en.json', ...localeFiles])('%s has none in the popup copy, bar the store name', file => {
+		const withDash = [...flatten(readLocale(file))].filter(([key, text]) => key !== 'extName' && text.includes('—')).map(([key]) => key);
+
+		expect(withDash).toEqual([]);
+	});
+
+	test.each(readdirSync(join(__dirname, '../../docs/src/i18n/strings')).filter(file => file.endsWith('.json')))('docs bundle %s has none under ui', file => {
+		const ui = readFileSync(join(__dirname, '../../docs/src/i18n/strings', file), 'utf8');
+		const strings = JSON.parse(ui) as { ui: Strings };
+		const withDash = [...flatten(strings.ui)].filter(([, text]) => text.includes('—')).map(([key]) => key);
+
+		expect(withDash).toEqual([]);
+	});
+});
