@@ -54,6 +54,20 @@ describe('multiview', () => {
 		expect(multiview.lineupFor(99)).toBeNull();
 	});
 
+	test('closes the tab it opened when its frames cannot be allowed, and holds off retrying', async () => {
+		const deps = createDeps();
+		deps.allowFrames.mockRejectedValueOnce(new Error('denied'));
+		const multiview = createMultiview(deps);
+
+		expect(await multiview.update(pass())).toEqual({ active: false, settled: false });
+		expect(deps.removeTab).toHaveBeenCalledWith(multiviewTabId);
+		expect(multiview.tabId()).toBeNull();
+		expect(deps.reveal).not.toHaveBeenCalled();
+
+		await multiview.update(pass({ now: 105_000 }));
+		expect(deps.createTab).toHaveBeenCalledTimes(1);
+	});
+
 	test('does not open inside the cooldown of the last switch', async () => {
 		const deps = createDeps();
 		const multiview = createMultiview(deps);

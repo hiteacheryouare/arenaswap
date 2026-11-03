@@ -119,7 +119,13 @@ export const createMultiview = (deps: multiviewDeps) => {
 			index: pass.besideTab?.index === undefined ? undefined : pass.besideTab.index + 1,
 		});
 		if (tabId === undefined) return false;
-		await deps.allowFrames(tabId);
+		try {
+			await deps.allowFrames(tabId);
+		} catch {
+			await deps.removeTab(tabId).catch(() => {});
+			failed = { key: failedSetKey(gameIds), at: pass.now };
+			return false;
+		}
 		session = {
 			tabId,
 			boxes: gameIds.map(gameId => ({ gameId, url: urlByGameId.get(gameId)! })),
