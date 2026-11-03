@@ -1298,7 +1298,7 @@
 	},
 	"tabAssign": {
 		"placeholder": "Tab zuweisen",
-		"inUse": " (in Verwendung)"
+		"inUse": " (belegt)"
 	},
 	"suggest": {
 		"bannerTitle": "Diese Tabs sehen nach Spielen aus",

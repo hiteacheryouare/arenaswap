@@ -1298,7 +1298,7 @@
 	},
 	"tabAssign": {
 		"placeholder": "Associer un onglet",
-		"inUse": " (en cours d'utilisation)"
+		"inUse": " (utilisé)"
 	},
 	"suggest": {
 		"bannerTitle": "Ces onglets ressemblent à des matchs",
