@@ -115,7 +115,7 @@ const profileDialog = ({ request, profiles, activeName, onCreate, onRename, onDe
 						</>
 					)}
 				</div>
-				<div className='dialog-footer flex-column align-items-stretch'>
+				<div className='dialog-footer flex-column flex-nowrap align-items-stretch'>
 					{shown?.kind === 'delete' && (
 						<button type='submit' id='profileDeleteConfirm' className='btn btn-solid theme-danger'>{i18n.t('profiles.delete')}</button>
 					)}
@@ -124,7 +124,7 @@ const profileDialog = ({ request, profiles, activeName, onCreate, onRename, onDe
 					)}
 					{shown?.kind === 'new' && (
 						<>
-							<button type='submit' id='profileCopy' className='btn btn-solid theme-primary mw-100' title={i18n.t('profiles.copyCurrent', { name: activeName })} disabled={!nameReady}>
+							<button type='submit' id='profileCopy' className='btn btn-solid theme-primary' title={i18n.t('profiles.copyCurrent', { name: activeName })} disabled={!nameReady}>
 								<span className='min-w-0 text-truncate'>{i18n.t('profiles.copyCurrent', { name: activeName })}</span>
 							</button>
 							<button type='button' id='profileFresh' className='btn btn-outline theme-accent' disabled={!nameReady} onClick={() => submit(true)}>

@@ -217,10 +217,10 @@ const App = () => {
 									{file ? (
 										<>
 											<div className='d-flex flex-column gap-2 mt-3'>
-												<button type='button' id='importAdd' className='btn btn-solid theme-primary mw-100' title={applying ? i18n.t('backupImport.applying') : i18n.t('backupImport.addAsNew')} onClick={() => void bringIn('add')} disabled={applying}>
+												<button type='button' id='importAdd' className='btn btn-solid theme-primary' title={applying ? i18n.t('backupImport.applying') : i18n.t('backupImport.addAsNew')} onClick={() => void bringIn('add')} disabled={applying}>
 													<span className='min-w-0 text-truncate'>{applying ? i18n.t('backupImport.applying') : i18n.t('backupImport.addAsNew')}</span>
 												</button>
-												<button type='button' id='importReplace' className='btn btn-outline theme-accent mw-100' title={i18n.t('backupImport.replace', { name: activeName })} onClick={() => void bringIn('replace')} disabled={applying}>
+												<button type='button' id='importReplace' className='btn btn-outline theme-accent' title={i18n.t('backupImport.replace', { name: activeName })} onClick={() => void bringIn('replace')} disabled={applying}>
 													<span className='min-w-0 text-truncate'>{i18n.t('backupImport.replace', { name: activeName })}</span>
 												</button>
 											</div>
