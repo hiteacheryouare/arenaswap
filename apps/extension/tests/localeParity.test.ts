@@ -77,3 +77,11 @@ describe('em dashes', () => {
 		expect(withDash).toEqual([]);
 	});
 });
+
+describe('Chinese hockey terms', () => {
+	test.each([['zh_CN.json', '强打'], ['zh_TW.json', '強打']])('%s never says %s for a power play', (file, word) => {
+		const withWord = [...flatten(readLocale(file))].filter(([, text]) => text.includes(word)).map(([key]) => key);
+
+		expect(withWord).toEqual([]);
+	});
+});
