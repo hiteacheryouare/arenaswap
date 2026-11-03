@@ -276,16 +276,20 @@ export const fetchState = async (forceRefresh = false): Promise<BackgroundState>
 	return normalizeBackgroundState(state);
 };
 
+const cutAtCodePoint = (text: string, length: number) => {
+	const characters = Array.from(text);
+	return characters.length > length ? `${characters.slice(0, length).join('')}…` : text;
+};
+
 export const formatTabLabel = (tab: Browser.tabs.Tab, allTabs: Browser.tabs.Tab[]): string => {
 	const title = tab.title ?? '';
 	if (!title) return i18n.t('tab.fallback', [String(tab.id)]);
 	const duplicates = allTabs.filter(t => t.title === title);
-	if (duplicates.length <= 1) return title.slice(0, 35);
+	if (duplicates.length <= 1) return title;
 	try {
 		const pathname = new URL(tab.url ?? '').pathname;
-		const truncated = pathname.length > 25 ? `${pathname.slice(0, 22)}...` : pathname;
-		return `${title.slice(0, 25)} (${truncated})`;
+		return `${cutAtCodePoint(title, 25)} (${(Array.from(pathname).length > 25 ? cutAtCodePoint(pathname, 22) : pathname)})`;
 	} catch {
-		return `${title.slice(0, 30)} (#${tab.id})`;
+		return `${cutAtCodePoint(title, 30)} (#${tab.id})`;
 	}
 };

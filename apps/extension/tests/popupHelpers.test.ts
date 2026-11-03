@@ -382,9 +382,9 @@ describe('formatTabLabel', () => {
 		expect(formatTabLabel({ id: 42 }, [{ id: 42 }])).toBe('Tab #42');
 	});
 
-	test('truncates a single-occurrence title to 35 characters', () => {
+	test('keeps a unique title whole', () => {
 		const title = 'A very long tab title that exceeds the truncation limit by quite a lot';
-		expect(formatTabLabel({ id: 1, title }, [{ id: 1, title }])).toBe(title.slice(0, 35));
+		expect(formatTabLabel({ id: 1, title }, [{ id: 1, title }])).toBe(title);
 	});
 
 	test('disambiguates duplicate titles with the URL pathname', () => {
@@ -403,8 +403,15 @@ describe('formatTabLabel', () => {
 			{ id: 1, title, url: `https://example.com${longPath}` },
 			[{ id: 1, title }, { id: 2, title }],
 		);
-		expect(result.endsWith('...)')).toBe(true);
+		expect(result.endsWith('…)')).toBe(true);
 		expect(result.startsWith('Docs (')).toBe(true);
+	});
+
+	test('cuts a duplicate title by code points, never through an emoji', () => {
+		const title = `${'a'.repeat(24)}🏀 and then some more words`;
+		const result = formatTabLabel({ id: 1, title, url: 'https://example.com/x' }, [{ id: 1, title }, { id: 2, title }]);
+		expect(result.startsWith(`${'a'.repeat(24)}🏀…`)).toBe(true);
+		expect(result.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '')).not.toMatch(/[\uD800-\uDFFF]/);
 	});
 
 	test('falls back to the tab id when a duplicate-title tab has an invalid URL', () => {
