@@ -346,3 +346,38 @@ describe('backup tab', () => {
 		cy.wrap(fake.sent).should('be.empty');
 	});
 });
+
+describe('long profile names', () => {
+	const longName = 'W'.repeat(40);
+
+	it('truncates the Replace label inside its button at 320px', () => {
+		cy.viewport(320, 700);
+		installExtension({ local: { profiles: [{ id: 'main', name: longName }], activeProfileId: 'main' } });
+		stubTeams();
+		cy.mount(<BackupApp />);
+		pickFile(exportedFile());
+		cy.get('#importReplace').should(([button]: JQuery<HTMLElement>) => {
+			const label = button.querySelector('.text-truncate') as HTMLElement;
+			expect(label.scrollWidth).to.be.greaterThan(label.clientWidth);
+			expect(button.getAttribute('title')).to.contain(longName);
+			const card = button.parentElement!.getBoundingClientRect();
+			expect(button.getBoundingClientRect().right).to.be.at.most(card.right + 0.5);
+		});
+	});
+
+	it('wraps the synced explainer instead of widening the popup', () => {
+		installExtension();
+		const profiles = { profiles: [{ id: 'main', name: longName }], activeId: 'main' };
+		cy.viewport(320, 700);
+		cy.mount(
+			<div className='popup-root'>
+				<div className='popup-container'>
+					<BackupSyncPage prefs={laptopPrefs} fantasyRoster={[]} profiles={profiles} profilesBusy={false} profileActions={{ onSwitch: () => {}, onCreate: () => {}, onRename: () => {}, onDelete: () => {} }} />
+				</div>
+			</div>,
+		);
+		cy.contains('.setting-explainer', longName).should(([paragraph]: JQuery<HTMLElement>) => {
+			expect(paragraph.scrollWidth).to.be.at.most(paragraph.clientWidth);
+		});
+	});
+});
