@@ -29,7 +29,7 @@ import TemperatureUnitToggle from './temperatureUnitToggle';
 import SelectDropdown from './selectDropdown';
 import StandbyStreamGuide from './standbyStreamGuide';
 import MultiviewGuide from './multiviewGuide';
-import TabFavicon from './tabFavicon';
+import TabFavicon from '@arenaswap/ui/src/components/tabFavicon';
 import { searchSettings, settingsGroups, type settingsGroupId } from './settingsCatalog';
 import type { demoSeason } from '../../../utils/holidayDecorations';
 import type { profileList } from '../../../utils/profiles';

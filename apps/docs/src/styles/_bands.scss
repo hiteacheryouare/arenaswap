@@ -243,14 +243,17 @@
 		padding: 0;
 		text-align: center;
 
+		// A column, so the demo above each step can sit over the rule.
 		li {
 			counter-increment: step;
-			padding-top: 1.5rem;
-			border-top: 1px solid var(--as-border-color);
+			display: flex;
+			flex-direction: column;
 
 			&::before {
 				content: counter(step);
 				display: block;
+				padding-top: 1.5rem;
+				border-top: 1px solid var(--as-border-color);
 				margin-bottom: 0.75rem;
 				font-size: 0.9375rem;
 				font-weight: 700;
@@ -275,9 +278,12 @@
 		}
 	}
 
-	@media (max-width: 767.98px) {
+	// Stacks a breakpoint earlier than the text alone needs: three demos across a tablet would each be
+	// drawn at half size.
+	@media (max-width: 991.98px) {
 		.steps {
 			grid-template-columns: minmax(0, 1fr);
+			row-gap: 3.5rem;
 		}
 	}
 

@@ -578,6 +578,22 @@
 				box-shadow:   0 0 0 0.15rem rgba(#F75C03, 0.2);
 			}
 		}
+
+		// Scaled to the card's own small picker rather than to the settings pickers the menu defaults to.
+		.menu {
+			--as-menu-font-size:      0.68rem;
+			--as-menu-item-padding-y: 0.2rem;
+			--as-menu-item-padding-x: 0.5rem;
+		}
+	}
+
+	// A hovered card is lifted with a transform, and a transform makes the card a stacking context of
+	// its own: the menu's z-index then only counts inside the card, and the next card in the list paints
+	// over it. While a card holds an open menu, the card itself is what climbs.
+	// It climbs past 3, where Bootstrap holds the active page of the Up Next day pager.
+	.game-card:has(.menu.show) {
+		position: relative;
+		z-index:  4;
 	}
 
 

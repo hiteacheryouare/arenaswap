@@ -1,12 +1,10 @@
 ---
-import { currentLocale, useTranslations } from '../../i18n/ui';
+import StepDemos from '../steps/StepDemos';
+import type { Step } from '../steps/StepDemos';
+import { currentLocale, useTranslations, uiStrings } from '../../i18n/ui';
 
-interface Step {
-	title: string;
-	copy: string;
-}
-
-const t = useTranslations(currentLocale(Astro.currentLocale));
+const locale = currentLocale(Astro.currentLocale);
+const t = useTranslations(locale);
 const steps = t.list<Step>('home.tabs.steps');
 ---
 <section class='band band-centred' id='how-it-works'>
@@ -14,13 +12,6 @@ const steps = t.list<Step>('home.tabs.steps');
 		<div class='band-head'>
 			<h2 class='display-md'>{t('home.tabs.titleLine1')} {t('home.tabs.titleLine2')}</h2>
 		</div>
-		<ol class='steps'>
-			{steps.map(step => (
-				<li>
-					<h3>{step.title}</h3>
-					<p>{step.copy}</p>
-				</li>
-			))}
-		</ol>
+		<StepDemos client:visible={{ rootMargin: '400px' }} strings={uiStrings(locale)} steps={steps} />
 	</div>
 </section>

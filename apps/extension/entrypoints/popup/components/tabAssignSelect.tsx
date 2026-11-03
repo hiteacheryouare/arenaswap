@@ -3,7 +3,7 @@ import type { Browser } from 'wxt/browser';
 import type { TabRegistration } from '@arenaswap/core/types';
 import { assignTabToGame } from '../../../utils/tabSuggestions';
 import SelectDropdown from './selectDropdown';
-import TabFavicon from './tabFavicon';
+import TabFavicon from '@arenaswap/ui/src/components/tabFavicon';
 
 interface tabAssignSelectProps {
 	gameId: string;

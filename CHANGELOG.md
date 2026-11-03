@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The three steps act themselves out — 2026-11-03
+
+Each step under "Set It Once. Watch Everything." now has a small Chrome window above it, and they play in turn: two streams open in new tabs, a tab is picked from a game card's dropdown, then the sound follows ArenaSwap's switches while the other tabs mute. `SelectDropdown`, `TabFavicon` and the popup's menu skin (now the `menu-skin` mixin) moved into `@arenaswap/ui` so the demo opens the real menu, and the extension's compiled CSS is the same rules, reordered.
+
 ## The PowerScore chart's hover shows just the score — 2026-11-03
 
 Hovering PowerScore Over Time no longer adds a line naming the strongest boost at that reading; it shows the time and the score, like the other charts. The `moment` flag on `boostPresentation` and `boostMomentOf` existed only for that line, so they went with it.

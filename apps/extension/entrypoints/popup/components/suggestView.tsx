@@ -4,7 +4,7 @@ import type { Browser } from 'wxt/browser';
 import type { Game, Team } from '@arenaswap/core/types';
 import CrestDisc from '@arenaswap/ui/src/components/crestDisc';
 import { suggestionPairKey, type TabSuggestion } from '../../../utils/tabSuggestions';
-import TabFavicon from './tabFavicon';
+import TabFavicon from '@arenaswap/ui/src/components/tabFavicon';
 
 interface suggestViewProps {
 	suggestions: TabSuggestion[];
