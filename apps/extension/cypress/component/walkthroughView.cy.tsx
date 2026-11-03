@@ -193,7 +193,7 @@ describe('walkthroughView step navigation', () => {
 		cy.contains('button', 'Next').click(); // 5 -> 6
 		cy.contains('button', 'Next').click(); // 6 -> 7
 		cy.contains('Step 7 of 9').should('exist');
-		cy.contains('Dive Into Any Game').should('exist');
+		cy.contains(en.stepGameDetail.title).should('exist');
 	});
 
 	it('goes back to step 6 from step 7', () => {
