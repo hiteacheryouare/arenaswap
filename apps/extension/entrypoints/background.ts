@@ -122,6 +122,12 @@ const readTabs = async (): Promise<tabSnapshot> => {
 	return { allTabs, activeTabId };
 };
 
+// The tab on screen in every window, not just the focused one: a postgame on a second monitor is still being watched.
+const activeTabIdsOf = ({ allTabs, activeTabId }: tabSnapshot): Set<number> => new Set([
+	...allTabs.flatMap(tab => tab.active && tab.id !== undefined ? [tab.id] : []),
+	...(activeTabId === undefined ? [] : [activeTabId]),
+]);
+
 const tabIdsOf = (tabs: tabSnapshot): Set<number> => new Set(tabs.allTabs.flatMap(tab => tab.id === undefined ? [] : [tab.id]));
 
 // Activating a tab in a window behind this one changes nothing anyone can see. And a player in full
@@ -1110,7 +1116,7 @@ export default defineBackground(() => {
 			action: prefs.finishedTabAction,
 			finishedGameIds,
 			openTabIds: tabIdsOf(tabs),
-			activeTabId: tabs.activeTabId ?? null,
+			activeTabIds: activeTabIdsOf(tabs),
 			...describeOpenWindows(tabs.allTabs),
 		});
 		if (resolutions.length === 0) return;

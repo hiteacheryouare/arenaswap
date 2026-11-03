@@ -2514,6 +2514,19 @@ describe('handing a tab back once its game finishes', () => {
 		expect(tabsRemove).not.toHaveBeenCalled();
 	});
 
+	test('leaves a tab that is showing in another window', async () => {
+		await load('close', { windowIds: { 7: 2, 8: 1 } });
+		tabsQuery.mockImplementation((q: unknown) => Promise.resolve(
+			(q as { active?: boolean }).active
+				? [{ id: 8 }]
+				: [{ id: 7, windowId: 2, active: true }, { id: 8, windowId: 1, active: true }, { id: 9, windowId: 1, active: false }],
+		));
+		await whistle();
+
+		expect(await registry()).toEqual([{ tabId: 7, gameId: 'wrapped' }]);
+		expect(tabsRemove).not.toHaveBeenCalled();
+	});
+
 	test('and takes it on the poll after they move away', async () => {
 		await load('close', { activeTabId: 7 });
 		await whistle();

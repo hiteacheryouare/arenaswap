@@ -15,7 +15,7 @@ const base: ResolveFinishedTabsParams = {
 	action: 'free',
 	finishedGameIds: new Set(['g1']),
 	openTabIds: new Set([1, 2, 3]),
-	activeTabId: null,
+	activeTabIds: new Set<number>(),
 	windowIdByTabId,
 	tabCountByWindowId,
 };
@@ -30,15 +30,24 @@ describe('resolveFinishedTabs', () => {
 	});
 
 	test('leaves the tab the user is looking at', () => {
-		expect(resolveFinishedTabs({ ...base, activeTabId: 1 })).toEqual([]);
+		expect(resolveFinishedTabs({ ...base, activeTabIds: new Set([1]) })).toEqual([]);
 	});
 
 	test('still takes the other tabs when one of them is active', () => {
 		expect(resolveFinishedTabs({
 			...base,
 			finishedGameIds: new Set(['g1', 'g2']),
-			activeTabId: 1,
+			activeTabIds: new Set([1]),
 		})).toEqual([{ tabId: 2, gameId: 'g2', close: false }]);
+	});
+
+	test('leaves a tab that is showing in another window, closing or freeing', () => {
+		const finishedGameIds = new Set(['g1', 'g3']);
+		const registry = [{ tabId: 1, gameId: 'g1' }, { tabId: 3, gameId: 'g3' }];
+		for (const action of ['free', 'close'] as const) {
+			expect(resolveFinishedTabs({ ...base, registry, action, finishedGameIds, activeTabIds: new Set([3]) }))
+				.toEqual([{ tabId: 1, gameId: 'g1', close: action === 'close' }]);
+		}
 	});
 
 	test('skips a registration whose tab has already closed', () => {

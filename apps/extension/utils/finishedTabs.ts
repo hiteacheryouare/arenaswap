@@ -22,9 +22,9 @@ export interface ResolveFinishedTabsParams {
 	action: FinishedTabAction;
 	finishedGameIds: ReadonlySet<string>;
 	openTabIds: ReadonlySet<number>;
-	// The tab the user is looking at is left alone until they leave it, so a postgame nobody asked
-	// to be pulled out of stays on screen. It comes back round on the next poll.
-	activeTabId: number | null;
+	// The tab showing in each window is left alone until the viewer leaves it, so a postgame nobody
+	// asked to be pulled out of stays on screen. It comes back round on the next poll.
+	activeTabIds: ReadonlySet<number>;
 	// Window id per tab, and how many tabs each window holds. Only consulted when closing.
 	windowIdByTabId?: ReadonlyMap<number, number>;
 	tabCountByWindowId?: ReadonlyMap<number, number>;
@@ -35,7 +35,7 @@ export const resolveFinishedTabs = ({
 	action,
 	finishedGameIds,
 	openTabIds,
-	activeTabId,
+	activeTabIds,
 	windowIdByTabId,
 	tabCountByWindowId,
 }: ResolveFinishedTabsParams): FinishedTabResolution[] => {
@@ -50,7 +50,7 @@ export const resolveFinishedTabs = ({
 	return registry
 		.filter(entry => finishedGameIds.has(entry.gameId)
 			&& openTabIds.has(entry.tabId)
-			&& entry.tabId !== activeTabId)
+			&& !activeTabIds.has(entry.tabId))
 		.map(entry => ({
 			tabId: entry.tabId,
 			gameId: entry.gameId,
