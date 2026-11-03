@@ -5,6 +5,34 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Long names stop before the arrow — 2026-11-03
+
+A long tab title in the tab picker ran under its arrow, because Bootstrap 6 makes `.form-control` a flex box and `text-truncate` does nothing on one. The label now ends in an ellipsis before the caret, the open list shows whole titles with "in use" kept visible, and the same dead truncation is fixed on the backup and profile buttons, the game header, the pre-game leaders and the Up Next search line.
+
+## Settings and switching hold their ground — 2026-11-03
+
+The worker now applies settings synced from another browser without a restart, drops a switched-off league's late answers, leaves a finished game alone while it's on screen in any window, and drops a queued switch when the Standby Stream tab changes. Saved prefs are normalised on load (Classic signals, cooldown and delay steps, damaged league lists), and boost inputs save once you stop typing or close the popup.
+
+## A comeback that takes the lead counts — 2026-11-03
+
+PowerScore paid less for a comeback that flipped the lead than for one that only tied it, and nothing once the new lead matched the old deficit. It now pays the full comeback up to a close lead and the old amount once the game turns into a rout, and a blowout with no known period no longer earns timing points.
+
+## Our sources' odd answers, handled — 2026-11-03
+
+A tiny or stale cache header can no longer set a league's poll speed: the floor keeps the largest of the last five, held between 6 and 25 seconds. Season totals with a thousands comma parse, player search gets the same timeout as every other request, and spelled-out conference finals grade as conference finals.
+
+## Multiview keeps its boxes straight — 2026-11-03
+
+The Multiview tab closes if its frames can't be allowed, a box forgets its old state when its game drops out, the featured box can stay paused, and the grid keeps its shape in very short windows. A player frame that hides its origin leaves the page's media alone until Multiview answers, then keeps asking until it's placed.
+
+## Store, legal and translated copy catch up — 2026-11-03
+
+The privacy page and store justifications now cover Multiview's permissions, alarms, the third host and every local cache, and the help articles and settings reference match the popup's labels. The popup's copy lost its em dashes in all 12 locales, the Filipino store description fits its 132-character cap, and Chinese uses the hockey word for a power play.
+
+## Build and CI fixes — 2026-11-03
+
+The Firefox sources zip ships the whole workspace, the bundle banner reads the extension's own version, and untranslated locale copies of the docs stay out of the sitemap, with the site check now expecting only self-canonical pages. Dependabot auto-merge matches package names exactly and refuses a minor update that names no packages.
+
 ## The three steps act themselves out — 2026-11-03
 
 Each step under "Set It Once. Watch Everything." now has a small Chrome window above it, with placeholder panels in each game's team colours instead of footage, and they play in turn: two streams open in new tabs, a tab is picked from a game card's dropdown, then the sound follows ArenaSwap's switches while the other tabs mute. `SelectDropdown`, `TabFavicon` and the popup's menu skin (now the `menu-skin` mixin) moved into `@arenaswap/ui` so the demo opens the real menu, and the extension's compiled CSS is the same rules, reordered.
