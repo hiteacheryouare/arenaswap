@@ -26,3 +26,15 @@ describe('selectDropdown', () => {
 		});
 	});
 });
+
+describe('selectDropdown overflow', () => {
+	it('truncates a long value inside the button instead of under the caret', () => {
+		const longOptions = [{ value: 'a', label: 'A very long option label that cannot possibly fit in the box' }];
+		cy.mount(<div style={{ width: '9.5rem' }}><SelectDropdown value='a' options={longOptions} onChange={() => {}} ariaLabel='Long' /></div>);
+		cy.get('.form-control-caret').should(([button]: JQuery<HTMLElement>) => {
+			const value = button.querySelector('[id$="-value"]') as HTMLElement;
+			expect(value.scrollWidth).to.be.greaterThan(value.clientWidth);
+			expect(value.getBoundingClientRect().right).to.be.at.most(button.getBoundingClientRect().right);
+		});
+	});
+});

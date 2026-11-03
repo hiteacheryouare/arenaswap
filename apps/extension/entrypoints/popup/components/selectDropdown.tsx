@@ -45,16 +45,17 @@ const selectDropdown = <T extends string>({ value, options, onChange, id, disabl
 				ref={toggleRef}
 				id={id}
 				type='button'
-				className='form-control form-control-sm form-control-caret text-start text-truncate'
+				className='form-control form-control-sm form-control-caret text-start'
 				data-bs-toggle='menu'
 				aria-expanded='false'
 				aria-labelledby={nameIds}
 				disabled={disabled}
+				title={current?.label}
 			>
 				{!labelId && ariaLabel && <span id={hiddenLabelId} className='visually-hidden'>{ariaLabel}</span>}
-				{current?.image && <span className='me-3'>{current.image}</span>}
-				{current?.icon && <i className={`bi ${current.icon} me-3`} aria-hidden='true' />}
-				<span id={valueId}>{current?.label}</span>
+				{current?.image && <span className='me-3 flex-shrink-0'>{current.image}</span>}
+				{current?.icon && <i className={`bi ${current.icon} me-3 flex-shrink-0`} aria-hidden='true' />}
+				<span id={valueId} className='flex-grow-1 min-w-0 text-truncate'>{current?.label}</span>
 			</button>
 			<div ref={menuRef} className='menu w-100 select-dropdown-menu'>
 				{options.map(option => (

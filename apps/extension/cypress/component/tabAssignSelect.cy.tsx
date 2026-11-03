@@ -53,3 +53,25 @@ describe('tabAssignSelect favicons', () => {
 		menuItem('Celtics vs 76ers live').find('.tab-favicon img').should('have.css', 'opacity', '0.5');
 	});
 });
+
+const longTitle = 'Celtics vs 76ers live stream Game 7 Eastern Conference Finals replay';
+
+describe('tabAssignSelect long titles', () => {
+	it('ends a long title before the caret and keeps the full name on hover', () => {
+		const longTabs = [{ id: 21, title: longTitle, url: 'https://example.com/long', favIconUrl: favicon }] as any[];
+		cy.mount(
+			<div className='game-card-tab-assign' style={{ width: '9.5rem' }}>
+				<TabAssignSelect gameId='g1' openTabs={longTabs} registry={[{ tabId: 21, gameId: 'g1' }] as any} onChange={() => {}} formatTabLabel={tab => tab.title ?? ''} />
+			</div>,
+		);
+		cy.document().its('fonts.status').should('eq', 'loaded');
+		cy.get('.form-control-caret').should(([button]: JQuery<HTMLElement>) => {
+			const value = button.querySelector('[id$="-value"]') as HTMLElement;
+			const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+			const caretLeft = button.getBoundingClientRect().right - 0.75 * rem - 16;
+			expect(value.scrollWidth).to.be.greaterThan(value.clientWidth);
+			expect(value.getBoundingClientRect().right).to.be.at.most(caretLeft);
+			expect(button.getAttribute('title')).to.equal(longTitle);
+		});
+	});
+});
