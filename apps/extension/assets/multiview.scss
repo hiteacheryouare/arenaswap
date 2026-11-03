@@ -185,8 +185,11 @@
 		// thing still fits the window's height.
 		--multiview-width: min(
 			100cqw,
-			(100cqh - var(--multiview-rows) * var(--multiview-bar-height) - (var(--multiview-rows) - 1) * var(--multiview-gap))
-			* var(--multiview-columns) * 16 / (var(--multiview-rows) * 9)
+			max(
+				0px,
+				(100cqh - var(--multiview-rows) * var(--multiview-bar-height) - (var(--multiview-rows) - 1) * var(--multiview-gap))
+				* var(--multiview-columns) * 16 / (var(--multiview-rows) * 9)
+			)
 			+ (var(--multiview-columns) - 1) * var(--multiview-gap)
 		);
 		display: grid;

@@ -258,6 +258,16 @@ describe('Multiview page', () => {
 		cy.get('.multiview-bar').first().should('contain.text', 'MIA').and('contain.text', 'BAL');
 	});
 
+	it('never gives the grid a negative width in a very short window', () => {
+		mountMultiview(lineupOf(4));
+		cy.viewport(1280, 200);
+		cy.get('.multiview-grid').then($grid => {
+			const grid = $grid[0].getBoundingClientRect();
+			expect(grid.width).to.be.at.least(0);
+			expect(grid.height).to.be.at.least(0);
+		});
+	});
+
 	it('moves the big box to a new leader without reloading a single stream', () => {
 		mountMultiview(lineupOf(3));
 		['g1', 'g2', 'g3'].forEach((gameId, index) => play(gameId, 11 + index));
