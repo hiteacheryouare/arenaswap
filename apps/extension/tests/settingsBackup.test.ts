@@ -71,6 +71,7 @@ describe('settings backup', () => {
 		laptop.areas.sync.set('prefs', prefs);
 		laptop.areas.sync.set('fantasyRoster', roster);
 		laptop.areas.local.set('onboardingCompleted', true);
+		laptop.areas.local.set('multiviewOnboardingDone', true);
 		laptop.areas.local.set('demoMode', true);
 		laptop.areas.local.set('demoSeason', 'december');
 		laptop.localStorage.set('arenaswap.breakdownCollapsed', JSON.stringify(['sport', 'signals']));
@@ -86,6 +87,7 @@ describe('settings backup', () => {
 		expect(desktop.areas.sync.get('prefs')).toEqual(prefs);
 		expect(await loadFantasyRoster()).toEqual(roster);
 		expect(desktop.areas.local.get('onboardingCompleted')).toBe(true);
+		expect(desktop.areas.local.get('multiviewOnboardingDone')).toBe(true);
 		expect(desktop.areas.local.get('demoSeason')).toBe('december');
 		expect(JSON.parse(desktop.localStorage.get('arenaswap.breakdownCollapsed') ?? '[]')).toEqual(['signals', 'sport']);
 		expect(desktop.localStorage.get('arenaswap.theme')).toBe('light');
@@ -166,7 +168,14 @@ describe('settings backup', () => {
 		expect(profile.prefs.enabledLeagues).toEqual(['nba']);
 		expect(profile.prefs.theme).toBe(createDefaultUserPreferences().theme);
 		expect(profile.fantasyRoster).toEqual([]);
-		expect(profile.device).toEqual({ onboardingCompleted: false, standbyOnboardingDone: false, demoMode: false, demoSeason: 'real', breakdownCollapsed: ['sport'] });
+		expect(profile.device).toEqual({ onboardingCompleted: false, standbyOnboardingDone: false, multiviewOnboardingDone: false, demoMode: false, demoSeason: 'real', breakdownCollapsed: ['sport'] });
+	});
+
+	test('an older file without the Multiview guide flag imports cleanly', () => {
+		const parsed = parseSettingsFile(truncated({ prefs: createDefaultUserPreferences(), fantasyRoster: [], device: { onboardingCompleted: true, standbyOnboardingDone: true } }));
+		if (!parsed.ok) throw new Error(`parse failed: ${parsed.problem}`);
+		expect(parsed.file.profile.device.multiviewOnboardingDone).toBe(false);
+		expect(parsed.file.profile.device.standbyOnboardingDone).toBe(true);
 	});
 
 	test('names the file after the profile and the day it was made', () => {

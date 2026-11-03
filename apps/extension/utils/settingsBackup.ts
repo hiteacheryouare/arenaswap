@@ -22,6 +22,7 @@ const breakdownSections: readonly breakdownSectionId[] = ['signals', 'general', 
 export interface deviceSettings {
 	onboardingCompleted: boolean;
 	standbyOnboardingDone: boolean;
+	multiviewOnboardingDone: boolean;
 	demoMode: boolean;
 	demoSeason: demoSeason;
 	breakdownCollapsed: breakdownSectionId[];
@@ -61,6 +62,7 @@ const normalizeDeviceSettings = (value: unknown): deviceSettings => {
 	return {
 		onboardingCompleted: device.onboardingCompleted === true,
 		standbyOnboardingDone: device.standbyOnboardingDone === true,
+		multiviewOnboardingDone: device.multiviewOnboardingDone === true,
 		demoMode: device.demoMode === true,
 		demoSeason: isDemoSeason(device.demoSeason) ? device.demoSeason : 'real',
 		breakdownCollapsed: normalizeBreakdownCollapsed(device.breakdownCollapsed),
@@ -116,7 +118,7 @@ export const loadSettingsProfile = async (profileId?: string): Promise<settingsP
 	const entry = profiles.find(profile => profile.id === (profileId ?? activeId)) ?? profiles.find(profile => profile.id === activeId);
 	const [setup, local] = await Promise.all([
 		loadProfileSetup(entry?.id ?? activeId),
-		browser.storage.local.get({ onboardingCompleted: null, standbyOnboardingDone: false, demoMode: false, demoSeason: 'real' }),
+		browser.storage.local.get({ onboardingCompleted: null, standbyOnboardingDone: false, multiviewOnboardingDone: false, demoMode: false, demoSeason: 'real' }),
 	]);
 	return {
 		name: entry?.name ?? defaultProfileName,
@@ -184,6 +186,7 @@ export const applySettingsProfile = async (profile: settingsProfile): Promise<pr
 	await browser.storage.local.set({
 		onboardingCompleted: device.onboardingCompleted,
 		standbyOnboardingDone: device.standbyOnboardingDone,
+		multiviewOnboardingDone: device.multiviewOnboardingDone,
 		demoSeason: device.demoSeason,
 	});
 	globalThis.localStorage?.setItem(breakdownFoldsKey, JSON.stringify(device.breakdownCollapsed));
