@@ -567,6 +567,7 @@
 
 	.settings-search-empty,
 	.upcoming-search-empty {
+		overflow-wrap: anywhere;
 		font-size:  0.7rem;
 		color:      var(--as-faint);
 		padding:    1.25rem 0.25rem;

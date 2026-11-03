@@ -163,6 +163,18 @@ describe('Up Next search', () => {
 		cy.get('[data-testid="upcoming-day-pager"]').should('exist');
 	});
 
+	it('wraps a long unbroken query inside the no-match line', () => {
+		mount();
+		openSearch();
+		cy.get('[data-testid="upcoming-search-input"]').type('q'.repeat(60));
+		cy.get('[data-testid="upcoming-search-empty"]').should(([message]: JQuery<HTMLElement>) => {
+			expect(message.scrollWidth).to.be.at.most(message.clientWidth);
+		});
+		cy.get('.popup-container').should(([container]: JQuery<HTMLElement>) => {
+			expect(container.scrollWidth).to.be.at.most(container.clientWidth);
+		});
+	});
+
 	it('closes with the button, restoring the whole day and handing focus back', () => {
 		mount();
 		openSearch();
