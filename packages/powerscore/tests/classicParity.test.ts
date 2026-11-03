@@ -134,13 +134,13 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 			// full overtime late-game value, so those games leave late-game and everything summed from it out.
 			const overtimeLead = (game.period ?? 0) > resolveLeagueConfig(game).regularPeriods
 				&& scoreMargin(game) > resolveSportConfig(game.sportType).closenessMargins[1];
-			// Deliberate: 2.x subtracted the unsigned margin, so a team that trailed and now leads, or a
-			// game that started level, was read wrongly. Those games leave comeback and what sums from it out.
+			// Deliberate: 2.x subtracted the unsigned margin, so a trailer that now leads inside the close
+			// margin was read wrongly. Past it the two agree. Those games leave comeback and what sums from it out.
 			const first = history[0];
+			const trailerLead = first === undefined ? 0 : first.homeScore < first.awayScore ? game.homeTeam.score - game.awayTeam.score : game.awayTeam.score - game.homeTeam.score;
 			const trailerNowLeads = first !== undefined && first.homeScore !== first.awayScore
-				&& (first.homeScore < first.awayScore ? game.homeTeam.score > game.awayTeam.score : game.awayTeam.score > game.homeTeam.score);
-			const startedLevel = first !== undefined && first.homeScore === first.awayScore;
-			const comebackMoved = history.length >= 3 && (trailerNowLeads || startedLevel);
+				&& trailerLead > 0 && trailerLead <= resolveSportConfig(game.sportType).closenessMargins[1];
+			const comebackMoved = history.length >= 3 && trailerNowLeads;
 			const skipsSubtotal = overtimeLead || comebackMoved;
 			const fields: [string, unknown, unknown][] = [
 				...signalNames.filter(name => (!overtimeLead || name !== 'lateGame') && (!comebackMoved || name !== 'comeback')).map((name): [string, unknown, unknown] => [name, v2[name], signalPoints(v3, name)]),
