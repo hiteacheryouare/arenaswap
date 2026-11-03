@@ -1,4 +1,4 @@
-import { collegeFetchGroups, isWithinFinalRetention, leagueConfigMap, logWarn, pollLookaheadDays, pollMinEagerMs, resolveLeagueLogoUrl, upcomingGamesDaysMax } from '@arenaswap/core';
+import { collegeFetchGroups, isWithinFinalRetention, leagueConfigMap, logWarn, pollLookaheadDays, pollMaxEagerMs, pollMinEagerMs, resolveLeagueLogoUrl, upcomingGamesDaysMax } from '@arenaswap/core';
 import type { AtBat, AtBatPlayer, Game, GameCondition, RedCardEvent, SeriesState, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, LeagueSchedule, LeagueScheduleMap, ProbableStarter, TeamLeader, TeamMonoLogoMap, TeamMonoMarks } from '@arenaswap/core';
 import { deriveBasketballPossession } from './basketballPossession';
 import { readCollegeBracket } from './collegeBracket';
@@ -108,19 +108,26 @@ export const takeRequestSlot = async (): Promise<void> => {
    Polling faster than this buys a cache hit and no information, so it is the floor the eager
    interval scales down to rather than a number we chose. Unasked leagues fall back to the
    assumption in constants. */
-const observedScoreboardMaxAgeMs = new Map<LeagueId, number>();
+const scoreboardRefreshFloorMs = 6_000;
+const scoreboardMaxAgeSamples = 5;
+const observedScoreboardMaxAgesMs = new Map<LeagueId, number[]>();
 
+// The edge counts max-age down as a cached copy ages, so any one reply understates the period.
+// The largest of the recent ones is the freshest copy, which is the true period.
 const recordScoreboardMaxAge = (leagueId: LeagueId, cacheControl: string | null): void => {
 	const match = /max-age\s*=\s*(\d+)/i.exec(cacheControl ?? '');
 	if (!match) return;
 	const seconds = Number(match[1]);
 	if (!Number.isFinite(seconds) || seconds <= 0) return;
-	observedScoreboardMaxAgeMs.set(leagueId, seconds * 1000);
+	const recent = [...(observedScoreboardMaxAgesMs.get(leagueId) ?? []), seconds * 1000];
+	observedScoreboardMaxAgesMs.set(leagueId, recent.slice(-scoreboardMaxAgeSamples));
 };
 
-export const scoreboardRefreshMs = (leagueId: LeagueId): number => (
-	observedScoreboardMaxAgeMs.get(leagueId) ?? pollMinEagerMs
-);
+export const scoreboardRefreshMs = (leagueId: LeagueId): number => {
+	const recent = observedScoreboardMaxAgesMs.get(leagueId);
+	if (!recent) return pollMinEagerMs;
+	return Math.min(Math.max(Math.max(...recent), scoreboardRefreshFloorMs), pollMaxEagerMs);
+};
 
 // ESPN ships a malformed row often enough that a dropped count is a steady state, not an event, so
 // warning on every poll would bury the console at the 6s floor. Only a change in the count is news.
@@ -815,7 +822,7 @@ interface LeagueGamesResult {
 	schedule?: LeagueSchedule;
 }
 
-const fetchScoreboard = async (url: string, leagueId: LeagueId, warnKey: string = leagueId): Promise<EspnScoreboardResponse> => {
+const fetchScoreboard = async (url: string, leagueId: LeagueId, warnKey: string = leagueId, recordMaxAge = false): Promise<EspnScoreboardResponse> => {
 	await takeRequestSlot();
 	const res = await fetch(url, {
 		headers: {
@@ -823,8 +830,8 @@ const fetchScoreboard = async (url: string, leagueId: LeagueId, warnKey: string 
 		},
 		signal: requestSignal(),
 	});
-	recordScoreboardMaxAge(leagueId, res.headers.get('cache-control'));
 	if (!res.ok) throw new LeagueFetchError(leagueId, res.status);
+	if (recordMaxAge) recordScoreboardMaxAge(leagueId, res.headers.get('cache-control'));
 	const parsed = parseScoreboard(await res.json());
 	warnOnDroppedCountChange(
 		`scoreboard:${warnKey}`,
@@ -945,7 +952,7 @@ const fetchDayFromEspn = async (
 	const url = `${espnBase}/${config.espnPath}/scoreboard?${params.toString()}`;
 
 	try {
-		const response = await fetchScoreboard(url, config.id, cacheKey);
+		const response = await fetchScoreboard(url, config.id, cacheKey, dayKey === todayKey);
 		const games = (response.events ?? [])
 			.map(event => parseEvent(event, config.id))
 			.filter((game): game is Game => game !== null)
@@ -963,7 +970,9 @@ const fetchDayFromEspn = async (
 	} catch (err) {
 		if (!cached || dayKey === todayKey) throw err;
 		logWarn(`ESPN would not answer for ${config.id} on ${dayKey}; keeping the last answer for that day.`);
-		return cached;
+		const retried = { ...cached, fetchedAt: Date.now() };
+		dayCache.set(cacheKey, retried);
+		return retried;
 	}
 };
 

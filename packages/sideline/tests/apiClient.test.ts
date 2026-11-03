@@ -2804,7 +2804,7 @@ describe('how often ESPN says it will answer with something new', () => {
 		expect(scoreboardRefreshMs('nba')).toBe(pollMinEagerMs);
 	});
 
-	it('takes the max-age the league actually sent', async () => {
+	it('takes the max-age the league actually sent, capped at the slowest eager interval', async () => {
 		const fetchMock = jest.fn().mockResolvedValue(
 			createResponse({ events: [] }, { cacheControl: 'max-age=30' }),
 		);
@@ -2813,7 +2813,66 @@ describe('how often ESPN says it will answer with something new', () => {
 		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
 		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
 
-		expect(scoreboardRefreshMs('nba')).toBe(30_000);
+		expect(scoreboardRefreshMs('nba')).toBe(25_000);
+	});
+
+	it('takes a max-age inside the clamp as sent', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }, { cacheControl: 'max-age=15' }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+
+		expect(scoreboardRefreshMs('nba')).toBe(15_000);
+	});
+
+	it('never lets a nearly expired cached copy drop the floor under 6 seconds', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }, { cacheControl: 'max-age=1' }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+
+		expect(scoreboardRefreshMs('nba')).toBe(6_000);
+	});
+
+	it('reads the largest of the recent replies, since the edge counts max-age down', async () => {
+		const replies = ['max-age=12', 'max-age=8', 'max-age=4'];
+		const fetchMock = jest.fn().mockImplementation(async (url: string) => (
+			createResponse({ events: [] }, { cacheControl: dateOf(url) === buildCurrentDayKeys().at(-1) ? replies.shift() : undefined })
+		));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
+		for (let i = 0; i < 3; i++) await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+
+		expect(scoreboardRefreshMs('nba')).toBe(12_000);
+	});
+
+	it('ignores the header on a refused reply', async () => {
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ events: [] }, { cacheControl: 'max-age=12' }))
+			.mockResolvedValue(createResponse({}, { ok: false, status: 429, cacheControl: 'max-age=60' }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+
+		expect(scoreboardRefreshMs('nba')).toBe(12_000);
+	});
+
+	it('ignores the header on a day that is not today', async () => {
+		const fetchMock = jest.fn().mockImplementation(async (url: string) => createResponse(
+			{ events: [] },
+			{ cacheControl: dateOf(url) === buildCurrentDayKeys().at(-1) ? 'max-age=8' : 'max-age=20' },
+		));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: true, includeFinal: true });
+
+		expect(scoreboardRefreshMs('nba')).toBe(8_000);
 	});
 
 	it('keeps the leagues apart rather than letting one answer set the pace for all of them', async () => {
@@ -2826,7 +2885,7 @@ describe('how often ESPN says it will answer with something new', () => {
 		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
 		await fetchGamesWithLeagueLogos(['nba', 'nhl'], { includeUpcoming: false });
 
-		expect(scoreboardRefreshMs('nhl')).toBe(4_000);
+		expect(scoreboardRefreshMs('nhl')).toBe(6_000);
 		expect(scoreboardRefreshMs('nba')).toBe(20_000);
 	});
 
@@ -2841,6 +2900,39 @@ describe('how often ESPN says it will answer with something new', () => {
 
 			expect(scoreboardRefreshMs('nba')).toBe(pollMinEagerMs);
 		}
+	});
+});
+
+/* A refused past day used to keep its expired entry, so every poll inside the window asked again. */
+describe('a refused past day', () => {
+	afterEach(() => jest.useRealTimers());
+
+	it('waits out its TTL after a refusal instead of asking again every poll', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2026-09-15T18:00:00.000Z'));
+		const yesterday = buildCurrentDayKeys()[0]!;
+		let refuse = false;
+		const fetchMock = jest.fn().mockImplementation(async (url: string) => (
+			refuse && dateOf(url) === yesterday
+				? createResponse({}, { ok: false, status: 403 })
+				: createResponse({ events: [] })
+		));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const asksFor = (day: string) => fetchMock.mock.calls.filter(([url]) => dateOf(url) === day).length;
+
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		const options = { includeUpcoming: true, includeFinal: true };
+		await fetchGamesWithLeagueLogos(['mlb'], options);
+		const before = asksFor(yesterday);
+		expect(before).toBe(1);
+
+		refuse = true;
+		jest.setSystemTime(new Date('2026-09-15T18:31:00.000Z'));
+		await fetchGamesWithLeagueLogos(['mlb'], options);
+		expect(asksFor(yesterday)).toBe(2);
+
+		jest.setSystemTime(new Date('2026-09-15T18:40:00.000Z'));
+		await fetchGamesWithLeagueLogos(['mlb'], options);
+		expect(asksFor(yesterday)).toBe(2);
 	});
 });
 
