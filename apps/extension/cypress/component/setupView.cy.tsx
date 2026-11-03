@@ -367,9 +367,13 @@ describe('setupView switching group', () => {
 		cy.document().then(doc => doc.fonts.load('600 10px "DM Sans"', 'Abc'));
 
 		cy.get('label[for="sensitivity-range"]').parent().should(([group]: JQuery<HTMLElement>) => {
-			group!.querySelector('label')!.textContent = de.sensitivity.label;
+			const label = group!.querySelector('label')!;
+			label.textContent = de.sensitivity.label;
 			const value = group!.parentElement!.querySelector('.setting-value-label')!;
-			value.textContent = de.sensitivity.valueLabel.replace('{label}', 'Ludicrous').replace('{gap}', '5');
+			const valueText = de.sensitivity.valueLabel.replace('{label}', 'Ludicrous').replace('{gap}', '5');
+			value.textContent = valueText;
+			expect(label.textContent, 'the German label is in place').to.equal(de.sensitivity.label);
+			expect(value.textContent, 'the German value is in place').to.equal(valueText);
 			expect(group!.getBoundingClientRect().right, 'label group ends before the value').to.be.at.most(value.getBoundingClientRect().left);
 			expect(value.getBoundingClientRect().right, 'value stays inside the row').to.be.at.most(group!.parentElement!.getBoundingClientRect().right);
 		});

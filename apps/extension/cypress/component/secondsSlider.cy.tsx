@@ -48,7 +48,9 @@ describe('the seconds sliders', () => {
 			cy.document().then(doc => doc.fonts.load('600 10px "DM Sans"', 'Abc'));
 			labelGroupOf(id).should(([group]: JQuery<HTMLElement>) => {
 				const label = group!.querySelector('label')!;
-				label.textContent = 'Mindestwartezeit zwischen zwei Wechseln der Spiele';
+				const longLabel = 'Mindestwartezeit zwischen zwei Wechseln der Spiele';
+				label.textContent = longLabel;
+				expect(label.textContent, 'the German label is in place').to.equal(longLabel);
 				const value = group!.parentElement!.querySelector('.setting-value-label')!;
 				expect(group!.getBoundingClientRect().right, `${id} label group ends before its value`)
 					.to.be.at.most(value.getBoundingClientRect().left);
