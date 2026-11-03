@@ -768,6 +768,9 @@
 		--as-menu-check-color: var(--as-accent-ink);
 		max-height: 14rem;
 		overflow-y: auto;
+		min-width: 100%;
+		width: max-content;
+		max-width: min(18rem, calc(100vw - 1.5rem));
 	}
 
 	.settings-page-lede {

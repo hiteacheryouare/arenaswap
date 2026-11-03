@@ -57,7 +57,7 @@ const selectDropdown = <T extends string>({ value, options, onChange, id, disabl
 				{current?.icon && <i className={`bi ${current.icon} me-3 flex-shrink-0`} aria-hidden='true' />}
 				<span id={valueId} className='flex-grow-1 min-w-0 text-truncate'>{current?.label}</span>
 			</button>
-			<div ref={menuRef} className='menu w-100 select-dropdown-menu'>
+			<div ref={menuRef} className='menu select-dropdown-menu'>
 				{options.map(option => (
 					<button
 						key={option.value}
@@ -66,6 +66,7 @@ const selectDropdown = <T extends string>({ value, options, onChange, id, disabl
 						aria-current={option.value === value ? 'true' : undefined}
 						aria-disabled={option.disabled ? 'true' : undefined}
 						disabled={option.disabled}
+						title={option.label}
 						onClick={() => onChange(option.value)}
 					>
 						{option.image}

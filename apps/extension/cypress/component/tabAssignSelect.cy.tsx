@@ -75,3 +75,28 @@ describe('tabAssignSelect long titles', () => {
 		});
 	});
 });
+
+describe('tabAssignSelect open list', () => {
+	it('is wider than the toggle and shows a long title whole inside a narrow popup', () => {
+		cy.viewport(320, 500);
+		const title = 'Celtics vs 76ers live stream';
+		const tab = [{ id: 31, title, url: 'https://example.com/x' }] as any[];
+		cy.mount(
+			<div className='d-flex justify-content-end p-2'>
+				<div className='game-card-tab-assign' style={{ width: '9.5rem' }}>
+					<TabAssignSelect gameId='g1' openTabs={tab} registry={[]} onChange={() => {}} formatTabLabel={t => t.title ?? ''} />
+				</div>
+			</div>,
+		);
+		cy.document().its('fonts.status').should('eq', 'loaded');
+		cy.get('.form-control-caret').click();
+		cy.get('.select-dropdown-menu.show').should(([menu]: JQuery<HTMLElement>) => {
+			const toggle = menu.parentElement!.querySelector('.form-control-caret')!.getBoundingClientRect();
+			const rect = menu.getBoundingClientRect();
+			expect(rect.width).to.be.greaterThan(toggle.width);
+			expect(rect.right).to.be.at.most(312);
+			const label = menu.querySelectorAll('.menu-item')[1].querySelector('.text-truncate') as HTMLElement;
+			expect(label.scrollWidth).to.equal(label.clientWidth);
+		});
+	});
+});
