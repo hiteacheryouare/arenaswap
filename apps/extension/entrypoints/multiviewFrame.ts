@@ -51,6 +51,14 @@ export default defineUnlistedScript({
 			if (elements.length > 0) playPending = false;
 		};
 
+		let listening = false;
+		const listenForMedia = () => {
+			if (listening) return;
+			listening = true;
+			document.addEventListener('play', enforceMute, true);
+			document.addEventListener('volumechange', enforceMute, true);
+		};
+
 		const report = async () => {
 			const video = playingVideo();
 			const status: MultiviewFrameStatusMessage = {
@@ -66,6 +74,7 @@ export default defineUnlistedScript({
 				const reply = await browser.runtime.sendMessage(status) as { muted?: boolean } | undefined;
 				if (typeof reply?.muted === 'boolean') {
 					answered = true;
+					listenForMedia();
 					setMuted(reply.muted);
 					enforceMute();
 				}
@@ -79,8 +88,7 @@ export default defineUnlistedScript({
 			enforceMute();
 		});
 
-		document.addEventListener('play', enforceMute, true);
-		document.addEventListener('volumechange', enforceMute, true);
+		if (!unsure) listenForMedia();
 		const timer = setInterval(() => void report(), reportIntervalMs);
 	},
 });
