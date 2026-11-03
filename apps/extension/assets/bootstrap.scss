@@ -2826,6 +2826,10 @@
 				font-weight: 700;
 				letter-spacing: 0.04em;
 				text-transform: uppercase;
+				white-space: normal;
+				text-wrap: balance;
+				min-width: 0;
+				overflow-wrap: anywhere;
 			}
 		}
 	}

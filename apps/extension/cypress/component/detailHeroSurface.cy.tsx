@@ -31,7 +31,7 @@ const heroStyle = {
 const markUrl = (side: string) => `https://a.espncdn.com/combiner/i?img=/guid/${side}/logos/primary_logo_white.png&w=120&h=120`;
 const mono: MonoLogos = { away: { white: markUrl('a') }, home: { white: markUrl('h') } };
 
-const mountLive = (game: Game, monoLogos = mono, isDelayed = false) => {
+const mountLive = (game: Game, monoLogos = mono, isDelayed = false, status: { text: string; clock?: string } = { text: 'Q2', clock: '5:00' }) => {
 	cy.mount(
 		<div style={{ width: '320px', background: '#0d1117', padding: '0.75rem' }}>
 			<DetailHero
@@ -41,7 +41,7 @@ const mountLive = (game: Game, monoLogos = mono, isDelayed = false) => {
 				monoLogos={monoLogos}
 				isDelayed={isDelayed}
 				isInningSport={game.sportType === 'baseball'}
-				status={{ text: 'Q2', clock: '5:00' }}
+				status={status}
 				heroStyle={heroStyle}
 				awayColor={awayColor}
 				homeColor={homeColor}
@@ -128,6 +128,21 @@ describe('the detail hero surface', () => {
 		});
 		cy.get('.game-detail-score-value').first().then($score => {
 			expect(Number(getComputedStyle($score[0]!).opacity)).to.equal(1);
+		});
+	});
+
+	it('wraps a long delay notice inside the status column, clear of both team names', () => {
+		mountLive(liveGame, mono, true, { text: 'Delayed - Lightning In The Area' });
+		cy.document().its('fonts.status').should('eq', 'loaded');
+		cy.get('.game-detail-period').should(([status]: JQuery<HTMLElement>) => {
+			const box = status.getBoundingClientRect();
+			const labels = Array.from(status.closest('.game-detail-teams-row')!.querySelectorAll('.game-detail-team-name')) as HTMLElement[];
+			expect(labels).to.have.length(2);
+			labels.forEach(label => {
+				const other = label.getBoundingClientRect();
+				expect(box.right <= other.left || box.left >= other.right || box.bottom <= other.top || box.top >= other.bottom).to.equal(true);
+			});
+			expect(status.scrollWidth).to.be.at.most(status.clientWidth);
 		});
 	});
 
