@@ -34,6 +34,15 @@ describe('GameBoostInput', () => {
 		cy.get('@setBoost').should('have.been.calledOnceWith', 'g1', 8);
 	});
 
+	it('saves a boost typed just before the popup closes', () => {
+		const spy = cy.spy().as('setBoost');
+		cy.clock();
+		cy.mount(<GameBoostInput gameId='g1' currentBoost={5} onSetGameBoost={spy} />);
+		cy.get('input[type="number"]').setInputValue(15);
+		cy.window().then(win => win.dispatchEvent(new win.Event('pagehide')));
+		cy.get('@setBoost').should('have.been.calledOnceWith', 'g1', 15);
+	});
+
 	it('clamps negative input to 0', () => {
 		const spy = cy.spy().as('setBoost');
 		cy.mount(<GameBoostInput gameId='g1' currentBoost={5} onSetGameBoost={spy} />);

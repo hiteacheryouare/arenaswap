@@ -17,7 +17,6 @@ const commitDelayMs = 400;
 
 // The field holds what was typed rather than the committed number, so it can sit empty while the
 // user retypes it. Without that, deleting "10" snapped straight back to "0" and typing 5 read "05".
-
 const boostPointsInput = ({ id, value, onChange, className, ariaLabel, unit }: boostPointsInputProps) => {
 	const [draft, setDraft] = useState<string | null>(null);
 
@@ -34,7 +33,13 @@ const boostPointsInput = ({ id, value, onChange, className, ariaLabel, unit }: b
 		onChangeRef.current(points);
 	};
 
-	useEffect(() => flush, []);
+	useEffect(() => {
+		window.addEventListener('pagehide', flush);
+		return () => {
+			window.removeEventListener('pagehide', flush);
+			flush();
+		};
+	}, []);
 
 	const settle = () => {
 		flush();
