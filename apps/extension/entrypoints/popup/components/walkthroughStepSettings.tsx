@@ -40,7 +40,7 @@ const walkthroughStepSettings = ({ onNext, onBack, leagues = fallbackLeagues }: 
 			<div className='border border-subtle-accent rounded p-3 mb-5'>
 				<div className='mb-5'>
 					<div className='d-flex justify-content-between align-items-center mb-1'>
-						<span className='fg-secondary setting-toggle-label'>
+						<span id='walkthrough-sensitivity-label' className='fg-secondary setting-toggle-label'>
 							<i className='bi bi-sliders me-1 fg-primary' />
 							{i18n.t('stepSettings.sensitivityLabel')}
 						</span>
@@ -51,6 +51,8 @@ const walkthroughStepSettings = ({ onNext, onBack, leagues = fallbackLeagues }: 
 					<FormRange
 						min={1} max={7} step={1}
 						value={sensitivity}
+						aria-labelledby='walkthrough-sensitivity-label'
+						aria-valuetext={sensitivityLabels[sensitivity]}
 						onChange={e => setSensitivity(Number(e.target.value))}
 					/>
 					<div className='fg-secondary small lh-md' style={{ fontSize: '0.7rem' }}>
@@ -60,7 +62,7 @@ const walkthroughStepSettings = ({ onNext, onBack, leagues = fallbackLeagues }: 
 
 				<div>
 					<div className='d-flex justify-content-between align-items-center mb-1'>
-						<span className='fg-secondary setting-toggle-label'>
+						<span id='walkthrough-cooldown-label' className='fg-secondary setting-toggle-label'>
 							<i className='bi bi-clock me-1 fg-primary' />
 							{i18n.t('stepSettings.cooldownLabel')}
 						</span>
@@ -71,6 +73,8 @@ const walkthroughStepSettings = ({ onNext, onBack, leagues = fallbackLeagues }: 
 					<FormRange
 						min={0} max={cooldownSteps.length - 1} step={1}
 						value={cooldownIdx}
+						aria-labelledby='walkthrough-cooldown-label'
+						aria-valuetext={formatCooldownSeconds(cooldownSteps[cooldownIdx]!)}
 						onChange={e => setCooldownIdx(Number(e.target.value))}
 					/>
 					<div className='fg-secondary small lh-md' style={{ fontSize: '0.7rem' }}>
