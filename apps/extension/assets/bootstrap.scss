@@ -276,7 +276,7 @@
 		padding-top:     0.1rem;
 		border-top:      1px solid #d1d5db;
 
-		span:last-child {
+		> span:last-child {
 			font-weight:    700;
 			letter-spacing: 0.01em;
 		}
@@ -416,7 +416,7 @@
 		text-decoration: line-through;
 	}
 
-	.powerscore-breakdown-row-penalty span:last-child {
+	.powerscore-breakdown-row-penalty > span:last-child {
 		color: #991b1b;
 	}
 

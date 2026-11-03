@@ -158,6 +158,12 @@ describe('PowerScoreBreakdown boosts', () => {
 		cy.contains('Game boost').parent().contains('+15').should('exist');
 	});
 
+	it('keeps the round name quiet beside the postseason boost while its value stays bold', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} postseasonBoost={5} postseasonLabel='Conference Finals' />);
+		cy.get('.powerscore-breakdown-qualifier').should('have.css', 'font-weight', '400');
+		cy.contains('Postseason boost').closest('.powerscore-breakdown-row').find('.powerscore-breakdown-value').should('have.css', 'font-weight', '700');
+	});
+
 	it('shows "+N" for postseason boost when > 0', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} postseasonBoost={5} />);
 		cy.contains('Postseason boost').parent().contains('+5').should('exist');
