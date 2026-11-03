@@ -338,9 +338,14 @@ export default () => {
 			if (!settledRef.current) { settledRef.current = true; setSettled(true); }
 		};
 		browser.runtime.onMessage.addListener(handleMessage);
+		const handleSessionChange = (changes: Record<string, { newValue?: unknown }>) => {
+			if (changes.tabRegistry) setRegistry((changes.tabRegistry.newValue as TabRegistration[] | undefined) ?? []);
+		};
+		browser.storage.session.onChanged.addListener(handleSessionChange);
 		return () => {
 			clearTimeout(settleTimer);
 			browser.runtime.onMessage.removeListener(handleMessage);
+			browser.storage.session.onChanged.removeListener(handleSessionChange);
 		};
 	}, [mutate, showToast]);
 

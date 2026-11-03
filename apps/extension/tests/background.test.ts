@@ -1157,6 +1157,26 @@ describe('closed tab handling', () => {
 		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
 	});
 
+	test('keeps a stale registry from an open popup from bringing back a closed tab', async () => {
+		await loadBackground({
+			prefs: switchingPrefs,
+			tabRegistry: [{ gameId: 'close', tabId: 3 }],
+			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {}, shedLeagues: [] },
+			openTabIds: [1, 3],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+
+		await sendMessage({ type: 'UPDATE_REGISTRY', tabRegistry: registry });
+
+		expect((await getDebugState()).tabRegistry).toEqual([{ gameId: 'close', tabId: 3 }]);
+
+		await runFirstPoll();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(3, { active: true });
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
+	});
+
 	test('forgets the standby stream tab when it closes', async () => {
 		await loadBackground({
 			prefs: { ...switchingPrefs, standbyStreamEnabled: true },

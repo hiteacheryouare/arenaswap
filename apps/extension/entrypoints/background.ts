@@ -1784,7 +1784,9 @@ export default defineBackground(() => {
 		}
 		if (msg.type === 'UPDATE_REGISTRY') {
 			return stateReady.then(async () => {
-				tabRegistry = msg.tabRegistry;
+				// The popup read the registry once when it opened, so it can send back tabs the worker has since let go.
+				const openTabIds = await getOpenTabIds();
+				tabRegistry = msg.tabRegistry.filter(reg => openTabIds.has(reg.tabId));
 				clearPendingSwitch();
 				await browser.storage.session.set({ tabRegistry });
 				await syncManagedTabMuteState(prefs.enabled);
