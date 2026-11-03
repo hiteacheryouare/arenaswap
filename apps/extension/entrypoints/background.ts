@@ -1395,6 +1395,8 @@ export default defineBackground(() => {
 			logWarn(`Failed to fetch ${leagueId} games.`, err);
 		}
 
+		if (!prefs.enabledLeagues.includes(leagueId)) return;
+
 		// Tracked per league across the steady-state polls, not just across a fan-out: a refusal and a
 		// network failure both mean this league's games are unknown rather than absent.
 		slateShedLeagues = fetchSucceeded

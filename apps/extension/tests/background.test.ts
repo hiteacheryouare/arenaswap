@@ -1297,6 +1297,33 @@ describe('a poll in flight when its league is switched off', () => {
 		expect(state.games.map(g => g.id)).not.toContain('mlb-live');
 		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
 	});
+	test('drops a late failure too, so the league is not marked shed', async () => {
+		const bothLeagues = { ...switchingPrefs, enabledLeagues: ['nba' as LeagueId, 'mlb' as LeagueId] };
+		await loadBackground({ prefs: bothLeagues, openTabIds: [1], activeTabId: 1, initialSystemTime: 1_000_000 });
+
+		let failMlb!: () => void;
+		let held = false;
+		fetchMock.mockImplementation(async (leagues: LeagueId[], options?: { includeUpcoming?: boolean }) => {
+			if (leagues[0] === 'mlb' && options?.includeUpcoming === false && !held) {
+				held = true;
+				await new Promise<void>((_, reject) => { failMlb = () => reject(new Error('offline')); });
+			}
+			return { games: [thriller], leagueLogos: {}, shedLeagues: [] };
+		});
+		await runFirstPoll();
+		expect(held).toBe(true);
+
+		await sendMessage({
+			type: 'UPDATE_PREFS',
+			prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...bothLeagues, enabledLeagues: ['nba' as LeagueId] }),
+		});
+		failMlb();
+		await drain(16);
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as { slateShedLeagues: LeagueId[] };
+		expect(state.slateShedLeagues).not.toContain('mlb');
+	});
+
 });
 
 describe('a queued switch when the user changes course', () => {
