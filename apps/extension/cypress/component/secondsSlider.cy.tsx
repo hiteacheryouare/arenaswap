@@ -3,6 +3,8 @@ import SwitchDelaySlider from '../../entrypoints/popup/components/switchDelaySli
 
 // The digits-only face is fetched on first use, so it is asked for outright rather than awaited.
 const figuresLoaded = () => cy.document().then(doc => doc.fonts.load('600 10px "Geist Figures"', '0123456789'));
+// The label group holds the label and its tooltip icon, beside the value.
+const labelGroupOf = (id: string) => cy.get(`label[for="${id}"]`).parent();
 
 
 describe('the seconds sliders', () => {
@@ -34,9 +36,6 @@ describe('the seconds sliders', () => {
 			cy.wrap(end).should('have.class', 'setting-explainer');
 		});
 	});
-
-	// The label group holds the label and its tooltip icon, beside the value.
-	const labelGroupOf = (id: string) => cy.get(`label[for="${id}"]`).parent();
 
 	it('keeps a long label clear of its value at 320px', () => {
 		cy.viewport(320, 560);

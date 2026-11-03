@@ -1,11 +1,12 @@
 import BackupSyncPage from '../../entrypoints/popup/components/backupSyncPage';
 import { createDefaultUserPreferences } from '@arenaswap/core/constants';
 
+const noop = () => {};
+
 describe('profile dialog', () => {
 	it('truncates a long profile name inside the Copy button at 320px', () => {
 		const longName = 'W'.repeat(40);
 		const profiles = { profiles: [{ id: 'main', name: longName }], activeId: 'main' };
-		const noop = () => {};
 		cy.viewport(320, 700);
 		cy.mount(
 			<div className='popup-root'>
