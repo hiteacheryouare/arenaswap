@@ -6,7 +6,7 @@ order: 7
 navLabel: Settings
 ---
 
-Settings live behind the gear icon in the popup's top bar, grouped into six categories: Switching, Scoring, Leagues, Display, Standby Stream, and Demo mode. A search box above the categories matches a setting by name or by common alternate terms, in the popup's current language.
+Settings live behind the gear icon in the popup's top bar, grouped into eight categories: Switching, Scoring, Favorite Teams, Leagues, Display, Standby Stream, Multiview, and Profiles & Backup. Firefox has seven, because Multiview isn't part of that build. A search box above the categories matches a setting by name or by common alternate terms, in the popup's current language.
 
 ## Switching
 
@@ -16,6 +16,11 @@ Settings live behind the gear icon in the popup's top bar, grouped into six cate
 | Switch cooldown | 45s | Off, 15s, 30s, 45s, 60s, 90s, 2m, 3m | The minimum time between automatic switches. |
 | Switch delay | Off | Off, 15s, 30s, 45s, 60s, 90s, 2m, 3m | The wait before ArenaSwap executes a switch it has decided on. |
 | Content-aware switching | Off | On/off | Holds a switch until the game you're leaving reaches a break in play, up to a cap that depends on the sport. While it waits, you may miss a key moment in the game it's switching to. Switch delay counts down after the break. |
+| Switch notifications | On | On/off | Shows a browser notification with the score, venue, and reason whenever ArenaSwap switches a tab, including switches to and from Standby Stream and Multiview. |
+| When a game finishes | Leave the tab alone | Leave the tab alone, Free it from ArenaSwap, or Close the tab | What ArenaSwap does with a registered tab once its game is over. Freeing drops the registration and unmutes the tab, leaving it open and available for tab suggestions again; closing shuts it. Either way the tab you are currently looking at is left alone until you move off it, and a window's last tab is freed rather than closed so no window disappears. Nothing happens in demo mode. |
+| Decoy page | Empty (a blank tab) | Any web address | Where the boss button takes you: a spreadsheet, a doc, anything that looks busy. The button also mutes every tab ArenaSwap manages and pauses auto-switching until you turn it back on. The suggested keyboard shortcut is Alt+Shift+X. |
+| Demo mode | Off | On/off | Replaces live scoreboards with 15 scripted games across 12 leagues, regardless of which leagues are enabled. |
+| Pretend it is | The real date | The real date, Thanksgiving week, or December | Only changes the holiday decorations. Appears while Demo mode is on. |
 
 ## Scoring
 
@@ -32,13 +37,18 @@ Settings live behind the gear icon in the popup's top bar, grouped into six cate
 
 At least one signal has to stay on in a mode. If a signal is off, ArenaSwap re-normalizes the rest so the total still spans the full 0 to 100 range. Fantasy only has something to say about a game with one of your players in it. Every other game is scored as Classic. [How to change what ArenaSwap looks for in a game](/arenaswap/docs/extension/scoring-modes/) covers the modes and the roster. See the [PowerScore page](/arenaswap/powerscore/) for how each signal is calculated.
 
+## Favorite Teams
+
+| Setting | Default | Range | What it does |
+| --- | --- | --- | --- |
+| Teams you follow | None | Any team | Followed teams stay at the top of the list, and their games get the favorite team bonus from Scoring. |
+
 ## Leagues
 
 | Setting | Default | Range | What it does |
 | --- | --- | --- | --- |
 | Enabled leagues | NBA, NFL, NHL, and MLB, chosen during setup | Any of the 31 supported leagues across basketball, football, hockey, baseball, softball, and soccer | Which leagues ArenaSwap tracks and considers for automatic switching. |
-| Group games by league | Off for new installs, on if you upgraded from an earlier version | On/off | Off, each section on the main screen is one list across every league, and each card carries a small league logo and short league name. On, sections split into league runs under league headers. Your favorite teams stay on top either way. |
-| Display order | The default league order | Drag a league or use its up and down arrows to reorder | The order league headers appear in on the main screen. Only shown while **Group games by league** is on and two or more leagues are enabled. A Reset button appears once the order no longer matches the default. |
+| College divisions and conferences | One division per league (FBS for football, Division I for the rest), no conference filter, Top 25 off, title rounds on | Divisions, conferences, Top 25 (Top 20 in college hockey) and title rounds, set per college league | Which college games appear. Pick other divisions or conferences to widen or narrow the list. Top 25 also shows any game with a ranked team. Title rounds, like March Madness or the College Football Playoff, show up whatever else you pick. |
 
 ## Display
 
@@ -47,11 +57,14 @@ At least one signal has to stay on in a mode. If a signal is off, ArenaSwap re-n
 | Show upcoming games | On | On/off | Shows an Up Next section for games in enabled leagues that haven't started yet. |
 | Days ahead | 7 days | 1–14 days | How far ahead Up Next looks. Only shown while Show upcoming games is on. |
 | Keep finished games | Off | On/off | Keeps a game reachable for 24 hours after it ends, in a Final section under Up Next, with your starred teams' games at the top. A finished game can't be assigned a tab or switched to, and its detail screen carries the box score, the venue and the attendance instead of a PowerScore. |
-| When a game finishes | Leave the tab alone | Leave the tab alone, Free it from ArenaSwap, or Close the tab | What ArenaSwap does with a registered tab once its game is over. Freeing drops the registration and unmutes the tab, leaving it open and available for tab suggestions again; closing shuts it. Either way the tab you are currently looking at is left alone until you move off it, and a window's last tab is freed rather than closed so no window disappears. Nothing happens in demo mode. |
 | Pro tips | On | On/off | Shows short contextual tips on the main screen. |
-| Switch notifications | On | On/off | Shows a browser notification with the score, venue, and reason whenever ArenaSwap switches a tab, including switches to and from Standby Stream. |
 | Show betting & odds | Off | On/off | Shows betting lines and the sportsbook's logo on game cards and the detail screen. |
 | Temperature unit | °F | °F or °C | The unit used for weather on the game detail screen. |
+| Theme | Dark | Dark, Light, or Match my system | The popup's colors. Match my system follows your browser's light or dark setting. |
+| Opening animation | On | On/off | Plays each game as a matchup poster when you open ArenaSwap: the long version once a day, a quicker one after that. |
+| Holiday decorations | On | On/off, with separate switches for Snow, Lights, and Leaves (all on) | Snow falls when it snows at the game, leaves the week of Thanksgiving, and lights all December. |
+| Group games by league | Off for new installs, on if you upgraded from an earlier version | On/off | Off, each section on the main screen is one list across every league, and each card carries a small league logo and short league name. On, sections split into league runs under league headers. Your favorite teams stay on top either way. |
+| Display order | The default league order | Drag a league or use its up and down arrows to reorder | The order league headers appear in on the main screen. Only shown while **Group games by league** is on and two or more leagues are enabled. A Reset button appears once the order no longer matches the default. |
 
 ## Standby Stream
 
@@ -61,11 +74,23 @@ At least one signal has to stay on in a mode. If a signal is off, ArenaSwap re-n
 | Standby below | 20 | 0–100 | The PowerScore every assigned live game must drop under before ArenaSwap switches to the standby tab. |
 | Standby tab | No tab selected | Any open browser tab | The tab ArenaSwap switches to once every assigned game is below the threshold. |
 
-## Demo mode
+## Multiview
+
+Chrome and Edge only.
 
 | Setting | Default | Range | What it does |
 | --- | --- | --- | --- |
-| Demo mode | Off | On/off | Replaces live scoreboards with 15 scripted games across 12 leagues, regardless of which leagues are enabled. |
+| Enable Multiview | Off | On/off | When two or more of your games are exciting at once, shows them together in one tab. The most exciting game gets the biggest box and the only sound, and ArenaSwap takes you back to a single game's tab when only one is left. Turning it on asks your browser for permission to read and change all websites. If you say no, Multiview stays off. |
+| Exciting at | 65 | 0–100, in steps of 5 | The PowerScore a game needs to count as exciting for Multiview. Lower opens it more often. Higher keeps it for big moments. |
+| Show | Exciting games | Exciting games or All my games | Which games get a box once Multiview opens. All my games uses every game you've assigned a tab to. |
+| Most boxes | 4 | 2–8 | The most games Multiview shows at once. |
+
+## Profiles & Backup
+
+| Setting | Default | Range | What it does |
+| --- | --- | --- | --- |
+| Profiles | One profile named main | Any number, with names up to 40 characters | Separate setups you can switch between. Start a new one from a copy of the current profile or from scratch, then rename, export or delete it. Only the profile in use syncs with your browser. |
+| Back up or restore | No backup | Download a backup, or import one | Downloads a profile as a file. Importing a file either adds it as a new profile or replaces every setting in the profile in use. |
 
 ## Related
 
