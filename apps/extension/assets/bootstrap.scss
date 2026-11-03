@@ -1362,6 +1362,8 @@
 	}
 
 	.gd-poster-name {
+		overflow-wrap: anywhere;
+		hyphens: auto;
 		font-size: 0.72rem;
 		font-weight: 700;
 		line-height: 1.2;
@@ -2548,6 +2550,8 @@
 	}
 
 	.game-detail-team-name {
+		overflow-wrap: anywhere;
+		hyphens: auto;
 		align-self: start;
 		min-width: 0;
 		font-size: 0.66rem;

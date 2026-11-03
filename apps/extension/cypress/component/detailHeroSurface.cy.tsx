@@ -146,6 +146,14 @@ describe('the detail hero surface', () => {
 		});
 	});
 
+	it('wraps a long single-word club name inside its crest column', () => {
+		mountLive({ ...liveGame, homeTeam: { ...liveGame.homeTeam, name: 'Mönchengladbach' } });
+		cy.document().its('fonts.status').should('eq', 'loaded');
+		cy.contains('.game-detail-team-name', 'Mönchengladbach').should(([name]: JQuery<HTMLElement>) => {
+			expect(name.scrollWidth).to.be.at.most(name.clientWidth);
+		});
+	});
+
 	it('gives the pre-game poster the same surface it always had', () => {
 		cy.mount(
 			<div style={{ width: '320px', background: '#0d1117', padding: '0.75rem' }}>
