@@ -246,7 +246,7 @@ const addStat = (table: StatTable, raw: RawStat, group?: string) => {
 	const name = str(raw.name);
 	const display = str(raw.displayValue);
 	if (!name || display === undefined) return;
-	const value = Number.parseFloat(display);
+	const value = Number.parseFloat(display.replace(/,/g, ''));
 	if (!Number.isFinite(value)) return;
 	table.set(statKey(name, group), { display, value, rank: rankOf(raw.rankDisplayValue) });
 };

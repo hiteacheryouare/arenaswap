@@ -198,6 +198,19 @@ describe('parseSeasonStats', () => {
 		expect(stats[2]).toMatchObject({ labelKey: 'detail.statEra', better: 'home', homeRank: 3 });
 	});
 
+	it('reads a season total with a thousands comma', () => {
+		const data = {
+			boxscore: {
+				teams: [
+					{ team: { id: '4' }, statistics: [{ name: 'batting', stats: [{ name: 'runs', displayValue: '1,012' }] }] },
+					{ team: { id: '5' }, statistics: [{ name: 'batting', stats: [{ name: 'runs', displayValue: '689' }] }] },
+				],
+			},
+		};
+		const stats = parseSeasonStats(data, 'baseball', { home: '5', away: '4' });
+		expect(stats[0]).toMatchObject({ labelKey: 'detail.statRuns', away: '1,012', better: 'away' });
+	});
+
 	it('drops a stat neither team has played into, and one only one side has', () => {
 		const data = {
 			boxscore: {
