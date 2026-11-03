@@ -81,6 +81,32 @@
 		}
 	}
 
+	.step-demo-placeholder {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: linear-gradient(
+			135deg,
+			color-mix(in oklab, var(--away-tint) 38%, #060607),
+			color-mix(in oklab, var(--home-tint) 38%, #060607)
+		);
+		opacity: 0;
+		transition: opacity m.$motion-slow m.$motion-ease;
+
+		&.is-active {
+			opacity: 1;
+		}
+
+		.crest {
+			--as-avatar-bg: transparent;
+			width: 4.5rem;
+			height: 4.5rem;
+			opacity: 0.9;
+		}
+	}
+
 	.step-demo-throbber {
 		--as-spinner-width: 0.8rem;
 		--as-spinner-height: 0.8rem;

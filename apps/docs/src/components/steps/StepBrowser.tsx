@@ -1,9 +1,9 @@
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import Crest from '@arenaswap/ui/src/components/crest';
 import { heroGames } from '../hero/heroGames';
 
 // A small Chrome window drawn with the hero's own classes, so the steps and the hero are the same
-// browser. Its tabs are the hero's three games.
+// browser. Its tabs are the hero's three games, each a placeholder panel in its teams' colours.
 
 export type TabSound = 'audible' | 'muted';
 
@@ -70,16 +70,15 @@ const StepBrowser = ({ tabs, active, popupOpen = false, children }: StepBrowserP
 			</div>
 
 			<div className='browser-viewport'>
-				{tabs.map((tab, index) => (
-					<img
-						key={heroGames[tab.game].base.id}
-						className={`browser-video${index === active && !tab.loading ? ' is-active' : ''}`}
-						src={`${base}video/${heroGames[tab.game].poster}.jpg`}
-						alt=''
-						loading='lazy'
-						decoding='async'
-					/>
-				))}
+				{tabs.map((tab, index) => {
+					const { base: game } = heroGames[tab.game];
+					const tint = { '--away-tint': game.awayTeam.color, '--home-tint': game.homeTeam.color } as CSSProperties;
+					return (
+						<span key={game.id} className={`step-demo-placeholder${index === active && !tab.loading ? ' is-active' : ''}`} style={tint}>
+							<Crest logo={`${base}images/leagues/${game.league}.png`} abbreviation='' icon='bi-globe2' />
+						</span>
+					);
+				})}
 				{children}
 			</div>
 		</div>

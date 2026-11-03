@@ -7,7 +7,7 @@
 
 ## The three steps act themselves out — 2026-11-03
 
-Each step under "Set It Once. Watch Everything." now has a small Chrome window above it, and they play in turn: two streams open in new tabs, a tab is picked from a game card's dropdown, then the sound follows ArenaSwap's switches while the other tabs mute. `SelectDropdown`, `TabFavicon` and the popup's menu skin (now the `menu-skin` mixin) moved into `@arenaswap/ui` so the demo opens the real menu, and the extension's compiled CSS is the same rules, reordered.
+Each step under "Set It Once. Watch Everything." now has a small Chrome window above it, with placeholder panels in each game's team colours instead of footage, and they play in turn: two streams open in new tabs, a tab is picked from a game card's dropdown, then the sound follows ArenaSwap's switches while the other tabs mute. `SelectDropdown`, `TabFavicon` and the popup's menu skin (now the `menu-skin` mixin) moved into `@arenaswap/ui` so the demo opens the real menu, and the extension's compiled CSS is the same rules, reordered.
 
 ## The PowerScore chart's hover shows just the score — 2026-11-03
 
