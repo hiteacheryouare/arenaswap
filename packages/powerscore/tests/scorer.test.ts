@@ -789,6 +789,17 @@ describe('computePowerScore', () => {
 		expect(comebackAt(6).reason).toContain('HOM came back from 6 down to lead');
 	});
 
+	test('a comeback that ends in a rout pays nothing, and a huge hole still pays the big tier', () => {
+		const comebackFor = (periodOverrides: Partial<Game>, from: [number, number], now: [number, number]) => {
+			const base = makeGame(periodOverrides);
+			const game = { ...base, homeTeam: { ...base.homeTeam, score: now[0] }, awayTeam: { ...base.awayTeam, score: now[1] } };
+			return computePowerScore(game, makeHistory([from, [from[0] + 2, from[1]], now])).comeback;
+		};
+		expect(comebackFor({ period: 4, clockSeconds: 300 }, [84, 90], [115, 90])).toBe(0);
+		expect(comebackFor({ sportType: 'football', league: 'nfl', period: 4, clockSeconds: 300 }, [13, 20], [41, 20])).toBe(0);
+		expect(comebackFor({ period: 4, clockSeconds: 300 }, [65, 90], [101, 90])).toBe(comebackFor({ period: 4, clockSeconds: 300 }, [84, 90], [90, 90]));
+	});
+
 	test('a game that was never behind pays no comeback, even once it is level', () => {
 		const game = makeGame({ period: 4, clockSeconds: 300, homeTeam: { ...makeGame().homeTeam, score: 90 }, awayTeam: { ...makeGame().awayTeam, score: 90 } });
 		expect(computePowerScore(game, makeHistory([[84, 84], [87, 87], [90, 90]])).comeback).toBe(0);

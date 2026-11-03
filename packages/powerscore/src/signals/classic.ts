@@ -267,7 +267,8 @@ export const computeComeback = ({ game, context, sport, progress, now, margin }:
 	if (deficit === 0) return none;
 	const homeTrailed = first.homeScore < first.awayScore;
 	const trailerLead = homeTrailed ? game.homeTeam.score - game.awayTeam.score : game.awayTeam.score - game.homeTeam.score;
-	const shrinkage = deficit + trailerLead;
+	// Past the close margin the game is decided, and the lead stops counting toward the comeback, as it did before.
+	const shrinkage = trailerLead > sport.closenessMargins[1] ? deficit - trailerLead : deficit + trailerLead;
 
 	let tier: number;
 	if (shrinkage >= sport.comebackThresholdBig) tier = scores.comeback.big;
