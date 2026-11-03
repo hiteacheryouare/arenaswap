@@ -1,6 +1,7 @@
 import GameDetailView from '../../entrypoints/popup/components/gameDetailView';
 import GameInfoPanel from '../../entrypoints/popup/components/gameInfoPanel';
 import { fetchGames } from '@arenaswap/sideline';
+import { LocaleContext } from '@arenaswap/ui/src/components/i18nContext';
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 import de from '../../locales/de.json';
 import en from '../../locales/en.json';
@@ -363,5 +364,22 @@ describe('game info panel', () => {
 			}
 			probe.remove();
 		});
+	});
+});
+
+describe('gameInfoPanel ticket price', () => {
+	it('formats the price in the display locale rather than the browser\'s', () => {
+		cy.mount(
+			<LocaleContext.Provider value='de'>
+				<GameInfoPanel
+					game={liveGame}
+					bettingPrefs={{ bettingEnabled: false }}
+					weatherPrefs={{ temperatureUnit: 'F' }}
+					gameDurationMins={null}
+					tickets={{ url: 'https://example.com/tickets', minPrice: 1234 }}
+				/>
+			</LocaleContext.Provider>,
+		);
+		cy.get('.game-info-link').should('have.text', en.detail.ticketsFrom.replace('{price}', (1234).toLocaleString('de', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })));
 	});
 });

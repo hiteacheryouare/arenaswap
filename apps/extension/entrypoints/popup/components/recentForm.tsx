@@ -1,6 +1,7 @@
 import { i18n } from '#i18n';
 import type { Game, Team } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
+import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import { readableTeamInkOnCard } from '@arenaswap/chromatic';
 import { showsRestDays } from './matchupLabels';
 import type { FormResult, Paired } from '@arenaswap/sideline';
@@ -40,9 +41,10 @@ export const restPhrase = (lastPlayed: string | undefined, startTime: string | u
 };
 
 const ResultCell = ({ result }: { result: FormResult }) => {
+	const locale = useDisplayLocale();
 	const letter = i18n.t(resultLetterKeys[result.result]);
 	const score = `${result.teamScore}–${result.opponentScore}`;
-	const date = new Date(result.date).toLocaleDateString([], { month: 'short', day: 'numeric' });
+	const date = new Date(result.date).toLocaleDateString(locale, { month: 'short', day: 'numeric' });
 	const opponent = i18n.t(result.isAway ? 'detail.formAt' : 'detail.formVs', { team: result.opponentAbbreviation });
 	const description = `${opponent} · ${letter} ${score} · ${date}`;
 

@@ -1,12 +1,13 @@
 import { i18n } from '#i18n';
 import { resolveOffseason } from '@arenaswap/core';
+import { displayLocale } from '../../../utils/displayLocale';
 import type { LeagueSchedule } from '@arenaswap/core/types';
 
 const dayMs = 24 * 60 * 60 * 1000;
 
 // Calendar days are stamped at Pacific midnight, which still falls on the same date in UTC.
 const formatReturnDay = (ms: number): string => (
-	new Date(ms).toLocaleDateString([], { month: 'short', day: 'numeric', timeZone: 'UTC' })
+	new Date(ms).toLocaleDateString(displayLocale(), { month: 'short', day: 'numeric', timeZone: 'UTC' })
 );
 
 // Counted from the reader's own date to the date printed beside it, so the two never disagree.

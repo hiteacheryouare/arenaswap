@@ -96,7 +96,7 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins, tic
 						{tickets.minPrice === undefined
 							? i18n.t('detail.ticketsCta')
 							: i18n.t('detail.ticketsFrom', {
-								price: tickets.minPrice.toLocaleString([], { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }),
+								price: tickets.minPrice.toLocaleString(locale, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }),
 							})}
 					</a>
 				</InfoRow>
