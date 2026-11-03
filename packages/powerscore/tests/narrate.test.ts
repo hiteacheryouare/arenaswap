@@ -59,6 +59,11 @@ describe('what just happened', () => {
 		expect(reasonFor(late, { history: window([90, 93], [96, 95], [102, 95]) })).toBe('Lakers came back from 3 down to lead. Up 7 with 2:10 left');
 	});
 
+	test('a run that takes the lead in a game that started level is one sentence', () => {
+		const late = game('basketball', 'nba', ['Lakers', 102], ['Celtics', 90], { period: 4, clockSeconds: 130 });
+		expect(reasonFor(late, { history: window([90, 90], [92, 96], [102, 90]) })).toBe('Lakers on a 12–0 run to take the lead. Up 12 with 2:10 left');
+	});
+
 	test('two teams trading baskets is not a run', () => {
 		const late = game('basketball', 'nba', ['Lakers', 110], ['Celtics', 100], { period: 3, clockSeconds: 300 });
 		expect(reasonFor(late, { history: window([100, 94], [105, 97], [110, 100]) })).toBe('Lakers outscoring Celtics 10–6 in the last 2 minutes. Up 10 in the 3rd quarter');

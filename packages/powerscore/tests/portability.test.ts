@@ -82,6 +82,17 @@ describe('overriding the tables for a league that plays differently', () => {
 	});
 });
 
+describe('a streak that takes the lead', () => {
+	test('reads as one sentence when the game started level', () => {
+		const game = feedGame({ league: 'kbo', sportType: 'baseball', period: 7, topOfInning: false, homeTeam: { score: 3 }, awayTeam: { score: 6 } });
+		// The feed takes a run back off the home side (4 to 3), so the away side's 3 are unanswered.
+		const history = ([[3, 3], [4, 3], [3, 6]] as const).map(([homeScore, awayScore], index) => ({
+			gameId: 'feed-1', timestamp: 1_790_000_000_000 + index * 60_000, homeScore, awayScore,
+		}));
+		expect(scoreGame(game, { history }).reasons.map(reason => reason.key)).toContain('scoredStraightToLead');
+	});
+});
+
 describe('a feed that publishes more as it matures', () => {
 	test('each field it adds lights up the signal that reads it', () => {
 		const scoresOnly = feedGame({ league: 'kbo', sportType: 'baseball', homeTeam: { score: 3 }, awayTeam: { score: 4 } });
