@@ -84,8 +84,9 @@ jobs:
           if [[ "$UPDATE_TYPE" == "version-update:semver-patch" ]]; then
             echo "should_merge=true" >> $GITHUB_OUTPUT
           elif [[ "$UPDATE_TYPE" == "version-update:semver-minor" ]]; then
-            should_merge=true
+            should_merge=false
             IFS=',' read -ra NAMES <<< "$PACKAGES"
+            if [[ ${#NAMES[@]} -gt 0 ]]; then should_merge=true; fi
             for name in "${NAMES[@]}"; do
               name="$(echo "$name" | xargs)"
               if [[ -z "$name" || "$MINOR_AUTO_PACKAGES" != *" $name "* ]]; then
