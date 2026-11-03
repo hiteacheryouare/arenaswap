@@ -191,6 +191,38 @@ describe('re-scoring games already in hand is not another poll', () => {
 	});
 });
 
+describe('a per-game boost', () => {
+	const boostOf = async (gameId: string) => (
+		(await sendMessage({ type: 'GET_STATE' }) as { scores: { gameId: string; gameBoost?: number }[] })
+			.scores.find(score => score.gameId === gameId)?.gameBoost ?? 0
+	);
+
+	test('is stored when set and gone from storage and the score once set back to 0', async () => {
+		seed({ enabledLeagues: ['nba'], enabled: true });
+		currentGames = [mkGame('g1', 'nba', 'basketball', 'in', 0)];
+		await startWorker(1_000_000);
+
+		await sendMessage({ type: 'SET_GAME_BOOST', gameId: 'g1', boost: 5 });
+		expect(sessionStore.gameBoosts).toEqual({ g1: 5 });
+		expect(await boostOf('g1')).toBe(5);
+
+		await sendMessage({ type: 'SET_GAME_BOOST', gameId: 'g1', boost: 0 });
+		expect(sessionStore.gameBoosts).not.toHaveProperty('g1');
+		expect(await boostOf('g1')).toBe(0);
+	});
+
+	test('stores nothing for input that is not a number', async () => {
+		seed({ enabledLeagues: ['nba'], enabled: true });
+		currentGames = [mkGame('g1', 'nba', 'basketball', 'in', 0)];
+		await startWorker(1_000_000);
+
+		await sendMessage({ type: 'SET_GAME_BOOST', gameId: 'g1', boost: 'abc' });
+
+		expect(sessionStore.gameBoosts).not.toHaveProperty('g1');
+		expect(await boostOf('g1')).toBe(0);
+	});
+});
+
 describe('switching a league off', () => {
 	test('drops its live games at once and stops paying for their summaries', async () => {
 		seed({ enabledLeagues: ['nba', 'nhl'], enabled: true });
