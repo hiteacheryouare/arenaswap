@@ -1,5 +1,5 @@
 import { defineConfig } from 'wxt';
-import pkg from '../../package.json';
+import pkg from './package.json';
 import bootstrapTokenPrefix from '@arenaswap/ui/src/bootstrapTokenPrefix';
 import { bossCommandName } from './utils/bossMode';
 
