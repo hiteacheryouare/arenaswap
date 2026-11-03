@@ -28,7 +28,7 @@ describe('GameBoostInput', () => {
 		const spy = cy.spy().as('setBoost');
 		cy.clock();
 		cy.mount(<GameBoostInput gameId='g1' currentBoost={5} onSetGameBoost={spy} />);
-		cy.get('input[type="number"]').focus().type('{uparrow}{uparrow}{uparrow}');
+		cy.get('input[type="number"]').setInputValue(6).setInputValue(7).setInputValue(8);
 		cy.get('@setBoost').should('not.have.been.called');
 		cy.tick(400);
 		cy.get('@setBoost').should('have.been.calledOnceWith', 'g1', 8);
