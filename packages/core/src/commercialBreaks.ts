@@ -154,15 +154,19 @@ const collegeFootballRule: Rule = (game, previous, next) => {
 	return undefined;
 };
 
+// College feeds run the words together ("OfficialTVTimeOut", "RegularTimeOut"). A college short
+// timeout is thirty seconds, too short for the broadcast to cut away.
 const basketballTvTypes: Record<string, CommercialBreakKind> = {
 	'full timeout': 'teamTimeout',
+	regulartimeout: 'teamTimeout',
 	'official timeout': 'tvTimeout',
 	'official tv timeout': 'tvTimeout',
+	officialtvtimeout: 'tvTimeout',
 	'media timeout': 'tvTimeout',
 	'end period': 'periodEnd',
 };
 // Plays logged during a timeout that don't mean the ball is back in play.
-const basketballDeadBallTypes = /^(substitution|full timeout|reset timeout|official( tv)? timeout|media timeout|end period)$/;
+const basketballDeadBallTypes = /^(substitution|full timeout|reset timeout|(short|regular)timeout|official( tv)? timeout|officialtvtimeout|media timeout|end period)$/;
 
 const basketballRule: Rule = (game, previous) => {
 	const type = playType(game);

@@ -172,6 +172,41 @@ const pistonsSunsFinalMinute: ClockPoll[] = [
 	[152, '33.8', '401908947760', 'Full Timeout'],
 ];
 
+// The recordings predate the college season, so these three are plays from the play-by-play,
+// laid out at the recorder's cadence. UConn @ Michigan, 2026-04-06, first half.
+const michiganUconnTvTimeout: ClockPoll[] = [
+	[0, '15:42', '401856600120416946', 'Block Shot'],
+	[15, '15:42', '401856600120416948', 'OfficialTVTimeOut'],
+	[30, '15:42', '401856600120416948', 'OfficialTVTimeOut'],
+	[45, '15:42', '401856600120416948', 'OfficialTVTimeOut'],
+	[60, '15:42', '401856600120416948', 'OfficialTVTimeOut'],
+	[75, '15:42', '401856600120416948', 'OfficialTVTimeOut'],
+	[90, '15:42', '401856600120416948', 'OfficialTVTimeOut'],
+	[105, '15:42', '401856600120416948', 'OfficialTVTimeOut'],
+	[120, '15:42', '401856600120416949', 'Substitution'],
+	[135, '15:42', '401856600120416950', 'Substitution'],
+	[150, '15:41', '401856600120416947', 'Offensive Rebound'],
+];
+
+// The same game, later in the first half.
+const michiganUconnShortTimeout: ClockPoll[] = [
+	[0, '2:31', '401856600120416919', 'LayUpShot'],
+	[15, '2:24', '401856600120417120', 'ShortTimeOut'],
+	[30, '2:24', '401856600120417120', 'ShortTimeOut'],
+	[45, '2:24', '401856600120417121', 'Substitution'],
+	[60, '2:24', '401856600120417124', 'Substitution'],
+];
+
+// Lehigh @ Holy Cross, 2026-03-15, the final seconds.
+const holyCrossLehighTimeout: ClockPoll[] = [
+	[0, '0:11', '401851596120280573', 'MadeFreeThrow'],
+	[15, '0:11', '401851596120280574', 'RegularTimeOut'],
+	[30, '0:11', '401851596120280574', 'RegularTimeOut'],
+	[45, '0:11', '401851596120280574', 'RegularTimeOut'],
+	[60, '0:11', '401851596120280574', 'RegularTimeOut'],
+	[75, '0:07', '401851596120280576', 'JumpShot'],
+];
+
 // CGY @ VAN, 2026-10-04 02:31:55 UTC onward.
 const canucksFlamesFirst: TextPoll[] = [
 	[0, '10:30', '401892440000001980', 'Penalty Shot Infraction', 'Brennan Othmann Minor'],
@@ -315,6 +350,23 @@ describe('basketball, from its timeouts', () => {
 	test('a timeout with 33.8 seconds left in a three-point game is the one a fan stays for', () => {
 		const game = clockGame({ id: '401908947', league: 'nba', sportType: 'basketball', homeTeam: team('8', 'DET', 105), awayTeam: team('21', 'PHX', 102), period: 4, status: 'in' });
 		expect(flagged(replay(polls(pistonsSunsFinalMinute, game)))).toEqual([]);
+	});
+
+	test('a college TV timeout is a break, though our sources spell it OfficialTVTimeOut', () => {
+		const game = clockGame({ id: '401856600', league: 'ncaab', sportType: 'basketball', homeTeam: team('130', 'MICH', 9), awayTeam: team('41', 'CONN', 4), period: 1, status: 'in' });
+		const verdicts = replay(polls(michiganUconnTvTimeout, game));
+		expect(flagged(verdicts, 'tvTimeout')).toEqual(between(verdicts, 15, 135));
+	});
+
+	test('a college short timeout is too short to go to commercial', () => {
+		const game = clockGame({ id: '401856600', league: 'ncaab', sportType: 'basketball', homeTeam: team('130', 'MICH', 29), awayTeam: team('41', 'CONN', 25), period: 1, status: 'in' });
+		expect(flagged(replay(polls(michiganUconnShortTimeout, game)))).toEqual([]);
+	});
+
+	test('a college regular timeout is a break once the game is out of reach', () => {
+		const game = clockGame({ id: '401851596', league: 'ncaaw', sportType: 'basketball', homeTeam: team('107', 'HC', 77), awayTeam: team('2329', 'LEH', 68), period: 4, status: 'in' });
+		const verdicts = replay(polls(holyCrossLehighTimeout, game));
+		expect(flagged(verdicts, 'teamTimeout')).toEqual(between(verdicts, 15, 60));
 	});
 });
 

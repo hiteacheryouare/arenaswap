@@ -42,7 +42,7 @@ const unheldLeagues: ReadonlySet<LeagueId> = new Set(['ncaaf', 'ncaamh']);
 const clockStoppedPolls = 3;
 
 // Steals ("Bad Pass Turnover", "Lost Ball Turnover") are live; "No Foul" and friends are not plays.
-const basketballDeadBallTypes = /foul|timeout|traveling|kicked ball|lane|delay of game|3-seconds|double dribble|back court|second turnover|shot clock|goaltending|jump ?ball|end period|end game|substitution|free throw|challenge|review|ejection|technical|inbound turnover|out of bounds|offensive charge/;
+const basketballDeadBallTypes = /foul|timeout|traveling|kicked ball|lane|delay of game|3-seconds|double dribble|back court|second turnover|shot clock|goaltending|jump ?ball|end period|end game|substitution|free ?throw|challenge|review|ejection|technical|inbound turnover|out of bounds|offensive charge/;
 const basketballNonPlays = /^no (foul|violation|turnover|shot)/;
 
 const playType = (game: Game): string => (game.lastPlayType ?? '').toLowerCase();

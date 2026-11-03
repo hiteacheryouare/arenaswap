@@ -102,6 +102,10 @@ describe('content-aware switching', () => {
 			expect(replay(game({}), [[12, { clockSeconds: 389, lastPlayId: '2', lastPlayType: 'Shooting Foul' }]])?.seconds).toBe(12);
 			expect(replay(game({}), [[12, { clockSeconds: 389, lastPlayId: '2', lastPlayType: 'No Foul' }]])).toBeUndefined();
 		});
+
+		test('switches on a college free throw, which our sources spell MadeFreeThrow', () => {
+			expect(replay(game({ league: 'ncaab' }), [[12, { clockSeconds: 389, lastPlayId: '2', lastPlayType: 'MadeFreeThrow' }]])?.seconds).toBe(12);
+		});
 	});
 
 	describe('hockey waits for the whistle', () => {
