@@ -52,3 +52,12 @@ describe.each(localeFiles)('%s', file => {
 		expect([...english].filter(([key, text]) => text.trim() !== '' && !isFragment(text) && translated.get(key)?.trim() === '').map(([key]) => key)).toEqual([]);
 	});
 });
+
+describe('store listing limits', () => {
+	test.each(['en.json', ...localeFiles])('%s fits the 75-character name and 132-character description caps', file => {
+		const strings = readLocale(file);
+
+		expect([...String(strings.extName)].length).toBeLessThanOrEqual(75);
+		expect([...String(strings.extDescription)].length).toBeLessThanOrEqual(132);
+	});
+});
