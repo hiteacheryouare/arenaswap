@@ -519,7 +519,7 @@ export default () => {
 		const next = update(fantasyRosterRef.current);
 		fantasyRosterRef.current = next;
 		setFantasyRoster(next);
-		void saveFantasyRoster(next);
+		prefsSyncRef.current = prefsSyncRef.current.catch(() => {}).then(() => saveFantasyRoster(next));
 	};
 
 	const onRegistryChange = (updated: TabRegistration[]) => {
