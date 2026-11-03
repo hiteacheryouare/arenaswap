@@ -24,22 +24,31 @@ export default defineUnlistedScript({
 		if (topOrigin !== new URL(browser.runtime.getURL('/')).origin && !unsure) return;
 
 		let muted = true;
+		let playPending = false;
 		let answered = false;
 		const audibleVolume = new WeakMap<HTMLMediaElement, number>();
 
 		// Silenced with the volume, never with `muted`: Chrome pauses muted video in a tab that is not
 		// showing, which is every box while Multiview gets ready. Players reset their own volume, so it
 		// is put back whenever one plays or touches it.
+		const setMuted = (next: boolean) => {
+			if (muted && !next) playPending = true;
+			muted = next;
+		};
+
 		const enforceMute = () => {
-			for (const element of document.querySelectorAll<HTMLMediaElement>('video, audio')) {
+			const elements = document.querySelectorAll<HTMLMediaElement>('video, audio');
+			if (muted) playPending = false;
+			for (const element of elements) {
 				if (element.muted) element.muted = false;
 				if (muted && element.volume !== 0) {
 					audibleVolume.set(element, element.volume);
 					element.volume = 0;
 				}
 				if (!muted && element.volume === 0) element.volume = audibleVolume.get(element) ?? 1;
-				if (!muted && element.paused) element.play().catch(() => {});
+				if (playPending && element.paused) element.play().catch(() => {});
 			}
+			if (elements.length > 0) playPending = false;
 		};
 
 		const report = async () => {
@@ -57,7 +66,7 @@ export default defineUnlistedScript({
 				const reply = await browser.runtime.sendMessage(status) as { muted?: boolean } | undefined;
 				if (typeof reply?.muted === 'boolean') {
 					answered = true;
-					muted = reply.muted;
+					setMuted(reply.muted);
 					enforceMute();
 				}
 			} catch {}
@@ -66,7 +75,7 @@ export default defineUnlistedScript({
 
 		browser.runtime.onMessage.addListener((message: ExtensionMessage) => {
 			if (message.type !== 'MULTIVIEW_MUTE') return;
-			muted = message.muted;
+			setMuted(message.muted);
 			enforceMute();
 		});
 
