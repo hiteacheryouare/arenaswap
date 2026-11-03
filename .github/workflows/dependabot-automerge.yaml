@@ -26,15 +26,20 @@ jobs:
 
       - name: Get package info
         id: package-info
+        env:
+          PACKAGE_NAME: ${{ steps.metadata.outputs.dependency-names }}
+          PREVIOUS_VERSION: ${{ steps.metadata.outputs.previous-version }}
+          NEW_VERSION: ${{ steps.metadata.outputs.new-version }}
+          UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
         run: |
-          echo "package_name=${{ steps.metadata.outputs.dependency-names }}" >> $GITHUB_OUTPUT
-          echo "previous_version=${{ steps.metadata.outputs.previous-version }}" >> $GITHUB_OUTPUT
-          echo "new_version=${{ steps.metadata.outputs.new-version }}" >> $GITHUB_OUTPUT
-          echo "update_type=${{ steps.metadata.outputs.update-type }}" >> $GITHUB_OUTPUT
+          echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+          echo "previous_version=$PREVIOUS_VERSION" >> $GITHUB_OUTPUT
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "update_type=$UPDATE_TYPE" >> $GITHUB_OUTPUT
 
-          if [[ "${{ steps.metadata.outputs.update-type }}" == "version-update:semver-major" ]]; then
+          if [[ "$UPDATE_TYPE" == "version-update:semver-major" ]]; then
             echo "upgrade_label=MAJOR" >> $GITHUB_OUTPUT
-          elif [[ "${{ steps.metadata.outputs.update-type }}" == "version-update:semver-minor" ]]; then
+          elif [[ "$UPDATE_TYPE" == "version-update:semver-minor" ]]; then
             echo "upgrade_label=MINOR" >> $GITHUB_OUTPUT
           else
             echo "upgrade_label=PATCH" >> $GITHUB_OUTPUT
@@ -42,13 +47,18 @@ jobs:
 
       - name: Update PR title and body
         uses: actions/github-script@v9
+        env:
+          PACKAGE_NAME: ${{ steps.package-info.outputs.package_name }}
+          PREVIOUS_VERSION: ${{ steps.package-info.outputs.previous_version }}
+          NEW_VERSION: ${{ steps.package-info.outputs.new_version }}
+          UPGRADE_TYPE: ${{ steps.package-info.outputs.upgrade_label }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const packageName = '${{ steps.package-info.outputs.package_name }}';
-            const previousVersion = '${{ steps.package-info.outputs.previous_version }}';
-            const newVersion = '${{ steps.package-info.outputs.new_version }}';
-            const upgradeType = '${{ steps.package-info.outputs.upgrade_label }}';
+            const packageName = process.env.PACKAGE_NAME;
+            const previousVersion = process.env.PREVIOUS_VERSION;
+            const newVersion = process.env.NEW_VERSION;
+            const upgradeType = process.env.UPGRADE_TYPE;
             const prNumber = context.issue.number;
             const currentDate = new Date().toISOString().split('T')[0];
 
@@ -61,13 +71,6 @@ jobs:
               pull_number: prNumber,
               title: newTitle,
               body: newBody,
-            });
-
-            await github.rest.pulls.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: prNumber,
-              commit_title: `Upgrade ${packageName} from ${previousVersion} to ${newVersion}`,
             });
 
       - name: Check auto-merge eligibility
@@ -104,6 +107,8 @@ jobs:
       - name: Add review labels
         if: steps.check-auto-merge.outputs.should_merge == 'false'
         uses: actions/github-script@v9
+        env:
+          UPGRADE_TYPE: ${{ steps.package-info.outputs.upgrade_label }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -111,5 +116,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              labels: ['needs-review', '${{ steps.package-info.outputs.upgrade_label }}-upgrade'],
+              labels: ['needs-review', `${process.env.UPGRADE_TYPE}-upgrade`],
             });
