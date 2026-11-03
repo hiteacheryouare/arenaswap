@@ -5,7 +5,7 @@ const leader = (player: string, value: string) => ({ category: 'points', fallbac
 
 const game: Game = {
 	id: 'g1',
-	league: 'mens-college-basketball',
+	league: 'ncaab',
 	sportType: 'basketball',
 	status: 'pre',
 	period: 0,
@@ -17,7 +17,7 @@ const game: Game = {
 describe('pre-game leaders row', () => {
 	it('leaves room for a five-letter team and keeps both rows\' player cells aligned', () => {
 		cy.mount(<div style={{ width: '320px' }}><PregameStats game={game} /></div>);
-		cy.document().its('fonts.status').should('eq', 'loaded');
+		cy.get('.gd-pregame-leader-player').first().then(([el]: JQuery<HTMLElement>) => el!.ownerDocument.fonts.load(getComputedStyle(el!).font, el!.textContent ?? 'Abc'));
 		cy.get('.gd-pregame-leader-row').should('have.length', 2).should(rows => {
 			const lefts = Array.from(rows).map(row => {
 				const team = row.querySelector('.gd-pregame-leader-team')!.getBoundingClientRect();
