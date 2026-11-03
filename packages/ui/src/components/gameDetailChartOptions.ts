@@ -3,8 +3,7 @@ import { scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, PowerScoreSnapshot, ResolvedTheme, ScoreSnapshot, SignalName } from '@arenaswap/core/types';
 import { resolveChartLineColors } from '@arenaswap/chromatic';
 import { defaultTranslate } from './defaultStrings';
-import { boostPresentation, isBoostId, isModeSignalId, modeSignalIds, signalColorOf, signalPresentation } from './scoringModeMeta';
-import type { BoostId } from './scoringModeMeta';
+import { isModeSignalId, modeSignalIds, signalColorOf, signalPresentation } from './scoringModeMeta';
 import { chartEasing, motionDuration } from '../motion';
 
 // ECharts draws to a canvas, so these cannot follow the page's CSS variables: whoever builds an
@@ -89,25 +88,6 @@ const baseOption = (
 
 // The website renders these charts without a translator, so English is the default for every name.
 const englishSignalLabel = (id: string): string => (isModeSignalId(id) ? defaultTranslate(signalPresentation[id].labelKey) : id);
-const englishBoostLabel = (id: string): string => (isBoostId(id) ? defaultTranslate(boostPresentation[id].labelKey) : id);
-
-// The moment boost paying most at this reading, named in the tooltip. These last for innings or a
-// whole game, so ranking them by size would bury every short live moment inside them; they only win
-// a reading where nothing live is happening.
-const contextBoostIds: ReadonlySet<string> = new Set(['noHitter', 'upsetWatch', 'stakes']);
-
-export const boostMomentOf = (snapshot: PowerScoreSnapshot): BoostId | undefined => {
-	let strongest: BoostId | undefined;
-	let strongestRank = 0;
-	for (const [id, points] of Object.entries(snapshot.boosts ?? {})) {
-		if (!isBoostId(id) || !boostPresentation[id].moment || points <= 0) continue;
-		const rank = (contextBoostIds.has(id) ? 0 : 1000) + points;
-		if (rank <= strongestRank) continue;
-		strongest = id;
-		strongestRank = rank;
-	}
-	return strongest;
-};
 
 interface axisTooltipParam {
 	axisValueLabel: string;
@@ -121,30 +101,13 @@ export const buildPowerScoreOption = (
 	powerHistory: PowerScoreSnapshot[],
 	palette = darkChartPalette,
 	locale?: string,
-	boostLabel = englishBoostLabel,
 ): EChartsOption => {
 	const labels = powerHistory.map(point => formatTimeLabel(point.timestamp, locale));
 	const totals = powerHistory.map(point => point.total);
 	const showSinglePointSymbols = totals.length === 1;
 	const option = baseOption(labels, palette);
-	const hasMoments = powerHistory.some(snapshot => boostMomentOf(snapshot));
 	return {
 		...option,
-		...(hasMoments ? {
-			tooltip: {
-				...(option.tooltip as object),
-				formatter: (params: unknown) => {
-					const [point] = params as axisTooltipParam[];
-					if (!point) return '';
-					const snapshot = powerHistory[point.dataIndex];
-					const moment = snapshot ? boostMomentOf(snapshot) : undefined;
-					const line = `${point.axisValueLabel}<br/>${point.marker}${point.seriesName}: ${point.value}`;
-					return moment
-						? `${line}<br/><span style="color:${boostPresentation[moment].color}">●</span> ${boostLabel(moment)}`
-						: line;
-				},
-			},
-		} : {}),
 		yAxis: {
 			...(option.yAxis as EChartsOption['yAxis']),
 			max: Math.max(scoreMaxTotal + 15, ...totals),

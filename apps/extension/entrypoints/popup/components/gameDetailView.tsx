@@ -40,7 +40,7 @@ import {
 } from './gameDetailChartOptions';
 import { resolveChartLineColors, resolveTeamColorPair } from '@arenaswap/chromatic';
 import { matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared';
-import { boostPresentation, isBoostId, isModeSignalId, signalColorOf, signalPresentation } from '@arenaswap/ui/src/components/scoringModeMeta';
+import { isModeSignalId, signalColorOf, signalPresentation } from '@arenaswap/ui/src/components/scoringModeMeta';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import useSwitchCrest from '@arenaswap/ui/src/components/useSwitchCrest';
 import useBasketballPossession from './useBasketballPossession';
@@ -91,7 +91,6 @@ const favoriteFlashMs = 5000;
 // The legend and the chart's tooltip print the same names, so a hover reads in the same language
 // as the swatches under it.
 const signalLabel = (id: string): string => (isModeSignalId(id) ? i18n.t(signalPresentation[id].labelKey) : id);
-const boostLabel = (id: string): string => (isBoostId(id) ? i18n.t(boostPresentation[id].labelKey) : id);
 const describeLead = (team: string | undefined, margin: number): string => (
 	team === undefined || margin === 0 ? i18n.t('detail.leadTied') : i18n.t('detail.leadBy', { team, margin })
 );
@@ -181,7 +180,7 @@ const gameDetailView = ({
 	useSwitchCrest(game.awayTeam, game.homeTeam);
 	const [awayLineColor, homeLineColor] = resolveChartLineColors(game.awayTeam, game.homeTeam, chartPalette.surface);
 	const powerScoreOption = useMemo(() => (
-		buildPowerScoreOption(orderedPowerScoreHistory, chartPalette, locale, boostLabel)
+		buildPowerScoreOption(orderedPowerScoreHistory, chartPalette, locale)
 	), [orderedPowerScoreHistory, chartPalette, locale]);
 	const scoreTrendOption = useMemo(() => (
 		buildTeamScoreOption(orderedScoreHistory, game, chartPalette, [awayLineColor, homeLineColor], locale)

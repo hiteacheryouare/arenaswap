@@ -2,7 +2,6 @@ import type { EChartsOption } from 'echarts';
 import { scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import {
-	boostMomentOf,
 	buildComponentContributionOption,
 	buildLeadTrackerOption,
 	buildPowerScoreOption,
@@ -10,7 +9,7 @@ import {
 	buildWinProbabilityOption,
 	contributionSignalIds,
 } from '../src/components/gameDetailChartOptions';
-import { boostPresentation, signalPresentation } from '../src/components/scoringModeMeta';
+import { signalPresentation } from '../src/components/scoringModeMeta';
 import { chartEasing, motionDuration } from '../src/motion';
 import { signalColors } from '../src/components/signalColors';
 
@@ -459,36 +458,11 @@ describe('buildComponentContributionOption across modes', () => {
 	});
 });
 
-const point = (index: number) => [{ axisValueLabel: 'x', dataIndex: index, marker: '', seriesName: 'PowerScore', value: 60 + index }];
-
-describe('boost moments on the PowerScore line', () => {
-	test('keeps the stock tooltip on a game with no moment boosts', () => {
-		const option = buildPowerScoreOption([powerPoint(0), powerPoint(1, { boosts: { favoriteBoost: 10 } })]);
+describe('boosts on the PowerScore line', () => {
+	test('keeps the stock tooltip while a boost pays', () => {
+		const option = buildPowerScoreOption([powerPoint(0), powerPoint(1, { boosts: { twoMinuteDrill: 8, noHitter: 22 } })]);
 		expect((option.tooltip as { formatter?: unknown }).formatter).toBeUndefined();
-	});
-
-	test('shades nothing behind the line while a moment boost pays', () => {
-		const option = buildPowerScoreOption([powerPoint(0), powerPoint(1, { boosts: { twoMinuteDrill: 8 } })]);
 		expect(seriesOf(option)[0]).not.toHaveProperty('markArea');
-	});
-
-	test('names the strongest moment when two pay at once, and leaves out the boosts that are not moments', () => {
-		const snapshot = powerPoint(0, { boosts: { scoringOpportunity: 3, goAheadRun: 8, favoriteBoost: 10, postseasonBoost: 5 } });
-		expect(boostMomentOf(snapshot)).toBe('goAheadRun');
-		expect(boostMomentOf(powerPoint(1, { boosts: { favoriteBoost: 10 } }))).toBeUndefined();
-	});
-
-	test('lets a live moment outrank a bigger boost that lasts all game', () => {
-		expect(boostMomentOf(powerPoint(0, { boosts: { noHitter: 22, scoringOpportunity: 4 } }))).toBe('scoringOpportunity');
-	});
-
-	test('names the boost in the tooltip, in the language it is given', () => {
-		const history = [powerPoint(0), powerPoint(1, { boosts: { noHitter: 22 } })];
-		const option = buildPowerScoreOption(history, undefined, undefined, id => `<${id}>`);
-		const formatter = (option.tooltip as { formatter: (params: unknown) => string }).formatter;
-		expect(formatter(point(1))).toContain('<noHitter>');
-		expect(formatter(point(1))).toContain(boostPresentation.noHitter.color);
-		expect(formatter(point(0))).not.toContain('noHitter');
 	});
 });
 

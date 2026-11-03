@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The PowerScore chart's hover shows just the score — 2026-11-03
+
+Hovering PowerScore Over Time no longer adds a line naming the strongest boost at that reading; it shows the time and the score, like the other charts. The `moment` flag on `boostPresentation` and `boostMomentOf` existed only for that line, so they went with it.
+
 ## College hoops TV timeouts count as commercial breaks — 2026-11-02
 
 Our sources spell college basketball's play types run together (`OfficialTVTimeOut`, `RegularTimeOut`, `MadeFreeThrow`), so the break detector never matched a college timeout and the break penalty never applied. Official TV and regular timeouts are now breaks; a 30-second `ShortTimeOut` deliberately isn't, and content-aware switching now treats a college free throw as a dead ball.
