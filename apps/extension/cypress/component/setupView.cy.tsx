@@ -1083,6 +1083,10 @@ describe('setupView favorites group', () => {
 });
 
 describe('setupView leagues group', () => {
+	beforeEach(() => {
+		(window as unknown as Record<string, unknown>).browser = { i18n: { getUILanguage: () => 'en-US' } };
+	});
+
 	it('heads each sport group and gives every league in it a mark', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('leagues');
