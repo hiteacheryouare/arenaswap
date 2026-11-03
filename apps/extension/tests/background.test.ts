@@ -76,7 +76,7 @@ let storageSessionSet: jest.Mock;
 let onMessageHandler!: (msg: unknown) => unknown;
 let onActivatedHandler: ((info: { tabId: number }) => unknown) | undefined;
 let onRemovedHandler: ((tabId: number) => unknown) | undefined;
-let onSyncChangedHandler: ((changes: Record<string, unknown>) => unknown) | undefined;
+let onSyncChangedHandlers: ((changes: Record<string, unknown>) => unknown)[] = [];
 
 // `windowIds` is opt-in: without it the tabs carry no windowId, which is what the browser never
 // does but every test written before tab closing existed assumes. Only the closing rules read it.
@@ -152,7 +152,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 	storageSessionSet = jest.fn().mockResolvedValue(undefined);
 	onActivatedHandler = undefined;
 	onRemovedHandler = undefined;
-	onSyncChangedHandler = undefined;
+	onSyncChangedHandlers = [];
 	if (options.openTabIds) mockOpenTabIds(options.openTabIds, options.activeTabId ?? options.openTabIds[0]!, options.windowIds);
 
 	(globalThis as { defineBackground?: unknown }).defineBackground = (fn: () => void) => fn();
@@ -162,7 +162,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 			sync: {
 				get: storageSyncGet,
 				set: storageSyncSet,
-				onChanged: { addListener: (h: (changes: Record<string, unknown>) => unknown) => { onSyncChangedHandler = h; } },
+				onChanged: { addListener: (h: (changes: Record<string, unknown>) => unknown) => { onSyncChangedHandlers.push(h); } },
 			},
 			session: {
 				get: jest.fn().mockResolvedValue({
@@ -1236,7 +1236,7 @@ describe('settings synced from another browser', () => {
 			prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...prefs }),
 			[prefsStorageUpdatedAtKey]: updatedAt,
 		});
-		onSyncChangedHandler?.({ prefs: {} });
+		for (const handler of onSyncChangedHandlers) handler({ prefs: {} });
 		await drain();
 	};
 
