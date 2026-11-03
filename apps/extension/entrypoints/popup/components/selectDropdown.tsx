@@ -7,6 +7,7 @@ export interface selectDropdownOption<T extends string> {
 	icon?: string;
 	image?: ReactNode;
 	disabled?: boolean;
+	hint?: string;
 }
 
 interface selectDropdownProps<T extends string> {
@@ -71,7 +72,8 @@ const selectDropdown = <T extends string>({ value, options, onChange, id, disabl
 					>
 						{option.image}
 						{option.icon && <i className={`bi ${option.icon}`} aria-hidden='true' />}
-						<span className='flex-grow-1 text-truncate'>{option.label}</span>
+						<span className='flex-grow-1 min-w-0 text-truncate'>{option.label}</span>
+						{option.hint && <span className='flex-shrink-0 fg-secondary'>{option.hint}</span>}
 						{option.value === value && <i className='bi bi-check2 menu-item-check' aria-hidden='true' />}
 					</button>
 				))}

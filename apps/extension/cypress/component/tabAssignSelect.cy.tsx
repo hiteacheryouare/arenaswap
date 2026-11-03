@@ -100,3 +100,25 @@ describe('tabAssignSelect open list', () => {
 		});
 	});
 });
+
+describe('tabAssignSelect in-use hint', () => {
+	it('keeps "in use" visible while a long title truncates', () => {
+		const title = 'Celtics vs 76ers live stream Game 7 Eastern Conference Finals replay with extra words';
+		const tab = [{ id: 41, title, url: 'https://example.com/y' }] as any[];
+		cy.mount(
+			<div className='game-card-tab-assign' style={{ width: '9.5rem' }}>
+				<TabAssignSelect gameId='g1' openTabs={tab} registry={[{ tabId: 41, gameId: 'g2' }] as any} onChange={() => {}} formatTabLabel={t => t.title ?? ''} />
+			</div>,
+		);
+		cy.document().its('fonts.status').should('eq', 'loaded');
+		cy.get('.form-control-caret').click();
+		cy.get('.select-dropdown-menu.show .menu-item').eq(1).should(([item]: JQuery<HTMLElement>) => {
+			const label = item.querySelector('.text-truncate') as HTMLElement;
+			const hint = item.querySelector('.fg-secondary') as HTMLElement;
+			expect(label.scrollWidth).to.be.greaterThan(label.clientWidth);
+			expect(hint.textContent!.trim()).to.not.equal('');
+			expect(hint.scrollWidth).to.equal(hint.clientWidth);
+			expect(hint.getBoundingClientRect().right).to.be.at.most(item.getBoundingClientRect().right);
+		});
+	});
+});

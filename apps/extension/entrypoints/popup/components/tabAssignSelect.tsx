@@ -40,7 +40,8 @@ const tabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel 
 						const inUse = assignedTabIds.has(tab.id!);
 						return {
 							value: String(tab.id),
-							label: `${formatTabLabel(tab)}${inUse ? i18n.t('tabAssign.inUse') : ''}`,
+							label: formatTabLabel(tab),
+							hint: inUse ? i18n.t('tabAssign.inUse').trim() : undefined,
 							image: <TabFavicon url={tab.favIconUrl} />,
 							disabled: inUse,
 						};
