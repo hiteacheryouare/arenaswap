@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { i18n } from '#i18n';
 import { fetchTeamsForLeagues } from '@arenaswap/sideline';
 import type { EspnTeamEntry } from '@arenaswap/sideline';
+import { parseFavoriteTeamKey } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap, SportType } from '@arenaswap/core/types';
 import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
 import { leagueOrder, leaguesBySportType } from '../popupHelpers';
@@ -85,7 +86,12 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough, startStep
 
 	const finish = (withFavorites: boolean) => {
 		const leagues = [...selectedLeagues].toSorted((a, b) => leagueOrder[a] - leagueOrder[b]);
-		const favorites = withFavorites ? [...selectedFavorites] : [];
+		const favorites = withFavorites
+			? [...selectedFavorites].filter(key => {
+				const leagueId = parseFavoriteTeamKey(key)?.leagueId;
+				return leagueId !== undefined && selectedLeagues.has(leagueId);
+			})
+			: [];
 		if (startStep !== 1) {
 			onComplete(leagues, favorites);
 			return;

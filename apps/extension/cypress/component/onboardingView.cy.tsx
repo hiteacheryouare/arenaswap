@@ -149,6 +149,27 @@ describe('onboardingView', () => {
 		cy.get('@onComplete').should('have.been.calledOnceWith', ['nba', 'nhl', 'mlb', 'nfl'], []);
 	});
 
+	it('forgets favorites from leagues that were unticked after starring them', () => {
+		cy.mount(<OnboardingView {...defaultProps} onComplete={cy.spy().as('onComplete')} />);
+
+		goToLeaguePicker();
+		cy.get('#onb-league-nhl').click().should('not.be.checked');
+		cy.get('#onb-league-mlb').click().should('not.be.checked');
+		goToTeamPicker();
+
+		cy.get('[aria-label="Add Philadelphia 76ers to favorites"]').click();
+		cy.get('[aria-label="Add Philadelphia Eagles to favorites"]').click();
+		cy.contains('button', 'Back').click();
+		cy.get('#onb-league-nfl').click().should('not.be.checked');
+		goToTeamPicker();
+		cy.contains('button', 'Done').click();
+
+		cy.contains("You're all set!").should('exist');
+		cy.contains('button', 'Jump right in').click();
+
+		cy.get('@onComplete').should('have.been.calledOnceWith', ['nba'], ['nba:20']);
+	});
+
 	it('saves the picked leagues in the default order, not the order they were tapped', () => {
 		cy.mount(<OnboardingView {...defaultProps} onComplete={cy.spy().as('onComplete')} />);
 
