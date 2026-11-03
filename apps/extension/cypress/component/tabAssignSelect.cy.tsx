@@ -96,7 +96,9 @@ describe('tabAssignSelect open list', () => {
 			const toggle = menu.parentElement!.querySelector('.form-control-caret')!.getBoundingClientRect();
 			const rect = menu.getBoundingClientRect();
 			expect(rect.width).to.be.greaterThan(toggle.width);
-			expect(rect.right).to.be.at.most(312);
+			const row = menu.closest('.d-flex.p-2')!;
+			const rowInnerRight = row.getBoundingClientRect().right - parseFloat(getComputedStyle(row).paddingRight);
+			expect(rect.right, 'menu stays inside its row').to.be.at.most(rowInnerRight);
 			const label = menu.querySelectorAll('.menu-item')[1].querySelector('.text-truncate') as HTMLElement;
 			expect(label.scrollWidth).to.equal(label.clientWidth);
 		});
