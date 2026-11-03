@@ -1353,7 +1353,7 @@
 		},
 		"setup": {
 			"t0": "Baisse le délai entre les changements pour basculer plus vite dans une fin de match folle.",
-			"t1": "Monte le bonus d'équipe favorite et ton équipe remportera presque toujours le changement.",
+			"t1": "Monte le bonus d'équipe favorite et les matchs de ton équipe décrochent plus de changements.",
 			"t2": "Augmente le délai de changement pour avoir un instant avant que l'onglet bascule vraiment.",
 			"t3": "Le Mode démo joue des matchs scénarisés, pour régler tes paramètres sans attendre un vrai match.",
 			"t4": "La sensibilité de changement fixe l'avance de PowerScore nécessaire avant qu'ArenaSwap bascule.",

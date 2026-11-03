@@ -1353,7 +1353,7 @@
 		},
 		"setup": {
 			"t0": "Baja el tiempo de espera entre cambios para cambiar más rápido en un final caótico.",
-			"t1": "Sube el impulso de equipo favorito y tu equipo ganará el cambio casi siempre.",
+			"t1": "Sube el impulso de equipo favorito y los partidos de tu equipo ganan más cambios.",
 			"t2": "Sube el retardo de cambio para tener un instante antes de que la pestaña cambie de verdad.",
 			"t3": "El Modo demostración reproduce partidos guionizados para que ajustes todo sin esperar a uno real.",
 			"t4": "La sensibilidad de cambio define cuánta ventaja de PowerScore hace falta antes de que ArenaSwap cambie.",

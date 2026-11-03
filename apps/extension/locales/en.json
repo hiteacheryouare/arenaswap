@@ -1348,14 +1348,14 @@
 			"t1": "Assign a tab from the dropdown beside each game so ArenaSwap knows where to swap.",
 			"t2": "The higher PowerScore wins the swap. Watch the bar on each card.",
 			"t3": "Turn on \"Show upcoming games\" in Settings to pre-assign tabs before the game starts.",
-			"t4": "No live games yet? Demo Mode in Settings stages a few so you can watch ArenaSwap work.",
+			"t4": "No live games yet? Demo mode in Settings stages a few so you can watch ArenaSwap work.",
 			"t5": "Standby Stream keeps a backup tab playing whenever every game goes quiet. Turn it on in Settings."
 		},
 		"setup": {
 			"t0": "Lower the switch cooldown to swap faster through a chaotic finish.",
-			"t1": "Bump the favorite team boost and your team will almost always win the swap.",
+			"t1": "Bump the favorite team boost and your team's games win more switches.",
 			"t2": "Raise the switch delay to get a beat before the tab actually changes.",
-			"t3": "Demo Mode runs scripted games, so you can tune your settings without waiting for a real one.",
+			"t3": "Demo mode runs scripted games, so you can tune your settings without waiting for a real one.",
 			"t4": "Switch sensitivity sets how big a PowerScore lead it takes before ArenaSwap swaps.",
 			"t5": "The postseason boost gives playoff and championship games extra weight, so the biggest moments win more switches.",
 			"t6": "Use the PowerScore Signals section to disable any signal you don't care about."
