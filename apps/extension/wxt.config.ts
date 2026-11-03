@@ -30,12 +30,35 @@ export default defineConfig({
 	// tasks in parallel, so they raced and left the served directory half-written. The e2e build
 	// takes this override to claim a directory nothing else writes.
 	outDir: process.env.WXT_OUT_DIR ?? '.output',
-	// dist/ is gitignored build output from the retired zip-builds scripts, so a stale copy on one
-	// machine would otherwise be swept into the sources archive an AMO reviewer downloads. marketing/
-	// is store screenshots and promo tiles — ~7MB of the archive, and nothing to do with building.
-	// coverage/ and cypress/screenshots/ are gitignored test output, ~10MB between them.
+	// The sources zip is the whole workspace an AMO reviewer needs to run `npm ci` and rebuild: it
+	// is rooted at the repo and allowlisted, because the root also holds large gitignored folders
+	// (temporary/, docs/, recordings). The other workspaces contribute only their package.json so
+	// the lockfile resolves. dist/, coverage/ and cypress/screenshots/ are gitignored output, and
+	// marketing/ is ~7MB of store art that has nothing to do with building.
 	zip: {
-		excludeSources: ['dist/**', 'marketing/**', 'coverage/**', 'cypress/screenshots/**'],
+		sourcesRoot: '../..',
+		includeSources: [
+			'package.json',
+			'package-lock.json',
+			'turbo.json',
+			'tsconfig.base.json',
+			'apps/extension/**',
+			'packages/core/**',
+			'packages/sideline/**',
+			'packages/ui/**',
+			'packages/chromatic/**',
+			'packages/powerscore/**',
+			'apps/docs/package.json',
+			'apps/film/package.json',
+			'packages/powerscore-tools/package.json',
+		],
+		excludeSources: [
+			'apps/extension/.output/**',
+			'**/dist/**',
+			'**/coverage/**',
+			'apps/extension/marketing/**',
+			'**/cypress/screenshots/**',
+		],
 	},
 	vite: async () => ({
 		plugins: [
