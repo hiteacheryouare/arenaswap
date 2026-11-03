@@ -11,7 +11,7 @@ faq:
     a: Yes. The same extension ships for all three browsers. Multiview, which shows several games on one screen, is the one feature that is Chrome and Edge only.
 ---
 
-Install ArenaSwap, answer three quick questions, and you're a few minutes from watching it grab your tab the moment a game gets good. Here's the whole path, start to finish.
+Install ArenaSwap, answer two quick questions, and you're a few minutes from watching it grab your tab the moment a game gets good. Here's the whole path, start to finish.
 
 ## Install the extension
 
@@ -47,7 +47,7 @@ Now for the real thing. Open two live games in two separate browser tabs, on wha
 
 ## Assign each tab to a game
 
-Back in the ArenaSwap popup, find each game's card. Use its **— Assign a tab —** dropdown to pick the browser tab you opened for that game. The game then moves into the **Active Tabs** section at the top of the list. ArenaSwap also starts muting every managed tab except the one you're actively watching.
+Back in the ArenaSwap popup, find each game's card. Use its **Assign a tab** dropdown to pick the browser tab you opened for that game. The game then moves into the **Active Tabs** section at the top of the list. ArenaSwap also starts muting every managed tab except the one you're actively watching.
 
 ## Watch it switch
 

@@ -21,7 +21,7 @@ Start each game the way you already do, in whatever tab and on whatever service 
 
 ## Assign a tab to each game
 
-In the ArenaSwap popup, find the card for each game. Use its **— Assign a tab —** dropdown to pick the tab you opened for that game. The same dropdown appears on a game's pre-game card, so you can assign a tab before the game even starts.
+In the ArenaSwap popup, find the card for each game. Use its **Assign a tab** dropdown to pick the tab you opened for that game. The same dropdown appears on a game's pre-game card, so you can assign a tab before the game even starts.
 
 If a tab is already assigned to another game, its dropdown entry is grayed out and marked **(in use)**. To reassign that tab, unassign it from the other game first.
 

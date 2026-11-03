@@ -6,7 +6,7 @@ order: 9
 navLabel: Troubleshooting
 faq:
   - q: Why doesn't ArenaSwap show any games?
-    a: Either no leagues are enabled, and ArenaSwap shows a Select Leagues prompt. Or your enabled leagues genuinely have nothing live right now, and you see a quieter empty-state message instead.
+    a: Either no leagues are enabled, and ArenaSwap shows a Choose Leagues to Get Started prompt. Or your enabled leagues genuinely have nothing live right now, and you see a quieter empty-state message instead.
   - q: Why won't ArenaSwap switch tabs?
     a: Check that Enable auto-switching is on in the top bar and that you've assigned a tab to at least one live game. With nothing assigned, there's nothing for ArenaSwap to switch to.
 ---
@@ -15,7 +15,7 @@ Most of what looks like a bug in ArenaSwap is a setting that isn't where you'd e
 
 ## Why is the game list empty?
 
-If you see **Choose leagues to get started**, no league is enabled yet. ArenaSwap needs at least one before it can find anything to track. Click **Select Leagues in Settings**. Turn at least one on.
+If you see **Choose Leagues to Get Started**, no league is enabled yet. ArenaSwap needs at least one before it can find anything to track. Click **Pick leagues in Settings**. Turn at least one on.
 
 If instead you see a quieter message like "It's a slow sports day," your enabled leagues genuinely have nothing live at the moment. Click **Refresh** to check again. If you want games to work with regardless, open [Demo mode](/arenaswap/docs/extension/demo-mode/).
 
@@ -24,7 +24,7 @@ If instead you see a quieter message like "It's a slow sports day," your enabled
 Check these in order:
 
 1. **Enable auto-switching**, the toggle in the top bar, has to be on. When it's off, ArenaSwap keeps scoring games but never touches a tab.
-2. At least one live game needs a tab assigned to it. Use the **— Assign a tab —** dropdown on a game card. ArenaSwap will never switch to a tab it hasn't been told to manage.
+2. At least one live game needs a tab assigned to it. Use the **Assign a tab** dropdown on a game card. ArenaSwap will never switch to a tab it hasn't been told to manage.
 3. With only one game assigned, there's nothing to switch to until a second one is. Assign a second stream to see switching happen at all.
 
 If all three check out and switching still isn't happening, a low **Switch sensitivity**, a long **Switch cooldown**, or a long **Switch delay** could be why. See [how to control when ArenaSwap switches tabs](/arenaswap/docs/extension/switching-and-sensitivity/) for what to change.
@@ -39,13 +39,13 @@ Two of your assigned games are close enough in PowerScore that the lead keeps tr
 
 ## Why is a tab missing from the assign dropdown, or shown grayed out?
 
-The **— Assign a tab —** dropdown only lists tabs that are currently open. A stream has to be open in its own tab before it shows up here. A tab already assigned to a different game appears grayed out with **(in use)** next to it. To reassign that tab, unassign it from the other game first.
+The **Assign a tab** dropdown only lists tabs that are currently open. A stream has to be open in its own tab before it shows up here. A tab already assigned to a different game appears grayed out with **(in use)** next to it. To reassign that tab, unassign it from the other game first.
 
 ## Why isn't Standby Stream doing anything?
 
 Standby Stream needs two things set up before it can act, and it silently does nothing without either:
 
-1. A tab picked in the **Standby tab** dropdown under Settings → Standby Stream. If it still reads **— Select a tab —**, nothing has been chosen.
+1. A tab picked in the **Standby tab** dropdown under Settings → Standby Stream. If it still reads **Select a tab**, nothing has been chosen.
 2. At least one live game with a tab assigned to it. Standby Stream only compares against games you've registered, so with no registered games there's nothing for it to fall back from.
 
 See [how to set up Standby Stream](/arenaswap/docs/extension/standby-stream/) for the full setup.

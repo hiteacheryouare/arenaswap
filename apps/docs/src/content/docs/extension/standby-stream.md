@@ -30,7 +30,7 @@ The first time you do, ArenaSwap walks you through a two-step guide explaining h
 
 Open whatever you want as your fallback, a highlight show, a studio broadcast, anything, in its own tab. Then, still in Standby Stream settings, pick that tab from the **Standby tab** dropdown.
 
-Standby Stream can't do anything without a tab picked here. If the dropdown is still on **— Select a tab —**, nothing will happen when your games go quiet.
+Standby Stream can't do anything without a tab picked here. If the dropdown is still on **Select a tab**, nothing will happen when your games go quiet.
 
 ## What happens next
 
