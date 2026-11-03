@@ -11,6 +11,10 @@ import bootstrapTokenPrefix from '@arenaswap/ui/src/bootstrapTokenPrefix.ts';
 import relativeDocLinks from './src/lib/relativeDocLinks.ts';
 import scrollableTables from './src/lib/scrollableTables.ts';
 
+const untranslatedLocalePages = new RegExp(
+	`/arenaswap/(${localeCodes.filter(code => code !== 'en').join('|')})/(docs|releases)/`,
+);
+
 const year = new Date().getFullYear();
 const version = pkg.version;
 
@@ -34,9 +38,10 @@ export default defineConfig({
 		react(),
 		mdx(),
 		// The nine /screenshots/ pages are store assets, rendered to be captured rather than
-		// landed on. They stay out of the sitemap and carry noindex of their own.
+		// landed on. They stay out of the sitemap and carry noindex of their own. So do the docs and
+		// release notes under a locale prefix, which are English copies.
 		sitemap({
-			filter: page => !page.includes('/screenshots/'),
+			filter: page => !page.includes('/screenshots/') && !untranslatedLocalePages.test(page),
 			// Emits the hreflang alternates into the sitemap as well as into each page's head. The
 			// keys are URL segments and the values are the hreflang codes, which for this site are
 			// the same string — `defaultLocale` is what tells the integration which one owns the
