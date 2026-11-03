@@ -72,22 +72,24 @@ jobs:
 
       - name: Check auto-merge eligibility
         id: check-auto-merge
+        env:
+          PACKAGES: ${{ steps.package-info.outputs.package_name }}
+          UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
         run: |
-          PACKAGE="${{ steps.package-info.outputs.package_name }}"
-          UPDATE_TYPE="${{ steps.metadata.outputs.update-type }}"
-
-          MINOR_AUTO_PACKAGES="turbo typescript react react-dom wxt @wxt-dev/module-react swr bootstrap bootstrap-icons tailwindcss sass jest oxlint astro @types/react @types/react-dom"
+          MINOR_AUTO_PACKAGES=" turbo typescript react react-dom wxt @wxt-dev/module-react swr bootstrap bootstrap-icons tailwindcss sass jest oxlint astro @types/react @types/react-dom "
 
           if [[ "$UPDATE_TYPE" == "version-update:semver-patch" ]]; then
             echo "should_merge=true" >> $GITHUB_OUTPUT
           elif [[ "$UPDATE_TYPE" == "version-update:semver-minor" ]]; then
-            for pkg in $MINOR_AUTO_PACKAGES; do
-              if [[ "$PACKAGE" == *"$pkg"* ]]; then
-                echo "should_merge=true" >> $GITHUB_OUTPUT
-                exit 0
+            should_merge=true
+            IFS=',' read -ra NAMES <<< "$PACKAGES"
+            for name in "${NAMES[@]}"; do
+              name="$(echo "$name" | xargs)"
+              if [[ -z "$name" || "$MINOR_AUTO_PACKAGES" != *" $name "* ]]; then
+                should_merge=false
               fi
             done
-            echo "should_merge=false" >> $GITHUB_OUTPUT
+            echo "should_merge=$should_merge" >> $GITHUB_OUTPUT
           else
             echo "should_merge=false" >> $GITHUB_OUTPUT
           fi
