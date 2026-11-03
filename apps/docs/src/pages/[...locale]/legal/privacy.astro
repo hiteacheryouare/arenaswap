@@ -6,9 +6,9 @@ import { localePath, localeRoutes } from '../../../i18n/locales';
 import { tokenize, useTranslations } from '../../../i18n/ui';
 
 // Written against the code rather than from a template. Every claim here is checkable: the
-// permissions and the two hosts are in apps/extension/wxt.config.ts, and the storage calls are in
-// apps/extension/utils/prefsStorage.ts — preferences go to storage.sync with storage.local as the
-// fallback, and everything else is storage.session.
+// permissions and the hosts are in apps/extension/wxt.config.ts, and the storage calls are in
+// apps/extension/utils/prefsStorage.ts. Preferences go to storage.sync with storage.local as the
+// fallback, and the rest is split between storage.local and storage.session.
 
 export const getStaticPaths = localeRoutes;
 
@@ -41,6 +41,7 @@ const questions1 = tokenize(t('legal.privacy.questions1'));
 
 				<h2>{t('legal.privacy.retainsHeading')}</h2>
 				<p>{t('legal.privacy.retains1')}</p>
+				<p>{t('legal.privacy.retainsLocal')}</p>
 				<p>{t('legal.privacy.retains2')}</p>
 				<p>{t('legal.privacy.retains3')}</p>
 
@@ -49,6 +50,7 @@ const questions1 = tokenize(t('legal.privacy.questions1'));
 				<ul>
 					<li><code>site.api.espn.com</code>, {t('legal.privacy.transmitsHost1')}</li>
 					<li><code>a.espncdn.com</code>, {t('legal.privacy.transmitsHost2')}</li>
+					<li><code>sports.core.api.espn.com</code>, {t('legal.privacy.transmitsHost3')}</li>
 				</ul>
 				<p>{t('legal.privacy.transmits2')}</p>
 
@@ -58,7 +60,11 @@ const questions1 = tokenize(t('legal.privacy.questions1'));
 					<li><strong>{t('legal.privacy.permissionTabsName')}</strong> {t('legal.privacy.permissionTabs')}</li>
 					<li><strong>{t('legal.privacy.permissionStorageName')}</strong> {t('legal.privacy.permissionStorage')}</li>
 					<li><strong>{t('legal.privacy.permissionNotificationsName')}</strong> {t('legal.privacy.permissionNotifications')}</li>
+					<li><strong>{t('legal.privacy.permissionAlarmsName')}</strong> {t('legal.privacy.permissionAlarms')}</li>
 				</ul>
+
+				<h2>{t('legal.privacy.multiviewHeading')}</h2>
+				<p>{t('legal.privacy.multiview1')}</p>
 
 				<h2>{t('legal.privacy.websiteHeading')}</h2>
 				<p>{t('legal.privacy.website1')}</p>
