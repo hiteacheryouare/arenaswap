@@ -1074,6 +1074,7 @@
 	}
 
 	.setting-explainer {
+		overflow-wrap: anywhere;
 		font-size: 0.55rem;
 		line-height: 1.3;
 		color: var(--as-faint);
@@ -3050,6 +3051,7 @@
 	}
 
 	.toast-body {
+		overflow-wrap: anywhere;
 		padding: 0.5rem 0.65rem;
 		font-size: 0.78rem;
 		color: var(--as-fg-body);

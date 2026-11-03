@@ -87,6 +87,7 @@
 	}
 
 	.backup-problem {
+		overflow-wrap: anywhere;
 		padding:       0.5rem 0.75rem;
 		font-size:     0.82rem;
 		color:         var(--as-warning-ink);
