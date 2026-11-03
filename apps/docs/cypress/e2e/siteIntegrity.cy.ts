@@ -41,6 +41,7 @@ describe('the built site holds together', () => {
 	it('lists every public page in the sitemap, and nothing that was not built', () => {
 		expect(report.sitemapMissing, 'built page absent from the sitemap').to.deep.equal([]);
 		expect(report.sitemapUnreachable, 'sitemap entry with no page behind it').to.deep.equal([]);
+		expect(report.sitemapNotCanonical, 'sitemap entry whose page names another URL as canonical').to.deep.equal([]);
 	});
 
 	// Twelve locales, one page tree. A locale that falls a page behind is invisible until somebody

@@ -22,6 +22,7 @@ export interface SiteReport {
 	leakedKeys: { page: string; text: string }[];
 	sitemapMissing: string[];
 	sitemapUnreachable: string[];
+	sitemapNotCanonical: string[];
 	localeGaps: { locale: string; missing: string[]; extra: string[] }[];
 }
 
@@ -73,6 +74,12 @@ export const crawlSite = (siteDir: string, basePath: string, localeCodes: string
 	const langMismatches: SiteReport['langMismatches'] = [];
 	const leakedKeys: SiteReport['leakedKeys'] = [];
 	const inSitemapNeeded: string[] = [];
+	const canonicalOf = new Map<string, string | null>();
+
+	const urlToPage = (url: string) => {
+		const pathname = new URL(url).pathname;
+		return pathname.endsWith('/') ? `${pathname.slice(basePath.length)}index.html` : pathname.slice(basePath.length);
+	};
 
 	for (const page of pages) {
 		const html = readFileSync(join(siteDir, page.split('/').join(sep)), 'utf8');
@@ -84,6 +91,9 @@ export const crawlSite = (siteDir: string, basePath: string, localeCodes: string
 			if (!brokenTargets.has(target)) brokenTargets.set(target, new Set());
 			brokenTargets.get(target)?.add(page);
 		}
+
+		const canonicalHref = html.match(/<link[^>]*rel="canonical"[^>]*>/)?.[0].match(/href="([^"]+)"/)?.[1];
+		canonicalOf.set(page, canonicalHref ? urlToPage(canonicalHref) : null);
 
 		if (isRedirectStub(html)) continue;
 
@@ -99,18 +109,18 @@ export const crawlSite = (siteDir: string, basePath: string, localeCodes: string
 
 		if (page === '404.html') continue;
 		if (page.split('/')[0] === screenshotDir) continue;
-		inSitemapNeeded.push(page);
+		if (canonicalOf.get(page) === page) inSitemapNeeded.push(page);
 	}
 
 	const sitemap = readFileSync(join(siteDir, 'sitemap-0.xml'), 'utf8');
 	const sitemapPaths = new Set(
 		[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)]
-			.map(match => new URL(match[1] ?? '').pathname)
-			.map(pathname => (pathname.endsWith('/') ? `${pathname.slice(basePath.length)}index.html` : pathname.slice(basePath.length))),
+			.map(match => urlToPage(match[1] ?? '')),
 	);
 
 	const sitemapMissing = inSitemapNeeded.filter(page => !sitemapPaths.has(page));
 	const sitemapUnreachable = [...sitemapPaths].filter(page => !files.has(page));
+	const sitemapNotCanonical = [...sitemapPaths].filter(page => files.has(page) && canonicalOf.get(page) !== page);
 
 	const englishPaths = new Set(pages.filter(page => localeOf(page) === 'en').map(pagePathOf).filter(page =>
 		page.split('/')[0] !== screenshotDir && page !== '404.html' && !isRedirectStub(readFileSync(join(siteDir, page.split('/').join(sep)), 'utf8')),
@@ -136,6 +146,7 @@ export const crawlSite = (siteDir: string, basePath: string, localeCodes: string
 		leakedKeys,
 		sitemapMissing,
 		sitemapUnreachable,
+		sitemapNotCanonical,
 		localeGaps,
 	};
 };
