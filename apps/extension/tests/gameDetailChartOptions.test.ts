@@ -1,4 +1,4 @@
-import { buildPowerScoreOption, buildTeamScoreOption, buildWinProbabilityOption } from '../entrypoints/popup/components/gameDetailChartOptions';
+import { buildLeadTrackerOption, buildPowerScoreOption, buildTeamScoreOption, buildWinProbabilityOption } from '../entrypoints/popup/components/gameDetailChartOptions';
 import type { Game, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 
 const makeGame = (homeAbbr = 'HOM', awayAbbr = 'AWY', homeColor = '#FF0000', awayColor = '#0000FF'): Game => ({
@@ -142,5 +142,16 @@ describe('buildTeamScoreOption', () => {
 		} as PowerScoreSnapshot;
 		const yAxis = buildPowerScoreOption([snapshot]).yAxis as { scale?: boolean };
 		expect(yAxis.scale).toBeUndefined();
+	});
+});
+
+describe('buildLeadTrackerOption', () => {
+	test('tooltip formatter escapes the leader\'s abbreviation before it reaches the HTML', () => {
+		const history: ScoreSnapshot[] = [{ gameId: 'test-game', timestamp: 1_767_225_600_000, homeScore: 40, awayScore: 45 }];
+		const option = buildLeadTrackerOption(history, makeGame('HOM', '<b>'));
+		const tooltip = option.tooltip as { formatter?: (params: unknown) => string };
+		const result = tooltip.formatter!([{ dataIndex: 0, axisValueLabel: '9:00 AM' }]);
+		expect(result).toContain('&lt;b&gt;');
+		expect(result).not.toContain('<b>');
 	});
 });
