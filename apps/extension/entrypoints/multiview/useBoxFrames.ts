@@ -35,7 +35,7 @@ const sameIds = (a: ReadonlySet<string>, b: ReadonlySet<string>) => a.size === b
 // Read off the reports the frame script sends from every frame in this tab: which boxes have ever
 // had a stream play, which are playing now, where each box's own frame has got to, and which box
 // the sound belongs to, answered back on each report.
-export default (tabId: number | null) => {
+export default (tabId: number | null, boxedIds?: readonly string[]) => {
 	const [readyIds, setReadyIds] = useState<ReadonlySet<string>>(() => new Set());
 	const [onAirIds, setOnAirIds] = useState<ReadonlySet<string>>(() => new Set());
 	const [hrefs, setHrefs] = useState<ReadonlyMap<string, string>>(() => new Map());
@@ -94,6 +94,19 @@ export default (tabId: number | null) => {
 			clearInterval(ticker);
 		};
 	}, [tabId]);
+
+	const boxedKey = boxedIds?.join(',');
+	useEffect(() => {
+		if (boxedKey === undefined) return;
+		const boxed = new Set(boxedKey.split(',').filter(Boolean));
+		for (const [frameId, gameId] of gameByFrameId.current) {
+			if (boxed.has(gameId)) continue;
+			gameByFrameId.current.delete(frameId);
+			frames.current.delete(frameId);
+		}
+		setReadyIds(current => ([...current].every(id => boxed.has(id)) ? current : new Set([...current].filter(id => boxed.has(id)))));
+		setHrefs(current => ([...current.keys()].every(id => boxed.has(id)) ? current : new Map([...current].filter(([id]) => boxed.has(id)))));
+	}, [boxedKey]);
 
 	const setAudible = useCallback((gameId: string | null) => {
 		audibleRef.current = gameId;
