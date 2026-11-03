@@ -38,3 +38,17 @@ describe('selectDropdown overflow', () => {
 		});
 	});
 });
+
+describe('selectDropdown long list', () => {
+	it('opens scrolled to the selected option', () => {
+		const many = Array.from({ length: 30 }, (_, index) => ({ value: `o${index + 1}`, label: `Option ${index + 1}` }));
+		cy.mount(<SelectDropdown value='o25' options={many} onChange={() => {}} ariaLabel='Many' />);
+		cy.get('.form-control-caret').click();
+		cy.get('.select-dropdown-menu.show').should(([menu]: JQuery<HTMLElement>) => {
+			const box = menu.getBoundingClientRect();
+			const item = menu.querySelector('.selected')!.getBoundingClientRect();
+			expect(item.top).to.be.at.least(box.top);
+			expect(item.bottom).to.be.at.most(box.bottom);
+		});
+	});
+});

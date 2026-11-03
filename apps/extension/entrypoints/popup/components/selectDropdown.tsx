@@ -36,8 +36,16 @@ const selectDropdown = <T extends string>({ value, options, onChange, id, disabl
 	const current = options.find(option => option.value === value) ?? options[0];
 
 	useEffect(() => {
-		if (!toggleRef.current || !menuRef.current) return;
-		return attachMenu(toggleRef.current, menuRef.current);
+		const toggle = toggleRef.current;
+		const menu = menuRef.current;
+		if (!toggle || !menu) return;
+		const revealSelected = () => menu.querySelector('.selected')?.scrollIntoView({ block: 'nearest' });
+		toggle.addEventListener('shown.bs.menu', revealSelected);
+		const detach = attachMenu(toggle, menu);
+		return () => {
+			toggle.removeEventListener('shown.bs.menu', revealSelected);
+			detach();
+		};
 	}, []);
 
 	return (
