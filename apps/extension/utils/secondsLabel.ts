@@ -11,4 +11,4 @@ export const formatSecondsLabel = (secs: number, t: translate): string => {
 	return seconds > 0 ? `${minutesText} ${secondsText}` : minutesText;
 };
 
-export const secondsSliderSteps = [0, 15, 30, 45, 60, 90, 120, 180];
+export { secondsSliderSteps } from '@arenaswap/core/constants';

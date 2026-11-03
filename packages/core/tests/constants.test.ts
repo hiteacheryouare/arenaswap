@@ -345,7 +345,7 @@ describe('constants', () => {
 		expect(normalizeUserPreferences({ disabledSignals: ['closeness', 'closeness', 'momentum', 'bogus'] }).disabledSignals).toEqual(['closeness', 'momentum']);
 	});
 
-	test.each([[10, 15], [50, 45], [1e9, 180], [-5, 0], [52.5, 45]])('snaps a %s second cooldown and delay to %s', (stored, snapped) => {
+	test.each([[10, 15], [50, 45], [1e9, 180], [-5, 0], [52.5, 45], [22.5, 15]])('snaps a %s second cooldown and delay to %s', (stored, snapped) => {
 		const normalized = normalizeUserPreferences({ cooldownSeconds: stored, switchDelaySeconds: stored });
 		expect(normalized.cooldownSeconds).toBe(snapped);
 		expect(normalized.switchDelaySeconds).toBe(snapped);
