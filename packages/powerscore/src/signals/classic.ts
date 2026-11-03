@@ -264,16 +264,18 @@ export const computeComeback = ({ game, context, sport, progress, now, margin }:
 
 	const first = history[0]!;
 	const deficit = Math.abs(first.homeScore - first.awayScore);
-	const shrinkage = deficit - margin;
+	if (deficit === 0) return none;
+	const homeTrailed = first.homeScore < first.awayScore;
+	const trailerLead = homeTrailed ? game.homeTeam.score - game.awayTeam.score : game.awayTeam.score - game.homeTeam.score;
+	const shrinkage = deficit + trailerLead;
 
 	let tier: number;
 	if (shrinkage >= sport.comebackThresholdBig) tier = scores.comeback.big;
 	else if (shrinkage >= sport.comebackThresholdSmall) tier = scores.comeback.moderate;
 	else return none;
 
-	const homeTrailed = first.homeScore < first.awayScore;
 	const team = teamName(homeTrailed ? game.homeTeam : game.awayTeam);
-	const nowLeads = homeTrailed ? game.homeTeam.score > game.awayTeam.score : game.awayTeam.score > game.homeTeam.score;
+	const nowLeads = trailerLead > 0;
 	let reason: ReasonFragment;
 	if (margin === 0) reason = deficit === 1 ? { key: 'tiedIt', params: { team } } : { key: 'cameBack', params: { team, from: deficit } };
 	else if (nowLeads) reason = { key: 'cameBackToLead', params: { team, from: deficit } };

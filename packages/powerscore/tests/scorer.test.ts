@@ -775,6 +775,25 @@ describe('computePowerScore', () => {
 		expect(bigComeback.reason).toContain('AWY cut the deficit from 10 to 2');
 	});
 
+	test('a comeback that goes all the way to the lead keeps paying', () => {
+		const history = makeHistory([[84, 90], [86, 90], [88, 90]]);
+		const comebackAt = (margin: number) => {
+			const awayScore = 90;
+			const homeScore = awayScore + margin;
+			const game = makeGame({ period: 4, clockSeconds: 300, homeTeam: { ...makeGame().homeTeam, score: homeScore }, awayTeam: { ...makeGame().awayTeam, score: awayScore } });
+			return computePowerScore(game, [...history.slice(0, 2), { ...history[2]!, homeScore, awayScore }]);
+		};
+		const points = [-3, 0, 3, 6, 8].map(margin => comebackAt(margin).comeback);
+		points.slice(1).forEach((value, index) => expect(value).toBeGreaterThanOrEqual(points[index]!));
+		expect(comebackAt(6).comeback).toBeGreaterThan(comebackAt(-3).comeback);
+		expect(comebackAt(6).reason).toContain('HOM came back from 6 down to lead');
+	});
+
+	test('a game that was never behind pays no comeback, even once it is level', () => {
+		const game = makeGame({ period: 4, clockSeconds: 300, homeTeam: { ...makeGame().homeTeam, score: 90 }, awayTeam: { ...makeGame().awayTeam, score: 90 } });
+		expect(computePowerScore(game, makeHistory([[84, 84], [87, 87], [90, 90]])).comeback).toBe(0);
+	});
+
 	test('a comeback built on a run is one sentence, and a level game takes the time instead of "Tied"', () => {
 		const game = makeGame({
 			period: 2,

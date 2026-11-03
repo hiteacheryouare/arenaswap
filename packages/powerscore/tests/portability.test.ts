@@ -87,7 +87,7 @@ describe('a feed that publishes more as it matures', () => {
 		const scoresOnly = feedGame({ league: 'kbo', sportType: 'baseball', homeTeam: { score: 3 }, awayTeam: { score: 4 } });
 		const withInning = { ...scoresOnly, period: 7, topOfInning: false };
 		const withRunners = { ...withInning, status: 'in' as const, baseRunners: { first: true, second: false, third: true } };
-		const history = ([[3, 2], [3, 3], [3, 4]] as const).map(([homeScore, awayScore], index) => ({
+		const history = ([[3, 3], [4, 3], [3, 4]] as const).map(([homeScore, awayScore], index) => ({
 			gameId: 'feed-1', timestamp: 1_790_000_000_000 + index * 60_000, homeScore, awayScore,
 		}));
 		const winProbability = [0.45, 0.52, 0.48, 0.5, 0.55, 0.47];
@@ -105,7 +105,7 @@ describe('a feed that publishes more as it matures', () => {
 		expect(boostPoints(steps[1]!, 'scoringOpportunity')).toBe(0);
 		expect(boostPoints(steps[2]!, 'scoringOpportunity')).toBe(6);
 		expect(signalPoints(steps[3]!, 'leadChanges')).toBeGreaterThan(0);
-		expect(steps[3]!.reasons.map(reason => reason.key)).toContain('scoredStraightToLead');
+		expect(steps[3]!.reasons.map(reason => reason.key)).toContain('tookLead');
 		expect(steps[3]!.winProbabilityVariance).toBeUndefined();
 		expect(steps[4]!.winProbabilityVariance).toBeGreaterThan(0);
 		for (let i = 1; i < steps.length; i++) expect(steps[i]!.total).toBeGreaterThan(steps[i - 1]!.total);

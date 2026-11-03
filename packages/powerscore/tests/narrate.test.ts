@@ -54,9 +54,9 @@ describe('the score sentence', () => {
 });
 
 describe('what just happened', () => {
-	test('a run that takes the lead is one sentence, and the score that follows does not repeat the team', () => {
+	test('a comeback that takes the lead is one sentence, and the score that follows does not repeat the team', () => {
 		const late = game('basketball', 'nba', ['Lakers', 102], ['Celtics', 95], { period: 4, clockSeconds: 130 });
-		expect(reasonFor(late, { history: window([90, 93], [96, 95], [102, 95]) })).toBe('Lakers on a 12–2 run to take the lead. Up 7 with 2:10 left');
+		expect(reasonFor(late, { history: window([90, 93], [96, 95], [102, 95]) })).toBe('Lakers came back from 3 down to lead. Up 7 with 2:10 left');
 	});
 
 	test('two teams trading baskets is not a run', () => {
