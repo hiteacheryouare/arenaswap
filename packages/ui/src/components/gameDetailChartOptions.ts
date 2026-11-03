@@ -6,6 +6,9 @@ import { defaultTranslate } from './defaultStrings';
 import { isModeSignalId, modeSignalIds, signalColorOf, signalPresentation } from './scoringModeMeta';
 import { chartEasing, motionDuration } from '../motion';
 
+const htmlEscapes: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+const escapeHtml = (text: string) => text.replace(/[&<>"']/g, character => htmlEscapes[character]!);
+
 // ECharts draws to a canvas, so these cannot follow the page's CSS variables: whoever builds an
 // option passes the palette for the surface the chart will sit on. Dark is the default because the
 // website's charts only ever sit on dark.
@@ -208,7 +211,7 @@ export const buildWinProbabilityOption = (
 			textStyle: { color: palette.text, fontSize: 11 },
 			formatter: (params: unknown) => {
 				const arr = params as Array<{ value: number; seriesName: string; color: string }>;
-				return arr.map(p => `<span style="color:${p.color}">●</span> ${p.seriesName}: ${p.value}%`).join('<br/>');
+				return arr.map(p => `<span style="color:${p.color}">●</span> ${escapeHtml(p.seriesName)}: ${p.value}%`).join('<br/>');
 			},
 		},
 		// Away first, so the tooltip lists the teams in the order the legend and the hero do.
@@ -327,7 +330,7 @@ export const buildLeadTrackerOption = (
 				if (!point) return '';
 				const margin = margins[point.dataIndex] ?? 0;
 				const leader = margin > 0 ? game.awayTeam.abbreviation : margin < 0 ? game.homeTeam.abbreviation : undefined;
-				return `${point.axisValueLabel}<br/>${describeLead(leader, Math.abs(margin))}`;
+				return `${point.axisValueLabel}<br/>${describeLead(leader && escapeHtml(leader), Math.abs(margin))}`;
 			},
 		},
 		series: [

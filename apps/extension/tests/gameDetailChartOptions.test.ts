@@ -76,6 +76,14 @@ describe('buildWinProbabilityOption', () => {
 		expect(result).toContain('●');
 	});
 
+	test('tooltip formatter escapes a series name before it reaches the HTML', () => {
+		const option = buildWinProbabilityOption([0.6], makeGame('PHI', 'NYM'));
+		const tooltip = option.tooltip as { formatter?: (params: unknown) => string };
+		const result = tooltip.formatter!([{ value: 60, seriesName: '<b>A&M</b>', color: '#FF0000' }]);
+		expect(result).toContain('&lt;b&gt;A&amp;M&lt;/b&gt;');
+		expect(result).not.toContain('<b>');
+	});
+
 	// A 320px chart cannot resolve more than a couple of hundred points, and a five-hour baseball
 	// game arrives with thousands. The sampling has to hold the drawn count down however long the
 	// game runs, and it has to keep the last value: the end of the line is the number on screen.
