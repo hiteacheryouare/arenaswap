@@ -8,7 +8,7 @@ faq:
   - q: Do I need an account to use ArenaSwap?
     a: No. ArenaSwap has no account and no sign-in. It installs, asks which leagues and teams you like, and starts working.
   - q: Does ArenaSwap work on Chrome, Firefox, and Edge?
-    a: Yes, the same extension ships for all three browsers, with the same features on each.
+    a: Yes. The same extension ships for all three browsers. Multiview, which shows several games on one screen, is the one feature that is Chrome and Edge only.
 ---
 
 Install ArenaSwap, answer three quick questions, and you're a few minutes from watching it grab your tab the moment a game gets good. Here's the whole path, start to finish.
