@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type { RefObject } from 'react';
+import type { ReactNode, RefObject } from 'react';
 import { leagueLabels, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap } from '@arenaswap/core/types';
 import Crest from './crest';
@@ -119,8 +119,11 @@ export const PopupHeader = ({
 	);
 };
 
-export const PopupSectionTitle = ({ children, first }: { children: string; first?: boolean }) => (
-	<div className={`popup-section-title${first ? ' mt-1' : ''}`}>{children}</div>
+export const PopupSectionTitle = ({ children, first, action }: { children: string; first?: boolean; action?: ReactNode }) => (
+	<div className={`popup-section-title${first ? ' mt-1' : ''}${action ? ' d-flex align-items-center gap-2' : ''}`}>
+		{children}
+		{action}
+	</div>
 );
 
 // No placeholder at all: the label is the next element along, so there is nothing a 20px disc could

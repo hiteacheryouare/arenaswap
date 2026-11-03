@@ -497,6 +497,10 @@
 		"upcomingDayNavLabel": "Próximos jogos por dia",
 		"upcomingPreviousDay": "Dia anterior",
 		"upcomingNextDay": "Próximo dia",
+		"upcomingSearchOpen": "Buscar em A seguir",
+		"upcomingSearchPlaceholder": "Buscar times, ligas, emissoras…",
+		"upcomingSearchClose": "Fechar busca",
+		"upcomingSearchNoMatch": "Nenhum jogo corresponde a \"{query}\" neste dia.",
 		"enableToggleLabel": "Ativar troca automática"
 	},
 	"guide": {

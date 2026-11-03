@@ -497,6 +497,10 @@
 		"upcomingDayNavLabel": "Kommende Spiele nach Tag",
 		"upcomingPreviousDay": "Vorheriger Tag",
 		"upcomingNextDay": "Nächster Tag",
+		"upcomingSearchOpen": "Als Nächstes durchsuchen",
+		"upcomingSearchPlaceholder": "Teams, Ligen, Sender suchen…",
+		"upcomingSearchClose": "Suche schließen",
+		"upcomingSearchNoMatch": "Keine Spiele passen zu \"{query}\" an diesem Tag.",
 		"enableToggleLabel": "Automatisches Wechseln aktivieren"
 	},
 	"guide": {

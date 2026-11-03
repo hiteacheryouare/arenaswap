@@ -497,6 +497,10 @@
 		"upcomingDayNavLabel": "日付ごとの今後の試合",
 		"upcomingPreviousDay": "前の日",
 		"upcomingNextDay": "次の日",
+		"upcomingSearchOpen": "次の試合を検索",
+		"upcomingSearchPlaceholder": "チーム、リーグ、放送局を検索…",
+		"upcomingSearchClose": "検索を閉じる",
+		"upcomingSearchNoMatch": "この日に「{query}」に一致する試合はありません",
 		"enableToggleLabel": "自動切り替えを有効にする"
 	},
 	"guide": {

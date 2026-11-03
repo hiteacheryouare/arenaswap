@@ -497,6 +497,10 @@
 		"upcomingDayNavLabel": "依日期查看即將開始的比賽",
 		"upcomingPreviousDay": "前一天",
 		"upcomingNextDay": "後一天",
+		"upcomingSearchOpen": "搜尋即將開賽",
+		"upcomingSearchPlaceholder": "搜尋球隊、聯賽、電視台……",
+		"upcomingSearchClose": "關閉搜尋",
+		"upcomingSearchNoMatch": "當天沒有與「{query}」相符的比賽",
 		"enableToggleLabel": "啟用自動切換"
 	},
 	"guide": {

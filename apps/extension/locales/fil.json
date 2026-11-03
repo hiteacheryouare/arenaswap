@@ -497,6 +497,10 @@
 		"upcomingDayNavLabel": "Mga paparating na laro ayon sa araw",
 		"upcomingPreviousDay": "Nakaraang araw",
 		"upcomingNextDay": "Susunod na araw",
+		"upcomingSearchOpen": "Maghanap sa Susunod",
+		"upcomingSearchPlaceholder": "Maghanap ng team, liga, network…",
+		"upcomingSearchClose": "Isara ang paghahanap",
+		"upcomingSearchNoMatch": "Walang larong tumutugma sa \"{query}\" sa araw na ito.",
 		"enableToggleLabel": "I-enable ang awtomatikong paglipat"
 	},
 	"guide": {

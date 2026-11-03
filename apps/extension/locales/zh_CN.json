@@ -497,6 +497,10 @@
 		"upcomingDayNavLabel": "按日期查看即将开始的比赛",
 		"upcomingPreviousDay": "前一天",
 		"upcomingNextDay": "后一天",
+		"upcomingSearchOpen": "搜索即将开赛",
+		"upcomingSearchPlaceholder": "搜索球队、联赛、电视台……",
+		"upcomingSearchClose": "关闭搜索",
+		"upcomingSearchNoMatch": "当天没有与「{query}」匹配的比赛",
 		"enableToggleLabel": "启用自动切换"
 	},
 	"guide": {

@@ -497,6 +497,10 @@
 		"upcomingDayNavLabel": "Prochains matchs par jour",
 		"upcomingPreviousDay": "Jour précédent",
 		"upcomingNextDay": "Jour suivant",
+		"upcomingSearchOpen": "Rechercher dans À suivre",
+		"upcomingSearchPlaceholder": "Rechercher équipes, ligues, chaînes…",
+		"upcomingSearchClose": "Fermer la recherche",
+		"upcomingSearchNoMatch": "Aucun match ne correspond à « {query} » ce jour-là.",
 		"enableToggleLabel": "Activer le changement automatique"
 	},
 	"guide": {

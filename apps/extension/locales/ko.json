@@ -497,6 +497,10 @@
 		"upcomingDayNavLabel": "날짜별 예정 경기",
 		"upcomingPreviousDay": "이전 날",
 		"upcomingNextDay": "다음 날",
+		"upcomingSearchOpen": "다음 경기 검색",
+		"upcomingSearchPlaceholder": "팀, 리그, 방송사 검색…",
+		"upcomingSearchClose": "검색 닫기",
+		"upcomingSearchNoMatch": "이날 \"{query}\"에 맞는 경기가 없어요",
 		"enableToggleLabel": "자동 전환 활성화"
 	},
 	"guide": {

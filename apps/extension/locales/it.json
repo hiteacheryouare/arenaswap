@@ -497,6 +497,10 @@
 		"upcomingDayNavLabel": "Prossime partite per giorno",
 		"upcomingPreviousDay": "Giorno precedente",
 		"upcomingNextDay": "Giorno successivo",
+		"upcomingSearchOpen": "Cerca in A seguire",
+		"upcomingSearchPlaceholder": "Cerca squadre, leghe, emittenti…",
+		"upcomingSearchClose": "Chiudi ricerca",
+		"upcomingSearchNoMatch": "Nessuna partita corrisponde a \"{query}\" in questo giorno.",
 		"enableToggleLabel": "Attiva il cambio automatico"
 	},
 	"guide": {

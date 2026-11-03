@@ -9,6 +9,10 @@
 
 Our sources spell college basketball's play types run together (`OfficialTVTimeOut`, `RegularTimeOut`, `MadeFreeThrow`), so the break detector never matched a college timeout and the break penalty never applied. Official TV and regular timeouts are now breaks; a 30-second `ShortTimeOut` deliberately isn't, and content-aware switching now treats a college free throw as a dead ball.
 
+## Search the day in Up Next — 2026-11-02
+
+A magnifier at the right of the Up Next title swaps it for a field that filters the shown day by team, city, league ("college" included), network or venue, with every word needing to match; paging keeps the query, and ✕ or Escape folds it back. The field grows out of the magnifier over the title in a shared grid cell, so the row never changes height, and the query is held in `app.tsx` beside the day page, so it survives a trip into a game's details but not a reopened popup.
+
 ## Up Next stops paging back to yesterday — 2026-10-30
 
 Since the keepalive, the worker can stay up for days, and the slate it builds Up Next from was only fetched at startup or on a settings change, so after midnight last night's games came back from it still marked pregame. The worker now refetches the slate when a poll finds it an hour old, and Up Next drops any pregame game that started before today as a backstop.

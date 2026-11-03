@@ -24,6 +24,7 @@ import NoticeReveal from './noticeReveal';
 import ReviewPromptBanner from './reviewPromptBanner';
 import SuggestBanner from './suggestBanner';
 import UpcomingDayPager from './upcomingDayPager';
+import UpcomingSearchTitle from './upcomingSearchTitle';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
 import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
@@ -33,6 +34,7 @@ import { buildFinalComparator, buildLeagueRank, buildLiveComparator, buildUpcomi
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import useRestoredScroll from '../useRestoredScroll';
 import { prefetchOnIntent } from './prefetchIntent';
+import { matchesGameQuery } from '../../../utils/gameSearch';
 import { revealModeForIndex, type cardRevealPlan, type revealMode } from '../cardReveal';
 
 const emptyScoreMap = new Map<string, PowerScoreResult>();
@@ -55,7 +57,9 @@ interface gameSectionProps {
 	bettingPrefs: BettingDisplayPrefs;
 	weatherPrefs: WeatherDisplayPrefs;
 	reveal: cardRevealPlan;
+	heading?: ReactNode;
 	afterTitle?: ReactNode;
+	emptyMessage?: ReactNode;
 	bodyKey?: string;
 	bodyClassName?: string;
 	dayNamedAbove?: boolean;
@@ -96,6 +100,8 @@ interface mainViewProps {
 	scrollOffsetRef: RefObject<number>;
 	selectedDayKey: string | null;
 	onSelectDay: (dayKey: string | null) => void;
+	upcomingQuery?: string | null;
+	onUpcomingQueryChange?: (query: string | null) => void;
 	revealMode?: revealMode;
 	revealSkipping?: boolean;
 }
@@ -117,7 +123,9 @@ const gameSection = ({
 	bettingPrefs,
 	weatherPrefs,
 	reveal,
+	heading,
 	afterTitle,
+	emptyMessage,
 	bodyKey,
 	bodyClassName,
 	dayNamedAbove,
@@ -156,9 +164,10 @@ const gameSection = ({
 
 	return (
 		<div className='mt-3'>
-			<PopupSectionTitle first={first}>{title}</PopupSectionTitle>
+			{heading ?? <PopupSectionTitle first={first}>{title}</PopupSectionTitle>}
 			{afterTitle}
 			<div key={bodyKey} className={bodyClassName}>
+				{games.length === 0 && emptyMessage}
 				{grouped
 					? groupByLeague(games).map(({ league, games: leagueGames }) => (
 						<div key={league}>
@@ -211,6 +220,8 @@ const mainView = ({
 	scrollOffsetRef,
 	selectedDayKey,
 	onSelectDay,
+	upcomingQuery = null,
+	onUpcomingQueryChange = () => {},
 	revealMode = 'none',
 	revealSkipping = false,
 }: mainViewProps) => {
@@ -257,6 +268,10 @@ const mainView = ({
 	const selectedDayIndex = resolveSelectedDayIndex(upcomingDays, selectedDayKey);
 	const selectedDay = upcomingDays[selectedDayIndex];
 	const daySlide = slideClassName(useSlideDirection(selectedDayIndex));
+	const shownDayGames = useMemo(
+		() => (upcomingQuery ? selectedDay?.games.filter(game => matchesGameQuery(game, upcomingQuery)) : selectedDay?.games) ?? [],
+		[selectedDay, upcomingQuery],
+	);
 	const [listShown, setListShown] = useState(!isLoading);
 	useEffect(() => {
 		if (!isLoading) setListShown(true);
@@ -270,6 +285,7 @@ const mainView = ({
 		() => liveGames.filter(g => !registeredGameIds.has(g.id)).toSorted(sortGames),
 		[liveGames, registeredGameIds, sortGames],
 	);
+	const upNextFirst = assignedLiveGames.length === 0 && unassignedLiveGames.length === 0;
 
 	// The stagger counts down the rendered page, so it walks the four sections in page order. Each
 	// list is already sorted league-first when grouped, so its order is the drawn order either way.
@@ -376,7 +392,8 @@ const mainView = ({
 			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionOtherLiveGames'), games: unassignedLiveGames, groupByLeague: grouped, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, reveal, first: assignedLiveGames.length === 0 })}
 			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && selectedDay && gameSection({
 				title: i18n.t('main.sectionUpNext'),
-				games: selectedDay.games,
+				heading: <UpcomingSearchTitle query={upcomingQuery} onQueryChange={onUpcomingQueryChange} first={upNextFirst} />,
+				games: shownDayGames,
 				groupByLeague: grouped,
 				scoreMap: emptyScoreMap,
 				leagueLogos,
@@ -402,7 +419,12 @@ const mainView = ({
 						onSelect={index => onSelectDay(upcomingDays[index]?.key ?? null)}
 					/>
 				),
-				first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0,
+				emptyMessage: (
+					<div className='upcoming-search-empty' data-testid='upcoming-search-empty'>
+						{i18n.t('main.upcomingSearchNoMatch', { query: upcomingQuery?.trim() ?? '' })}
+					</div>
+				),
+				first: upNextFirst,
 			})}
 
 			{/* Last, under Up Next: results are the one section you are never deciding anything from,
@@ -424,8 +446,7 @@ const mainView = ({
 				bettingPrefs,
 				weatherPrefs,
 				reveal,
-				first: assignedLiveGames.length === 0 && unassignedLiveGames.length === 0
-					&& !(prefs.showUpcomingGames && selectedDay),
+				first: upNextFirst && !(prefs.showUpcomingGames && selectedDay),
 			})}
 
 			<PopupFooter />

@@ -557,18 +557,74 @@
 		font-size:     0.72rem;
 	}
 
-	.settings-search-input {
+	.settings-search-input,
+	.upcoming-search-input {
 		&::placeholder { color: var(--as-faint); }
 
 		// Safari draws its own clear affordance that collides with the 320px layout.
 		&::-webkit-search-cancel-button { appearance: none; }
 	}
 
-	.settings-search-empty {
+	.settings-search-empty,
+	.upcoming-search-empty {
 		font-size:  0.7rem;
 		color:      var(--as-faint);
 		padding:    1.25rem 0.25rem;
 		text-align: center;
+	}
+
+	// The title and the field share one cell, so the row is the same height whichever is showing and
+	// the field can grow out of the magnifier over the title rather than push it aside. The margins
+	// sit on the row, where they collapse into the section's own exactly as the bare title's did.
+	.upcoming-search-title {
+		display:       grid;
+		margin-top:    1rem;
+		margin-bottom: 0.5rem;
+
+		> .popup-section-title,
+		> .upcoming-search {
+			grid-area: 1 / 1;
+			margin:    0;
+		}
+	}
+
+	// Left showing only while the field is moving over it.
+	.upcoming-search-settled > .popup-section-title {
+		visibility: hidden;
+	}
+
+	// The title's line box is 1.2rem at a 1.5 line height.
+	.upcoming-search {
+		justify-self: end;
+		width:        100%;
+		min-height:   1.8rem;
+		overflow:     hidden;
+		font-size:    0.72rem;
+	}
+
+	.upcoming-search-expanding {
+		animation: upcoming-search-expand m.$motion-base m.$motion-ease;
+	}
+
+	.upcoming-search-collapsing {
+		animation: upcoming-search-collapse m.$motion-quick m.$motion-ease-in forwards;
+	}
+
+	@keyframes upcoming-search-expand {
+		from { width: 1.8rem; opacity: 0; }
+		30%  { opacity: 1; }
+	}
+
+	@keyframes upcoming-search-collapse {
+		60% { opacity: 1; }
+		to  { width: 1.8rem; opacity: 0; }
+	}
+
+	@include m.reduced-motion {
+		.upcoming-search-expanding,
+		.upcoming-search-collapsing {
+			@include m.motion-still;
+		}
 	}
 
 	.settings-index {
