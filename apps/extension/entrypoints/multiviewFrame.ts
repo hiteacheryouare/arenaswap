@@ -72,8 +72,9 @@ export default defineUnlistedScript({
 			};
 			try {
 				const reply = await browser.runtime.sendMessage(status) as { muted?: boolean } | undefined;
+				// Only the Multiview page answers, so even an empty reply means this frame is one of its boxes.
+				if (reply) answered = true;
 				if (typeof reply?.muted === 'boolean') {
-					answered = true;
 					listenForMedia();
 					setMuted(reply.muted);
 					enforceMute();
@@ -90,5 +91,6 @@ export default defineUnlistedScript({
 
 		if (!unsure) listenForMedia();
 		const timer = setInterval(() => void report(), reportIntervalMs);
+		void report();
 	},
 });

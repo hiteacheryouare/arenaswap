@@ -29,7 +29,7 @@ const drain = async () => {
 	for (let i = 0; i < 8; i++) await Promise.resolve();
 };
 
-const setup = (options: { ancestorOrigins: string[]; reply?: { muted: boolean } }) => {
+const setup = (options: { ancestorOrigins: string[]; reply?: { muted?: boolean }; replies?: ({ muted?: boolean } | undefined)[] }) => {
 	const listeners = new Map<string, listener>();
 	const video = mkVideo();
 	const topWindow = {};
@@ -42,6 +42,7 @@ const setup = (options: { ancestorOrigins: string[]; reply?: { muted: boolean } 
 		querySelectorAll: () => [video],
 	};
 	const sendMessage = jest.fn().mockResolvedValue(options.reply);
+	for (const reply of options.replies ?? []) sendMessage.mockResolvedValueOnce(reply);
 	(globalThis as Record<string, unknown>).browser = {
 		runtime: {
 			getURL: () => `${extensionOrigin}/`,
@@ -82,12 +83,36 @@ describe('a frame whose top origin is hidden', () => {
 		expect(jest.getTimerCount()).toBe(0);
 		expect(video.volume).toBe(1);
 	});
+
+	test('asks the moment it loads, before any timer runs', async () => {
+		const { sendMessage } = setup({ ancestorOrigins: [] });
+		await run();
+
+		expect(sendMessage).toHaveBeenCalledTimes(1);
+	});
+
+	test('keeps asking when Multiview has not placed it yet, then silences it once told to', async () => {
+		const { listeners, video, sendMessage } = setup({ ancestorOrigins: [], replies: [{}, { muted: true }] });
+		await run();
+		await drain();
+		expect(listeners.size).toBe(0);
+		expect(video.volume).toBe(1);
+
+		jest.advanceTimersByTime(1000);
+		await drain();
+
+		expect(sendMessage).toHaveBeenCalledTimes(2);
+		expect(jest.getTimerCount()).toBe(1);
+		expect(listeners.has('play')).toBe(true);
+		expect(video.volume).toBe(0);
+	});
 });
 
 describe('a frame inside the Multiview page', () => {
 	test('silences its video on play, and gives it back when told to unmute', async () => {
-		const { listeners, video } = setup({ ancestorOrigins: [extensionOrigin], reply: { muted: false } });
+		const { listeners, video } = setup({ ancestorOrigins: [extensionOrigin], replies: [{ muted: true }], reply: { muted: false } });
 		await run();
+		await drain();
 		listeners.get('play')?.();
 		expect(video.volume).toBe(0);
 
