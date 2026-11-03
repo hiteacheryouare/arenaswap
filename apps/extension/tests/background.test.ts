@@ -1261,6 +1261,44 @@ describe('settings synced from another browser', () => {
 	});
 });
 
+describe('a poll in flight when its league is switched off', () => {
+	test('drops the late answer and never switches to a game from it', async () => {
+		const mlbGame = { ...mkGame('mlb-live', 100, 100, 9, 20), league: 'mlb' as LeagueId, sportType: 'baseball' };
+		const bothLeagues = { ...switchingPrefs, enabledLeagues: ['nba' as LeagueId, 'mlb' as LeagueId] };
+		await loadBackground({
+			prefs: bothLeagues,
+			tabRegistry: [{ gameId: 'mlb-live', tabId: 2 }],
+			openTabIds: [1, 2],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+
+		let answerMlb!: () => void;
+		let held = false;
+		fetchMock.mockImplementation(async (leagues: LeagueId[], options?: { includeUpcoming?: boolean }) => {
+			if (leagues[0] === 'mlb' && options?.includeUpcoming === false && !held) {
+				held = true;
+				await new Promise<void>(resolve => { answerMlb = resolve; });
+				return { games: [mlbGame], leagueLogos: {}, shedLeagues: [] };
+			}
+			return { games: [], leagueLogos: {}, shedLeagues: [] };
+		});
+		await runFirstPoll();
+		expect(held).toBe(true);
+
+		await sendMessage({
+			type: 'UPDATE_PREFS',
+			prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...bothLeagues, enabledLeagues: ['nba' as LeagueId] }),
+		});
+		answerMlb();
+		await drain(16);
+
+		const state = await sendMessage({ type: 'GET_STATE' }) as { games: Game[] };
+		expect(state.games.map(g => g.id)).not.toContain('mlb-live');
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
+	});
+});
+
 // Regression: a queued switch replayed the target it was created with, so after the delay it
 // switched to a game that had since gone quiet, or ended.
 

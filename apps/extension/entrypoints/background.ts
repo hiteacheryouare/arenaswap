@@ -1360,6 +1360,8 @@ export default defineBackground(() => {
 			// function would read that as a successful tick with nothing live, hand it to
 			// `recordPollResult`, and walk a league down into dormant while its games are being played.
 			// Failure keeps the mode it already had, which is the faster of the two.
+			// Switched off while this was in flight: its games must not come back, and applyPrefsChange has already told the popup.
+			if (!prefs.enabledLeagues.includes(leagueId)) return;
 			if (fetchResult.shedLeagues.length > 0) throw new Error(`ESPN shed the ${leagueId} scoreboard.`);
 			absorbFinalGames(fetchResult.games);
 			noteGameEnds(fetchResult.games);
