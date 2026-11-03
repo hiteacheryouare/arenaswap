@@ -1299,6 +1299,62 @@ describe('a poll in flight when its league is switched off', () => {
 	});
 });
 
+describe('a queued switch when the user changes course', () => {
+	const queue = async () => {
+		await loadBackground({
+			prefs: { ...switchingPrefs, switchDelaySeconds: 10 },
+			tabRegistry: [{ gameId: 'thriller', tabId: 2 }, { gameId: 'close', tabId: 3 }],
+			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {}, shedLeagues: [] },
+			openTabIds: [1, 2, 3],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+		await runFirstPoll();
+		expect((await getDebugState()).pendingSwitch).toEqual(expect.objectContaining({ tabId: 2 }));
+	};
+
+	const waitOutTheDelay = async () => {
+		jest.advanceTimersByTime(15_000);
+		await drain(16);
+	};
+
+	test('turning ArenaSwap off drops it', async () => {
+		await queue();
+		await sendMessage({
+			type: 'UPDATE_PREFS',
+			prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...switchingPrefs, switchDelaySeconds: 10, enabled: false }),
+		});
+		await waitOutTheDelay();
+
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
+	});
+
+	test('a registry without the target tab drops it', async () => {
+		await queue();
+		await sendMessage({ type: 'UPDATE_REGISTRY', tabRegistry: [{ gameId: 'close', tabId: 3 }] });
+		await waitOutTheDelay();
+
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
+	});
+
+	test('starting demo mode drops it', async () => {
+		await queue();
+		await sendMessage({ type: 'SET_DEMO_MODE', enabled: true });
+		await waitOutTheDelay();
+
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
+	});
+
+	test('choosing the target tab as the standby stream drops it', async () => {
+		await queue();
+		await sendMessage({ type: 'SET_STANDBY_STREAM_TAB', tabId: 2 });
+		await waitOutTheDelay();
+
+		expect((await getDebugState()).pendingSwitch).toBeNull();
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
+	});
+});
+
 // Regression: a queued switch replayed the target it was created with, so after the delay it
 // switched to a game that had since gone quiet, or ended.
 

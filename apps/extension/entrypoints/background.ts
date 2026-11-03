@@ -1856,6 +1856,7 @@ export default defineBackground(() => {
 		}
 		if (msg.type === 'SET_STANDBY_STREAM_TAB') {
 			return stateReady.then(async () => {
+				clearPendingSwitch();
 				standbyStreamTabId = msg.tabId;
 				onStandbyStream = false;
 				await browser.storage.session.set({ standbyStreamTabId });
