@@ -16,14 +16,14 @@ export const multiviewRetryMs = 10 * 60_000;
 // the page the user registered.
 export const multiviewPermissions: Browser.permissions.Permissions = { origins: ['<all_urls>'], permissions: ['webNavigation'] };
 
-// Only the Chrome and Edge builds carry the permission that lets a box show a site that refuses to
-// be framed, so the manifest is what says whether this build has Multiview at all.
 // A framed stream's script can send the whole tab elsewhere. The page's own address, with or
 // without a hash or query, is the only place the tab is meant to be.
 export const leftMultiviewPage = (tabUrl: string, pageUrl: string): boolean => (
 	tabUrl !== pageUrl && !tabUrl.startsWith(`${pageUrl}#`) && !tabUrl.startsWith(`${pageUrl}?`)
 );
 
+// Only the Chrome and Edge builds carry the permission that lets a box show a site that refuses to
+// be framed, so the manifest is what says whether this build has Multiview at all.
 export const isMultiviewBuild = (manifest: { permissions?: string[] }): boolean => (
 	(manifest.permissions ?? []).includes('declarativeNetRequestWithHostAccess')
 );
@@ -74,8 +74,15 @@ const idle: multiviewOutcome = { active: false, settled: false };
 
 const failedSetKey = (gameIds: readonly string[]): string => gameIds.toSorted().join(',');
 
+const readHolds = (stored: unknown): Record<string, number> => {
+	const holds = (stored as { holds?: unknown } | null)?.holds;
+	if (!holds || typeof holds !== 'object') return {};
+	return Object.fromEntries(Object.entries(holds).filter(([, at]) => typeof at === 'number'));
+};
+
 const readSession = (stored: unknown): multiviewSession | null => {
-	const session = stored as Partial<multiviewSession> | null;
+	const wrapped = stored as { session?: unknown } | null;
+	const session = (wrapped && 'session' in wrapped ? wrapped.session : stored) as Partial<multiviewSession> | null;
 	if (!session || typeof session.tabId !== 'number') return null;
 	return {
 		tabId: session.tabId,
@@ -95,6 +102,8 @@ export const createMultiview = (deps: multiviewDeps) => {
 	// The last time the user closed Multiview themselves. It reopens once the cooldown has passed.
 	let closedAt = 0;
 	let failed: { key: string; at: number } | null = null;
+	// Games that were boxed when a framed site took the tab, by when it happened.
+	let hijackHolds: Record<string, number> = {};
 	// When the games first qualified, so the Switch Delay is counted from there.
 	let qualifiedAt: number | null = null;
 
@@ -107,7 +116,7 @@ export const createMultiview = (deps: multiviewDeps) => {
 		};
 	};
 
-	const persist = () => deps.save(session).catch(() => {});
+	const persist = () => deps.save({ session, holds: hijackHolds }).catch(() => {});
 
 	const end = async () => {
 		if (!session) return;
@@ -179,7 +188,8 @@ export const createMultiview = (deps: multiviewDeps) => {
 			qualifiedAt ??= pass.now;
 			const cooledDown = pass.now - Math.max(pass.lastSwitchTime, closedAt) > cooldownMs;
 			const delayServed = pass.now - qualifiedAt >= pass.prefs.switchDelaySeconds * 1000;
-			const retryHeld = failed !== null && failed.key === failedSetKey(plan.gameIds) && pass.now - failed.at < multiviewRetryMs;
+			const retryHeld = (failed !== null && failed.key === failedSetKey(plan.gameIds) && pass.now - failed.at < multiviewRetryMs)
+				|| plan.gameIds.some(gameId => pass.now - (hijackHolds[gameId] ?? -Infinity) < multiviewRetryMs);
 			if (!cooledDown || !delayServed || retryHeld) return idle;
 			qualifiedAt = null;
 			const revealed = await start(pass, plan.gameIds, plan.urlByGameId);
@@ -237,17 +247,18 @@ export const createMultiview = (deps: multiviewDeps) => {
 		},
 		lineupFor: (tabId: number | undefined): MultiviewLineup | null => (session && session.tabId === tabId ? lineup() : null),
 		forget,
-		// The tab is still open, but a framed site took it somewhere else. It is left alone, and the
-		// games that were boxed are not tried again for a while.
+		// The tab is still open, but a framed site took it somewhere else. It is left alone, and any
+		// set with one of the games that were boxed is not tried again for a while.
 		hijacked: async (tabId: number, now: number) => {
 			if (session?.tabId !== tabId) return false;
-			failed = { key: failedSetKey(session.boxes.map(box => box.gameId)), at: now };
+			hijackHolds = Object.fromEntries(session.boxes.map(box => [box.gameId, now]));
 			return forget(tabId, now);
 		},
 		stop: end,
 		tabId: (): number | null => session?.tabId ?? null,
 		restore: (stored: unknown) => {
 			session = readSession(stored);
+			hijackHolds = readHolds(stored);
 		},
 	};
 };

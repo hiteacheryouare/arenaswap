@@ -236,6 +236,33 @@ describe('multiview hijacked', () => {
 		expect(deps.createTab).not.toHaveBeenCalled();
 	});
 
+	test('keeps the hold through a worker restart', async () => {
+		const deps = createDeps();
+		const multiview = await openMultiview(deps);
+		await multiview.hijacked(multiviewTabId, 120_000);
+		const saved = deps.save.mock.calls.at(-1)?.[0];
+
+		const restartedDeps = createDeps();
+		const restarted = createMultiview(restartedDeps);
+		restarted.restore(saved);
+		await restarted.update(pass({ now: 120_000 + 60_000 }));
+		expect(restartedDeps.createTab).not.toHaveBeenCalled();
+
+		await restarted.update(pass({ now: 120_000 + multiviewRetryMs + 1 }));
+		expect(restartedDeps.createTab).toHaveBeenCalledTimes(1);
+	});
+
+	test('holds a set that shares a game with the hijacked one', async () => {
+		const deps = createDeps();
+		const multiview = await openMultiview(deps);
+		await multiview.hijacked(multiviewTabId, 120_000);
+		deps.createTab.mockClear();
+
+		const withThird = [{ gameId: 'a', total: 80 }, { gameId: 'b', total: 72 }, { gameId: 'c', total: 70 }];
+		await multiview.update(pass({ scores: withThird, now: 120_000 + 60_000 }));
+		expect(deps.createTab).not.toHaveBeenCalled();
+	});
+
 	test('ignores a tab that is not the session', async () => {
 		const multiview = await openMultiview(createDeps());
 		expect(await multiview.hijacked(99, 120_000)).toBe(false);
