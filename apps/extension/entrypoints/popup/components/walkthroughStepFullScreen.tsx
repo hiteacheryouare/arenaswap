@@ -23,9 +23,9 @@ const eaglesGame: screenGame = {
 	home: { abbr: 'NYG', color: '#0B2265', logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png', score: 10 },
 };
 
-const sixersGame: screenGame = {
-	away: { abbr: 'PHI', color: '#006BB6', logo: 'https://a.espncdn.com/i/teamlogos/nba/500/phi.png', score: 98 },
-	home: { abbr: 'BOS', color: '#007A33', logo: 'https://a.espncdn.com/i/teamlogos/nba/500/bos.png', score: 95 },
+const chiefsGame: screenGame = {
+	away: { abbr: 'KC', color: '#E31837', logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/kc.png', score: 24 },
+	home: { abbr: 'BUF', color: '#00338D', logo: 'https://a.espncdn.com/i/teamlogos/nfl/500/buf.png', score: 21 },
 };
 
 const switchAtMs = 1600;
@@ -37,7 +37,7 @@ const walkthroughStepFullScreen = ({ onNext, onBack }: walkthroughStepFullScreen
 	const [game, setGame] = useState(eaglesGame);
 
 	useEffect(() => {
-		const timer = setTimeout(() => setGame(sixersGame), switchAtMs);
+		const timer = setTimeout(() => setGame(chiefsGame), switchAtMs);
 		return () => clearTimeout(timer);
 	}, []);
 

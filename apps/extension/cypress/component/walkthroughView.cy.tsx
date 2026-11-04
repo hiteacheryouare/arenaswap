@@ -118,6 +118,9 @@ describe('walkthroughView step navigation', () => {
 		cy.contains('button', 'Next').click(); // 3 -> 4
 		cy.get('button.btn-solid.theme-primary').last().should('be.disabled');
 		cy.tick(2500);
+		cy.contains('KC').should('exist');
+		cy.contains('BUF').should('exist');
+		cy.contains('76ers').should('not.exist');
 		cy.get('button.btn-solid.theme-primary').last().should('not.be.disabled');
 	});
 
@@ -147,7 +150,7 @@ describe('walkthroughView step navigation', () => {
 		cy.get('button.btn-solid.theme-primary').last().click(); // 4 -> 5
 		cy.contains('NYG').should('exist');
 		cy.tick(1600);
-		cy.contains('BOS').should('exist');
+		cy.contains('BUF').should('exist');
 		cy.contains('NYG').should('not.exist');
 	});
 

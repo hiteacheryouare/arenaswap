@@ -15,13 +15,13 @@ const psMax = 100;
 
 const eaglesColor = '#004C54';
 const giantsColor = '#0B2265';
-const sixersColor = '#006BB6';
-const celticsColor = '#007A33';
+const chiefsColor = '#E31837';
+const billsColor = '#00338D';
 
 const LOGO_EAGLES  = 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png';
 const LOGO_GIANTS  = 'https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png';
-const LOGO_SIXERS  = 'https://a.espncdn.com/i/teamlogos/nba/500/phi.png';
-const LOGO_CELTICS = 'https://a.espncdn.com/i/teamlogos/nba/500/bos.png';
+const LOGO_CHIEFS = 'https://a.espncdn.com/i/teamlogos/nfl/500/kc.png';
+const LOGO_BILLS  = 'https://a.espncdn.com/i/teamlogos/nfl/500/buf.png';
 
 interface TeamLogoProps {
 	abbr: string;
@@ -110,14 +110,14 @@ const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, 
 
 const walkthroughStepAutoSwitch = ({ onNext, onBack }: walkthroughStepAutoSwitchProps) => {
 	const [phase, setPhase] = useState(0);
-	const [ps76ers, setPs76ers] = useState(31);
-	const [watching76ers, setWatching76ers] = useState(false);
+	const [psChiefs, setPsChiefs] = useState(31);
+	const [watchingChiefs, setWatchingChiefs] = useState(false);
 	const [flash, setFlash] = useState(false);
 
 	useEffect(() => {
-		const t1 = setTimeout(() => setPs76ers(89), 800);
+		const t1 = setTimeout(() => setPsChiefs(89), 800);
 		let t4: ReturnType<typeof setTimeout> | undefined;
-		const t2 = setTimeout(() => { setFlash(true); t4 = setTimeout(() => setFlash(false), 300); setWatching76ers(true); }, 1800);
+		const t2 = setTimeout(() => { setFlash(true); t4 = setTimeout(() => setFlash(false), 300); setWatchingChiefs(true); }, 1800);
 		const t3 = setTimeout(() => setPhase(1), 2200);
 		return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
 	}, []);
@@ -134,14 +134,14 @@ const walkthroughStepAutoSwitch = ({ onNext, onBack }: walkthroughStepAutoSwitch
 					abbr2='NYG' color2={giantsColor} logo2={LOGO_GIANTS}
 					score1={14} score2={10}
 					clock='7:43' period={i18n.t('gameCard.periodQuarter', { count: '2' })}
-					ps={52} watching={!watching76ers}
+					ps={52} watching={!watchingChiefs}
 				/>
 				<MockCard
-					abbr1='PHI' color1={sixersColor} logo1={LOGO_SIXERS}
-					abbr2='BOS' color2={celticsColor} logo2={LOGO_CELTICS}
-					score1={98} score2={95}
+					abbr1='KC' color1={chiefsColor} logo1={LOGO_CHIEFS}
+					abbr2='BUF' color2={billsColor} logo2={LOGO_BILLS}
+					score1={24} score2={21}
 					clock='1:22' period={i18n.t('gameCard.periodQuarter', { count: '4' })}
-					ps={ps76ers} watching={watching76ers}
+					ps={psChiefs} watching={watchingChiefs}
 				/>
 				{flash && (
 					<div
