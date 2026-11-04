@@ -73,8 +73,8 @@ const credit = tokenize(t('footer.madeWith'));
 		</div>
 
 		<p class="footer-disclaimer">
-			{t('footer.disclaimer')}
-			<a href={localePath(locale, 'legal/')}>{t('footer.legalNotices')}</a>.
+			{t('footer.disclaimer')}{' '}
+			<a href={localePath(locale, 'legal/')}>{t('footer.legalNotices')}</a>.{' '}
 			<a href={localePath(locale, 'legal/licenses/')}>{t('footer.iscLicense')}</a>
 		</p>
 		<p class="footer-credit">{credit.map(part => (

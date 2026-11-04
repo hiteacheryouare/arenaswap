@@ -85,6 +85,10 @@ The home page's leagues now ride the top half of three rings turning around a gl
 
 The home page's Standby Stream chart now draws itself behind a moving playhead, under a Chrome tab strip whose active tab moves from Bournemouth vs Aston Villa to College GameDay and back as the games cross the line. The loop runs only while the chart is on screen; with reduced motion or no script, the finished chart shows as before.
 
+## The footer disclaimer gets its spaces back — 2026-11-03
+
+The site footer read "extension.Legal notices.ISC License" because Astro drops line-break whitespace next to an expression or tag. `Footer.astro` now writes those spaces as explicit `{' '}`.
+
 ## The hero headline keeps its two lines — 2026-11-03
 
 On wide screens "the Moment." was about 2px too wide for the 480px copy column and broke into "the / Moment."; German and Japanese broke into four and five lines. The home hero's headline now sizes to its column (`16cqi`, capped at the old 5.25rem), and Japanese wraps at phrase boundaries with `word-break: auto-phrase`.
