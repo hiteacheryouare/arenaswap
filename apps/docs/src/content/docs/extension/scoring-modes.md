@@ -77,6 +77,7 @@ Some points come from you, not from the game, and they apply in every mode:
 
 - **Favorite team boost**, for each favorited team in the game. See [favorite teams](/arenaswap/docs/extension/favorite-teams/).
 - **Postseason boost**, for playoff and knockout games. Blowouts is the exception, since a settled result isn't worth chasing.
+- **Game Boost**, points you add to one game yourself, from 0 to 100. Set it in the Game Boost field on the game's detail screen or in the [Guide](/arenaswap/docs/extension/guide/). It lands on top of everything else, so it's the only thing that can push a score past 100. It lasts until you close your browser.
 - **Standby Stream**, which compares the same 0 to 100 score against your threshold. See [Standby Stream](/arenaswap/docs/extension/standby-stream/).
 
 ## Where the numbers come from

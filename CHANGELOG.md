@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The Guide and game details get help pages — 2026-11-03
+
+New help articles cover the Guide and a game's detail screen, including Game Boost, and `powerscore-tools` gets a README for its record, replay, simulate, validate-live and breaks commands. The existing articles now cover importing a backup from setup, tab suggestions, the Up Next day arrows and search, staying full screen through a switch, and the freed-tab, "Up next" and Multiview questions in troubleshooting.
+
 ## The E2E suite runs the real worker — 2026-11-03
 
 Extension E2E specs can now boot the built background worker itself (`cypress/support/liveExtension.ts`), fed recorded scoreboards with its clock moved by the spec, so switching, the cooldown, Standby Stream, the boss button, Multiview and moving a setup through a backup file are checked against what the shipped worker decides. The docs site gained a spec that walks each help section with Previous and Next and checks every FAQ's structured data matches the questions on the page.

@@ -23,7 +23,7 @@ The setup flow opens with a welcome screen covering three things:
 - **You pick the tabs**
 - **You stay in control**, with a pause switch and tunable settings
 
-Click **Got it** to continue.
+Click **Got it** to continue. Moving over from another browser or computer? **Have a backup file? Skip setup and import it** brings your settings along. [Profiles and backup](/arenaswap/docs/extension/profiles-and-backup/) covers the file.
 
 ## Choose your leagues
 
@@ -39,7 +39,7 @@ Nothing here is required. Star as many teams as you want. Click **Done** when yo
 
 ## Take the tour, or jump right in
 
-You'll land on **You're all set!**. Click **Take the tour** for a guided walkthrough of PowerScore, tab assignment, and settings. Click **Jump right in** instead to go straight to the main screen. The **?** button in the top bar replays it whenever you want.
+You'll land on **You're all set!**. Click **Take the tour** for a guided walkthrough of PowerScore, tab assignment, settings, leagues and favorites, opening a game's details, and going full screen. Click **Jump right in** instead to go straight to the main screen. The **?** button in the top bar replays it whenever you want.
 
 ## Open two streams
 
@@ -47,7 +47,7 @@ Now for the real thing. Open two live games in two separate browser tabs, on wha
 
 ## Assign each tab to a game
 
-Back in the ArenaSwap popup, find each game's card. Use its **Assign a tab** dropdown to pick the browser tab you opened for that game. The game then moves into the **Active Tabs** section at the top of the list. ArenaSwap also starts muting every managed tab except the one you're actively watching.
+Back in the ArenaSwap popup, find each game's card. Use its **Assign a tab** dropdown to pick the browser tab you opened for that game. If tabs you already have open look like games, a **These Tabs Look Like Games** banner offers to assign them for you. The game then moves into the **Active Tabs** section at the top of the list. ArenaSwap also starts muting every managed tab except the one you're actively watching.
 
 ## Watch it switch
 

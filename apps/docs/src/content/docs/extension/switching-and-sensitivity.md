@@ -31,7 +31,7 @@ If ArenaSwap feels slow to catch a game that's clearly heating up, raise it. If 
 
 ## Stop rapid switching
 
-**Switch cooldown**, also under Switching, sets the minimum time between automatic switches, from **Off** up to 3 minutes. The default is 45 seconds. Set it to Off, and the sensitivity gap is the only thing left holding a switch back.
+**Switch cooldown**, also under Switching, sets the minimum time between automatic switches, from **Off** up to 3 minutes. The default is 45 seconds. Set it to Off, and the sensitivity gap is the only thing left holding a switch back. Clicking over to an assigned tab yourself starts the cooldown too, so ArenaSwap doesn't pull you off a quieter game you just chose.
 
 If two of your assigned games are close enough that the lead keeps trading back and forth, a short cooldown lets ArenaSwap follow every swing. Raise the cooldown, and ArenaSwap holds on one game longer before it's willing to switch again, even if the other briefly pulls ahead.
 
@@ -52,7 +52,11 @@ If ArenaSwap keeps switching you to a game a few seconds before your feed shows 
 
 If play doesn't stop in time, the switch goes ahead anyway: after 45 seconds in football, 90 in basketball and hockey, and 2 minutes in baseball (2:30 in college baseball, 1:40 in college softball). It doesn't wait at all when the game you're leaving is already at a timeout, a TV break or an intermission, when it's a blowout, or when the other game is at a deciding moment, like a walk-off chance or a last shot. Soccer, college football and college hockey switch straight away.
 
-While a switch waits, the popup says which game is up next and what it's waiting for, and with switch notifications on, an "Up next" notification says the same. The switch's own notification replaces it and says it waited, or the notification disappears if the switch is called off. Switch delay still counts down after the break, so a stream that runs well behind gets its extra time too.
+While a switch waits, the popup says which game is up next and what it's waiting for, and with switch notifications on, an "Up next" notification says the same. The switch's own notification replaces it and says it waited, or the notification disappears if the switch is called off. Switch delay still counts down after the break, so a stream that runs well behind gets its extra time too. Demo mode never holds a switch.
+
+## Stay full screen through every switch
+
+Press **⌃⌘F** on a Mac or **F11** everywhere else before the game to make the whole browser window full screen. It stays full screen when ArenaSwap switches tabs, and when it switches to a game in another window, that window comes forward full screen too. If you use the video player's own full screen button instead, ArenaSwap puts the window back in full screen after each switch.
 
 ## Related
 

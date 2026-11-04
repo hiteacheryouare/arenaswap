@@ -19,6 +19,8 @@ If you see **Choose Leagues to Get Started**, no league is enabled yet. ArenaSwa
 
 If instead you see a quieter message like "It's a slow sports day," your enabled leagues genuinely have nothing live at the moment. Click **Refresh** to check again. If you want games to work with regardless, open [Demo mode](/arenaswap/docs/extension/demo-mode/).
 
+If a banner says **Our sources went quiet. Couldn't load games.**, ArenaSwap couldn't reach the scoreboard. Click **Retry**. If it keeps failing, check your connection.
+
 ## Why won't ArenaSwap switch tabs at all?
 
 Check these in order:
@@ -40,6 +42,18 @@ Two of your assigned games are close enough in PowerScore that the lead keeps tr
 ## Why is a tab missing from the assign dropdown, or shown grayed out?
 
 The **Assign a tab** dropdown lists the open tabs in the window you opened ArenaSwap from, and skips the browser's own pages. A stream has to be open in its own tab before it shows up here. To assign a tab in another window, open ArenaSwap from that window. A tab you open while ArenaSwap is showing appears the next time you open it. A tab already assigned to a different game appears grayed out with **(in use)** next to it. To reassign that tab, unassign it from the other game first.
+
+## Why did a tab get freed or closed after a game ended?
+
+Your **When a game finishes** setting did it. It's in Settings under Switching, and it's set to **Free it from ArenaSwap** or **Close the tab**. Set it back to **Leave the tab alone** to stop. A message when you next open ArenaSwap says how many tabs were handed back. See [what happens when a game ends](/arenaswap/docs/extension/watching-multiple-games/#choose-what-happens-when-a-game-ends).
+
+## Why did I get an "Up next" notification, but ArenaSwap hasn't switched yet?
+
+**Content-aware switching** is waiting for a break in play. The notification says what it's waiting for, like "Switching after this play." or "Switching at the next whistle." The switch goes ahead on its own once play stops or the wait runs out. Turn off **Content-aware switching** in Settings to switch right away. [How the wait works](/arenaswap/docs/extension/switching-and-sensitivity/#dont-get-cut-off-mid-play) has the details.
+
+## Why didn't Multiview open?
+
+The [Multiview page](/arenaswap/docs/extension/multiview/) answers that one.
 
 ## Why isn't Standby Stream doing anything?
 

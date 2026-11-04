@@ -48,7 +48,7 @@ At least one signal has to stay on in a mode. If a signal is off, ArenaSwap re-n
 | Setting | Default | Range | What it does |
 | --- | --- | --- | --- |
 | Enabled leagues | NBA, NFL, NHL, and MLB, chosen during setup | Any of the 31 supported leagues across basketball, football, hockey, baseball, softball, and soccer | Which leagues ArenaSwap tracks and considers for automatic switching. |
-| College divisions and conferences | One division per league (FBS for football, Division I for the rest), no conference filter, Top 25 off, title rounds on | Divisions, conferences, Top 25 (Top 20 in college hockey) and title rounds, set per college league | Which college games appear. Pick other divisions or conferences to widen or narrow the list. Top 25 also shows any game with a ranked team. Title rounds, like March Madness or the College Football Playoff, show up whatever else you pick. |
+| College divisions and conferences | One division per league (FBS for football, Division I for the rest), no conference filter, Top 25 off, title rounds on | Divisions, conferences, Top 25 (Top 20 in college hockey) and title rounds, set per college league | Which college games appear. Pick other divisions or conferences to widen or narrow the list. Top 25 also shows any game with a ranked team. Title rounds, like March Madness or the College Football Playoff, show up whatever else you pick. So does any game with one of your favorite teams. |
 
 ## Display
 
@@ -100,4 +100,6 @@ Chrome and Edge only. [How to use Multiview](/arenaswap/docs/extension/multiview
 - [How to change what ArenaSwap looks for in a game](/arenaswap/docs/extension/scoring-modes/) covers the scoring modes, the Fantasy roster, and its scoring rules.
 - [How to set favorite teams in ArenaSwap](/arenaswap/docs/extension/favorite-teams/) covers where the favorite team bonus comes from.
 - [How to set up Standby Stream](/arenaswap/docs/extension/standby-stream/) covers the fallback tab and its threshold.
+- [The Guide](/arenaswap/docs/extension/guide/) covers the full-slate view of today's games.
+- [Game details](/arenaswap/docs/extension/game-details/) covers the screen behind each game card, including its PowerScore breakdown and Game Boost.
 - [Try ArenaSwap with Demo mode](/arenaswap/docs/extension/demo-mode/) covers the scripted games and how they behave.

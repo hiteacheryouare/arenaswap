@@ -25,13 +25,19 @@ In the ArenaSwap popup, find the card for each game. Use its **Assign a tab** dr
 
 If a tab is already assigned to another game, its dropdown entry is grayed out and marked **(in use)**. To reassign that tab, unassign it from the other game first.
 
+## Let ArenaSwap match your tabs to games
+
+When tabs you already have open look like live games, or games starting today, a **These Tabs Look Like Games** banner appears above the list. Click **Take a look** to open a checklist of suggested pairs, each game next to the tab it matched on title and address. Strong matches start checked. Uncheck anything it got wrong, then click **Assign 3 tabs**, or however many are checked.
+
+Close the banner to dismiss those suggestions. A new match brings it back.
+
 ## Watch the list sort itself
 
 The main screen splits into sections:
 
 - **Active Tabs** appears once you've assigned a tab, and holds every live game with one, sorted by PowerScore, with your starred teams' games pinned to the top. By default that's one list across every league. Turn on **Group games by league** and each section splits into league runs instead, favorites first within each league.
 - **Live Games** holds everything else live in your enabled leagues, in the same order, in case something there is worth grabbing a tab for.
-- **Up Next** holds upcoming games in your enabled leagues, one day at a time, favorites first and then by start time.
+- **Up Next** holds upcoming games in your enabled leagues, one day at a time, favorites first and then by start time. Use the arrows to move between days, and the search icon to filter the day by team, league, or network.
 - **Final** holds games that have already ended, your starred teams first and then most recent, and only appears if you've turned on **Keep finished games**. Each card reads Final, or Final/OT and Final/10 where there was extra time, with the winning score at full weight and the losing one dimmed. Nothing here can be assigned a tab or switched to.
 
 ## Let ArenaSwap manage the tabs
@@ -39,6 +45,20 @@ The main screen splits into sections:
 With more than one tab assigned, ArenaSwap takes over deciding which one is active. It mutes every tab you've registered except the one currently in focus. It switches focus to whichever registered game has the highest PowerScore, once that game pulls far enough ahead. You never have to click into a tab to check on it or reach for the mute button yourself.
 
 If you want to stop ArenaSwap from touching a specific tab, unassign it from the dropdown. If you want to stop it from switching anything at all, turn off **Enable auto-switching** in the top bar.
+
+## Choose what happens when a game ends
+
+**When a game finishes**, in Settings under Switching, decides what ArenaSwap does with a tab once its game is over:
+
+- **Leave the tab alone** is the default.
+- **Free it from ArenaSwap** unassigns and unmutes the tab and leaves it open.
+- **Close the tab** shuts it.
+
+The tab you're looking at stays put until you move off it. A window's last tab is freed instead of closed, so no window disappears. The next time you open ArenaSwap, a message says how many tabs were handed back, like "2 tabs are yours again." Demo mode never frees or closes a tab.
+
+## Use more than one window
+
+The **Assign a tab** dropdown lists the tabs in the window you opened ArenaSwap from. To assign a tab in another window, open ArenaSwap from that window. When ArenaSwap switches to a game in another window, that window comes forward. [Full screen](/arenaswap/docs/extension/switching-and-sensitivity/#stay-full-screen-through-every-switch) carries over too.
 
 ## Related
 
