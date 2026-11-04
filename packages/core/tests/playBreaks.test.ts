@@ -21,6 +21,8 @@ const game = (overrides: Partial<Game>): Game => ({
 	...overrides,
 });
 
+const score = (home: number, away: number) => ({ homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: home }, awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: away } });
+
 const atBat = (batter: string, pitcher = 'p1') => ({ batter: { id: batter, name: batter }, pitcher: { id: pitcher, name: pitcher } });
 
 // The background worker's loop while a switch waits: one fresh poll of the game being left at a time.
@@ -199,7 +201,6 @@ describe('content-aware switching', () => {
 
 		describe('football overtime', () => {
 			const overtime = game({ league: 'nfl', sportType: 'football', period: 5, clockSeconds: 540, possessionTeamId: 'h', yardLine: 80, down: 4 });
-			const score = (home: number, away: number) => ({ homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: home }, awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: away } });
 
 			test('a fourth down early in overtime is decisive', () => {
 				expect(isDecisiveMoment({ ...overtime, ...score(20, 20) })).toBe(true);
