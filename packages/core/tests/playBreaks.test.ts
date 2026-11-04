@@ -218,6 +218,17 @@ describe('content-aware switching', () => {
 				expect(isDecisiveMoment({ ...overtime, ...score(29, 20) })).toBe(false);
 			});
 
+			test('a second overtime in a playoff game is still decisive', () => {
+				expect(isDecisiveMoment({ ...overtime, ...score(20, 20), period: 6 })).toBe(true);
+				expect(isDecisiveMoment({ ...overtime, ...score(20, 20), period: 6, down: 2, yardLine: 50 })).toBe(false);
+			});
+
+			test('the UFL has no overtime clock, and a fourth down is still decisive', () => {
+				const ufl = { ...overtime, league: 'ufl' as const, ...score(20, 20), clockSeconds: 0 };
+				expect(isDecisiveMoment(ufl)).toBe(true);
+				expect(isDecisiveMoment({ ...ufl, down: 1, yardLine: 40 })).toBe(false);
+			});
+
 			test('regulation still needs the two-minute rule', () => {
 				const fourth = { ...overtime, ...score(20, 20), period: 4 };
 				expect(isDecisiveMoment({ ...fourth, clockSeconds: 540 })).toBe(false);
