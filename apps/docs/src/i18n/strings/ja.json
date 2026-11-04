@@ -158,7 +158,10 @@
 				"八",
 				"九",
 				"十"
-			]
+			],
+			"seeAll": "全{count}リーグを見る",
+			"listTitle": "全{count}リーグ",
+			"close": "閉じる"
 		},
 		"settings": {
 			"title": "あなたに合わせて調整。",

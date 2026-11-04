@@ -158,7 +158,10 @@
 				"Walo",
 				"Siyam",
 				"Sampu"
-			]
+			],
+			"seeAll": "Tingnan ang {count} liga",
+			"listTitle": "Lahat ng {count} Liga",
+			"close": "Isara"
 		},
 		"settings": {
 			"title": "Naka-tune sa'yo.",

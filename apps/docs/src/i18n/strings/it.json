@@ -158,7 +158,10 @@
 				"Otto",
 				"Nove",
 				"Dieci"
-			]
+			],
+			"seeAll": "Vedi tutti i {count} campionati",
+			"listTitle": "Tutti i {count} campionati",
+			"close": "Chiudi"
 		},
 		"settings": {
 			"title": "Sintonizzato su di te.",

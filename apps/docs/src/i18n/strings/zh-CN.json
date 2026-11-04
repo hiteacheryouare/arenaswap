@@ -158,7 +158,10 @@
 				"八",
 				"九",
 				"十"
-			]
+			],
+			"seeAll": "查看全部 {count} 个联赛",
+			"listTitle": "全部 {count} 个联赛",
+			"close": "关闭"
 		},
 		"settings": {
 			"title": "为您量身调校。",

@@ -158,7 +158,10 @@
 				"Huit",
 				"Neuf",
 				"Dix"
-			]
+			],
+			"seeAll": "Voir les {count} ligues",
+			"listTitle": "Les {count} ligues",
+			"close": "Fermer"
 		},
 		"settings": {
 			"title": "Réglé sur toi.",

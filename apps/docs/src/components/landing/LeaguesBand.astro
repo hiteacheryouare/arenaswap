@@ -1,15 +1,104 @@
 ---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
 import { leagueConfigs } from '@arenaswap/core/constants';
-import type { SportType } from '@arenaswap/core/types';
+import type { LeagueId, SportType } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
 import CrestSettle from '../CrestSettle.astro';
 import { currentLocale, useTranslations } from '../../i18n/ui';
 
-// Generated from `leagueConfigs`, so the count and the list are whatever the extension actually
-// tracks. The previous version of this section was a marquee of hand-picked logos that slid past
-// too fast to read and had drifted three leagues out of date.
+interface RingCrest {
+	mark: string;
+	leagues: LeagueId[];
+}
 
-const t = useTranslations(currentLocale(Astro.currentLocale));
+interface Ring {
+	radius: number;
+	size: number;
+	crests: RingCrest[];
+}
+
+// The most watched ring first. Radii and crest sizes are percentages of the arc's width, and
+// leagues that share one logo share one crest.
+const rings: Ring[] = [
+	{
+		radius: 19,
+		size: 11,
+		crests: [
+			{ mark: 'nfl', leagues: ['nfl'] },
+			{ mark: 'nba', leagues: ['nba'] },
+			{ mark: 'mlb', leagues: ['mlb'] },
+			{ mark: 'nhl', leagues: ['nhl'] },
+		],
+	},
+	{
+		radius: 32,
+		size: 7.5,
+		crests: [
+			{ mark: 'epl', leagues: ['epl'] },
+			{ mark: 'fifa', leagues: ['fifawc', 'fifawwc'] },
+			{ mark: 'ncaa', leagues: ['ncaaf', 'ncaab', 'ncaaw', 'ncaamh', 'cbase', 'csoft'] },
+			{ mark: 'ucl', leagues: ['ucl'] },
+			{ mark: 'laliga', leagues: ['laliga'] },
+		],
+	},
+	{
+		radius: 43,
+		size: 5.75,
+		crests: [
+			{ mark: 'mls', leagues: ['mls'] },
+			{ mark: 'ligamx', leagues: ['ligamx'] },
+			{ mark: 'bundesliga', leagues: ['bundesliga'] },
+			{ mark: 'seriea', leagues: ['seriea'] },
+			{ mark: 'uel', leagues: ['uel'] },
+			{ mark: 'wnba', leagues: ['wnba'] },
+			{ mark: 'wbbc', leagues: ['wbbc'] },
+			{ mark: 'olympics', leagues: ['olybkm', 'olybkw', 'olymih', 'olywih', 'olybb', 'olysocm', 'olysocw'] },
+			{ mark: 'ufl', leagues: ['ufl'] },
+			{ mark: 'nwsl', leagues: ['nwsl'] },
+		],
+	},
+];
+
+const onArc = rings.flatMap(ring => ring.crests.flatMap(crest => crest.leagues));
+const missing = leagueConfigs.filter(config => !onArc.includes(config.id)).map(config => config.id);
+if (missing.length) throw new Error(`LeaguesBand: no crest on the arc for ${missing.join(', ')}`);
+
+const locale = currentLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const leagueCount = leagueConfigs.length;
+
+const artwork = import.meta.glob<{ default: ImageMetadata }>('../../assets/leagues/*.png', { eager: true });
+const art = (name: string) => artwork[`../../assets/leagues/${name}.png`]?.default;
+
+// The widest the arc gets, in px, so each WebP comes out at 2x its largest size on screen.
+const widestArc = 72 * 16;
+const listFormat = new Intl.ListFormat(locale, { type: 'conjunction' });
+
+// Each ring carries its crests twice, half a turn apart, so the whole ring is always in the top half.
+// Every crest in a ring covers the same area, so a wide wordmark and a tall shield look equally big.
+const arcRings = rings.map((ring, ringIndex) => {
+	const slots = [...ring.crests, ...ring.crests];
+	const step = 360 / slots.length;
+	return {
+		style: `--radius: ${ring.radius}; --size: ${ring.size}`,
+		number: ringIndex + 1,
+		crests: slots.map((crest, index) => {
+			const light = art(crest.mark);
+			if (!light) throw new Error(`LeaguesBand: no artwork at src/assets/leagues/${crest.mark}.png`);
+			const widthFactor = Math.sqrt(Math.min(Math.max(light.width / light.height, 0.6), 2.4));
+			return {
+				...crest,
+				light,
+				dark: art(`${crest.mark}-dark`),
+				repeat: index >= ring.crests.length,
+				label: listFormat.format(crest.leagues.map(id => leagueConfigs.find(config => config.id === id)!.label)),
+				style: `--angle: ${(index * step - 90 + step / 2).toFixed(2)}deg; --crest-w: ${widthFactor.toFixed(3)}; --crest-h: ${(1 / widthFactor).toFixed(3)}`,
+				renderWidth: Math.min(Math.round(ring.size / 100 * widestArc * widthFactor * 2), light.width),
+			};
+		}),
+	};
+});
 
 const sportOrder: SportType[] = ['basketball', 'football', 'hockey', 'baseball', 'softball', 'soccer'];
 
@@ -27,7 +116,7 @@ const groups = sportOrder
 const numerals = t.list<string>('home.leagues.numerals');
 const sportCount = numerals[groups.length] ?? String(groups.length);
 ---
-<section class='band' id='leagues'>
+<section class='band band-leagues' id='leagues'>
 	<div class='container'>
 
 		<div class='band-head'>
@@ -35,6 +124,41 @@ const sportCount = numerals[groups.length] ?? String(groups.length);
 			<p class='band-copy'>{t('home.leagues.copy', { sports: sportCount })}</p>
 		</div>
 
+		<div class='league-orbit'>
+			<div class='glow' aria-hidden='true'></div>
+			<div class='league-orbit-window'>
+				<div class='league-orbit-rings'>
+					{arcRings.map(ring => (
+						<ul class='league-ring' data-ring={ring.number} style={ring.style} role='list'>
+							{ring.crests.map(crest => (
+								<li class='league-crest' style={crest.style} title={crest.repeat ? undefined : crest.label} aria-hidden={crest.repeat ? 'true' : undefined}>
+									<Image src={crest.light} width={crest.renderWidth} alt={crest.repeat ? '' : crest.label} loading='lazy' class:list={{ 'for-light': crest.dark }} />
+									{crest.dark && (
+										<Image src={crest.dark} width={crest.renderWidth} alt={crest.repeat ? '' : crest.label} loading='lazy' class='for-dark' />
+									)}
+								</li>
+							))}
+						</ul>
+					))}
+				</div>
+			</div>
+		</div>
+
+		<div class='league-orbit-more'>
+			<button type='button' class='btn btn-outline-secondary-custom' data-bs-toggle='dialog' data-bs-target='#leagues-dialog'>
+				{t('home.leagues.seeAll', { count: leagueCount })}
+			</button>
+		</div>
+
+	</div>
+</section>
+
+<dialog class='dialog dialog-lg dialog-scrollable md-down:dialog-fullscreen leagues-dialog' id='leagues-dialog' aria-labelledby='leagues-dialog-title'>
+	<div class='dialog-header'>
+		<h2 class='dialog-title' id='leagues-dialog-title'>{t('home.leagues.listTitle', { count: leagueCount })}</h2>
+		<button type='button' class='btn-close' data-bs-dismiss='dialog' aria-label={t('home.leagues.close')}></button>
+	</div>
+	<div class='dialog-body'>
 		<div class='leagues-grid' data-crest-settle>
 			{groups.map(group => (
 				<div class='leagues-group'>
@@ -50,8 +174,7 @@ const sportCount = numerals[groups.length] ?? String(groups.length);
 				</div>
 			))}
 		</div>
-
 	</div>
-</section>
+</dialog>
 
 <CrestSettle />

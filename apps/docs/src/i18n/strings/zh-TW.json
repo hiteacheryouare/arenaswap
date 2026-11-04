@@ -158,7 +158,10 @@
 				"八",
 				"九",
 				"十"
-			]
+			],
+			"seeAll": "查看全部 {count} 個聯盟",
+			"listTitle": "全部 {count} 個聯盟",
+			"close": "關閉"
 		},
 		"settings": {
 			"title": "為你量身調整。",

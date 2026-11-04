@@ -158,7 +158,10 @@
 				"여덟",
 				"아홉",
 				"열"
-			]
+			],
+			"seeAll": "{count}개 리그 전체 보기",
+			"listTitle": "전체 {count}개 리그",
+			"close": "닫기"
 		},
 		"settings": {
 			"title": "당신에게 맞춰 조율돼요.",

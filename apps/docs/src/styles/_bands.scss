@@ -458,16 +458,123 @@
 	}
 
 	// ─── Leagues ─────────────────────────────────────────────────────────────────
-	// A list grouped by sport, with each league's real mark.
+	// The top half of three rings of crests turning around a hub on the arc's bottom edge, most watched
+	// innermost, and the full list grouped by sport in a dialog. LeaguesBand.astro sets each ring's
+	// radius and crest size as a percentage of the arc's width.
+	.band-leagues {
+		overflow-x: clip;
+	}
+
+	// Full bleed, so the glow and the faded edges belong to the screen rather than the container.
+	.league-orbit {
+		position: relative;
+		width: 100vw;
+		margin: clamp(2rem, 5vw, 3.5rem) calc(50% - 50vw) 0;
+
+		.glow {
+			--glow-width: 34%;
+			--glow-height: 19rem;
+			--glow-spill: 4rem;
+			--glow-lift: 0rem;
+		}
+
+		@media (max-width: 767.98px) {
+			.glow {
+				--glow-width: 70%;
+				--glow-height: 13rem;
+			}
+		}
+	}
+
+	// Phones crop the arc's sides instead of shrinking it, so the window fades the screen edges too.
+	// The hub sits on the bottom edge, so a crest is gone by the time it sinks level with it.
+	.league-orbit-window {
+		display: flex;
+		justify-content: center;
+		mask-image:
+			linear-gradient(to right, transparent, #000 8%, #000 92%, transparent),
+			linear-gradient(to bottom, #000 76%, rgb(0 0 0 / 0.8) 84%, rgb(0 0 0 / 0.5) 90%, rgb(0 0 0 / 0.2) 95%, rgb(0 0 0 / 0.05) 98.5%, transparent);
+		mask-composite: intersect;
+	}
+
+	.league-orbit-rings {
+		position: relative;
+		flex-shrink: 0;
+		width: clamp(36rem, 100%, 72rem);
+		aspect-ratio: 100 / 47;
+		container-type: inline-size;
+		overflow: hidden;
+	}
+
+	.league-ring {
+		position: absolute;
+		left: 50%;
+		top: 100%;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		animation: league-ring-turn 60s linear infinite;
+
+		&[data-ring='2'] {
+			animation-duration: 90s;
+			animation-direction: reverse;
+		}
+
+		&[data-ring='3'] {
+			animation-duration: 120s;
+		}
+
+		@include m.reduced-motion {
+			animation: none;
+		}
+	}
+
+	@keyframes league-ring-turn {
+		to {
+			rotate: 360deg;
+		}
+	}
+
+	.league-crest {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: calc(var(--size) * var(--crest-w) * 1cqi);
+		height: calc(var(--size) * var(--crest-h) * 1cqi);
+		transform: translate(-50%, -50%) rotate(var(--angle)) translateY(calc(var(--radius) * -1cqi));
+
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+		}
+	}
+
+	.league-orbit-more {
+		display: flex;
+		justify-content: center;
+		margin-top: clamp(3rem, 5vw, 4.5rem);
+	}
+
+	.leagues-dialog {
+		--as-dialog-header-border-width: 0;
+
+		.dialog-title {
+			font-size: 1.25rem;
+			font-weight: 700;
+		}
+	}
+
 	.leagues-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
-		gap: 0 1.5rem;
+		columns: 3 13.5rem;
+		column-gap: 2rem;
 	}
 
 	.leagues-group {
+		break-inside: avoid;
 		border-top: 1px solid var(--as-border-color);
 		padding-top: 0.9rem;
+		margin-bottom: 1.5rem;
 
 		h3 {
 			font-size: 1rem;

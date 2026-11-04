@@ -158,7 +158,10 @@
 				"Ocho",
 				"Nueve",
 				"Diez"
-			]
+			],
+			"seeAll": "Ver las {count} ligas",
+			"listTitle": "Las {count} ligas",
+			"close": "Cerrar"
 		},
 		"settings": {
 			"title": "Sintonizado contigo.",

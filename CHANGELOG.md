@@ -77,6 +77,10 @@ The Firefox sources zip ships the whole workspace, the bundle banner reads the e
 
 Each step under "Set It Once. Watch Everything." now has a small Chrome window above it, with placeholder panels in each game's team colours instead of footage, and they play in turn: two streams open in new tabs, a tab is picked from a game card's dropdown, then the sound follows ArenaSwap's switches while the other tabs mute. `SelectDropdown`, `TabFavicon` and the popup's menu skin (now the `menu-skin` mixin) moved into `@arenaswap/ui` so the demo opens the real menu, and the extension's compiled CSS is the same rules, reordered.
 
+## The leagues band turns — 2026-11-03
+
+The home page's leagues now ride the top half of three rings turning around a glowing hub, the NFL, NBA, MLB and NHL biggest on the inside, each ring smaller and turning the other way from the one inside it, fading out softly as crests sink to the horizon. Each ring carries its crests twice so every league is always on screen; the rings hold still for reduced motion and run off the screen edges on phones instead of shrinking. "See all 31 leagues" opens the full list by sport in a dialog, and the build fails if a league in `leagueConfigs` has no crest.
+
 ## The hero headline keeps its two lines — 2026-11-03
 
 On wide screens "the Moment." was about 2px too wide for the 480px copy column and broke into "the / Moment."; German and Japanese broke into four and five lines. The home hero's headline now sizes to its column (`16cqi`, capped at the old 5.25rem), and Japanese wraps at phrase boundaries with `word-break: auto-phrase`.

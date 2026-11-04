@@ -158,7 +158,10 @@
 				"Eight",
 				"Nine",
 				"Ten"
-			]
+			],
+			"seeAll": "See all {count} leagues",
+			"listTitle": "All {count} Leagues",
+			"close": "Close"
 		},
 		"settings": {
 			"title": "Tuned In to You.",

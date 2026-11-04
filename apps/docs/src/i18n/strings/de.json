@@ -158,7 +158,10 @@
 				"Acht",
 				"Neun",
 				"Zehn"
-			]
+			],
+			"seeAll": "Alle {count} Ligen ansehen",
+			"listTitle": "Alle {count} Ligen",
+			"close": "Schließen"
 		},
 		"settings": {
 			"title": "Auf dich abgestimmt.",
