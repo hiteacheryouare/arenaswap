@@ -202,6 +202,7 @@ interface PowerScore {
 	winProbabilityVariance?: number;
 	baseTotal: number;
 	classicTotal?: number;
+	blend?: BlendResult;
 	boosts: ScoredBoost[];
 	reasons: ReasonFragment[];
 	reason: string;
@@ -301,6 +302,7 @@ interface PowerScoreMode {
 	usesBreakPenalty: boolean;
 	usesWinProbability: boolean;
 	classicBlend?: ClassicBlend;
+	paysPostseason?: boolean;
 	appliesTo?: (game: Game<string>, context: ScoringContext) => boolean;
 }
 ```
@@ -377,7 +379,7 @@ interface BlendResult {
 
 `SportTypeConfig` holds everything about how a sport plays. That covers closeness thresholds, momentum and comeback thresholds, decay half-lives, whether the sport has a clock, and (baseball and softball only) a `lateGameCurve`. `LeagueConfig` holds how long a specific league's periods run: `id`, `label`, `sportType`, `regularPeriods`, `periodDurationSecs`, and `periodFormat`. It also carries fields ArenaSwap uses for its own fetching and schedule bars, which the scorer doesn't read.
 
-Neither type has optional fields in the built-in tables. Every shipped sport and league fills in every one of them. Through `options.sport` and `options.league`, you can pass any subset as a `Partial` to override one per call. Field-by-field meaning and every sport and league's actual values are in [Sport and league configuration](/arenaswap/docs/powerscore/configuration/).
+A few fields are optional, and only some entries set them: `lateGameCurve` (baseball and softball), `clockIsFullGameElapsed` (soccer), `zeroZeroPenaltyPeriods` (hockey and soccer), and `knockoutRunMinutes` (the two World Cups and both Olympic soccer tournaments). Through `options.sport` and `options.league`, you can pass any subset as a `Partial` to override one per call. Field-by-field meaning and every sport and league's actual values are in [Sport and league configuration](/arenaswap/docs/powerscore/configuration/).
 
 ## LateGameCurveConfig
 

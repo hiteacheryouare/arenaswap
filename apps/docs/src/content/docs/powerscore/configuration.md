@@ -10,10 +10,10 @@ navLabel: Configuration
 
 ## SportTypeConfig
 
-One entry per `SportType`, exported as `sportTypeConfigs` (an array) and `sportTypeConfigMap` (keyed by `id`). Field meanings are in [PowerScore's TypeScript types](/arenaswap/docs/powerscore/types/#sporttypeconfig-and-leagueconfig). This table holds the six sports' actual values. Classic reads all of it. Blowouts reads `closenessMargins`, `momentumBigRun` and `momentumSmallRun`, the momentum half-life, and `historyWindowMs`.
+One entry per `SportType`, exported as `sportTypeConfigs` (an array) and `sportTypeConfigMap` (keyed by `id`). This table holds the six sports' actual values, and [what the fields mean](#what-the-sport-fields-mean) follows it. Classic reads all of it. Blowouts reads `closenessMargins`, `momentumBigRun` and `momentumSmallRun`, the momentum half-life, and `historyWindowMs`.
 
 | Field | basketball | football | hockey | soccer | baseball | softball |
-|---|---|---|---|
+|---|---|---|---|---|---|---|
 | `clockBased` | true | true | true | true | false | false |
 | `closenessMargins` (t1, t2, t3) | 5, 10, 18 | 3, 9, 14 | 1, 2, 3 | 1, 2, 3 | 1, 3, 5 | 1, 3, 5 |
 | `momentumBigRun` / `momentumSmallRun` | 8 / 4 | 10 / 4 | 2 / 1 | 2 / 1 | 3 / 1 | 3 / 1 |
@@ -30,6 +30,23 @@ One entry per `SportType`, exported as `sportTypeConfigs` (an array) and `sportT
 | `lateGameCurve` | none | none | none | none | 9 innings, starts at 6 | 7 innings, starts at 5 |
 
 `historyWindowMs` is the span of score history each sport needs to hold onto for momentum, lead changes, and comeback to work. Blowouts' Sustained signal is measured over the same window. It is at least four times the sport's longest half-life. That margin lets a signal fully decay before it falls out of the window, no matter how often a caller polls.
+
+### What the sport fields mean
+
+| Field | Meaning |
+|---|---|
+| `clockBased` | The sport has a game clock. Baseball and softball don't, so late-game pressure runs across innings instead. |
+| `closenessMargins` | The three margins Closeness steps down at: within t1 is tight, within t2 is close, within t3 is the fringe, past t3 pays nothing. Other signals and boosts reuse them, such as Comeback Factor's rout cutoff at t2 and Blowouts' Timing gate past t3. |
+| `momentumBigRun`, `momentumSmallRun` | The net run within the history window that pays Momentum's full and half tier. |
+| `comebackThresholdBig`, `comebackThresholdSmall` | The swing that pays Comeback Factor's big and moderate tier. |
+| `clockCountsUp` | The clock shows time played, not time left. Only soccer. |
+| `clockIsFullGameElapsed` | The clock runs across the whole match (0' to 90'+) instead of restarting each period, so completed periods are subtracted before working out the time left. Only soccer. |
+| `zeroZeroAsFullTie` | A 0–0 game earns the full tied credit in Closeness. When `false`, 0–0 earns the reduced `zeroZero` tier. |
+| `zeroZeroPenaltyPeriods` | Periods where 0–0 still earns the reduced tier even though `zeroZeroAsFullTie` is `true`. Hockey uses 1 and 2, soccer the first half. |
+| `otPreBoostWindowSecs` | The last seconds of the final regulation period where a tied game ramps toward the overtime pre-boost. `0` turns it off. |
+| `decayHalfLifeMs` | How fast Momentum, Lead Changes and Comeback Factor fade after the last score. Longer in low-scoring sports, so one goal keeps them alive until the next. |
+| `historyWindowMs` | How much score history the history signals read. See above. |
+| `lateGameCurve` | Baseball and softball only: how many innings regulation has and which inning the late-game ramp starts in. |
 
 ## LeagueConfig
 

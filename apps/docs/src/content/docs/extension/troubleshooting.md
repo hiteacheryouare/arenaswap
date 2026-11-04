@@ -25,7 +25,7 @@ Check these in order:
 
 1. **Enable auto-switching**, the toggle in the top bar, has to be on. When it's off, ArenaSwap keeps scoring games but never touches a tab.
 2. At least one live game needs a tab assigned to it. Use the **Assign a tab** dropdown on a game card. ArenaSwap will never switch to a tab it hasn't been told to manage.
-3. With only one game assigned, there's nothing to switch to until a second one is. Assign a second stream to see switching happen at all.
+3. With only one game assigned, ArenaSwap only moves you to it from a tab that isn't a game. To see it switch between games, assign a second stream.
 
 If all three check out and switching still isn't happening, a low **Switch sensitivity**, a long **Switch cooldown**, or a long **Switch delay** could be why. See [how to control when ArenaSwap switches tabs](/arenaswap/docs/extension/switching-and-sensitivity/) for what to change.
 
@@ -39,7 +39,7 @@ Two of your assigned games are close enough in PowerScore that the lead keeps tr
 
 ## Why is a tab missing from the assign dropdown, or shown grayed out?
 
-The **Assign a tab** dropdown only lists tabs that are currently open. A stream has to be open in its own tab before it shows up here. A tab already assigned to a different game appears grayed out with **(in use)** next to it. To reassign that tab, unassign it from the other game first.
+The **Assign a tab** dropdown lists the open tabs in the window you opened ArenaSwap from, and skips the browser's own pages. A stream has to be open in its own tab before it shows up here. To assign a tab in another window, open ArenaSwap from that window. A tab you open while ArenaSwap is showing appears the next time you open it. A tab already assigned to a different game appears grayed out with **(in use)** next to it. To reassign that tab, unassign it from the other game first.
 
 ## Why isn't Standby Stream doing anything?
 
@@ -48,11 +48,13 @@ Standby Stream needs two things set up before it can act, and it silently does n
 1. A tab picked in the **Standby tab** dropdown under Settings → Standby Stream. If it still reads **Select a tab**, nothing has been chosen.
 2. At least one live game with a tab assigned to it. Standby Stream only compares against games you've registered, so with no registered games there's nothing for it to fall back from.
 
+It also stands down while **Enable auto-switching** is off, waits out your **Switch cooldown** like any other switch, and steps aside while Multiview is showing.
+
 See [how to set up Standby Stream](/arenaswap/docs/extension/standby-stream/) for the full setup.
 
 ## Why didn't I get a switch notification?
 
-Check that **Switch notifications** is turned on in Settings, under Display. If it's already on and you're still not seeing anything, check your operating system's notification settings for your browser. ArenaSwap asks the browser to show a notification either way. If the OS is blocking notifications from the browser itself, ArenaSwap's never arrive either.
+Check that **Switch notifications** is turned on in Settings, under Switching. If it's already on and you're still not seeing anything, check your operating system's notification settings for your browser. ArenaSwap asks the browser to show a notification either way. If the OS is blocking notifications from the browser itself, ArenaSwap's never arrive either.
 
 ## Related
 

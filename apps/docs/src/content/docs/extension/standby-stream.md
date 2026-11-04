@@ -8,7 +8,7 @@ faq:
   - q: What is Standby Stream in ArenaSwap?
     a: A fallback tab. When every game you've assigned a tab to drops below a score threshold you set, ArenaSwap switches you to a tab you picked in advance. You don't get left on the least-bad option instead.
   - q: Why isn't Standby Stream doing anything even though it's turned on?
-    a: It needs two things before it can act. Pick a standby tab in Settings. Assign a tab to at least one live game. Without both, there's nothing for it to compare or fall back to.
+    a: It needs a standby tab picked in Settings, a tab assigned to at least one live game, and Enable auto-switching turned on. It also waits out your switch cooldown, and when Multiview is showing, Multiview goes first.
 ---
 
 Some nights every game you're tracking turns into a blowout, a rain delay, or an intermission at the same time. Standby Stream gives ArenaSwap somewhere better to put you than whichever of those is technically least boring.
@@ -34,7 +34,7 @@ Standby Stream can't do anything without a tab picked here. If the dropdown is s
 
 ## What happens next
 
-Once every assigned live game's PowerScore drops below your threshold, ArenaSwap switches you to the standby tab automatically. The moment any assigned game climbs back above the threshold, ArenaSwap switches you right back. Navigate away from the standby tab yourself, and ArenaSwap takes the hint and leaves you wherever you went. The standby tab mutes and unmutes exactly like any other tab ArenaSwap manages.
+Once every assigned live game's PowerScore drops below your threshold, ArenaSwap switches you to the standby tab automatically. The moment any assigned game climbs back above the threshold, ArenaSwap switches you right back. Leave the standby tab yourself, and ArenaSwap goes back to switching as usual. From a tab that isn't a game, that means the best assigned game takes your tab on the next check. Once your cooldown is up, if every game is still below the threshold, you're back on standby. To browse without being moved, turn off **Enable auto-switching**. The standby tab mutes and unmutes exactly like any other tab ArenaSwap manages.
 
 Standby Stream only ever compares against games you've assigned a tab to. If you haven't registered any tabs yet, there's nothing for it to fall back from.
 

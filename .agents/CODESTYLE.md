@@ -209,8 +209,9 @@ Typical acceptable cases include:
 
 Only `.scss` files are permitted.
 
-Do not create application `.css` files, except a Tailwind entry file in
-`apps/docs`, which Tailwind v4 requires.
+Do not create application `.css` files, except the Tailwind entry file in
+`apps/docs` (`src/styles/tailwind.css`), which Tailwind v4 requires, and the
+shared Tailwind theme it imports from `packages/ui/src/tailwind.css`.
 
 ---
 
@@ -221,8 +222,8 @@ every Sass token map. Apps configure only its scalars (`$body-font-size`,
 `$radius`, `$font-sizes`, `$link-hover-color`); passing a token map from an app
 replaces the theme's instead of merging with it.
 
-- **Tokens are `--as-*`.** A PostCSS plugin (`packages/ui/src/tokenPrefix.ts`)
-  prefixes every token Bootstrap declares. Write the compiled name in our code:
+- **Tokens are `--as-*`.** A PostCSS plugin (`packages/ui/src/bootstrapTokenPrefix.ts`,
+  built on `tokenPrefix.ts`) prefixes every token Bootstrap declares. Write the compiled name in our code:
   `var(--as-fg-body)`, not `var(--fg-body)`. The few tokens Bootstrap's JS reads
   (`--bs-range-fill`, `--bs-breakpoint-*`) keep `--bs-`.
   `packages/ui/tests/tokenNames.test.ts` fails on a token nobody declares.

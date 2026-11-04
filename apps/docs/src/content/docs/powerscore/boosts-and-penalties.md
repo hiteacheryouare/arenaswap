@@ -10,7 +10,7 @@ Signals measure how a game is going. Boosts and penalties handle the smaller, mo
 
 A boost pays nothing while the game isn't live (`status: 'in'`) or while play is frozen at halftime, an intermission, or a delay. Each one is recomputed from the current game state on every call, so there's nothing to clear when the moment passes.
 
-Every boost a mode pays shows up in `score.boosts` as `{ id, points, meta? }`, at `0` when it isn't paying. Look one up with `boostPoints(score, 'noHitter')`.
+Every boost a mode pays shows up in `score.boosts` as `{ id, points, meta?, details? }`, where `details` holds the reason fragments that describe it, at `0` when it isn't paying. Look one up with `boostPoints(score, 'noHitter')`.
 
 ## Which mode keeps which boosts
 
@@ -116,7 +116,7 @@ Baseball and softball. Needs `baseRunners`, `topOfInning`, `outs`, and `period`.
 Only the higher row applies. The base value is then weighted by inning:
 
 - Before the 6th inning (the 5th in softball), half. A threat in the 3rd is real, but the game has plenty of innings to answer it.
-- From there to the last regulation inning, 75% rising to 100%.
+- From there to the last regulation inning, 50% rising to 100%.
 - Extra innings, 100%.
 - ×1.25 when it's the last chance: the home team batting in the final inning or later, where the go-ahead run is the winning run, or a trailing road team in the top of it, which may not bat again.
 
@@ -129,9 +129,9 @@ Football. Needs `possession`, `yardsToEndZone`, and a live `down`. Pays in the 4
 - **Tied:** the last 2 minutes.
 - **Trailing by one score** (8 points, or 9 in the UFL, where a try can be worth 3): the last 4 minutes.
 
-A team running out the clock with a lead pays nothing. Neither does an NCAA overtime, which has no game clock.
+A team running out the clock with a lead pays nothing. Neither does an NCAA or UFL overtime, which has no game clock.
 
-The 12 points are scaled by four things: how little time is left (full at 40 seconds), field position (full from the opponent's 35, or 30 in college, down to 40% at your own 20), timeouts left (70% with none, 100% with three), and the margin (full when tied or down 1 or 2, shrinking to 70% at 8 down). Between plays, after a score, a feed sends a down that means nothing, and the boost pays 0 until the next snap.
+The 12 points are scaled by four things: how little time is left (full at 40 seconds), field position (full from the opponent's 35, or 30 in college, down to 40% at your own 20), timeouts left (85% with none, 100% with three, 92.5% when the feed doesn't say), and the margin (full when tied or down 1 or 2, shrinking to 70% at 8 down). Between plays, after a score, a feed sends a down that means nothing, and the boost pays 0 until the next snap.
 
 ## Red card
 
@@ -150,7 +150,7 @@ It pays in full for 2 game minutes, then fades to 0 by the 10th. A second card f
 
 ## No-hitter
 
-Baseball and softball. Needs `hits` on each team. One team with no hits pays for a **no-hit bid**, which starts late and grows with each hitless inning:
+Baseball and softball. Needs `hits` on each team, plus `period` and `topOfInning`. One team with no hits pays for a **no-hit bid**, which starts late and grows with each hitless inning:
 
 - **Starts** after the 5th complete inning of a 9-inning game, and after the 3rd in softball.
 - **Climbs** with every complete hitless inning: 10, 22, 38, then 52 and holding. While the pitching staff chasing the bid is on the field, it also adds points out by out, so it keeps growing inside an inning.

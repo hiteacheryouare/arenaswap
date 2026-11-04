@@ -19,21 +19,21 @@ Settings live behind the gear icon in the popup's top bar, grouped into eight ca
 | Switch notifications | On | On/off | Shows a browser notification with the score, venue, and reason whenever ArenaSwap switches a tab, including switches to and from Standby Stream and Multiview. |
 | When a game finishes | Leave the tab alone | Leave the tab alone, Free it from ArenaSwap, or Close the tab | What ArenaSwap does with a registered tab once its game is over. Freeing drops the registration and unmutes the tab, leaving it open and available for tab suggestions again; closing shuts it. Either way the tab you are currently looking at is left alone until you move off it, and a window's last tab is freed rather than closed so no window disappears. Nothing happens in demo mode. |
 | Decoy page | Empty (a blank tab) | Any web address | Where the boss button takes you: a spreadsheet, a doc, anything that looks busy. The button also mutes every tab ArenaSwap manages and pauses auto-switching until you turn it back on. The suggested keyboard shortcut is Alt+Shift+X. [How to use the boss button](/arenaswap/docs/extension/boss-button/) has the rest. |
-| Demo mode | Off | On/off | Replaces live scoreboards with 15 scripted games across 12 leagues, regardless of which leagues are enabled. |
+| Demo mode | Off | On/off | Replaces live scoreboards with 18 scripted games across 12 leagues, regardless of which leagues are enabled. |
 | Pretend it is | The real date | The real date, Thanksgiving week, or December | Only changes the holiday decorations. Appears while Demo mode is on. |
 
 ## Scoring
 
 | Setting | Default | Range | What it does |
 | --- | --- | --- | --- |
-| Scoring mode | Classic | Classic, Blowouts, Fantasy, or Custom | Which question PowerScore asks of every game. Classic looks for the closest, tensest game. Blowouts looks for a team running away with it. Fantasy looks for the game your rostered players are in. Custom picks one of the three for each league. |
-| Mode for each league | Classic | Classic, Blowouts, or Fantasy, per league | Only used when the scoring mode is Custom. A league you leave alone scores as Classic. |
-| Signals | All on | On/off for each signal in the mode | Whether a signal contributes to the score. Each mode keeps its own list: Classic's are Closeness, Late-game, Momentum, Lead changes, and Comeback. Blowouts' are Blowout margin, Sustained, Timing, and Pile-on. Fantasy's are Situation, Production, and Exposure. You only see the lists for modes you're using. |
-| Fantasy blend | 60% | 0 to 100% | How much of your players' Fantasy score is added on top of Classic. 0 is pure Classic. 100 adds the full Fantasy score. Only used when a game is scored in Fantasy. |
-| Fantasy roster | Empty | Up to 50 players | The players Fantasy follows. Add them by searching their name. Covers the NFL, NBA, WNBA, MLB, and NHL. |
-| Fantasy scoring rules | The usual defaults for each sport | Each rule has its own minimum and maximum | How many fantasy points each stat is worth, for football, basketball, baseball, and hockey. |
-| Favorite team bonus | 10 | 0 or higher | Points added once for each favorited team in a game. Doubled when both teams are favorited. Applies in every mode. |
-| Postseason boost | 8 | 0 or higher | The most a title-deciding game can add. Earlier rounds add a share of it: 75% for a semifinal, 50% for a quarterfinal, and 25% for anything before that. Applies in every mode except Blowouts, where a settled result is not worth chasing. |
+| What PowerScore looks for | Classic | Classic, Blowouts, Fantasy, or Custom | Which question PowerScore asks of every game. Classic looks for the closest, tensest game. Blowouts looks for a team running away with it. Fantasy looks for the game your rostered players are in. Custom picks one of the three for each league. |
+| Mode by league | Classic | Classic, Blowouts, or Fantasy, per league | Only used when **What PowerScore looks for** is Custom. A league you leave alone scores as Classic. |
+| PowerScore Signals | All on | On/off for each signal in the mode | Whether a signal contributes to the score. Each mode keeps its own list: Classic's are Closeness, Late-game, Momentum, Lead changes, and Comeback. Blowouts' are Blowout margin, Sustained, Timing, and Pile-on. Fantasy's are Situation, Production, and Exposure. You only see the lists for modes you're using. |
+| How much your players lift their games | 60% | 0 to 100% | How much of your players' Fantasy score is added on top of Classic. 0 is pure Classic. 100 adds the full Fantasy score. Only used when a game is scored in Fantasy. |
+| Your Players | Empty | Up to 50 players | The players Fantasy follows. Add them by searching their name. Covers the NFL, NBA, WNBA, MLB, and NHL. |
+| Scoring Rules | The usual defaults for each sport | Each rule has its own minimum and maximum | How many fantasy points each stat is worth, for football, basketball, baseball, and hockey. |
+| Favorite team boost | 10 | 0 to 100 | Points added once for each favorited team in a game. Doubled when both teams are favorited. Applies in every mode. |
+| Postseason boost | 8 | 0 to 100 | The most a title-deciding game can add. Earlier rounds add a share of it: 75% for a semifinal, 50% for a quarterfinal, and 25% for anything before that. Applies in every mode except Blowouts, where a settled result is not worth chasing. |
 
 At least one signal has to stay on in a mode. If a signal is off, ArenaSwap re-normalizes the rest so the total still spans the full 0 to 100 range. Fantasy only has something to say about a game with one of your players in it. Every other game is scored as Classic. [How to change what ArenaSwap looks for in a game](/arenaswap/docs/extension/scoring-modes/) covers the modes and the roster. See the [PowerScore page](/arenaswap/powerscore/) for how each signal is calculated.
 
@@ -41,7 +41,7 @@ At least one signal has to stay on in a mode. If a signal is off, ArenaSwap re-n
 
 | Setting | Default | Range | What it does |
 | --- | --- | --- | --- |
-| Teams you follow | None | Any team | Followed teams stay at the top of the list, and their games get the favorite team bonus from Scoring. |
+| Teams you follow | None | Any team | Followed teams stay at the top of the list, and their games get the favorite team boost from Scoring. |
 
 ## Leagues
 

@@ -75,7 +75,7 @@ Each mode keeps its own list of signals you can turn off, the same way Classic a
 
 Some points come from you, not from the game, and they apply in every mode:
 
-- **Favorite team bonus**, for each favorited team in the game. See [favorite teams](/arenaswap/docs/extension/favorite-teams/).
+- **Favorite team boost**, for each favorited team in the game. See [favorite teams](/arenaswap/docs/extension/favorite-teams/).
 - **Postseason boost**, for playoff and knockout games. Blowouts is the exception, since a settled result isn't worth chasing.
 - **Standby Stream**, which compares the same 0 to 100 score against your threshold. See [Standby Stream](/arenaswap/docs/extension/standby-stream/).
 

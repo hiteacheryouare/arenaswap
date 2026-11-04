@@ -76,7 +76,7 @@ Tied games ramp past 36 in the final minute, toward an overtime pre-boost that t
 
 Baseball and softball have no clock, so the same closeness-gated ramp runs across innings instead. It starts in the 6th inning for baseball, or the 5th for softball, and reaches its ceiling by the end of regulation.
 
-Soccer never says "overtime." Extra time reads *extra time*, a shootout reads *penalties*, and a level match late in the second half reads *still level late*. A draw is an ordinary league result, not a stop on the way to overtime. The pre-boost still applies, because a late deadlock is genuinely tense.
+Soccer never says "overtime." Extra time reads *Tied in extra time*, a shootout reads *Penalty shootout*, and a level match late on reads *Tied in the 85th minute*. A draw is an ordinary league result, not a stop on the way to overtime. The pre-boost still applies, because a late deadlock is genuinely tense.
 
 What late-game pressure ignores: recent scoring pace, which is momentum's job, and anything about the first three quarters of a game that's since turned lopsided.
 
@@ -86,9 +86,9 @@ These three all read from `context.history`, the list of a game's past scores, a
 
 **Momentum** (ceiling 38) measures the swing in the score differential between the oldest and newest snapshot in the window. If one team scores 10 and the other answers with 2, that's a swing of 8, not a 10-0 run. The reason string names both numbers, because a differential isn't a shutout. What counts as a big swing scales with the sport: 8 points in basketball, 2 goals in hockey, 3 runs in baseball. It ignores which team is actually ahead. A team can be losing by 20 and still register a momentum spike by outscoring its opponent over the window.
 
-**Lead Changes** (ceiling 18) counts how many times the lead changed hands across the window: 18 points for two or more, 12 for one. A tie doesn't count as a lead on its own. Trailing, tying, then taking the lead is one change. Taking the lead, tying, then taking it back is none. It ignores the size of any swing. Two flips or twenty score the same, because past that point the game has already established that it's unpredictable.
+**Lead Changes** (ceiling 18) counts how many times the lead changed hands across the window: 18 points for two or more, 12 for one. A tie doesn't count as a lead on its own. Trailing, tying, then taking the lead is one change. Taking the lead, tying, then taking it back is none. It ignores the size of any swing. Two flips or twenty score the same, because past that point the game has already established that it's unpredictable. If your feed counts lead changes from its play log, pass `context.recentLeadChanges` (`{ count, lastAt? }`). When its count is higher than the snapshots show, it wins, which catches flips that happened between polls.
 
-**Comeback Factor** (ceiling 20) compares how much the margin has shrunk since the oldest snapshot in the window, scaled by game progress the same way closeness is. Cutting a lead in the first quarter counts for less than cutting the same lead with two minutes on the clock. It scores the trend while it's happening, without waiting to see whether the trailing team completes it.
+**Comeback Factor** (ceiling 20) measures the swing for the team that trailed at the oldest snapshot in the window: the deficit it erased, plus any lead it has taken since. A team down 5 that now leads by 6 has swung 11. Nothing pays if the window opened tied. Once the comeback team leads by more than the sport's second closeness margin (10 in basketball), the game has turned into a rout, and only the deficit it erased counts, less that lead. The swing is scaled by game progress the same way closeness is. Cutting a lead in the first quarter counts for less than cutting the same lead with two minutes on the clock. It scores the trend while it's happening, without waiting to see whether the trailing team completes it.
 
 ### Two modifiers that aren't signals
 
@@ -101,8 +101,8 @@ Closeness turned inside out. Blowouts pays nothing until a game is two scores ap
 | Signal | Ceiling | What it measures |
 |---|---|---|
 | Blowout Margin | 50 | The margin, scaled up as the game goes on so a rout late is surer than one early. Full credit at 30 points in basketball, 28 in football, 5 goals in hockey and soccer, 10 runs in baseball and softball. |
-| Sustained | 30 | How much of the history window the current leader has been more than two scores up. A lead that has been built and held scores here. A run that may revert doesn't. Needs 3 snapshots. |
-| Timing | 25 | An early rout has more beatdown left to watch than one that is nearly over. Falls toward 0 as regulation ends. |
+| Sustained | 30 | How much of the history window the current leader has been more than two scores up. A lead that has been built and held scores here. A run that may revert doesn't. Needs 3 snapshots, and pays in full only once the history covers the whole window. |
+| Timing | 25 | An early rout has more beatdown left to watch than one that is nearly over. Falls toward 0 as regulation ends. Pays only once the margin is past the sport's third closeness margin, and only when `period` is known. |
 | Pile-On | 15 | The leader is still extending. It reads momentum in the leader's direction only, so a team hanging on to a big lead scores nothing here. Needs 3 snapshots. |
 
 What Blowouts ignores: how a close game is going. A game inside two scores scores next to nothing here. That's where the blend comes in.
@@ -115,11 +115,11 @@ Scores what your players are doing. It reads `context.fantasy`, one entry per ro
 
 | Signal | Ceiling | What it measures |
 |---|---|---|
-| Situation | 50 | Where your players are in the game. Football: who has the ball, red zone, goal line, your kicker in range, your defense on the field. Baseball: at bat, on deck, or pitching with runners on. Basketball and hockey: how close and late the game is. The player with the most going on counts in full and everyone else at a quarter. |
+| Situation | 50 | Where your players are in the game. Football: who has the ball, red zone, goal line, your kicker in range, your defense on the field. Baseball: at bat, on deck, or pitching with runners on. Basketball, hockey and soccer: how close and late the game is. The player with the most going on counts in full and everyone else at a quarter. |
 | Production | 35 | Fantasy points your players scored lately, fading the way a lead change does. A full burst (a touchdown, a home run, a goal) fills it. Negative plays don't count: nobody switches in to watch an interception they already missed. |
 | Exposure | 15 | How many of your players are in the game: 5 each, up to 15. |
 
-Football is the only sport with a live feel for who has the ball. Basketball and hockey have no live on-court data, so a rostered player in a game there is worth as much as the game itself is close and late. A player marked `active: false` (benched, injured, ejected) counts for nothing.
+Football is the only sport with a live feel for who has the ball. Basketball, hockey and soccer have no live on-court data, so a rostered player in a game there is worth as much as the game itself is close and late. A player marked `active: false` (benched, injured, ejected) counts for nothing.
 
 ## How the modes blend with Classic
 

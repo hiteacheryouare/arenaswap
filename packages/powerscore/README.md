@@ -64,7 +64,8 @@ That minimum gets you the two score-and-clock signals (Closeness and Late-Game P
 | Score snapshots, oldest first | `context.history` | Momentum, Lead Changes, Comeback Factor. Needs at least 3 snapshots. |
 | Win probability, 0–1 per poll | `context.winProbability` | The ±5 win probability modifier. Needs at least 5 values. |
 | Whether the game is in a commercial break | `context.onBreak` | The break deduction. |
-| `possession`, `yardsToEndZone`, `down`, `distance`, and `timeouts` on the team | `game`, `game.homeTeam` | The two-minute drill, the red zone boost, and Fantasy's football situation. |
+| `possession`, `yardsToEndZone`, `down`, `distance`, and `timeouts` on the team | `game`, `game.homeTeam` | The two-minute drill and Fantasy's football situation. |
+| `isRedZone`, plus `down`, `distance` and `isGoalToGo` | `game` | The red zone boost. |
 | `baseRunners`, `outs`, `topOfInning` | `game` | Runners on base, go-ahead run on base. |
 | `hits` on each team | `game.homeTeam`, `game.awayTeam` | The no-hitter. |
 | `series`, `rank` on each team | `game`, `game.homeTeam` | Stakes: a series on the brink, two ranked teams. |
@@ -96,7 +97,7 @@ const score = scoreGame(
 );
 
 score.boosts.find(boost => boost.id === 'twoMinuteDrill');
-// { id: 'twoMinuteDrill', points: 6, meta: { secondsLeft: 95, trailBy: 3 } }
+// { id: 'twoMinuteDrill', points: 7, meta: { secondsLeft: 95, trailBy: 3 }, details: [ … ] }
 
 score.reason; // "Bills down 3, driving from 41 yards out with 1:35 left"
 ```
@@ -221,7 +222,7 @@ Boosts are the smaller, moment-shaped inputs. They pay nothing while the game is
 | Scoring opportunity | `scoringOpportunity` | Runners on base; a football drive inside the red zone, weighted by down; a hockey power play in a tied or one- or two-goal game, or a pulled goalie in the last 4 minutes of the 3rd. | 20 |
 | Go-ahead run | `goAheadRun` | Baseball and softball. The batting team has the go-ahead run on base, or failing that the tying run. Stronger late, and strongest when it's the last chance. Pays nothing at 3 outs. | 10 |
 | Two-minute drill | `twoMinuteDrill` | Football. The team with the ball is tied or down one score, inside the last 2 minutes (4 when trailing), weighted by field position and timeouts. | 12 |
-| Red card | `redCard` | Soccer. A red card in a tied or one-goal game, fading over the next 10 game minutes. | 15 |
+| Red card | `redCard` | Soccer. A red card in a tied or one-goal game, or with the carded team up two, fading over the next 10 game minutes. | 15 |
 | No-hitter | `noHitter` | Baseball and softball. One team has no hits, from the 6th inning (the 4th in softball), growing with each hitless inning. | 70 |
 | Upset watch | `upsetWatch` | The pregame underdog leading, level or within one score, past halfway. Bigger the longer the odds. | 12 |
 | Stakes | `stakes` | A playoff series on the brink, two ranked teams, a late-season race. Halved when the game isn't close. | 10 |
@@ -518,7 +519,7 @@ Half-lives: 60s basketball, 180s football and baseball/softball, 240s hockey, 30
 
 ### Comeback Factor
 
-Compares how much the margin has shrunk since the oldest snapshot. Progress-scaled like closeness (with a flat floor of 2) and then decayed like momentum.
+Measures the swing for the team that trailed at the oldest snapshot: the deficit it erased plus any lead it has taken since. Nothing pays if the window opened tied. Once that team leads by more than the sport's second closeness margin (10 in basketball), the game has turned into a rout and only the deficit it erased counts, less the lead. Progress-scaled like closeness (with a flat floor of 2) and then decayed like momentum.
 
 | Sport | Big shrinkage → 20 | Moderate → 11 |
 |---|---|---|
@@ -566,9 +567,10 @@ result.total; // 0–100, the same number 2.x gave you
 
 ## Migrating from 2.x
 
-Scores don't change. Reasons do, and one field is gone. Upgrade, run your tests, and move to `scoreGame` when you want modes or the new boosts.
+Most scores hold. Reasons change, the stall penalty is gone, and a game coming back to take the lead now earns Comeback Factor. Upgrade, run your tests, and move to `scoreGame` when you want modes or the new boosts.
 
-- **`computePowerScore` and its friends still work.** They are deprecated, not removed. `PowerScoreResult` is unchanged, and `computePowerScore` keeps 2.x's boost-free behavior: it returns the same totals it did.
+- **The stall penalty is retired, and that changes three signatures.** `computePowerScore` is now `(game, history, winProbabilityHistory)`. A 2.x call that still passes `stallCount` third fails to type-check, and in plain JavaScript it throws a `TypeError`, so drop that argument at every call site. `PowerScoreResult` and `PowerScore` lost `stalled` and `stallPenalty`, `ScoringContext` lost `stallCount`, and `PowerScoreMode.usesStallPenalty` is now `usesBreakPenalty`. Set `context.onBreak` to dock a game in a commercial break.
+- **`computePowerScore` and its friends still work.** They are deprecated, not removed, and `computePowerScore` keeps 2.x's boost-free behavior. A stalled game no longer loses points, and a comeback that reaches the lead pays Comeback Factor, so those two cases score higher than they did.
 - **`Game` gained optional fields and a type parameter.** `Game<League extends string = LeagueId>`, so a bare `Game` means what it meant. New fields: `possession`, `yardsToEndZone`, `outs`, `series`, `redCards`, `seasonType`, `postseasonRound`, plus `rank`, `hits`, `errors` and `timeouts` on each team.
 - **Unknown leagues now fall back by sport, not to the NBA.** A league id the table doesn't know used to be scored with the NBA's configuration whatever the sport. Now a hockey game in an unknown league gets the NHL's periods and clock, and so on. If you relied on the old fallback for a non-basketball sport, scores will move, and for the better.
 - **Reasons are sentences of plain facts.** `reason` reads "Lakers on a 12–2 run to take the lead. Up 7 with 2:10 left" where 2.x read "LAL outscoring BOS 12-2, just took the lead". Boosts are no longer appended with their points. Most reason keys are new; see [Reasons](#reasons). Pass `nickname` on each team to have it used in place of the abbreviation.
@@ -600,7 +602,7 @@ scoreGame(game, context, { mode: { ...classicMode, boosts: [] } });
 
 **The clock late-game curve types are gone.** `ExponentialLateGameCurve` and `ClockLateGameCurveConfig` were removed, and `LateGameCurveConfig` is no longer a union — it is now just `BaseballLateGameCurveConfig`. Clock sports derive their ramp from period plus clock and carry no curve config at all. `BaseballInningScoreTier` went with them, and `BaseballLateGameCurveConfig.extraInningsStartInning` is gone too, since extra innings are detected from `period > league.regularPeriods` and the field was never read.
 
-**Everything else worth knowing.** Signal ceilings were raised across the board except lead changes (30→42 closeness, 28→38 late-game, 28→38 momentum, 14→20 comeback), so any threshold you calibrated against 1.x totals needs revisiting. `Game.period`, `Game.clockSeconds` and both `abbreviation` fields are now optional, and a missing clock is treated as unknown rather than 0:00. `SportType` gained `'softball'` and `LeagueId` went from 12 leagues to 31. `computePowerScore` takes a fourth `winProbabilityHistory` parameter, and `PowerScoreResult` gained `winProbabilityVariance`, `stallPenalty`, `scoringOpportunityBoost` and `postseasonBoost`. `signalsSubtotal` is now set by `computePowerScore` itself, holding the pre-stall signals subtotal.
+**Everything else worth knowing.** Signal ceilings were raised across the board except lead changes (30→42 closeness, 28→38 late-game, 28→38 momentum, 14→20 comeback), so any threshold you calibrated against 1.x totals needs revisiting. `Game.period`, `Game.clockSeconds` and both `abbreviation` fields are now optional, and a missing clock is treated as unknown rather than 0:00. `SportType` gained `'softball'` and `LeagueId` went from 12 leagues to 31. `computePowerScore` gained a `winProbabilityHistory` parameter, and `PowerScoreResult` gained `winProbabilityVariance`, `scoringOpportunityBoost` and `postseasonBoost`. `signalsSubtotal` is now set by `computePowerScore` itself, holding the signals subtotal before any deduction.
 
 Reason strings changed wording throughout. They are display text, not an API — match on them at your own risk.
 

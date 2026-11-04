@@ -202,9 +202,9 @@ Arrow functions only, unless the language, runtime or framework requires otherwi
 - `apps/extension` and `packages/ui` → Bootstrap components and utilities, plus SCSS
 - `apps/docs` → Bootstrap, SCSS and TailwindCSS utilities
 - Tailwind is compiled only in `apps/docs`. A Tailwind class in the extension does nothing.
-- The popup and `packages/ui` support both light and dark themes. The website is dark only
+- The popup, `packages/ui` and the website support both light and dark themes
 - Motion uses the shared tokens in `packages/ui/src/_motion.scss` and `packages/ui/src/motion.ts`, and respects reduced motion
-- `.scss` only (no `.sass`, no application `.css` beyond the website's Tailwind entry)
+- `.scss` only (no `.sass`, no application `.css` beyond the Tailwind entry in `apps/docs` and the shared Tailwind theme in `packages/ui`)
 
 ### Prohibited:
 - External UI libraries (MUI, Chakra, shadcn, headlessui, etc.)

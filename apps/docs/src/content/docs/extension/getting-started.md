@@ -15,12 +15,12 @@ Install ArenaSwap, answer two quick questions, and you're a few minutes from wat
 
 ## Install the extension
 
-Grab ArenaSwap from the Chrome Web Store, Firefox Add-ons, or the Edge Add-ons store, depending on your browser. Installation adds an icon to your toolbar and opens the setup flow automatically.
+Grab ArenaSwap from the Chrome Web Store, Firefox Add-ons, or the Edge Add-ons store, depending on your browser. Installation adds an icon to your toolbar. Click it to start setup.
 
 The setup flow opens with a welcome screen covering three things:
 
 - **Automatic tab switching**
-- **You register tabs to games**
+- **You pick the tabs**
 - **You stay in control**, with a pause switch and tunable settings
 
 Click **Got it** to continue.
@@ -51,7 +51,7 @@ Back in the ArenaSwap popup, find each game's card. Use its **Assign a tab** dro
 
 ## Watch it switch
 
-Leave both tabs open and let ArenaSwap run. As soon as one game's PowerScore pulls far enough ahead of the one you're watching, your browser jumps to that tab on its own. It unmutes the new tab and mutes the one you left. If you turned on **Switch notifications**, a banner tells you the score and why it switched.
+Leave both tabs open and let ArenaSwap run. As soon as one game's PowerScore pulls far enough ahead of the one you're watching, your browser jumps to that tab on its own. It unmutes the new tab and mutes the one you left. With **Switch notifications** on, which is the default, a banner tells you the score and why it switched.
 
 ## What's next
 

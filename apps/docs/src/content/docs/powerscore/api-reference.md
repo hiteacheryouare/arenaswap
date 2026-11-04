@@ -104,7 +104,7 @@ const overtimeOnly: PowerScoreMode = defineMode({
 scoreGame(game, context, { mode: overtimeOnly });
 ```
 
-A signal's `compute` receives the game, the context, the resolved sport and league config, the game's `progress` (0 at the start, 1 at the end of regulation and through overtime), and the `margin`. It returns `points`, clamped to the ceiling, and an optional `reason`. A mode can also carry `boosts`, `bucketCaps`, a `classicBlend`, and an `appliesTo(game, context)` that sends games it has nothing to say about to Classic.
+A signal's `compute` receives the game, the context, the resolved sport and league config, the game's `progress` (0 at the start, 1 at the end of regulation and through overtime), and the `margin`. It returns `points`, clamped to the ceiling, and an optional `reason`. A mode can also carry `boosts`, `bucketCaps`, a `classicBlend`, `paysPostseason` (default `true`; `false` withholds the postseason boost), and an `appliesTo(game, context)` that sends games it has nothing to say about to Classic.
 
 `reasonPriority` lists the signals whose reasons may be read. The strongest of them speaks, and the order breaks ties. A reason key the built-in modes know renders as English in `score.reason`. A key of your own renders as itself, so translate from `score.reasons`, not from the string.
 

@@ -58,7 +58,8 @@ Each optional field turns on the part of the engine that needs it. Leave one out
 | Score snapshots, oldest first | `context.history` | Momentum, Lead Changes, Comeback Factor. Needs at least 3 snapshots. |
 | Win probability, 0 to 1 per poll | `context.winProbability` | The ±5 win probability modifier. Needs at least 5 values. |
 | Whether the game is in a commercial break | `context.onBreak` | The break deduction. |
-| `possession`, `yardsToEndZone`, `down`, `distance`, and `timeouts` on the team | `game`, `game.homeTeam` | The two-minute drill, the red zone boost, and Fantasy's football situation. |
+| `possession`, `yardsToEndZone`, `down`, `distance`, and `timeouts` on the team | `game`, `game.homeTeam` | The two-minute drill and Fantasy's football situation. |
+| `isRedZone`, plus `down`, `distance` and `isGoalToGo` | `game` | The red zone boost. |
 | `baseRunners`, `outs`, `topOfInning` | `game` | Runners on base and the go-ahead run. |
 | `hits` on each team | `game.homeTeam`, `game.awayTeam` | The no-hitter. |
 | `series`, and `rank` on each team | `game`, `game.homeTeam` | Stakes: a series on the brink, two ranked teams. |
@@ -67,6 +68,9 @@ Each optional field turns on the part of the engine that needs it. Leave one out
 | `redCards` | `game` | The red card boost, soccer. |
 | `powerPlay`, `emptyNet` | `context` | Hockey's scoring opportunity. |
 | `fantasy` | `context` | The Fantasy mode. |
+| `nickname` on each team | `game.homeTeam`, `game.awayTeam` | Team names in `reason`, in place of the abbreviation. |
+| `seasonType`, `postseasonRound` | `game` | Stakes read the game as postseason (a series) rather than regular season (ranks and races). |
+| `recentLeadChanges` | `context` | A lead change count from your feed's play log, for flips between polls. |
 
 The fields are all on [the types page](/arenaswap/docs/powerscore/types/#game), and what each boost pays is in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/).
 
@@ -98,12 +102,12 @@ const history: ScoreSnapshot[] = [
 const score = scoreGame(game, { history });
 ```
 
-Boston just took the lead on the back of a 13-2 run:
+Boston was down 5 and just took the lead on the back of a 13-2 run:
 
 ```ts
-score.total;  // 70
-score.reason; // 'BOS on a 13–2 run to take the lead. Up 6 in the 3rd quarter'
-// closeness 18, lateGame 2, momentum 38, leadChanges 12, comeback 0
+score.total;  // 86
+score.reason; // 'BOS came back from 5 down to lead. Up 6 in the 3rd quarter'
+// closeness 18, lateGame 2, momentum 38, leadChanges 12, comeback 16
 ```
 
 Trim snapshots older than the sport's `historyWindowMs` so the array doesn't grow forever. That window, and the rest of the sport-specific tuning, is in [Sport and league configuration](/arenaswap/docs/powerscore/configuration/).
@@ -144,7 +148,7 @@ score.boosts.filter(boost => boost.points > 0);
 // ]
 ```
 
-Those two together fill the moments bucket's cap of 20. Football gets the red zone and the two-minute drill from `possession`, `yardsToEndZone`, and `down`. Hockey's scoring opportunity needs `context.powerPlay` and `context.emptyNet`. Soccer needs `redCards`.
+Those two together fill the moments bucket's cap of 20. Football gets the red zone from `isRedZone`, weighted by `down`, `distance` and `isGoalToGo`, and the two-minute drill from `possession`, `yardsToEndZone`, and `down`. Hockey's scoring opportunity needs `context.powerPlay` and `context.emptyNet`. Soccer needs `redCards`.
 
 ## Score it in a different mode
 
@@ -173,7 +177,7 @@ const score = scoreGame(game, { history }, {
 	gameBoost: 10,
 });
 
-score.total; // 90
+score.total; // 106
 ```
 
 The favorite and postseason boosts are added to the total and capped at 100. `gameBoost` is added after that, and it is the only thing allowed past 100, so a game a viewer pins can beat a perfect score. A frozen game skips them all: a stopped game can't out-score one being played.

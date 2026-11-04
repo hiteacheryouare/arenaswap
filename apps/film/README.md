@@ -25,7 +25,7 @@ npm run film:render -- --cut 15 --stills 4.2,9  # PNG frames at those seconds in
 npm run film -- --locale ja                     # any locale the extension ships
 ```
 
-Everything lands in `apps/film/out/` (gitignored), named `arenaswap-<cut>s-<16x9|9x16>.mp4`.
+Everything lands in `apps/film/out/` (gitignored), named `arenaswap-<cut>s-<16x9|9x16>.mp4`, with `-<locale>` added for a non-English cut and `-preview` for a `--scale` render.
 A full set of six takes roughly 20 minutes on an Apple-silicon Mac with `--jobs 2`.
 
 Run these from the repo root. They hand off to this workspace's own scripts (`build:film`, `render`,

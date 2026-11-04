@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The docs match the code again — 2026-11-03
+
+A pass over every help article, the PowerScore pages and README, CONTRIBUTING and CODESTYLE fixed what had drifted: Comeback Factor now paying a comeback that takes the lead (the history example reads 86, not 70), the demo's 18 games, the shipped setting labels, the go-ahead run and two-minute drill weights, and what Standby Stream really does when you leave its tab. The PowerScore README now warns that retiring the stall penalty changed `computePowerScore`'s arguments, and that an old four-argument call throws.
+
 ## Long names stop before the arrow — 2026-11-03
 
 A long tab title in the tab picker ran under its arrow, because Bootstrap 6 makes `.form-control` a flex box and `text-truncate` does nothing on one. The label now ends in an ellipsis before the caret, the open list shows whole titles with "in use" kept visible, and the same dead truncation is fixed on the backup and profile buttons, the game header, the pre-game leaders and the Up Next search line.
