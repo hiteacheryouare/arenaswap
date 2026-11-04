@@ -128,7 +128,7 @@ export default () => {
 	const [leagueSchedules, setLeagueSchedules] = useState<LeagueScheduleMap>({});
 	const settledRef = useRef(false);
 	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
-	const { toasts, showToast, dismissToast } = useToast();
+	const { toasts, showToast, dismissToast, pauseToast, resumeToast } = useToast();
 	const bossShortcut = useBossShortcut();
 
 	// Updates arrive by push, so revalidation is off: a second SWR fetch (StrictMode remount or
@@ -676,7 +676,7 @@ export default () => {
 		<StaleLeaguesProvider shedLeagues={data?.slateShedLeagues} lastGoodAt={data?.leagueLastGoodAt}>
 		<div className='popup-root'>
 			<canvas ref={confettiCanvasRef} className='popup-confetti-canvas' aria-hidden='true' />
-			<ToastContainer toasts={toasts} onDismiss={dismissToast} />
+			<ToastContainer toasts={toasts} onDismiss={dismissToast} onPause={pauseToast} onResume={resumeToast} />
 			<div key={view} className={`popup-view-shell${navigated ? '' : ' is-opening-view'}${viewSlide === 'back' ? ' is-returning' : ''}`}>
 				{view === 'setup' && (
 					<SetupView
