@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The E2E suite runs the real worker — 2026-11-03
+
+Extension E2E specs can now boot the built background worker itself (`cypress/support/liveExtension.ts`), fed recorded scoreboards with its clock moved by the spec, so switching, the cooldown, Standby Stream, the boss button, Multiview and moving a setup through a backup file are checked against what the shipped worker decides. The docs site gained a spec that walks each help section with Previous and Next and checks every FAQ's structured data matches the questions on the page.
+
 ## Tests run in cached groups — 2026-11-03
 
 Unit tests, each Cypress component folder and each end-to-end folder are now separate turbo tasks cached on only the files they load, and CI runs them as parallel jobs. `test:specGroups` fails when a spec sits outside a group or loads a file its group's inputs leave out, so a cache hit can't hide a real failure.
