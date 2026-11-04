@@ -58,6 +58,19 @@ const loadFaceOf = (selector: string) => cy.get(selector).first().then(([el]: JQ
 
 const longTitle = 'Celtics vs 76ers live stream Game 7 Eastern Conference Finals replay';
 
+describe('tabAssignSelect standby tab', () => {
+	it('disables the standby tab with a hint, and leaves the others open', () => {
+		cy.mount(
+			<div className='game-card-tab-assign' style={{ width: 240 }}>
+				<TabAssignSelect gameId='g1' openTabs={tabs} registry={[]} standbyStreamTabId={11} onChange={() => {}} formatTabLabel={tab => tab.title ?? ''} />
+			</div>,
+		);
+		cy.get('.form-control-caret').click();
+		menuItem('Celtics vs 76ers live').should('have.class', 'disabled').and('be.disabled').and('contain.text', 'standby');
+		menuItem('New Tab').should('not.have.class', 'disabled');
+	});
+});
+
 describe('tabAssignSelect long titles', () => {
 	it('ends a long title before the caret and keeps the full name on hover', () => {
 		const longTabs = [{ id: 21, title: longTitle, url: 'https://example.com/long', favIconUrl: favicon }] as any[];

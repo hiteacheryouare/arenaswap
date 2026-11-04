@@ -1298,7 +1298,9 @@
 	},
 	"tabAssign": {
 		"placeholder": "タブを割り当て",
-		"inUse": "（使用中）"
+		"inUse": "（使用中）",
+		"standby": "（スタンバイ）",
+		"hasGame": "（試合に割り当て済み）"
 	},
 	"suggest": {
 		"bannerTitle": "これらのタブ、試合っぽいです",

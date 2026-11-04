@@ -9,10 +9,11 @@ interface ExtLiveGameCardProps extends GameCardDisplayProps {
 	registry: TabRegistration[];
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
+	standbyStreamTabId?: number | null;
 	gameBoosts?: Record<string, number>;
 }
 
-const liveGameCard = ({ openTabs, registry, onRegistryChange, formatTabLabel, game, gameBoosts: _gameBoosts, ...rest }: ExtLiveGameCardProps) => (
+const liveGameCard = ({ openTabs, registry, onRegistryChange, formatTabLabel, standbyStreamTabId, game, gameBoosts: _gameBoosts, ...rest }: ExtLiveGameCardProps) => (
 	<LiveGameCard
 		{...rest}
 		game={game}
@@ -23,6 +24,7 @@ const liveGameCard = ({ openTabs, registry, onRegistryChange, formatTabLabel, ga
 				registry={registry}
 				onChange={onRegistryChange}
 				formatTabLabel={formatTabLabel}
+				standbyStreamTabId={standbyStreamTabId}
 			/>
 		}
 	/>

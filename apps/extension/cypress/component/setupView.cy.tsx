@@ -71,6 +71,7 @@ const defaultProps = {
 	standbyStreamTabId: null,
 	standbyOnboardingDone: true,
 	openTabs: [],
+	registry: [],
 	formatTabLabel: () => 'Tab',
 	onClose: () => {},
 	onSensitivityChange: () => {},
@@ -761,6 +762,24 @@ describe('setupView standby stream', () => {
 
 		cy.get('#standbyTabSelect').choose('Gamecast');
 		cy.get('@onSetStandbyTab').should('have.been.calledWith', 102);
+	});
+
+	it('keeps tabs that hold a game from being the standby tab, and says why', () => {
+		cy.mount(
+			<SetupView
+				{...defaultProps}
+				prefs={{ ...defaultPrefs, standbyStreamEnabled: true }}
+				openTabs={[{ id: 101, title: 'Red Zone' }, { id: 102, title: 'Gamecast' }]}
+				registry={[{ tabId: 102, gameId: 'g1' }]}
+				formatTabLabel={(tab: { title?: string }) => tab.title ?? ''}
+				onSetStandbyTab={cy.stub().as('onSetStandbyTab')}
+			/>,
+		);
+		openGroup('standby');
+
+		cy.get('#standbyTabSelect').click();
+		cy.contains('.menu-item', 'Gamecast').should('have.class', 'disabled').and('be.disabled').and('contain.text', 'has a game');
+		cy.contains('.menu-item', 'Red Zone').should('not.have.class', 'disabled').and('not.contain.text', 'has a game');
 	});
 
 	it('shows the standby stream guide when toggled on and onboarding not done', () => {

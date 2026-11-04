@@ -3,7 +3,7 @@ import { i18n } from '#i18n';
 import { isCollegeLeagueId, leagueConfigMap, multiviewMaxBoxesMax, multiviewMaxBoxesMin, resolveCollegeFilter } from '@arenaswap/core/constants';
 import { modesInUse } from '@arenaswap/core';
 import type { FantasyRosterEntry } from '@arenaswap/core';
-import type { BuiltInModeId, CollegeFilter, CollegeLeagueId, FinishedTabAction, LeagueId, LeagueLogoMap, LeagueScheduleMap, ScoringModeChoice, SignalName, SportType, ThemePreference, UserPreferences } from '@arenaswap/core/types';
+import type { BuiltInModeId, CollegeFilter, CollegeLeagueId, FinishedTabAction, LeagueId, LeagueLogoMap, LeagueScheduleMap, ScoringModeChoice, SignalName, SportType, TabRegistration, ThemePreference, UserPreferences } from '@arenaswap/core/types';
 import { fantasySportOf, type FantasySport } from 'powerscore';
 import type { Browser } from 'wxt/browser';
 import ToggleSwitch from '@arenaswap/ui/src/components/toggleSwitch';
@@ -54,6 +54,7 @@ interface setupViewProps {
 	standbyStreamTabId: number | null;
 	standbyOnboardingDone: boolean;
 	openTabs: Browser.tabs.Tab[];
+	registry: TabRegistration[];
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 	onClose: () => void;
 	onSensitivityChange: (val: number) => void;
@@ -135,7 +136,7 @@ const pageFallback = (
 
 const setupView = ({
 	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, leagueSchedules, favoriteTeamIds, standbyStreamTabId, standbyOnboardingDone,
-	openTabs, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange, onToggleContentAwareSwitching,
+	openTabs, registry, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange, onToggleContentAwareSwitching,
 	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder, onCollegeFilterChange,
 	onToggleGroupByLeague, onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onThemeChange, onUpcomingGamesDaysChange,
 	onToggleProTips, onToggleNotifications, bossShortcut, onBossDecoyChange, onToggleDemo, onDemoSeasonChange, onToggleStandbyStream, onStandbyThresholdChange,
@@ -575,11 +576,16 @@ const setupView = ({
 							ariaLabel={i18n.t('setup.standbyTab')}
 							options={[
 								{ value: '', label: i18n.t('setup.selectTab') },
-								...openTabs.filter(openTab => openTab.id !== undefined).map(openTab => ({
-									value: String(openTab.id),
-									label: formatTabLabel(openTab),
-									image: <TabFavicon url={openTab.favIconUrl} />,
-								})),
+								...openTabs.filter(openTab => openTab.id !== undefined).map(openTab => {
+									const holdsGame = registry.some(reg => reg.tabId === openTab.id);
+									return {
+										value: String(openTab.id),
+										label: formatTabLabel(openTab),
+										hint: holdsGame ? i18n.t('tabAssign.hasGame').trim() : undefined,
+										image: <TabFavicon url={openTab.favIconUrl} />,
+										disabled: holdsGame,
+									};
+								}),
 							]}
 						/>
 					</div>

@@ -1298,7 +1298,9 @@
 	},
 	"tabAssign": {
 		"placeholder": "Associa um separador",
-		"inUse": " (em uso)"
+		"inUse": " (em uso)",
+		"standby": " (em espera)",
+		"hasGame": " (tem um jogo)"
 	},
 	"suggest": {
 		"bannerTitle": "Estes separadores parecem jogos",

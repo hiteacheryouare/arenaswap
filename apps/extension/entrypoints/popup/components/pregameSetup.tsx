@@ -13,6 +13,7 @@ interface pregameSetupProps {
 	onSetGameBoost: (gameId: string, boost: number) => void;
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
+	standbyStreamTabId?: number | null;
 	// Off where there is no tab registry to write to, which leaves the picker with nothing to list.
 	tabAssignEnabled?: boolean;
 }
@@ -28,6 +29,7 @@ const pregameSetup = ({
 	onSetGameBoost,
 	onRegistryChange,
 	formatTabLabel,
+	standbyStreamTabId,
 	tabAssignEnabled = true,
 }: pregameSetupProps) => (
 	<div className='gd-setup'>
@@ -42,6 +44,7 @@ const pregameSetup = ({
 					registry={registry}
 					onChange={onRegistryChange}
 					formatTabLabel={formatTabLabel}
+					standbyStreamTabId={standbyStreamTabId}
 				/>
 			</div>
 		)}

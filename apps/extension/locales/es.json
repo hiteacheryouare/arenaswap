@@ -1298,7 +1298,9 @@
 	},
 	"tabAssign": {
 		"placeholder": "Asigna una pestaña",
-		"inUse": " (en uso)"
+		"inUse": " (en uso)",
+		"standby": " (en espera)",
+		"hasGame": " (tiene un partido)"
 	},
 	"suggest": {
 		"bannerTitle": "Estas pestañas parecen partidos",

@@ -72,6 +72,7 @@ interface gameDetailViewProps {
 	favoriteTeamIds?: ReadonlySet<string>;
 	openTabs?: Browser.tabs.Tab[];
 	registry?: TabRegistration[];
+	standbyStreamTabId?: number | null;
 	onToggleFavoriteTeam?: (leagueId: LeagueId, teamId: string) => void;
 	onRegistryChange?: (updated: TabRegistration[]) => void;
 	formatTabLabel?: (tab: Browser.tabs.Tab) => string;
@@ -111,6 +112,7 @@ const gameDetailView = ({
 	favoriteTeamIds = noFavorites,
 	openTabs = [],
 	registry = [],
+	standbyStreamTabId = null,
 	onToggleFavoriteTeam = () => {},
 	onRegistryChange = () => {},
 	formatTabLabel = tab => tab.title ?? '',
@@ -279,6 +281,7 @@ const gameDetailView = ({
 					currentBoost={currentBoost}
 					openTabs={openTabs}
 					registry={registry}
+					standbyStreamTabId={standbyStreamTabId}
 					onSetGameBoost={onSetGameBoost}
 					onRegistryChange={onRegistryChange}
 					formatTabLabel={formatTabLabel}

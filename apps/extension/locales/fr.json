@@ -1298,7 +1298,9 @@
 	},
 	"tabAssign": {
 		"placeholder": "Associer un onglet",
-		"inUse": " (utilisé)"
+		"inUse": " (utilisé)",
+		"standby": " (en veille)",
+		"hasGame": " (a un match)"
 	},
 	"suggest": {
 		"bannerTitle": "Ces onglets ressemblent à des matchs",

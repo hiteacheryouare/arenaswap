@@ -1,4 +1,4 @@
-import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
+import { computeStandbyStreamDecision, usableStandbyTabId } from '../utils/standbyStreamLogic';
 
 const makeScores = (...totals: number[]) => totals.map(total => ({ total }));
 
@@ -71,5 +71,22 @@ describe('computeStandbyStreamDecision', () => {
 
 	test('handles a single registered game at threshold (no switch)', () => {
 		expect(computeStandbyStreamDecision({ ...base, registeredScores: makeScores(20) })).toBe('none');
+	});
+});
+
+describe('usableStandbyTabId', () => {
+	const open = new Set([1, 2, 3]);
+
+	test('keeps an open tab that holds no game', () => {
+		expect(usableStandbyTabId(3, open, [{ tabId: 1 }, { tabId: 2 }])).toBe(3);
+	});
+
+	test('stands down when the tab is also a game tab', () => {
+		expect(usableStandbyTabId(2, open, [{ tabId: 1 }, { tabId: 2 }])).toBeNull();
+	});
+
+	test('drops a closed or missing tab', () => {
+		expect(usableStandbyTabId(9, open, [])).toBeNull();
+		expect(usableStandbyTabId(null, open, [])).toBeNull();
 	});
 });

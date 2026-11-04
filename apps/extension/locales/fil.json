@@ -1298,7 +1298,9 @@
 	},
 	"tabAssign": {
 		"placeholder": "Mag-assign ng tab",
-		"inUse": " (ginagamit na)"
+		"inUse": " (ginagamit na)",
+		"standby": " (standby)",
+		"hasGame": " (may laro)"
 	},
 	"suggest": {
 		"bannerTitle": "Mukhang mga laro ang mga tab na ito",

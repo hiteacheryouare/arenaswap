@@ -1298,7 +1298,9 @@
 	},
 	"tabAssign": {
 		"placeholder": "分配标签页",
-		"inUse": "（已占用）"
+		"inUse": "（已占用）",
+		"standby": "（待机）",
+		"hasGame": "（已分配比赛）"
 	},
 	"suggest": {
 		"bannerTitle": "这些标签页看起来像比赛",

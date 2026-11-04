@@ -1298,7 +1298,9 @@
 	},
 	"tabAssign": {
 		"placeholder": "탭 할당",
-		"inUse": " (사용 중)"
+		"inUse": " (사용 중)",
+		"standby": " (대기 중)",
+		"hasGame": " (경기 배정됨)"
 	},
 	"suggest": {
 		"bannerTitle": "이 탭들, 경기 같아 보여요",

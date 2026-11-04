@@ -9,10 +9,11 @@ interface ExtPreGameCardProps extends GameCardDisplayProps {
 	registry: TabRegistration[];
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
+	standbyStreamTabId?: number | null;
 	gameBoosts?: Record<string, number>;
 }
 
-const preGameCard = ({ openTabs, registry, onRegistryChange, formatTabLabel, game, gameBoosts: _gameBoosts, ...rest }: ExtPreGameCardProps) => (
+const preGameCard = ({ openTabs, registry, onRegistryChange, formatTabLabel, standbyStreamTabId, game, gameBoosts: _gameBoosts, ...rest }: ExtPreGameCardProps) => (
 	<PreGameCard
 		{...rest}
 		game={game}
@@ -23,6 +24,7 @@ const preGameCard = ({ openTabs, registry, onRegistryChange, formatTabLabel, gam
 				registry={registry}
 				onChange={onRegistryChange}
 				formatTabLabel={formatTabLabel}
+				standbyStreamTabId={standbyStreamTabId}
 			/>
 		}
 	/>

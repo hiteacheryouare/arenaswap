@@ -11,9 +11,10 @@ interface tabAssignSelectProps {
 	registry: TabRegistration[];
 	onChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
+	standbyStreamTabId?: number | null;
 }
 
-const tabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel }: tabAssignSelectProps) => {
+const tabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel, standbyStreamTabId = null }: tabAssignSelectProps) => {
 	const currentTabId = registry.find(r => r.gameId === gameId)?.tabId;
 
 	const onSelect = (tabIdStr: string) => {
@@ -38,12 +39,14 @@ const tabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel 
 					{ value: '', label: i18n.t('tabAssign.placeholder') },
 					...openTabs.filter(tab => tab.id !== undefined).map(tab => {
 						const inUse = assignedTabIds.has(tab.id!);
+						const isStandby = tab.id === standbyStreamTabId;
+						const hint = inUse ? i18n.t('tabAssign.inUse') : isStandby ? i18n.t('tabAssign.standby') : undefined;
 						return {
 							value: String(tab.id),
 							label: formatTabLabel(tab),
-							hint: inUse ? i18n.t('tabAssign.inUse').trim() : undefined,
+							hint: hint?.trim(),
 							image: <TabFavicon url={tab.favIconUrl} />,
-							disabled: inUse,
+							disabled: inUse || isStandby,
 						};
 					}),
 				]}

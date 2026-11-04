@@ -1298,7 +1298,9 @@
 	},
 	"tabAssign": {
 		"placeholder": "指派分頁",
-		"inUse": "（使用中）"
+		"inUse": "（使用中）",
+		"standby": "（待機）",
+		"hasGame": "（已指派比賽）"
 	},
 	"suggest": {
 		"bannerTitle": "這些分頁看起來像比賽",

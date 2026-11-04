@@ -1298,7 +1298,9 @@
 	},
 	"tabAssign": {
 		"placeholder": "Assegna una scheda",
-		"inUse": " (in uso)"
+		"inUse": " (in uso)",
+		"standby": " (standby)",
+		"hasGame": " (ha una partita)"
 	},
 	"suggest": {
 		"bannerTitle": "Queste schede sembrano partite",

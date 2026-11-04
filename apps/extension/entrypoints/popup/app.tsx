@@ -690,6 +690,7 @@ export default () => {
 						standbyStreamTabId={standbyStreamTabId}
 						standbyOnboardingDone={standbyOnboardingDone}
 						openTabs={openTabs}
+						registry={registry}
 						formatTabLabel={tab => formatTabLabel(tab, openTabs)}
 						onClose={closeSetup}
 						onSensitivityChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, sensitivity: val as UserPreferences['sensitivity'] }))}
@@ -771,6 +772,7 @@ export default () => {
 						favoriteTeamIds={favoriteTeamIds}
 						gameBoosts={gameBoosts}
 						openTabs={openTabs}
+						standbyStreamTabId={standbyStreamTabId}
 						onStandbyStream={onStandbyStream}
 						heldSwitch={heldSwitch}
 						onOpenGameDetail={openGameDetail}
@@ -834,6 +836,7 @@ export default () => {
 						favoriteTeamIds={favoriteTeamIds}
 						openTabs={openTabs}
 						registry={registry}
+						standbyStreamTabId={standbyStreamTabId}
 						onToggleFavoriteTeam={toggleFavoriteTeam}
 						onRegistryChange={onRegistryChange}
 						formatTabLabel={tab => formatTabLabel(tab, openTabs)}

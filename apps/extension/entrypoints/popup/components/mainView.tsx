@@ -51,6 +51,7 @@ interface gameSectionProps {
 	gameBoosts: Record<string, number>;
 	openTabs: Browser.tabs.Tab[];
 	registry: TabRegistration[];
+	standbyStreamTabId: number | null;
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 	onOpenGameDetail: (gameId: string) => void;
@@ -78,6 +79,7 @@ interface mainViewProps {
 	favoriteTeamIds: Set<string>;
 	gameBoosts: Record<string, number>;
 	openTabs: Browser.tabs.Tab[];
+	standbyStreamTabId: number | null;
 	onStandbyStream: boolean;
 	heldSwitch?: BackgroundState['heldSwitch'];
 	onOpenGameDetail: (gameId: string) => void;
@@ -117,6 +119,7 @@ const gameSection = ({
 	gameBoosts,
 	openTabs,
 	registry,
+	standbyStreamTabId,
 	onRegistryChange,
 	formatTabLabel,
 	onOpenGameDetail,
@@ -150,6 +153,7 @@ const gameSection = ({
 					gameBoosts={gameBoosts}
 					openTabs={openTabs}
 					registry={registry}
+					standbyStreamTabId={standbyStreamTabId}
 					onRegistryChange={onRegistryChange}
 					formatTabLabel={formatTabLabel}
 					onOpenGameDetail={onOpenGameDetail}
@@ -198,6 +202,7 @@ const mainView = ({
 	favoriteTeamIds,
 	gameBoosts,
 	openTabs,
+	standbyStreamTabId,
 	onStandbyStream,
 	heldSwitch = null,
 	onOpenGameDetail,
@@ -388,8 +393,8 @@ const mainView = ({
 			/>
 
 			{!isLoading && !noLeaguesSelected && prefs.proTipsEnabled && <ProTip context='main' />}
-			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionActiveLiveTabs'), games: assignedLiveGames, groupByLeague: grouped, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, reveal, first: true })}
-			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionOtherLiveGames'), games: unassignedLiveGames, groupByLeague: grouped, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, reveal, first: assignedLiveGames.length === 0 })}
+			{!isLoading && !noLeaguesSelected && assignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionActiveLiveTabs'), games: assignedLiveGames, groupByLeague: grouped, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, standbyStreamTabId, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, reveal, first: true })}
+			{!isLoading && !noLeaguesSelected && unassignedLiveGames.length > 0 && gameSection({ title: i18n.t('main.sectionOtherLiveGames'), games: unassignedLiveGames, groupByLeague: grouped, scoreMap, leagueLogos, favoriteTeamIds, onToggleFavoriteTeam, gameBoosts, openTabs, registry, standbyStreamTabId, onRegistryChange, formatTabLabel, onOpenGameDetail, bettingPrefs, weatherPrefs, reveal, first: assignedLiveGames.length === 0 })}
 			{!isLoading && !noLeaguesSelected && prefs.showUpcomingGames && selectedDay && gameSection({
 				title: i18n.t('main.sectionUpNext'),
 				heading: <UpcomingSearchTitle query={upcomingQuery} onQueryChange={onUpcomingQueryChange} first={upNextFirst} />,
@@ -402,6 +407,7 @@ const mainView = ({
 				gameBoosts,
 				openTabs,
 				registry,
+				standbyStreamTabId,
 				onRegistryChange,
 				formatTabLabel,
 				onOpenGameDetail,
@@ -440,6 +446,7 @@ const mainView = ({
 				gameBoosts,
 				openTabs,
 				registry,
+				standbyStreamTabId,
 				onRegistryChange,
 				formatTabLabel,
 				onOpenGameDetail,

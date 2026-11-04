@@ -1298,7 +1298,9 @@
 	},
 	"tabAssign": {
 		"placeholder": "Assign a tab",
-		"inUse": " (in use)"
+		"inUse": " (in use)",
+		"standby": " (standby)",
+		"hasGame": " (has a game)"
 	},
 	"suggest": {
 		"bannerTitle": "These Tabs Look Like Games",

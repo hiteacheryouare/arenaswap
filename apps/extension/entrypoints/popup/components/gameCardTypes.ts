@@ -8,5 +8,6 @@ export interface gameCardProps extends GameCardDisplayProps {
 	registry: TabRegistration[];
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
+	standbyStreamTabId?: number | null;
 	gameBoosts: Record<string, number>;
 }

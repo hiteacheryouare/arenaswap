@@ -3,7 +3,7 @@ import { randomInRange } from '@porkyproductions/hat';
 import { createWinProbabilityTracker, summaryStillNeeded, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, computeRetryDelayMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextCommercialBreak, checkHeldSwitch, holdSwitch, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
 import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, fetchNextScheduledStart, scoreboardRefreshMs, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces } from '@arenaswap/sideline';
 import type { CommercialBreakEntry, HeldSwitch, PlayBreakSport } from '@arenaswap/core';
-import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
+import { computeStandbyStreamDecision, usableStandbyTabId } from '../utils/standbyStreamLogic';
 import kickoffDelayMs from '../utils/kickoffPoll';
 import createKeepAwake from '../utils/keepAwake';
 import { gameEndRetentionMs, gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
@@ -885,7 +885,7 @@ export default defineBackground(() => {
 
 		// Everything went quiet during the delay: park on the standby stream on the next poll
 		// instead of dropping the user into the least-boring game.
-		if (prefs.standbyStreamEnabled && standbyStreamTabId !== null) {
+		if (prefs.standbyStreamEnabled && usableStandbyTabId(standbyStreamTabId, openTabIds, tabRegistry) !== null) {
 			const registeredGameIds = new Set(
 				tabRegistry.filter(reg => openTabIds.has(reg.tabId)).map(reg => reg.gameId)
 			);
@@ -1247,13 +1247,14 @@ export default defineBackground(() => {
 			return multiviewResult.settled;
 		}
 
+		const usableStandbyId = usableStandbyTabId(standbyStreamTabId, openTabIds, tabRegistry);
 		const standbyDecision = computeStandbyStreamDecision({
 			standbyStreamEnabled: prefs.standbyStreamEnabled,
-			standbyStreamTabId: standbyStreamTabId !== null && openTabIds.has(standbyStreamTabId) ? standbyStreamTabId : null,
+			standbyStreamTabId: usableStandbyId,
 			standbyStreamThreshold: prefs.standbyStreamThreshold,
 			registeredScores,
 			onStandbyStream,
-			activeTabIsStandby: activeTabId === standbyStreamTabId,
+			activeTabIsStandby: usableStandbyId !== null && activeTabId === usableStandbyId,
 		});
 
 		// Evaluated ahead of the pending-switch guard so a queued switch cannot freeze the standby
@@ -1265,7 +1266,7 @@ export default defineBackground(() => {
 			const inCooldown = prefs.cooldownSeconds > 0 && Date.now() - lastSwitchTime <= prefs.cooldownSeconds * 1000;
 			if (inCooldown) return false;
 			onStandbyStream = true;
-			return executeSwitch(standbyStreamTabId!);
+			return executeSwitch(usableStandbyId!);
 		}
 		if (standbyDecision === 'stayOnStandby') {
 			clearPendingSwitch();

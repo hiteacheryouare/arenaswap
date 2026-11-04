@@ -1298,7 +1298,9 @@
 	},
 	"tabAssign": {
 		"placeholder": "Atribuir uma aba",
-		"inUse": " (em uso)"
+		"inUse": " (em uso)",
+		"standby": " (em espera)",
+		"hasGame": " (tem um jogo)"
 	},
 	"suggest": {
 		"bannerTitle": "Essas abas parecem jogos",
