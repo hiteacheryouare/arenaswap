@@ -134,6 +134,19 @@
 		}
 	}
 
+	.hero-copy {
+		container-type: inline-size;
+
+		// The longest second line, German "den Moment.", is 5.96em wide: 16cqi keeps every one on one line.
+		.display-xl {
+			font-size: min(clamp(3rem, 5.4vw, 5.25rem), 16cqi);
+		}
+
+		.display-xl:lang(ja) {
+			word-break: auto-phrase;
+		}
+	}
+
 	// Copy left, window right, weighted towards the window. The window holds a 320px popup at the
 	// popup's real size, so the narrower the window, the more of it that popup occupies.
 	.hero-grid {
