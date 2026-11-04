@@ -57,6 +57,42 @@ Quando todos os jogos ao vivo caem abaixo de um limite de PowerScore (intervalo 
 
 
 ━━━━━━━━━━━━━━━━━━━━━━
+MULTIVIEW
+━━━━━━━━━━━━━━━━━━━━━━
+
+Quando dois ou mais dos seus jogos estão emocionantes ao mesmo tempo, o ArenaSwap pode mostrá-los juntos em uma única aba. O jogo mais emocionante fica com o quadro maior e o único som. Quando sobra só um, você volta para a aba dele.
+
+- Emocionante a partir de: o PowerScore que um jogo precisa ter para ganhar um quadro (65 por padrão). Mais baixo abre o Multiview com mais frequência; mais alto o reserva para os grandes momentos.
+- Mostrar: jogos emocionantes, ou todos os jogos aos quais você atribuiu uma aba.
+- Máximo de quadros: quantos jogos dividem a tela, de 2 a 8 (4 por padrão).
+
+O Multiview fica desativado até você ativá-lo nas configurações, e o navegador pede permissão antes. Disponível no Chrome e no Edge.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+MODOS DE PONTUAÇÃO
+━━━━━━━━━━━━━━━━━━━━━━
+
+Escolha o que o PowerScore procura.
+
+- Clássico: jogos disputados, na reta final e cheios de reviravoltas. É o padrão.
+- Atropelos: jogos desequilibrados, para quando você quer ver um time passar por cima do outro.
+- Fantasy: jogos com os seus jogadores de Fantasy. Os elencos cobrem NFL, NBA, WNBA, MLB e NHL, com até 50 jogadores.
+- Personalizado: um modo diferente para cada liga.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+PERFIS E BACKUP
+━━━━━━━━━━━━━━━━━━━━━━
+
+Mantenha configurações separadas e alterne entre elas: uma para os domingos de futebol americano, outra para uma semana de playoffs de basquete. Cada perfil tem suas próprias configurações e seu próprio elenco do Fantasy.
+
+- Perfis: comece um a partir de uma cópia da sua configuração atual ou do zero, e depois renomeie, exporte ou exclua.
+- Backup: baixe um perfil como arquivo e importe como um novo perfil ou por cima do que você está usando. Serve para levar sua configuração para outro navegador.
+- Só o perfil em uso é sincronizado com o seu navegador.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
 PRIVADO POR PADRÃO
 ━━━━━━━━━━━━━━━━━━━━━━
 

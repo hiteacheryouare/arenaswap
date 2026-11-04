@@ -57,6 +57,42 @@ Cuando todos los partidos en vivo caen por debajo de un umbral de PowerScore (en
 
 
 ━━━━━━━━━━━━━━━━━━━━━━
+MULTIVIEW
+━━━━━━━━━━━━━━━━━━━━━━
+
+Cuando dos o más de tus partidos están emocionantes al mismo tiempo, ArenaSwap puede mostrarlos juntos en una sola pestaña. El partido más emocionante recibe el cuadro más grande y el único sonido. Cuando solo queda uno, vuelves a su pestaña.
+
+- Emocionante desde: el PowerScore que necesita un partido para ganarse un cuadro (65 por defecto). Más bajo abre Multiview más seguido; más alto lo reserva para los grandes momentos.
+- Mostrar: partidos emocionantes, o todos los partidos a los que les asignaste una pestaña.
+- Máximo de cuadros: cuántos partidos comparten la pantalla, de 2 a 8 (4 por defecto).
+
+Multiview está desactivado hasta que lo actives en los ajustes, y tu navegador te pide permiso antes. Disponible en Chrome y Edge.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+MODOS DE PUNTUACIÓN
+━━━━━━━━━━━━━━━━━━━━━━
+
+Elige qué busca PowerScore.
+
+- Clásico: partidos cerrados, tardíos y con vaivenes. Es el modo por defecto.
+- Palizas: partidos desiguales, para cuando quieres ver a un equipo arrasar.
+- Fantasy: partidos con tus jugadores de Fantasy. Las plantillas cubren la NFL, NBA, WNBA, MLB y NHL, hasta 50 jugadores.
+- Personalizado: un modo distinto para cada liga.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+PERFILES Y COPIA
+━━━━━━━━━━━━━━━━━━━━━━
+
+Guarda configuraciones separadas y cambia entre ellas: una para los domingos de fútbol americano, otra para una semana de playoffs de básquetbol. Cada perfil tiene sus propios ajustes y su propia plantilla de Fantasy.
+
+- Perfiles: crea uno a partir de una copia de tu configuración actual o desde cero, y luego renómbralo, expórtalo o elimínalo.
+- Copia: descarga un perfil como archivo e impórtalo como perfil nuevo o sobre el que estás usando. Sirve para llevar tu configuración a otro navegador.
+- Solo el perfil en uso se sincroniza con tu navegador.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
 PRIVADO POR DEFECTO
 ━━━━━━━━━━━━━━━━━━━━━━
 

@@ -57,6 +57,42 @@ Kapag bumagsak sa ibaba ng PowerScore threshold ang lahat ng live game (halftime
 
 
 ━━━━━━━━━━━━━━━━━━━━━━
+MULTIVIEW
+━━━━━━━━━━━━━━━━━━━━━━
+
+Kapag dalawa o higit pa sa mga laro mo ang sabay na kapana-panabik, puwede silang ipakita ng ArenaSwap nang magkakasama sa iisang tab. Ang pinakakapana-panabik na laro ang may pinakamalaking box at tanging may tunog. Kapag isa na lang ang natira, babalik ka sa tab nito.
+
+- Kapana-panabik sa: ang PowerScore na kailangan ng laro para magkaroon ng box (65 bilang default). Kung mas mababa, mas madalas bumukas ang Multiview; kung mas mataas, para lang sa malalaking sandali.
+- Ipakita: mga kapana-panabik na laro, o lahat ng larong na-assign-an mo ng tab.
+- Pinakamaraming box: kung ilang laro ang magbabahagi ng screen, mula 2 hanggang 8 (4 bilang default).
+
+Naka-off ang Multiview hangga't hindi mo ito ino-on sa settings, at hihingi muna ng pahintulot ang browser mo. Available sa Chrome at Edge.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+MGA SCORING MODE
+━━━━━━━━━━━━━━━━━━━━━━
+
+Piliin kung ano ang hinahanap ng PowerScore.
+
+- Classic: mga laro na dikit, huli na, at pabago-bago ang lamang. Ito ang default.
+- Blowouts: mga lopsided na laro, para sa gusto mong makitang tinatambakan ang isang team.
+- Fantasy: mga larong kasama ang mga fantasy player mo. Sakop ng mga roster ang NFL, NBA, WNBA, MLB, at NHL, hanggang 50 player.
+- Custom: ibang mode para sa bawat liga.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+MGA PROFILE AT BACKUP
+━━━━━━━━━━━━━━━━━━━━━━
+
+Magtabi ng magkakahiwalay na setup at lumipat sa pagitan nila: isa para sa football tuwing Linggo, isa para sa isang linggo ng playoff basketball. May sariling settings at Fantasy roster ang bawat profile.
+
+- Mga Profile: magsimula sa kopya ng kasalukuyang setup mo o sa wala, tapos palitan ang pangalan, i-export, o i-delete ito.
+- Backup: i-download ang isang profile bilang file, tapos i-import ito bilang bagong profile o bilang kapalit ng profile na ginagamit mo. Gamitin ito para ilipat ang setup mo sa ibang browser.
+- Ang profile lang na ginagamit ang nagsi-sync sa browser mo.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
 PRIVATE BY DEFAULT
 ━━━━━━━━━━━━━━━━━━━━━━
 

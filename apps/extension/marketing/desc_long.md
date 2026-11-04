@@ -58,6 +58,42 @@ When all live games drop below a PowerScore threshold (halftime everywhere, blow
 
 
 ━━━━━━━━━━━━━━━━━━━━━━
+MULTIVIEW
+━━━━━━━━━━━━━━━━━━━━━━
+
+When two or more of your games are exciting at once, ArenaSwap can show them together in one tab. The most exciting game gets the biggest box and the only sound. When just one is left, you land back on its tab.
+
+- Exciting at: the PowerScore a game needs to earn a box (65 by default). Lower opens Multiview more often, higher saves it for big moments.
+- Show: exciting games, or every game you've assigned a tab to.
+- Most boxes: how many games share the screen, from 2 to 8 (4 by default).
+
+Multiview is off until you turn it on in settings, and your browser asks permission first. Available on Chrome and Edge.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+SCORING MODES
+━━━━━━━━━━━━━━━━━━━━━━
+
+Choose what PowerScore looks for.
+
+- Classic: close, late, swinging games. This is the default.
+- Blowouts: lopsided games, for when you want to watch a team get flattened.
+- Fantasy: games with your fantasy players in them. Rosters cover the NFL, NBA, WNBA, MLB and NHL, up to 50 players.
+- Custom: a different mode for each league.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+PROFILES & BACKUP
+━━━━━━━━━━━━━━━━━━━━━━
+
+Keep separate setups and switch between them: one for football Sundays, another for a week of playoff basketball. Each profile has its own settings and Fantasy roster.
+
+- Profiles: start one from a copy of your current setup or from scratch, then rename, export or delete it.
+- Backup: download a profile as a file, then import it as a new profile or over the one you're using. Use it to move your setup to another browser.
+- Only the profile in use syncs with your browser.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
 PRIVATE BY DEFAULT
 ━━━━━━━━━━━━━━━━━━━━━━
 

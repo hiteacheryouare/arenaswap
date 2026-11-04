@@ -57,6 +57,42 @@ Quand tous les matchs en direct passent sous un seuil de PowerScore (mi-temps pa
 
 
 ━━━━━━━━━━━━━━━━━━━━━━
+MULTIVIEW
+━━━━━━━━━━━━━━━━━━━━━━
+
+Quand deux matchs ou plus sont palpitants en même temps, ArenaSwap peut les afficher ensemble dans un seul onglet. Le match le plus palpitant obtient la plus grande case et le seul son. Quand il n'en reste qu'un, tu retournes sur son onglet.
+
+- Palpitant dès : le PowerScore qu'un match doit atteindre pour obtenir une case (65 par défaut). Plus bas, Multiview s'ouvre plus souvent ; plus haut, il se réserve aux grands moments.
+- Afficher : les matchs palpitants, ou tous les matchs auxquels tu as associé un onglet.
+- Max de cases : combien de matchs se partagent l'écran, de 2 à 8 (4 par défaut).
+
+Multiview est désactivé tant que tu ne l'actives pas dans les réglages, et ton navigateur demande d'abord ton autorisation. Disponible sur Chrome et Edge.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+MODES DE SCORE
+━━━━━━━━━━━━━━━━━━━━━━
+
+Choisis ce que PowerScore recherche.
+
+- Classique : des matchs serrés, tardifs, pleins de rebondissements. C'est le mode par défaut.
+- Raclées : des matchs à sens unique, pour quand tu veux voir une équipe se faire balayer.
+- Fantasy : les matchs où jouent les joueurs de ton Fantasy. Les effectifs couvrent la NFL, la NBA, la WNBA, la MLB et la NHL, jusqu'à 50 joueurs.
+- Personnalisé : un mode différent pour chaque ligue.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+PROFILS ET SAUVEGARDE
+━━━━━━━━━━━━━━━━━━━━━━
+
+Garde des configurations séparées et passe de l'une à l'autre : une pour les dimanches de football américain, une autre pour une semaine de playoffs de basket. Chaque profil a ses propres réglages et son propre effectif Fantasy.
+
+- Profils : crée-en un à partir d'une copie de ta configuration actuelle ou de zéro, puis renomme-le, exporte-le ou supprime-le.
+- Sauvegarde : télécharge un profil sous forme de fichier, puis importe-le comme nouveau profil ou à la place de celui que tu utilises. Pratique pour déménager ta configuration vers un autre navigateur.
+- Seul le profil en cours d'utilisation se synchronise avec ton navigateur.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
 PRIVÉ PAR DÉFAUT
 ━━━━━━━━━━━━━━━━━━━━━━
 

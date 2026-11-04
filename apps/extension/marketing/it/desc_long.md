@@ -57,6 +57,42 @@ Quando tutte le partite dal vivo scendono sotto una soglia di PowerScore (interv
 
 
 ━━━━━━━━━━━━━━━━━━━━━━
+MULTIVIEW
+━━━━━━━━━━━━━━━━━━━━━━
+
+Quando due o più delle tue partite sono emozionanti nello stesso momento, ArenaSwap può mostrarle insieme in una sola scheda. La partita più emozionante ottiene il riquadro più grande e l'unico audio. Quando ne resta una sola, torni alla sua scheda.
+
+- Emozionante da: il PowerScore che una partita deve raggiungere per ottenere un riquadro (65 di default). Più basso apre Multiview più spesso, più alto lo tiene per i momenti importanti.
+- Mostra: le partite emozionanti, oppure tutte le partite a cui hai assegnato una scheda.
+- Massimo di riquadri: quante partite si dividono lo schermo, da 2 a 8 (4 di default).
+
+Multiview resta disattivato finché non lo attivi nelle impostazioni, e il browser chiede prima il permesso. Disponibile su Chrome e Edge.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+MODALITÀ DI PUNTEGGIO
+━━━━━━━━━━━━━━━━━━━━━━
+
+Scegli che cosa cerca PowerScore.
+
+- Classica: partite equilibrate, a fine gara, piene di colpi di scena. È la modalità predefinita.
+- Senso unico: partite a senso unico, per quando vuoi vedere una squadra dominare.
+- Fantasy: partite con i tuoi giocatori Fantasy. Le rose coprono NFL, NBA, WNBA, MLB e NHL, fino a 50 giocatori.
+- Personalizzata: una modalità diversa per ogni lega.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+PROFILI E BACKUP
+━━━━━━━━━━━━━━━━━━━━━━
+
+Tieni impostazioni separate e passa dall'una all'altra: una per le domeniche di football, un'altra per una settimana di playoff di basket. Ogni profilo ha le sue impostazioni e la sua rosa Fantasy.
+
+- Profili: creane uno da una copia delle impostazioni attuali o da zero, poi rinominalo, esportalo o eliminalo.
+- Backup: scarica un profilo come file, poi importalo come nuovo profilo o al posto di quello che stai usando. Serve a portare le tue impostazioni su un altro browser.
+- Solo il profilo in uso si sincronizza con il browser.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
 PRIVATO DI DEFAULT
 ━━━━━━━━━━━━━━━━━━━━━━
 

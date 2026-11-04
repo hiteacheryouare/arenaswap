@@ -57,6 +57,42 @@ Wenn alle Live-Spiele unter einen PowerScore-Schwellenwert fallen (überall Halb
 
 
 ━━━━━━━━━━━━━━━━━━━━━━
+MULTIVIEW
+━━━━━━━━━━━━━━━━━━━━━━
+
+Wenn zwei oder mehr deiner Spiele gleichzeitig spannend sind, kann ArenaSwap sie gemeinsam in einem Tab zeigen. Das spannendste Spiel bekommt die größte Box und den einzigen Ton. Bleibt nur noch eines übrig, landest du wieder in dessen Tab.
+
+- Spannend ab: der PowerScore, den ein Spiel für eine Box braucht (standardmäßig 65). Niedriger öffnet Multiview öfter, höher spart es sich für die großen Momente auf.
+- Anzeigen: spannende Spiele oder alle Spiele, denen du einen Tab zugewiesen hast.
+- Max. Boxen: wie viele Spiele sich den Bildschirm teilen, von 2 bis 8 (standardmäßig 4).
+
+Multiview ist aus, bis du es in den Einstellungen einschaltest, und dein Browser fragt vorher um Erlaubnis. Verfügbar in Chrome und Edge.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+WERTUNGSMODI
+━━━━━━━━━━━━━━━━━━━━━━
+
+Lege fest, wonach PowerScore sucht.
+
+- Klassisch: knappe, späte, hin und her schwankende Spiele. Das ist der Standard.
+- Kantersiege: einseitige Spiele, für alle, die zusehen wollen, wie ein Team überrollt wird.
+- Fantasy: Spiele mit deinen Fantasy-Spielern. Kader gibt es für NFL, NBA, WNBA, MLB und NHL, mit bis zu 50 Spielern.
+- Individuell: ein eigener Modus für jede Liga.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+PROFILE & BACKUP
+━━━━━━━━━━━━━━━━━━━━━━
+
+Führe getrennte Setups und wechsle zwischen ihnen: eins für Football-Sonntage, eins für eine Woche Playoff-Basketball. Jedes Profil hat eigene Einstellungen und einen eigenen Fantasy-Kader.
+
+- Profile: starte eins als Kopie deines aktuellen Setups oder ganz neu, dann benenne es um, exportiere oder lösche es.
+- Backup: lade ein Profil als Datei herunter und importiere es als neues Profil oder über das Profil, das du gerade nutzt. So ziehst du mit deinem Setup in einen anderen Browser um.
+- Nur das aktive Profil wird mit deinem Browser synchronisiert.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
 STANDARDMÄSSIG PRIVAT
 ━━━━━━━━━━━━━━━━━━━━━━
 

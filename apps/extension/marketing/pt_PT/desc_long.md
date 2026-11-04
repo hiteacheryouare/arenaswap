@@ -57,6 +57,42 @@ Quando todos os jogos em direto caem abaixo de um limiar de PowerScore (interval
 
 
 ━━━━━━━━━━━━━━━━━━━━━━
+MULTIVIEW
+━━━━━━━━━━━━━━━━━━━━━━
+
+Quando dois ou mais dos teus jogos estão emocionantes ao mesmo tempo, o ArenaSwap pode mostrá-los juntos num único separador. O jogo mais emocionante fica com o quadro maior e o único som. Quando sobra só um, voltas ao separador dele.
+
+- Emocionante a partir de: o PowerScore de que um jogo precisa para ganhar um quadro (65 por predefinição). Mais baixo abre o Multiview com mais frequência; mais alto reserva-o para os grandes momentos.
+- Mostrar: jogos emocionantes, ou todos os jogos a que atribuíste um separador.
+- Máximo de quadros: quantos jogos dividem o ecrã, de 2 a 8 (4 por predefinição).
+
+O Multiview fica desativado até o ativares nas definições, e o navegador pede permissão antes. Disponível no Chrome e no Edge.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+MODOS DE PONTUAÇÃO
+━━━━━━━━━━━━━━━━━━━━━━
+
+Escolhe o que o PowerScore procura.
+
+- Clássico: jogos equilibrados, na reta final e cheios de reviravoltas. É o predefinido.
+- Goleadas: jogos desequilibrados, para quando queres ver uma equipa a passar por cima da outra.
+- Fantasy: jogos com os teus jogadores de Fantasy. Os plantéis cobrem NFL, NBA, WNBA, MLB e NHL, com até 50 jogadores.
+- Personalizado: um modo diferente para cada liga.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
+PERFIS E BACKUP
+━━━━━━━━━━━━━━━━━━━━━━
+
+Mantém configurações separadas e alterna entre elas: uma para os domingos de futebol americano, outra para uma semana de playoffs de basquetebol. Cada perfil tem as suas próprias definições e o seu próprio plantel Fantasy.
+
+- Perfis: começa um a partir de uma cópia da tua configuração atual ou do zero, e depois muda-lhe o nome, exporta-o ou elimina-o.
+- Backup: descarrega um perfil como ficheiro e importa-o como um novo perfil ou por cima do que estás a usar. Serve para levar a tua configuração para outro navegador.
+- Só o perfil em uso é sincronizado com o teu navegador.
+
+
+━━━━━━━━━━━━━━━━━━━━━━
 PRIVADO POR DEFEITO
 ━━━━━━━━━━━━━━━━━━━━━━
 
