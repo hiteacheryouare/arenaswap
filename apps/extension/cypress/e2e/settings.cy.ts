@@ -265,16 +265,12 @@ describe('profiles', () => {
 		});
 	});
 
-	it('backs out of a fresh profile into settings, then switches back to the old setup', () => {
+	it('backs out of a fresh profile by deleting it and putting the old setup back', () => {
 		newFreshProfile('Weekend');
 		cy.contains('button', 'Back').click();
 		openGroup('backup');
-		cy.contains('[aria-current="true"]', 'Weekend').should('exist');
-		cy.background().its('prefs.enabledLeagues').should('deep.equal', []);
-
-		cy.get('#profileSwitch-main').click();
-		cy.contains('.toast', 'Switched to main.').should('be.visible');
 		cy.get('#profileSwitch-main').should('have.attr', 'aria-current', 'true');
+		cy.contains('[id^="profileSwitch-"]', 'Weekend').should('not.exist');
 		cy.background().its('prefs.enabledLeagues').should('deep.equal', onboardedPrefs().enabledLeagues);
 	});
 });
