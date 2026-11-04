@@ -228,6 +228,10 @@
 		"ledeLink": "mag-open ng issue",
 		"items": [
 			{
+				"q": "Teka, ano ba talaga ang binebenta n'yo sa akin?",
+				"a": "Wala. Libre ang ArenaSwap, walang ads, at walang kinokolektang data, kaya wala talagang ibebenta. Ginawa namin ito kasi sports fans kami na sobrang daming larong sabay-sabay na pinapanood, at gusto naming magkaroon nito. 'Yan na ang buong business plan."
+			},
+			{
 				"q": "Anong mga liga ang suportado ng ArenaSwap?",
 				"a": "{leagues} liga sa anim na sports. Basketball: NBA, WNBA, NCAA Basketball, NCAA Women's Basketball, at parehong Olympic tournament. Football: NFL, NCAA Football, at ang UFL. Hockey: NHL, NCAA Men's Hockey, at parehong Olympic tournament. Baseball at softball: MLB, NCAA Baseball, NCAA Softball, ang World Baseball Classic, at Olympic Baseball. Soccer: Premier League, La Liga, Bundesliga, Serie A, Liga MX, MLS, NWSL, Champions League, Europa League, parehong FIFA World Cup, at parehong Olympic tournament."
 			},

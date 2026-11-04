@@ -228,6 +228,10 @@
 		"ledeLink": "abre un issue",
 		"items": [
 			{
+				"q": "Un momento, ¿qué me están vendiendo?",
+				"a": "Nada. ArenaSwap es gratis, no muestra anuncios y no recopila datos, así que no hay nada que vender. Lo hicimos porque somos fanáticos del deporte que vemos demasiados partidos a la vez, y queríamos que existiera. Ese es todo el plan de negocio."
+			},
+			{
 				"q": "¿Qué ligas admite ArenaSwap?",
 				"a": "{leagues} ligas de seis deportes. Baloncesto: NBA, WNBA, NCAA Basketball, NCAA Women's Basketball y ambos torneos olímpicos. Fútbol americano: NFL, NCAA Football y la UFL. Hockey: NHL, NCAA Men's Hockey y ambos torneos olímpicos. Béisbol y softbol: MLB, NCAA Baseball, NCAA Softball, el World Baseball Classic y el béisbol olímpico. Fútbol: la Premier League, La Liga, la Bundesliga, la Serie A, la Liga MX, la MLS, la NWSL, la Champions League, la Europa League, ambos Mundiales de la FIFA y ambos torneos olímpicos."
 			},

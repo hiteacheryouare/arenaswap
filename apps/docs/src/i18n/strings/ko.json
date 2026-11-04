@@ -228,6 +228,10 @@
 		"ledeLink": "이슈를 열어주세요",
 		"items": [
 			{
+				"q": "잠깐, 대체 뭘 팔려는 거예요?",
+				"a": "아무것도요. ArenaSwap은 무료고, 광고도 없고, 데이터도 수집하지 않아서 팔 게 없어요. 저희는 너무 많은 경기를 한꺼번에 보는 스포츠 팬이고, 이런 게 있었으면 해서 만들었어요. 그게 사업 계획의 전부예요."
+			},
+			{
 				"q": "ArenaSwap은 어떤 리그를 지원하나요?",
 				"a": "{leagues}개 리그, 6개 종목에 걸쳐 있어요. 농구: NBA, WNBA, NCAA Basketball, NCAA Women's Basketball, 그리고 올림픽 두 대회. 풋볼: NFL, NCAA Football, UFL. 아이스하키: NHL, NCAA Men's Hockey, 그리고 올림픽 두 대회. 야구와 소프트볼: MLB, NCAA Baseball, NCAA Softball, 월드 베이스볼 클래식, 올림픽 야구. 축구: 프리미어리그, 라리가, 분데스리가, 세리에 A, 리가 MX, MLS, NWSL, 챔피언스리그, 유로파리그, FIFA 월드컵 두 대회, 그리고 올림픽 두 대회."
 			},

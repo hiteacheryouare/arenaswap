@@ -228,6 +228,10 @@
 		"ledeLink": "abre uma issue",
 		"items": [
 			{
+				"q": "Espera aí, o que é que me estão a tentar vender?",
+				"a": "Nada. O ArenaSwap é gratuito, não mostra anúncios e não recolhe dados, por isso não há nada para vender. Criámo-lo porque somos fãs de desporto que veem demasiados jogos ao mesmo tempo, e queríamos que existisse. É esse o plano de negócio todo."
+			},
+			{
 				"q": "Que ligas suporta o ArenaSwap?",
 				"a": "{leagues} ligas em seis desportos. Basquetebol: NBA, WNBA, NCAA Basketball, NCAA Women's Basketball e ambos os torneios olímpicos. Futebol americano: NFL, NCAA Football e a UFL. Hóquei: NHL, NCAA Men's Hockey e ambos os torneios olímpicos. Basebol e softbol: MLB, NCAA Baseball, NCAA Softball, o World Baseball Classic e o basebol olímpico. Futebol: Premier League, La Liga, Bundesliga, Serie A, Liga MX, MLS, NWSL, Liga dos Campeões, Liga Europa, ambos os Campeonatos do Mundo da FIFA e ambos os torneios olímpicos."
 			},

@@ -228,6 +228,10 @@
 		"ledeLink": "请提交一个 issue",
 		"items": [
 			{
+				"q": "等等，你们到底想卖给我什么？",
+				"a": "什么都不卖。ArenaSwap 完全免费，没有广告，也不收集任何数据，所以根本没什么可卖的。我们是一群同时看太多比赛的体育迷，做它只是因为我们希望有这样一个东西。这就是我们全部的商业计划。"
+			},
+			{
 				"q": "ArenaSwap 支持哪些联赛？",
 				"a": "覆盖六项运动的 {leagues} 个联赛。篮球：NBA、WNBA、NCAA Basketball、NCAA Women's Basketball 以及两项奥运会比赛。橄榄球：NFL、NCAA Football 和 UFL。冰球：NHL、NCAA Men's Hockey 以及两项奥运会比赛。棒球和垒球：MLB、NCAA Baseball、NCAA Softball、世界棒球经典赛以及奥运棒球。足球：英超、西甲、德甲、意甲、墨西哥甲级联赛、美国大联盟、美国女足联赛、欧冠、欧联，以及两届 FIFA 世界杯和两项奥运会比赛。"
 			},
