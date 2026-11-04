@@ -1,0 +1,11 @@
+Build steps for the sources zip
+
+Requirements: Node.js 22.9 or newer (22.x, 24.x or 26+) and npm 11 or newer. Built and tested with Node 26 and npm 12.1.
+
+1. Unzip the sources archive and open a terminal in the unzipped folder (the one holding package.json and package-lock.json).
+2. Run: npm ci
+3. Run: npx turbo run build:firefox --filter=@arenaswap/extension
+   This builds the workspace packages the extension imports (packages/core, sideline, ui, chromatic and powerscore), then the Firefox add-on.
+4. The built add-on is in apps/extension/.output/firefox-mv3. It matches the submitted package.
+
+No network access is needed during the build beyond npm ci, and no environment variables are required.
