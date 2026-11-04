@@ -75,11 +75,12 @@ describe('notices above the list', () => {
 });
 
 const ToastHarness = () => {
-	const { toasts, showToast, dismissToast } = useToast();
+	const { toasts, showToast, dismissToast, pauseToast, resumeToast } = useToast();
 	return (
 		<>
 			<button type='button' onClick={() => showToast('Settings saved', 'success')}>Show</button>
-			<ToastContainer toasts={toasts} onDismiss={dismissToast} />
+			<button type='button' onClick={() => showToast('Settings did not save', 'error')}>Fail</button>
+			<ToastContainer toasts={toasts} onDismiss={dismissToast} onPause={pauseToast} onResume={resumeToast} />
 		</>
 	);
 };
@@ -102,5 +103,62 @@ describe('toasts', () => {
 		cy.get('.toast').should('have.class', 'is-leaving');
 		cy.tick(200);
 		cy.get('.toast').should('not.exist');
+	});
+
+	it('announces success politely and errors assertively', () => {
+		cy.mount(<ToastHarness />);
+		cy.contains('button', 'Show').click();
+		cy.get('.toast').should('have.attr', 'role', 'status').and('have.attr', 'aria-live', 'polite');
+		cy.contains('button', 'Fail').click();
+		cy.contains('.toast', 'did not save').should('have.attr', 'role', 'alert').and('have.attr', 'aria-live', 'assertive');
+	});
+
+	it('keeps an error up for 6 seconds', () => {
+		cy.clock(Date.now(), ['setTimeout', 'clearTimeout']);
+		cy.mount(<ToastHarness />);
+		cy.contains('button', 'Fail').click();
+		cy.tick(5900);
+		cy.get('.toast').should('not.have.class', 'is-leaving');
+		cy.tick(100);
+		cy.get('.toast').should('have.class', 'is-leaving');
+		cy.tick(200);
+		cy.get('.toast').should('not.exist');
+	});
+
+	it('holds an error while it is hovered and resumes on leave', () => {
+		cy.clock(Date.now(), ['setTimeout', 'clearTimeout', 'Date']);
+		cy.mount(<ToastHarness />);
+		cy.contains('button', 'Fail').click();
+		cy.tick(4000);
+		cy.get('.toast').trigger('mouseover').trigger('mouseenter');
+		cy.tick(10000);
+		cy.get('.toast').should('not.have.class', 'is-leaving');
+		cy.get('.toast').trigger('mouseout').trigger('mouseleave');
+		cy.tick(1900);
+		cy.get('.toast').should('not.have.class', 'is-leaving');
+		cy.tick(100);
+		cy.get('.toast').should('have.class', 'is-leaving');
+	});
+
+	it('holds an error while focused and resumes on blur', () => {
+		cy.clock(Date.now(), ['setTimeout', 'clearTimeout', 'Date']);
+		cy.mount(<ToastHarness />);
+		cy.contains('button', 'Fail').click();
+		cy.tick(5000);
+		cy.get('.toast .btn-close').focus();
+		cy.tick(10000);
+		cy.get('.toast').should('not.have.class', 'is-leaving');
+		cy.get('.toast .btn-close').blur();
+		cy.tick(1000);
+		cy.get('.toast').should('have.class', 'is-leaving');
+	});
+
+	it('does not hold a success toast on hover', () => {
+		cy.clock(Date.now(), ['setTimeout', 'clearTimeout', 'Date']);
+		cy.mount(<ToastHarness />);
+		cy.contains('button', 'Show').click();
+		cy.get('.toast').trigger('mouseover').trigger('mouseenter');
+		cy.tick(3000);
+		cy.get('.toast').should('have.class', 'is-leaving');
 	});
 });

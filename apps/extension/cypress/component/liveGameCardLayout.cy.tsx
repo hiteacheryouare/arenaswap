@@ -21,7 +21,7 @@ const nflGame: Game = {
 const result: PowerScoreResult = {
 	gameId: 'g1', total: 42, closeness: 10, lateGame: 8, momentum: 6,
 	leadChanges: 4, comeback: 0, favoriteBonus: 0, favoriteTeamCount: 0,
-	stalled: false, reason: 'Close game',
+	reason: 'Close game',
 };
 
 const defaultProps = {

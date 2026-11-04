@@ -4,7 +4,6 @@ import type { BuiltInModeId, FinishedTabAction, Game, LeagueId, ScoringModeChoic
 import type { FantasyRule, FantasySport } from 'powerscore';
 import {
 	allLeagueIds,
-	stallPenaltySteps,
 	scoreMaxCloseness,
 	scoreMaxLateGame,
 	scoreMaxMomentum,
@@ -24,7 +23,6 @@ import {
 
 export {
 	allLeagueIds,
-	stallPenaltySteps,
 	scoreMaxCloseness,
 	scoreMaxLateGame,
 	scoreMaxMomentum,

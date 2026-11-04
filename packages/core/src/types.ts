@@ -434,8 +434,6 @@ export interface PowerScoreSnapshot {
 	gameBoost?: number;
 	scoringOpportunityBoost?: number;
 	postseasonBoost?: number;
-	stalled: boolean;
-	stallPenalty?: number;
 	// Absent on a snapshot from before commercial breaks were detected.
 	onBreak?: boolean;
 	breakPenalty?: number;

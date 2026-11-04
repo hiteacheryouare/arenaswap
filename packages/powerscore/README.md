@@ -63,8 +63,7 @@ That minimum gets you the two score-and-clock signals (Closeness and Late-Game P
 |---|---|---|
 | Score snapshots, oldest first | `context.history` | Momentum, Lead Changes, Comeback Factor. Needs at least 3 snapshots. |
 | Win probability, 0–1 per poll | `context.winProbability` | The ±5 win probability modifier. Needs at least 5 values. |
-| Whether the game is in a commercial break | `context.onBreak` | The break deduction. Replaces `stallCount` when set. |
-| Consecutive polls with a frozen clock | `context.stallCount` | The stall deduction, when `onBreak` isn't set. |
+| Whether the game is in a commercial break | `context.onBreak` | The break deduction. |
 | `possession`, `yardsToEndZone`, `down`, `distance`, and `timeouts` on the team | `game`, `game.homeTeam` | The two-minute drill, the red zone boost, and Fantasy's football situation. |
 | `baseRunners`, `outs`, `topOfInning` | `game` | Runners on base, go-ahead run on base. |
 | `hits` on each team | `game.homeTeam`, `game.awayTeam` | The no-hitter. |
@@ -155,9 +154,9 @@ scoreGame(game, context, { mode: 'blowouts' });
 
 | Mode | The question | Signals (ceiling) | Boosts it keeps |
 |---|---|---|---|
-| `'classic'` (default) | Is it close, late and swinging? | Closeness 42, Late-Game Pressure 38, Momentum 38, Lead Changes 18, Comeback Factor 20 | All of them (below), plus the stall and break deduction and the win probability modifier |
-| `'blowouts'` | Is somebody running away with it? | Blowout Margin 50, Sustained 30, Timing 25, Pile-On 15 | No-hitter, Upset Rout. Keeps the stall and break deduction. |
-| `'fantasy'` | Is something about to happen to my players? | Situation 50, Production 35, Exposure 15 | None. No stall or break deduction. |
+| `'classic'` (default) | Is it close, late and swinging? | Closeness 42, Late-Game Pressure 38, Momentum 38, Lead Changes 18, Comeback Factor 20 | All of them (below), plus the break deduction and the win probability modifier |
+| `'blowouts'` | Is somebody running away with it? | Blowout Margin 50, Sustained 30, Timing 25, Pile-On 15 | No-hitter, Upset Rout. Keeps the break deduction. |
+| `'fantasy'` | Is something about to happen to my players? | Situation 50, Production 35, Exposure 15 | None. No break deduction. |
 
 The signal ids, as they appear in `score.signals`: `closeness`, `lateGame`, `momentum`, `leadChanges`, `comeback`; `blowoutMargin`, `sustained`, `timing`, `pileOn`; `situation`, `production`, `exposure`.
 
@@ -255,7 +254,7 @@ const overtimeOnly: PowerScoreMode = defineMode({
 	],
 	boosts: [],
 	reasonPriority: ['extraTime'],
-	usesStallPenalty: false,
+	usesBreakPenalty: false,
 	usesWinProbability: false,
 });
 
@@ -284,12 +283,10 @@ interface PowerScore {
 	scaledSubtotal: number;         // after rescaling for disabled signals
 	signalCeiling: number;
 	frozen: boolean;                // halftime, intermission or delay
-	stalled: boolean;
-	stallPenalty: number;           // points removed, always ≥ 0
 	onBreak: boolean;
 	breakPenalty: number;           // points removed, always ≥ 0
 	winProbabilityVariance?: number; // −5 to +5, absent without enough history
-	baseTotal: number;              // signals less stall or break plus variance, before any boost
+	baseTotal: number;              // signals less the break deduction plus variance, before any boost
 	classicTotal?: number;          // Classic's own total, when the mode blends with it
 	blend?: BlendResult;            // { kind, weight, ownTotal, classicTotal, floorApplied? }, to show the arithmetic
 	boosts: ScoredBoost[];          // { id, points, meta?, details? }
@@ -301,8 +298,7 @@ interface PowerScore {
 - **`signals` and `boosts` are lists.** Every signal the mode defines is there, with its ceiling, even at 0. So is every boost the mode pays, at 0 when it isn't paying. Boost ids are listed above, plus `favoriteBoost`, `postseasonBoost` and `gameBoost` when you asked for them. Look one up with `signalPoints(score, 'momentum')` or `boostPoints(score, 'noHitter')`.
 - **`reasons` are sentences** (`{ key: 'run', params: { team: 'Lakers', scoredFor: 12, scoredAgainst: 2 } }`) so a UI can translate them. `reason` is the same list in English, joined into sentences, for when you don't have translations. It's display text, not an API. Don't match on it. See [Reasons](#reasons) for what each sentence says.
 - **`frozen`** is true at halftime, in an intermission or in a delay. Everything scores 0 until play resumes, and `reason` is empty.
-- **`stalled`** is true when a stall deduction applied. `stallPenalty` is how many points it took. 8 consecutive frozen polls cost 15, 15 cost 25.
-- **`onBreak`** is true when a commercial break deduction applied. `breakPenalty` is how many points it took, 15 at most. Both are `false` and `0` on a frozen score, and `stalled` only ever fires through `stallCount`.
+- **`onBreak`** is true when a commercial break deduction applied. `breakPenalty` is how many points it took, 15 at most. Both are `false` and `0` on a frozen score.
 - **`meta`** on a boost carries what a UI might want to say, such as `{ inning: 8 }` on a no-hitter.
 - **`details`** on a boost says what is happening in this game that the boost pays for, or doesn't, as reason fragments for a UI to translate: `{ key: 'seriesClinch', params: { team: 'CHW' } }` on stakes, or a pulled goalie and a power play together on a hockey 6-on-4. It's absent when there's nothing to say, such as before a game starts or while play is stopped. There is no English renderer for these keys; the table below lists every one the built-in boosts send, with the sentence ArenaSwap shows for it.
 
@@ -399,7 +395,7 @@ Basketball calls a lopsided stretch a run (12–4 or better). Everywhere else on
 The order is fixed:
 
 1. Signals score. Disabled ones are rescaled out.
-2. The stall or break deduction comes off.
+2. The break deduction comes off.
 3. The win probability modifier is added (Classic only). The result is clamped to 0–100.
 4. The mode's own boosts are added, within their caps, and the total is capped at 100.
 5. If the mode blends with Classic (floor, mix, or boost), that happens here.
@@ -535,37 +531,21 @@ Compares how much the margin has shrunk since the oldest snapshot. Progress-scal
 
 A ±5 modifier applied on top of the five signals, from the mean absolute distance of the supplied win-probability line from 50%. A line hugging 50% earns +5; an average distance of 0.35 or more saturates the −5 penalty. Needs at least 5 finite data points, and is absent from the result entirely when fewer are supplied.
 
-### Stall and break detection
+### Commercial breaks
 
-When a game's clock stops moving, a **flat point deduction** comes off the signals subtotal so ArenaSwap doesn't switch to a game stuck in a commercial break or a timeout:
-
-- **≥8 consecutive frozen polls** → −15 points
-- **≥15 consecutive frozen polls** → −25 points
-
-```ts
-// stall deduction steps (exported from constants.ts), highest threshold first
-stallPenaltySteps // [{ minPolls: 15, deduction: 25 }, { minPolls: 8, deduction: 15 }]
-```
-
-It is a deduction, not a multiplier: a game whose signals total 79 with a deep stall lands at 54, not at 55. ArenaSwap polls on a dynamic interval — 12–25 seconds while games are live, 40 during an intermission — so 8 frozen polls is about 1.5 to 3.5 minutes of dead air, and 15 polls about 3 to 6 minutes.
-
-The deduction applies to the five signals only. `winProbabilityVariance` sits on top of the stalled subtotal and is not reduced by it. `signalsSubtotal` holds the pre-deduction subtotal, so a breakdown can show what the stall cost.
-
-#### Commercial breaks
-
-A frozen clock is a blunt way to find a break. It also stops for incompletions, free throws and reviews, and baseball has no clock at all. If you can spot a break some other way, tell the engine directly:
+When a game is in a commercial break, a **flat point deduction** comes off the signals subtotal so ArenaSwap doesn't switch to a game that's showing ads. Tell the engine when you spot one:
 
 ```ts
 const score = scoreGame(game, { history, onBreak: true });
 ```
 
-While `onBreak` is true, a flat 15 points come off the signals subtotal. With some signals disabled, the deduction scales up with the rest of the subtotal, so it's 30 with half the signal ceiling switched off. It sits in the same place as the stall deduction: after the signals, before the win probability modifier. Classic and Blowouts pay it. Fantasy doesn't.
+While `onBreak` is true, a flat 15 points come off the signals subtotal. With some signals disabled, the deduction scales up with the rest of the subtotal, so it's 30 with half the signal ceiling switched off. It comes off after the signals, before the win probability modifier. Classic and Blowouts pay it. Fantasy doesn't.
 
 ```ts
 breakPenalty // 15 (exported from constants.ts)
 ```
 
-`onBreak` replaces `stallCount`. Set it to `true` or `false` and `stallCount` is ignored. Leave it undefined and `stallCount` works as it always did, so existing callers don't change. The engine doesn't detect breaks. The caller does, the same way it counts stalled polls. ArenaSwap reads inning breaks, pitching changes and TV timeouts from its scoreboard feed and passes the result in.
+The engine doesn't detect breaks. The caller does. ArenaSwap reads inning breaks, pitching changes and TV timeouts from its scoreboard feed and passes the result in.
 
 ---
 
@@ -573,12 +553,12 @@ breakPenalty // 15 (exported from constants.ts)
 
 ## The 2.x API
 
-Still exported, still working, marked deprecated. `computePowerScore(game, history, stallCount, winProbabilityHistory)` returns the flat `PowerScoreResult` (`closeness`, `lateGame`, `momentum`, `leadChanges`, `comeback`, `total`, `reason` and friends) it always did. It is `scoreGame` in Classic with the signals only, then flattened. `normalizePowerScoreResult`, `computeScoringOpportunityBoost`, `computeWinProbVarianceScore`, `computeGameProgress` and `isPlayFrozen` are unchanged.
+Still exported, still working, marked deprecated. `computePowerScore(game, history, winProbabilityHistory)` returns the flat `PowerScoreResult` (`closeness`, `lateGame`, `momentum`, `leadChanges`, `comeback`, `total`, `reason` and friends) it always did. It is `scoreGame` in Classic with the signals only, then flattened. `normalizePowerScoreResult`, `computeScoringOpportunityBoost`, `computeWinProbVarianceScore`, `computeGameProgress` and `isPlayFrozen` are unchanged.
 
 ```ts
 import { computePowerScore } from 'powerscore';
 
-const result = computePowerScore(game, history, stallCount, winProbabilityHistory);
+const result = computePowerScore(game, history, winProbabilityHistory);
 result.total; // 0–100, the same number 2.x gave you
 ```
 
@@ -608,19 +588,7 @@ scoreGame(game, context, { mode: { ...classicMode, boosts: [] } });
 
 2.0.0 recalibrated the model and changed public shapes. Four things are most likely to break a 1.x consumer.
 
-**`stallPenaltySteps` is a flat deduction, not a multiplier.** The field was renamed along with the mechanic, so the old one silently disappears rather than erroring.
-
-```ts
-// 1.x
-stallPenaltySteps // [{ minPolls: 15, multiplier: 0.70 }, { minPolls: 8, multiplier: 0.85 }]
-const total = rawTotal * step.multiplier;
-
-// 2.0
-stallPenaltySteps // [{ minPolls: 15, deduction: 25 }, { minPolls: 8, deduction: 15 }]
-const total = Math.max(0, rawTotal - step.deduction);
-```
-
-Reading `step.multiplier` on 2.0 returns `undefined`, and multiplying by it gives `NaN`.
+**`stallPenaltySteps` is gone.** 2.0 turned its multipliers into flat deductions, and a later release removed the stall penalty altogether. `stallCount` is no longer read, and `computePowerScore` no longer takes it. Use `onBreak` to dock a game in a commercial break.
 
 **`ScorerTunables.scores.lateGame` was reshaped.** The single ramp ceiling became three, picked by how close the game is, and the two fields deprecated in 1.x are gone.
 

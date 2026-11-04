@@ -29,10 +29,9 @@ const classicSignalsOnly: PowerScoreMode = { ...classicMode, boosts: [] };
 export const computePowerScore = (
 	game: Game,
 	history: ScoreSnapshot[] = [],
-	stallCount: number = 0,
 	winProbabilityHistory: number[] = [],
 ): PowerScoreResult => {
-	const score = scoreGame(game, { history, stallCount, winProbability: winProbabilityHistory }, { mode: classicSignalsOnly });
+	const score = scoreGame(game, { history, winProbability: winProbabilityHistory }, { mode: classicSignalsOnly });
 	const flat = {
 		gameId: game.id,
 		total: score.baseTotal,
@@ -42,14 +41,12 @@ export const computePowerScore = (
 		leadChanges: signalPoints(score, 'leadChanges'),
 		comeback: signalPoints(score, 'comeback'),
 		reason: score.reason,
-		stalled: score.stalled,
 	};
 	// A frozen game reports only the zeros, as 2.x did.
 	if (isPlayFrozen(game)) return normalizePowerScoreResult(flat);
 	return normalizePowerScoreResult({
 		...flat,
 		...(score.winProbabilityVariance !== undefined ? { winProbabilityVariance: score.winProbabilityVariance } : {}),
-		stallPenalty: score.stallPenalty,
 		signalsSubtotal: score.signalsSubtotal,
 	});
 };
@@ -80,14 +77,12 @@ export const normalizePowerScoreResult = (
 	const winProbabilityVariance = hasWinProbVariance
 		? clamp(Math.round(toFiniteNumber(score.winProbabilityVariance)), -scoreWinProbVarianceMax, scoreWinProbVarianceMax)
 		: undefined;
-	const hasStallPenalty = typeof score.stallPenalty === 'number' && Number.isFinite(score.stallPenalty);
-	const stallPenalty = hasStallPenalty ? Math.max(0, Math.round(toFiniteNumber(score.stallPenalty))) : undefined;
 	const hasBreakPenalty = typeof score.breakPenalty === 'number' && Number.isFinite(score.breakPenalty);
 	const breakPenalty = hasBreakPenalty ? Math.max(0, Math.round(toFiniteNumber(score.breakPenalty))) : undefined;
 	const clampedSignalsSum = closeness + lateGame + momentum + leadChanges + comeback;
-	// The fallback subtracts the penalties. Falling back to the bare signal sum handed a stalled game
+	// The fallback subtracts the penalty. Falling back to the bare signal sum handed a game on a break
 	// back every point the penalty had removed, any time `total` arrived non-finite.
-	const totalFallback = Math.max(0, clampedSignalsSum - (stallPenalty ?? 0) - (breakPenalty ?? 0));
+	const totalFallback = Math.max(0, clampedSignalsSum - (breakPenalty ?? 0));
 	const total = options.allowTotalOverflow
 		? Math.max(0, toFiniteNumber(score.total, totalFallback))
 		: clamp(toFiniteNumber(score.total, totalFallback), 0, scoreMaxTotal);
@@ -98,7 +93,7 @@ export const normalizePowerScoreResult = (
 	const hasScoringOpportunityBoost = typeof score.scoringOpportunityBoost === 'number' && Number.isFinite(score.scoringOpportunityBoost);
 	const hasPostseasonBoost = typeof score.postseasonBoost === 'number' && Number.isFinite(score.postseasonBoost);
 	// Clamped to the signals ceiling, not scoreMaxTotal: this is the raw pre-cap subtotal the
-	// breakdown subtracts the stall penalty from.
+	// breakdown subtracts the break penalty from.
 	const signalsSubtotal = hasSignalsSubtotal ? clamp(toFiniteNumber(score.signalsSubtotal), 0, scoreMaxSignalsSubtotal) : undefined;
 	const favoriteBonus = hasFavoriteBonus ? Math.max(0, Math.round(toFiniteNumber(score.favoriteBonus))) : undefined;
 	const favoriteTeamCount = hasFavoriteTeamCount ? Math.max(0, Math.round(toFiniteNumber(score.favoriteTeamCount))) : undefined;
@@ -116,8 +111,6 @@ export const normalizePowerScoreResult = (
 		comeback,
 		...(hasWinProbVariance ? { winProbabilityVariance } : {}),
 		reason: typeof score.reason === 'string' ? score.reason : scorerTunables.reasons.fallback,
-		stalled: score.stalled === true,
-		...(hasStallPenalty ? { stallPenalty } : {}),
 		...(typeof score.onBreak === 'boolean' ? { onBreak: score.onBreak } : {}),
 		...(hasBreakPenalty ? { breakPenalty } : {}),
 		...(hasSignalsSubtotal ? { signalsSubtotal } : {}),

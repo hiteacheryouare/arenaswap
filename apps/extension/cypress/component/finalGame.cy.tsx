@@ -53,7 +53,6 @@ const excitement: PowerScoreResult = {
 	comeback: 3,
 	favoriteBonus: 0,
 	favoriteTeamCount: 0,
-	stalled: false,
 	reason: 'close game',
 };
 
@@ -102,7 +101,7 @@ const spanning = (): PowerScoreSnapshot[] => (
 		timestamp: startMs + (sportWrapAllowanceMs.basketball * fraction),
 		total: 60,
 		closeness: 20, lateGame: 20, momentum: 10, leadChanges: 5, comeback: 5,
-		signalsSubtotal: 60, favoriteBonus: 0, favoriteTeamCount: 0, stalled: false,
+		signalsSubtotal: 60, favoriteBonus: 0, favoriteTeamCount: 0,
 		reason: 'close game',
 	}))
 );

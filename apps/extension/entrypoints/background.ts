@@ -447,7 +447,6 @@ export default defineBackground(() => {
 				gameBoost: score.gameBoost ?? 0,
 				scoringOpportunityBoost: score.scoringOpportunityBoost ?? 0,
 				postseasonBoost: score.postseasonBoost ?? 0,
-				stalled: score.stalled ?? false,
 				onBreak: score.onBreak ?? false,
 				reason: score.reason,
 				// Classic's signals are already the flat fields above, and only the newest snapshot keeps its

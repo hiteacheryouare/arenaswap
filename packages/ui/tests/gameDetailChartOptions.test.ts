@@ -65,7 +65,6 @@ const powerPoint = (index: number, overrides: Partial<PowerScoreSnapshot> = {}):
 	signalsSubtotal: 58,
 	favoriteBonus: 0,
 	favoriteTeamCount: 0,
-	stalled: false,
 	reason: 'close late game',
 	...overrides,
 });

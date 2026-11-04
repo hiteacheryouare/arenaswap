@@ -25,7 +25,6 @@ const baseResult: PowerScoreResult = {
 	comeback: 0,
 	favoriteBonus: 0,
 	favoriteTeamCount: 0,
-	stalled: false,
 	reason: 'Close game',
 };
 

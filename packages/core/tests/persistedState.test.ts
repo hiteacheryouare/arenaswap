@@ -38,7 +38,6 @@ const snapshotAsShipped = (over: Partial<PowerScoreSnapshot> = {}): PowerScoreSn
 	gameBoost: 0,
 	scoringOpportunityBoost: 0,
 	postseasonBoost: 0,
-	stalled: false,
 	reason: 'best game available',
 	...over,
 });
@@ -93,7 +92,7 @@ describe('an upgrade, reading what an older release wrote', () => {
 			gameId: 'game-1', timestamp: 1_764_000_000_000, total: 55,
 			closeness: 20, lateGame: 15, momentum: 10, leadChanges: 5, comeback: 5,
 			signalsSubtotal: 55, favoriteBonus: 0, favoriteTeamCount: 0,
-			stalled: false, reason: 'best game available',
+			reason: 'best game available',
 		};
 
 		expect(isPowerScoreSnapshotLike(reload(old))).toBe(true);

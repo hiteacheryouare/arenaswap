@@ -99,11 +99,10 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 
 	test(`${cases} seeded games agree field by field`, () => {
 		const mismatches: string[] = [];
-		const seen = { highTotal: 0, overflow: 0, disabled: 0, stalled: 0, scoringOpportunity: 0, postseason: 0, momentum: 0, leadChanges: 0, comeback: 0, frozen: 0 };
+		const seen = { highTotal: 0, overflow: 0, disabled: 0, scoringOpportunity: 0, postseason: 0, momentum: 0, leadChanges: 0, comeback: 0, frozen: 0 };
 		for (let i = 0; i < cases; i++) {
 			const game = buildGame(random, i);
 			const history = buildHistory(random, game.id, game.homeTeam.score, game.awayTeam.score);
-			const stallCount = random.pick([0, 0, 0, 3, 8, 12, 15, 20]);
 			const winProbability = buildWinProbability(random);
 			const disabledSignals = random.chance(0.6) ? [] : signalNames.filter(() => random.chance(0.35));
 			const favoriteTeamCount = random.pick([0, 0, 1, 2]);
@@ -113,7 +112,7 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 			const gameBoost = random.pick([0, 0, 0, 15, 40]);
 			game.postseasonRound = postseasonRound;
 
-			const v2 = scoreGameV2(game as V2Game, history, stallCount, winProbability, {
+			const v2 = scoreGameV2(game as V2Game, history, 0, winProbability, {
 				disabledSignals,
 				favoriteTeamCount,
 				favoriteBonusPoints: favoriteBoostPoints,
@@ -121,7 +120,7 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 				postseasonRound,
 				gameBoost,
 			});
-			const v3 = scoreGame(game, { history, stallCount, winProbability }, {
+			const v3 = scoreGame(game, { history, winProbability }, {
 				mode: classicAsShipped,
 				disabledSignals,
 				favoriteTeamCount,
@@ -145,7 +144,6 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 			const fields: [string, unknown, unknown][] = [
 				...signalNames.filter(name => (!overtimeLead || name !== 'lateGame') && (!comebackMoved || name !== 'comeback')).map((name): [string, unknown, unknown] => [name, v2[name], signalPoints(v3, name)]),
 				...(skipsSubtotal ? [] : [['signalsSubtotal', v2.signalsSubtotal ?? 0, v3.scaledSubtotal] as [string, unknown, unknown]]),
-				['stallPenalty', v2.stallPenalty ?? 0, v3.stallPenalty],
 				['winProbabilityVariance', v2.winProbabilityVariance, v3.winProbabilityVariance],
 				['favoriteBonus', v2.favoriteBonus, boostPoints(v3, 'favoriteBoost')],
 				['gameBoost', v2.gameBoost, boostPoints(v3, 'gameBoost')],
@@ -153,16 +151,12 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 				['postseasonBoost', v2.postseasonBoost, boostPoints(v3, 'postseasonBoost')],
 			];
 
-			// The deliberate changes. The reason line was rewritten from a list of fragments into
-			// sentences, so it is not compared, and 2.x's disabled path floored after adding win
-			// probability instead of before.
-			const subtotalUnderStall = v3.scaledSubtotal < v3.stallPenalty && (v3.winProbabilityVariance ?? 0) > 0;
-			if (!skipsSubtotal && (disabledSignals.length === 0 || !subtotalUnderStall)) fields.push(['total', v2.total, v3.total]);
+			// The reason line was rewritten from a list of fragments into sentences, so it is not compared.
+			if (!skipsSubtotal) fields.push(['total', v2.total, v3.total]);
 
 			if (v3.total >= 70) seen.highTotal++;
 			if (v3.total > 100) seen.overflow++;
 			if (disabledSignals.length > 0) seen.disabled++;
-			if (v3.stalled) seen.stalled++;
 			if (boostPoints(v3, 'scoringOpportunity') > 0) seen.scoringOpportunity++;
 			if (boostPoints(v3, 'postseasonBoost') > 0) seen.postseason++;
 			if (signalPoints(v3, 'momentum') > 0) seen.momentum++;

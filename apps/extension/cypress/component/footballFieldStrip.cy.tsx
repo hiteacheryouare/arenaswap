@@ -40,7 +40,7 @@ const nflGame: Game = {
 const result: PowerScoreResult = {
 	gameId: 'g1', total: 78, closeness: 20, lateGame: 18, momentum: 12,
 	leadChanges: 8, comeback: 0, favoriteBonus: 0, favoriteTeamCount: 0,
-	stalled: false, reason: 'Close game',
+	reason: 'Close game',
 };
 
 // The card's own inner width: the popup less its padding, less the card's.

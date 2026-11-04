@@ -67,7 +67,7 @@ export interface BoostPresentation extends FactorTone {
 export interface ModePresentation {
 	nameKey: string;
 	// The engine pays no commercial-break penalty in this mode, so the breakdown leaves the row out.
-	usesStallPenalty: boolean;
+	usesBreakPenalty: boolean;
 	// Present when the mode blends with Classic, to say how.
 	blendTooltipKey?: string;
 }
@@ -121,9 +121,9 @@ export const penaltyPresentation = {
 } as const;
 
 export const modePresentation = {
-	classic: { nameKey: 'powerScore.modeClassic', usesStallPenalty: true },
-	blowouts: { nameKey: 'powerScore.modeBlowouts', usesStallPenalty: true, blendTooltipKey: 'powerScore.tooltipBlendBlowouts' },
-	fantasy: { nameKey: 'powerScore.modeFantasy', usesStallPenalty: false, blendTooltipKey: 'powerScore.tooltipBlendFantasy' },
+	classic: { nameKey: 'powerScore.modeClassic', usesBreakPenalty: true },
+	blowouts: { nameKey: 'powerScore.modeBlowouts', usesBreakPenalty: true, blendTooltipKey: 'powerScore.tooltipBlendBlowouts' },
+	fantasy: { nameKey: 'powerScore.modeFantasy', usesBreakPenalty: false, blendTooltipKey: 'powerScore.tooltipBlendFantasy' },
 } as const satisfies Record<BuiltInModeId, ModePresentation>;
 
 export const modeNameKeys = {

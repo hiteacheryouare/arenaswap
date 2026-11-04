@@ -33,7 +33,7 @@ describe('scoringModeMeta keeps up with the engine', () => {
 	});
 
 	test('knows whether each mode pays the commercial-break penalty', () => {
-		for (const mode of modes) expect(modePresentation[mode].usesStallPenalty).toBe(builtInModes[mode].usesStallPenalty);
+		for (const mode of modes) expect(modePresentation[mode].usesBreakPenalty).toBe(builtInModes[mode].usesBreakPenalty);
 	});
 
 	test('has an entry for every boost a mode can pay, and for the three every mode adds', () => {

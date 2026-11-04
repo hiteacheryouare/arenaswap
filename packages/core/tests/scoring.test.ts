@@ -209,7 +209,6 @@ describe('a fourth quarter in Kansas City, poll by poll', () => {
 		expect(chiefs[13]!.total).toBeLessThanOrEqual(chiefs[12]!.total - 10);
 		expect(chiefs[24]!.onBreak).toBe(false);
 		expect(chiefs[24]!.breakPenalty).toBe(0);
-		expect(chiefs.every(score => !score.stalled)).toBe(true);
 	});
 
 	test('pays the red-zone boost on third and short with the game tied in the final minute', () => {
@@ -384,7 +383,6 @@ describe('the flat score the popup reads', () => {
 			25,
 		));
 		expect(halftime.total).toBe(0);
-		expect(halftime).not.toHaveProperty('stallPenalty');
 		expect(halftime).not.toHaveProperty('breakPenalty');
 		expect(live.onBreak).toBe(true);
 		expect(live.breakPenalty).toBe(15);

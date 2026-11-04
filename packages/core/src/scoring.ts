@@ -160,7 +160,7 @@ export interface LiveScoringInput {
 	onBreak: boolean;
 	winProbability: number[];
 	now: number;
-	extras?: Omit<ScoringContext, 'history' | 'stallCount' | 'onBreak' | 'winProbability'>;
+	extras?: Omit<ScoringContext, 'history' | 'onBreak' | 'winProbability'>;
 }
 
 export const scoringContextFor = ({ game, history, onBreak, winProbability, now, extras }: LiveScoringInput): ScoringContext => ({
@@ -222,8 +222,6 @@ export const toLegacyPowerScoreResult = (score: PowerScore): PowerScoreResult =>
 	comeback: signalPoints(score, 'comeback'),
 	...(score.winProbabilityVariance !== undefined ? { winProbabilityVariance: score.winProbabilityVariance } : {}),
 	reason: score.reason,
-	stalled: score.stalled,
-	...(score.frozen ? {} : { stallPenalty: score.stallPenalty }),
 	onBreak: score.onBreak,
 	...(score.frozen ? {} : { breakPenalty: score.breakPenalty }),
 	signalsSubtotal: score.scaledSubtotal,

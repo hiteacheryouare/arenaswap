@@ -1,4 +1,4 @@
-import { breakPenalty, scoreMaxTotal, stallPenaltySteps } from './constants';
+import { breakPenalty, scoreMaxTotal } from './constants';
 import { resolveLeagueConfig, resolveSportConfig } from './config';
 import { clamp, isFiniteNumber, sum, toFiniteNumber } from './math';
 import { classicMode, getMode } from './modes';
@@ -26,8 +26,6 @@ interface ModeRun {
 	signalsSubtotal: number;
 	scaledSubtotal: number;
 	signalCeiling: number;
-	stalled: boolean;
-	stallPenalty: number;
 	onBreak: boolean;
 	breakPenalty: number;
 	winProbabilityVariance?: number;
@@ -57,10 +55,6 @@ export const createSignalInput = (game: Game<string>, context: ScoringContext, o
 	};
 };
 
-const stallPenaltyFor = (stallCount: number | undefined): number | undefined => (
-	stallPenaltySteps.find(step => (stallCount ?? 0) >= step.minPolls)?.deduction
-);
-
 // Disabled signals score nothing and the survivors are rescaled to the mode's full signal ceiling,
 // not to 100: the subtotal is pre-cap and the total is capped at 100 afterwards, so scaling to 100
 // here would cap twice and deflate every score. Switching every signal off switches none of them off.
@@ -87,16 +81,12 @@ const runMode = (mode: PowerScoreMode, input: SignalInput, disabledSignals?: rea
 	const scale = enabledCeiling === signalCeiling ? 1 : signalCeiling / enabledCeiling;
 	const scaledSubtotal = scale === 1 ? signalsSubtotal : Math.min(Math.round(signalsSubtotal * scale), signalCeiling);
 
-	const { onBreak: reportedBreak, stallCount } = input.context;
-	const onBreak = mode.usesStallPenalty && reportedBreak === true;
-	const stallDeduction = mode.usesStallPenalty && reportedBreak === undefined ? stallPenaltyFor(stallCount) : undefined;
-	const stalled = stallDeduction !== undefined;
-	const stallPenalty = stalled ? Math.round(stallDeduction * scale) : 0;
+	const onBreak = mode.usesBreakPenalty && input.context.onBreak === true;
 	const scaledBreakPenalty = onBreak ? Math.round(breakPenalty * scale) : 0;
 	const winProbabilityVariance = mode.usesWinProbability
 		? computeWinProbVarianceScore(input.context.winProbability ?? [])
 		: undefined;
-	const baseTotal = clamp(Math.max(0, scaledSubtotal - stallPenalty - scaledBreakPenalty) + (winProbabilityVariance ?? 0), 0, scoreMaxTotal);
+	const baseTotal = clamp(Math.max(0, scaledSubtotal - scaledBreakPenalty) + (winProbabilityVariance ?? 0), 0, scoreMaxTotal);
 
 	const bucketRoom = new Map(Object.entries(mode.bucketCaps ?? {}));
 	const boosts = mode.boosts.map((boost): ScoredBoost => {
@@ -126,8 +116,6 @@ const runMode = (mode: PowerScoreMode, input: SignalInput, disabledSignals?: rea
 		signalsSubtotal,
 		scaledSubtotal,
 		signalCeiling,
-		stalled,
-		stallPenalty,
 		onBreak,
 		breakPenalty: scaledBreakPenalty,
 		...(winProbabilityVariance !== undefined ? { winProbabilityVariance } : {}),
@@ -167,8 +155,6 @@ const frozenScore = (game: Game<string>, mode: PowerScoreMode, options: ScoreOpt
 	scaledSubtotal: 0,
 	signalCeiling: sum(mode.signals.map(signal => signal.ceiling)),
 	frozen: true,
-	stalled: false,
-	stallPenalty: 0,
 	onBreak: false,
 	breakPenalty: 0,
 	baseTotal: 0,
@@ -183,7 +169,7 @@ const frozenScore = (game: Game<string>, mode: PowerScoreMode, options: ScoreOpt
 });
 
 /*
-	Scores one game. The order is fixed: signals → disabled-signal rescale → stall or break penalty → win
+	Scores one game. The order is fixed: signals → disabled-signal rescale → break penalty → win
 	probability (clamped 0–100) → the mode's own boosts (capped at 100) → blend with Classic →
 	favorite and postseason boosts (capped at 100) → the manual game boost, the only thing allowed
 	past 100.
@@ -226,8 +212,6 @@ export const scoreGame = (game: Game<string>, context: ScoringContext = {}, opti
 		scaledSubtotal: run.scaledSubtotal,
 		signalCeiling: run.signalCeiling,
 		frozen: false,
-		stalled: run.stalled,
-		stallPenalty: run.stallPenalty,
 		onBreak: run.onBreak,
 		breakPenalty: run.breakPenalty,
 		...(run.winProbabilityVariance !== undefined ? { winProbabilityVariance: run.winProbabilityVariance } : {}),

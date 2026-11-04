@@ -3,13 +3,6 @@ import type { LeagueId, SportType, SportTypeConfig, ScorerTunables, LeagueConfig
 // Taken off the signals subtotal while the caller reports the game is in a commercial break.
 export const breakPenalty = 15;
 
-// For callers that count frozen-clock polls themselves instead of reporting a break. Sorted
-// descending so the first matching step wins; 8 frozen polls is roughly a commercial break.
-export const stallPenaltySteps: { minPolls: number; deduction: number }[] = [
-	{ minPolls: 15, deduction: 25 },
-	{ minPolls: 8,  deduction: 15 },
-];
-
 // Indexed by runner count (0–3).
 export const scoringOpportunityBaseRunnerBoosts: [number, number, number, number] = [0, 3, 6, 10];
 
@@ -43,7 +36,7 @@ export const scoreWinProbVarianceMax = 5;
 export const scoreMaxTotal = 100;
 
 // `signalsSubtotal` is the raw pre-cap sum, so it has to be allowed past scoreMaxTotal — clamping
-// it to 100 would make the breakdown's stall arithmetic disagree with the total it explains.
+// it to 100 would make the breakdown's penalty arithmetic disagree with the total it explains.
 export const scoreMaxSignalsSubtotal =
 	scoreMaxCloseness + scoreMaxLateGame + scoreMaxMomentum + scoreMaxLeadChanges + scoreMaxComeback;
 

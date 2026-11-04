@@ -3,7 +3,7 @@
 // single non-finite total poisons that comparison and the switcher silently stops working.
 
 import { computePowerScore } from '../src/scorer';
-import { leagueConfigs, scoreMaxTotal, scoreMaxCloseness, scoreMaxLateGame, scoreMaxMomentum, scoreMaxLeadChanges, scoreMaxComeback, stallPenaltySteps } from '../src/constants';
+import { leagueConfigs, scoreMaxTotal, scoreMaxCloseness, scoreMaxLateGame, scoreMaxMomentum, scoreMaxLeadChanges, scoreMaxComeback } from '../src/constants';
 import type { Game, PowerScoreResult, ScoreSnapshot } from '../src/types';
 
 const makeRandom = (seed: number) => {
@@ -47,10 +47,10 @@ const describeBadShape = (result: PowerScoreResult): string | null => {
 
 describe('the composed total always agrees with the parts it is built from', () => {
 	// Signals are verified one at a time elsewhere. This walks the whole pipeline — signals, then
-	// the stall deduction, then the win-probability adjustment, then the cap — over a broad spread
+	// the win-probability adjustment, then the cap — over a broad spread
 	// of real league/period/clock/history combinations, because the arithmetic joining them is
 	// where a retune goes wrong without any single signal test noticing.
-	test('signals minus the stall penalty plus the variance adjustment is the published total', () => {
+	test('signals plus the variance adjustment is the published total', () => {
 		const disagreements: string[] = [];
 		for (let seed = 0; seed < 3_000; seed++) {
 			const random = makeRandom(seed);
@@ -76,9 +76,8 @@ describe('the composed total always agrees with the parts it is built from', () 
 				history.push({ gameId: game.id, timestamp: i * 20_000, homeScore: home, awayScore: away });
 			}
 
-			const stallCount = Math.floor(random() * 20);
 			const winProbability = Array.from({ length: Math.floor(random() * 9) }, () => random());
-			const result = computePowerScore(game, history, stallCount, winProbability);
+			const result = computePowerScore(game, history, winProbability);
 
 			const shape = describeBadShape(result);
 			if (shape !== null) disagreements.push(`${league.id} seed ${seed}: ${shape}`);
@@ -87,13 +86,9 @@ describe('the composed total always agrees with the parts it is built from', () 
 			if (result.signalsSubtotal !== signalSum)
 				disagreements.push(`${league.id} seed ${seed}: signalsSubtotal ${result.signalsSubtotal} but signals add to ${signalSum}`);
 
-			const expectedPenalty = stallPenaltySteps.find(step => stallCount >= step.minPolls)?.deduction ?? 0;
-			if (result.stallPenalty !== expectedPenalty)
-				disagreements.push(`${league.id} seed ${seed}: ${stallCount} stalled polls deducted ${result.stallPenalty}, expected ${expectedPenalty}`);
-
 			const composed = Math.min(
 				scoreMaxTotal,
-				Math.max(0, Math.max(0, signalSum - expectedPenalty) + (result.winProbabilityVariance ?? 0)),
+				Math.max(0, signalSum + (result.winProbabilityVariance ?? 0)),
 			);
 			if (result.total !== composed)
 				disagreements.push(`${league.id} seed ${seed}: total ${result.total}, composition gives ${composed}`);
@@ -132,30 +127,5 @@ describe('a hole in the ESPN payload still produces a score worth sorting', () =
 			{ gameId: 'game-1', timestamp: 40_000, homeScore: 14, awayScore: undefined },
 		] as unknown as ScoreSnapshot[];
 		expect(describeBadShape(computePowerScore(baseGame(), junkHistory))).toBeNull();
-	});
-
-	test('a non-finite stall count is treated as no stall rather than an unknown deduction', () => {
-		const result = computePowerScore(baseGame(), [], NaN);
-		expect(result.stallPenalty).toBe(0);
-		expect(describeBadShape(result)).toBeNull();
-	});
-});
-
-describe('a longer stall is never punished more lightly than a shorter one', () => {
-	// The deduction is picked with a `find` over stallPenaltySteps, so it depends on that array
-	// staying sorted from most to least severe. Reordering it silently halves the penalty on the
-	// longest stalls, which is exactly the case the penalty exists for.
-	test('the deduction only ever grows as the feed goes quiet for longer', () => {
-		const game = baseGame({ period: 2, clockSeconds: 600 });
-		const regressions: string[] = [];
-		let previous = 0;
-		for (let stallCount = 0; stallCount <= 40; stallCount++) {
-			const { stallPenalty = 0 } = computePowerScore(game, [], stallCount);
-			if (stallPenalty < previous)
-				regressions.push(`${stallCount} stalled polls deducted ${stallPenalty}, down from ${previous}`);
-			previous = stallPenalty;
-		}
-		expect(regressions).toEqual([]);
-		expect(previous).toBe(Math.max(...stallPenaltySteps.map(step => step.deduction)));
 	});
 });

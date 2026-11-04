@@ -10,7 +10,6 @@ import {
 	scoreMaxTotal,
 	scoreWinProbVarianceMax,
 	sportTypeConfigMap,
-	stallPenaltySteps,
 } from '../src/constants';
 import { computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, isPlayFrozen, normalizePowerScoreResult } from '../src/scorer';
 import type { Game, PowerScoreResult, ScoreSnapshot } from '../src/types';
@@ -237,7 +236,6 @@ describe('computePowerScore', () => {
 			leadChanges: 0,
 			comeback: 0,
 			reason: '',
-			stalled: false,
 		});
 	});
 
@@ -252,7 +250,6 @@ describe('computePowerScore', () => {
 			leadChanges: 0,
 			comeback: 0,
 			reason: '',
-			stalled: false,
 		});
 	});
 
@@ -662,58 +659,6 @@ describe('computePowerScore', () => {
 		expect(result.reason).toBe('HOM up 11 in the 3rd quarter');
 	});
 
-	test('applies no stall penalty below the first threshold', () => {
-		const game = makeGame({
-			homeTeam: { ...makeGame().homeTeam, score: 100 },
-			awayTeam: { ...makeGame().awayTeam, score: 92 },
-			period: 2,
-			clockSeconds: 600,
-		});
-
-		const lightStep = stallPenaltySteps[stallPenaltySteps.length - 1]!;
-		expect(lightStep).toBeDefined();
-		const result = computePowerScore(game, [], lightStep.minPolls - 1);
-		expect(result.stalled).toBe(false);
-		expect(result.stallPenalty).toBe(0);
-		expect(result.total).toBe(result.closeness + result.lateGame + result.momentum + result.leadChanges + result.comeback);
-	});
-
-	test('applies light stall penalty at the first step threshold', () => {
-		const game = makeGame({
-			homeTeam: { ...makeGame().homeTeam, score: 100 },
-			awayTeam: { ...makeGame().awayTeam, score: 92 },
-			period: 2,
-			clockSeconds: 600,
-		});
-
-		const lightStep = stallPenaltySteps[stallPenaltySteps.length - 1]!;
-		expect(lightStep).toBeDefined();
-		const raw = computePowerScore(game, [], lightStep.minPolls - 1);
-		const stalled = computePowerScore(game, [], lightStep.minPolls);
-		expect(stalled.stalled).toBe(true);
-		expect(stalled.total).toBe(Math.max(0, raw.total - lightStep.deduction));
-		expect(stalled.signalsSubtotal).toBe(raw.total);
-		expect(stalled.stallPenalty).toBe(lightStep.deduction);
-	});
-
-	test('applies heavy stall penalty at the highest step threshold', () => {
-		const game = makeGame({
-			homeTeam: { ...makeGame().homeTeam, score: 100 },
-			awayTeam: { ...makeGame().awayTeam, score: 92 },
-			period: 2,
-			clockSeconds: 600,
-		});
-
-		const heavyStep = stallPenaltySteps[0]!;
-		expect(heavyStep).toBeDefined();
-		const raw = computePowerScore(game, [], 0);
-		const stalled = computePowerScore(game, [], heavyStep.minPolls);
-		expect(stalled.stalled).toBe(true);
-		expect(stalled.total).toBe(Math.max(0, raw.total - heavyStep.deduction));
-		expect(stalled.signalsSubtotal).toBe(raw.total);
-		expect(stalled.stallPenalty).toBe(heavyStep.deduction);
-	});
-
 	test('gives the score when no signal has anything to say', () => {
 		const game = makeGame({
 			homeTeam: { ...makeGame().homeTeam, score: 120 },
@@ -993,26 +938,6 @@ describe('PowerScore calibration targets', () => {
 		expect(result.total).toBeGreaterThanOrEqual(63);
 	});
 
-	test('stall penalty is a flat deduction, not a fraction of the original score', () => {
-		// High-scoring enough that the base total exceeds the heaviest deduction.
-		const game = makeGame({
-			period: 4,
-			clockSeconds: 120,
-			homeTeam: { abbreviation: 'HOM', score: 100 },
-			awayTeam: { abbreviation: 'AWY', score: 98 },
-		});
-
-		const rawA = computePowerScore(game, [], 0);
-		const lightDeduction = stallPenaltySteps[stallPenaltySteps.length - 1]!.deduction;
-		const heavyDeduction = stallPenaltySteps[0]!.deduction;
-		const stalledLight = computePowerScore(game, [], stallPenaltySteps[stallPenaltySteps.length - 1]!.minPolls);
-		const stalledHeavy = computePowerScore(game, [], stallPenaltySteps[0]!.minPolls);
-
-		expect(rawA.total).toBeGreaterThan(heavyDeduction); // guard: base score exceeds max deduction
-		expect(rawA.total - stalledLight.total).toBe(lightDeduction);
-		expect(rawA.total - stalledHeavy.total).toBe(heavyDeduction);
-	});
-
 	test('blowout (>t3) scores lower lateGame ceiling than a close game in same period', () => {
 		const closeGame = makeGame({
 			period: 4,
@@ -1240,19 +1165,19 @@ describe('computePowerScore — win probability volatility boost/penalty integra
 	const shortHistory = makeHistory([[78, 76], [79, 77], [80, 78]]);
 
 	test('omits winProbabilityVariance from result when no win prob history is supplied', () => {
-		const result = computePowerScore(baseGame, shortHistory, 0, []);
+		const result = computePowerScore(baseGame, shortHistory, []);
 		expect(result.winProbabilityVariance).toBeUndefined();
 	});
 
 	test('omits winProbabilityVariance when history is shorter than minDataPoints', () => {
-		const result = computePowerScore(baseGame, shortHistory, 0, [0.5, 0.6]);
+		const result = computePowerScore(baseGame, shortHistory, [0.5, 0.6]);
 		expect(result.winProbabilityVariance).toBeUndefined();
 	});
 
 	test('includes winProbabilityVariance when sufficient win prob history is supplied', () => {
 		// Alternating far from the middle averages out to maxAvgDist, clamping to the full penalty.
 		const winProb = Array.from({ length: 20 }, (_, i) => (i % 2 === 0 ? 0.15 : 0.85));
-		const result = computePowerScore(baseGame, shortHistory, 0, winProb);
+		const result = computePowerScore(baseGame, shortHistory, winProb);
 		expect(result.winProbabilityVariance).toBeDefined();
 		expect(result.winProbabilityVariance).toBeLessThan(0);
 	});
@@ -1260,14 +1185,14 @@ describe('computePowerScore — win probability volatility boost/penalty integra
 	test('close-to-50% game has a higher total than a one-sided game (other signals equal)', () => {
 		const contestedProb = Array.from({ length: 30 }, () => 0.5);     // avg dist = 0 → +max
 		const dominatedProb = Array.from({ length: 30 }, () => 0.8);     // avg dist = 0.3 → negative
-		const contestedResult = computePowerScore(baseGame, shortHistory, 0, contestedProb);
-		const dominatedResult = computePowerScore(baseGame, shortHistory, 0, dominatedProb);
+		const contestedResult = computePowerScore(baseGame, shortHistory, contestedProb);
+		const dominatedResult = computePowerScore(baseGame, shortHistory, dominatedProb);
 		expect(contestedResult.total).toBeGreaterThan(dominatedResult.total);
 	});
 
 	test('signalsSubtotal holds pure signals subtotal, unaffected by variance', () => {
 		const winProb = Array.from({ length: 20 }, () => 0.8); // stable → variance penalty
-		const result = computePowerScore(baseGame, shortHistory, 0, winProb);
+		const result = computePowerScore(baseGame, shortHistory, winProb);
 		const signalsSubtotal = result.closeness + result.lateGame + result.momentum + result.leadChanges + result.comeback;
 		expect(result.signalsSubtotal).toBe(signalsSubtotal);
 		expect(result.winProbabilityVariance).toBeDefined();
@@ -1276,7 +1201,7 @@ describe('computePowerScore — win probability volatility boost/penalty integra
 
 	test('win prob volatility does not appear in reason string', () => {
 		const winProb = Array.from({ length: 20 }, (_, i) => (i % 2 === 0 ? 0.2 : 0.8));
-		const result = computePowerScore(baseGame, shortHistory, 0, winProb);
+		const result = computePowerScore(baseGame, shortHistory, winProb);
 		expect(result.reason).not.toContain('variance');
 	});
 });
@@ -1487,15 +1412,11 @@ describe('computePowerScore — non-finite win probability input', () => {
 	});
 	const history = makeHistory([[94, 93], [97, 96], [100, 99]]);
 
-	test('a single NaN cannot hand a stalled game its penalty back', () => {
-		const clean = computePowerScore(game, history, 15, []);
-		const poisoned = computePowerScore(game, history, 15, [0.5, 0.5, Number.NaN, 0.5, 0.5]);
+	test('a single NaN leaves the total where the clean line puts it', () => {
+		const clean = computePowerScore(game, history, []);
+		const poisoned = computePowerScore(game, history, [0.5, 0.5, Number.NaN, 0.5, 0.5]);
 
-		expect(clean.stallPenalty).toBe(25);
-		expect(poisoned.stallPenalty).toBe(25);
-		expect(poisoned.stalled).toBe(true);
 		expect(poisoned.total).toBe(clean.total);
-		expect(poisoned.total).toBeLessThan(poisoned.signalsSubtotal!);
 	});
 
 	test('drops non-finite samples and scores the finite ones that remain', () => {
@@ -1517,8 +1438,7 @@ describe('computePowerScore — non-finite win probability input', () => {
 			momentum: 10,
 			leadChanges: 5,
 			comeback: 2,
-			stalled: true,
-			stallPenalty: 25,
+			breakPenalty: 25,
 			reason: '',
 		});
 		expect(normalized.total).toBe(54);

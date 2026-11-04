@@ -138,7 +138,6 @@ describe('buildTeamScoreOption', () => {
 			signalsSubtotal: 62,
 			favoriteBonus: 0,
 			favoriteTeamCount: 0,
-			stalled: false,
 		} as PowerScoreSnapshot;
 		const yAxis = buildPowerScoreOption([snapshot]).yAxis as { scale?: boolean };
 		expect(yAxis.scale).toBeUndefined();

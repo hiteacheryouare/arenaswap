@@ -62,7 +62,6 @@ const powerScoreHistory: PowerScoreSnapshot[] = Array.from({ length: 6 }, (_, i)
 	signalsSubtotal: 60 + i * 2,
 	favoriteBonus: 0,
 	favoriteTeamCount: 0,
-	stalled: false,
 	reason: 'close game, lead changes',
 }));
 const clear = game({ weather: { temperatureF: 52, conditionLabel: 'Partly Cloudy' } });

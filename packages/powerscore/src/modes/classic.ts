@@ -23,6 +23,6 @@ export const classicMode: PowerScoreMode = {
 	],
 	bucketCaps: boostBucketCaps,
 	reasonPriority: ['momentum', 'comeback', 'leadChanges', 'lateGame', 'closeness'],
-	usesStallPenalty: true,
+	usesBreakPenalty: true,
 	usesWinProbability: true,
 };

@@ -101,7 +101,7 @@ for (let tick = 0; tick < ticks; tick++) {
 	const tickTotals: number[] = [];
 	for (const game of games) {
 		const gameHistory = history.get(game.id) ?? [];
-		const result = computePowerScore(game, gameHistory, 0, winProbHistory.get(game.id) ?? []);
+		const result = computePowerScore(game, gameHistory, winProbHistory.get(game.id) ?? []);
 		allTotals.push(result.total);
 		(totalsBySport[game.sportType] ??= []).push(result.total);
 		(totalsByHistoryDepth[historyDepthBucket(gameHistory.length)] ??= []).push(result.total);
@@ -242,7 +242,7 @@ console.log('  ' + '-'.repeat(88));
 for (const { label, game, depths } of earlyGameScenarios) {
 	for (const depth of depths) {
 		const h = makeSnapshotHistory(depth, game.homeTeam.score, game.awayTeam.score);
-		const r = computePowerScore(game, h, 0, []);
+		const r = computePowerScore(game, h, []);
 		const signals = r.closeness + r.lateGame + r.momentum + r.leadChanges + r.comeback;
 		const row = [
 			`  ${label}`.padEnd(44),

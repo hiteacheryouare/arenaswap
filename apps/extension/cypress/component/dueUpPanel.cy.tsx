@@ -56,7 +56,6 @@ const excitement: PowerScoreResult = {
 	comeback: 4,
 	favoriteBonus: 0,
 	favoriteTeamCount: 0,
-	stalled: false,
 	reason: 'close game, late innings',
 };
 

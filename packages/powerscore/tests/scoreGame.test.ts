@@ -29,7 +29,7 @@ const testMode = (overrides: Partial<PowerScoreMode> = {}): PowerScoreMode => de
 	signals: [fixedSignal('alpha', 50, 30), fixedSignal('beta', 50, 20)],
 	boosts: [],
 	reasonPriority: ['alpha', 'beta'],
-	usesStallPenalty: false,
+	usesBreakPenalty: false,
 	usesWinProbability: false,
 	...overrides,
 });
@@ -124,25 +124,9 @@ describe('switching signals off', () => {
 		expect(noComeback.reason).toBe('DEN on an 11–2 run. Tied with 0:40 left');
 	});
 
-	test('scales the stall penalty with the subtotal so a stalled game keeps its proportion', () => {
-		const mode = testMode({ signals: [fixedSignal('alpha', 50, 40), fixedSignal('beta', 50, 0)], usesStallPenalty: true });
-		const allOn = scoreGame(thirdQuarter(), { stallCount: 8 }, { mode });
-		const betaOff = scoreGame(thirdQuarter(), { stallCount: 8 }, { mode, disabledSignals: ['beta'] });
-		expect(allOn.stallPenalty).toBe(15);
-		expect(allOn.baseTotal).toBe(25);
-		expect(betaOff.stallPenalty).toBe(30);
-		expect(betaOff.baseTotal).toBe(50);
-	});
 });
 
-describe('the stall penalty and the win-probability line', () => {
-	test('a mode that opts out of the stall penalty ignores a frozen clock', () => {
-		const score = scoreGame(thirdQuarter(), { stallCount: 20 }, { mode: testMode() });
-		expect(score.stalled).toBe(false);
-		expect(score.stallPenalty).toBe(0);
-		expect(score.total).toBe(50);
-	});
-
+describe('the break penalty and the win-probability line', () => {
 	test('a mode that opts out of win probability ignores the line entirely', () => {
 		const optedOut = scoreGame(thirdQuarter(), { winProbability: balancedLine }, { mode: testMode() });
 		const optedIn = scoreGame(thirdQuarter(), { winProbability: balancedLine }, { mode: testMode({ usesWinProbability: true }) });
@@ -152,37 +136,33 @@ describe('the stall penalty and the win-probability line', () => {
 		expect(optedIn.total).toBe(55);
 	});
 
-	test('a coin-flip line still lifts a game the stall penalty has floored', () => {
-		const mode = testMode({ signals: [fixedSignal('alpha', 100, 10)], usesStallPenalty: true, usesWinProbability: true });
-		const balanced = scoreGame(thirdQuarter(), { stallCount: 8, winProbability: balancedLine }, { mode });
-		const lopsided = scoreGame(thirdQuarter(), { stallCount: 8, winProbability: lopsidedLine }, { mode });
-		expect(balanced.stallPenalty).toBe(15);
+	test('a coin-flip line still lifts a game the break penalty has floored', () => {
+		const mode = testMode({ signals: [fixedSignal('alpha', 100, 10)], usesBreakPenalty: true, usesWinProbability: true });
+		const balanced = scoreGame(thirdQuarter(), { onBreak: true, winProbability: balancedLine }, { mode });
+		const lopsided = scoreGame(thirdQuarter(), { onBreak: true, winProbability: lopsidedLine }, { mode });
+		expect(balanced.breakPenalty).toBe(15);
 		expect(balanced.baseTotal).toBe(5);
 		expect(lopsided.winProbabilityVariance).toBe(-5);
 		expect(lopsided.baseTotal).toBe(0);
 	});
 
 	test('a reported commercial break takes the flat break penalty off the signals', () => {
-		const mode = testMode({ usesStallPenalty: true });
+		const mode = testMode({ usesBreakPenalty: true });
 		const score = scoreGame(thirdQuarter(), { onBreak: true }, { mode });
 		expect(score.onBreak).toBe(true);
 		expect(score.breakPenalty).toBe(15);
-		expect(score.stalled).toBe(false);
 		expect(score.total).toBe(35);
 	});
 
-	test('a reported break replaces the stall count rather than stacking on it', () => {
-		const mode = testMode({ usesStallPenalty: true });
-		const onBreak = scoreGame(thirdQuarter(), { onBreak: true, stallCount: 20 }, { mode });
-		const playing = scoreGame(thirdQuarter(), { onBreak: false, stallCount: 20 }, { mode });
-		expect(onBreak.stallPenalty).toBe(0);
-		expect(onBreak.total).toBe(35);
-		expect(playing.stalled).toBe(false);
+	test('a game not on a break takes no penalty', () => {
+		const mode = testMode({ usesBreakPenalty: true });
+		const playing = scoreGame(thirdQuarter(), { onBreak: false }, { mode });
 		expect(playing.onBreak).toBe(false);
+		expect(playing.breakPenalty).toBe(0);
 		expect(playing.total).toBe(50);
 	});
 
-	test('a mode that opts out of the stall penalty ignores a reported break too', () => {
+	test('a mode that opts out of the break penalty ignores a reported break', () => {
 		const score = scoreGame(thirdQuarter(), { onBreak: true }, { mode: testMode() });
 		expect(score.onBreak).toBe(false);
 		expect(score.breakPenalty).toBe(0);
@@ -190,7 +170,7 @@ describe('the stall penalty and the win-probability line', () => {
 	});
 
 	test('scales the break penalty with the subtotal when signals are switched off', () => {
-		const mode = testMode({ signals: [fixedSignal('alpha', 50, 40), fixedSignal('beta', 50, 0)], usesStallPenalty: true });
+		const mode = testMode({ signals: [fixedSignal('alpha', 50, 40), fixedSignal('beta', 50, 0)], usesBreakPenalty: true });
 		const betaOff = scoreGame(thirdQuarter(), { onBreak: true }, { mode, disabledSignals: ['beta'] });
 		expect(betaOff.breakPenalty).toBe(30);
 		expect(betaOff.baseTotal).toBe(50);

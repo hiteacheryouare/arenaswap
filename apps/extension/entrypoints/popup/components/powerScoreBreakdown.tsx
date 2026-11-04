@@ -132,7 +132,7 @@ const PowerScoreBreakdown = ({
 		];
 	const modeId = breakdown?.modeId;
 	const mode = isBuiltInModeId(modeId) ? modePresentation[modeId] : undefined;
-	const showsBreak = hasBreaks && (mode?.usesStallPenalty ?? true) && breakPenalty > 0;
+	const showsBreak = hasBreaks && (mode?.usesBreakPenalty ?? true) && breakPenalty > 0;
 	const blendTooltipKey = mode && 'blendTooltipKey' in mode ? mode.blendTooltipKey : undefined;
 	const classicTotal = breakdown?.classicTotal;
 	const blend = breakdown?.blend;

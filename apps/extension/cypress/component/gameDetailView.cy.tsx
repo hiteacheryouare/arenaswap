@@ -121,7 +121,6 @@ const excitement: PowerScoreResult = {
 	comeback: 6,
 	favoriteBonus: 0,
 	favoriteTeamCount: 0,
-	stalled: false,
 	reason: '3 lead changes in the last 5 minutes. Lakers up 2 with 2:10 left',
 };
 
@@ -138,7 +137,6 @@ const powerScoreHistory: PowerScoreSnapshot[] = Array.from({ length: 6 }, (_, i)
 	signalsSubtotal: 60 + i * 2,
 	favoriteBonus: 0,
 	favoriteTeamCount: 0,
-	stalled: false,
 	reason: '3 lead changes in the last 5 minutes. Lakers up 2 with 2:10 left',
 }));
 

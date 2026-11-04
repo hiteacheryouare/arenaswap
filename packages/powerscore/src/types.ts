@@ -94,13 +94,10 @@ export interface PowerScoreResult {
 	// −5 to +5. Absent when no win-probability history was supplied.
 	winProbabilityVariance?: number;
 	reason: string;
-	stalled?: boolean;
-	// Points removed, always ≥ 0.
-	stallPenalty?: number;
 	onBreak?: boolean;
 	// Points removed for a commercial break, always ≥ 0.
 	breakPenalty?: number;
-	// The pre-stall signals subtotal, so a breakdown can show what the penalty removed.
+	// The pre-penalty signals subtotal, so a breakdown can show what the penalty removed.
 	signalsSubtotal?: number;
 	favoriteBonus?: number;
 	favoriteTeamCount?: number;
@@ -284,9 +281,7 @@ export interface ScoringContext {
 	// Score snapshots, oldest first, ending at or before this poll. Event ages are measured from the
 	// newest one, so a replay scores exactly like the live run did.
 	history?: ScoreSnapshot[];
-	// Consecutive polls with an unchanged clock (clock sports only). Ignored when `onBreak` is set.
-	stallCount?: number;
-	// The game is in a commercial break, as the caller detected it. Replaces `stallCount` when set.
+	// The game is in a commercial break, as the caller detected it.
 	onBreak?: boolean;
 	// Home win probability over the whole game, 0–1.
 	winProbability?: number[];
@@ -376,8 +371,8 @@ export interface PowerScoreMode {
 	// Signal ids whose reasons may be read, most worth reading first. The strongest signal still wins;
 	// the order breaks ties.
 	reasonPriority: readonly string[];
-	// Covers the break penalty too.
-	usesStallPenalty: boolean;
+	// Whether the mode takes the commercial-break penalty.
+	usesBreakPenalty: boolean;
 	usesWinProbability: boolean;
 	classicBlend?: ClassicBlend;
 	// False for a mode that grades something other than the result, where a playoff game is no more
@@ -438,13 +433,11 @@ export interface PowerScore {
 	signalCeiling: number;
 	// Halftime, an intermission or a delay: everything scores 0 until play resumes.
 	frozen: boolean;
-	stalled: boolean;
-	stallPenalty: number;
 	onBreak: boolean;
 	breakPenalty: number;
 	// −5 to +5; absent without enough win-probability data.
 	winProbabilityVariance?: number;
-	// Signals less the stall or break penalty plus variance, 0–100, before any boost.
+	// Signals less the break penalty plus variance, 0–100, before any boost.
 	baseTotal: number;
 	// Classic's own total when the mode blends with it or uses it as a floor.
 	classicTotal?: number;
