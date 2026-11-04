@@ -81,6 +81,10 @@ Each step under "Set It Once. Watch Everything." now has a small Chrome window a
 
 The home page's leagues now ride the top half of three rings turning around a glowing hub, the NFL, NBA, MLB and NHL biggest on the inside, each ring smaller and turning the other way from the one inside it, fading out softly as crests sink to the horizon. Each ring carries its crests twice so every league is always on screen; the rings hold still for reduced motion and run off the screen edges on phones instead of shrinking. "See all 31 leagues" opens the full list by sport in a dialog, and the build fails if a league in `leagueConfigs` has no crest.
 
+## The Standby chart plays the switch out — 2026-11-03
+
+The home page's Standby Stream chart now draws itself behind a moving playhead, under a Chrome tab strip whose active tab moves from Bournemouth vs Aston Villa to College GameDay and back as the games cross the line. The loop runs only while the chart is on screen; with reduced motion or no script, the finished chart shows as before.
+
 ## The hero headline keeps its two lines — 2026-11-03
 
 On wide screens "the Moment." was about 2px too wide for the 480px copy column and broke into "the / Moment."; German and Japanese broke into four and five lines. The home hero's headline now sizes to its column (`16cqi`, capped at the old 5.25rem), and Japanese wraps at phrase boundaries with `word-break: auto-phrase`.

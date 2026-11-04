@@ -1,8 +1,10 @@
 ---
 import { createDefaultUserPreferences } from '@arenaswap/core/constants';
+import Crest from '@arenaswap/ui/src/components/crest';
 import { currentLocale, useTranslations } from '../../i18n/ui';
 
 const t = useTranslations(currentLocale(Astro.currentLocale));
+const base = import.meta.env.BASE_URL;
 const threshold = createDefaultUserPreferences().standbyStreamThreshold;
 
 // Three games on a 0–100 PowerScore scale, drawn into a 1000×300 box. All three sink under the
@@ -11,9 +13,9 @@ const height = 300;
 const y = (score: number) => height - (score / 100) * height;
 const thresholdY = y(threshold);
 const games = [
-	'M0,90 C120,80 210,120 300,190 S420,268 520,275 S640,270 700,250 S820,120 1000,96',
-	'M0,135 C140,128 240,160 330,215 S460,276 560,282 S700,284 780,276 S900,264 1000,262',
-	'M0,180 C130,170 230,190 320,236 S450,284 600,288 S800,286 1000,289',
+	{ title: 'Bournemouth vs Aston Villa', league: 'epl', path: 'M0,90 C120,80 210,120 300,190 S420,268 520,275 S640,270 700,250 S820,120 1000,96' },
+	{ title: 'Oregon at Washington State', league: 'ncaaf', path: 'M0,135 C140,128 240,160 330,215 S460,276 560,282 S700,284 780,276 S900,264 1000,262' },
+	{ title: 'Golden State at Indiana', league: 'wnba', path: 'M0,180 C130,170 230,190 320,236 S450,284 600,288 S800,286 1000,289' },
 ];
 const standbyFrom = 430;
 const standbyTo = 707;
@@ -24,17 +26,133 @@ const standbyTo = 707;
 			<h2 class='display-md'>{t('home.standby.title')}</h2>
 			<p class='band-copy'>{t('home.standby.copy')}</p>
 		</div>
-		<figure class='standby-chart' role='img' aria-label={t('home.standby.label')} style={`--threshold:${thresholdY / height}`}>
-			<svg viewBox={`0 0 1000 ${height}`} preserveAspectRatio='none' aria-hidden='true'>
-				<rect class='standby-chart-band' x={standbyFrom} y='0' width={standbyTo - standbyFrom} height={height} />
-				<line class='standby-chart-line' x1='0' x2='1000' y1={thresholdY} y2={thresholdY} />
-				{games.map((path, index) => <path class={`standby-chart-game is-game-${index}`} d={path} />)}
-			</svg>
-			<figcaption aria-hidden='true' data-no-dots>
-				<span class='standby-chart-threshold'>{t('home.standby.threshold', { score: threshold })}</span>
-				<span class='standby-chart-standby' style={`left:${standbyFrom / 10}%`}>{t('home.standby.onStandby')}</span>
-				<span class='standby-chart-back'>{t('home.standby.backToGame')}</span>
-			</figcaption>
-		</figure>
+		<div class='standby-demo' data-standby-demo data-from={standbyFrom} data-to={standbyTo} data-height={height}>
+			<div class='standby-tabs' aria-hidden='true' data-bs-theme='dark'>
+				<div class='browser-titlebar'>
+					<span class='browser-lights'><i /><i /><i /></span>
+					<div class='browser-tabs'>
+						{games.map((game, index) => (
+							<span class:list={['browser-tab', { 'is-active': index === 0 }]} data-standby-tab={index === 0 ? 'game' : undefined}>
+								<Crest logo={`${base}images/leagues/${game.league}.png`} abbreviation='' icon='bi-globe2' className='browser-tab-favicon' />
+								<span class='browser-tab-title'>{game.title}</span>
+								<span class='browser-tab-close'><i class='bi bi-x-lg' /></span>
+								<span class='browser-tab-flare' />
+							</span>
+						))}
+						<span class='browser-tab' data-standby-tab='standby'>
+							<i class='bi bi-tv browser-tab-favicon' />
+							<span class='browser-tab-title'>College GameDay</span>
+							<span class='browser-tab-close'><i class='bi bi-x-lg' /></span>
+							<span class='browser-tab-flare' />
+						</span>
+					</div>
+				</div>
+				<div class='standby-tabs-toolbar' />
+			</div>
+			<figure class='standby-chart' role='img' aria-label={t('home.standby.label')} style={`--threshold:${thresholdY / height}`}>
+				<svg viewBox={`0 0 1000 ${height}`} preserveAspectRatio='none' aria-hidden='true'>
+					<clipPath id='standby-chart-reveal'>
+						<rect x='0' y='-10' width='1000' height={height + 20} data-standby-reveal />
+					</clipPath>
+					<line class='standby-chart-line' x1='0' x2='1000' y1={thresholdY} y2={thresholdY} />
+					<g class='standby-chart-played'>
+						<g clip-path='url(#standby-chart-reveal)'>
+							<rect class='standby-chart-band' x={standbyFrom} y='0' width={standbyTo - standbyFrom} height={height} />
+							{games.map((game, index) => <path class={`standby-chart-game is-game-${index}`} d={game.path} data-standby-game />)}
+						</g>
+						<line class='standby-chart-now' x1='0' x2='0' y1='0' y2={height} data-standby-now />
+					</g>
+				</svg>
+				<div class='standby-chart-played standby-chart-dots' aria-hidden='true'>
+					{games.map((_, index) => <span class={`standby-chart-dot is-game-${index}`} data-standby-dot />)}
+				</div>
+				<figcaption aria-hidden='true' data-no-dots>
+					<span class='standby-chart-threshold'>{t('home.standby.threshold', { score: threshold })}</span>
+					<span class='standby-chart-standby' style={`left:${standbyFrom / 10}%`}>{t('home.standby.onStandby')}</span>
+					<span class='standby-chart-back'>{t('home.standby.backToGame')}</span>
+				</figcaption>
+			</figure>
+		</div>
 	</div>
 </section>
+
+<!-- Without script, or with reduced motion, the markup above is the finished chart. -->
+<script>
+	const sweepMs = 6500;
+	const holdMs = 1000;
+	const fadeMs = 500;
+	const loopMs = sweepMs + holdMs + fadeMs;
+	const samplesPerGame = 120;
+
+	const heightAt = (curve: DOMPoint[], x: number) => {
+		const after = curve.findIndex(point => point.x >= x);
+		if (after <= 0) return curve[Math.max(after, 0)].y;
+		const before = curve[after - 1];
+		const span = curve[after].x - before.x || 1;
+		return before.y + (curve[after].y - before.y) * ((x - before.x) / span);
+	};
+
+	const demo = document.querySelector<HTMLElement>('[data-standby-demo]');
+	const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+	if (demo) {
+		const from = Number(demo.dataset.from);
+		const to = Number(demo.dataset.to);
+		const height = Number(demo.dataset.height);
+		const reveal = demo.querySelector<SVGRectElement>('[data-standby-reveal]')!;
+		const now = demo.querySelector<SVGLineElement>('[data-standby-now]')!;
+		const dots = [...demo.querySelectorAll<HTMLElement>('[data-standby-dot]')];
+		const gameTab = demo.querySelector<HTMLElement>('[data-standby-tab="game"]')!;
+		const standbyTab = demo.querySelector<HTMLElement>('[data-standby-tab="standby"]')!;
+
+		const curves = [...demo.querySelectorAll<SVGPathElement>('[data-standby-game]')].map(path => {
+			const length = path.getTotalLength();
+			return Array.from({ length: samplesPerGame + 1 }, (_, step) => path.getPointAtLength((step / samplesPerGame) * length));
+		});
+
+		const phaseAt = (x: number) => (x < from ? 'game' : x < to ? 'standby' : 'back');
+
+		let frame = 0;
+		let startedAt = 0;
+		let phase = '';
+
+		const draw = (time: number) => {
+			const elapsed = (time - startedAt) % loopMs;
+			const x = Math.min(1, elapsed / sweepMs) * 1000;
+
+			reveal.setAttribute('width', String(x));
+			now.setAttribute('transform', `translate(${x} 0)`);
+			dots.forEach((dot, index) => {
+				dot.style.setProperty('--x', String(x / 1000));
+				dot.style.setProperty('--y', String(heightAt(curves[index], x) / height));
+			});
+
+			const next = phaseAt(x);
+			if (next !== phase) {
+				phase = next;
+				demo.dataset.phase = phase;
+				standbyTab.classList.toggle('is-active', phase === 'standby');
+				gameTab.classList.toggle('is-active', phase !== 'standby');
+			}
+			demo.classList.toggle('is-rewinding', elapsed > sweepMs + holdMs);
+
+			frame = requestAnimationFrame(draw);
+		};
+
+		const play = () => {
+			if (frame || still.matches) return;
+			demo.classList.add('is-playing');
+			frame = requestAnimationFrame(time => {
+				startedAt = time;
+				draw(time);
+			});
+		};
+
+		const pause = () => {
+			cancelAnimationFrame(frame);
+			frame = 0;
+		};
+
+		new IntersectionObserver(([entry]) => (entry.isIntersecting ? play() : pause()), { threshold: 0.4 }).observe(demo);
+	}
+</script>

@@ -463,4 +463,49 @@
 			display: none;
 		}
 	}
+
+	// ─── Standby band's tab strip ────────────────────────────────────────────────
+	.standby-tabs {
+		max-width: 64rem;
+		margin: 0 auto;
+		border-radius: 0.7rem 0.7rem 0.45rem 0.45rem;
+		background: $chrome-strip;
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.07),
+			0 1px 2px rgba(0, 0, 0, 0.5);
+		overflow: hidden;
+
+		.bi.browser-tab-favicon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-shrink: 0;
+			font-size: 0.85rem;
+		}
+	}
+
+	.standby-tabs-toolbar {
+		height: 0.6rem;
+		background: $chrome-toolbar;
+	}
+
+	// Every tab stays on screen at every width, so the standby tab is never scrolled out of sight.
+	.standby-tabs .browser-tab {
+		flex: 0 1 13.5rem;
+	}
+
+	@media (max-width: 575.98px) {
+		.standby-tabs .browser-lights,
+		.standby-tabs .browser-tab-close {
+			display: none;
+		}
+
+		.standby-tabs .browser-titlebar {
+			padding-left: 0.7rem;
+		}
+
+		.standby-tabs .browser-tab {
+			padding: 0 0.5rem;
+		}
+	}
 }

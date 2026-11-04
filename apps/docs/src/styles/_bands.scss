@@ -827,7 +827,66 @@
 	.standby-chart-back {
 		right: 0;
 		top: 0;
-		color: var(--color-muted);
+		color: var(--color-text);
+	}
+
+	.standby-chart-now {
+		stroke: color-mix(in srgb, var(--color-text) 35%, transparent);
+		stroke-width: 1;
+		vector-effect: non-scaling-stroke;
+		visibility: hidden;
+	}
+
+	.standby-chart-dots {
+		position: absolute;
+		inset: 1.5rem 0 auto;
+		height: var(--chart-height);
+		pointer-events: none;
+		visibility: hidden;
+	}
+
+	.standby-chart-dot {
+		position: absolute;
+		left: calc(var(--x, 0) * 100%);
+		top: calc(var(--y, 0) * 100%);
+		width: 0.55rem;
+		height: 0.55rem;
+		border-radius: 50%;
+		transform: translate(-50%, -50%);
+
+		&.is-game-0 {
+			background: var(--color-text);
+		}
+
+		&.is-game-1 {
+			background: color-mix(in srgb, var(--color-text) 55%, var(--color-bg));
+		}
+
+		&.is-game-2 {
+			background: color-mix(in srgb, var(--color-text) 30%, var(--color-bg));
+		}
+	}
+
+	.standby-demo.is-playing {
+		.standby-chart-now,
+		.standby-chart-dots {
+			visibility: visible;
+		}
+
+		.standby-chart-played,
+		.standby-chart-standby,
+		.standby-chart-back {
+			transition: opacity m.$motion-urgent m.$motion-ease, color m.$motion-base m.$motion-ease;
+		}
+
+		&[data-phase='game'] .standby-chart-standby,
+		&[data-phase='game'] .standby-chart-back,
+		&[data-phase='standby'] .standby-chart-back,
+		&.is-rewinding .standby-chart-played,
+		&.is-rewinding .standby-chart-standby,
+		&.is-rewinding .standby-chart-back {
+			opacity: 0;
+		}
 	}
 
 	@media (max-width: 575.98px) {
