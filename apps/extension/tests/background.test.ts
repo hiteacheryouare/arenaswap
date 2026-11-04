@@ -1373,9 +1373,9 @@ describe('a queued switch when the user changes course', () => {
 		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
 	});
 
-	test('choosing the target tab as the standby stream drops it', async () => {
+	test('choosing a standby stream drops it', async () => {
 		await queue();
-		await sendMessage({ type: 'SET_STANDBY_STREAM_TAB', tabId: 2 });
+		await sendMessage({ type: 'SET_STANDBY_STREAM_TAB', tabId: 9 });
 		await waitOutTheDelay();
 
 		expect((await getDebugState()).pendingSwitch).toBeNull();
