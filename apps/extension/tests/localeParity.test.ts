@@ -63,8 +63,8 @@ describe('store listing limits', () => {
 });
 
 describe('em dashes', () => {
-	test.each(['en.json', ...localeFiles])('%s has none in the popup copy, bar the store name', file => {
-		const withDash = [...flatten(readLocale(file))].filter(([key, text]) => key !== 'extName' && text.includes('—')).map(([key]) => key);
+	test.each(['en.json', ...localeFiles])('%s has none in the popup copy or the store name', file => {
+		const withDash = [...flatten(readLocale(file))].filter(([, text]) => text.includes('—')).map(([key]) => key);
 
 		expect(withDash).toEqual([]);
 	});

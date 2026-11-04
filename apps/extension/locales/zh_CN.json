@@ -1,5 +1,5 @@
 {
-	"extName": "ArenaSwap——自动切换 NFL、NBA、March Madness、MLB 直播",
+	"extName": "ArenaSwap：自动切换 NFL、NBA、March Madness、MLB 直播",
 	"extDescription": "监控 31 个联赛的所有直播比赛，自动将您的标签页切换到最精彩的一场，最快每 12 秒判定一次。",
 	"bossCommandDescription": "老板来了：静音所有比赛，并切换到掩护页面",
 	"app": {
