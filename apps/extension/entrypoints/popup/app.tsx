@@ -39,6 +39,7 @@ import {
 	createProfile,
 	defaultProfileId,
 	activeProfileSyncKey,
+	abandonProfile,
 	defaultProfileName,
 	deleteProfile,
 	followSyncedProfile,
@@ -109,6 +110,7 @@ export default () => {
 	const [profiles, setProfiles] = useState<profileList>(defaultProfiles);
 	const [profilesBusy, setProfilesBusy] = useState(false);
 	const [freshProfileSetup, setFreshProfileSetup] = useState(false);
+	const freshProfileReturnIdRef = useRef<string | null>(null);
 	const [standbyOnboardingDone, setStandbyOnboardingDone] = useState(false);
 	const [multiviewOnboardingDone, setMultiviewOnboardingDone] = useState(false);
 	const [standbyStreamTabId, setStandbyStreamTabId] = useState<number | null>(null);
@@ -438,9 +440,14 @@ export default () => {
 			void runProfileChange(() => switchProfile(id), list => i18n.t('profiles.switchedToast', { name: activeProfileName(list) }));
 		},
 		onCreate: (name: string, fresh: boolean) => {
+			const previousId = profiles.activeId;
 			const blank = fresh ? { prefs: { ...createDefaultUserPreferences(), theme: prefsRef.current.theme }, fantasyRoster: [] } : undefined;
 			void runProfileChange(() => createProfile(name, blank), fresh ? undefined : list => i18n.t('profiles.switchedToast', { name: activeProfileName(list) }))
-				.then(() => { if (fresh) setFreshProfileSetup(true); }, () => {});
+				.then(() => {
+					if (!fresh) return;
+					freshProfileReturnIdRef.current = previousId;
+					setFreshProfileSetup(true);
+				}, () => {});
 		},
 		onRename: (id: string, name: string) => {
 			void runProfileChange(() => renameProfile(id, name));
@@ -461,9 +468,17 @@ export default () => {
 		return () => browser.storage.sync.onChanged.removeListener(onSyncChanged);
 	}, []);
 
+	const onFreshProfileLeave = () => {
+		const returnToId = freshProfileReturnIdRef.current;
+		freshProfileReturnIdRef.current = null;
+		setFreshProfileSetup(false);
+		if (returnToId) void runProfileChange(() => abandonProfile(profiles.activeId, returnToId));
+	};
+
 	const onFreshProfileComplete = (leagues: LeagueId[], favorites: string[]) => {
 		persistPrefs(currentPrefs => ({ ...currentPrefs, enabledLeagues: leagues, favoriteTeamIds: favorites }));
 		settingsOnOpenRef.current = settingsSnapshot();
+		freshProfileReturnIdRef.current = null;
 		setFreshProfileSetup(false);
 		showToast(i18n.t('profiles.switchedToast', { name: activeProfileName(profiles) }), 'success');
 		closeSetup();
@@ -642,7 +657,7 @@ export default () => {
 					leagueLogos={leagueLogos}
 					startStep={2}
 					onComplete={onFreshProfileComplete}
-					onLeave={() => setFreshProfileSetup(false)}
+					onLeave={onFreshProfileLeave}
 				/>
 			</TranslationContext.Provider>
 		);

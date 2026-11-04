@@ -4,6 +4,7 @@ import { loadFantasyRoster } from '../utils/fantasyRosterStorage';
 import { loadStoredUserPreferences } from '../utils/prefsStorage';
 import {
 	createProfile,
+	abandonProfile,
 	deleteProfile,
 	followSyncedProfile,
 	loadProfiles,
@@ -118,6 +119,19 @@ describe('profiles', () => {
 		await renameProfile('main', '  Weeknights  ');
 		expect((await loadProfiles()).profiles).toEqual([{ id: 'main', name: 'Weeknights' }]);
 		expect(fake.areas.sync.get('activeProfile')).toEqual({ id: 'main', name: 'Weeknights' });
+	});
+
+	test('backing out of a fresh profile returns to the previous setup and deletes the new one', async () => {
+		const fake = installBrowser();
+		seedLive(fake, weekdayPrefs, roster);
+		const created = await createProfile('Blank', { prefs: createDefaultUserPreferences(), fantasyRoster: [] });
+
+		const list = await abandonProfile(created.activeId, 'main');
+		expect(list).toEqual({ profiles: [{ id: 'main', name: 'main' }], activeId: 'main' });
+		expect(await loadStoredUserPreferences()).toEqual(weekdayPrefs);
+		expect(await loadFantasyRoster()).toEqual(roster);
+		expect(fake.areas.local.get('profileSetups')).toEqual({});
+		expect(fake.areas.sync.get('activeProfile')).toEqual({ id: 'main', name: 'main' });
 	});
 
 	test('only a profile not in use can be deleted', async () => {

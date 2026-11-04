@@ -235,6 +235,11 @@ export const createProfile = async (name: string, setup?: profileSetup): Promise
 	return { profiles: next, activeId: entry.id };
 };
 
+export const abandonProfile = async (id: string, returnToId: string): Promise<profileList> => {
+	await switchProfile(returnToId);
+	return deleteProfile(id);
+};
+
 export const replaceActiveProfile = async (name: string, setup: profileSetup): Promise<profileList> => {
 	const { profiles, activeId } = await readState();
 	const entry = { id: activeId, name: uniqueProfileName(name, profiles, activeId) };
