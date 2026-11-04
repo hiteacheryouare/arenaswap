@@ -2,6 +2,7 @@ import { i18n } from '#i18n';
 import type { Game } from '@arenaswap/core/types';
 import HoverTooltip from '@arenaswap/ui/src/components/hoverTooltip';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
+import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
 import { OddsProvider, oddsSummary } from './gameCardShared';
 import { conditionIcon, formatTemperature } from './weatherUtils';
 import type { TicketLink } from '@arenaswap/sideline';
@@ -38,6 +39,7 @@ const InfoRow = ({ icon, label, stacked, children }: { icon: string; label: stri
 
 const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins, tickets }: gameInfoPanelProps) => {
 	const locale = useDisplayLocale();
+	const theme = useDocumentTheme();
 	const networks = game.broadcasts?.join(' • ');
 	const venueName = game.venueName;
 	const venueLocation = game.venueLocation;
@@ -125,7 +127,7 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins, tic
 							className='game-info-attribution'
 							text={`${i18n.t('gameCard.oddsProvidedBy')} ${game.odds!.provider!.name}`}
 						>
-							<OddsProvider game={game} dark />
+							<OddsProvider game={game} dark={theme === 'dark'} />
 						</HoverTooltip>
 					)}
 				</InfoRow>

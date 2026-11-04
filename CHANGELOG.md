@@ -33,6 +33,10 @@ The walkthrough's second game is now Chiefs vs. Bills, so the Eagles are its onl
 
 A pass over every help article, the PowerScore pages and README, CONTRIBUTING and CODESTYLE fixed what had drifted: Comeback Factor now paying a comeback that takes the lead (the history example reads 86, not 70), the demo's 18 games, the shipped setting labels, the go-ahead run and two-minute drill weights, and what Standby Stream really does when you leave its tab. The PowerScore README now warns that retiring the stall penalty changed `computePowerScore`'s arguments, and that an old four-argument call throws; its development commands now run `test:unit`, since the package no longer has a `test` script.
 
+## The sportsbook logo reads in light mode — 2026-11-03
+
+The game detail panel always asked for the sportsbook's dark-ground logo, so in light mode DraftKings lost its white "KINGS" and read as "DRAFT". `GameInfoPanel` now picks the variant from the page's colour mode with `useDocumentTheme`.
+
 ## Long names stop before the arrow — 2026-11-03
 
 A long tab title in the tab picker ran under its arrow, because Bootstrap 6 makes `.form-control` a flex box and `text-truncate` does nothing on one. The label now ends in an ellipsis before the caret, the open list shows whole titles with "in use" kept visible, and the same dead truncation is fixed on the backup and profile buttons, the game header, the pre-game leaders and the Up Next search line.

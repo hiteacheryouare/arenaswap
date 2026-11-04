@@ -219,6 +219,17 @@ describe('game info panel', () => {
 		cy.get('.game-info-attribution').trigger('mouseout');
 	});
 
+	it('shows the sportsbook logo drawn for the colour mode the popup is in', () => {
+		const lightLogo = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="12"><rect width="40" height="12" fill="black"/></svg>';
+		const darkLogo = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="12"><rect width="40" height="12" fill="white"/></svg>';
+		document.documentElement.dataset.bsTheme = 'light';
+		mountDetail({ ...liveGame, odds: { ...liveGame.odds, provider: { name: 'DraftKings', logoUrl: lightLogo, darkLogoUrl: darkLogo } } });
+		cy.get('.odds-provider-logo').should('have.attr', 'src', lightLogo);
+		cy.then(() => { document.documentElement.dataset.bsTheme = 'dark'; });
+		cy.get('.odds-provider-logo').should('have.attr', 'src', darkLogo);
+		cy.then(() => { delete document.documentElement.dataset.bsTheme; });
+	});
+
 	it('drops the line row when betting display is off', () => {
 		mountDetail(liveGame, false);
 		cy.get('.game-info-row').should('have.length', 2);
