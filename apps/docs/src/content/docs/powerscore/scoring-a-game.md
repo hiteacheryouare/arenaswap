@@ -57,8 +57,7 @@ Each optional field turns on the part of the engine that needs it. Leave one out
 |---|---|---|
 | Score snapshots, oldest first | `context.history` | Momentum, Lead Changes, Comeback Factor. Needs at least 3 snapshots. |
 | Win probability, 0 to 1 per poll | `context.winProbability` | The ±5 win probability modifier. Needs at least 5 values. |
-| Whether the game is in a commercial break | `context.onBreak` | The break deduction. Replaces `stallCount` when set. |
-| Consecutive polls with a frozen clock | `context.stallCount` | The stall deduction, when `onBreak` isn't set. |
+| Whether the game is in a commercial break | `context.onBreak` | The break deduction. |
 | `possession`, `yardsToEndZone`, `down`, `distance`, and `timeouts` on the team | `game`, `game.homeTeam` | The two-minute drill, the red zone boost, and Fantasy's football situation. |
 | `baseRunners`, `outs`, `topOfInning` | `game` | Runners on base and the go-ahead run. |
 | `hits` on each team | `game.homeTeam`, `game.awayTeam` | The no-hitter. |
@@ -109,23 +108,15 @@ score.reason; // 'BOS on a 13–2 run to take the lead. Up 6 in the 3rd quarter'
 
 Trim snapshots older than the sport's `historyWindowMs` so the array doesn't grow forever. That window, and the rest of the sport-specific tuning, is in [Sport and league configuration](/arenaswap/docs/powerscore/configuration/).
 
-## Track breaks, stalls and win probability, if you have them
+## Track breaks and win probability, if you have them
 
-They all go in the context. If you can tell when a game is in a commercial break, pass `onBreak`. It's a better signal than a frozen clock, which also stops for incompletions, free throws and reviews, and baseball has no clock at all:
+They all go in the context. If you can tell when a game is in a commercial break, pass `onBreak`:
 
 ```ts
 const score = scoreGame(game, { history, onBreak: isInBreak(game), winProbability });
 ```
 
-`isInBreak` is yours to write, from whatever your feed says about inning breaks, pitching changes and timeouts. While `onBreak` is `true`, the score loses a flat 15 points. Once you set it, `true` or `false`, `stallCount` is ignored.
-
-If you can't spot breaks, fall back to `stallCount`. It's however many consecutive polls the clock hasn't moved, which you track yourself by comparing `clockSeconds` between polls:
-
-```ts
-const stallCount = game.clockSeconds === previousClockSeconds ? previousStallCount + 1 : 0;
-const score = scoreGame(game, { history, stallCount, winProbability });
-```
-
+`isInBreak` is yours to write, from whatever your feed says about inning breaks, pitching changes and timeouts. While `onBreak` is `true`, the score loses a flat 15 points.
 `winProbability` is a list of recent win-probability values from 0 to 1, for either team. Only the distance from 50% matters. Both are optional, and PowerScore scores fine without them. What each one changes is in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/).
 
 ## Let the boosts see the moment
@@ -191,4 +182,4 @@ ArenaSwap's own [scoring code](https://github.com/hiteacheryouare/arenaswap/blob
 
 ## The 2.x way
 
-`computePowerScore(game, history, stallCount, winProbabilityHistory)` still works and returns the flat 2.x result, with no moment boosts. It's the right call if you only want the number you always got. [The API reference](/arenaswap/docs/powerscore/api-reference/#the-2x-api) lists everything that's still there.
+`computePowerScore(game, history, winProbabilityHistory)` still works and returns the flat 2.x result, with no moment boosts. It's the right call if you only want the number you always got. [The API reference](/arenaswap/docs/powerscore/api-reference/#the-2x-api) lists everything that's still there.

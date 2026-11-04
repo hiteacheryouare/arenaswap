@@ -35,7 +35,7 @@ A frozen game (`intermission` or `delayed`) scores 0 across the board, including
 The total is built in a fixed order:
 
 1. Signals score. Disabled ones are rescaled out.
-2. The stall or break deduction comes off.
+2. The break deduction comes off.
 3. The win probability modifier is added (Classic only). The result is clamped to 0 to 100.
 4. The mode's own boosts are added, within their bucket caps, and the total is capped at 100.
 5. If the mode blends with Classic (floor, mix, or boost), that happens here.
@@ -97,7 +97,7 @@ const overtimeOnly: PowerScoreMode = defineMode({
 	],
 	boosts: [],
 	reasonPriority: ['extraTime'],
-	usesStallPenalty: false,
+	usesBreakPenalty: false,
 	usesWinProbability: false,
 });
 
@@ -211,7 +211,7 @@ resolveFantasyScoring('football', { receptions: 5 }).receptions;   // 2, held to
 
 Why Classic's ceilings outrun the 100-point cap is in [PowerScore signals in every mode](/arenaswap/docs/powerscore/signals/#why-the-ceilings-add-up-to-more-than-the-total). The caps are explained in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/#caps-on-the-buckets).
 
-`stallPenaltySteps`, `scoringOpportunityBaseRunnerBoosts`, `scoringOpportunityRedZoneBoost`, `scoringOpportunityRedZoneFringeBoost`, `redZoneDownMultipliers`, and `thirdAndShortDistance` hold the exact values behind the stall deduction and the scoring opportunity boost, tabulated in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/). The newer boosts keep their numbers in `goAheadRunTunables`, `twoMinuteDrillTunables`, `noHitterTunables`, `redCardTunables`, `upsetTunables`, `stakesTunables`, and `hockeyTunables`.
+`scoringOpportunityBaseRunnerBoosts`, `scoringOpportunityRedZoneBoost`, `scoringOpportunityRedZoneFringeBoost`, `redZoneDownMultipliers`, and `thirdAndShortDistance` hold the exact values behind the scoring opportunity boost, tabulated in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/). The newer boosts keep their numbers in `goAheadRunTunables`, `twoMinuteDrillTunables`, `noHitterTunables`, `redCardTunables`, `upsetTunables`, `stakesTunables`, and `hockeyTunables`.
 
 `scorerTunables` holds every tier value the engine scores with, the same numbers the constants above already give by name, so a consumer can read a tier's value instead of hardcoding it.
 
@@ -227,18 +227,16 @@ Still exported, still working, and marked deprecated where noted. Nothing here w
 function computePowerScore(
 	game: Game,
 	history?: ScoreSnapshot[],
-	stallCount?: number,
 	winProbabilityHistory?: number[],
 ): PowerScoreResult
 ```
 
-Deprecated. Scores Classic's five signals, applies the stall penalty and the win probability modifier, and returns the flat `PowerScoreResult` (`closeness`, `lateGame`, `momentum`, `leadChanges`, `comeback`, `total`, `reason`, and friends). It's `scoreGame` in Classic with the signals only, flattened, so it doesn't include any of the moment boosts.
+Deprecated. Scores Classic's five signals, applies the win probability modifier, and returns the flat `PowerScoreResult` (`closeness`, `lateGame`, `momentum`, `leadChanges`, `comeback`, `total`, `reason`, and friends). It's `scoreGame` in Classic with the signals only, flattened, so it doesn't include any of the moment boosts.
 
 | Parameter | Default | Notes |
 |---|---|---|
 | `game` | required | The current game state. |
 | `history` | `[]` | Recent score snapshots. Momentum, lead changes, and comeback stay at 0 until this holds at least 3 entries. |
-| `stallCount` | `0` | Consecutive polls where the clock hasn't moved. See [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/#stall-deduction). |
 | `winProbabilityHistory` | `[]` | Recent win-probability values, 0 to 1. Needs at least 5 finite entries to contribute anything. |
 
 Never throws. Returns an all-zero result immediately when `isPlayFrozen(game)` is true. Doesn't check `game.status`: a `'pre'` or `'post'` game scores the same as an `'in'` one, given the same other fields.
@@ -286,7 +284,7 @@ function normalizePowerScoreResult(
 
 Deprecated. Takes a partial, possibly untrusted `PowerScoreResult` (only `gameId` is required) and returns a fully clamped, valid one. `computePowerScore` calls this internally on every result it produces.
 
-Each of the five signal fields is clamped to its own ceiling. `total` is clamped to `scoreMaxTotal` unless `options.allowTotalOverflow` is `true`. With that option, it's only clamped to a minimum of `0`, letting a manual boost push it past 100 on purpose. A missing or non-finite `total` falls back to the five signals' sum minus `stallPenalty` and `breakPenalty`, not the raw sum. `reason` falls back to `scorerTunables.reasons.fallback` ("best game available") when it isn't a string. `favoriteBonus`, `favoriteTeamCount`, `gameBoost`, `scoringOpportunityBoost`, and `postseasonBoost` are rounded and floored at `0` when supplied. When they aren't, they're left off the result entirely, not defaulted to `0`. Never throws.
+Each of the five signal fields is clamped to its own ceiling. `total` is clamped to `scoreMaxTotal` unless `options.allowTotalOverflow` is `true`. With that option, it's only clamped to a minimum of `0`, letting a manual boost push it past 100 on purpose. A missing or non-finite `total` falls back to the five signals' sum minus `breakPenalty`, not the raw sum. `reason` falls back to `scorerTunables.reasons.fallback` ("best game available") when it isn't a string. `favoriteBonus`, `favoriteTeamCount`, `gameBoost`, `scoringOpportunityBoost`, and `postseasonBoost` are rounded and floored at `0` when supplied. When they aren't, they're left off the result entirely, not defaulted to `0`. Never throws.
 
 ### What changes if you move
 

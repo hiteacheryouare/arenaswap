@@ -16,9 +16,9 @@ Every boost a mode pays shows up in `score.boosts` as `{ id, points, meta? }`, a
 
 | Mode | Boosts |
 |---|---|
-| Classic | Every boost on this page, plus the win probability modifier, the stall deduction and the commercial break deduction |
-| Blowouts | No-hitter and Upset Rout, plus the stall and commercial break deductions. No postseason boost, since a playoff blowout has settled its result. |
-| Fantasy | None, and no stall or break deduction |
+| Classic | Every boost on this page, plus the win probability modifier and the commercial break deduction |
+| Blowouts | No-hitter and Upset Rout, plus the commercial break deduction. No postseason boost, since a playoff blowout has settled its result. |
+| Fantasy | None, and no break deduction |
 
 The favorite, postseason, and manual boosts at the [bottom of the page](#favorite-postseason-and-manual-boosts) apply in every mode, except that Blowouts skips the postseason boost.
 
@@ -202,31 +202,15 @@ The modifier is the mean absolute distance of the supplied values from 0.5, mapp
 
 Despite the name, the modifier measures average distance from 50%, not variance. A win-probability line that oscillates between 10% and 90% scores the same penalty as one held steadily at 90%. Both average the same distance from the midpoint.
 
-The modifier is added after the stall and break deductions, not before them, and the result is clamped to 0 to 100 before any boost is added.
-
-## Stall deduction
-
-A flat deduction comes off the signals subtotal when a game's clock has stopped moving for several consecutive polls. It keeps ArenaSwap from switching to a game sitting in a commercial break or a timeout. Classic and Blowouts apply it. Fantasy doesn't.
-
-`scoreGame` doesn't detect a stall itself. It reads `context.stallCount`, and the caller counts how many consecutive polls the clock hasn't moved. [Score a game from live data](/arenaswap/docs/powerscore/scoring-a-game/#track-breaks-stalls-and-win-probability-if-you-have-them) shows how.
-
-`stallPenaltySteps`, checked highest threshold first:
-
-| Consecutive frozen polls | Deduction |
-|---|---|
-| ≥ 15 | 25 |
-| ≥ 8 | 15 |
-| Fewer than 8 | 0 |
-
-The deduction comes straight off the signals subtotal rather than scaling it. A game whose signals sum to 79 lands at 54 under the heavy penalty, not 55. `signalsSubtotal` on the result holds the pre-deduction sum, and `stallPenalty` says how much came off, so a breakdown can show what the stall cost. `stalled` is `true` whenever a deduction applied.
+The modifier is added after the break deduction, not before it, and the result is clamped to 0 to 100 before any boost is added.
 
 ## Commercial break deduction
 
-A frozen clock is a blunt way to find a break. It also stops for incompletions, free throws and reviews, and baseball has no clock at all. So when a caller can spot a break some other way, it passes `context.onBreak` and the engine takes a flat 15 points off the signals subtotal while it's `true`. That's `breakPenalty`. If some signals are disabled, the deduction scales up with the rest of the subtotal: 30 with half the signal ceiling switched off.
+A flat deduction comes off the signals subtotal while a game is in a commercial break, so ArenaSwap doesn't switch to a game that's showing ads. The caller passes `context.onBreak`, and the engine takes a flat 15 points off the signals subtotal while it's `true`. That's `breakPenalty`. If some signals are disabled, the deduction scales up with the rest of the subtotal: 30 with half the signal ceiling switched off.
 
-It sits where the stall deduction does, after the signals and before the win probability modifier, and it's a deduction, not a multiplier. Classic and Blowouts pay it. Fantasy doesn't. The result's `onBreak` and `breakPenalty` say whether it applied and how much came off. Both are `false` and `0` on a frozen halftime or intermission score.
+It comes off after the signals and before the win probability modifier, and it's a deduction, not a multiplier. Classic and Blowouts pay it. Fantasy doesn't. The result's `onBreak` and `breakPenalty` say whether it applied and how much came off. Both are `false` and `0` on a frozen halftime or intermission score.
 
-`onBreak` replaces `stallCount`. Set it to `true` or `false` and `stallCount` is ignored. Leave it out and the stall deduction works as above. `scoreGame` doesn't detect breaks itself. The caller does. ArenaSwap reads inning breaks, pitching changes and TV timeouts from its scoreboard feed and passes the answer in.
+`signalsSubtotal` on the result holds the pre-deduction sum, so a breakdown can show what the break cost. `scoreGame` doesn't detect breaks itself. The caller does. ArenaSwap reads inning breaks, pitching changes and TV timeouts from its scoreboard feed and passes the answer in.
 
 ## Favorite, postseason, and manual boosts
 
@@ -244,4 +228,4 @@ None of them pay anything unless you give them points. The package has no defaul
 
 ## If you're still on the 2.x API
 
-`computePowerScore` keeps its 2.x behavior: signals, win probability, and the stall deduction, with none of the moment boosts. `computeScoringOpportunityBoost(game)` still returns the scoring-opportunity number on its own, and `normalizePowerScoreResult` still clamps and passes through `favoriteBonus`, `gameBoost`, and `postseasonBoost` for a result you build by hand. All of these are deprecated but working. See [the API reference](/arenaswap/docs/powerscore/api-reference/#the-2x-api) for the full list.
+`computePowerScore` keeps its 2.x behavior: signals and win probability, with none of the moment boosts. `computeScoringOpportunityBoost(game)` still returns the scoring-opportunity number on its own, and `normalizePowerScoreResult` still clamps and passes through `favoriteBonus`, `gameBoost`, and `postseasonBoost` for a result you build by hand. All of these are deprecated but working. See [the API reference](/arenaswap/docs/powerscore/api-reference/#the-2x-api) for the full list.

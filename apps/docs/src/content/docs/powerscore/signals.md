@@ -92,7 +92,7 @@ These three all read from `context.history`, the list of a game's past scores, a
 
 ### Two modifiers that aren't signals
 
-Classic also applies the win probability modifier (±5) and the stall deduction. Both belong to Classic's pipeline, and both are covered in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance).
+Classic also applies the win probability modifier (±5) and the commercial break deduction. Both belong to Classic's pipeline, and both are covered in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance).
 
 ## Blowouts
 
