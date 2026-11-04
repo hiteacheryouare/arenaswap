@@ -27,7 +27,7 @@ The walkthrough's second game is now Chiefs vs. Bills, so the Eagles are its onl
 
 ## The docs match the code again — 2026-11-03
 
-A pass over every help article, the PowerScore pages and README, CONTRIBUTING and CODESTYLE fixed what had drifted: Comeback Factor now paying a comeback that takes the lead (the history example reads 86, not 70), the demo's 18 games, the shipped setting labels, the go-ahead run and two-minute drill weights, and what Standby Stream really does when you leave its tab. The PowerScore README now warns that retiring the stall penalty changed `computePowerScore`'s arguments, and that an old four-argument call throws.
+A pass over every help article, the PowerScore pages and README, CONTRIBUTING and CODESTYLE fixed what had drifted: Comeback Factor now paying a comeback that takes the lead (the history example reads 86, not 70), the demo's 18 games, the shipped setting labels, the go-ahead run and two-minute drill weights, and what Standby Stream really does when you leave its tab. The PowerScore README now warns that retiring the stall penalty changed `computePowerScore`'s arguments, and that an old four-argument call throws; its development commands now run `test:unit`, since the package no longer has a `test` script.
 
 ## Long names stop before the arrow — 2026-11-03
 

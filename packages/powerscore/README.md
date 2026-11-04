@@ -616,11 +616,11 @@ Reason strings changed wording throughout. They are display text, not an API —
 # standalone (from packages/powerscore)
 npm install
 npm run build
-npm test
+npm run test:unit
 
 # from the ArenaSwap monorepo root
 npm run typecheck --workspace powerscore
-npm run test --workspace powerscore
+npm run test:unit --workspace powerscore
 npm run build --workspace powerscore
 ```
 
