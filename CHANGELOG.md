@@ -41,6 +41,10 @@ A new first question, "Wait, what are you selling me?", answers that ArenaSwap i
 
 The game detail panel always asked for the sportsbook's dark-ground logo, so in light mode DraftKings lost its white "KINGS" and read as "DRAFT". `GameInfoPanel` now picks the variant from the page's colour mode with `useDocumentTheme`.
 
+## The hero plays Wetherholt, Bemidji State and Pullman — 2026-11-03
+
+The home hero now runs Tampa Bay at St. Louis, Minnesota State at Bemidji State and Oregon at Washington State, with the real scores, counts and clocks wherever the record has them, and Army-Navy and Northern Arizona at Hawai'i move to the Multiview demo. Each clip now rewinds when its tab comes up, so the beats in `heroGames.ts` stay lined up with the footage on every loop, and every switch lands after a play is over. The popup hides the right third of the stream at 1440 and 1536 wide, so `fetchHeroClips.sh` gained a `pan` field that keeps each play left of it.
+
 ## Long names stop before the arrow — 2026-11-03
 
 A long tab title in the tab picker ran under its arrow, because Bootstrap 6 makes `.form-control` a flex box and `text-truncate` does nothing on one. The label now ends in an ellipsis before the caret, the open list shows whole titles with "in use" kept visible, and the same dead truncation is fixed on the backup and profile buttons, the game header, the pre-game leaders and the Up Next search line.

@@ -3,17 +3,25 @@ import type { Game } from '@arenaswap/core/types';
 // The three games in the hero, and the play-by-play they run through.
 //
 // Each one is the game that is actually playing in its clip, in a league ArenaSwap tracks. The
-// basketball clip is Hawai'i's own highlights of their Northern Arizona game and opens on a title
-// card reading the final score; the football clip is the Army-Navy game; the hockey clip is Bemidji
-// State against Minnesota State at the Sanford Center, which is readable off the jerseys and the
-// boards. A card naming a different game from the one on screen would be the first thing anybody
+// hockey clip is Bemidji State against Minnesota State at the Sanford Center, which is readable off
+// the jerseys and the boards; the baseball clip is JJ Wetherholt's first big-league hit, a solo home
+// run in the bottom of the third on Opening Day 2026; the football clip is Gardner Minshew's 22-yard
+// touchdown to Dezmon Patmon with 3:40 left, the score that put Oregon away at Martin Stadium in
+// 2018. A card naming a different game from the one on screen would be the first thing anybody
 // noticed, and describing what you are watching is the popup's whole job.
+//
+// The baseball and football beats are the real games wherever the record says what happened: the
+// scores, the inning and count, the quarter, the clock and the down on screen. Only the polls in
+// between are authored. The hockey game is authored throughout, around the goal in its clip.
+//
+// Each clip starts from the top when its tab comes up, so a beat lines up with the footage: the
+// switch-in tick is the clip's first frame, and every tick after it is another 1.15 seconds in.
 //
 // Team ids, abbreviations, colours and crests come from ESPN's own teams endpoint, which is where
 // the extension gets them too. The two hockey colours are the schools' own: ESPN returns empty
 // strings for college hockey, and a grey card would say more about ESPN's feed than about the game.
-// Minnesota State, Northern Arizona and Hawai'i play in their alternates: each crest is drawn in the
-// team's primary, so on a card painted in it the crest disappears.
+// Minnesota State plays in its alternate: its crest is drawn in its primary, so on a card painted in
+// it the crest disappears.
 //
 // Nothing here is a PowerScore. The scores on the cards are computed at render time by
 // `computePowerScore` from the `powerscore` package — the same function the extension calls — over
@@ -35,6 +43,7 @@ export interface HeroBeat {
 	period?: number;
 	// Restated whenever the period changes; between beats it moves by `clockPerTick`.
 	clock?: number;
+	intermission?: boolean;
 	topOfInning?: boolean;
 	bso?: { balls: number; strikes: number; outs: number };
 	baseRunners?: { first: boolean; second: boolean; third: boolean };
@@ -71,42 +80,39 @@ export interface HeroGameScript {
 }
 
 export const heroTickMs = 1150;
-export const heroTickCount = 24;
+export const heroTickCount = 21;
+
+const emptyBases = { first: false, second: false, third: false };
 
 export const heroGames: HeroGameScript[] = [
 	{
 		base: {
-			id: 'hero-ncaaf',
-			league: 'ncaaf',
-			sportType: 'football',
+			id: 'hero-mlb',
+			league: 'mlb',
+			sportType: 'baseball',
 			status: 'in',
-			venueName: 'Lincoln Financial Field',
-			broadcasts: ['CBS'],
-			awayTeam: { id: '349', name: 'Army Black Knights', abbreviation: 'ARMY', logo: ncaaLogo('349'), color: '#000000', alternateColor: '#d3bc8d' },
-			homeTeam: { id: '2426', name: 'Navy Midshipmen', abbreviation: 'NAVY', logo: ncaaLogo('2426'), color: '#00225b', alternateColor: '#b5a67c' },
+			venueName: 'Busch Stadium',
+			broadcasts: ['MLB.TV'],
+			awayTeam: { id: '30', name: 'Tampa Bay Rays', abbreviation: 'TB', logo: espnTeamLogo('mlb/500/tb'), color: '#092c5c', alternateColor: '#8fbce6' },
+			homeTeam: { id: '24', name: 'St. Louis Cardinals', abbreviation: 'STL', logo: espnTeamLogo('mlb/500/stl'), color: '#be0a14', alternateColor: '#001541' },
 		},
-		video: 'football',
-		poster: 'football',
-		tabTitle: 'Army at Navy',
-		tabHost: 'paramountplus.com',
-		clockPerTick: 45,
-		periodSeconds: 900,
-		// Last on the board and last on screen: two lead changes inside the fourth quarter, then a
-		// drive into the red zone with the game inside a score.
-		// Possession alternates off the scoring: a team that has just scored kicks off, so the next
-		// beat hands the ball to the other side at its own 25. The two yard markers that used to
-		// leave the ball in the scoring team's hands moved to keep that true, which is also what
-		// lets the closing drive read as one 67-yard march rather than a jump.
+		video: 'baseball',
+		poster: 'baseball',
+		tabTitle: 'Tampa Bay at St. Louis',
+		tabHost: 'mlb.com',
+		clockPerTick: 0,
+		clockless: true,
+		periodSeconds: 0,
+		// Where the hero opens: scoreless in the bottom of the third, Wetherholt leading off on an 0-2
+		// count. He makes contact two seconds into the clip, and the run posts once the ball has had
+		// time to land. The hero leaves while he is rounding first.
 		beats: [
-			{ tick: 0, away: 10, home: 0, period: 3, clock: 495, downDistance: '2nd & 7', fieldPosition: 'NAVY 38', down: 2, distance: 7 },
-			{ tick: 3, home: 3, period: 3, clock: 360, downDistance: '1st & 10', fieldPosition: 'ARMY 41', down: 1, distance: 10, note: 'NAVY 3' },
-			{ tick: 7, period: 3, clock: 180, downDistance: '2nd & 6', fieldPosition: 'ARMY 45', down: 2, distance: 6 },
-			{ tick: 11, period: 4, clock: 900, downDistance: '1st & 10', fieldPosition: 'NAVY 48', down: 1, distance: 10 },
-			{ tick: 14, home: 10, period: 4, clock: 765, downDistance: '1st & 10', fieldPosition: 'ARMY 25', down: 1, distance: 10, note: 'NAVY 10, level' },
-			{ tick: 17, home: 13, period: 4, clock: 630, downDistance: '1st & 10', fieldPosition: 'ARMY 32', down: 1, distance: 10, note: 'NAVY 13, first lead change' },
-			{ tick: 20, away: 17, period: 4, clock: 495, downDistance: '1st & 10', fieldPosition: 'NAVY 25', down: 1, distance: 10, note: 'ARMY 17, second lead change' },
-			{ tick: 22, downDistance: '2nd & 6', fieldPosition: 'ARMY 12', down: 2, distance: 6, isRedZone: true, note: 'Navy in the red zone, down four' },
-			{ tick: 23, downDistance: '3rd & 2', fieldPosition: 'ARMY 8', down: 3, distance: 2, isRedZone: true },
+			{ tick: 0, away: 0, home: 0, period: 3, topOfInning: false, bso: { balls: 0, strikes: 2, outs: 0 }, baseRunners: emptyBases, note: 'Wetherholt up, 0-2' },
+			{ tick: 6, home: 1, bso: { balls: 0, strikes: 0, outs: 0 }, note: 'STL 1, Wetherholt homers' },
+			{ tick: 10, bso: { balls: 1, strikes: 1, outs: 1 } },
+			{ tick: 14, bso: { balls: 2, strikes: 2, outs: 2 } },
+			{ tick: 18, bso: { balls: 0, strikes: 0, outs: 3 } },
+			{ tick: 19, period: 4, topOfInning: true, bso: { balls: 0, strikes: 1, outs: 0 } },
 		],
 	},
 	{
@@ -124,53 +130,53 @@ export const heroGames: HeroGameScript[] = [
 		poster: 'hockey',
 		tabTitle: 'Minnesota State at Bemidji State',
 		tabHost: 'flohockey.tv',
-		clockPerTick: 62,
+		clockPerTick: 92,
 		periodSeconds: 1200,
-		// The middle of the story: Bemidji State ties it, which is worth a lot in a sport where a goal
-		// is rare, and then Minnesota State pulls two clear and it drains away again.
+		// The middle. Bemidji State's first goal pulls the hero here, the tying goal is three seconds
+		// into the clip, and the second intermission scores zero, which hands the hero to football.
 		beats: [
-			{ tick: 0, away: 2, home: 0, period: 2, clock: 620 },
-			{ tick: 4, period: 2, clock: 372 },
-			{ tick: 7, home: 1, period: 2, clock: 186, note: 'BST 1' },
-			{ tick: 9, home: 2, period: 2, clock: 62, note: 'BST 2, tied late in the second' },
-			{ tick: 11, period: 3, clock: 1200 },
-			{ tick: 14, away: 3, period: 3, clock: 1014, note: 'MNST 3' },
-			{ tick: 17, away: 4, period: 3, clock: 828, note: 'MNST 4, two clear' },
-			{ tick: 21, period: 3, clock: 580 },
+			{ tick: 0, away: 2, home: 0, period: 1, clock: 0, intermission: true, note: 'First intermission' },
+			{ tick: 4, period: 2, clock: 828, intermission: false },
+			{ tick: 8, home: 1, clock: 460, note: 'BST 1, the goal that pulls the hero here' },
+			{ tick: 11, home: 2, clock: 184, note: 'BST 2, tied: the goal in the clip' },
+			{ tick: 13, clock: 0, intermission: true, note: 'Second intermission' },
 		],
 	},
 	{
 		base: {
-			id: 'hero-ncaab',
-			league: 'ncaab',
-			sportType: 'basketball',
+			id: 'hero-ncaaf',
+			league: 'ncaaf',
+			sportType: 'football',
 			status: 'in',
-			venueName: 'Stan Sheriff Center',
-			broadcasts: ['Spectrum Sports'],
-			awayTeam: { id: '2464', name: 'Northern Arizona Lumberjacks', abbreviation: 'NAU', logo: ncaaLogo('2464'), color: '#f1c40f', alternateColor: '#003976' },
-			homeTeam: { id: '62', name: "Hawai'i Rainbow Warriors", abbreviation: 'HAW', logo: ncaaLogo('62'), color: '#000000', alternateColor: '#005737' },
+			venueName: 'Martin Stadium',
+			broadcasts: ['FOX'],
+			awayTeam: { id: '2483', name: 'Oregon Ducks', abbreviation: 'ORE', logo: ncaaLogo('2483'), color: '#00934b', alternateColor: '#fff41b' },
+			homeTeam: { id: '265', name: 'Washington State Cougars', abbreviation: 'WSU', logo: ncaaLogo('265'), color: '#a60f2d', alternateColor: '#4d4d4d' },
 		},
-		video: 'basketball',
-		poster: 'basketball',
-		tabTitle: "Northern Arizona at Hawai'i",
-		tabHost: 'spectrumsportsnet.com',
-		// 20-minute halves, so the clock burns faster per poll than the football or hockey ones.
-		clockPerTick: 54,
-		periodSeconds: 1200,
-		// Where the hero opens: a one-possession second half, until Hawai'i pulls away and it stops
-		// being the best thing on. It finishes as the blowout the clip's own title card says it was.
+		video: 'football',
+		poster: 'football',
+		tabTitle: 'Oregon at Washington State',
+		tabHost: 'foxsports.com',
+		clockPerTick: 49,
+		periodSeconds: 900,
+		// Last on screen. Oregon's comeback has it at 27-17 to start the fourth and 27-20 after a field
+		// goal at 6:38, and the clip is Washington State's next drive: 2nd & 9 at the Oregon 22 with
+		// 3:47 left. The card's clock follows the footage. The hero loops during the celebration,
+		// before the scoreboard has caught up with the catch, which in the extension takes about 30
+		// seconds.
 		beats: [
-			{ tick: 0, away: 34, home: 36, period: 2, clock: 1092 },
-			{ tick: 2, away: 37, home: 38 },
-			{ tick: 4, away: 39, home: 41 },
-			{ tick: 6, away: 41, home: 44 },
-			{ tick: 8, away: 44, home: 47 },
-			{ tick: 10, away: 46, home: 52, note: 'HAW start to pull away' },
-			{ tick: 12, away: 48, home: 56 },
-			{ tick: 15, away: 51, home: 62 },
-			{ tick: 18, away: 55, home: 68 },
-			{ tick: 21, away: 59, home: 74 },
-			{ tick: 23, away: 64, home: 80, note: 'On its way to the 85-68 the highlight reel opens on' },
+			{ tick: 0, away: 17, home: 27, period: 4, clock: 839, downDistance: '1st & 10', fieldPosition: 'WSU 30', down: 1, distance: 10 },
+			{ tick: 9, away: 20, clock: 398, downDistance: '1st & 10', fieldPosition: 'WSU 25', note: 'ORE FG, 6:38' },
+			{ tick: 11, downDistance: '1st & 10', fieldPosition: 'ORE 41' },
+			{ tick: 12, clock: 232, downDistance: '1st & 10', fieldPosition: 'ORE 23' },
+			{ tick: 13, clock: 227, downDistance: '2nd & 9', fieldPosition: 'ORE 22', down: 2, distance: 9, note: 'The clip starts here' },
+			{ tick: 14, clock: 226 },
+			{ tick: 15, clock: 225 },
+			{ tick: 16, clock: 224 },
+			{ tick: 17, clock: 223 },
+			{ tick: 18, clock: 222 },
+			{ tick: 19, clock: 221 },
+			{ tick: 20, clock: 221, note: 'The catch is on screen; the scoreboard has not caught up' },
 		],
 	},
 ];
@@ -191,6 +197,7 @@ export const heroGameAt = (script: HeroGameScript, tick: number): Game => {
 			home: beat.home ?? state.home,
 			period: beat.period ?? state.period,
 			clock: beat.clock ?? state.clock,
+			intermission: beat.intermission ?? state.intermission,
 			topOfInning: beat.topOfInning ?? state.topOfInning,
 			bso: beat.bso ?? state.bso,
 			baseRunners: beat.baseRunners ?? state.baseRunners,
@@ -217,6 +224,7 @@ export const heroGameAt = (script: HeroGameScript, tick: number): Game => {
 		homeTeam: { ...script.base.homeTeam, score: state.home ?? 0 },
 		period: state.period ?? 1,
 		clockSeconds,
+		intermission: state.intermission,
 		topOfInning: state.topOfInning,
 		bso: state.bso,
 		baseRunners: state.baseRunners,

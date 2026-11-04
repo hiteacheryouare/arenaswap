@@ -25,9 +25,9 @@ export const multiviewGames: MultiviewGame[] = [
 		right: { abbreviation: 'AVL', logo: espnTeamLogo('soccer/500-dark/362'), color: '#660E36' },
 	},
 	{
-		video: 'multiview/collegeFootball',
-		left: { abbreviation: 'ORE', logo: espnTeamLogo('ncaa/500-dark/2483'), color: '#044520' },
-		right: { abbreviation: 'WSU', logo: espnTeamLogo('ncaa/500-dark/265'), color: '#94022A' },
+		video: 'multiview/football',
+		left: { abbreviation: 'ARMY', logo: espnTeamLogo('ncaa/500-dark/349'), color: '#000000' },
+		right: { abbreviation: 'NAVY', logo: espnTeamLogo('ncaa/500-dark/2426'), color: '#00225b' },
 	},
 	{
 		video: 'multiview/wnba',
@@ -35,8 +35,8 @@ export const multiviewGames: MultiviewGame[] = [
 		right: { abbreviation: 'IND', logo: espnTeamLogo('wnba/500/5'), color: '#002D62' },
 	},
 	{
-		video: 'multiview/baseball',
-		left: { abbreviation: 'TB', logo: espnTeamLogo('mlb/500-dark/tb'), color: '#092C5C' },
-		right: { abbreviation: 'STL', logo: espnTeamLogo('mlb/500-dark/stl'), color: '#BE0A14' },
+		video: 'multiview/basketball',
+		left: { abbreviation: 'NAU', logo: espnTeamLogo('ncaa/500-dark/2464'), color: '#f1c40f' },
+		right: { abbreviation: 'HAW', logo: espnTeamLogo('ncaa/500-dark/62'), color: '#000000' },
 	},
 ];

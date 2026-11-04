@@ -21,7 +21,6 @@ import type { HeroSwitch } from './heroTimeline';
 //
 // The footage is real game footage under a free licence. /credits names every clip.
 
-const holdTicksAtEnd = 3;
 // prefers-reduced-motion lands here instead of tick 0: far enough in that both switches have
 // already happened, so the still frame shows a finished story rather than an opening position.
 const restingTick = 18;
@@ -141,7 +140,7 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 	useEffect(() => {
 		if (!running) return;
 		const timer = setTimeout(() => {
-			if (tick >= heroTickCount - 1 + holdTicksAtEnd) restart();
+			if (tick >= heroTickCount - 1) restart();
 			else setTick(current => current + 1);
 		}, heroTickMs);
 		return () => clearTimeout(timer);
@@ -149,11 +148,20 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 
 	// Play the tab you are on, pause the rest. Sources attach on first use so a visitor who
 	// never scrolls past the hero downloads one clip instead of three.
+	//
+	// A clip starts from the top whenever its tab comes up. The beats in heroGames.ts are timed
+	// against the footage from that first frame, so a clip resuming wherever it was last paused
+	// would drift a little further each loop until a switch landed mid-swing.
+	const rewoundIndexRef = useRef<number | null>(null);
 	useEffect(() => {
 		videoRefs.current.forEach((video, index) => {
 			if (!video) return;
 			const active = index === onScreenIndex;
 			if (active && !video.getAttribute('src')) video.setAttribute('src', video.dataset.src ?? '');
+			if (active && rewoundIndexRef.current !== index) {
+				video.currentTime = 0;
+				rewoundIndexRef.current = index;
+			}
 			if (active && running) void video.play().catch(noop);
 			else video.pause();
 		});
