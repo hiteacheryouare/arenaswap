@@ -244,6 +244,32 @@ describe('an evening parked on the standby stream', () => {
 	});
 });
 
+describe('a game registered onto the standby tab', () => {
+	const debugState = async () => await sendMessage({ type: 'GET_DEBUG_STATE' }) as { onStandbyStream: boolean; standbyStreamTabId: number | null };
+
+	test('ends the standby stay, so unregistering it later does not resume a stay nobody chose', async () => {
+		seedStorage(standbyPrefs);
+		await startWorker({ games: [runaway('g1'), runaway('g2')], openTabIds: allTabs, activeTabId: 1, atMs: 1_000_000 });
+		await poll();
+		expect((await debugState()).onStandbyStream).toBe(true);
+
+		await sendMessage({ type: 'UPDATE_REGISTRY', tabRegistry: [...registry, { gameId: 'g3', tabId: standbyTabId }] });
+		for (let i = 0; i < 2; i++) await poll();
+		expect((await debugState()).onStandbyStream).toBe(false);
+	});
+
+	test('cannot be made the standby tab', async () => {
+		seedStorage(standbyPrefs, { standbyStreamTabId: null });
+		await startWorker({ games: [runaway('g1'), runaway('g2')], openTabIds: allTabs, activeTabId: 1, atMs: 1_000_000 });
+
+		await sendMessage({ type: 'SET_STANDBY_STREAM_TAB', tabId: 2 });
+		expect((await debugState()).standbyStreamTabId).toBeNull();
+
+		await sendMessage({ type: 'SET_STANDBY_STREAM_TAB', tabId: standbyTabId });
+		expect((await debugState()).standbyStreamTabId).toBe(standbyTabId);
+	});
+});
+
 describe('a switch waiting out its delay while the games go quiet', () => {
 	test('is dropped when the popup refreshes the scores to quiet, instead of landing on the least boring game', async () => {
 		seedStorage({ ...standbyPrefs, cooldownSeconds: 0, switchDelaySeconds: 10 });

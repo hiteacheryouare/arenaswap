@@ -1249,6 +1249,7 @@ export default defineBackground(() => {
 		}
 
 		const usableStandbyId = usableStandbyTabId(standbyStreamTabId, openTabIds, tabRegistry);
+		if (usableStandbyId === null) onStandbyStream = false;
 		const standbyDecision = computeStandbyStreamDecision({
 			standbyStreamEnabled: prefs.standbyStreamEnabled,
 			standbyStreamTabId: usableStandbyId,
@@ -1859,6 +1860,7 @@ export default defineBackground(() => {
 		}
 		if (msg.type === 'SET_STANDBY_STREAM_TAB') {
 			return stateReady.then(async () => {
+				if (tabRegistry.some(reg => reg.tabId === msg.tabId)) return;
 				clearPendingSwitch();
 				standbyStreamTabId = msg.tabId;
 				onStandbyStream = false;
