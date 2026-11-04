@@ -56,5 +56,6 @@ Leave both tabs open and let ArenaSwap run. As soon as one game's PowerScore pul
 ## What's next
 
 - [How to watch multiple games at once](/arenaswap/docs/extension/watching-multiple-games/) covers assigning several streams at once and how the game list is organized.
+- [How to use Multiview](/arenaswap/docs/extension/multiview/) covers showing several games in one tab, in Chrome and Edge.
 - [How to control when ArenaSwap switches tabs](/arenaswap/docs/extension/switching-and-sensitivity/) covers sensitivity, cooldown, and switch delay.
 - [ArenaSwap settings reference](/arenaswap/docs/extension/settings/) lists every setting, its default, and its range.

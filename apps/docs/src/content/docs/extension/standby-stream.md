@@ -42,3 +42,4 @@ Standby Stream only ever compares against games you've assigned a tab to. If you
 
 - [How to watch multiple games at once](/arenaswap/docs/extension/watching-multiple-games/) covers assigning tabs to games, which Standby Stream depends on.
 - [ArenaSwap settings reference](/arenaswap/docs/extension/settings/) lists the default and range for every Standby Stream setting.
+- [How to use Multiview](/arenaswap/docs/extension/multiview/) covers showing several exciting games in one tab, for when more than one game is worth watching.

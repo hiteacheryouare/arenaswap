@@ -18,7 +18,7 @@ Settings live behind the gear icon in the popup's top bar, grouped into eight ca
 | Content-aware switching | Off | On/off | Holds a switch until the game you're leaving reaches a break in play, up to a cap that depends on the sport. While it waits, you may miss a key moment in the game it's switching to. Switch delay counts down after the break. |
 | Switch notifications | On | On/off | Shows a browser notification with the score, venue, and reason whenever ArenaSwap switches a tab, including switches to and from Standby Stream and Multiview. |
 | When a game finishes | Leave the tab alone | Leave the tab alone, Free it from ArenaSwap, or Close the tab | What ArenaSwap does with a registered tab once its game is over. Freeing drops the registration and unmutes the tab, leaving it open and available for tab suggestions again; closing shuts it. Either way the tab you are currently looking at is left alone until you move off it, and a window's last tab is freed rather than closed so no window disappears. Nothing happens in demo mode. |
-| Decoy page | Empty (a blank tab) | Any web address | Where the boss button takes you: a spreadsheet, a doc, anything that looks busy. The button also mutes every tab ArenaSwap manages and pauses auto-switching until you turn it back on. The suggested keyboard shortcut is Alt+Shift+X. |
+| Decoy page | Empty (a blank tab) | Any web address | Where the boss button takes you: a spreadsheet, a doc, anything that looks busy. The button also mutes every tab ArenaSwap manages and pauses auto-switching until you turn it back on. The suggested keyboard shortcut is Alt+Shift+X. [How to use the boss button](/arenaswap/docs/extension/boss-button/) has the rest. |
 | Demo mode | Off | On/off | Replaces live scoreboards with 15 scripted games across 12 leagues, regardless of which leagues are enabled. |
 | Pretend it is | The real date | The real date, Thanksgiving week, or December | Only changes the holiday decorations. Appears while Demo mode is on. |
 
@@ -76,7 +76,7 @@ At least one signal has to stay on in a mode. If a signal is off, ArenaSwap re-n
 
 ## Multiview
 
-Chrome and Edge only.
+Chrome and Edge only. [How to use Multiview](/arenaswap/docs/extension/multiview/) covers what to expect when it opens.
 
 | Setting | Default | Range | What it does |
 | --- | --- | --- | --- |
@@ -86,6 +86,8 @@ Chrome and Edge only.
 | Most boxes | 4 | 2–8 | The most games Multiview shows at once. |
 
 ## Profiles & Backup
+
+[How to use profiles and back up your settings](/arenaswap/docs/extension/profiles-and-backup/) walks through switching, exporting and importing.
 
 | Setting | Default | Range | What it does |
 | --- | --- | --- | --- |

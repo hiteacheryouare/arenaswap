@@ -45,3 +45,4 @@ If you want to stop ArenaSwap from touching a specific tab, unassign it from the
 - [How to control when ArenaSwap switches tabs](/arenaswap/docs/extension/switching-and-sensitivity/) covers sensitivity, cooldown, and switch delay.
 - [How to set favorite teams in ArenaSwap](/arenaswap/docs/extension/favorite-teams/) covers what starring a team does to a game's PowerScore and its place in the list.
 - [How to set up Standby Stream](/arenaswap/docs/extension/standby-stream/) covers what happens when every game you've assigned goes quiet at once.
+- [How to use Multiview](/arenaswap/docs/extension/multiview/) covers putting several exciting games on one screen instead of switching between tabs.
