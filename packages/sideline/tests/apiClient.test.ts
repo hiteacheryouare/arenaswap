@@ -113,6 +113,8 @@ const getCompetition = (event: Record<string, unknown>): Record<string, unknown>
 );
 
 const dateOf = (url: unknown): string => new URL(String(url)).searchParams.get('dates') ?? '';
+// Today as our sources file it: the Eastern date, which runs a day behind UTC every evening.
+const easternToday = (): string => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date()).replaceAll('-', '');
 
 /* A window is one request per Eastern day, so a chain of `mockResolvedValueOnce` runs out and
    resolves `undefined` on the day after its last entry. The chains below list the days they care
@@ -2839,7 +2841,7 @@ describe('how often ESPN says it will answer with something new', () => {
 	it('reads the largest of the recent replies, since the edge counts max-age down', async () => {
 		const replies = ['max-age=12', 'max-age=8', 'max-age=4'];
 		const fetchMock = jest.fn().mockImplementation(async (url: string) => (
-			createResponse({ events: [] }, { cacheControl: dateOf(url) === buildCurrentDayKeys().at(-1) ? replies.shift() : undefined })
+			createResponse({ events: [] }, { cacheControl: dateOf(url) === easternToday() ? replies.shift() : undefined })
 		));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 
@@ -2865,7 +2867,7 @@ describe('how often ESPN says it will answer with something new', () => {
 	it('ignores the header on a day that is not today', async () => {
 		const fetchMock = jest.fn().mockImplementation(async (url: string) => createResponse(
 			{ events: [] },
-			{ cacheControl: dateOf(url) === buildCurrentDayKeys().at(-1) ? 'max-age=8' : 'max-age=20' },
+			{ cacheControl: dateOf(url) === easternToday() ? 'max-age=8' : 'max-age=20' },
 		));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 
