@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The extension typechecks in 5 seconds, not 90 — 2026-11-04
+
+Calling `i18n.t` with a `plainMessageKey` variable made TypeScript intersect two 1,400-key unions on every call, and ten such calls spent 83 of the 88 seconds `tsc` took. Those calls now go through `translate` from `settingsCatalog.ts`, which is checked once; use it whenever the key isn't a literal.
+
 ## The Guide and game details get help pages — 2026-11-03
 
 New help articles cover the Guide and a game's detail screen, including Game Boost, and `powerscore-tools` gets a README for its record, replay, simulate, validate-live and breaks commands. The existing articles now cover importing a backup from setup, tab suggestions, the Up Next day arrows and search, staying full screen through a switch, and the freed-tab, "Up next" and Multiview questions in troubleshooting.

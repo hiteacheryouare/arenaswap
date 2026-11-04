@@ -5,7 +5,7 @@ import { boostPresentation, modeSignalIds, penaltyPresentation, signalPresentati
 import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
 import { iconSrc } from '../../../utils/theme';
 import FlowStepper from './flowStepper';
-import type { plainMessageKey } from './settingsCatalog';
+import { translate, type plainMessageKey } from './settingsCatalog';
 import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepPowerScoreProps {
@@ -171,7 +171,7 @@ const BloomOverlay = ({ signal, dotPxX, dotPxY, phase, onClick }: BloomOverlayPr
 				</div>
 
 				<div className='ps-bloom-body' style={{ color: textColor }}>
-					{i18n.t(signal.descriptionKey)}
+					{translate(signal.descriptionKey)}
 				</div>
 
 				<div className='ps-bloom-tap-hint' style={{ color: textColor }}>

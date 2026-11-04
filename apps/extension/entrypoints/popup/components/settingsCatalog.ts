@@ -104,6 +104,10 @@ export interface settingsSearchResult {
 	controlId?: string;
 }
 
+// Calling i18n.t with the whole key union cost the typechecker over a minute per build; checking
+// the assignment once here and calling through it is instant.
+export const translate: (key: plainMessageKey) => string = i18n.t;
+
 // Group text is matched per group, never folded into each entry's haystack: "bonus" appears in
 // the Scoring description, and mixing the two returned all five signals for it.
 // `available` is every mode whose controls are on screen; without it, nothing is left out.
@@ -116,17 +120,17 @@ export const searchSettings = (query: string, available?: ReadonlySet<ScoringMod
 	const groupById = new Map(shownGroups.map(group => [group.id, group]));
 
 	const groupHits = shownGroups
-		.filter(group => normalize(`${i18n.t(group.labelKey)} ${i18n.t(group.descriptionKey)}`).includes(needle))
-		.map(group => ({ group, label: i18n.t(group.labelKey), sublabel: i18n.t(group.descriptionKey), labelKey: group.labelKey }));
+		.filter(group => normalize(`${translate(group.labelKey)} ${translate(group.descriptionKey)}`).includes(needle))
+		.map(group => ({ group, label: translate(group.labelKey), sublabel: translate(group.descriptionKey), labelKey: group.labelKey }));
 
 	const entryHits = settingsEntries.flatMap(entry => {
 		const group = groupById.get(entry.group);
 		if (!group || (entry.requires && available && !available.has(entry.requires))) return [];
 
-		const label = i18n.t(entry.labelKey);
-		if (!normalize(`${label} ${i18n.t(entry.keywordsKey)}`).includes(needle)) return [];
+		const label = translate(entry.labelKey);
+		if (!normalize(`${label} ${translate(entry.keywordsKey)}`).includes(needle)) return [];
 
-		return [{ group, label, sublabel: i18n.t(group.labelKey), labelKey: entry.labelKey, controlId: entry.controlId }];
+		return [{ group, label, sublabel: translate(group.labelKey), labelKey: entry.labelKey, controlId: entry.controlId }];
 	});
 
 	const seen = new Set<string>();

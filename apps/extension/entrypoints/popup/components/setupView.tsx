@@ -30,7 +30,7 @@ import SelectDropdown from './selectDropdown';
 import StandbyStreamGuide from './standbyStreamGuide';
 import MultiviewGuide from './multiviewGuide';
 import TabFavicon from '@arenaswap/ui/src/components/tabFavicon';
-import { searchSettings, settingsGroups, type settingsGroupId } from './settingsCatalog';
+import { searchSettings, settingsGroups, translate, type settingsGroupId } from './settingsCatalog';
 import type { demoSeason } from '../../../utils/holidayDecorations';
 import type { profileList } from '../../../utils/profiles';
 import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
@@ -799,7 +799,7 @@ const setupView = ({
 			<div key={page} ref={pageRef} className={`popup-container settings-view${scrollsWithin ? ' d-flex flex-column' : ''}${slide}`}>
 				<button type='button' className='setup-header' onClick={() => setPage(null)}>
 					<i className='bi bi-arrow-left' />
-					{group ? i18n.t(group.labelKey) : i18n.t('setup.header')}
+					{group ? translate(group.labelKey) : i18n.t('setup.header')}
 				</button>
 				{pages[page]()}
 			</div>
@@ -861,8 +861,8 @@ const setupView = ({
 						>
 							<i className={`bi bi-${group.icon} settings-index-icon`} aria-hidden='true' />
 							<span className='settings-index-text'>
-								<span className='settings-index-name'>{i18n.t(group.labelKey)}</span>
-								<span className='settings-index-desc'>{i18n.t(group.descriptionKey)}</span>
+								<span className='settings-index-name'>{translate(group.labelKey)}</span>
+								<span className='settings-index-desc'>{translate(group.descriptionKey)}</span>
 							</span>
 							{group.id === 'leagues' && noLeaguesSelected && (
 								<>
