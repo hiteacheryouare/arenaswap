@@ -5,6 +5,22 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Standby and Multiview mind their own tabs — 2026-11-03
+
+One tab can no longer be both the Standby Stream and a game's tab: each picker disables the other's tab, and the worker ignores an overlap saved before this. A Standby tab in another window now shows by its title in settings. When the Multiview tab goes to another page, Multiview stops, says so in a notification, and holds those games off for 10 minutes, even across a worker restart.
+
+## Overtime counts, the stall penalty retires — 2026-11-03
+
+Content-aware switching now treats an NFL or UFL overtime 4th down or red-zone snap as decisive when the margin is 8 or less, with no 120-second rule. The stall penalty is gone from PowerScore, core, the site and the film, so `computePowerScore` takes `(game, history, winProbabilityHistory)` and its result has no `stalled` or `stallPenalty`.
+
+## Profiles back out cleanly, errors stick around — 2026-11-03
+
+Back on a Start Fresh profile's league step now deletes that profile and puts the previous one back as it was. Error toasts stay up for 6 seconds and pause while hovered or focused, and success toasts are announced politely instead of assertively.
+
+## The walkthrough, the store and the help pages — 2026-11-03
+
+The walkthrough's second game is now Chiefs vs. Bills, so the Eagles are its only Philly team. The store title and site page titles trade the em dash for a colon and " | ", and the store description gains Multiview, Scoring Modes and Profiles & Backup in all 12 languages. New help articles cover Multiview, the boss button, and profiles and backup, and `marketing/amo_reviewer_notes.txt` holds the Firefox build steps to paste into each submission.
+
 ## The docs match the code again — 2026-11-03
 
 A pass over every help article, the PowerScore pages and README, CONTRIBUTING and CODESTYLE fixed what had drifted: Comeback Factor now paying a comeback that takes the lead (the history example reads 86, not 70), the demo's 18 games, the shipped setting labels, the go-ahead run and two-minute drill weights, and what Standby Stream really does when you leave its tab. The PowerScore README now warns that retiring the stall penalty changed `computePowerScore`'s arguments, and that an old four-argument call throws.
