@@ -26,7 +26,7 @@ export const GET: APIRoute = async ({ site }) => {
 		const link = new URL(`${base}releases/${release.data.version}/`, origin).href;
 		return [
 			'\t\t<item>',
-			`\t\t\t<title>${escape(`${release.data.version} — ${release.data.title}`)}</title>`,
+			`\t\t\t<title>${escape(`${release.data.version}: ${release.data.title}`)}</title>`,
 			`\t\t\t<link>${escape(link)}</link>`,
 			`\t\t\t<guid isPermaLink="true">${escape(link)}</guid>`,
 			`\t\t\t<pubDate>${release.data.date.toUTCString()}</pubDate>`,

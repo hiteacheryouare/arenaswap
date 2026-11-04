@@ -46,7 +46,7 @@ const formatted = formatReleaseDate(release.data.date, locale);
 const imageSize = release.data.image ? publicImageSize(release.data.image) : undefined;
 ---
 <Shell
-	title={`${release.data.title} — ArenaSwap ${release.data.version}`}
+	title={`${release.data.title} | ArenaSwap ${release.data.version}`}
 	description={release.data.summary}
 	path={`releases/${release.data.version}/`}
 	translated={false}
