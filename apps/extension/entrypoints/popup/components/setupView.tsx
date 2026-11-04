@@ -52,6 +52,7 @@ interface setupViewProps {
 	leagueSchedules: LeagueScheduleMap;
 	favoriteTeamIds: ReadonlySet<string>;
 	standbyStreamTabId: number | null;
+	standbyTabElsewhere?: Browser.tabs.Tab | null;
 	standbyOnboardingDone: boolean;
 	openTabs: Browser.tabs.Tab[];
 	registry: TabRegistration[];
@@ -135,7 +136,7 @@ const pageFallback = (
 );
 
 const setupView = ({
-	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, leagueSchedules, favoriteTeamIds, standbyStreamTabId, standbyOnboardingDone,
+	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, leagueSchedules, favoriteTeamIds, standbyStreamTabId, standbyTabElsewhere = null, standbyOnboardingDone,
 	openTabs, registry, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange, onToggleContentAwareSwitching,
 	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder, onCollegeFilterChange,
 	onToggleGroupByLeague, onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onThemeChange, onUpcomingGamesDaysChange,
@@ -576,7 +577,7 @@ const setupView = ({
 							ariaLabel={i18n.t('setup.standbyTab')}
 							options={[
 								{ value: '', label: i18n.t('setup.selectTab') },
-								...openTabs.filter(openTab => openTab.id !== undefined).map(openTab => {
+								...[...openTabs, ...(standbyTabElsewhere?.id === standbyStreamTabId && !openTabs.some(openTab => openTab.id === standbyStreamTabId) ? [standbyTabElsewhere] : [])].filter(openTab => openTab.id !== undefined).map(openTab => {
 									const holdsGame = registry.some(reg => reg.tabId === openTab.id);
 									return {
 										value: String(openTab.id),

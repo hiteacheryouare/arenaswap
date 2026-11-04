@@ -114,6 +114,7 @@ export default () => {
 	const [standbyOnboardingDone, setStandbyOnboardingDone] = useState(false);
 	const [multiviewOnboardingDone, setMultiviewOnboardingDone] = useState(false);
 	const [standbyStreamTabId, setStandbyStreamTabId] = useState<number | null>(null);
+	const [standbyTabElsewhere, setStandbyTabElsewhere] = useState<Browser.tabs.Tab | null>(null);
 	const [dismissedSuggestions, setDismissedSuggestions] = useState<string[]>([]);
 	const [reviewPromptState, setReviewPromptState] = useState<ReviewPromptState>(normalizeReviewPromptState(null));
 	const [settled, setSettled] = useState(false);
@@ -328,6 +329,16 @@ export default () => {
 		void browser.tabs.query({ currentWindow: true }).then(tabs => {
 			setOpenTabs(tabs.filter(tab => tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('about:')));
 		});
+
+		// The picker lists this window's tabs, so a standby tab in another window is fetched by id.
+		// A tab that has since closed is left out, which shows the placeholder as before.
+		const lookupStandbyElsewhere = async () => {
+			const { standbyStreamTabId: savedId } = await browser.storage.session.get({ standbyStreamTabId: null });
+			if (typeof savedId !== 'number') return;
+			const tab = await browser.tabs.get(savedId).catch(() => null);
+			if (tab) setStandbyTabElsewhere(tab);
+		};
+		void lookupStandbyElsewhere();
 
 		// Fallback for when no SCORES_UPDATED ever arrives.
 		const settleTimer = setTimeout(() => {
@@ -688,6 +699,7 @@ export default () => {
 						leagueSchedules={leagueSchedules}
 						favoriteTeamIds={favoriteTeamIds}
 						standbyStreamTabId={standbyStreamTabId}
+						standbyTabElsewhere={standbyTabElsewhere}
 						standbyOnboardingDone={standbyOnboardingDone}
 						openTabs={openTabs}
 						registry={registry}

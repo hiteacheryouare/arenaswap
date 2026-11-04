@@ -764,6 +764,37 @@ describe('setupView standby stream', () => {
 		cy.get('@onSetStandbyTab').should('have.been.calledWith', 102);
 	});
 
+	it('shows a standby tab from another window by its title', () => {
+		cy.mount(
+			<SetupView
+				{...defaultProps}
+				prefs={{ ...defaultPrefs, standbyStreamEnabled: true }}
+				openTabs={[{ id: 101, title: 'Red Zone' }]}
+				standbyStreamTabId={205}
+				standbyTabElsewhere={{ id: 205, title: 'Game Pass' } as any}
+				formatTabLabel={(tab: { title?: string }) => tab.title ?? ''}
+			/>,
+		);
+		openGroup('standby');
+
+		cy.get('#standbyTabSelect').should('contain.text', 'Game Pass').and('not.contain.text', 'Select a tab');
+	});
+
+	it('shows the placeholder when the standby tab has closed', () => {
+		cy.mount(
+			<SetupView
+				{...defaultProps}
+				prefs={{ ...defaultPrefs, standbyStreamEnabled: true }}
+				openTabs={[{ id: 101, title: 'Red Zone' }]}
+				standbyStreamTabId={205}
+				formatTabLabel={(tab: { title?: string }) => tab.title ?? ''}
+			/>,
+		);
+		openGroup('standby');
+
+		cy.get('#standbyTabSelect').should('contain.text', 'Select a tab');
+	});
+
 	it('keeps tabs that hold a game from being the standby tab, and says why', () => {
 		cy.mount(
 			<SetupView
