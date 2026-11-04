@@ -172,8 +172,6 @@ const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string
 	const [error, setError] = useState<string | null>(null);
 
 	const historyRef = useRef<Record<string, ScoreSnapshot[]>>({});
-	const previousClockRef = useRef<Record<string, number>>({});
-	const stallRef = useRef<Record<string, number>>({});
 
 	const hostRef = useRef<HTMLDivElement | null>(null);
 	const onScreenRef = useRef(true);
@@ -208,13 +206,6 @@ const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string
 
 			const now = Date.now();
 			const nextCards = liveGames.map(game => {
-				const prevClock = previousClockRef.current[game.id];
-				const nextStall = prevClock === game.clockSeconds
-					? (stallRef.current[game.id] ?? 0) + 1
-					: 0;
-				stallRef.current[game.id] = nextStall;
-				previousClockRef.current[game.id] = game.clockSeconds ?? 0;
-
 				const nextSnapshot: ScoreSnapshot = {
 					gameId: game.id,
 					timestamp: now,
@@ -225,19 +216,13 @@ const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string
 				const history = [...prior, nextSnapshot].slice(-historyMax);
 				historyRef.current[game.id] = history;
 
-				const result = computePowerScore(game, history, nextStall);
+				const result = computePowerScore(game, history);
 				return { game, score: result.total, reason: result.reason };
 			});
 
 			const activeGameIds = new Set(nextCards.map(card => card.game.id));
 			for (const gameId of Object.keys(historyRef.current)) {
 				if (!activeGameIds.has(gameId)) delete historyRef.current[gameId];
-			}
-			for (const gameId of Object.keys(previousClockRef.current)) {
-				if (!activeGameIds.has(gameId)) delete previousClockRef.current[gameId];
-			}
-			for (const gameId of Object.keys(stallRef.current)) {
-				if (!activeGameIds.has(gameId)) delete stallRef.current[gameId];
 			}
 
 			setCards(nextCards.toSorted((a, b) => b.score - a.score));

@@ -62,7 +62,7 @@ export const scoreBoardAt = (tick: number): ScoredGame[] => heroGames.map((scrip
 	}
 
 	const game = heroGameAt(script, tick);
-	return { id: script.base.id, game, index, result: computePowerScore(game, snapshots, 0, probabilities) };
+	return { id: script.base.id, game, index, result: computePowerScore(game, snapshots, probabilities) };
 });
 
 export const bestOf = (board: ScoredGame[]): ScoredGame => (

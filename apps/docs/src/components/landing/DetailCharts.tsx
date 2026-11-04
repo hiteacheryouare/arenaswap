@@ -80,7 +80,7 @@ const powerHistory: PowerScoreSnapshot[] = scoreHistory.map((point, index) => {
 		awayTeam: { ...game.awayTeam, score: point.awayScore },
 		homeTeam: { ...game.homeTeam, score: point.homeScore },
 	};
-	const result = computePowerScore(at, scoreHistory.slice(0, index + 1), 0, winProbability.slice(0, index + 1));
+	const result = computePowerScore(at, scoreHistory.slice(0, index + 1), winProbability.slice(0, index + 1));
 	return {
 		gameId: game.id,
 		timestamp: point.timestamp,
@@ -94,8 +94,6 @@ const powerHistory: PowerScoreSnapshot[] = scoreHistory.map((point, index) => {
 		signalsSubtotal: result.signalsSubtotal ?? result.total,
 		favoriteBonus: result.favoriteBonus ?? 0,
 		favoriteTeamCount: result.favoriteTeamCount ?? 0,
-		stalled: result.stalled ?? false,
-		stallPenalty: result.stallPenalty,
 		reason: result.reason,
 	};
 });
