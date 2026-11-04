@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { i18n } from '#i18n';
 import type { toastItem } from '../useToast';
 
@@ -15,16 +16,24 @@ const variantConfig: Record<string, { icon: string; label: string }> = {
 };
 
 const toastContainer = ({ toasts, onDismiss, onPause, onResume }: toastContainerProps) => {
+	const holds = useRef(new Map<string, { hovered: boolean; focused: boolean }>());
 	if (!toasts.length) return null;
 	return (
 		<div className='toast-container position-fixed bottom-0 start-50 translate-middle-x pb-5'>
 			{toasts.map(toast => {
 				const { icon, label } = variantConfig[toast.variant] ?? variantConfig['info']!;
 				const urgent = toast.variant === 'error';
-				const pause = urgent ? () => onPause?.(toast.id) : undefined;
-				const resume = urgent ? () => onResume?.(toast.id) : undefined;
+				const hold = (change: Partial<{ hovered: boolean; focused: boolean }>) => {
+					const state = { ...holds.current.get(toast.id) ?? { hovered: false, focused: false }, ...change };
+					holds.current.set(toast.id, state);
+					if (state.hovered || state.focused) onPause?.(toast.id);
+					else onResume?.(toast.id);
+				};
+				const pause = urgent ? () => hold({ hovered: true }) : undefined;
+				const resume = urgent ? () => hold({ hovered: false }) : undefined;
+				const pauseOnFocus = urgent ? () => hold({ focused: true }) : undefined;
 				const resumeOnBlur = urgent ? (event: React.FocusEvent<HTMLElement>) => {
-					if (!event.relatedTarget || !event.currentTarget.contains(event.relatedTarget)) onResume?.(toast.id);
+					if (!event.relatedTarget || !event.currentTarget.contains(event.relatedTarget)) hold({ focused: false });
 				} : undefined;
 				return (
 					<div
@@ -34,7 +43,7 @@ const toastContainer = ({ toasts, onDismiss, onPause, onResume }: toastContainer
 						aria-live={urgent ? 'assertive' : 'polite'}
 						aria-atomic='true'
 						onMouseEnter={pause}
-						onFocus={pause}
+						onFocus={pauseOnFocus}
 						onMouseLeave={resume}
 						onBlur={resumeOnBlur}
 					>
