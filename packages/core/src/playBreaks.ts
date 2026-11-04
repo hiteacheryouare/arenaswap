@@ -92,8 +92,8 @@ const baseballDecider = (game: Game): boolean => {
 };
 
 const footballDecider = (game: Game): boolean => {
-	if (game.league === 'ncaaf' && game.period > regularPeriods(game)) return true;
-	if (game.period < regularPeriods(game) || game.clockSeconds > 120 || margin(game) > 8) return false;
+	const overtime = game.period > regularPeriods(game);
+	if (game.period < regularPeriods(game) || (!overtime && game.clockSeconds > 120) || margin(game) > 8) return false;
 	const yardsToGoal = game.yardLine === undefined ? undefined : (game.possessionTeamId === game.homeTeam.id ? 100 - game.yardLine : game.yardLine);
 	return game.down === 4 || (yardsToGoal !== undefined && yardsToGoal <= 35);
 };

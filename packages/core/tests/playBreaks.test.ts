@@ -196,6 +196,33 @@ describe('content-aware switching', () => {
 			expect(isDecisiveMoment({ ...drive, down: 4 })).toBe(true);
 			expect(isDecisiveMoment({ ...drive, yardLine: 70 })).toBe(true);
 		});
+
+		describe('football overtime', () => {
+			const overtime = game({ league: 'nfl', sportType: 'football', period: 5, clockSeconds: 540, possessionTeamId: 'h', yardLine: 80, down: 4 });
+			const score = (home: number, away: number) => ({ homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: home }, awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: away } });
+
+			test('a fourth down early in overtime is decisive', () => {
+				expect(isDecisiveMoment({ ...overtime, ...score(20, 20) })).toBe(true);
+			});
+
+			test('a red-zone snap early in overtime is decisive', () => {
+				expect(isDecisiveMoment({ ...overtime, ...score(20, 20), down: 2, yardLine: 85 })).toBe(true);
+			});
+
+			test('midfield on second down in overtime is not', () => {
+				expect(isDecisiveMoment({ ...overtime, ...score(20, 20), down: 2, yardLine: 50 })).toBe(false);
+			});
+
+			test('a nine-point margin is not decisive', () => {
+				expect(isDecisiveMoment({ ...overtime, ...score(29, 20) })).toBe(false);
+			});
+
+			test('regulation still needs the two-minute rule', () => {
+				const fourth = { ...overtime, ...score(20, 20), period: 4 };
+				expect(isDecisiveMoment({ ...fourth, clockSeconds: 540 })).toBe(false);
+				expect(isDecisiveMoment({ ...fourth, clockSeconds: 100 })).toBe(true);
+			});
+		});
 	});
 
 	describe('while a switch waits', () => {
