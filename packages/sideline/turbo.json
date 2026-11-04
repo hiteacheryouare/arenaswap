@@ -1,0 +1,9 @@
+{
+	"extends": ["//"],
+	"tasks": {
+		// Both Jest projects are offline. `test` keeps running both, as it always has.
+		"test": {
+			"dependsOn": ["test:unit", "test:e2e"]
+		}
+	}
+}

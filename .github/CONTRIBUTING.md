@@ -146,7 +146,7 @@ npm run lint typecheck test test:e2e build build:edge build:firefox zip zip:edge
 Run it from the root. Running workspace type checks from inside a subfolder can trip path-casing errors.
 
 > [!WARNING]
-> `docs/` at the repository root is tracked build output. `test`, `typecheck` and `zip` rebuild it from your working tree. Check `git status` before staging and do not commit a rebuild that captured unrelated changes.
+> `docs/` at the repository root is tracked build output. `typecheck`, `test:e2e` and `zip` rebuild it from your working tree. Check `git status` before staging and do not commit a rebuild that captured unrelated changes.
 
 ## Formatting & Code Standards (Non-Negotiable)
 
@@ -244,9 +244,13 @@ If it cannot be deleted with rm -rf, it does not belong here.
 ## Testing Policy
 
 The test stack:
-- **Jest** (through `@swc/jest`) for unit tests in every package and in `apps/extension`
-- **Cypress component tests** for popup and shared UI components (`npm test` in `apps/extension`)
-- **Cypress end-to-end tests** against a built popup and the website (`npm run test:e2e`, kept outside `npm test`)
+- **Jest** (through `@swc/jest`) for unit tests in every package and in `apps/extension` (`npm run test:unit` inside any package)
+- **Cypress component tests** for popup and shared UI components, in one folder per feature area under `apps/extension/cypress/component/`
+- **Cypress end-to-end tests** against a built popup and the website, in feature folders under `apps/extension/cypress/e2e/`
+
+From the repository root, `npm test` runs every unit suite and every component folder, and `npm run test:e2e` runs every end-to-end suite. End-to-end stays outside `npm test`. Each Cypress folder is its own cached task, so only the folders your change touches run again. To run one, use `npx turbo run test:component:settings` or `npx turbo run test:e2e:tabs`. `npx cypress open` in `apps/extension` still lists every spec.
+
+A new spec goes in the folder for its feature area. A new folder needs four things: a `test:component:<folder>` or `test:e2e:<folder>` task with its inputs in `apps/extension/turbo.json`, the matching script in `apps/extension/package.json`, its name in that task's umbrella (`test:component` or `test:e2e`), and an entry in the CI matrix. `test:specGroups` fails until they agree, and it fails when a spec loads a file its folder's inputs leave out.
 
 Do not introduce another test framework.
 

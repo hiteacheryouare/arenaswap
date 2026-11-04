@@ -11,7 +11,6 @@
 		"./mockStandings": "./src/mockStandings.ts"
 	},
 	"scripts": {
-		"test": "npm run test:unit && npm run test:e2e",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
 		"test:e2e": "jest --passWithNoTests --selectProjects e2e",
 		"test:coverage": "jest --coverage",

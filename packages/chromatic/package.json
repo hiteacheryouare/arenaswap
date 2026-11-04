@@ -12,7 +12,6 @@
 		"./logoTint": "./src/logoTint.ts"
 	},
 	"scripts": {
-		"test": "npm run test:unit",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
 		"test:coverage": "jest --passWithNoTests --selectProjects unit --coverage",
 		"typecheck": "tsc --noEmit",

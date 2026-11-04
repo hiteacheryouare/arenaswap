@@ -1,7 +1,9 @@
 import { defineConfig } from 'cypress';
 import codeCoverageTask from '@cypress/code-coverage/task';
 import { existsSync } from 'node:fs';
+import type { AddressInfo } from 'node:net';
 import path from 'path';
+import { componentAliases, componentStubs } from './cypress/componentResolve';
 import { startStaticServer } from './cypress/staticServer';
 import bootstrapTokenPrefix from '@arenaswap/ui/src/bootstrapTokenPrefix';
 
@@ -11,7 +13,14 @@ const root = (rel: string) => path.resolve(__dirname, rel);
 // bundle under test is byte-for-byte the one that ships. It reads its own build rather than the
 // shared `.output/chrome-mv3`, which `wxt zip` deletes and rewrites while this server is serving it.
 const popupBuildDir = root('./.output/e2e/chrome-mv3');
-const e2ePort = 5199;
+
+// Each `test:component:<group>` and `test:e2e:<group>` script names a folder under cypress/<type>/,
+// and turbo caches each one on its own inputs. Unset, a run takes every spec. Groups run in
+// parallel, so each also gets its own Vite deps cache and screenshots folder: two dev servers
+// optimizing into one cache is what makes lazy imports 404 mid-run.
+const specGroup = process.env.ARENASWAP_SPEC_GROUP;
+const specFolder = (testingType: 'component' | 'e2e') => (specGroup ? `cypress/${testingType}/${specGroup}` : `cypress/${testingType}`);
+const screenshotsFolder = (testingType: 'component' | 'e2e') => (specGroup ? `cypress/screenshots/${testingType}/${specGroup}` : 'cypress/screenshots');
 
 // Both Cypress runners share this working directory, so which one is collecting decides where
 // nyc writes (see nyc.config.cjs). Instrumenting the component dev server costs build time on
@@ -24,20 +33,6 @@ const istanbulPlugins = async () => {
 	if (coverageTarget !== 'component') return [];
 	const { default: istanbul } = await import('vite-plugin-istanbul');
 	return [istanbul({ requireEnv: false })];
-};
-
-const componentStubs: Record<string, string> = {
-	'./flipScore': root('./cypress/stubs/flipScore.tsx'),
-	// tabAssignSelect is deliberately absent: it touches no browser API, so the real control
-	// mounts here. Stubbing it to null had the card and pre-game specs measuring a layout with
-	// no tab picker in it, which is not a layout the extension ever renders.
-	'./gameCard': root('./cypress/stubs/gameCard.tsx'),
-	'./gameDetailChart': root('./cypress/stubs/gameDetailChart.tsx'),
-	'./popupFooter': root('./cypress/stubs/popupFooter.tsx'),
-	'./proTip': root('./cypress/stubs/proTip.tsx'),
-	'./emptyGameState': root('./cypress/stubs/emptyGameState.tsx'),
-	'./reviewPromptBanner': root('./cypress/stubs/reviewPromptBanner.tsx'),
-	'./ludicrousSpeedOverlay': root('./cypress/stubs/ludicrousSpeedOverlay.tsx'),
 };
 
 export default defineConfig({
@@ -53,6 +48,7 @@ export default defineConfig({
 			framework: 'react',
 			bundler: 'vite',
 			viteConfig: async () => ({
+				...(specGroup ? { cacheDir: root(`node_modules/.vite/cypress-component-${specGroup}`) } : {}),
 				// The support file imports both .scss entries, so the component runner needs the same
 				// token prefix the real build applies.
 				css: {
@@ -61,15 +57,7 @@ export default defineConfig({
 					},
 				},
 				resolve: {
-					alias: [
-						// List subpaths before the root entry to prevent prefix-match collision
-						{ find: '@arenaswap/core/constants', replacement: root('../../packages/core/src/constants.ts') },
-						{ find: '@arenaswap/core/types', replacement: root('../../packages/core/src/types.ts') },
-						{ find: /^@arenaswap\/core$/, replacement: root('../../packages/core/src/index.ts') },
-						{ find: /^powerscore$/, replacement: root('../../packages/powerscore/src/index.ts') },
-						{ find: /^wxt\/browser$/, replacement: root('./tests/stubs/wxtBrowser.ts') },
-						{ find: /^#i18n$/, replacement: root('./cypress/stubs/i18n.ts') },
-					],
+					alias: componentAliases,
 				},
 				// The stub resolver stays first so a stubbed specifier never reaches the real
 				// module; istanbul follows it and therefore instruments only what did resolve to
@@ -86,7 +74,8 @@ export default defineConfig({
 				],
 			}),
 		},
-		specPattern: 'cypress/component/**/*.cy.{ts,tsx}',
+		specPattern: `${specFolder('component')}/**/*.cy.{ts,tsx}`,
+		screenshotsFolder: screenshotsFolder('component'),
 		supportFile: 'cypress/support/component.ts',
 		setupNodeEvents(on, config) {
 			codeCoverageTask(on, config);
@@ -94,8 +83,8 @@ export default defineConfig({
 		},
 	},
 	e2e: {
-		baseUrl: `http://localhost:${e2ePort}`,
-		specPattern: 'cypress/e2e/**/*.cy.ts',
+		specPattern: `${specFolder('e2e')}/**/*.cy.ts`,
+		screenshotsFolder: screenshotsFolder('e2e'),
 		supportFile: 'cypress/support/e2e.ts',
 		// The popup is 320x560 and never renders at anything else.
 		viewportWidth: 320,
@@ -104,10 +93,11 @@ export default defineConfig({
 			if (!existsSync(path.join(popupBuildDir, 'popup.html'))) {
 				throw new Error(`No built popup at ${popupBuildDir}. Run \`npm run test:e2e\` from the repo root, which builds first, or \`npm run build:e2e\` here.`);
 			}
-			const server = await startStaticServer(popupBuildDir, e2ePort);
+			// Port 0 takes any free port, so e2e groups, worktrees and other checkouts can all serve at once.
+			const server = await startStaticServer(popupBuildDir, 0);
 			on('after:run', () => new Promise<void>(resolve => { server.close(() => resolve()); }));
 			codeCoverageTask(on, config);
-			return config;
+			return { ...config, baseUrl: `http://localhost:${(server.address() as AddressInfo).port}` };
 		},
 	},
 });

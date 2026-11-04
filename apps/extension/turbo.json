@@ -33,11 +33,77 @@
 		"zip:edge": {
 			"outputs": [".output/*-edge.zip"]
 		},
-		// Cypress serves a real build rather than re-bundling the source, so this needs this
-		// package's own build — not just its dependencies' — before it can run. It depends on the
-		// e2e build specifically: `zip` rebuilds .output/chrome-mv3 underneath a running server.
+		// Each Cypress group below runs one folder of specs (cypress/<type>/<group>) and is cached on
+		// only what that folder loads. `test:specGroups` traces every spec's imports and fails when a
+		// group reads a file its inputs leave out, when a spec sits outside a group folder, or when a
+		// group is missing from these umbrellas or from CI. `test:component` and `test:e2e` have no
+		// script here; they only gather the groups.
+		//
+		// E2E serves a real build rather than re-bundling the source, so each e2e group needs this
+		// package's own build, not just its dependencies'. It depends on the e2e build specifically:
+		// `zip` rebuilds .output/chrome-mv3 underneath a running server.
+		"test:unit": {
+			"inputs": ["$TURBO_DEFAULT$", "!cypress/**", "!cypress.config.ts", "!tests/specGroups/**", "!marketing/**", "!*.md", "$TURBO_ROOT$/apps/docs/src/i18n/strings/**"]
+		},
+		"test:specGroups": {
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/.github/workflows/ci.yml"]
+		},
+		"test:component": {
+			"dependsOn": [
+				"test:specGroups",
+				"test:component:detail",
+				"test:component:gameList",
+				"test:component:guide",
+				"test:component:multiview",
+				"test:component:onboarding",
+				"test:component:settings",
+				"test:component:ui"
+			]
+		},
+		"test:component:detail": {
+			"dependsOn": ["^build"],
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/detail/**", "entrypoints/popup/**", "utils/**", "locales/**"]
+		},
+		"test:component:gameList": {
+			"dependsOn": ["^build"],
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/gameList/**", "entrypoints/popup/**", "utils/**", "locales/**"]
+		},
+		"test:component:guide": {
+			"dependsOn": ["^build"],
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/guide/**", "entrypoints/guide/**", "entrypoints/popup/**", "utils/**", "locales/**"]
+		},
+		"test:component:multiview": {
+			"dependsOn": ["^build"],
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/multiview/**", "entrypoints/multiview/**", "entrypoints/popup/components/prefetchIntent.ts", "locales/en.json"]
+		},
+		"test:component:onboarding": {
+			"dependsOn": ["^build"],
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/onboarding/**", "entrypoints/popup/**", "utils/**", "locales/**"]
+		},
+		"test:component:settings": {
+			"dependsOn": ["^build"],
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/settings/**", "entrypoints/popup/**", "entrypoints/settingsBackup/**", "utils/**", "locales/**"]
+		},
+		// Shared @arenaswap/ui components only: no extension source, so popup edits never rerun it.
+		"test:component:ui": {
+			"dependsOn": ["^build"],
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/ui/**", "entrypoints/popup/components/prefetchIntent.ts", "locales/**"]
+		},
 		"test:e2e": {
-			"dependsOn": ["build:e2e"]
+			"dependsOn": ["test:e2e:popup", "test:e2e:settings", "test:e2e:tabs"]
+		},
+		"test:e2e:popup": {
+			"dependsOn": ["build:e2e"],
+			"inputs": ["package.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/**", "cypress/e2e/popup/**", "entrypoints/**", "utils/**", "locales/**"]
+		},
+		"test:e2e:settings": {
+			"dependsOn": ["build:e2e"],
+			"inputs": ["package.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/**", "cypress/e2e/settings/**", "entrypoints/**", "utils/**", "locales/**"]
+		},
+		"test:e2e:tabs": {
+			"dependsOn": ["build:e2e"],
+			"inputs": ["package.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/**", "cypress/e2e/tabs/**", "entrypoints/**", "utils/**", "locales/**"]
 		}
 	}
 }

@@ -2,21 +2,29 @@
 	"$schema": "./node_modules/turbo/schema.json",
 	"globalDependencies": ["tsconfig.base.json", ".oxlintrc.json"],
 	"tasks": {
+		// Builds never read tests or package READMEs, so editing one reruns only the tests, not every
+		// build and every dependent package's tests behind it. Test fixtures stay in: other packages'
+		// tests read them through this hash.
 		"build": {
 			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "!tests/**/*.test.ts", "!tests/**/*.spec.ts", "!cypress/**", "!cypress.config.ts", "!jest.config.cjs", "!jestSetup.ts", "!*.md"],
 			"outputs": ["dist/**"]
 		},
 		"build:firefox": {
-			"dependsOn": ["^build"]
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "!tests/**/*.test.ts", "!tests/**/*.spec.ts", "!cypress/**", "!cypress.config.ts", "!jest.config.cjs", "!jestSetup.ts", "!*.md"]
 		},
 		"build:edge": {
-			"dependsOn": ["^build"]
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "!tests/**/*.test.ts", "!tests/**/*.spec.ts", "!cypress/**", "!cypress.config.ts", "!jest.config.cjs", "!jestSetup.ts", "!*.md"]
 		},
 		"build:e2e": {
-			"dependsOn": ["^build"]
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "!tests/**/*.test.ts", "!tests/**/*.spec.ts", "!cypress/**", "!cypress.config.ts", "!jest.config.cjs", "!jestSetup.ts", "!*.md"]
 		},
 		"build:film": {
-			"dependsOn": ["^build"]
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "!tests/**/*.test.ts", "!tests/**/*.spec.ts", "!cypress/**", "!cypress.config.ts", "!jest.config.cjs", "!jestSetup.ts", "!*.md"]
 		},
 		"zip": {
 			"dependsOn": ["^build", "build"],
@@ -35,11 +43,20 @@
 			"cache": false,
 			"dependsOn": ["^build"]
 		},
+		// `test`, `test:component` and the extension's `test:e2e` have no scripts: they only gather the
+		// suites below, so each suite keeps its own cache entry. `test:e2e` stays out of `test`.
 		"test": {
+			"dependsOn": ["test:unit", "test:component"]
+		},
+		"test:unit": {
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "!cypress/**", "!cypress.config.ts", "!*.md"]
+		},
+		"test:component": {
 			"dependsOn": ["^build"]
 		},
-		// packages/sideline answers this with an offline Jest project; apps/extension answers it with
-		// Cypress against a real build, and overrides the dependency in its own config to say so.
+		// packages/sideline answers this with an offline Jest project, apps/docs with Cypress against
+		// its built site, and apps/extension with Cypress groups against its e2e build.
 		"test:e2e": {
 			"dependsOn": ["^build"]
 		},

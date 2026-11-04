@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Tests run in cached groups — 2026-11-03
+
+Unit tests, each Cypress component folder and each end-to-end folder are now separate turbo tasks cached on only the files they load, and CI runs them as parallel jobs. `test:specGroups` fails when a spec sits outside a group or loads a file its group's inputs leave out, so a cache hit can't hide a real failure.
+
 ## Standby and Multiview mind their own tabs — 2026-11-03
 
 One tab can no longer be both the Standby Stream and a game's tab: each picker disables the other's tab, and the worker ignores an overlap saved before this. A Standby tab in another window now shows by its title in settings. When the Multiview tab goes to another page, Multiview stops, says so in a notification, and holds those games off for 10 minutes, even across a worker restart.

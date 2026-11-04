@@ -13,7 +13,6 @@
 		"simulate": "rolldown -c && node dist/simulateDistribution.cjs 100000",
 		"validate-live": "rolldown -c && node dist/validateLive.cjs",
 		"breaks": "rolldown -c && node --max-old-space-size=6144 dist/evaluateBreaks.cjs",
-		"test": "npm run test:unit",
 		"test:unit": "jest --passWithNoTests --selectProjects unit",
 		"typecheck": "tsc --noEmit",
 		"lint": "oxlint ."

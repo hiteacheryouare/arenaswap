@@ -1,0 +1,14 @@
+{
+	"extends": ["//"],
+	"tasks": {
+		// tokenNames.test.ts reads every stylesheet and component in apps/ and packages/ for --as- tokens,
+		// skipping the same folders it skips. Explicit globs here ignore .gitignore, so they are listed.
+		"test:unit": {
+			"inputs": [
+				"$TURBO_DEFAULT$", "!*.md",
+				"$TURBO_ROOT$/apps/**/*.{scss,ts,tsx,js,jsx,astro,html}", "$TURBO_ROOT$/packages/**/*.{scss,ts,tsx,js,jsx,astro,html}",
+				"!$TURBO_ROOT$/{apps,packages}/**/node_modules/**", "!$TURBO_ROOT$/{apps,packages}/**/dist/**", "!$TURBO_ROOT$/{apps,packages}/**/coverage/**", "!$TURBO_ROOT$/{apps,packages}/**/docs/**", "!$TURBO_ROOT$/{apps,packages}/**/temporary/**", "!$TURBO_ROOT$/{apps,packages}/**/.*/**"
+			]
+		}
+	}
+}

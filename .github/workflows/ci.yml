@@ -25,39 +25,83 @@ jobs:
           turbo-cache-key: checks
       - run: npx turbo run lint typecheck --continue
 
-  test:
-    name: Unit & component tests
+  unit:
+    name: Unit tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
         with:
-          turbo-cache-key: test
-      - run: npx turbo run test
+          turbo-cache-key: unit
+      - run: npx turbo run test:unit test:specGroups
+
+  # One job per Cypress group (apps/extension/turbo.json). test:specGroups fails if a group is
+  # missing here, so a new group cannot be skipped by CI.
+  component:
+    name: Component tests (${{ matrix.group }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - group: detail
+            tasks: test:component:detail
+          - group: gameList
+            tasks: test:component:gameList
+          - group: guide
+            tasks: test:component:guide
+          - group: multiview
+            tasks: test:component:multiview
+          - group: onboarding
+            tasks: test:component:onboarding
+          - group: settings
+            tasks: test:component:settings
+          - group: ui
+            tasks: test:component:ui
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+        with:
+          turbo-cache-key: component-${{ matrix.group }}
+      - run: npx turbo run ${{ matrix.tasks }}
       - name: Upload Cypress screenshots
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: component-screenshots
+          name: component-screenshots-${{ matrix.group }}
           path: apps/extension/cypress/screenshots
           if-no-files-found: ignore
 
   e2e:
-    name: E2E tests
+    name: E2E tests (${{ matrix.group }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - group: popup
+            tasks: test:e2e:popup
+          - group: settings
+            tasks: test:e2e:settings
+          - group: tabs
+            tasks: test:e2e:tabs
+          # Every other package's test:e2e: the docs site and sideline's offline Jest project.
+          - group: site
+            tasks: test:e2e --filter=!@arenaswap/extension
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
         with:
-          turbo-cache-key: e2e
-      - run: npx turbo run test:e2e
+          turbo-cache-key: e2e-${{ matrix.group }}
+      - run: npx turbo run ${{ matrix.tasks }}
       - name: Upload Cypress screenshots
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: e2e-screenshots
+          name: e2e-screenshots-${{ matrix.group }}
           path: apps/extension/cypress/screenshots
           if-no-files-found: ignore
 

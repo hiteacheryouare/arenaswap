@@ -44,6 +44,12 @@ module.exports = {
 			...commonProjectConfig,
 			displayName: 'unit',
 			testMatch: ['<rootDir>/tests/**/*.test.ts'],
+			testPathIgnorePatterns: ['<rootDir>/tests/specGroups/'],
+		},
+		{
+			...commonProjectConfig,
+			displayName: 'specGroups',
+			testMatch: ['<rootDir>/tests/specGroups/**/*.test.ts'],
 		},
 	],
 };
