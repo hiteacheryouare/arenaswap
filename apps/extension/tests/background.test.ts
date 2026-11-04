@@ -197,6 +197,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 			onRemoved: {
 				addListener: (h: (tabId: number) => unknown) => { onRemovedHandler = h; },
 			},
+			onUpdated: { addListener: () => {} },
 		},
 		notifications: { create: notificationsCreate },
 		windows: { update: windowsUpdate, get: windowsGet, getLastFocused: windowsGetLastFocused },

@@ -119,6 +119,7 @@ const startWorker = async ({ games, openTabIds, activeTabId, atMs }: StartOption
 			remove: jest.fn().mockResolvedValue(undefined),
 			onActivated: { addListener: (h: (info: { tabId: number }) => unknown) => { onActivatedHandler = h; } },
 			onRemoved: { addListener: () => {} },
+			onUpdated: { addListener: () => {} },
 		},
 		windows: {
 			update: jest.fn().mockResolvedValue(undefined),

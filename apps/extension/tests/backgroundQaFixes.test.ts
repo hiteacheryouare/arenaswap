@@ -84,6 +84,7 @@ const startWorker = async (atMs: number) => {
 			remove: jest.fn().mockResolvedValue(undefined),
 			onActivated: { addListener: () => {} },
 			onRemoved: { addListener: () => {} },
+			onUpdated: { addListener: () => {} },
 		},
 		windows: {
 			update: jest.fn().mockResolvedValue(undefined),

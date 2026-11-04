@@ -18,7 +18,7 @@ import {
 } from '../utils/finishedTabs';
 import { loadConferenceDirectory } from '../utils/collegeConferences';
 import { bossCommandName, bossHushedKey, createBossMode } from '../utils/bossMode';
-import { createMultiview, isMultiviewBuild, multiviewFrameScriptId, multiviewFrameScriptPath, multiviewPermissions, multiviewStateKey } from '../utils/multiview';
+import { createMultiview, isMultiviewBuild, leftMultiviewPage, multiviewFrameScriptId, multiviewFrameScriptPath, multiviewPagePath, multiviewPermissions, multiviewStateKey } from '../utils/multiview';
 import type { multiviewOutcome } from '../utils/multiview';
 import { loadStoredUserPreferences, persistStoredUserPreferences } from '../utils/prefsStorage';
 import { loadFantasyRoster } from '../utils/fantasyRosterStorage';
@@ -94,6 +94,7 @@ const readStoredSwitchTime = (value: unknown, now: number): number => (
 );
 
 const switchNotificationId = 'arenaswap-switch';
+const multiviewLeftNotificationId = 'arenaswap-multiview-left';
 const standingsRefreshMs = 30 * 60 * 1000;
 const blowoutSummaryIntervalMs = 180_000;
 const situationWaitMs = 2_000;
@@ -1936,6 +1937,26 @@ export default defineBackground(() => {
 			if (tabRegistry.some(reg => reg.tabId === tabId)) setLastSwitchTime(Date.now());
 			return syncManagedTabMuteState(prefs.enabled);
 		}).catch(err => logWarn('Failed to settle mute state after a tab switch.', err));
+	});
+
+	// A framed stream can send the whole Multiview tab to its own page. A notification says so even
+	// with the popup shut, and is sent whether or not switch notifications are on, because the page
+	// in front of the user has changed under them.
+	browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
+		const { url } = changeInfo;
+		if (!url) return;
+		void stateReady.then(async () => {
+			if (multiview.tabId() !== tabId || !leftMultiviewPage(url, browser.runtime.getURL(multiviewPagePath))) return;
+			if (!await multiview.hijacked(tabId, Date.now())) return;
+			await syncManagedTabMuteState(prefs.enabled);
+			const host = (() => { try { return new URL(url).host; } catch { return ''; } })();
+			await browser.notifications.create(multiviewLeftNotificationId, {
+				type: 'basic',
+				iconUrl: 'icon/128.png',
+				title: i18n.t('notification.multiviewLeftTitle'),
+				message: host ? i18n.t('notification.multiviewLeftMessage', { host }) : i18n.t('notification.multiviewLeftMessageNoHost'),
+			});
+		}).catch(err => logWarn('Failed to handle the Multiview tab leaving its page.', err));
 	});
 
 	browser.tabs.onRemoved.addListener(tabId => {

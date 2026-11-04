@@ -48,6 +48,8 @@ let openTabIds: number[] = [];
 let activeTabId = watchedTabId;
 let onMessageHandler!: (msg: unknown, sender: unknown) => unknown;
 let onRemovedHandler!: (tabId: number) => unknown;
+let onUpdatedHandler!: (tabId: number, changeInfo: { url?: string }) => unknown;
+let notificationsCreate: jest.Mock;
 
 const tabFor = (id: number) => ({ id, windowId: 1, index: id, url: id === multiviewTabId ? 'chrome-extension://x/multiview.html' : `https://stream.example/${id}` });
 
@@ -79,6 +81,7 @@ const startWorker = async (games: Game[], prefs: Partial<UserPreferences>) => {
 	sessionRules = jest.fn().mockResolvedValue(undefined);
 	registerScripts = jest.fn().mockResolvedValue(undefined);
 	permissionsContains = jest.fn().mockResolvedValue(true);
+	notificationsCreate = jest.fn().mockResolvedValue(undefined);
 
 	sessionStore = { tabRegistry: [{ gameId: 'g2', tabId: 2 }, { gameId: 'g3', tabId: 3 }] satisfies TabRegistration[] };
 	syncStore = { prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...prefs }) };
@@ -114,6 +117,7 @@ const startWorker = async (games: Game[], prefs: Partial<UserPreferences>) => {
 			remove: tabsRemove,
 			onActivated: { addListener: () => {} },
 			onRemoved: { addListener: (h: typeof onRemovedHandler) => { onRemovedHandler = h; } },
+			onUpdated: { addListener: (h: typeof onUpdatedHandler) => { onUpdatedHandler = h; } },
 		},
 		windows: {
 			update: jest.fn().mockResolvedValue(undefined),
@@ -122,7 +126,7 @@ const startWorker = async (games: Game[], prefs: Partial<UserPreferences>) => {
 		},
 		commands: { onCommand: { addListener: () => {} } },
 		alarms: { create: jest.fn(), clear: jest.fn(), onAlarm: { addListener: () => {} } },
-		notifications: { create: jest.fn().mockResolvedValue(undefined), clear: jest.fn().mockResolvedValue(undefined) },
+		notifications: { create: notificationsCreate, clear: jest.fn().mockResolvedValue(undefined) },
 		i18n: { getUILanguage: () => 'en-US' },
 	};
 
@@ -228,5 +232,52 @@ describe('Multiview in the background', () => {
 		await drain();
 		expect(sessionRules).toHaveBeenLastCalledWith({ removeRuleIds: [multiviewTabId] });
 		expect(await sendMessage({ type: 'GET_MULTIVIEW' }, multiviewTabId)).toBeNull();
+	});
+	describe('a framed site taking the tab', () => {
+		const leftMessages = () => notificationsCreate.mock.calls.filter(([id]) => id === 'arenaswap-multiview-left').map(([, options]) => options);
+
+		test('forgets the session, keeps the tab, and names the site that took it', async () => {
+			await startWorker([thriller('g2'), thriller('g3')], multiviewPrefs);
+			await poll();
+			tabsRemove.mockClear();
+
+			onUpdatedHandler(multiviewTabId, { url: 'https://ads.stream.example/offer?x=1' });
+			await drain();
+
+			expect(tabsRemove).not.toHaveBeenCalled();
+			expect(sessionRules).toHaveBeenLastCalledWith({ removeRuleIds: [multiviewTabId] });
+			expect(await sendMessage({ type: 'GET_MULTIVIEW' }, multiviewTabId)).toBeNull();
+			expect(leftMessages()).toEqual([expect.objectContaining({ message: expect.stringContaining('ads.stream.example') })]);
+		});
+
+		test('holds off reopening the same games', async () => {
+			await startWorker([thriller('g2'), thriller('g3')], multiviewPrefs);
+			await poll();
+			onUpdatedHandler(multiviewTabId, { url: 'https://ads.stream.example/' });
+			await drain();
+			tabsCreate.mockClear();
+			await poll();
+			expect(tabsCreate).not.toHaveBeenCalled();
+		});
+
+		test('says nothing while the tab stays on the Multiview page, or when it is closed from our side', async () => {
+			await startWorker([thriller('g2'), thriller('g3')], multiviewPrefs);
+			await poll();
+
+			onUpdatedHandler(multiviewTabId, { url: 'chrome-extension://x/multiview.html' });
+			onUpdatedHandler(multiviewTabId, { url: 'chrome-extension://x/multiview.html#reload' });
+			onUpdatedHandler(multiviewTabId, {});
+			onUpdatedHandler(2, { url: 'https://elsewhere.example/' });
+			await drain();
+			expect(leftMessages()).toEqual([]);
+			expect(await sendMessage({ type: 'GET_MULTIVIEW' }, multiviewTabId)).not.toBeNull();
+
+			fetchMock.mockResolvedValue({ games: [thriller('g2'), runaway('g3')], leagueLogos: {}, shedLeagues: [] });
+			await poll();
+			expect(tabsRemove).toHaveBeenCalledWith(multiviewTabId);
+			onUpdatedHandler(multiviewTabId, { url: 'https://elsewhere.example/' });
+			await drain();
+			expect(leftMessages()).toEqual([]);
+		});
 	});
 });

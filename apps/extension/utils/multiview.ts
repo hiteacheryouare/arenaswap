@@ -18,6 +18,12 @@ export const multiviewPermissions: Browser.permissions.Permissions = { origins: 
 
 // Only the Chrome and Edge builds carry the permission that lets a box show a site that refuses to
 // be framed, so the manifest is what says whether this build has Multiview at all.
+// A framed stream's script can send the whole tab elsewhere. The page's own address, with or
+// without a hash or query, is the only place the tab is meant to be.
+export const leftMultiviewPage = (tabUrl: string, pageUrl: string): boolean => (
+	tabUrl !== pageUrl && !tabUrl.startsWith(`${pageUrl}#`) && !tabUrl.startsWith(`${pageUrl}?`)
+);
+
 export const isMultiviewBuild = (manifest: { permissions?: string[] }): boolean => (
 	(manifest.permissions ?? []).includes('declarativeNetRequestWithHostAccess')
 );
@@ -211,6 +217,16 @@ export const createMultiview = (deps: multiviewDeps) => {
 		return { active: true, settled: away ? await deps.reveal(session.tabId, lineup()) : false };
 	};
 
+	// The user closed it, or it closed while the worker was asleep.
+	const forget = async (tabId: number, now: number) => {
+		if (session?.tabId !== tabId) return false;
+		session = null;
+		closedAt = now;
+		await persist();
+		await deps.forbidFrames(tabId).catch(() => {});
+		return true;
+	};
+
 	return {
 		update,
 		markReady: async (tabId: number, gameIds: string[]) => {
@@ -220,14 +236,13 @@ export const createMultiview = (deps: multiviewDeps) => {
 			await persist();
 		},
 		lineupFor: (tabId: number | undefined): MultiviewLineup | null => (session && session.tabId === tabId ? lineup() : null),
-		// The user closed it, or it closed while the worker was asleep.
-		forget: async (tabId: number, now: number) => {
+		forget,
+		// The tab is still open, but a framed site took it somewhere else. It is left alone, and the
+		// games that were boxed are not tried again for a while.
+		hijacked: async (tabId: number, now: number) => {
 			if (session?.tabId !== tabId) return false;
-			session = null;
-			closedAt = now;
-			await persist();
-			await deps.forbidFrames(tabId).catch(() => {});
-			return true;
+			failed = { key: failedSetKey(session.boxes.map(box => box.gameId)), at: now };
+			return forget(tabId, now);
 		},
 		stop: end,
 		tabId: (): number | null => session?.tabId ?? null,

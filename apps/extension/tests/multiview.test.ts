@@ -1,4 +1,4 @@
-import { createMultiview, isMultiviewBuild, multiviewReadyTimeoutMs, multiviewRetryMs } from '../utils/multiview';
+import { createMultiview, isMultiviewBuild, leftMultiviewPage, multiviewReadyTimeoutMs, multiviewRetryMs } from '../utils/multiview';
 import type { multiviewDeps, multiviewPass } from '../utils/multiview';
 
 const multiviewTabId = 50;
@@ -203,5 +203,42 @@ describe('isMultiviewBuild', () => {
 		expect(isMultiviewBuild({ permissions: ['tabs', 'declarativeNetRequestWithHostAccess'] })).toBe(true);
 		expect(isMultiviewBuild({ permissions: ['tabs'] })).toBe(false);
 		expect(isMultiviewBuild({})).toBe(false);
+	});
+});
+
+describe('leftMultiviewPage', () => {
+	const page = 'chrome-extension://x/multiview.html';
+
+	test('stays quiet on the page itself, with or without a hash or query', () => {
+		expect(leftMultiviewPage(page, page)).toBe(false);
+		expect(leftMultiviewPage(`${page}#top`, page)).toBe(false);
+		expect(leftMultiviewPage(`${page}?a=1`, page)).toBe(false);
+	});
+
+	test('notices any other address, including a lookalike path', () => {
+		expect(leftMultiviewPage('https://stream.example/', page)).toBe(true);
+		expect(leftMultiviewPage(`${page}.evil`, page)).toBe(true);
+	});
+});
+
+describe('multiview hijacked', () => {
+	test('lets go of the tab without closing it and holds off the same games', async () => {
+		const deps = createDeps();
+		const multiview = await openMultiview(deps);
+		deps.createTab.mockClear();
+
+		expect(await multiview.hijacked(multiviewTabId, 120_000)).toBe(true);
+		expect(deps.removeTab).not.toHaveBeenCalled();
+		expect(deps.forbidFrames).toHaveBeenCalledWith(multiviewTabId);
+		expect(multiview.tabId()).toBeNull();
+
+		await multiview.update(pass({ now: 120_000 + 60_000 }));
+		expect(deps.createTab).not.toHaveBeenCalled();
+	});
+
+	test('ignores a tab that is not the session', async () => {
+		const multiview = await openMultiview(createDeps());
+		expect(await multiview.hijacked(99, 120_000)).toBe(false);
+		expect(multiview.tabId()).toBe(multiviewTabId);
 	});
 });
