@@ -79,7 +79,7 @@ interface mainViewProps {
 	favoriteTeamIds: Set<string>;
 	gameBoosts: Record<string, number>;
 	openTabs: Browser.tabs.Tab[];
-	standbyStreamTabId: number | null;
+	standbyStreamTabId?: number | null;
 	onStandbyStream: boolean;
 	heldSwitch?: BackgroundState['heldSwitch'];
 	onOpenGameDetail: (gameId: string) => void;
@@ -202,7 +202,7 @@ const mainView = ({
 	favoriteTeamIds,
 	gameBoosts,
 	openTabs,
-	standbyStreamTabId,
+	standbyStreamTabId = null,
 	onStandbyStream,
 	heldSwitch = null,
 	onOpenGameDetail,

@@ -55,7 +55,7 @@ interface setupViewProps {
 	standbyTabElsewhere?: Browser.tabs.Tab | null;
 	standbyOnboardingDone: boolean;
 	openTabs: Browser.tabs.Tab[];
-	registry: TabRegistration[];
+	registry?: TabRegistration[];
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 	onClose: () => void;
 	onSensitivityChange: (val: number) => void;
@@ -137,7 +137,7 @@ const pageFallback = (
 
 const setupView = ({
 	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, leagueSchedules, favoriteTeamIds, standbyStreamTabId, standbyTabElsewhere = null, standbyOnboardingDone,
-	openTabs, registry, formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange, onToggleContentAwareSwitching,
+	openTabs, registry = [], formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange, onToggleContentAwareSwitching,
 	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder, onCollegeFilterChange,
 	onToggleGroupByLeague, onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onThemeChange, onUpcomingGamesDaysChange,
 	onToggleProTips, onToggleNotifications, bossShortcut, onBossDecoyChange, onToggleDemo, onDemoSeasonChange, onToggleStandbyStream, onStandbyThresholdChange,
