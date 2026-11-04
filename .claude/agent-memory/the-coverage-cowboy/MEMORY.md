@@ -1,6 +1,8 @@
 # The Coverage Cowboy — Memory Index
 
 - [Audit 2026-10-24](project_audit_20261024.md) — what the "fix everything" pass closed, red tests left on purpose, what is still open; start here
+- [Turbo test groups](project_turbo_test_groups.md) — 49c2573c7: suites split into cached tasks, spec feature folders, test:specGroups guard; open calls
+- [Turbo inputs gotchas](reference_turbo_inputs_gotchas.md) — explicit globs ignore .gitignore; proving isolation via --dry=json hash diffs
 - [Cooldown restart bug](project_cooldown_restart_bug.md) — FIXED by 2026-10-12; a red test there is now a real regression
 - [Extension coverage wiring](reference_extension_coverage_wiring.md) — shared Cypress cwd needs an env-driven nyc target; vite-plugin-istanbul is ESM-only
 - [Coverage: report, never gate](feedback_coverage_setup.md) — no coverageThreshold; prove source bugs with a failing test, never fix them yourself
