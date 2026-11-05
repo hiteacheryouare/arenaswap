@@ -101,6 +101,9 @@ describe('settings sub-pages containment', () => {
 		cy.get('#fantasyPlayerSearch').should('exist');
 	};
 
+	// Every earlier roster test leaves its team fetches queued in the shared request bucket, and the search waits behind them at 10 a second.
+	const drainedBucketMs = 20000;
+
 	const playerName = '.fantasy-roster-scroll span.d-block.fw-semibold';
 
 	it('names a rostered player in full on hover when the list cuts the name short', () => {
@@ -118,14 +121,14 @@ describe('settings sub-pages containment', () => {
 	it('keeps the Fantasy roster page inside the popup when a long search finds nothing', () => {
 		openRoster(english, 0);
 		typeInto('#fantasyPlayerSearch', worstUserText.unbroken(120));
-		cy.get(noMatchLine).should('exist');
+		cy.get(noMatchLine, { timeout: drainedBucketMs }).should('exist');
 		cy.get(popupSurface).assertContained();
 	});
 
 	inEveryLocale('keeps the Fantasy roster page inside the popup when a long search finds nothing, apart from the echoed query', locale => {
 		openRoster(locale, 0);
 		typeInto('#fantasyPlayerSearch', worstUserText.unbroken(120));
-		cy.get(noMatchLine).should('exist');
+		cy.get(noMatchLine, { timeout: drainedBucketMs }).should('exist');
 		cy.get(popupSurface).assertContained({ exempt: [noMatchLine] });
 	});
 

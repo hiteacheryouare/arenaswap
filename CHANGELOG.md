@@ -9,6 +9,10 @@
 
 Football on Christmas Eve, NBA and NFL games on Christmas Day and soccer on Boxing Day hang a gold garland along the hero's bottom edge with a crested stocking per team hanging from it, filled by the score with coal for the loser at the final. MLB hangs three pleated fans of bunting for the home opener series and the postseason, and every run on July 4 (plus MLS goals, and Blue Jays runs on Canada Day) sets off a firework in the scorer's colours. The opener series is read off the home team's home record, now parsed as `Team.homeRecord`, because the scoreboard's season calendar starts at spring training.
 
+## Roster search containment test waits out the request bucket — 2026-11-05
+
+The two Fantasy roster no-match tests in `settingsSubpagesContainment.cy.tsx` flaked because every earlier roster test leaves its team fetches queued in the shared request bucket, which drains at 10 a second, and the player search waits behind them. They now give the no-match line 20 seconds to appear instead of 4.
+
 ## Crest placeholders are plain Bootstrap avatars — 2026-11-04
 
 A crest's own `.avatar` box is now its placeholder, with the initials as its text and the logo laid over it, replacing the separate `.crest-fallback` disc and the twenty-odd font sizes call sites set on it. Initials are 30% of the box and icons 80%, measured with container units because Bootstrap's `--avatar-size` calc breaks on crests sized in `%` or `em`. The disc's shape is `--as-avatar-border-radius`, the logo's is `--crest-logo-radius` (square by default), and `--crest-wash` lightens a disc that sits on its own team colour.
