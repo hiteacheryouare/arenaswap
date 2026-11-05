@@ -128,7 +128,7 @@ describe('input the wire has never produced', () => {
 		['soccer stoppage notation', "90'+8'", 5880],
 		['soccer prime notation', "85'", 5100],
 		['a leading plus on prime notation', "+5'", 0],
-		['a sub-minute decimal', '0.75', 0],
+		['a sub-second decimal, which is still time on the clock', '0.75', 1],
 		['a zero decimal', '0.0', 0],
 		['the word NaN', 'NaN:00', 0],
 	])('%s reads as a known value', (_label, clock, expected) => {

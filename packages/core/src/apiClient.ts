@@ -785,8 +785,8 @@ const scoreboardEventLimit = 500;
 
 const scoreboardParams = (config: LeagueConfig): URLSearchParams => {
 	const params = new URLSearchParams();
-	if (config.id === 'ncaab') params.set('groups', '50');
-	if (config.id === 'ncaaw') params.set('groups', '49');
+	// Division I is group 50 in both basketball leagues. Women's 49 answers with an empty board.
+	if (config.id === 'ncaab' || config.id === 'ncaaw') params.set('groups', '50');
 	params.set('limit', String(scoreboardEventLimit));
 	return params;
 };
@@ -1222,10 +1222,9 @@ export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnT
 	if (leagueConfigs.length === 0) return [];
 
 	const results = await settledInPool(leagueConfigs, async (config): Promise<EspnTeamEntry[]> => {
-		const params = new URLSearchParams({ limit: '200' });
-		if (config.id === 'ncaab') params.set('groups', '50');
-		if (config.id === 'ncaaw') params.set('groups', '49');
-		const url = `${espnBase}/${config.espnPath}/teams?${params.toString()}`;
+		// College football alone has 762 teams. `/teams` ignores `groups`, so the limit is the only
+		// thing that decides whether a school makes the list.
+		const url = `${espnBase}/${config.espnPath}/teams?limit=1000`;
 		await takeRequestSlot();
 		const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
 		if (!res.ok) throw new Error(`Failed to fetch teams for ${config.id}: HTTP ${res.status}`);

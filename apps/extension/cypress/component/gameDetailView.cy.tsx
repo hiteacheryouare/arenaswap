@@ -220,6 +220,13 @@ describe('gameDetailView countdown', () => {
 		cy.get('.gd-countdown-clock').should('not.contain.text', 's');
 	});
 
+	it('leaves the countdown off a game that has been postponed', () => {
+		mountDetail({ ...makeScheduledSlate(5 * hourMs), delayed: true, delayDescription: 'Postponed' });
+		cy.get('.gd-poster-status').should('have.text', 'Postponed');
+		cy.get('.gd-countdown-clock').should('not.exist');
+		cy.get('.gd-countdown-when').should('not.exist');
+	});
+
 	it('switches to hours, minutes and seconds inside the final day', () => {
 		mountDetail(makePreGame(5 * hourMs + 13 * minuteMs + 42_000));
 		cy.get('.gd-countdown-seg').should('have.length', 3);

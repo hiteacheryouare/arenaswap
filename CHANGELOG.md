@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Small fixes from dev ride along in 2.3 — 2026-11-05
+
+Women's college basketball asked the scoreboard for group 49, which now answers empty, so it shows no games; it asks for 50 like the men's, and `/teams` asks for 1,000 with no `groups` so college favourite pickers stop missing schools. Switch notifications reuse one id instead of piling up, a sub-second clock reads 1 rather than 0, and the popup keeps the Box and Standings tabs through tip-off and the final, drops a postponed game's countdown, and stops the quiet-night line from going missing behind a leftover tab registration or showing under the error banner.
+
 ## The holiday decorations backport to 2.3 — 2026-11-05
 
 `dev`'s stockings and garland (Christmas Eve football, Christmas Day NBA and NFL, Boxing Day soccer), MLB bunting and Fourth of July fireworks, plus its redrawn leaf pile, are hand-ported onto `mega` with a switch each, since 3.0 won't ship before the holidays. Mega has no light mode, no `OnColorCrest` and no home-left leagues, so the snow and leaves stay dark-only, the stocking crest picks ESPN's `500-dark` logo itself, and away always hangs left. The parser now reads `Team.homeRecord` and `Game.isPreseason`, which bunting needs to find a home opener series.

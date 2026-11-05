@@ -170,7 +170,7 @@ describe('apiClient', () => {
 		expect(fetchMock).not.toHaveBeenCalled();
 	});
 
-	test('fetches and parses teams for requested leagues, including NCAA groups params', async () => {
+	test('fetches and parses teams for requested leagues, a thousand at a time with no groups', async () => {
 		const fetchMock = jest.fn().mockImplementation(async (input: RequestInfo | URL) => {
 			const url = toUrl(input);
 			if (url.includes('/basketball/nba/teams')) {
@@ -240,10 +240,10 @@ describe('apiClient', () => {
 			'/apis/site/v2/sports/basketball/nba/teams',
 			'/apis/site/v2/sports/basketball/mens-college-basketball/teams',
 		]);
-		expect(requestedUrls[0]?.searchParams.get('limit')).toBe('200');
+		expect(requestedUrls[0]?.searchParams.get('limit')).toBe('1000');
 		expect(requestedUrls[0]?.searchParams.get('groups')).toBeNull();
-		expect(requestedUrls[1]?.searchParams.get('limit')).toBe('200');
-		expect(requestedUrls[1]?.searchParams.get('groups')).toBe('50');
+		expect(requestedUrls[1]?.searchParams.get('limit')).toBe('1000');
+		expect(requestedUrls[1]?.searchParams.get('groups')).toBeNull();
 	});
 
 	test('keeps successful team results when one league request fails', async () => {
@@ -433,9 +433,9 @@ describe('apiClient', () => {
 		expect(floatGame?.clockSeconds).toBe(45);
 		// Seconds, not decimal minutes. Checked against ESPN on 2026-09-21: the basketball leagues
 		// drop the colon under a minute and count down 40.8 -> 0.1, so 0.75 is three quarters of a
-		// second and floors to nothing left, not to 45 seconds.
-		expect(dec75Game?.clockSeconds).toBe(0);
-		expect(dec5Game?.clockSeconds).toBe(0);
+		// second, not 45 seconds. It reads as 1, because a fraction of a second is still a possession.
+		expect(dec75Game?.clockSeconds).toBe(1);
+		expect(dec5Game?.clockSeconds).toBe(1);
 	});
 
 	test('parses soccer prime-notation clock values (e.g. "85\'", "90\'+8\'")', async () => {
@@ -608,7 +608,7 @@ describe('apiClient', () => {
 		expect(calledUrls.every(url => url.includes('groups=50'))).toBe(true);
 	});
 
-	test('adds NCAA womens basketball groups=49 query parameter', async () => {
+	test('adds NCAA womens basketball groups=50 query parameter, since 49 answers empty', async () => {
 		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [makeEvent({
 			id: 'ncaaw-live',
 			state: 'live',
@@ -626,7 +626,7 @@ describe('apiClient', () => {
 
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls.length).toBeGreaterThan(1);
-		expect(calledUrls.every(url => url.includes('groups=49'))).toBe(true);
+		expect(calledUrls.every(url => url.includes('groups=50'))).toBe(true);
 		expect(calledUrls[0]).toContain('/basketball/womens-college-basketball/scoreboard');
 	});
 
@@ -2688,7 +2688,7 @@ describe('the polling lookahead', () => {
 
 		const second = mockEvents([]);
 		await second.fetchNextScheduledStart('ncaaw', { now });
-		expect(new URL(toUrl(second.fetchMock.mock.calls[0]![0] as RequestInfo)).searchParams.get('groups')).toBe('49');
+		expect(new URL(toUrl(second.fetchMock.mock.calls[0]![0] as RequestInfo)).searchParams.get('groups')).toBe('50');
 	});
 
 	// Null is what puts a league to sleep for half an hour, so a failed request must not produce it.

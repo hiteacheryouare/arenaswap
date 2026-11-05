@@ -59,6 +59,7 @@ let storageLocalGet: jest.Mock;
 let storageLocalSet: jest.Mock;
 let tabsQuery: jest.Mock;
 let tabsUpdate: jest.Mock;
+let notificationsCreate: jest.Mock;
 let tabsRemove: jest.Mock;
 let storageSessionSet: jest.Mock;
 let onMessageHandler!: (msg: unknown) => unknown;
@@ -129,6 +130,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 	storageLocalSet = jest.fn().mockResolvedValue(undefined);
 	tabsQuery = jest.fn().mockResolvedValue([]);
 	tabsUpdate = jest.fn().mockResolvedValue(undefined);
+	notificationsCreate = jest.fn().mockResolvedValue(undefined);
 	tabsRemove = jest.fn().mockResolvedValue(undefined);
 	storageSessionSet = jest.fn().mockResolvedValue(undefined);
 	onActivatedHandler = undefined;
@@ -171,7 +173,7 @@ const loadBackground = async (options: LoadOptions = {}) => {
 				addListener: (h: (tabId: number) => unknown) => { onRemovedHandler = h; },
 			},
 		},
-		notifications: { create: jest.fn().mockResolvedValue(undefined) },
+		notifications: { create: notificationsCreate },
 	};
 
 	fetchMock = (require('@arenaswap/core') as { fetchGamesWithLeagueLogos: jest.Mock }).fetchGamesWithLeagueLogos;
@@ -1017,6 +1019,23 @@ describe('manual tab activation', () => {
 		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
 	});
 
+	// A fixed id makes each switch notification replace the last rather than pile up.
+	test('posts every switch notification under the same id', async () => {
+		await loadBackground({
+			prefs: { ...switchingPrefs, cooldownSeconds: 0, notificationsEnabled: true },
+			tabRegistry: [{ gameId: 'thriller', tabId: 2 }],
+			fetchReturnValue: { games: [thriller], leagueLogos: {}, shedLeagues: [] },
+			openTabIds: [1, 2],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+
+		await activateTab(2);
+		await runFirstPoll();
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+		expect(notificationsCreate).toHaveBeenCalledWith('arenaswap-switch', expect.objectContaining({ type: 'basic' }));
+	});
+
 	test('switches when the cooldown is off and the evaluation lands in the same millisecond', async () => {
 		await loadBackground({
 			prefs: { ...switchingPrefs, cooldownSeconds: 0 },
@@ -1706,7 +1725,8 @@ describe('when a guide game actually ended', () => {
 		...game('mlb-final', 'post'),
 		league: 'mlb' as LeagueId,
 		sportType: 'baseball',
-		startTime: '2026-09-21T17:10:00Z',
+		// Relative, or the final ages out of end-time retention as the calendar moves on.
+		startTime: new Date(Date.now() - 6 * 60 * 60_000).toISOString(),
 	};
 
 	test('stamps a game with the poll that first saw it final', async () => {
@@ -1750,7 +1770,7 @@ describe('when a guide game actually ended', () => {
 		expect(durationFetch()).toHaveBeenCalledTimes(1);
 		expect(durationFetch().mock.calls[0]![0].id).toBe('mlb-final');
 		expect(runtimeSendMessage()).toHaveBeenCalledWith({ type: 'GUIDE_SLATE_UPDATED' });
-		expect((await guideSlate()).endTimes['mlb-final']).toBe(new Date('2026-09-21T17:10:00Z').getTime() + 196 * 60_000);
+		expect((await guideSlate()).endTimes['mlb-final']).toBe(new Date(mlbFinal.startTime!).getTime() + 196 * 60_000);
 	});
 
 	test('asks only once for a final whose summary has no duration', async () => {

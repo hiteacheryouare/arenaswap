@@ -270,6 +270,12 @@ describe('mainView empty states', () => {
 		cy.get('[data-testid="empty-no-leagues"]').should('not.exist');
 	});
 
+	it('leaves the quiet-night message to the error banner when the slate failed to load', () => {
+		cy.mount(<MainView {...defaultProps} hasError={true} />);
+		cy.get('.popup-error-banner').should('exist');
+		cy.get('[data-testid="empty-no-games"]').should('not.exist');
+	});
+
 	it('shows neither once a game arrives', () => {
 		cy.mount(<MainView {...defaultProps} games={[makeGame('g1')]} />);
 		cy.get('[data-testid="empty-no-games"]').should('not.exist');
