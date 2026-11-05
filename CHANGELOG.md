@@ -7,7 +7,7 @@
 
 ## ArenaSwap 2.3.0 — 2026-11-05
 
-Every workspace moves to 2.3.0, with release notes in `releases/2.3.0.md`. `mega`'s English-only settings article gains its first Holiday decorations row and the Pretend it is season picker, since dev's localized settings docs don't exist on this branch.
+Every workspace moves to 2.3.0, with release notes in `releases/2.3.0.md` titled Home for the Holidays. `mega`'s English-only settings article gains its first Holiday decorations row and the Pretend it is season picker, since dev's localized settings docs don't exist on this branch.
 
 ## Switching fixes from dev ride along in 2.3 — 2026-11-05
 
