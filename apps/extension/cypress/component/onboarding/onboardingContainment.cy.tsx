@@ -57,7 +57,7 @@ describe('onboarding containment', () => {
 		const walk = (remaining: number): void => {
 			cy.get(popupSurface).assertContained();
 			if (remaining === 0) return;
-			cy.get('body').then($body => {
+			cy.get('body').then(() => {
 				if (onComplete.called) return;
 				cy.get(primaryButton).last().click();
 				cy.wait(150);

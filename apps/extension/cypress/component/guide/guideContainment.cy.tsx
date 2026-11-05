@@ -28,6 +28,12 @@ const fullSlate = (): { games: Game[]; endTimes: Record<string, number> } => {
 	return { games, endTimes };
 };
 
+const storageArea = (values: Record<string, unknown>) => ({
+	get: () => Promise.resolve({ ...values }),
+	set: () => Promise.resolve(),
+	onChanged: { addListener: () => {}, removeListener: () => {} },
+});
+
 const mountGuide = (locale: shippedLocale, games: Game[], endTimes: Record<string, number> = {}, width = 1280) => {
 	cy.clock(now, ['Date', 'setInterval', 'clearInterval']);
 	cy.viewport(width, 800);
@@ -35,11 +41,6 @@ const mountGuide = (locale: shippedLocale, games: Game[], endTimes: Record<strin
 	const favorites = [createFavoriteTeamKey('ncaamh', worstTeams.longIsland.id), createFavoriteTeamKey('nba', worstTeams.celtics.id)];
 	const prefs = { ...createDefaultUserPreferences(), favoriteTeamIds: favorites };
 	const slate: GuideSlate = { games, leagueLogos: {}, monoLogos: {}, gameBoosts: {}, endTimes };
-	const storageArea = (values: Record<string, unknown>) => ({
-		get: () => Promise.resolve({ ...values }),
-		set: () => Promise.resolve(),
-		onChanged: { addListener: () => {}, removeListener: () => {} },
-	});
 	(window as unknown as Record<string, unknown>).browser = {
 		runtime: {
 			sendMessage: (message: { type: string }) => Promise.resolve(message.type === 'GET_GUIDE_SLATE' ? slate : undefined),

@@ -8,6 +8,16 @@ import { axisBounds, fillAxis, hourMarks } from '../entrypoints/guide/guideLayou
 const minute = 60_000;
 const hour = 60 * minute;
 
+const nfl = (status: Game['status']) => makeGame('nfl-401872988', {
+	league: 'nfl', sportType: 'football', status, startTime: '2026-10-11T17:00:00Z',
+});
+
+const laliga = (status: Game['status']) => makeGame('laliga-401882849', {
+	league: 'laliga', sportType: 'soccer', status, startTime: '2026-10-10T12:00:00Z',
+});
+
+const barsAt = (games: Game[], now: number) => games.map(game => buildBar(game, false, now)!);
+
 describe('a final the guide never saw end', () => {
 	// ncaaf 401864516 ended 2 h 40 min after kickoff, against a 210-minute estimate. Seen the moment
 	// the slate loaded, with nobody having watched it finish.
@@ -48,9 +58,6 @@ describe('a live game that has not started play', () => {
 });
 
 describe('the end the guide records for a final', () => {
-	const nfl = (status: Game['status']) => makeGame('nfl-401872988', {
-		league: 'nfl', sportType: 'football', status, startTime: '2026-10-11T17:00:00Z',
-	});
 	const kickoff = Date.parse('2026-10-11T17:00:00Z');
 
 	test('is not the moment it was found, when the browser was closed for the night', () => {
@@ -65,9 +72,6 @@ describe('the end the guide records for a final', () => {
 	// laliga 401882849, ATH at RAY, 2026-10-10: STATUS_SUSPENDED arrives as state 'post' at 31'
 	// of the first half, and fifteen minutes later the same game is back to 'in' at 28'.
 	test('moves to the real final when a suspended game resumes', () => {
-		const laliga = (status: Game['status']) => makeGame('laliga-401882849', {
-			league: 'laliga', sportType: 'soccer', status, startTime: '2026-10-10T12:00:00Z',
-		});
 		const start = Date.parse('2026-10-10T12:00:00Z');
 		const suspendedAt = 1791635652656;
 		const resumedAt = 1791636552815;
@@ -83,8 +87,6 @@ describe('the end the guide records for a final', () => {
 });
 
 describe('the axis', () => {
-	const barsAt = (games: Game[], now: number) => games.map(game => buildBar(game, false, now)!);
-
 	test.each(everyTimeEdge.filter(edge => edge.game.startTime))('holds every bar, with half an hour either side, when $label', ({ game, now, endedAt }) => {
 		const bar = buildBar(game, false, now, endedAt)!;
 		const { fromMs, toMs } = axisBounds([bar])!;

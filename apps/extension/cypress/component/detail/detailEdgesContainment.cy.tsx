@@ -14,7 +14,7 @@ const rankedSeries = (game: Game, id: string): Game => ({
 
 describe('detail hero edge containment', () => {
 	// mock-14 carries a canned playoff series ("BOS leads series 3-2") on top of its record.
-	for (const { label, game } of worstCaseGames.filter(({ game }) => ['basketball', 'hockey'].includes(game.sportType))) {
+	for (const { label, game } of worstCaseGames.filter(entry => ['basketball', 'hockey'].includes(entry.game.sportType))) {
 		inEveryLocale(`keeps a ranked ${label} with a series and timeouts inside the hero`, locale => {
 			mountDetailView(detailView(rankedSeries(game, 'mock-14')), locale);
 			cy.get(popupSurface).assertContained({ bleeds: detailBleeds });

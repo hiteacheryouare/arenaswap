@@ -95,6 +95,11 @@ describe('notices and headers containment', () => {
 	});
 });
 
+const SearchHarness = ({ initial }: { initial: string }) => {
+	const [query, setQuery] = useState<string | null>(initial);
+	return <UpcomingSearchTitle query={query} onQueryChange={setQuery} />;
+};
+
 describe('Up Next controls containment', () => {
 	inEveryLocale('keeps the day pager inside the popup with the longest date in the language', locale => {
 		mountInPopup(<UpcomingDayPager dayLabel={longestDayLabel(locale)} index={3} total={14} onSelect={() => {}} />, locale);
@@ -105,11 +110,6 @@ describe('Up Next controls containment', () => {
 		mountInPopup(<UpcomingSearchTitle query={null} onQueryChange={() => {}} />, locale);
 		cy.get(popupSurface).assertContained();
 	});
-
-	const SearchHarness = ({ initial }: { initial: string }) => {
-		const [query, setQuery] = useState<string | null>(initial);
-		return <UpcomingSearchTitle query={query} onQueryChange={setQuery} />;
-	};
 
 	inEveryLocale('keeps the open search field inside the popup', locale => {
 		mountInPopup(<SearchHarness initial='' />, locale);
