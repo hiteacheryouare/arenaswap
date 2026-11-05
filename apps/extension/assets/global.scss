@@ -183,7 +183,8 @@
 		font-weight: 700;
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
-		white-space: nowrap;
+		hyphens: auto;
+		text-wrap: balance;
 		padding: 0.35em 0.8em;
 		border-width: 2px;
 		border-style: solid;

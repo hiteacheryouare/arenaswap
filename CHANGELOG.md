@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Long speed signs hyphenate instead of running off the popup — 2026-11-04
+
+The Ludicrous Speed signs used to stay on one line, so German's LICHTGESCHWINDIGKEIT ran past the popup's edge and the overlay scrolled sideways. A sign now breaks a long word at a real hyphenation point in the reader's language, and every sign that fits stays on one line.
+
 ## The game detail bar names a long delay in full on hover — 2026-11-04
 
 The compact bar at the top of a scrolled game detail cut a long delay notice short with nothing on hover, and now carries the full status as its title. The detail hero, panels and edge cases now run through the safety net in every locale.
