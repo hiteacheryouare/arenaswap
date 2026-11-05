@@ -72,6 +72,8 @@ PowerScore is the scoring algorithm, published separately on npm and usable outs
 
 **Read `.agents/VOICE.md` before writing anything.** It defines the ArenaSwap voice and the 0 to 10 spectrum it slides along, from loading lines to formal statements: where each surface starts, what slides toward formal, what humor is fair game, and punctuation and emoji rules. Decide where on the spectrum a piece sits before you start, and say where you put it in your report.
 
+For release notes, also read `.agents/RELEASENOTES.md` and follow it over everything else here. It holds the shape, the rules Ryan keeps correcting, Transit samples and the 2.3 notes as the model.
+
 Then read the surrounding copy on the surface you're editing (`desc_long.md`, the site's `Hero.astro` and `Features.astro`, the blog) so the new lines sit next to the old ones without a seam.
 
 - **Earn every adjective.** Most of them are load-bearing for nobody.

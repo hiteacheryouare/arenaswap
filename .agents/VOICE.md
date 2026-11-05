@@ -162,7 +162,7 @@ These are spots on the line with examples, not categories. Copy that sits betwee
 - "Bribing the refs…"
 - "Our scouts are fetching the conference list…"
 
-**Around 2.** Release notes and social posts. The joke goes first and the fact comes right after it:
+**Around 2.** Release notes and social posts. The joke goes first and the fact comes right after it. Release notes have their own guide, `.agents/RELEASENOTES.md`, which wins over this section:
 
 - "Multiview boxes learned to share. Two boxes on the same streaming site now take turns loading, so each one gets its own game."
 

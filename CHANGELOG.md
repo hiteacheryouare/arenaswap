@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Release notes get their own guide — 2026-11-05
+
+`.agents/RELEASENOTES.md` sets how release notes are written: an opener built from this week's sports news, a joke in every line, no technical details, a themed fix list and a five-star sign-off. It carries the 2.3 notes as the model and four Transit samples, and `AGENTS.md`, `VOICE.md` and the content-writer agent point to it.
+
 ## Stockings, bunting and fireworks join the holiday decorations — 2026-11-05
 
 Football on Christmas Eve, NBA and NFL games on Christmas Day and soccer on Boxing Day hang a gold garland along the hero's bottom edge with a crested stocking per team hanging from it, filled by the score with coal for the loser at the final. MLB hangs three pleated fans of bunting for the home opener series and the postseason, and every run on July 4 (plus MLS goals, and Blue Jays runs on Canada Day) sets off a firework in the scorer's colours. The opener series is read off the home team's home record, now parsed as `Team.homeRecord`, because the scoreboard's season calendar starts at spring training.
