@@ -1,0 +1,26 @@
+---
+import DemoBrowser from './DemoBrowser.astro';
+import { celticsKnicks, flyersPenguins, leagueFavicon } from './demoGames';
+import { demoTranslator } from './demoStrings';
+import { currentLocale, useTranslations } from '../../i18n/ui';
+
+const locale = currentLocale(Astro.currentLocale);
+const demoText = demoTranslator(locale);
+const t = useTranslations(locale);
+
+const games = [celticsKnicks, flyersPenguins].map(entry => ({
+	title: entry.tabTitle,
+	favicon: leagueFavicon(entry.game.league),
+	sound: 'muted' as const,
+}));
+const tabs = [...games, { title: t('docDemos.standbyTab'), icon: 'bi-tv', sound: 'audible' as const }];
+---
+<div class='doc-demo-stack'>
+	<DemoBrowser tabs={tabs} active={tabs.length - 1} host='youtube.com' path='/watch' />
+	<div class='doc-demo-popup doc-demo-panel'>
+		<div class='alert popup-notice d-flex align-items-center gap-3 mb-0'>
+			<i class='bi bi-broadcast popup-notice-icon'></i>
+			<span>{demoText('main.onStandbyStream')}</span>
+		</div>
+	</div>
+</div>

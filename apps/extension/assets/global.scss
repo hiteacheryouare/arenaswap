@@ -1422,22 +1422,15 @@
 	.game-card-reveal-crest.is-named .crest {
 		--as-avatar-bg:    var(--reveal-surface);
 		--as-avatar-color: var(--reveal-ink);
-	}
-
-	.game-card-reveal-crest.is-named .crest-fallback {
-		background-image: linear-gradient(rgba(255, 255, 255, 0.16) 0 0);
-		font-size:        0.7rem;
-		animation:        cardRevealCrestDisc calc(3400ms * var(--reveal-rate)) linear calc(var(--reveal-spine) - var(--reveal-late, 0ms)) both;
+		--crest-wash:      linear-gradient(rgba(255, 255, 255, 0.16) 0 0);
+		animation:         cardRevealCrestDisc calc(3400ms * var(--reveal-rate)) linear calc(var(--reveal-spine) - var(--reveal-late, 0ms)) both;
 	}
 
 	/* A finished game lands on the plain plate card, which draws its placeholder light. */
 	.game-card-reveal.is-final .game-card-reveal-crest.is-named .crest {
 		--as-avatar-bg:    #f8f9fa;
 		--as-avatar-color: #495057;
-	}
-
-	.game-card-reveal.is-final .game-card-reveal-crest.is-named .crest-fallback {
-		background-image: none;
+		--crest-wash:      none;
 	}
 
 	/* The card's own crest waits under the graphic until the overlay has finished walking onto it, and

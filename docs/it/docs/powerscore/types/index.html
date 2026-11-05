@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Every field on Game, ScoringContext, ScoreOptions, PowerScore, and the mode and config types, which ones are optional, and what happens when an optional one is missing."><meta name="theme-color" content="#000000"><script>// Inlined into the head as a plain blocking script, so a light page never paints dark for a frame.
+<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Ogni campo di Game, ScoringContext, ScoreOptions, PowerScore e dei tipi di modalità e configurazione, quali sono facoltativi e cosa succede quando uno facoltativo manca."><meta name="theme-color" content="#000000"><script>// Inlined into the head as a plain blocking script, so a light page never paints dark for a frame.
 // Nothing stored means the visitor never chose, and the OS decides.
 (() => {
 	const preference = localStorage.getItem('arenaswap.theme');
@@ -7,7 +7,7 @@
 	document.documentElement.dataset.bsTheme = light ? 'light' : 'dark';
 	document.querySelector('meta[name="theme-color"]')?.setAttribute('content', light ? '#ffffff' : '#000000');
 })();
-</script><link rel="canonical" href="https://hiteacheryouare.github.io/arenaswap/docs/powerscore/types/"><meta property="og:title" content="PowerScore TypeScript types | ArenaSwap"><meta property="og:description" content="Every field on Game, ScoringContext, ScoreOptions, PowerScore, and the mode and config types, which ones are optional, and what happens when an optional one is missing."><meta property="og:type" content="article"><meta property="og:url" content="https://hiteacheryouare.github.io/arenaswap/docs/powerscore/types/"><meta property="og:site_name" content="ArenaSwap"><meta property="og:locale" content="it_IT"><meta property="og:image" content="https://hiteacheryouare.github.io/arenaswap/images/social-card.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="PowerScore TypeScript types | ArenaSwap"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://hiteacheryouare.github.io/arenaswap/images/social-card.png"><title>PowerScore TypeScript types | ArenaSwap</title><link rel="icon" href="/arenaswap/images/128.png" type="image/png" sizes="128x128"><link rel="apple-touch-icon" href="/arenaswap/images/apple-touch-icon.png"><link rel="alternate" type="application/rss+xml" title="Note di rilascio di ArenaSwap" href="/arenaswap/releases/rss.xml"><noscript><style>.reveal { opacity: 1 !important; transform: none !important; }</style></noscript><script>(function(){const chromeUrl = "https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee";
+</script><link rel="canonical" href="https://hiteacheryouare.github.io/arenaswap/it/docs/powerscore/types/"><link rel="alternate" hreflang="en" href="https://hiteacheryouare.github.io/arenaswap/docs/powerscore/types/"><link rel="alternate" hreflang="de" href="https://hiteacheryouare.github.io/arenaswap/de/docs/powerscore/types/"><link rel="alternate" hreflang="es" href="https://hiteacheryouare.github.io/arenaswap/es/docs/powerscore/types/"><link rel="alternate" hreflang="fil" href="https://hiteacheryouare.github.io/arenaswap/fil/docs/powerscore/types/"><link rel="alternate" hreflang="fr" href="https://hiteacheryouare.github.io/arenaswap/fr/docs/powerscore/types/"><link rel="alternate" hreflang="it" href="https://hiteacheryouare.github.io/arenaswap/it/docs/powerscore/types/"><link rel="alternate" hreflang="ja" href="https://hiteacheryouare.github.io/arenaswap/ja/docs/powerscore/types/"><link rel="alternate" hreflang="ko" href="https://hiteacheryouare.github.io/arenaswap/ko/docs/powerscore/types/"><link rel="alternate" hreflang="pt-BR" href="https://hiteacheryouare.github.io/arenaswap/pt-BR/docs/powerscore/types/"><link rel="alternate" hreflang="pt-PT" href="https://hiteacheryouare.github.io/arenaswap/pt-PT/docs/powerscore/types/"><link rel="alternate" hreflang="zh-CN" href="https://hiteacheryouare.github.io/arenaswap/zh-CN/docs/powerscore/types/"><link rel="alternate" hreflang="zh-TW" href="https://hiteacheryouare.github.io/arenaswap/zh-TW/docs/powerscore/types/"><link rel="alternate" hreflang="x-default" href="https://hiteacheryouare.github.io/arenaswap/docs/powerscore/types/"><meta property="og:title" content="I tipi TypeScript di PowerScore | ArenaSwap"><meta property="og:description" content="Ogni campo di Game, ScoringContext, ScoreOptions, PowerScore e dei tipi di modalità e configurazione, quali sono facoltativi e cosa succede quando uno facoltativo manca."><meta property="og:type" content="article"><meta property="og:url" content="https://hiteacheryouare.github.io/arenaswap/it/docs/powerscore/types/"><meta property="og:site_name" content="ArenaSwap"><meta property="og:locale" content="it_IT"><meta property="og:image" content="https://hiteacheryouare.github.io/arenaswap/images/social-card.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="I tipi TypeScript di PowerScore | ArenaSwap"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://hiteacheryouare.github.io/arenaswap/images/social-card.png"><title>I tipi TypeScript di PowerScore | ArenaSwap</title><link rel="icon" href="/arenaswap/images/128.png" type="image/png" sizes="128x128"><link rel="apple-touch-icon" href="/arenaswap/images/apple-touch-icon.png"><link rel="alternate" type="application/rss+xml" title="Note di rilascio di ArenaSwap" href="/arenaswap/releases/rss.xml"><noscript><style>.reveal { opacity: 1 !important; transform: none !important; }</style></noscript><script>(function(){const chromeUrl = "https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee";
 const firefoxUrl = "https://addons.mozilla.org/addon/arenaswap/";
 const edgeUrl = "https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba";
 const addToTemplate = "Aggiungi a {browser}";
@@ -50,133 +50,133 @@ const addToTemplate = "Aggiungi a {browser}";
 				},
 			};
 		})();
-	})();</script><link rel="stylesheet" href="/arenaswap/_astro/Shell.ve-yTtRW.css"></head><body><a class="visually-hidden-focusable skip-link" href="#main">Vai al contenuto</a><header id="site-header" class="site-header"><nav class="site-nav"><div class="container"><div class="nav-row"><a class="nav-logo" href="/arenaswap/it/"><svg viewBox="0 0 1790 471" style="aspect-ratio:1790 / 471;color:var(--as-wordmark-ink, #ffffff)" role="img" aria-label="ArenaSwap"><defs><linearGradient id="r1R0-fade-aren" data-wm="fade-aren" gradientUnits="userSpaceOnUse" x1="718.6" x2="748.6" y1="0" y2="0"><stop offset="0" stop-color="#ffffff"></stop><stop offset="1" stop-color="#000000"></stop></linearGradient><linearGradient id="r1R0-fade-wap" data-wm="fade-wap" gradientUnits="userSpaceOnUse" x1="1725" x2="1755" y1="0" y2="0"><stop offset="0" stop-color="#ffffff"></stop><stop offset="1" stop-color="#000000"></stop></linearGradient><mask id="r1R0-mask-aren" maskUnits="userSpaceOnUse" x="-400" y="-150" width="3400" height="800"><rect x="-400" y="-150" width="3400" height="800" fill="url(#r1R0-fade-aren)"></rect></mask><mask id="r1R0-mask-wap" maskUnits="userSpaceOnUse" x="-400" y="-150" width="3400" height="800"><rect x="-400" y="-150" width="3400" height="800" fill="url(#r1R0-fade-wap)"></rect></mask></defs><g mask="url(#r1R0-mask-aren)"><path d="M41,63c11.1,0,31.68,4.04,41.72,-0.6c3.25,-1.5,4.04,-6.58,5.84,-9.39C91.56,48.31,96.04,44.51,101,42C118.42,33.15,143.59,36.66,153.45,55C157.15,61.89,157,69.43,157,77C125.45,77,85.57,71.3,58,90.09C24.45,112.96,32.35,165.75,70,179.14c21.09,7.5,49.8,8.02,69,-4.89c8.72,-5.86,13.31,-14.73,21,-21.25l4,27h38V87C202,64.55,201.49,41.29,184.96,24C145.64,-17.13,43.87,-3.62,41,63M156,105c-1.13,8.74,-3.86,17.45,-8.46,25c-10.76,17.67,-41.57,28.73,-58.35,11.81C76.43,128.95,86.89,110.37,102,106.48C108.3,104.86,114.55,105,121,105h35M273,37h-1L268,5h-40v175h44c0,-27.14,-1.74,-55,0.83,-82C274.41,81.38,276.63,65.98,292,55.97C304.9,47.56,321.26,48,336,48V1c-25.2,1.08,-51.53,11.86,-63,36M514,125c-13.03,0,-31.32,-3.36,-43.79,0.32c-3.63,1.07,-5.39,5.95,-7.68,8.64C458.68,138.49,453.53,142.34,448,144.54C418.88,156.07,386.26,134.08,386,103H519C519,70.31,515.01,39.89,487,18.5C432.72,-22.94,348.83,11.47,342.17,80C338.95,113.16,348.05,146.68,376,167.24C422.13,201.17,498.13,183.01,514,125M474,76H416L386,75C389.8,61.52,395.07,49.89,408,42.9C435.47,28.04,472.57,42.84,474,76M583,34L580,5h-40v175h45V108C585,92.36,583.8,76.31,591.26,62C602.5,40.44,637.13,28.3,655.53,49.09C667.26,62.34,667,80.41,667,97v83h44V99C711,80.11,712.15,61.17,705.92,43C693.17,5.81,647.78,-9.53,613,7.26C599.23,13.91,593.4,23.93,583,34" fill="currentColor"></path></g><g mask="url(#r1R0-mask-wap)"><path data-wm="wap" d="M1070,218l15.98,57L1120,392h33c3.6,0,10.26,1.26,13.3,-1.03c6.46,-4.87,8.65,-26.23,10.84,-33.97c8.91,-31.44,20.24,-63.01,26.86,-95h1c7.02,30.61,17.29,60.78,25.86,91c2.81,9.93,4.52,29.62,11.28,37.4C1244.42,393.03,1249.91,392,1253,392h25c2.96,0,7.78,0.87,10.3,-1.03c3.18,-2.4,3.81,-9.36,4.84,-12.97c3.16,-11.02,6.58,-21.97,9.72,-33c12.03,-42.25,27.32,-84.18,37.14,-127h-31c-3.34,0,-9.47,-1.15,-12.27,1.03c-5.92,4.6,-6.82,23.85,-8.6,30.97c-7.52,30.11,-17.99,61.26,-22.13,92c-7.18,-7.57,-8.65,-25,-11.42,-35c-8.07,-29.02,-20.19,-59.22,-24.58,-89h-36c-3.72,0,-10.29,-1.24,-13.49,1.03c-2.78,1.97,-3.1,6.95,-3.94,9.97c-2.23,8.01,-4.55,15.98,-6.73,24c-7.91,29.2,-13.62,62.37,-25.85,90L1124.35,262L1114,218h-44M1342,275h31c3.41,0,9.39,1.13,12.3,-1.03c5.9,-4.37,7.77,-13.37,14.7,-18.06c14.75,-9.97,37.74,-7.77,49.91,5.1c4.29,4.53,13.3,21.33,7.48,27.38c-2.35,2.45,-7.33,1.6,-10.38,1.6h-28c-38.08,0,-83.03,10.72,-80.96,58c2.59,58.99,99.09,65.08,121.96,17l5,27h38v-91c0,-21.49,0.55,-43.12,-13.52,-61c-26.57,-33.76,-91.47,-35.11,-123.48,-8.67c-14.29,11.81,-20.66,25.93,-24,43.67M1457,317c-0.35,8.21,-2.95,15.78,-6.78,23c-10.17,19.15,-42.38,32.66,-60.01,13.9c-12.96,-13.8,-0.86,-31.81,14.79,-35.23c5.94,-1.29,11.95,-1.67,18,-1.67zM1575,243l-6,-25h-40v252h45V369c14.12,16.17,28.72,24.52,50,27.28c16.31,2.12,34.37,-1.67,49,-9.04c58.08,-29.25,60.62,-121.74,9,-158.2C1651.92,207.8,1594.64,205.15,1575,243M1615,253.29c7.93,-1.03,17.39,-0.77,25,1.81c51.43,17.43,39.93,96.23,-12,102.61c-63.67,7.82,-75.74,-96.25,-13,-104.42" fill="currentColor"></path></g><path data-wm="a" d="M737,63c12.09,0,29.22,3.17,40.78,-0.32c3.74,-1.13,4.84,-6.69,6.69,-9.68C787.3,48.44,791.33,44.95,796,42.35C824.32,26.6,853,46.62,853,77c-30.28,0,-68.86,-5.55,-96,10.93c-36.21,21.98,-31.12,77.05,9,91.38c22.4,8,51.18,7.25,71,-6.74c7.74,-5.46,11.92,-13.71,19,-19.56c0.11,5.42,0.15,22.47,4.6,25.97C863.06,180.91,868.08,180,871,180h27V89C898,65.01,897.03,40.09,878.96,22.04C839.65,-17.22,738.35,-2.26,737,63M852,105c-1.79,9.23,-4.49,17.92,-9.47,26c-10.58,17.17,-41.34,27.12,-57.43,10.9C772.93,129.62,781.53,110.24,797,106.5C803.29,104.98,809.58,105,816,105h36" fill="currentColor"></path><path data-wm="s" d="M914,338c2.91,11.79,6.18,22.25,13.9,31.96c18.42,23.16,51.51,28.34,79.1,26.13c30.63,-2.46,62.66,-21.6,61.74,-56.09c-1.14,-42.89,-44.23,-46.03,-76.74,-55.72c-9.91,-2.95,-34.12,-9.18,-26.54,-24.28c7.62,-15.18,33.36,-15.15,45.53,-6.21c4.24,3.11,6.3,11.5,11.15,12.89c11.48,3.29,27.91,0.32,39.87,0.32c-8.03,-62.15,-113.18,-75.17,-137.66,-18c-2.6,6.08,-3.54,12.43,-3.63,19c-0.49,36.92,41.06,44.6,69.29,51.63c10.53,2.62,24.79,4.68,31.3,14.38c6.19,9.22,-0.43,20.52,-9.3,25c-11.55,5.84,-29.75,4.28,-40,-3.53c-5.66,-4.32,-8.19,-12.8,-13.5,-16.44C955.42,336.91,949.56,338,946,338h-32" fill="currentColor"></path><ellipse data-wm="dot" cx="1761.1208" cy="368.38882" rx="27.602106" ry="26.288622" fill="#ff751f" stroke="#ff751f" stroke-width="1.13729"></ellipse><line data-wm="bar" x1="925" x2="1691" y1="115" y2="115" stroke="currentColor" stroke-width="30" stroke-linecap="round"></line><path data-wm="head" d="M1691,130L1691,132L1690.9,133.9L1690.8,135.9L1690.6,137.9L1690.5,139.9L1690.4,141.8L1690.2,143.8L1690.1,145.8L1690.1,147.7L1690,149.7L1690,151.7L1690.1,153.7L1690.2,155.6L1690.4,157.6L1690.6,159.6L1691,161.5L1691.5,163.4L1692.1,165.3L1692.9,167.1L1693.9,168.8L1695.1,170.3L1696.6,171.6L1698.2,172.7L1700,173.6L1701.9,174.1L1703.9,174.4L1705.8,174.4L1707.8,174.1L1709.7,173.6L1711.5,173L1713.3,172.1L1715.1,171.2L1716.8,170.2L1718.4,169L1720,167.9L1721.6,166.7L1723.2,165.5L1724.7,164.4L1726.3,163.2L1727.9,162L1729.5,160.8L1731.1,159.6L1732.6,158.4L1734.2,157.3L1735.8,156.1L1737.4,154.9L1738.9,153.7L1740.5,152.5L1742.1,151.3L1743.7,150.1L1745.3,149L1746.8,147.8L1748.4,146.6L1750,145.4L1751.6,144.2L1753.1,143L1754.7,141.8L1756.3,140.7L1757.9,139.5L1759.5,138.3L1761,137.1L1762.6,135.9L1764.2,134.7L1765.8,133.6L1767.4,132.4L1769,131.2L1770.6,130.1L1772.1,128.9L1773.6,127.6L1775,126.2L1776.4,124.7L1777.5,123.2L1778.5,121.5L1779.3,119.6L1779.7,117.7L1779.9,115.8L1779.9,113.8L1779.6,111.8L1779,109.9L1778.2,108.1L1777.2,106.5L1776,104.9L1774.6,103.5L1773.2,102.1L1771.7,100.8L1770.1,99.6L1768.5,98.5L1766.9,97.3L1765.3,96.1L1763.8,94.9L1762.2,93.8L1760.6,92.6L1759,91.4L1757.4,90.2L1755.9,89L1754.3,87.8L1752.7,86.6L1751.1,85.4L1749.6,84.3L1748,83.1L1746.4,81.9L1744.8,80.7L1743.3,79.5L1741.7,78.3L1740.1,77.1L1738.5,75.9L1737,74.8L1735.4,73.6L1733.8,72.4L1732.2,71.2L1730.6,70L1729.1,68.8L1727.5,67.7L1725.9,66.5L1724.3,65.3L1722.7,64.1L1721.1,63L1719.5,61.8L1718,60.6L1716.3,59.5L1714.6,58.5L1712.9,57.6L1711.1,56.8L1709.2,56.1L1707.3,55.7L1705.3,55.4L1703.4,55.5L1701.4,55.8L1699.6,56.5L1697.8,57.4L1696.2,58.6L1694.8,60L1693.7,61.6L1692.7,63.3L1692,65.1L1691.4,67L1690.9,68.9L1690.6,70.9L1690.3,72.8L1690.2,74.8L1690.1,76.7L1690,78.7L1690,80.7L1690.1,82.7L1690.2,84.6L1690.3,86.6L1690.4,88.6L1690.5,90.5L1690.7,92.5L1690.8,94.5L1690.9,96.5L1691,98.4L1691,100.4L1691,102.4L1691,104.3L1691,106.3L1691,108.3L1691,110.3L1691,112.2L1691,114.2L1691,116.2L1691,118.2L1691,120.1L1691,122.1L1691,124.1L1691,126.1L1691,128Z" fill="currentColor"></path><path data-wm="chevron" d="M60,318L61.9,316.9L63.6,315.6L65.2,314.1L66.5,312.4L67.5,310.4L68.2,308.4L68.5,306.2L68.4,304L68,301.9L67.3,299.8L66.3,297.9L65.1,296L63.8,294.3L62.3,292.7L60.7,291.3L59.1,290L61,289L62.9,287.9L64.8,286.9L66.7,285.7L68.6,284.6L70.4,283.4L72.2,282.2L74,281L75.8,279.7L77.5,278.4L79.2,277L80.9,275.6L82.5,274.1L84,272.6L85.5,271L86.9,269.3L88.1,267.4L89,265.5L89.6,263.4L90,261.2L90,259.1L89.7,256.9L89.2,254.8L88.3,252.8L87.2,250.9L85.8,249.3L84.1,247.9L82.2,246.8L80.2,246L78.1,245.5L75.9,245.3L73.7,245.5L71.6,246L69.5,246.8L67.6,247.7L65.7,248.8L63.8,249.9L62,251.2L60.3,252.4L58.5,253.7L56.8,255.1L55,256.4L53.3,257.6L51.5,258.9L49.7,260.2L48,261.5L46.2,262.8L44.4,264L42.6,265.3L40.9,266.6L39.1,267.8L37.3,269.1L35.5,270.4L33.8,271.6L32,272.9L30.2,274.2L28.5,275.5L26.7,276.8L25,278.1L23.2,279.4L21.5,280.7L19.8,282L18,283.4L16.3,284.7L14.6,286.1L12.9,287.5L11.3,288.9L9.6,290.3L7.9,291.7L6.3,293.2L4.8,294.8L3.6,296.5L2.5,298.5L1.8,300.5L1.3,302.6L1.1,304.8L1.3,307L1.8,309.1L2.6,311.1L3.7,313L5,314.8L6.4,316.4L8,317.9L9.6,319.3L11.4,320.7L13.1,322L14.9,323.2L16.7,324.5L18.5,325.8L20.2,327L22,328.4L23.7,329.7L25.4,331.1L27,332.5L28.7,333.9L30.4,335.3L32,336.7L33.7,338.1L35.4,339.5L37,341L38.7,342.4L40.3,343.8L42,345.2L43.7,346.5L45.4,347.9L47.1,349.3L48.8,350.6L50.6,351.9L52.3,353.2L54.1,354.5L55.9,355.7L57.8,356.9L59.6,358L61.5,359.1L63.4,360.1L65.4,361.1L67.4,362L69.4,362.8L71.5,363.5L73.6,363.9L75.8,364L78,363.7L80.1,363.2L82.1,362.3L84,361.2L85.7,359.9L87.1,358.3L88.4,356.5L89.3,354.5L89.9,352.4L90.2,350.3L90.1,348.1L89.7,345.9L89,343.9L88,342L86.7,340.2L85.4,338.5L83.8,336.9L82.2,335.4L80.5,334.1L78.8,332.7L77,331.5L75.2,330.3L73.4,329.1L71.6,327.9L69.8,326.6L68,325.4L66.2,324.1L64.5,322.7L62.9,321.2L61.4,319.7Z" fill="currentColor"></path><line data-wm="dashes" x1="115.8" x2="892.7" y1="304.75" y2="304.75" stroke="currentColor" stroke-width="31.8" stroke-linecap="round" stroke-dasharray="56.9 63.1"></line></svg></a><ul class="nav-desktop-links"><li><a href="/arenaswap/it/">Home</a></li><li><a href="/arenaswap/it/powerscore/">PowerScore</a></li><li><a href="/arenaswap/it/docs/" aria-current="true">Docs</a></li><li><a href="/arenaswap/it/releases/">Release</a></li><li><a href="/arenaswap/it/faq/">FAQ</a></li></ul><div class="nav-end"><button type="button" class="theme-toggle" data-theme-toggle data-modes="[{&quot;value&quot;:&quot;system&quot;,&quot;icon&quot;:&quot;bi-circle-half&quot;,&quot;label&quot;:&quot;Tema: Come il sistema&quot;},{&quot;value&quot;:&quot;light&quot;,&quot;icon&quot;:&quot;bi-sun&quot;,&quot;label&quot;:&quot;Tema: Chiaro&quot;},{&quot;value&quot;:&quot;dark&quot;,&quot;icon&quot;:&quot;bi-moon&quot;,&quot;label&quot;:&quot;Tema: Scuro&quot;}]" aria-label="Tema: Come il sistema" title="Tema: Come il sistema"><i class="bi bi-circle-half" aria-hidden="true"></i></button><script type="module">/*! ArenaSwap v3.0.0 Copyright (c) 2026 Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */
-var e=`arenaswap.theme`,t=`(prefers-color-scheme: light)`,n={light:`#ffffff`,dark:`#000000`},r=()=>{let t=localStorage.getItem(e);return t===`light`||t===`dark`?t:`system`},i=(e,t)=>e===`system`?t?`light`:`dark`:e,a=(e,t)=>{let n=t?`light`:`dark`,r=t?`dark`:`light`;return e===`system`?r:e===r?n:`system`},o=()=>matchMedia(t).matches,s=e=>{let t=i(e,o());document.documentElement.dataset.bsTheme=t,document.querySelector(`meta[name="theme-color"]`)?.setAttribute(`content`,n[t])},c=e=>{matchMedia(t).addEventListener(`change`,e)},l=[...document.querySelectorAll(`[data-theme-toggle]`)],u=e=>{s(e),l.forEach(t=>{let n=JSON.parse(t.dataset.modes??`[]`),r=n.find(t=>t.value===e)??n[0];t.setAttribute(`aria-label`,r.label),t.title=r.label,t.querySelector(`i`).className=`bi ${r.icon}`})};l.forEach(t=>{t.addEventListener(`click`,()=>{let t=a(r(),o());localStorage.setItem(e,t),u(t)})}),c(()=>u(r())),window.addEventListener(`storage`,e=>{e.key===`arenaswap.theme`&&u(r())}),u(r());</script><div class="lang-switch"><button class="lang-switch-trigger" type="button" data-bs-toggle="menu" data-bs-display="static" data-bs-placement="bottom-end" aria-expanded="false" aria-label="Scegli una lingua"><span class="lang-switch-flag" aria-hidden="true">🇮🇹</span><span class="lang-switch-current">Italiano</span><i class="bi bi-chevron-down lang-switch-caret" aria-hidden="true"></i></button><div class="menu lang-switch-menu"><a class="menu-item" href="/arenaswap/docs/powerscore/types/" hreflang="en" lang="en"><span class="lang-switch-flag" aria-hidden="true">🇺🇸</span>English</a><a class="menu-item" href="/arenaswap/de/docs/powerscore/types/" hreflang="de" lang="de"><span class="lang-switch-flag" aria-hidden="true">🇩🇪</span>Deutsch</a><a class="menu-item" href="/arenaswap/es/docs/powerscore/types/" hreflang="es" lang="es"><span class="lang-switch-flag" aria-hidden="true">🇲🇽</span>Español</a><a class="menu-item" href="/arenaswap/fil/docs/powerscore/types/" hreflang="fil" lang="fil"><span class="lang-switch-flag" aria-hidden="true">🇵🇭</span>Filipino</a><a class="menu-item" href="/arenaswap/fr/docs/powerscore/types/" hreflang="fr" lang="fr"><span class="lang-switch-flag" aria-hidden="true">🇫🇷</span>Français</a><a class="menu-item active" href="/arenaswap/it/docs/powerscore/types/" hreflang="it" lang="it" aria-current="true"><span class="lang-switch-flag" aria-hidden="true">🇮🇹</span>Italiano</a><a class="menu-item" href="/arenaswap/ja/docs/powerscore/types/" hreflang="ja" lang="ja"><span class="lang-switch-flag" aria-hidden="true">🇯🇵</span>日本語</a><a class="menu-item" href="/arenaswap/ko/docs/powerscore/types/" hreflang="ko" lang="ko"><span class="lang-switch-flag" aria-hidden="true">🇰🇷</span>한국어</a><a class="menu-item" href="/arenaswap/pt-BR/docs/powerscore/types/" hreflang="pt-BR" lang="pt-BR"><span class="lang-switch-flag" aria-hidden="true">🇧🇷</span>Português (Brasil)</a><a class="menu-item" href="/arenaswap/pt-PT/docs/powerscore/types/" hreflang="pt-PT" lang="pt-PT"><span class="lang-switch-flag" aria-hidden="true">🇵🇹</span>Português (Portugal)</a><a class="menu-item" href="/arenaswap/zh-CN/docs/powerscore/types/" hreflang="zh-CN" lang="zh-CN"><span class="lang-switch-flag" aria-hidden="true">🇨🇳</span>简体中文</a><a class="menu-item" href="/arenaswap/zh-TW/docs/powerscore/types/" hreflang="zh-TW" lang="zh-TW"><span class="lang-switch-flag" aria-hidden="true">🇹🇼</span>繁體中文</a></div></div><a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee" class="btn btn-cta nav-cta-desktop" data-install-cta><i class="bi bi-browser-chrome me-3" data-install-icon></i><span data-install-label>Aggiungi a Chrome</span></a><script>window.arenaSwapInstall?.applyCta(document.currentScript.previousElementSibling);</script><button type="button" class="nav-hamburger" id="nav-toggle" aria-label="Apri il menu" aria-controls="nav-drawer" aria-expanded="false" data-bs-toggle="drawer" data-bs-target="#nav-drawer"><span class="ham-bar"></span><span class="ham-bar"></span><span class="ham-bar"></span></button></div></div></div></nav><dialog class="drawer drawer-top nav-drawer" id="nav-drawer" aria-label="Menu"><div class="drawer-body"><ul><li><a href="/arenaswap/it/">Home</a></li><li><a href="/arenaswap/it/powerscore/">PowerScore</a></li><li><a href="/arenaswap/it/docs/" aria-current="true">Docs</a></li><li><a href="/arenaswap/it/releases/">Release</a></li><li><a href="/arenaswap/it/faq/">FAQ</a></li><li><a href="/arenaswap/it/legal/">Note legali</a></li></ul><div class="nav-drawer-cta"><a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee" class="btn btn-cta d-block text-center" data-install-cta><i class="bi bi-browser-chrome me-3" data-install-icon></i><span data-install-label>Aggiungi a Chrome</span></a><script>window.arenaSwapInstall?.applyCta(document.currentScript.previousElementSibling);</script></div><div class="lang-switch-list"><p class="lang-switch-heading">Lingua</p><ul><li><a href="/arenaswap/docs/powerscore/types/" hreflang="en" lang="en"><span class="lang-switch-flag" aria-hidden="true">🇺🇸</span>English</a></li><li><a href="/arenaswap/de/docs/powerscore/types/" hreflang="de" lang="de"><span class="lang-switch-flag" aria-hidden="true">🇩🇪</span>Deutsch</a></li><li><a href="/arenaswap/es/docs/powerscore/types/" hreflang="es" lang="es"><span class="lang-switch-flag" aria-hidden="true">🇲🇽</span>Español</a></li><li><a href="/arenaswap/fil/docs/powerscore/types/" hreflang="fil" lang="fil"><span class="lang-switch-flag" aria-hidden="true">🇵🇭</span>Filipino</a></li><li><a href="/arenaswap/fr/docs/powerscore/types/" hreflang="fr" lang="fr"><span class="lang-switch-flag" aria-hidden="true">🇫🇷</span>Français</a></li><li><a href="/arenaswap/it/docs/powerscore/types/" hreflang="it" lang="it" aria-current="true"><span class="lang-switch-flag" aria-hidden="true">🇮🇹</span>Italiano</a></li><li><a href="/arenaswap/ja/docs/powerscore/types/" hreflang="ja" lang="ja"><span class="lang-switch-flag" aria-hidden="true">🇯🇵</span>日本語</a></li><li><a href="/arenaswap/ko/docs/powerscore/types/" hreflang="ko" lang="ko"><span class="lang-switch-flag" aria-hidden="true">🇰🇷</span>한국어</a></li><li><a href="/arenaswap/pt-BR/docs/powerscore/types/" hreflang="pt-BR" lang="pt-BR"><span class="lang-switch-flag" aria-hidden="true">🇧🇷</span>Português (Brasil)</a></li><li><a href="/arenaswap/pt-PT/docs/powerscore/types/" hreflang="pt-PT" lang="pt-PT"><span class="lang-switch-flag" aria-hidden="true">🇵🇹</span>Português (Portugal)</a></li><li><a href="/arenaswap/zh-CN/docs/powerscore/types/" hreflang="zh-CN" lang="zh-CN"><span class="lang-switch-flag" aria-hidden="true">🇨🇳</span>简体中文</a></li><li><a href="/arenaswap/zh-TW/docs/powerscore/types/" hreflang="zh-TW" lang="zh-TW"><span class="lang-switch-flag" aria-hidden="true">🇹🇼</span>繁體中文</a></li></ul></div></div></dialog></header><script type="module" src="/arenaswap/_astro/Nav.astro_astro_type_script_index_0_lang.CZqkKHzF.js"></script><main id="main" tabindex="-1"><div class="container"><div class="page-head" lang="en"><h1 class="page-title docs-title">PowerScore TypeScript types</h1><p class="page-lede">Every field on Game, ScoringContext, ScoreOptions, PowerScore, and the mode and config types, which ones are optional, and what happens when an optional one is missing.</p></div><aside class="alert theme-accent untranslated-notice" role="note"><p class="alert-heading untranslated-notice-heading">Questa pagina non è ancora stata tradotta.</p><p class="untranslated-notice-body">La documentazione e le note di rilascio sono scritte in inglese. Tutto il resto del sito è disponibile nella tua lingua.</p></aside><div class="reading-shell"><nav class="reading-nav docs-nav" aria-label="Documentazione"><h2><a href="/arenaswap/it/docs/extension/">L&#39;estensione</a></h2><ul lang="en"><li><a href="/arenaswap/it/docs/extension/getting-started/">Getting started</a></li><li><a href="/arenaswap/it/docs/extension/watching-multiple-games/">Multiple games</a></li><li><a href="/arenaswap/it/docs/extension/switching-and-sensitivity/">Switching</a></li><li><a href="/arenaswap/it/docs/extension/favorite-teams/">Favorite teams</a></li><li><a href="/arenaswap/it/docs/extension/standby-stream/">Standby Stream</a></li><li><a href="/arenaswap/it/docs/extension/scoring-modes/">Scoring modes</a></li><li><a href="/arenaswap/it/docs/extension/settings/">Settings</a></li><li><a href="/arenaswap/it/docs/extension/demo-mode/">Demo mode</a></li><li><a href="/arenaswap/it/docs/extension/troubleshooting/">Troubleshooting</a></li><li><a href="/arenaswap/it/docs/extension/multiview/">Multiview</a></li><li><a href="/arenaswap/it/docs/extension/boss-button/">Boss button</a></li><li><a href="/arenaswap/it/docs/extension/profiles-and-backup/">Profiles and backup</a></li><li><a href="/arenaswap/it/docs/extension/guide/">The Guide</a></li><li><a href="/arenaswap/it/docs/extension/game-details/">Game details</a></li></ul><h2><a href="/arenaswap/it/docs/powerscore/">PowerScore</a></h2><ul lang="en"><li><a href="/arenaswap/it/docs/powerscore/getting-started/">Getting started</a></li><li><a href="/arenaswap/it/docs/powerscore/scoring-a-game/">Score from live data</a></li><li><a href="/arenaswap/it/docs/powerscore/signals/">Signals by mode</a></li><li><a href="/arenaswap/it/docs/powerscore/boosts-and-penalties/">Boosts and penalties</a></li><li><a href="/arenaswap/it/docs/powerscore/configuration/">Configuration</a></li><li><a href="/arenaswap/it/docs/powerscore/api-reference/">API reference</a></li><li><a href="/arenaswap/it/docs/powerscore/types/" aria-current="page">Types</a></li></ul></nav><div><article class="prose" lang="en"><p>PowerScore 3’s types fall in three groups. What you hand <code>scoreGame</code>: <a href="#game"><code>Game</code></a>, <a href="#scoringcontext"><code>ScoringContext</code></a>, and <a href="#scoreoptions"><code>ScoreOptions</code></a>. What you get back: <a href="#powerscore"><code>PowerScore</code></a>. And what a mode is made of: <a href="#powerscoremode"><code>PowerScoreMode</code></a> and its parts. The 2.x types are at the end, still exported and working.</p>
+	})();</script><link rel="stylesheet" href="/arenaswap/_astro/Shell.8pJU0AE3.css"></head><body><a class="visually-hidden-focusable skip-link" href="#main">Vai al contenuto</a><header id="site-header" class="site-header"><nav class="site-nav"><div class="container"><div class="nav-row"><a class="nav-logo" href="/arenaswap/it/"><svg viewBox="0 0 1790 471" style="aspect-ratio:1790 / 471;color:var(--as-wordmark-ink, #ffffff)" role="img" aria-label="ArenaSwap"><defs><linearGradient id="r1R0-fade-aren" data-wm="fade-aren" gradientUnits="userSpaceOnUse" x1="718.6" x2="748.6" y1="0" y2="0"><stop offset="0" stop-color="#ffffff"></stop><stop offset="1" stop-color="#000000"></stop></linearGradient><linearGradient id="r1R0-fade-wap" data-wm="fade-wap" gradientUnits="userSpaceOnUse" x1="1725" x2="1755" y1="0" y2="0"><stop offset="0" stop-color="#ffffff"></stop><stop offset="1" stop-color="#000000"></stop></linearGradient><mask id="r1R0-mask-aren" maskUnits="userSpaceOnUse" x="-400" y="-150" width="3400" height="800"><rect x="-400" y="-150" width="3400" height="800" fill="url(#r1R0-fade-aren)"></rect></mask><mask id="r1R0-mask-wap" maskUnits="userSpaceOnUse" x="-400" y="-150" width="3400" height="800"><rect x="-400" y="-150" width="3400" height="800" fill="url(#r1R0-fade-wap)"></rect></mask></defs><g mask="url(#r1R0-mask-aren)"><path d="M41,63c11.1,0,31.68,4.04,41.72,-0.6c3.25,-1.5,4.04,-6.58,5.84,-9.39C91.56,48.31,96.04,44.51,101,42C118.42,33.15,143.59,36.66,153.45,55C157.15,61.89,157,69.43,157,77C125.45,77,85.57,71.3,58,90.09C24.45,112.96,32.35,165.75,70,179.14c21.09,7.5,49.8,8.02,69,-4.89c8.72,-5.86,13.31,-14.73,21,-21.25l4,27h38V87C202,64.55,201.49,41.29,184.96,24C145.64,-17.13,43.87,-3.62,41,63M156,105c-1.13,8.74,-3.86,17.45,-8.46,25c-10.76,17.67,-41.57,28.73,-58.35,11.81C76.43,128.95,86.89,110.37,102,106.48C108.3,104.86,114.55,105,121,105h35M273,37h-1L268,5h-40v175h44c0,-27.14,-1.74,-55,0.83,-82C274.41,81.38,276.63,65.98,292,55.97C304.9,47.56,321.26,48,336,48V1c-25.2,1.08,-51.53,11.86,-63,36M514,125c-13.03,0,-31.32,-3.36,-43.79,0.32c-3.63,1.07,-5.39,5.95,-7.68,8.64C458.68,138.49,453.53,142.34,448,144.54C418.88,156.07,386.26,134.08,386,103H519C519,70.31,515.01,39.89,487,18.5C432.72,-22.94,348.83,11.47,342.17,80C338.95,113.16,348.05,146.68,376,167.24C422.13,201.17,498.13,183.01,514,125M474,76H416L386,75C389.8,61.52,395.07,49.89,408,42.9C435.47,28.04,472.57,42.84,474,76M583,34L580,5h-40v175h45V108C585,92.36,583.8,76.31,591.26,62C602.5,40.44,637.13,28.3,655.53,49.09C667.26,62.34,667,80.41,667,97v83h44V99C711,80.11,712.15,61.17,705.92,43C693.17,5.81,647.78,-9.53,613,7.26C599.23,13.91,593.4,23.93,583,34" fill="currentColor"></path></g><g mask="url(#r1R0-mask-wap)"><path data-wm="wap" d="M1070,218l15.98,57L1120,392h33c3.6,0,10.26,1.26,13.3,-1.03c6.46,-4.87,8.65,-26.23,10.84,-33.97c8.91,-31.44,20.24,-63.01,26.86,-95h1c7.02,30.61,17.29,60.78,25.86,91c2.81,9.93,4.52,29.62,11.28,37.4C1244.42,393.03,1249.91,392,1253,392h25c2.96,0,7.78,0.87,10.3,-1.03c3.18,-2.4,3.81,-9.36,4.84,-12.97c3.16,-11.02,6.58,-21.97,9.72,-33c12.03,-42.25,27.32,-84.18,37.14,-127h-31c-3.34,0,-9.47,-1.15,-12.27,1.03c-5.92,4.6,-6.82,23.85,-8.6,30.97c-7.52,30.11,-17.99,61.26,-22.13,92c-7.18,-7.57,-8.65,-25,-11.42,-35c-8.07,-29.02,-20.19,-59.22,-24.58,-89h-36c-3.72,0,-10.29,-1.24,-13.49,1.03c-2.78,1.97,-3.1,6.95,-3.94,9.97c-2.23,8.01,-4.55,15.98,-6.73,24c-7.91,29.2,-13.62,62.37,-25.85,90L1124.35,262L1114,218h-44M1342,275h31c3.41,0,9.39,1.13,12.3,-1.03c5.9,-4.37,7.77,-13.37,14.7,-18.06c14.75,-9.97,37.74,-7.77,49.91,5.1c4.29,4.53,13.3,21.33,7.48,27.38c-2.35,2.45,-7.33,1.6,-10.38,1.6h-28c-38.08,0,-83.03,10.72,-80.96,58c2.59,58.99,99.09,65.08,121.96,17l5,27h38v-91c0,-21.49,0.55,-43.12,-13.52,-61c-26.57,-33.76,-91.47,-35.11,-123.48,-8.67c-14.29,11.81,-20.66,25.93,-24,43.67M1457,317c-0.35,8.21,-2.95,15.78,-6.78,23c-10.17,19.15,-42.38,32.66,-60.01,13.9c-12.96,-13.8,-0.86,-31.81,14.79,-35.23c5.94,-1.29,11.95,-1.67,18,-1.67zM1575,243l-6,-25h-40v252h45V369c14.12,16.17,28.72,24.52,50,27.28c16.31,2.12,34.37,-1.67,49,-9.04c58.08,-29.25,60.62,-121.74,9,-158.2C1651.92,207.8,1594.64,205.15,1575,243M1615,253.29c7.93,-1.03,17.39,-0.77,25,1.81c51.43,17.43,39.93,96.23,-12,102.61c-63.67,7.82,-75.74,-96.25,-13,-104.42" fill="currentColor"></path></g><path data-wm="a" d="M737,63c12.09,0,29.22,3.17,40.78,-0.32c3.74,-1.13,4.84,-6.69,6.69,-9.68C787.3,48.44,791.33,44.95,796,42.35C824.32,26.6,853,46.62,853,77c-30.28,0,-68.86,-5.55,-96,10.93c-36.21,21.98,-31.12,77.05,9,91.38c22.4,8,51.18,7.25,71,-6.74c7.74,-5.46,11.92,-13.71,19,-19.56c0.11,5.42,0.15,22.47,4.6,25.97C863.06,180.91,868.08,180,871,180h27V89C898,65.01,897.03,40.09,878.96,22.04C839.65,-17.22,738.35,-2.26,737,63M852,105c-1.79,9.23,-4.49,17.92,-9.47,26c-10.58,17.17,-41.34,27.12,-57.43,10.9C772.93,129.62,781.53,110.24,797,106.5C803.29,104.98,809.58,105,816,105h36" fill="currentColor"></path><path data-wm="s" d="M914,338c2.91,11.79,6.18,22.25,13.9,31.96c18.42,23.16,51.51,28.34,79.1,26.13c30.63,-2.46,62.66,-21.6,61.74,-56.09c-1.14,-42.89,-44.23,-46.03,-76.74,-55.72c-9.91,-2.95,-34.12,-9.18,-26.54,-24.28c7.62,-15.18,33.36,-15.15,45.53,-6.21c4.24,3.11,6.3,11.5,11.15,12.89c11.48,3.29,27.91,0.32,39.87,0.32c-8.03,-62.15,-113.18,-75.17,-137.66,-18c-2.6,6.08,-3.54,12.43,-3.63,19c-0.49,36.92,41.06,44.6,69.29,51.63c10.53,2.62,24.79,4.68,31.3,14.38c6.19,9.22,-0.43,20.52,-9.3,25c-11.55,5.84,-29.75,4.28,-40,-3.53c-5.66,-4.32,-8.19,-12.8,-13.5,-16.44C955.42,336.91,949.56,338,946,338h-32" fill="currentColor"></path><ellipse data-wm="dot" cx="1761.1208" cy="368.38882" rx="27.602106" ry="26.288622" fill="#ff751f" stroke="#ff751f" stroke-width="1.13729"></ellipse><line data-wm="bar" x1="925" x2="1691" y1="115" y2="115" stroke="currentColor" stroke-width="30" stroke-linecap="round"></line><path data-wm="head" d="M1691,130L1691,132L1690.9,133.9L1690.8,135.9L1690.6,137.9L1690.5,139.9L1690.4,141.8L1690.2,143.8L1690.1,145.8L1690.1,147.7L1690,149.7L1690,151.7L1690.1,153.7L1690.2,155.6L1690.4,157.6L1690.6,159.6L1691,161.5L1691.5,163.4L1692.1,165.3L1692.9,167.1L1693.9,168.8L1695.1,170.3L1696.6,171.6L1698.2,172.7L1700,173.6L1701.9,174.1L1703.9,174.4L1705.8,174.4L1707.8,174.1L1709.7,173.6L1711.5,173L1713.3,172.1L1715.1,171.2L1716.8,170.2L1718.4,169L1720,167.9L1721.6,166.7L1723.2,165.5L1724.7,164.4L1726.3,163.2L1727.9,162L1729.5,160.8L1731.1,159.6L1732.6,158.4L1734.2,157.3L1735.8,156.1L1737.4,154.9L1738.9,153.7L1740.5,152.5L1742.1,151.3L1743.7,150.1L1745.3,149L1746.8,147.8L1748.4,146.6L1750,145.4L1751.6,144.2L1753.1,143L1754.7,141.8L1756.3,140.7L1757.9,139.5L1759.5,138.3L1761,137.1L1762.6,135.9L1764.2,134.7L1765.8,133.6L1767.4,132.4L1769,131.2L1770.6,130.1L1772.1,128.9L1773.6,127.6L1775,126.2L1776.4,124.7L1777.5,123.2L1778.5,121.5L1779.3,119.6L1779.7,117.7L1779.9,115.8L1779.9,113.8L1779.6,111.8L1779,109.9L1778.2,108.1L1777.2,106.5L1776,104.9L1774.6,103.5L1773.2,102.1L1771.7,100.8L1770.1,99.6L1768.5,98.5L1766.9,97.3L1765.3,96.1L1763.8,94.9L1762.2,93.8L1760.6,92.6L1759,91.4L1757.4,90.2L1755.9,89L1754.3,87.8L1752.7,86.6L1751.1,85.4L1749.6,84.3L1748,83.1L1746.4,81.9L1744.8,80.7L1743.3,79.5L1741.7,78.3L1740.1,77.1L1738.5,75.9L1737,74.8L1735.4,73.6L1733.8,72.4L1732.2,71.2L1730.6,70L1729.1,68.8L1727.5,67.7L1725.9,66.5L1724.3,65.3L1722.7,64.1L1721.1,63L1719.5,61.8L1718,60.6L1716.3,59.5L1714.6,58.5L1712.9,57.6L1711.1,56.8L1709.2,56.1L1707.3,55.7L1705.3,55.4L1703.4,55.5L1701.4,55.8L1699.6,56.5L1697.8,57.4L1696.2,58.6L1694.8,60L1693.7,61.6L1692.7,63.3L1692,65.1L1691.4,67L1690.9,68.9L1690.6,70.9L1690.3,72.8L1690.2,74.8L1690.1,76.7L1690,78.7L1690,80.7L1690.1,82.7L1690.2,84.6L1690.3,86.6L1690.4,88.6L1690.5,90.5L1690.7,92.5L1690.8,94.5L1690.9,96.5L1691,98.4L1691,100.4L1691,102.4L1691,104.3L1691,106.3L1691,108.3L1691,110.3L1691,112.2L1691,114.2L1691,116.2L1691,118.2L1691,120.1L1691,122.1L1691,124.1L1691,126.1L1691,128Z" fill="currentColor"></path><path data-wm="chevron" d="M60,318L61.9,316.9L63.6,315.6L65.2,314.1L66.5,312.4L67.5,310.4L68.2,308.4L68.5,306.2L68.4,304L68,301.9L67.3,299.8L66.3,297.9L65.1,296L63.8,294.3L62.3,292.7L60.7,291.3L59.1,290L61,289L62.9,287.9L64.8,286.9L66.7,285.7L68.6,284.6L70.4,283.4L72.2,282.2L74,281L75.8,279.7L77.5,278.4L79.2,277L80.9,275.6L82.5,274.1L84,272.6L85.5,271L86.9,269.3L88.1,267.4L89,265.5L89.6,263.4L90,261.2L90,259.1L89.7,256.9L89.2,254.8L88.3,252.8L87.2,250.9L85.8,249.3L84.1,247.9L82.2,246.8L80.2,246L78.1,245.5L75.9,245.3L73.7,245.5L71.6,246L69.5,246.8L67.6,247.7L65.7,248.8L63.8,249.9L62,251.2L60.3,252.4L58.5,253.7L56.8,255.1L55,256.4L53.3,257.6L51.5,258.9L49.7,260.2L48,261.5L46.2,262.8L44.4,264L42.6,265.3L40.9,266.6L39.1,267.8L37.3,269.1L35.5,270.4L33.8,271.6L32,272.9L30.2,274.2L28.5,275.5L26.7,276.8L25,278.1L23.2,279.4L21.5,280.7L19.8,282L18,283.4L16.3,284.7L14.6,286.1L12.9,287.5L11.3,288.9L9.6,290.3L7.9,291.7L6.3,293.2L4.8,294.8L3.6,296.5L2.5,298.5L1.8,300.5L1.3,302.6L1.1,304.8L1.3,307L1.8,309.1L2.6,311.1L3.7,313L5,314.8L6.4,316.4L8,317.9L9.6,319.3L11.4,320.7L13.1,322L14.9,323.2L16.7,324.5L18.5,325.8L20.2,327L22,328.4L23.7,329.7L25.4,331.1L27,332.5L28.7,333.9L30.4,335.3L32,336.7L33.7,338.1L35.4,339.5L37,341L38.7,342.4L40.3,343.8L42,345.2L43.7,346.5L45.4,347.9L47.1,349.3L48.8,350.6L50.6,351.9L52.3,353.2L54.1,354.5L55.9,355.7L57.8,356.9L59.6,358L61.5,359.1L63.4,360.1L65.4,361.1L67.4,362L69.4,362.8L71.5,363.5L73.6,363.9L75.8,364L78,363.7L80.1,363.2L82.1,362.3L84,361.2L85.7,359.9L87.1,358.3L88.4,356.5L89.3,354.5L89.9,352.4L90.2,350.3L90.1,348.1L89.7,345.9L89,343.9L88,342L86.7,340.2L85.4,338.5L83.8,336.9L82.2,335.4L80.5,334.1L78.8,332.7L77,331.5L75.2,330.3L73.4,329.1L71.6,327.9L69.8,326.6L68,325.4L66.2,324.1L64.5,322.7L62.9,321.2L61.4,319.7Z" fill="currentColor"></path><line data-wm="dashes" x1="115.8" x2="892.7" y1="304.75" y2="304.75" stroke="currentColor" stroke-width="31.8" stroke-linecap="round" stroke-dasharray="56.9 63.1"></line></svg></a><ul class="nav-desktop-links"><li><a href="/arenaswap/it/">Home</a></li><li><a href="/arenaswap/it/powerscore/">PowerScore</a></li><li><a href="/arenaswap/it/docs/" aria-current="true">Docs</a></li><li><a href="/arenaswap/it/releases/">Release</a></li><li><a href="/arenaswap/it/faq/">FAQ</a></li></ul><div class="nav-end"><button type="button" class="theme-toggle" data-theme-toggle data-modes="[{&quot;value&quot;:&quot;system&quot;,&quot;icon&quot;:&quot;bi-circle-half&quot;,&quot;label&quot;:&quot;Tema: Come il sistema&quot;},{&quot;value&quot;:&quot;light&quot;,&quot;icon&quot;:&quot;bi-sun&quot;,&quot;label&quot;:&quot;Tema: Chiaro&quot;},{&quot;value&quot;:&quot;dark&quot;,&quot;icon&quot;:&quot;bi-moon&quot;,&quot;label&quot;:&quot;Tema: Scuro&quot;}]" aria-label="Tema: Come il sistema" title="Tema: Come il sistema"><i class="bi bi-circle-half" aria-hidden="true"></i></button><script type="module">/*! ArenaSwap v3.0.0 Copyright (c) 2026 Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */
+var e=`arenaswap.theme`,t=`(prefers-color-scheme: light)`,n={light:`#ffffff`,dark:`#000000`},r=()=>{let t=localStorage.getItem(e);return t===`light`||t===`dark`?t:`system`},i=(e,t)=>e===`system`?t?`light`:`dark`:e,a=(e,t)=>{let n=t?`light`:`dark`,r=t?`dark`:`light`;return e===`system`?r:e===r?n:`system`},o=()=>matchMedia(t).matches,s=e=>{let t=i(e,o());document.documentElement.dataset.bsTheme=t,document.querySelector(`meta[name="theme-color"]`)?.setAttribute(`content`,n[t])},c=e=>{matchMedia(t).addEventListener(`change`,e)},l=[...document.querySelectorAll(`[data-theme-toggle]`)],u=e=>{s(e),l.forEach(t=>{let n=JSON.parse(t.dataset.modes??`[]`),r=n.find(t=>t.value===e)??n[0];t.setAttribute(`aria-label`,r.label),t.title=r.label,t.querySelector(`i`).className=`bi ${r.icon}`})};l.forEach(t=>{t.addEventListener(`click`,()=>{let t=a(r(),o());localStorage.setItem(e,t),u(t)})}),c(()=>u(r())),window.addEventListener(`storage`,e=>{e.key===`arenaswap.theme`&&u(r())}),u(r());</script><div class="lang-switch"><button class="lang-switch-trigger" type="button" data-bs-toggle="menu" data-bs-display="static" data-bs-placement="bottom-end" aria-expanded="false" aria-label="Scegli una lingua"><span class="lang-switch-flag" aria-hidden="true">🇮🇹</span><span class="lang-switch-current">Italiano</span><i class="bi bi-chevron-down lang-switch-caret" aria-hidden="true"></i></button><div class="menu lang-switch-menu"><a class="menu-item" href="/arenaswap/docs/powerscore/types/" hreflang="en" lang="en"><span class="lang-switch-flag" aria-hidden="true">🇺🇸</span>English</a><a class="menu-item" href="/arenaswap/de/docs/powerscore/types/" hreflang="de" lang="de"><span class="lang-switch-flag" aria-hidden="true">🇩🇪</span>Deutsch</a><a class="menu-item" href="/arenaswap/es/docs/powerscore/types/" hreflang="es" lang="es"><span class="lang-switch-flag" aria-hidden="true">🇲🇽</span>Español</a><a class="menu-item" href="/arenaswap/fil/docs/powerscore/types/" hreflang="fil" lang="fil"><span class="lang-switch-flag" aria-hidden="true">🇵🇭</span>Filipino</a><a class="menu-item" href="/arenaswap/fr/docs/powerscore/types/" hreflang="fr" lang="fr"><span class="lang-switch-flag" aria-hidden="true">🇫🇷</span>Français</a><a class="menu-item active" href="/arenaswap/it/docs/powerscore/types/" hreflang="it" lang="it" aria-current="true"><span class="lang-switch-flag" aria-hidden="true">🇮🇹</span>Italiano</a><a class="menu-item" href="/arenaswap/ja/docs/powerscore/types/" hreflang="ja" lang="ja"><span class="lang-switch-flag" aria-hidden="true">🇯🇵</span>日本語</a><a class="menu-item" href="/arenaswap/ko/docs/powerscore/types/" hreflang="ko" lang="ko"><span class="lang-switch-flag" aria-hidden="true">🇰🇷</span>한국어</a><a class="menu-item" href="/arenaswap/pt-BR/docs/powerscore/types/" hreflang="pt-BR" lang="pt-BR"><span class="lang-switch-flag" aria-hidden="true">🇧🇷</span>Português (Brasil)</a><a class="menu-item" href="/arenaswap/pt-PT/docs/powerscore/types/" hreflang="pt-PT" lang="pt-PT"><span class="lang-switch-flag" aria-hidden="true">🇵🇹</span>Português (Portugal)</a><a class="menu-item" href="/arenaswap/zh-CN/docs/powerscore/types/" hreflang="zh-CN" lang="zh-CN"><span class="lang-switch-flag" aria-hidden="true">🇨🇳</span>简体中文</a><a class="menu-item" href="/arenaswap/zh-TW/docs/powerscore/types/" hreflang="zh-TW" lang="zh-TW"><span class="lang-switch-flag" aria-hidden="true">🇹🇼</span>繁體中文</a></div></div><a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee" class="btn btn-cta nav-cta-desktop" data-install-cta><i class="bi bi-browser-chrome me-3" data-install-icon></i><span data-install-label>Aggiungi a Chrome</span></a><script>window.arenaSwapInstall?.applyCta(document.currentScript.previousElementSibling);</script><button type="button" class="nav-hamburger" id="nav-toggle" aria-label="Apri il menu" aria-controls="nav-drawer" aria-expanded="false" data-bs-toggle="drawer" data-bs-target="#nav-drawer"><span class="ham-bar"></span><span class="ham-bar"></span><span class="ham-bar"></span></button></div></div></div></nav><dialog class="drawer drawer-top nav-drawer" id="nav-drawer" aria-label="Menu"><div class="drawer-body"><ul><li><a href="/arenaswap/it/">Home</a></li><li><a href="/arenaswap/it/powerscore/">PowerScore</a></li><li><a href="/arenaswap/it/docs/" aria-current="true">Docs</a></li><li><a href="/arenaswap/it/releases/">Release</a></li><li><a href="/arenaswap/it/faq/">FAQ</a></li><li><a href="/arenaswap/it/legal/">Note legali</a></li></ul><div class="nav-drawer-cta"><a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee" class="btn btn-cta d-block text-center" data-install-cta><i class="bi bi-browser-chrome me-3" data-install-icon></i><span data-install-label>Aggiungi a Chrome</span></a><script>window.arenaSwapInstall?.applyCta(document.currentScript.previousElementSibling);</script></div><div class="lang-switch-list"><p class="lang-switch-heading">Lingua</p><ul><li><a href="/arenaswap/docs/powerscore/types/" hreflang="en" lang="en"><span class="lang-switch-flag" aria-hidden="true">🇺🇸</span>English</a></li><li><a href="/arenaswap/de/docs/powerscore/types/" hreflang="de" lang="de"><span class="lang-switch-flag" aria-hidden="true">🇩🇪</span>Deutsch</a></li><li><a href="/arenaswap/es/docs/powerscore/types/" hreflang="es" lang="es"><span class="lang-switch-flag" aria-hidden="true">🇲🇽</span>Español</a></li><li><a href="/arenaswap/fil/docs/powerscore/types/" hreflang="fil" lang="fil"><span class="lang-switch-flag" aria-hidden="true">🇵🇭</span>Filipino</a></li><li><a href="/arenaswap/fr/docs/powerscore/types/" hreflang="fr" lang="fr"><span class="lang-switch-flag" aria-hidden="true">🇫🇷</span>Français</a></li><li><a href="/arenaswap/it/docs/powerscore/types/" hreflang="it" lang="it" aria-current="true"><span class="lang-switch-flag" aria-hidden="true">🇮🇹</span>Italiano</a></li><li><a href="/arenaswap/ja/docs/powerscore/types/" hreflang="ja" lang="ja"><span class="lang-switch-flag" aria-hidden="true">🇯🇵</span>日本語</a></li><li><a href="/arenaswap/ko/docs/powerscore/types/" hreflang="ko" lang="ko"><span class="lang-switch-flag" aria-hidden="true">🇰🇷</span>한국어</a></li><li><a href="/arenaswap/pt-BR/docs/powerscore/types/" hreflang="pt-BR" lang="pt-BR"><span class="lang-switch-flag" aria-hidden="true">🇧🇷</span>Português (Brasil)</a></li><li><a href="/arenaswap/pt-PT/docs/powerscore/types/" hreflang="pt-PT" lang="pt-PT"><span class="lang-switch-flag" aria-hidden="true">🇵🇹</span>Português (Portugal)</a></li><li><a href="/arenaswap/zh-CN/docs/powerscore/types/" hreflang="zh-CN" lang="zh-CN"><span class="lang-switch-flag" aria-hidden="true">🇨🇳</span>简体中文</a></li><li><a href="/arenaswap/zh-TW/docs/powerscore/types/" hreflang="zh-TW" lang="zh-TW"><span class="lang-switch-flag" aria-hidden="true">🇹🇼</span>繁體中文</a></li></ul></div></div></dialog></header><script type="module" src="/arenaswap/_astro/Nav.astro_astro_type_script_index_0_lang.CZqkKHzF.js"></script><main id="main" tabindex="-1"><div class="container"><div class="page-head"><h1 class="page-title docs-title">I tipi TypeScript di PowerScore</h1><p class="page-lede">Ogni campo di Game, ScoringContext, ScoreOptions, PowerScore e dei tipi di modalità e configurazione, quali sono facoltativi e cosa succede quando uno facoltativo manca.</p></div><div class="reading-shell"><nav class="reading-nav docs-nav" aria-label="Documentazione"><h2><a href="/arenaswap/it/docs/extension/">L&#39;estensione</a></h2><ul><li><a href="/arenaswap/it/docs/extension/getting-started/">Per iniziare</a></li><li><a href="/arenaswap/it/docs/extension/watching-multiple-games/">Più partite</a></li><li><a href="/arenaswap/it/docs/extension/switching-and-sensitivity/">Cambio</a></li><li><a href="/arenaswap/it/docs/extension/favorite-teams/">Squadre preferite</a></li><li><a href="/arenaswap/it/docs/extension/standby-stream/">Standby Stream</a></li><li><a href="/arenaswap/it/docs/extension/scoring-modes/">Modalità di punteggio</a></li><li><a href="/arenaswap/it/docs/extension/settings/">Impostazioni</a></li><li><a href="/arenaswap/it/docs/extension/demo-mode/">Modalità demo</a></li><li><a href="/arenaswap/it/docs/extension/troubleshooting/">Risoluzione dei problemi</a></li><li><a href="/arenaswap/it/docs/extension/multiview/">Multiview</a></li><li><a href="/arenaswap/it/docs/extension/boss-button/">Pulsante del capo</a></li><li><a href="/arenaswap/it/docs/extension/profiles-and-backup/">Profili e backup</a></li><li><a href="/arenaswap/it/docs/extension/guide/">La Guida</a></li><li><a href="/arenaswap/it/docs/extension/game-details/">Dettagli della partita</a></li></ul><h2><a href="/arenaswap/it/docs/powerscore/">PowerScore</a></h2><ul><li><a href="/arenaswap/it/docs/powerscore/getting-started/">Per iniziare</a></li><li><a href="/arenaswap/it/docs/powerscore/scoring-a-game/">Calcolo da dati in diretta</a></li><li><a href="/arenaswap/it/docs/powerscore/signals/">Segnali per modalità</a></li><li><a href="/arenaswap/it/docs/powerscore/boosts-and-penalties/">Boost e penalità</a></li><li><a href="/arenaswap/it/docs/powerscore/configuration/">Configurazione</a></li><li><a href="/arenaswap/it/docs/powerscore/api-reference/">Riferimento API</a></li><li><a href="/arenaswap/it/docs/powerscore/types/" aria-current="page">Tipi</a></li></ul></nav><div><article class="prose"><p>I tipi di PowerScore 3 stanno in tre gruppi. Quello che passi a <code>scoreGame</code>: <a href="#game"><code>Game</code></a>, <a href="#scoringcontext"><code>ScoringContext</code></a> e <a href="#scoreoptions"><code>ScoreOptions</code></a>. Quello che ricevi: <a href="#powerscore"><code>PowerScore</code></a>. E di cosa è fatta una modalità: <a href="#powerscoremode"><code>PowerScoreMode</code></a> e le sue parti. I tipi 2.x sono in fondo, ancora esportati e funzionanti.</p>
 <h2 id="game">Game</h2>
-<p>The state of the game right now. Only <code>id</code>, <code>league</code>, <code>sportType</code>, and the two team scores are required. Everything else narrows the score when it’s present. Each optional field is treated as unknown, not as a default value, when it’s absent.</p>
-<p><code>Game</code> is generic over the league id: <code>Game&lt;League extends string = LeagueId&gt;</code>. A bare <code>Game</code> means what it always did. A feed with its own league ids uses <code>Game&lt;string&gt;</code>.</p>
+<p>Lo stato della partita adesso. Servono solo <code>id</code>, <code>league</code>, <code>sportType</code> e i due punteggi delle squadre. Tutto il resto affina il punteggio quando c’è. Ogni campo facoltativo assente è trattato come sconosciuto, non come un valore predefinito.</p>
+<p><code>Game</code> è generico sull’id della lega: <code>Game&lt;League extends string = LeagueId&gt;</code>. Un <code>Game</code> semplice significa quello che ha sempre significato. Un feed con id di lega propri usa <code>Game&lt;string&gt;</code>.</p>
 <div class="prose-table" tabindex="0"><table>
 <thead>
 <tr>
-<th>Field</th>
-<th>Type</th>
-<th>Missing means</th>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Se manca</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>id</code></td>
 <td><code>string</code></td>
-<td>Required.</td>
+<td>Obbligatorio.</td>
 </tr>
 <tr>
 <td><code>league</code></td>
 <td><code>League</code></td>
-<td>Required. An id <code>leagueConfigMap</code> doesn’t recognize is scored with its sport’s defaults (see <a href="../configuration/#tune-it-for-a-league-powerscore-doesnt-ship">Sport and league configuration</a>).</td>
+<td>Obbligatorio. Un id che <code>leagueConfigMap</code> non riconosce viene valutato con i valori predefiniti del suo sport (vedi <a href="../configuration/#tune-it-for-a-league-powerscore-doesnt-ship">Configurazione di sport e leghe</a>).</td>
 </tr>
 <tr>
 <td><code>sportType</code></td>
 <td><code>SportType</code></td>
-<td>Required. A value <code>sportTypeConfigMap</code> doesn’t recognize falls back to basketball’s tuning.</td>
+<td>Obbligatorio. Un valore che <code>sportTypeConfigMap</code> non riconosce ricade sulla taratura del basket.</td>
 </tr>
 <tr>
 <td><code>homeTeam</code> / <code>awayTeam</code></td>
 <td><a href="#teamstate"><code>TeamState</code></a></td>
-<td>Required.</td>
+<td>Obbligatorio.</td>
 </tr>
 <tr>
 <td><code>period?</code></td>
 <td><code>number</code></td>
-<td>Late-game pressure reads as <code>0</code>. Closeness still scores, but game progress reads as <code>0</code> too, so it pays only its flat floor rather than the fuller tier value.</td>
+<td>La pressione di fine gara vale <code>0</code>. L’equilibrio segna comunque, ma anche l’avanzamento della partita vale <code>0</code>, quindi paga solo il suo minimo fisso invece del valore pieno della fascia.</td>
 </tr>
 <tr>
 <td><code>clockSeconds?</code></td>
 <td><code>number</code></td>
-<td>Treated as unknown, not <code>0:00</code>. The late-game ramp holds at the start of the period, and every clock-gated boost pays 0.</td>
+<td>Trattato come sconosciuto, non come <code>0:00</code>. La rampa di fine gara resta all’inizio del periodo e ogni boost legato al cronometro paga 0.</td>
 </tr>
 <tr>
 <td><code>intermission?</code></td>
 <td><code>boolean</code></td>
-<td><code>false</code>. <code>true</code> freezes the game: everything scores 0 until play resumes.</td>
+<td><code>false</code>. <code>true</code> ferma la partita: tutto vale 0 finché il gioco non riprende.</td>
 </tr>
 <tr>
 <td><code>delayed?</code></td>
 <td><code>boolean</code></td>
-<td><code>false</code>. <code>true</code> freezes the game, the same as <code>intermission</code>.</td>
+<td><code>false</code>. <code>true</code> ferma la partita, come <code>intermission</code>.</td>
 </tr>
 <tr>
 <td><code>status?</code></td>
 <td><code>'pre' | 'in' | 'post'</code></td>
-<td>Boosts pay nothing for anything other than <code>'in'</code>, including a missing value. The signals don’t read it.</td>
+<td>I boost non pagano niente per qualunque valore diverso da <code>'in'</code>, compreso uno mancante. I segnali non lo leggono.</td>
 </tr>
 <tr>
 <td><code>topOfInning?</code></td>
 <td><code>boolean</code></td>
-<td>Baseball and softball. Scores between the top and bottom of the inning’s closeness values. Go-ahead run and the no-hitter need it.</td>
+<td>Baseball e softball. Vale tra i valori di equilibrio del primo e del secondo tempo dell’inning. Il punto del vantaggio in base e il no-hitter ne hanno bisogno.</td>
 </tr>
 <tr>
 <td><code>baseRunners?</code></td>
 <td><code>{ first: boolean; second: boolean; third: boolean }</code></td>
-<td>Baseball and softball. Treated as no runners on.</td>
+<td>Baseball e softball. Trattato come nessun corridore in base.</td>
 </tr>
 <tr>
 <td><code>outs?</code></td>
 <td><code>number</code></td>
-<td>Baseball and softball. Treated as 0. At 3, runner-based boosts pay nothing.</td>
+<td>Baseball e softball. Trattato come 0. A 3, i boost basati sui corridori non pagano niente.</td>
 </tr>
 <tr>
 <td><code>possession?</code></td>
 <td><code>'home' | 'away'</code></td>
-<td>Football, or the puck where a feed reports it. Without it the two-minute drill pays 0 and Fantasy has no football situation.</td>
+<td>Football, o il disco dove un feed lo riporta. Senza, il two-minute drill paga 0 e Fantasy non ha una situazione di football.</td>
 </tr>
 <tr>
 <td><code>yardsToEndZone?</code></td>
 <td><code>number</code></td>
-<td>Football. The yards the team with the ball needs. Needed by the two-minute drill and Fantasy.</td>
+<td>Football. Le yard che servono alla squadra in possesso. Servono al two-minute drill e a Fantasy.</td>
 </tr>
 <tr>
 <td><code>isRedZone?</code></td>
 <td><code>boolean</code></td>
-<td>Football only. <code>false</code> or missing means the red-zone case of the scoring opportunity boost pays 0.</td>
+<td>Solo football. <code>false</code> o mancante significa che il caso red zone del boost opportunità di segnare paga 0.</td>
 </tr>
 <tr>
 <td><code>down?</code></td>
 <td><code>number</code></td>
-<td>Football only. Falls through to the unweighted (×1) multiplier rather than losing the boost entirely. In the two-minute drill and Fantasy, a <code>down</code> below 1 reads as between plays.</td>
+<td>Solo football. Ricade sul moltiplicatore non pesato (×1) invece di perdere del tutto il boost. Nel two-minute drill e in Fantasy, un <code>down</code> sotto 1 si legge come tra un’azione e l’altra.</td>
 </tr>
 <tr>
 <td><code>distance?</code></td>
 <td><code>number</code></td>
-<td>Football only. On 3rd down, a missing value can’t qualify as 3rd-and-short, so it falls through to ×1.</td>
+<td>Solo football. Al 3° down, un valore mancante non può qualificarsi come 3° e corto, quindi ricade su ×1.</td>
 </tr>
 <tr>
 <td><code>isGoalToGo?</code></td>
 <td><code>boolean</code></td>
-<td>Football only, and only changes anything on 4th down.</td>
+<td>Solo football, e cambia qualcosa solo al 4° down.</td>
 </tr>
 <tr>
 <td><code>series?</code></td>
 <td><a href="#seriesstate"><code>SeriesState</code></a></td>
-<td>No series, so stakes reads none.</td>
+<td>Nessuna serie, quindi In palio non legge niente.</td>
 </tr>
 <tr>
 <td><code>redCards?</code></td>
 <td><a href="#redcard"><code>RedCard[]</code></a></td>
-<td>Soccer. No cards.</td>
+<td>Calcio. Nessun cartellino.</td>
 </tr>
 <tr>
 <td><code>seasonType?</code></td>
 <td><code>'regular' | 'postseason'</code></td>
-<td>Stakes treats the game as postseason when this says so or <code>postseasonRound</code> is set, and as regular season otherwise.</td>
+<td>In palio tratta la partita come postseason quando lo dice questo o è impostato <code>postseasonRound</code>, e come regular season altrimenti.</td>
 </tr>
 <tr>
 <td><code>postseasonRound?</code></td>
 <td><code>0 | 1 | 2 | 3</code></td>
-<td>No postseason boost. <code>0</code> decides the title, <code>1</code> is a semifinal, <code>2</code> a quarterfinal, <code>3</code> anything earlier.</td>
+<td>Nessun boost postseason. <code>0</code> decide il titolo, <code>1</code> è una semifinale, <code>2</code> un quarto di finale, <code>3</code> qualsiasi turno precedente.</td>
 </tr>
 </tbody>
 </table></div>
-<p><code>SportId</code> is a deprecated alias for <code>LeagueId</code>, kept for 1.x compatibility. Use <code>LeagueId</code>.</p>
+<p><code>SportId</code> è un alias deprecato di <code>LeagueId</code>, tenuto per compatibilità con la 1.x. Usa <code>LeagueId</code>.</p>
 <h3 id="teamstate">TeamState</h3>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> TeamState</span><span style="color:#E1E4E8"> {</span></span>
 <span class="line"><span style="color:#FFAB70">	score</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">;</span></span>
@@ -190,38 +190,38 @@ var e=`arenaswap.theme`,t=`(prefers-color-scheme: light)`,n={light:`#ffffff`,dar
 <div class="prose-table" tabindex="0"><table>
 <thead>
 <tr>
-<th>Field</th>
-<th>Missing means</th>
+<th>Campo</th>
+<th>Se manca</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>score</code></td>
-<td>Required.</td>
+<td>Obbligatorio.</td>
 </tr>
 <tr>
 <td><code>abbreviation</code></td>
-<td>Names the team in reasons when <code>nickname</code> is missing too, and shows as <code>?</code> when both are.</td>
+<td>Nomina la squadra nelle ragioni quando manca anche <code>nickname</code>, e compare come <code>?</code> quando mancano entrambi.</td>
 </tr>
 <tr>
 <td><code>nickname</code></td>
-<td>What reasons call the team: “Lakers”, “Nittany Lions”, or a soccer club’s short name such as “Portland”. Falls back to <code>abbreviation</code>.</td>
+<td>Come le ragioni chiamano la squadra: “Lakers”, “Nittany Lions”, o il nome breve di un club di calcio come “Portland”. Ricade su <code>abbreviation</code>.</td>
 </tr>
 <tr>
 <td><code>rank</code></td>
-<td>The team is unranked. Leave it out for a bracket seed too: it’s a poll ranking, where 1 is best. Stakes needs it on both teams.</td>
+<td>La squadra non è classificata. Omettilo anche per una testa di serie di tabellone: è una posizione in un sondaggio, dove 1 è la migliore. In palio ne ha bisogno su entrambe le squadre.</td>
 </tr>
 <tr>
 <td><code>hits</code></td>
-<td>Baseball and softball. No hits count, so the no-hitter can’t pay. <code>0</code> is a real value: it means a hitless team.</td>
+<td>Baseball e softball. Nessun conteggio di valide, quindi il no-hitter non può pagare. <code>0</code> è un valore vero: significa una squadra senza valide.</td>
 </tr>
 <tr>
 <td><code>errors</code></td>
-<td>Baseball and softball. Not read by any score today.</td>
+<td>Baseball e softball. Oggi non è letto da nessun punteggio.</td>
 </tr>
 <tr>
 <td><code>timeouts</code></td>
-<td>Football. The two-minute drill uses a neutral weight for clock control.</td>
+<td>Football. Il two-minute drill usa un peso neutro per il controllo del cronometro.</td>
 </tr>
 </tbody>
 </table></div>
@@ -231,81 +231,81 @@ var e=`arenaswap.theme`,t=`(prefers-color-scheme: light)`,n={light:`#ffffff`,dar
 <span class="line"><span style="color:#FFAB70">	awayWins</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#FFAB70">	bestOf</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">// 7 for best-of-seven</span></span>
 <span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
-<p>A series shorter than a best of 3 pays nothing.</p>
+<p>Una serie più corta di un al meglio delle 3 non paga niente.</p>
 <h3 id="redcard">RedCard</h3>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> RedCard</span><span style="color:#E1E4E8"> {</span></span>
 <span class="line"><span style="color:#FFAB70">	side</span><span style="color:#F97583">:</span><span style="color:#9ECBFF"> 'home'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'away'</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#FFAB70">	minute</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">// elapsed game minute the card was shown</span></span>
 <span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
 <h2 id="scoringcontext">ScoringContext</h2>
-<p>Everything the game itself doesn’t carry. Every field is optional, and <code>scoreGame</code> takes the whole object as its second argument.</p>
+<p>Tutto quello che la partita stessa non porta con sé. Ogni campo è facoltativo, e <code>scoreGame</code> prende l’intero oggetto come secondo argomento.</p>
 <div class="prose-table" tabindex="0"><table>
 <thead>
 <tr>
-<th>Field</th>
-<th>Type</th>
-<th>Missing means</th>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Se manca</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>history?</code></td>
 <td><a href="#scoresnapshot"><code>ScoreSnapshot[]</code></a></td>
-<td>Momentum, Lead Changes, and Comeback Factor stay at 0 until it holds 3 entries. Oldest first.</td>
+<td>Momentum, Sorpassi e Rimonta restano a 0 finché non contiene 3 voci. Dalla più vecchia.</td>
 </tr>
 <tr>
 <td><code>onBreak?</code></td>
 <td><code>boolean</code></td>
-<td>The caller has detected a commercial break. <code>true</code> takes <code>breakPenalty</code> (15) off the signals subtotal. No break deduction when absent.</td>
+<td>Chi chiama ha rilevato una pausa pubblicitaria. <code>true</code> toglie <code>breakPenalty</code> (15) dal subtotale dei segnali. Nessuna detrazione per la pausa quando manca.</td>
 </tr>
 <tr>
 <td><code>winProbability?</code></td>
 <td><code>number[]</code></td>
-<td>Home win probability over the game, 0 to 1. Needs 5 finite values to matter. No modifier otherwise.</td>
+<td>Probabilità di vittoria della squadra di casa durante la partita, da 0 a 1. Servono 5 valori finiti perché conti. Nessun modificatore altrimenti.</td>
 </tr>
 <tr>
 <td><code>pregameLine?</code></td>
 <td><a href="#pregameline"><code>PregameLine</code></a></td>
-<td>Upset watch and Upset Rout pay 0.</td>
+<td>Allarme sorpresa e Sorpresa a senso unico pagano 0.</td>
 </tr>
 <tr>
 <td><code>stakes?</code></td>
 <td><code>Partial&lt;Record&lt;'home' | 'away', TeamStakes&gt;&gt;</code></td>
-<td>No race stakes. See <a href="#teamstakes"><code>TeamStakes</code></a>.</td>
+<td>Nessuna posta in gioco nella corsa. Vedi <a href="#teamstakes"><code>TeamStakes</code></a>.</td>
 </tr>
 <tr>
 <td><code>powerPlay?</code></td>
 <td><code>'home' | 'away' | boolean</code></td>
-<td>No power play in the scoring opportunity boost. A side when the feed says whose, <code>true</code> when it only says one is on.</td>
+<td>Nessun power play nel boost opportunità di segnare. Un lato quando il feed dice di chi è, <code>true</code> quando dice solo che ce n’è uno.</td>
 </tr>
 <tr>
 <td><code>emptyNet?</code></td>
 <td><code>'home' | 'away' | boolean</code></td>
-<td>No empty net in the scoring opportunity boost. Set it only once the feed has reported it on two polls in a row.</td>
+<td>Nessuna porta vuota nel boost opportunità di segnare. Impostalo solo dopo che il feed l’ha riportata in due interrogazioni di fila.</td>
 </tr>
 <tr>
 <td><code>recentLeadChanges?</code></td>
 <td><code>{ count: number; lastAt?: number }</code></td>
-<td>Lead changes counted from a feed’s own play log, which sees flips between polls, with the time of the latest. Used when it counts more than <code>history</code> shows. Lead Changes still needs the 3 snapshots.</td>
+<td>Sorpassi contati dal registro delle azioni di un feed, che vede i cambi tra un’interrogazione e l’altra, con l’ora dell’ultimo. Usato quando ne conta più di quelli che mostra <code>history</code>. Sorpassi ha comunque bisogno dei 3 snapshot.</td>
 </tr>
 <tr>
 <td><code>fantasy?</code></td>
 <td><a href="#fantasyplayerstate"><code>FantasyPlayerState[]</code></a></td>
-<td>Fantasy has no players, and the game is scored as Classic.</td>
+<td>Fantasy non ha giocatori, e la partita è valutata come Classica.</td>
 </tr>
 </tbody>
 </table></div>
 <h3 id="scoresnapshot">ScoreSnapshot</h3>
-<p>A point-in-time record of a game’s score, used to detect momentum, lead changes, and comebacks. All four fields are required.</p>
+<p>Una fotografia del punteggio di una partita in un momento preciso, usata per rilevare momentum, sorpassi e rimonte. Tutti e quattro i campi sono obbligatori.</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> ScoreSnapshot</span><span style="color:#E1E4E8"> {</span></span>
 <span class="line"><span style="color:#FFAB70">	gameId</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#FFAB70">	timestamp</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#FFAB70">	homeScore</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#FFAB70">	awayScore</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
-<p><code>timestamp</code> only needs to be relative to the other snapshots in the same array. Decay is measured against the newest snapshot’s timestamp, not against wall-clock time. Replaying the same history produces the same result, no matter when it’s replayed.</p>
+<p><code>timestamp</code> deve solo essere relativo agli altri snapshot dello stesso array. Il decadimento si misura rispetto al timestamp dello snapshot più recente, non all’ora reale. Rigiocare lo stesso storico dà lo stesso risultato, in qualunque momento lo si rigiochi.</p>
 <h3 id="pregameline">PregameLine</h3>
-<p>The line as it stood before the game. A live line moves with the score and would erase an upset.</p>
+<p>La linea com’era prima della partita. Una linea dal vivo si muove con il punteggio e cancellerebbe una sorpresa.</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> PregameLine</span><span style="color:#E1E4E8"> {</span></span>
 <span class="line"><span style="color:#FFAB70">	favorite</span><span style="color:#F97583">:</span><span style="color:#9ECBFF"> 'home'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'away'</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#FFAB70">	spread</span><span style="color:#F97583">?:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">;</span></span>
@@ -313,18 +313,18 @@ var e=`arenaswap.theme`,t=`(prefers-color-scheme: light)`,n={light:`#ffffff`,dar
 <span class="line"><span style="color:#FFAB70">	underdogMoneyline</span><span style="color:#F97583">?:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#FFAB70">	drawMoneyline</span><span style="color:#F97583">?:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
-<p><code>spread</code> is the points the favorite was laid, as a positive number, and only basketball and football read it. With both moneylines, the bookmaker’s margin is removed before use. <code>drawMoneyline</code> is soccer’s three-way line. A run line or a puck line alone says who’s favored but not by how much, so it isn’t enough.</p>
+<p><code>spread</code> sono i punti dati alla favorita, come numero positivo, e lo leggono solo basket e football. Con entrambe le moneyline, il margine del bookmaker viene tolto prima dell’uso. <code>drawMoneyline</code> è la linea a tre esiti del calcio. Una run line o una puck line da sola dice chi è favorito ma non di quanto, quindi non basta.</p>
 <h3 id="teamstakes">TeamStakes</h3>
-<p>Late-season race flags for one team, regular season only.</p>
+<p>Indicatori della corsa di fine stagione per una squadra, solo regular season.</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> TeamStakes</span><span style="color:#E1E4E8"> {</span></span>
 <span class="line"><span style="color:#FFAB70">	canClinch</span><span style="color:#F97583">?:</span><span style="color:#79B8FF"> boolean</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#FFAB70">	canBeEliminated</span><span style="color:#F97583">?:</span><span style="color:#79B8FF"> boolean</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#FFAB70">	inRace</span><span style="color:#F97583">?:</span><span style="color:#79B8FF"> boolean</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#FFAB70">	nearLine</span><span style="color:#F97583">?:</span><span style="color:#9ECBFF"> 'title'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'relegation'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'topQualification'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'other'</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
-<p><code>canClinch</code> means winning this game clinches a spot, a division, or a title whatever else happens. <code>canBeEliminated</code> means losing knocks the team out of contention. <code>inRace</code> means still in the hunt, neither safe nor out. <code>nearLine</code> is within a few points of a table line.</p>
+<p><code>canClinch</code> significa che vincere questa partita assicura un posto, una division o un titolo qualunque cosa accada. <code>canBeEliminated</code> significa che perdere butta la squadra fuori dalla corsa. <code>inRace</code> significa ancora in gioco, né al sicuro né fuori. <code>nearLine</code> è a pochi punti da una linea della classifica.</p>
 <h3 id="fantasyplayerstate">FantasyPlayerState</h3>
-<p>One rostered player in a game.</p>
+<p>Un giocatore della tua rosa in una partita.</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> FantasyPlayerState</span><span style="color:#E1E4E8"> {</span></span>
 <span class="line"><span style="color:#FFAB70">	id</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#FFAB70">	name</span><span style="color:#F97583">?:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">;</span></span>
@@ -334,72 +334,72 @@ var e=`arenaswap.theme`,t=`(prefers-color-scheme: light)`,n={light:`#ffffff`,dar
 <span class="line"><span style="color:#FFAB70">	role</span><span style="color:#F97583">?:</span><span style="color:#9ECBFF"> 'atBat'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'onDeck'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'inHole'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'pitching'</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#FFAB70">	pointEvents</span><span style="color:#F97583">?:</span><span style="color:#E1E4E8"> { </span><span style="color:#FFAB70">at</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">points</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8"> }[];</span></span>
 <span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
-<p><code>FantasyPosition</code> is <code>'QB' | 'RB' | 'WR' | 'TE' | 'K' | 'DST' | 'P' | 'H' | 'player'</code>: football positions, a pitcher and a hitter for baseball, and a generic player elsewhere. <code>name</code> appears in reasons, such as “Mahomes in the red zone”. <code>active: false</code> means the feed says the player is out of the game, and it counts for nothing. <code>role</code> is baseball only: where the player is in the inning. <code>pointEvents</code> are fantasy points as they came in, so recent production fades like any other event.</p>
+<p><code>FantasyPosition</code> è <code>'QB' | 'RB' | 'WR' | 'TE' | 'K' | 'DST' | 'P' | 'H' | 'player'</code>: i ruoli del football, un lanciatore e un battitore per il baseball, e un giocatore generico altrove. <code>name</code> compare nelle ragioni, come “Mahomes in red zone”. <code>active: false</code> significa che il feed dice che il giocatore è fuori dalla partita, e non conta per niente. <code>role</code> è solo baseball: dove si trova il giocatore nell’inning. <code>pointEvents</code> sono i punti fantasy come sono arrivati, così la produzione recente sfuma come ogni altro evento.</p>
 <h2 id="scoreoptions">ScoreOptions</h2>
-<p>How to score. Every field is optional, and <code>scoreGame</code> takes the object as its third argument.</p>
+<p>Come valutare. Ogni campo è facoltativo, e <code>scoreGame</code> prende l’oggetto come terzo argomento.</p>
 <div class="prose-table" tabindex="0"><table>
 <thead>
 <tr>
-<th>Field</th>
-<th>Type</th>
-<th>What it does</th>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Cosa fa</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>mode?</code></td>
 <td><code>'classic' | 'blowouts' | 'fantasy' | PowerScoreMode</code></td>
-<td>Which mode scores the game. Classic when absent.</td>
+<td>Quale modalità valuta la partita. Classica quando manca.</td>
 </tr>
 <tr>
 <td><code>disabledSignals?</code></td>
 <td><code>readonly string[]</code></td>
-<td>Signal ids of the mode to switch off. The rest are rescaled to the mode’s full range.</td>
+<td>Id dei segnali della modalità da disattivare. Gli altri vengono riscalati sull’intero intervallo della modalità.</td>
 </tr>
 <tr>
 <td><code>classicDisabledSignals?</code></td>
 <td><code>readonly string[]</code></td>
-<td>Signal ids to switch off in Classic when it’s blended in or used as a floor.</td>
+<td>Id dei segnali da disattivare in Classica quando è combinata o usata come minimo.</td>
 </tr>
 <tr>
 <td><code>classicBlend?</code></td>
 <td><a href="#classicblend"><code>ClassicBlend</code></a></td>
-<td>Overrides the mode’s own blend, such as a viewer’s Fantasy slider.</td>
+<td>Sovrascrive la combinazione propria della modalità, come il cursore Fantasy di chi guarda.</td>
 </tr>
 <tr>
 <td><code>favoriteTeamCount?</code></td>
 <td><code>number</code></td>
-<td>How many favorite teams are in the game.</td>
+<td>Quante squadre preferite ci sono nella partita.</td>
 </tr>
 <tr>
 <td><code>favoriteBoostPoints?</code></td>
 <td><code>number</code></td>
-<td>Points per favorite team.</td>
+<td>Punti per ogni squadra preferita.</td>
 </tr>
 <tr>
 <td><code>postseasonBoostPoints?</code></td>
 <td><code>number</code></td>
-<td>Points for a title-deciding game. Earlier rounds get a share.</td>
+<td>Punti per una partita che decide il titolo. I turni precedenti ne ricevono una quota.</td>
 </tr>
 <tr>
 <td><code>gameBoost?</code></td>
 <td><code>number</code></td>
-<td>A manual boost. The only thing allowed to push the total past 100.</td>
+<td>Un boost manuale. L’unica cosa a cui è permesso spingere il totale oltre 100.</td>
 </tr>
 <tr>
 <td><code>sport?</code></td>
 <td><code>Partial&lt;SportTypeConfig&gt;</code></td>
-<td>For sports the built-in tables don’t match, or to tune them.</td>
+<td>Per gli sport che le tabelle integrate non coprono, o per tararle.</td>
 </tr>
 <tr>
 <td><code>league?</code></td>
 <td><code>Partial&lt;LeagueConfig&gt;</code></td>
-<td>For leagues the built-in table doesn’t know. Set <code>regularPeriods</code> and <code>periodDurationSecs</code>.</td>
+<td>Per le leghe che la tabella integrata non conosce. Imposta <code>regularPeriods</code> e <code>periodDurationSecs</code>.</td>
 </tr>
 </tbody>
 </table></div>
 <h2 id="powerscore">PowerScore</h2>
-<p>What <code>scoreGame</code> returns.</p>
+<p>Quello che restituisce <code>scoreGame</code>.</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> PowerScore</span><span style="color:#E1E4E8"> {</span></span>
 <span class="line"><span style="color:#FFAB70">	gameId</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#FFAB70">	modeId</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">;</span></span>
@@ -422,86 +422,86 @@ var e=`arenaswap.theme`,t=`(prefers-color-scheme: light)`,n={light:`#ffffff`,dar
 <div class="prose-table" tabindex="0"><table>
 <thead>
 <tr>
-<th>Field</th>
-<th>Meaning</th>
+<th>Campo</th>
+<th>Significato</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>modeId</code></td>
-<td>The mode that actually scored the game. A mode that doesn’t apply, such as Fantasy with no rostered player in the game, falls back to <code>'classic'</code>.</td>
+<td>La modalità che ha davvero valutato la partita. Una modalità che non si applica, come Fantasy senza giocatori della tua rosa in partita, ricade su <code>'classic'</code>.</td>
 </tr>
 <tr>
 <td><code>total</code></td>
-<td>0 to 100, and above 100 only through <code>gameBoost</code>.</td>
+<td>Da 0 a 100, e oltre 100 solo tramite <code>gameBoost</code>.</td>
 </tr>
 <tr>
 <td><code>signals</code></td>
-<td>Every signal the mode defines, with its ceiling, even at 0. See <a href="#scoredsignal-scoredboost-and-reasonfragment"><code>ScoredSignal</code></a>.</td>
+<td>Ogni segnale che la modalità definisce, con il suo massimo, anche a 0. Vedi <a href="#scoredsignal-scoredboost-and-reasonfragment"><code>ScoredSignal</code></a>.</td>
 </tr>
 <tr>
 <td><code>signalsSubtotal</code></td>
-<td>The enabled signals’ sum before any rescaling for disabled signals.</td>
+<td>La somma dei segnali attivi prima di qualsiasi riscalatura per i segnali disattivati.</td>
 </tr>
 <tr>
 <td><code>scaledSubtotal</code></td>
-<td>The same after rescaling, capped at <code>signalCeiling</code>.</td>
+<td>La stessa dopo la riscalatura, limitata a <code>signalCeiling</code>.</td>
 </tr>
 <tr>
 <td><code>signalCeiling</code></td>
-<td>The sum of the mode’s ceilings: 156 for Classic.</td>
+<td>La somma dei massimi della modalità: 156 per Classica.</td>
 </tr>
 <tr>
 <td><code>frozen</code></td>
-<td><code>true</code> at halftime, in an intermission, or in a delay. Everything scores 0 and <code>reason</code> is empty.</td>
+<td><code>true</code> all’intervallo, in una pausa o in un’interruzione. Tutto vale 0 e <code>reason</code> è vuoto.</td>
 </tr>
 <tr>
 <td><code>onBreak</code>, <code>breakPenalty</code></td>
-<td>Whether a commercial break deduction applied, and how many points it took (always ≥ 0). Both are <code>false</code> and <code>0</code> on a frozen score.</td>
+<td>Se è stata applicata la detrazione per la pausa pubblicitaria, e quanti punti ha tolto (sempre ≥ 0). Sono <code>false</code> e <code>0</code> su un punteggio fermo.</td>
 </tr>
 <tr>
 <td><code>winProbabilityVariance?</code></td>
-<td>−5 to +5. Absent, not <code>0</code>, without enough win-probability data.</td>
+<td>Da −5 a +5. Assente, non <code>0</code>, senza abbastanza dati di probabilità di vittoria.</td>
 </tr>
 <tr>
 <td><code>baseTotal</code></td>
-<td>Signals less the break deduction plus the modifier, 0 to 100, before any boost.</td>
+<td>I segnali meno la detrazione per la pausa più il modificatore, da 0 a 100, prima di qualsiasi boost.</td>
 </tr>
 <tr>
 <td><code>classicTotal?</code></td>
-<td>Classic’s own total, when the mode blends with it.</td>
+<td>Il totale di Classica stessa, quando la modalità si combina con lei.</td>
 </tr>
 <tr>
 <td><code>blend?</code></td>
-<td>How a blended mode reached its total. See <a href="#blendresult"><code>BlendResult</code></a>.</td>
+<td>Come una modalità combinata è arrivata al suo totale. Vedi <a href="#blendresult"><code>BlendResult</code></a>.</td>
 </tr>
 <tr>
 <td><code>boosts</code></td>
-<td>Every boost the mode pays, at 0 when it isn’t paying. Plus <code>favoriteBoost</code>, <code>postseasonBoost</code>, and <code>gameBoost</code> once you’ve asked for them.</td>
+<td>Ogni boost che la modalità paga, a 0 quando non paga. Più <code>favoriteBoost</code>, <code>postseasonBoost</code> e <code>gameBoost</code> una volta che li hai richiesti.</td>
 </tr>
 <tr>
 <td><code>reasons</code></td>
-<td>Up to three sentences of plain facts, as fragments ready to translate: what is happening right now, what just happened, the score and the time, and what is at stake. See the <a href="https://github.com/hiteacheryouare/arenaswap/blob/mega/packages/powerscore/README.md#reasons">README’s reason table</a> for every key.</td>
+<td>Fino a tre frasi di fatti semplici, come frammenti pronti da tradurre: cosa sta succedendo adesso, cosa è appena successo, il punteggio e il tempo, e cosa è in palio. Vedi la <a href="https://github.com/hiteacheryouare/arenaswap/blob/mega/packages/powerscore/README.md#reasons">tabella delle ragioni nel README</a> per ogni chiave.</td>
 </tr>
 <tr>
 <td><code>reason</code></td>
-<td>The same in English, as sentences. Display text, not an API: it can change wording between versions. Don’t match on it.</td>
+<td>La stessa cosa in inglese, come frasi. Testo da mostrare, non un’API: può cambiare formulazione tra le versioni. Non confrontarlo.</td>
 </tr>
 </tbody>
 </table></div>
-<h3 id="scoredsignal-scoredboost-and-reasonfragment">ScoredSignal, ScoredBoost, and ReasonFragment</h3>
+<h3 id="scoredsignal-scoredboost-and-reasonfragment">ScoredSignal, ScoredBoost e ReasonFragment</h3>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> ScoredSignal</span><span style="color:#E1E4E8"> { </span><span style="color:#FFAB70">id</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">points</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">ceiling</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">disabled</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> boolean</span><span style="color:#E1E4E8"> }</span></span>
 <span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> ScoredBoost</span><span style="color:#E1E4E8">  { </span><span style="color:#FFAB70">id</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">points</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">meta</span><span style="color:#F97583">?:</span><span style="color:#B392F0"> Record</span><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">string</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">number</span><span style="color:#E1E4E8">&gt;; </span><span style="color:#FFAB70">details</span><span style="color:#F97583">?:</span><span style="color:#B392F0"> ReasonFragment</span><span style="color:#E1E4E8">[] }</span></span>
 <span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> ReasonFragment</span><span style="color:#E1E4E8"> { </span><span style="color:#FFAB70">key</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">params</span><span style="color:#F97583">?:</span><span style="color:#B392F0"> Record</span><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">string</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">string</span><span style="color:#F97583"> |</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">&gt; }</span></span></code></pre>
-<p><code>meta</code> on a boost carries what a UI might want to say, such as <code>{ inning: 8 }</code> on a no-hitter or <code>{ secondsLeft: 95, trailBy: 3 }</code> on a two-minute drill. A reason fragment looks like <code>{ key: 'run', params: { team: 'Lakers', scoredFor: 12, scoredAgainst: 2 } }</code>. Reason keys the built-in modes know render as English in <code>reason</code>. A key of your own renders as itself, so translate from <code>reasons</code>, not from the string.</p>
-<p><code>details</code> on a boost says what is happening in this game that the boost pays for, or doesn’t, as reason fragments for a UI to translate: <code>{ key: 'seriesClinch', params: { team: 'CHW' } }</code> on stakes, or a pulled goalie and a power play together on a hockey 6-on-4. It’s absent when there’s nothing to say, such as before a game starts or while play is stopped. There is no English renderer for these keys; the table below lists every one the built-in boosts send, with the sentence ArenaSwap shows for it.</p>
+<p><code>meta</code> su un boost porta ciò che una UI potrebbe voler dire, come <code>{ inning: 8 }</code> su un no-hitter o <code>{ secondsLeft: 95, trailBy: 3 }</code> su un two-minute drill. Un frammento di ragione è fatto così: <code>{ key: 'run', params: { team: 'Lakers', scoredFor: 12, scoredAgainst: 2 } }</code>. Le chiavi di ragione che le modalità integrate conoscono vengono rese in inglese in <code>reason</code>. Una chiave tua viene resa com’è, quindi traduci da <code>reasons</code>, non dalla stringa.</p>
+<p><code>details</code> su un boost dice cosa succede in questa partita che il boost paga, o non paga, come frammenti di ragione che una UI può tradurre: <code>{ key: 'seriesClinch', params: { team: 'CHW' } }</code> su In palio, oppure un portiere tolto e un power play insieme in un 6 contro 4 di hockey. È assente quando non c’è niente da dire, come prima dell’inizio di una partita o mentre il gioco è fermo. Per queste chiavi non esiste un renderer inglese; la tabella qui sotto elenca tutte quelle inviate dai boost integrati, con la frase che ArenaSwap mostra per ciascuna.</p>
 <div class="prose-table" tabindex="0"><table>
 <thead>
 <tr>
 <th>Boost</th>
-<th>Key</th>
-<th>Params</th>
-<th>In English</th>
+<th>Chiave</th>
+<th>Parametri</th>
+<th>In inglese</th>
 </tr>
 </thead>
 <tbody>
@@ -784,7 +784,7 @@ var e=`arenaswap.theme`,t=`(prefers-color-scheme: light)`,n={light:`#ffffff`,dar
 </tbody>
 </table></div>
 <h2 id="powerscoremode">PowerScoreMode</h2>
-<p>A mode is a list of signals plus the boosts that suit it. Build one with <a href="../api-reference/#definemode"><code>defineMode</code></a>, which checks it once, up front.</p>
+<p>Una modalità è una lista di segnali più i boost che le si addicono. Costruiscine una con <a href="../api-reference/#definemode"><code>defineMode</code></a>, che la controlla una volta sola, in anticipo.</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> PowerScoreMode</span><span style="color:#E1E4E8"> {</span></span>
 <span class="line"><span style="color:#FFAB70">	id</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#FFAB70">	signals</span><span style="color:#F97583">:</span><span style="color:#F97583"> readonly</span><span style="color:#B392F0"> SignalDefinition</span><span style="color:#E1E4E8">[];</span></span>
@@ -800,42 +800,42 @@ var e=`arenaswap.theme`,t=`(prefers-color-scheme: light)`,n={light:`#ffffff`,dar
 <div class="prose-table" tabindex="0"><table>
 <thead>
 <tr>
-<th>Field</th>
-<th>Meaning</th>
+<th>Campo</th>
+<th>Significato</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>signals</code>, <code>boosts</code></td>
-<td>In display order.</td>
+<td>In ordine di visualizzazione.</td>
 </tr>
 <tr>
 <td><code>bucketCaps</code></td>
-<td>The most a bucket of boosts may add together. Earlier boosts in the list are paid first.</td>
+<td>Il massimo che un gruppo di boost può aggiungere in totale. I boost più in alto nella lista vengono pagati per primi.</td>
 </tr>
 <tr>
 <td><code>reasonPriority</code></td>
-<td>Signal ids whose reasons may be read, most worth reading first. The strongest one gives the “what just happened” sentence; the order breaks ties.</td>
+<td>Id dei segnali le cui ragioni possono essere lette, i più degni di lettura per primi. Il più forte dà la frase “cosa è appena successo”; l’ordine risolve i pareggi.</td>
 </tr>
 <tr>
 <td><code>usesBreakPenalty</code>, <code>usesWinProbability</code></td>
-<td>Whether the commercial break deduction and the ±5 modifier apply.</td>
+<td>Se si applicano la detrazione per la pausa pubblicitaria e il modificatore di ±5.</td>
 </tr>
 <tr>
 <td><code>classicBlend</code></td>
-<td>How the mode combines with Classic.</td>
+<td>Come la modalità si combina con Classica.</td>
 </tr>
 <tr>
 <td><code>paysPostseason?</code></td>
-<td><code>false</code> withholds the postseason boost in this mode. Defaults to <code>true</code>. Blowouts sets it to <code>false</code>, since a playoff blowout has settled its result.</td>
+<td><code>false</code> trattiene il boost postseason in questa modalità. Predefinito <code>true</code>. Senso unico lo imposta a <code>false</code>, dato che una batosta di playoff ha già deciso il suo risultato.</td>
 </tr>
 <tr>
 <td><code>appliesTo</code></td>
-<td>Returns <code>false</code> for a game the mode has nothing to say about, and the game is scored as Classic.</td>
+<td>Restituisce <code>false</code> per una partita su cui la modalità non ha niente da dire, e la partita viene valutata come Classica.</td>
 </tr>
 </tbody>
 </table></div>
-<h3 id="signaldefinition-and-boostdefinition">SignalDefinition and BoostDefinition</h3>
+<h3 id="signaldefinition-and-boostdefinition">SignalDefinition e BoostDefinition</h3>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> SignalDefinition</span><span style="color:#E1E4E8"> {</span></span>
 <span class="line"><span style="color:#FFAB70">	id</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> string</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#FFAB70">	ceiling</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">;</span></span>
@@ -850,36 +850,36 @@ var e=`arenaswap.theme`,t=`(prefers-color-scheme: light)`,n={light:`#ffffff`,dar
 <span class="line"></span>
 <span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> SignalOutput</span><span style="color:#E1E4E8"> { </span><span style="color:#FFAB70">points</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">reason</span><span style="color:#F97583">?:</span><span style="color:#B392F0"> ReasonFragment</span><span style="color:#E1E4E8"> }</span></span>
 <span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> BoostOutput</span><span style="color:#F97583"> extends</span><span style="color:#B392F0"> SignalOutput</span><span style="color:#E1E4E8"> { </span><span style="color:#FFAB70">meta</span><span style="color:#F97583">?:</span><span style="color:#B392F0"> Record</span><span style="color:#E1E4E8">&lt;</span><span style="color:#79B8FF">string</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">number</span><span style="color:#E1E4E8">&gt;; </span><span style="color:#FFAB70">details</span><span style="color:#F97583">?:</span><span style="color:#B392F0"> ReasonFragment</span><span style="color:#E1E4E8">[] }</span></span></code></pre>
-<p>A signal’s <code>points</code> are clamped to its <code>ceiling</code>. A boost has no ceiling of its own, but its bucket may have a cap.</p>
+<p>I <code>points</code> di un segnale sono limitati al suo <code>ceiling</code>. Un boost non ha un massimo suo, ma il suo gruppo può avere un limite.</p>
 <h3 id="signalinput">SignalInput</h3>
-<p>What <code>compute</code> receives.</p>
+<p>Quello che riceve <code>compute</code>.</p>
 <div class="prose-table" tabindex="0"><table>
 <thead>
 <tr>
-<th>Field</th>
-<th>Meaning</th>
+<th>Campo</th>
+<th>Significato</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>game</code>, <code>context</code></td>
-<td>What was passed to <code>scoreGame</code>.</td>
+<td>Quello che è stato passato a <code>scoreGame</code>.</td>
 </tr>
 <tr>
 <td><code>sport</code>, <code>league</code></td>
-<td>The resolved <a href="#sporttypeconfig-and-leagueconfig"><code>SportTypeConfig</code></a> and <code>LeagueConfig</code>, after any overrides in <code>options</code>.</td>
+<td>Il <a href="#sporttypeconfig-and-leagueconfig"><code>SportTypeConfig</code></a> e il <code>LeagueConfig</code> risolti, dopo le eventuali sovrascritture in <code>options</code>.</td>
 </tr>
 <tr>
 <td><code>progress</code></td>
-<td>0 at the start of the game, 1 at the end of regulation and through overtime.</td>
+<td>0 all’inizio della partita, 1 alla fine dei tempi regolamentari e durante i supplementari.</td>
 </tr>
 <tr>
 <td><code>now</code></td>
-<td>The timestamp of the newest snapshot in <code>history</code>, or 0 with none.</td>
+<td>Il timestamp dello snapshot più recente in <code>history</code>, o 0 se non ce ne sono.</td>
 </tr>
 <tr>
 <td><code>margin</code></td>
-<td>The absolute score margin.</td>
+<td>Il margine assoluto di punteggio.</td>
 </tr>
 </tbody>
 </table></div>
@@ -888,7 +888,7 @@ var e=`arenaswap.theme`,t=`(prefers-color-scheme: light)`,n={light:`#ffffff`,dar
 <span class="line"><span style="color:#F97583">	|</span><span style="color:#E1E4E8"> { </span><span style="color:#FFAB70">kind</span><span style="color:#F97583">:</span><span style="color:#9ECBFF"> 'floor'</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">factor</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8"> } </span><span style="color:#6A737D">// total = max(own, factor × classic)</span></span>
 <span class="line"><span style="color:#F97583">	|</span><span style="color:#E1E4E8"> { </span><span style="color:#FFAB70">kind</span><span style="color:#F97583">:</span><span style="color:#9ECBFF"> 'mix'</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">weight</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8"> }   </span><span style="color:#6A737D">// total = weight × own + (1 − weight) × classic</span></span>
 <span class="line"><span style="color:#F97583">	|</span><span style="color:#E1E4E8"> { </span><span style="color:#FFAB70">kind</span><span style="color:#F97583">:</span><span style="color:#9ECBFF"> 'boost'</span><span style="color:#E1E4E8">; </span><span style="color:#FFAB70">weight</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8"> }; </span><span style="color:#6A737D">// total = min(100, classic + weight × own)</span></span></code></pre>
-<p>Blowouts uses a floor with a factor of 0.3. Fantasy uses a boost with a weight of 0.6, so your players’ games can only rise above their Classic score. The built-in modes don’t use <code>mix</code>, but it’s there for modes of your own.</p>
+<p>Senso unico usa un floor con fattore 0.3. Fantasy usa un boost con peso 0.6, quindi le partite dei tuoi giocatori possono solo salire sopra il loro punteggio Classica. Le modalità integrate non usano <code>mix</code>, ma c’è per le modalità tue.</p>
 <h3 id="blendresult">BlendResult</h3>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> BlendResult</span><span style="color:#E1E4E8"> {</span></span>
 <span class="line"><span style="color:#FFAB70">	kind</span><span style="color:#F97583">:</span><span style="color:#B392F0"> ClassicBlend</span><span style="color:#E1E4E8">[</span><span style="color:#9ECBFF">'kind'</span><span style="color:#E1E4E8">];</span></span>
@@ -897,10 +897,10 @@ var e=`arenaswap.theme`,t=`(prefers-color-scheme: light)`,n={light:`#ffffff`,dar
 <span class="line"><span style="color:#FFAB70">	classicTotal</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">;   </span><span style="color:#6A737D">// Classic's, likewise</span></span>
 <span class="line"><span style="color:#FFAB70">	floorApplied</span><span style="color:#F97583">?:</span><span style="color:#79B8FF"> boolean</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">// for a floor, whether Classic's share won</span></span>
 <span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
-<p><code>score.blend</code> carries one when a mode blended with Classic, so a breakdown can show the arithmetic.</p>
-<h2 id="sporttypeconfig-and-leagueconfig">SportTypeConfig and LeagueConfig</h2>
-<p><code>SportTypeConfig</code> holds everything about how a sport plays. That covers closeness thresholds, momentum and comeback thresholds, decay half-lives, whether the sport has a clock, and (baseball and softball only) a <code>lateGameCurve</code>. <code>LeagueConfig</code> holds how long a specific league’s periods run: <code>id</code>, <code>label</code>, <code>sportType</code>, <code>regularPeriods</code>, <code>periodDurationSecs</code>, and <code>periodFormat</code>. It also carries fields ArenaSwap uses for its own fetching and schedule bars, which the scorer doesn’t read.</p>
-<p>A few fields are optional, and only some entries set them: <code>lateGameCurve</code> (baseball and softball), <code>clockIsFullGameElapsed</code> (soccer), <code>zeroZeroPenaltyPeriods</code> (hockey and soccer), and <code>knockoutRunMinutes</code> (the two World Cups and both Olympic soccer tournaments). Through <code>options.sport</code> and <code>options.league</code>, you can pass any subset as a <code>Partial</code> to override one per call. Field-by-field meaning and every sport and league’s actual values are in <a href="../configuration/">Sport and league configuration</a>.</p>
+<p><code>score.blend</code> ne porta uno quando una modalità si è combinata con Classica, così una scomposizione può mostrare l’aritmetica.</p>
+<h2 id="sporttypeconfig-and-leagueconfig">SportTypeConfig e LeagueConfig</h2>
+<p><code>SportTypeConfig</code> contiene tutto su come si gioca uno sport. Comprende le soglie di equilibrio, le soglie di momentum e rimonta, i tempi di dimezzamento del decadimento, se lo sport ha un cronometro e (solo baseball e softball) una <code>lateGameCurve</code>. <code>LeagueConfig</code> contiene quanto durano i periodi di una lega specifica: <code>id</code>, <code>label</code>, <code>sportType</code>, <code>regularPeriods</code>, <code>periodDurationSecs</code> e <code>periodFormat</code>. Porta anche campi che ArenaSwap usa per il proprio recupero dei dati e per le barre del calendario, che il punteggio non legge.</p>
+<p>Alcuni campi sono facoltativi, e solo certe voci li impostano: <code>lateGameCurve</code> (baseball e softball), <code>clockIsFullGameElapsed</code> (calcio), <code>zeroZeroPenaltyPeriods</code> (hockey e calcio) e <code>knockoutRunMinutes</code> (i due Mondiali e i due tornei olimpici di calcio). Con <code>options.sport</code> e <code>options.league</code> puoi passare un sottoinsieme qualsiasi come <code>Partial</code> per sovrascriverne uno per chiamata. Il significato campo per campo e i valori effettivi di ogni sport e lega sono in <a href="../configuration/">Configurazione di sport e leghe</a>.</p>
 <h2 id="lategamecurveconfig">LateGameCurveConfig</h2>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> BaseballLateGameCurveConfig</span><span style="color:#E1E4E8"> {</span></span>
 <span class="line"><span style="color:#FFAB70">	model</span><span style="color:#F97583">:</span><span style="color:#9ECBFF"> 'baseball'</span><span style="color:#E1E4E8">;</span></span>
@@ -909,53 +909,53 @@ var e=`arenaswap.theme`,t=`(prefers-color-scheme: light)`,n={light:`#ffffff`,dar
 <span class="line"><span style="color:#E1E4E8">}</span></span>
 <span class="line"></span>
 <span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> LateGameCurveConfig</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> BaseballLateGameCurveConfig</span><span style="color:#E1E4E8">;</span></span></code></pre>
-<p>Only baseball and softball set <code>SportTypeConfig.lateGameCurve</code>. Clock sports derive their late-game ramp from <code>period</code> and <code>clockSeconds</code> directly, and leave the field <code>undefined</code>. There is nothing else for a clock-based sport to configure here, so the type currently has only one shape.</p>
+<p>Solo baseball e softball impostano <code>SportTypeConfig.lateGameCurve</code>. Gli sport a cronometro ricavano la rampa di fine gara direttamente da <code>period</code> e <code>clockSeconds</code>, e lasciano il campo <code>undefined</code>. Non c’è altro da configurare qui per uno sport a cronometro, quindi per ora il tipo ha una sola forma.</p>
 <h2 id="scorertunables">ScorerTunables</h2>
-<p>The single exported object holding every tier value the engine scores with. It’s a fully populated constant, not a partial config.</p>
+<p>L’unico oggetto esportato che contiene ogni valore di fascia con cui il motore valuta. È una costante completa, non una configurazione parziale.</p>
 <div class="prose-table" tabindex="0"><table>
 <thead>
 <tr>
-<th>Branch</th>
-<th>Holds</th>
+<th>Ramo</th>
+<th>Contiene</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>scores.closeness</code></td>
-<td>The closeness tier ceilings (<code>tied</code>, <code>tight</code>, <code>zeroZero</code>, <code>close</code>, <code>fringe</code>, <code>none</code>). See <a href="../signals/#closeness">Classic’s closeness signal</a>.</td>
+<td>I massimi delle fasce di equilibrio (<code>tied</code>, <code>tight</code>, <code>zeroZero</code>, <code>close</code>, <code>fringe</code>, <code>none</code>). Vedi <a href="../signals/#closeness">il segnale equilibrio di Classica</a>.</td>
 </tr>
 <tr>
 <td><code>scores.closenessFlatFloor</code></td>
-<td>The flat floor every closeness tier pays out before progress scaling.</td>
+<td>Il minimo fisso che ogni fascia di equilibrio paga prima della scalatura per avanzamento.</td>
 </tr>
 <tr>
 <td><code>scores.lateGame</code></td>
-<td>The late-game ceilings, the overtime pre-boost, and the previous-period touch. See <a href="../signals/#late-game-pressure">Late-Game Pressure</a>.</td>
+<td>I massimi di fine gara, il pre-boost dei supplementari e il tocco del periodo precedente. Vedi <a href="../signals/#late-game-pressure">Fine gara</a>.</td>
 </tr>
 <tr>
 <td><code>scores.momentum</code></td>
-<td>The two momentum tier values. See <a href="../signals/#momentum-lead-changes-and-comeback-factor">Momentum</a>.</td>
+<td>I due valori di fascia del momentum. Vedi <a href="../signals/#momentum-lead-changes-and-comeback-factor">Momentum</a>.</td>
 </tr>
 <tr>
 <td><code>scores.leadChanges</code></td>
-<td>The two lead-change tier values.</td>
+<td>I due valori di fascia dei sorpassi.</td>
 </tr>
 <tr>
 <td><code>scores.comeback</code></td>
-<td>The two comeback tier values and its flat floor.</td>
+<td>I due valori di fascia della rimonta e il suo minimo fisso.</td>
 </tr>
 <tr>
 <td><code>scores.winProbabilityVariance</code></td>
-<td><code>maxAvgDist</code> and <code>minDataPoints</code>, tabulated in <a href="../boosts-and-penalties/#win-probability-balance">Boosts and penalties</a>.</td>
+<td><code>maxAvgDist</code> e <code>minDataPoints</code>, in tabella in <a href="../boosts-and-penalties/#win-probability-balance">Boost e penalità</a>.</td>
 </tr>
 <tr>
 <td><code>reasons</code></td>
-<td>Only <code>fallback</code> (“best game available”), the reason the deprecated flat result falls back to. The English phrasing lives in <code>renderReasonEnglish</code>.</td>
+<td>Solo <code>fallback</code> (“best game available”), la ragione su cui ricade il risultato piatto deprecato. La formulazione inglese sta in <code>renderReasonEnglish</code>.</td>
 </tr>
 </tbody>
 </table></div>
-<h2 id="fantasyrule-and-fantasysport">FantasyRule and FantasySport</h2>
-<p>The types behind <a href="../api-reference/#computefantasypoints"><code>defaultFantasyScoring</code></a>.</p>
+<h2 id="fantasyrule-and-fantasysport">FantasyRule e FantasySport</h2>
+<p>I tipi dietro <a href="../api-reference/#computefantasypoints"><code>defaultFantasyScoring</code></a>.</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> FantasySport</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> 'football'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'basketball'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'baseball'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'hockey'</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"></span>
 <span class="line"><span style="color:#F97583">interface</span><span style="color:#B392F0"> FantasyRule</span><span style="color:#E1E4E8"> {</span></span>
@@ -963,90 +963,90 @@ var e=`arenaswap.theme`,t=`(prefers-color-scheme: light)`,n={light:`#ffffff`,dar
 <span class="line"><span style="color:#FFAB70">	min</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#FFAB70">	max</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
-<p><code>min</code> and <code>max</code> are the bounds a settings screen can enforce, and <code>resolveFantasyScoring</code> clamps an override to them.</p>
-<h2 id="sporttype-and-leagueid">SportType and LeagueId</h2>
+<p><code>min</code> e <code>max</code> sono i limiti che una schermata di impostazioni può far rispettare, e <code>resolveFantasyScoring</code> limita una sovrascrittura a quei valori.</p>
+<h2 id="sporttype-and-leagueid">SportType e LeagueId</h2>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> SportType</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> 'basketball'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'football'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'hockey'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'baseball'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'softball'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'soccer'</span><span style="color:#E1E4E8">;</span></span>
 <span class="line"><span style="color:#F97583">type</span><span style="color:#B392F0"> LeagueId</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> 'nba'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'wnba'</span><span style="color:#F97583"> |</span><span style="color:#9ECBFF"> 'nhl'</span><span style="color:#F97583"> |</span><span style="color:#6A737D"> /* ...31 total */</span><span style="color:#E1E4E8">;</span></span></code></pre>
-<p><code>SportType</code> is a closed union. <code>LeagueId</code> is the 31 leagues with built-in tuning, but it doesn’t limit a <code>Game</code>: a game’s <code>league</code> can be any string with <code>Game&lt;string&gt;</code>, and an id the table doesn’t know is scored with its sport’s defaults. The full list of 31 league ids is in <a href="../configuration/">Sport and league configuration</a>. It’s also available at runtime as <code>allLeagueIds</code>.</p>
+<p><code>SportType</code> è un’unione chiusa. <code>LeagueId</code> sono le 31 leghe con taratura integrata, ma non limita un <code>Game</code>: la <code>league</code> di una partita può essere qualsiasi stringa con <code>Game&lt;string&gt;</code>, e un id che la tabella non conosce viene valutato con i valori predefiniti del suo sport. L’elenco completo dei 31 id di lega è in <a href="../configuration/">Configurazione di sport e leghe</a>. È disponibile anche a runtime come <code>allLeagueIds</code>.</p>
 <h2 id="powerscoreresult-2x">PowerScoreResult (2.x)</h2>
-<p>Deprecated, still exported, still working. The flat output of <code>computePowerScore</code>, and the shape <code>normalizePowerScoreResult</code> accepts a partial version of. <code>scoreGame</code> doesn’t return it.</p>
+<p>Deprecato, ancora esportato, ancora funzionante. L’output piatto di <code>computePowerScore</code>, e la forma di cui <code>normalizePowerScoreResult</code> accetta una versione parziale. <code>scoreGame</code> non lo restituisce.</p>
 <div class="prose-table" tabindex="0"><table>
 <thead>
 <tr>
-<th>Field</th>
-<th>Type</th>
-<th>Missing means</th>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Se manca</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>gameId</code></td>
 <td><code>string</code></td>
-<td>Required everywhere this type appears.</td>
+<td>Obbligatorio ovunque compaia questo tipo.</td>
 </tr>
 <tr>
 <td><code>total</code></td>
 <td><code>number</code></td>
-<td>Set by <code>computePowerScore</code>. 0 to <code>scoreMaxTotal</code> (100), unless produced through <code>normalizePowerScoreResult</code> with <code>allowTotalOverflow</code>.</td>
+<td>Impostato da <code>computePowerScore</code>. Da 0 a <code>scoreMaxTotal</code> (100), a meno che sia prodotto tramite <code>normalizePowerScoreResult</code> con <code>allowTotalOverflow</code>.</td>
 </tr>
 <tr>
 <td><code>closeness</code></td>
 <td><code>number</code></td>
-<td>0 to <code>scoreMaxCloseness</code> (42).</td>
+<td>Da 0 a <code>scoreMaxCloseness</code> (42).</td>
 </tr>
 <tr>
 <td><code>lateGame</code></td>
 <td><code>number</code></td>
-<td>0 to <code>scoreMaxLateGame</code> (38).</td>
+<td>Da 0 a <code>scoreMaxLateGame</code> (38).</td>
 </tr>
 <tr>
 <td><code>momentum</code></td>
 <td><code>number</code></td>
-<td>0 to <code>scoreMaxMomentum</code> (38).</td>
+<td>Da 0 a <code>scoreMaxMomentum</code> (38).</td>
 </tr>
 <tr>
 <td><code>leadChanges</code></td>
 <td><code>number</code></td>
-<td>0 to <code>scoreMaxLeadChanges</code> (18).</td>
+<td>Da 0 a <code>scoreMaxLeadChanges</code> (18).</td>
 </tr>
 <tr>
 <td><code>comeback</code></td>
 <td><code>number</code></td>
-<td>0 to <code>scoreMaxComeback</code> (20).</td>
+<td>Da 0 a <code>scoreMaxComeback</code> (20).</td>
 </tr>
 <tr>
 <td><code>winProbabilityVariance?</code></td>
 <td><code>number</code></td>
-<td>−<code>scoreWinProbVarianceMax</code> to <code>scoreWinProbVarianceMax</code> (±5). Absent, not <code>0</code>, when no win-probability history was supplied or too little of it was usable.</td>
+<td>Da −<code>scoreWinProbVarianceMax</code> a <code>scoreWinProbVarianceMax</code> (±5). Assente, non <code>0</code>, quando non è stato fornito nessuno storico di probabilità di vittoria o ne era utilizzabile troppo poco.</td>
 </tr>
 <tr>
 <td><code>reason</code></td>
 <td><code>string</code></td>
-<td>Falls back to <code>scorerTunables.reasons.fallback</code> (“best game available”) when absent or not a string.</td>
+<td>Ricade su <code>scorerTunables.reasons.fallback</code> (“best game available”) quando manca o non è una stringa.</td>
 </tr>
 <tr>
 <td><code>onBreak?</code></td>
 <td><code>boolean</code></td>
-<td>Absent reads as <code>false</code>. <code>normalizePowerScoreResult</code> passes it through when it’s a boolean.</td>
+<td>Assente si legge come <code>false</code>. <code>normalizePowerScoreResult</code> lo passa com’è quando è un booleano.</td>
 </tr>
 <tr>
 <td><code>breakPenalty?</code></td>
 <td><code>number</code></td>
-<td>Points removed, always ≥ 0. Absent, not <code>0</code>, when none was supplied. <code>computePowerScore</code> doesn’t set it.</td>
+<td>Punti tolti, sempre ≥ 0. Assente, non <code>0</code>, quando non ne è stato fornito nessuno. <code>computePowerScore</code> non lo imposta.</td>
 </tr>
 <tr>
 <td><code>signalsSubtotal?</code></td>
 <td><code>number</code></td>
-<td>The five signals’ sum before the break penalty, 0 to <code>scoreMaxSignalsSubtotal</code> (156).</td>
+<td>La somma dei cinque segnali prima della penalità per la pausa, da 0 a <code>scoreMaxSignalsSubtotal</code> (156).</td>
 </tr>
 <tr>
 <td><code>favoriteBonus?</code>, <code>favoriteTeamCount?</code>, <code>gameBoost?</code>, <code>scoringOpportunityBoost?</code>, <code>postseasonBoost?</code></td>
 <td><code>number</code></td>
-<td>Not computed by <code>computePowerScore</code>. Absent unless a caller supplies them.</td>
+<td>Non calcolati da <code>computePowerScore</code>. Assenti a meno che li fornisca chi chiama.</td>
 </tr>
 </tbody>
 </table></div>
-<p><code>scoreGame</code> folds the favorite, postseason, and game boosts in for you, so you never need to build a <code>PowerScoreResult</code> by hand with it. Everything 2.x still exports is listed in <a href="../api-reference/#the-2x-api">the API reference</a>.</p>
-</article><nav class="docs-adjacent" aria-label="Articoli vicini"><a href="/arenaswap/it/docs/powerscore/api-reference/" lang="en"><span aria-hidden="true">← </span>PowerScore API reference</a></nav></div></div></div><script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"PowerScore TypeScript types","description":"Every field on Game, ScoringContext, ScoreOptions, PowerScore, and the mode and config types, which ones are optional, and what happens when an optional one is missing.","url":"https://hiteacheryouare.github.io/arenaswap/docs/powerscore/types/","inLanguage":"en","isPartOf":{"@type":"WebSite","name":"ArenaSwap","url":"https://hiteacheryouare.github.io/arenaswap/"},"publisher":{"@type":"Organization","name":"Lattice & Company"}}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Documentation","item":"https://hiteacheryouare.github.io/arenaswap/docs/"},{"@type":"ListItem","position":2,"name":"PowerScore","item":"https://hiteacheryouare.github.io/arenaswap/docs/powerscore/"},{"@type":"ListItem","position":3,"name":"PowerScore TypeScript types","item":"https://hiteacheryouare.github.io/arenaswap/docs/powerscore/types/"}]}</script></main><footer class="site-footer"><div class="container"><div class="footer-top"><div class="footer-brand"><a href="/arenaswap/it/" title="ArenaSwap" class="footer-brand-item"><img src="/arenaswap/_astro/full_logo_white_on_transparent.B23MbHNo_sIxSY.svg" alt="ArenaSwap" loading="lazy" decoding="async" width="1790" height="471" class="footer-arenaswap-mark for-dark"><img src="/arenaswap/_astro/full_logo_black.CKJ9z6l8_sIxSY.svg" alt="ArenaSwap" loading="lazy" decoding="async" width="1790" height="471" class="footer-arenaswap-mark for-light"></a><p class="footer-tagline">Costruito da tifosi, per tifosi.</p></div><div><p class="footer-col-label">Prodotto</p><ul class="list-unstyled footer-links"><li><a href="/arenaswap/it/faq/">FAQ</a></li><li><a href="/arenaswap/it/docs/">Documentazione</a></li><li><a href="/arenaswap/it/powerscore/">Pacchetto PowerScore</a></li><li><a href="/arenaswap/it/releases/">Note di rilascio</a></li><li><a href="https://github.com/hiteacheryouare/arenaswap">GitHub</a></li></ul></div><div><p class="footer-col-label">Note legali</p><ul class="list-unstyled footer-links"><li><a href="/arenaswap/it/legal/privacy/">Privacy</a></li><li><a href="/arenaswap/it/legal/licenses/">Licenze</a></li><li><a href="/arenaswap/it/legal/credits/">Crediti</a></li><li><a href="/arenaswap/it/legal/terms/">Clausole di esclusione</a></li></ul></div><div><p class="footer-col-label">Installa</p><ul class="list-unstyled footer-links"><li><a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee"><i class="bi bi-browser-chrome" aria-hidden="true"></i>Chrome Web Store</a></li><li><a href="https://addons.mozilla.org/addon/arenaswap/"><i class="bi bi-browser-firefox" aria-hidden="true"></i>Firefox Add-ons</a></li><li><a href="https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba"><i class="bi bi-browser-edge" aria-hidden="true"></i>Edge Add-ons</a></li></ul></div></div><div class="footer-bottom"><a href="https://latticeandcompany.github.io" title="Lattice &amp; Company" class="footer-brand-item latticeco-lockup"><img src="/arenaswap/_astro/lattice-rosette-white.cvDYXqm3_Z1reiWw.svg" alt aria-hidden="true" loading="lazy" decoding="async" width="516" height="516" class="latticeco-mark for-dark"><img src="/arenaswap/_astro/lattice-rosette-black.CC876qNF_Z1reiWw.svg" alt aria-hidden="true" loading="lazy" decoding="async" width="516" height="516" class="latticeco-mark for-light"><span class="latticeco-word">Lattice <span class="latticeco-amp">&amp;</span> Company</span></a><div class="footer-icons"><a href="https://github.com/hiteacheryouare/arenaswap" title="GitHub" class="footer-icon-link"><i class="bi bi-github"></i></a><a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee" title="Chrome Web Store" class="footer-icon-link"><i class="bi bi-browser-chrome"></i></a><a href="https://addons.mozilla.org/addon/arenaswap/" title="Firefox Add-ons" class="footer-icon-link"><i class="bi bi-browser-firefox"></i></a><a href="https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba" title="Edge Add-ons" class="footer-icon-link"><i class="bi bi-browser-edge"></i></a></div></div><p class="footer-disclaimer">Non affiliato con e non sostenuto da NFL, NBA, NHL, MLB, MLS o qualsiasi altro campionato monitorato da questa estensione. <a href="/arenaswap/it/legal/">Note legali</a>. <a href="/arenaswap/it/legal/licenses/">ISC License</a></p><p class="footer-credit">Fatto con ❤️ a Philadelphia e Boston da <a href="https://hiteacheryouare.github.io">Ryan Mullin</a></p></div></footer><script type="module">/*! ArenaSwap v3.0.0 Copyright (c) 2026 Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */
+<p><code>scoreGame</code> inserisce per te i boost preferita, postseason e partita, quindi con lui non devi mai costruire a mano un <code>PowerScoreResult</code>. Tutto quello che la 2.x esporta ancora è elencato in <a href="../api-reference/#the-2x-api">il riferimento API</a>.</p>
+</article><nav class="docs-adjacent" aria-label="Articoli vicini"><a href="/arenaswap/it/docs/powerscore/api-reference/"><span aria-hidden="true">← </span>Riferimento API di PowerScore</a></nav></div></div></div><script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"I tipi TypeScript di PowerScore","description":"Ogni campo di Game, ScoringContext, ScoreOptions, PowerScore e dei tipi di modalità e configurazione, quali sono facoltativi e cosa succede quando uno facoltativo manca.","url":"https://hiteacheryouare.github.io/arenaswap/it/docs/powerscore/types/","inLanguage":"it","isPartOf":{"@type":"WebSite","name":"ArenaSwap","url":"https://hiteacheryouare.github.io/arenaswap/it/"},"publisher":{"@type":"Organization","name":"Lattice & Company"}}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Documentazione","item":"https://hiteacheryouare.github.io/arenaswap/it/docs/"},{"@type":"ListItem","position":2,"name":"PowerScore","item":"https://hiteacheryouare.github.io/arenaswap/it/docs/powerscore/"},{"@type":"ListItem","position":3,"name":"I tipi TypeScript di PowerScore","item":"https://hiteacheryouare.github.io/arenaswap/it/docs/powerscore/types/"}]}</script></main><footer class="site-footer"><div class="container"><div class="footer-top"><div class="footer-brand"><a href="/arenaswap/it/" title="ArenaSwap" class="footer-brand-item"><img src="/arenaswap/_astro/full_logo_white_on_transparent.B23MbHNo_sIxSY.svg" alt="ArenaSwap" loading="lazy" decoding="async" width="1790" height="471" class="footer-arenaswap-mark for-dark"><img src="/arenaswap/_astro/full_logo_black.CKJ9z6l8_sIxSY.svg" alt="ArenaSwap" loading="lazy" decoding="async" width="1790" height="471" class="footer-arenaswap-mark for-light"></a><p class="footer-tagline">Costruito da tifosi, per tifosi.</p></div><div><p class="footer-col-label">Prodotto</p><ul class="list-unstyled footer-links"><li><a href="/arenaswap/it/faq/">FAQ</a></li><li><a href="/arenaswap/it/docs/">Documentazione</a></li><li><a href="/arenaswap/it/powerscore/">Pacchetto PowerScore</a></li><li><a href="/arenaswap/it/releases/">Note di rilascio</a></li><li><a href="https://github.com/hiteacheryouare/arenaswap">GitHub</a></li></ul></div><div><p class="footer-col-label">Note legali</p><ul class="list-unstyled footer-links"><li><a href="/arenaswap/it/legal/privacy/">Privacy</a></li><li><a href="/arenaswap/it/legal/licenses/">Licenze</a></li><li><a href="/arenaswap/it/legal/credits/">Crediti</a></li><li><a href="/arenaswap/it/legal/terms/">Clausole di esclusione</a></li></ul></div><div><p class="footer-col-label">Installa</p><ul class="list-unstyled footer-links"><li><a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee"><i class="bi bi-browser-chrome" aria-hidden="true"></i>Chrome Web Store</a></li><li><a href="https://addons.mozilla.org/addon/arenaswap/"><i class="bi bi-browser-firefox" aria-hidden="true"></i>Firefox Add-ons</a></li><li><a href="https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba"><i class="bi bi-browser-edge" aria-hidden="true"></i>Edge Add-ons</a></li></ul></div></div><div class="footer-bottom"><a href="https://latticeandcompany.github.io" title="Lattice &amp; Company" class="footer-brand-item latticeco-lockup"><img src="/arenaswap/_astro/lattice-rosette-white.cvDYXqm3_Z1reiWw.svg" alt aria-hidden="true" loading="lazy" decoding="async" width="516" height="516" class="latticeco-mark for-dark"><img src="/arenaswap/_astro/lattice-rosette-black.CC876qNF_Z1reiWw.svg" alt aria-hidden="true" loading="lazy" decoding="async" width="516" height="516" class="latticeco-mark for-light"><span class="latticeco-word">Lattice <span class="latticeco-amp">&amp;</span> Company</span></a><div class="footer-icons"><a href="https://github.com/hiteacheryouare/arenaswap" title="GitHub" class="footer-icon-link"><i class="bi bi-github"></i></a><a href="https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee" title="Chrome Web Store" class="footer-icon-link"><i class="bi bi-browser-chrome"></i></a><a href="https://addons.mozilla.org/addon/arenaswap/" title="Firefox Add-ons" class="footer-icon-link"><i class="bi bi-browser-firefox"></i></a><a href="https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba" title="Edge Add-ons" class="footer-icon-link"><i class="bi bi-browser-edge"></i></a></div></div><p class="footer-disclaimer">Non affiliato con e non sostenuto da NFL, NBA, NHL, MLB, MLS o qualsiasi altro campionato monitorato da questa estensione. <a href="/arenaswap/it/legal/">Note legali</a>. <a href="/arenaswap/it/legal/licenses/">ISC License</a></p><p class="footer-credit">Fatto con ❤️ a Philadelphia e Boston da <a href="https://hiteacheryouare.github.io">Ryan Mullin</a></p></div></footer><script type="module">/*! ArenaSwap v3.0.0 Copyright (c) 2026 Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */
 var e=/* @__PURE__ */ new Set([`SCRIPT`,`STYLE`,`NOSCRIPT`,`CODE`,`PRE`,`KBD`,`SAMP`,`TEXTAREA`,`INPUT`,`CANVAS`,`SVG`,`ASTRO-ISLAND`]),t=t=>{let n=t instanceof Element?t:t?.parentElement??null;for(;n;){if(e.has(n.tagName)||n.hasAttribute(`data-no-dots`)||n.classList.contains(`as-dot`))return!0;n=n.parentElement}return!1},n=e=>!!e&&(e.includes(`.`)||e.includes(`。`)),r=(e,t)=>e===`。`||e===`.`&&(t===void 0||/[\s.)\]"'”’»]/u.test(t)),i=e=>{let i=e.nodeValue;if(!n(i)||t(e.parentElement))return;let a=[...i];if(!a.some((e,t)=>r(e,a[t+1])))return;let o=document.createDocumentFragment(),s=``;for(let[e,t]of a.entries())if(r(t,a[e+1])){s&&=(o.appendChild(document.createTextNode(s)),``);let e=document.createElement(`span`);e.className=`as-dot`,e.textContent=t,o.appendChild(e)}else s+=t;s&&o.appendChild(document.createTextNode(s)),e.parentNode?.replaceChild(o,e)},a=()=>{if(t(document.body))return;let e=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode(e){return n(e.nodeValue)&&!t(e.parentElement)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT}}),r=[];for(;e.nextNode();)r.push(e.currentNode);r.forEach(i)};document.readyState===`loading`?document.addEventListener(`DOMContentLoaded`,a):a();</script><script type="module" src="/arenaswap/_astro/Shell.astro_astro_type_script_index_0_lang.BTkMYP7-.js"></script><script type="module">/*! ArenaSwap v3.0.0 Copyright (c) 2026 Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */
 var e=document.querySelectorAll(`.reveal`),t=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&e.target.classList.add(`visible`)})},{threshold:.12,rootMargin:`0px 0px -40px 0px`});e.forEach(e=>t.observe(e));</script></body></html>

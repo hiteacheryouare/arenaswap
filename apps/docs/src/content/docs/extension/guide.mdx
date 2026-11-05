@@ -1,0 +1,65 @@
+---
+title: How to use the Guide to plan your viewing
+description: The Guide lays out every game on a timeline, shades the best stretch of the day to watch, and lets you boost a game before it starts.
+section: extension
+order: 13
+navLabel: The Guide
+faq:
+  - q: How far ahead does the Guide show games in ArenaSwap?
+    a: "As far as your Days ahead setting, from 1 to 14 days. It starts at 7. The Guide always shows at least 3 days, and keeps games that ended in the last day."
+  - q: What does Best time to watch mean in the Guide?
+    a: The part of the day with the most games on, counting late-game stretches and your favorite teams' games extra. The header tells you the hours and how many games are yours.
+  - q: Does a Game Boost set in the Guide change what ArenaSwap switches to?
+    a: Yes. It's the same Game Boost you'd set on the game's detail screen, and it works the same way.
+---
+
+import Demo from '../../../components/docs/Demo.astro';
+
+The popup shows what's on now. The Guide shows the rest of the day, so you know when to clear the couch.
+
+## Open the Guide
+
+Click the calendar icon labeled **Guide** in the popup's top bar. It opens in its own browser tab, so you can leave it next to your games.
+
+## Read the timeline
+
+Each row is a game, grouped by league, with the hours across the top.
+
+- A bar runs from the start of the game to roughly when it should end.
+- A line marks the current time, and today's page opens scrolled to it.
+- An upcoming game shows its start time and channel. A live game shows the score and clock. A finished game shows its score and **Final**.
+- A filled star on a bar means one of your teams is playing.
+- Hover over a bar for the matchup and start time.
+
+<Demo name='guide' />
+
+You'll only see the leagues you've turned on in Settings.
+
+## Look at other days
+
+Use **Previous day** and **Next day** to move one day at a time. Days with no games are skipped.
+
+How far ahead you can go is **Days ahead**, under Game List in Settings. It runs from 1 to 14 days and starts at 7. The Guide always shows at least 3 days. Games that finished in the last day stay on the grid.
+
+## Find the best time to watch
+
+**Best time to watch** is on by default. It shades the stretch of the day with the most games on at once. Games near the finish count for more than games just starting, and so do your favorite teams.
+
+The header spells it out, like "3 games · 1 of yours". Turn the switch off to hide the shading.
+
+## Open a game
+
+Click any bar and the game opens in a panel on the right. [Game details](/arenaswap/docs/extension/game-details/) covers what's in it.
+
+- Click another bar to swap games, and **Close** or Escape to put the panel away.
+- Before a game starts, star either team. The star shows on every bar for that team.
+- Add a **Game Boost** to a game you don't want to miss. Do it before kickoff and ArenaSwap starts it with a head start.
+
+To link a game to a tab, use the popup. The Guide can't do that.
+
+## Related
+
+- [Game details](/arenaswap/docs/extension/game-details/) covers the screen the Guide opens, including Game Boost.
+- [How to set favorite teams in ArenaSwap](/arenaswap/docs/extension/favorite-teams/) explains the stars.
+- [ArenaSwap settings reference](/arenaswap/docs/extension/settings/) lists Days ahead and Show upcoming games.
+- [How to watch multiple games at once](/arenaswap/docs/extension/watching-multiple-games/) covers linking tabs to the games you plan to watch.

@@ -235,9 +235,21 @@
 		opacity: 1;
 	}
 
+	// See-through rather than hidden or moved offscreen, either of which Chrome takes as a reason to pause the stream.
+	.multiview-box-hidden {
+		z-index: 0;
+		animation: multiview-box-out 0.45s ease both;
+		pointer-events: none;
+	}
+
 	@keyframes multiview-box-in {
 		from { opacity: 0; }
 		to { opacity: 1; }
+	}
+
+	@keyframes multiview-box-out {
+		from { opacity: 1; }
+		to { opacity: 0; }
 	}
 
 	.multiview-bar {
@@ -330,12 +342,6 @@
 		width: min(42cqh, 36cqw);
 		height: min(42cqh, 36cqw);
 		filter: drop-shadow(0 0.25rem 0.75rem rgb(3 7 12 / 0.35));
-
-		.crest-fallback {
-			font-weight: 800;
-			font-size: 14cqh;
-			text-shadow: 0 1px 3px rgb(3 7 12 / 0.5);
-		}
 	}
 
 	.multiview-off-air-mark {
@@ -354,12 +360,40 @@
 		transform: translate(-50%, -50%);
 	}
 
-	.multiview-empty {
-		position: relative;
-		margin: 0;
-		padding: 0 2rem;
+	// A box's off-air card, the size of the whole tab.
+	.multiview-closed {
+		padding: 2rem;
 		color: var(--as-fg-body);
-		text-align: center;
-		text-shadow: 0 1px 3px rgb(0 0 0 / 0.6);
+	}
+
+	.multiview-closed-mark {
+		width: clamp(10rem, 24cqw, 18rem);
+		margin-bottom: 3.5rem;
+		filter: drop-shadow(0 1px 3px rgb(3 7 12 / 0.6));
+	}
+
+	.multiview-closed-title {
+		margin: 0 0 1rem;
+		font-size: clamp(2.25rem, 4vw, 3rem);
+		font-weight: 700;
+		letter-spacing: -0.04em;
+		line-height: 1;
+
+		// The store art's full stop, and the ideographic one where the language ends on that.
+		&::after {
+			content: '.';
+			color: var(--as-primary-base);
+		}
+
+		&:is(:lang(ja), :lang(zh))::after {
+			content: '。';
+		}
+	}
+
+	.multiview-empty {
+		max-width: 28rem;
+		margin: 0 0 2rem;
+		color: var(--as-fg-2);
+		text-wrap: balance;
 	}
 }

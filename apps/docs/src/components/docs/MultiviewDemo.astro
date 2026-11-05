@@ -1,0 +1,34 @@
+---
+import { teamLogoOnColor } from '@arenaswap/core/constants';
+import Crest from '@arenaswap/ui/src/components/crest';
+import { buildGameCardSurface, teamsInOrder } from '@arenaswap/ui/src/components/gameCardShared';
+import { arizonaPurdue, arsenalChelsea, celticsKnicks, flyersPenguins } from './demoGames';
+
+// Four games is a 2×2 grid in the extension. The game with the sound is the highest PowerScore.
+const boxes = [celticsKnicks, flyersPenguins, arizonaPurdue, arsenalChelsea].map((entry, index) => {
+	const surface = buildGameCardSurface(entry.game);
+	const [left, right] = teamsInOrder(entry.game);
+	return { left, right, surface, audible: index === 0 };
+});
+---
+<div class='doc-demo-multiview'>
+	{boxes.map(box => (
+		<div class:list={['doc-demo-multiview-box', { 'is-audible': box.audible }]}>
+			<div class='doc-demo-multiview-bar' style={box.surface.style}>
+				<span class='doc-demo-multiview-team is-left'>
+					<Crest logo={teamLogoOnColor(box.left.logo)} abbreviation={box.left.abbreviation} />
+					{box.left.abbreviation}
+				</span>
+				{box.audible && <i class='bi bi-volume-up-fill doc-demo-multiview-sound'></i>}
+				<span class='doc-demo-multiview-team is-right'>
+					{box.right.abbreviation}
+					<Crest logo={teamLogoOnColor(box.right.logo)} abbreviation={box.right.abbreviation} />
+				</span>
+			</div>
+			<div class='doc-demo-multiview-picture' style={{ '--left-tint': box.surface.leftColor, '--right-tint': box.surface.rightColor }}>
+				<Crest logo={teamLogoOnColor(box.left.logo)} abbreviation={box.left.abbreviation} />
+				<Crest logo={teamLogoOnColor(box.right.logo)} abbreviation={box.right.abbreviation} />
+			</div>
+		</div>
+	))}
+</div>

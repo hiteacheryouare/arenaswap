@@ -10,9 +10,11 @@ export interface multiviewCandidate {
 export interface multiviewPlanInput {
 	// Registered game tabs that are still open, in registry order.
 	candidates: readonly multiviewCandidate[];
-	scores: readonly { gameId: string; total: number }[];
+	scores: readonly { gameId: string; total: number; onBreak?: boolean }[];
 	// Games boxed right now, in the order they joined. Empty while Multiview is closed.
 	boxedGameIds: readonly string[];
+	// Whether those boxes are on screen. Only a box the user has seen keeps its place below the threshold.
+	shown: boolean;
 	threshold: number;
 	games: UserPreferences['multiviewGames'];
 	maxBoxes: number;
@@ -21,6 +23,8 @@ export interface multiviewPlanInput {
 
 export interface multiviewPlan {
 	open: boolean;
+	// Not open yet, but close enough that Multiview starts loading its boxes out of sight.
+	warm: boolean;
 	// Box order: games already boxed keep their place, newcomers join behind them, best first.
 	gameIds: string[];
 	tabIdByGameId: Map<string, number>;
@@ -42,8 +46,13 @@ export const isFrameableUrl = (url: string | undefined): url is string => {
 // game sitting on the line does not blink in and out with every poll.
 const marginFor = (sensitivity: UserPreferences['sensitivity']): number => sensitivityThresholds[sensitivity] ?? 0;
 
-export const planMultiview = ({ candidates, scores, boxedGameIds, threshold, games, maxBoxes, sensitivity }: multiviewPlanInput): multiviewPlan => {
+// How far under the threshold a second game can be while one game is over it for Multiview to
+// start warming up.
+export const multiviewWarmupPoints = 10;
+
+export const planMultiview = ({ candidates, scores, boxedGameIds, shown, threshold, games, maxBoxes, sensitivity }: multiviewPlanInput): multiviewPlan => {
 	const totalByGameId = new Map(scores.map(score => [score.gameId, score.total]));
+	const onBreak = new Set(scores.filter(score => score.onBreak).map(score => score.gameId));
 	const tabIdByGameId = new Map<string, number>();
 	const urlByGameId = new Map<string, string>();
 	// A game registered on two tabs takes the first one, the same tab switching would pick.
@@ -54,25 +63,28 @@ export const planMultiview = ({ candidates, scores, boxedGameIds, threshold, gam
 	}
 
 	const boxed = new Set(boxedGameIds);
-	const margin = marginFor(sensitivity);
-	const isHot = (gameId: string): boolean => {
-		const total = totalByGameId.get(gameId) ?? 0;
-		return total >= (boxed.has(gameId) ? threshold - margin : threshold);
-	};
+	const margin = shown ? marginFor(sensitivity) : 0;
+	const totalOf = (gameId: string): number => totalByGameId.get(gameId) ?? 0;
+	// A commercial takes more off a game than the margin allows, so a box on screen sits it out.
+	const keepsBox = (gameId: string): boolean => shown && boxed.has(gameId) && onBreak.has(gameId);
+	const isHot = (gameId: string): boolean => keepsBox(gameId) || totalOf(gameId) >= (boxed.has(gameId) ? threshold - margin : threshold);
 
 	const eligible = [...tabIdByGameId.keys()];
 	const hot = eligible.filter(isHot);
-	if (hot.length < 2) return { open: false, gameIds: [], tabIdByGameId, urlByGameId };
+	const near = eligible.filter(gameId => totalOf(gameId) >= threshold - multiviewWarmupPoints);
+	const open = hot.length >= 2;
+	const warm = !open && hot.length === 1 && near.length >= 2;
+	if (!open && !warm) return { open: false, warm: false, gameIds: [], tabIdByGameId, urlByGameId };
 
-	const members = games === 'all' ? eligible : hot;
+	const members = games === 'all' ? eligible : open ? hot : near;
 	const kept = new Set(
-		members.toSorted((a, b) => (totalByGameId.get(b) ?? 0) - (totalByGameId.get(a) ?? 0)).slice(0, maxBoxes)
+		members.toSorted((a, b) => totalOf(b) - totalOf(a)).slice(0, maxBoxes)
 	);
 	const staying = boxedGameIds.filter(gameId => kept.has(gameId));
 	const joining = [...kept]
 		.filter(gameId => !boxed.has(gameId))
-		.toSorted((a, b) => (totalByGameId.get(b) ?? 0) - (totalByGameId.get(a) ?? 0));
-	return { open: true, gameIds: [...staying, ...joining], tabIdByGameId, urlByGameId };
+		.toSorted((a, b) => totalOf(b) - totalOf(a));
+	return { open, warm, gameIds: [...staying, ...joining], tabIdByGameId, urlByGameId };
 };
 
 export interface featuredInput {
@@ -96,4 +108,24 @@ export const chooseFeatured = ({ gameIds, scores, current, sensitivity, canChang
 	if (best.gameId === current || !canChange) return current;
 	const currentTotal = ranked.find(score => score.gameId === current)?.total ?? 0;
 	return best.total >= currentTotal + marginFor(sensitivity) ? best.gameId : current;
+};
+
+export interface overtakenInput {
+	soloGameId: string | null;
+	boxedGameIds: readonly string[];
+	// Every registered game with an open tab, boxable or not.
+	candidateGameIds: readonly string[];
+	scores: readonly { gameId: string; total: number }[];
+	sensitivity: UserPreferences['sensitivity'];
+}
+
+// A game outside Multiview has pulled ahead of the one it shows alone by enough to switch to.
+export const isOvertaken = ({ soloGameId, boxedGameIds, candidateGameIds, scores, sensitivity }: overtakenInput): boolean => {
+	const soloTotal = scores.find(score => score.gameId === soloGameId)?.total;
+	if (soloTotal === undefined) return true;
+	return scores.some(score => (
+		candidateGameIds.includes(score.gameId)
+		&& !boxedGameIds.includes(score.gameId)
+		&& score.total >= soloTotal + marginFor(sensitivity)
+	));
 };

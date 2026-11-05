@@ -1,0 +1,60 @@
+---
+sourceHash: 'c22a44d5493c'
+title: So änderst du, worauf ArenaSwap in einem Spiel achtet
+description: Wähl Klassisch für knappe Spiele, Kantersiege für Abreibungen oder Fantasy für die Spiele, in denen deine Spieler stehen, oder leg für jede Liga einen anderen fest.
+section: extension
+order: 6
+navLabel: Wertungsmodi
+faq:
+  - q: Welchen Wertungsmodus soll ich nehmen?
+    a: Klassisch für das knappste, spannendste Spiel, so arbeitet ArenaSwap ab Werk. Kantersiege, wenn du lieber siehst, wie jemand vom Platz gefegt wird. Fantasy, wenn dir deine eigenen Spieler am wichtigsten sind. Mit Individuell wählst du für jede Liga einen anderen.
+  - q: Warum tut Fantasy nichts, wenn ich es einschalte?
+    a: Fantasy braucht Spieler. Füg in den Einstellungen unter Deine Spieler welche hinzu. Bis dahin, und in jedem Spiel, in dem keiner von ihnen spielt, nutzt ArenaSwap Klassisch.
+  - q: Kann ich Fantasy für eine andere Sportart als Football nutzen?
+    a: Ja. Fantasy funktioniert für NFL, NBA, WNBA, MLB und NHL, und du kannst die Wertungsregeln für jede Sportart ändern.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Ab Werk sucht ArenaSwap das Spiel, das knapp, spät und wechselhaft ist. Das ist **Klassisch**. Willst du etwas anderes auf dem Bildschirm, änderst du in den Einstellungen unter **Bewertung**, wonach es sucht.
+
+<Demo name='modes' />
+
+## Die gewünschte Art von Spiel wählen
+
+- **Klassisch:** knappe Spiele, späte Dramatik und Comebacks. Ein Unentschieden in den Schlussminuten ist der Traum.
+- **Kantersiege:** einseitige Spiele, für Momente, in denen du sehen willst, wie ein Team das andere plattmacht. Knappe Spiele tauchen in einer Nacht ohne Abreibung trotzdem auf, aber eine echte gewinnt immer.
+- **Fantasy:** Spiele, in denen deine Spieler stehen. Es folgt, wo sie im Spiel gerade sind (wer den Ball hat, wer am Schlag ist, wer in der Red Zone steht) und wie viele Fantasy-Punkte sie zuletzt gesammelt haben.
+- **Individuell:** ein anderer Modus für jede Liga. Vielleicht bekommt die NFL Fantasy, College-Basketball Klassisch und alles andere Kantersiege. Eine Liga, die du nicht festlegst, nutzt Klassisch.
+
+Spiele aus allen Ligen werden auf derselben Skala von 0 bis 100 bewertet, ein Fantasy-Spiel und ein Klassisch-Spiel können also trotzdem um deinen Tab konkurrieren. Wie viel besser ein Spiel sein muss, bevor ArenaSwap dich umsetzt, bestimmen weiterhin deine [Wechseleinstellungen](/arenaswap/docs/extension/switching-and-sensitivity/).
+
+## Nie deine Spieler verpassen
+
+1. Stell den Wertungsmodus auf **Fantasy**, oder auf **Individuell** mit Fantasy bei den Ligen, die du willst.
+2. Öffne **Deine Spieler** und such einen Spieler nach Namen. Füg ihn aus den Ergebnissen hinzu. Bis zu 50 sind möglich.
+3. Stell **Wie stark deine Spieler ihre Spiele nach oben ziehen** ein. Schieb nach oben, und dein Kader zählt mehr. Schieb nach unten, und er entscheidet nur bei Gleichstand.
+
+Fantasy deckt NFL, NBA, WNBA, MLB und NHL ab. Ein Football-Kader kann auch eine Team-Defense enthalten. Ein Spiel mit einem deiner Spieler kann in der Liste nur nach oben rutschen, nie nach unten.
+
+Unter **Wertungsregeln** änderst du, wie viele Fantasy-Punkte jede Statistik wert ist. ArenaSwap startet mit den Standardpunkten für jede Sportart.
+
+## Abschalten, was dich nicht interessiert
+
+Jeder Modus misst ein paar Dinge, die Signale heißen. Bei Klassisch sind das Ausgeglichenheit, Spielschluss, Schwung, Führungswechsel und Comeback. Unter **PowerScore-Signale** kannst du jedes davon abschalten, solange eines an bleibt. Was jedes bedeutet, steht auf der [Seite zu den Signalen](/arenaswap/docs/powerscore/signals/).
+
+<Demo name='breakdown' />
+
+## Punkte, die du selbst vergibst
+
+Diese gelten in jedem Modus:
+
+- **Lieblingsteam-Boost** gibt Spielen mit einem Team, dem du folgst, Extrapunkte. Siehe [Lieblingsteams](/arenaswap/docs/extension/favorite-teams/).
+- **Postseason-Boost** gibt Playoff- und K.-o.-Spielen Extrapunkte, in späteren Runden mehr. Bei Kantersiege gilt er nicht.
+- **Spielboost** gibt einem Spiel deiner Wahl Extrapunkte, von 0 bis 100. Nutz das Feld Spielboost auf dem Detailbildschirm des Spiels oder im [Guide](/arenaswap/docs/extension/guide/). Er gilt, bis du den Browser schließt.
+
+## Verwandt
+
+- [Die ArenaSwap-Einstellungen im Überblick](/arenaswap/docs/extension/settings/) führt die Bewertungseinstellungen mit ihren Standardwerten auf.
+- [So steuerst du, wann ArenaSwap die Tabs wechselt](/arenaswap/docs/extension/switching-and-sensitivity/) behandelt, wie viel besser ein Spiel sein muss, bevor ArenaSwap dich umsetzt.
+- [PowerScore-Signale in jedem Modus](/arenaswap/docs/powerscore/signals/) erklärt jedes Signal im Detail.

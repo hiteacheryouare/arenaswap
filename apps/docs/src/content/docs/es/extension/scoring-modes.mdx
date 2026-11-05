@@ -1,0 +1,60 @@
+---
+sourceHash: 'c22a44d5493c'
+title: Cómo cambiar lo que ArenaSwap busca en un partido
+description: Elige Clásico para partidos cerrados, Palizas para goleadas o Fantasy para los partidos donde juegan tus jugadores, o define uno distinto para cada liga.
+section: extension
+order: 6
+navLabel: Modos de puntuación
+faq:
+  - q: ¿Qué modo de puntuación debo usar?
+    a: Clásico para el partido más cerrado y tenso, que es como funciona ArenaSwap desde el inicio. Palizas si prefieres ver cómo una de las partes aplasta a la otra. Fantasy si lo que más te importa son tus propios jugadores. Personalizado te deja elegir uno distinto para cada liga.
+  - q: ¿Por qué Fantasy no hace nada cuando lo activo?
+    a: Fantasy necesita jugadores. Agrega algunos en Tus jugadores, dentro de Ajustes. Mientras no lo hagas, y en cualquier partido donde no juegue ninguno, ArenaSwap usa Clásico.
+  - q: ¿Puedo usar Fantasy en un deporte que no sea futbol americano?
+    a: Sí. Fantasy funciona con la NFL, NBA, WNBA, MLB y NHL, y puedes cambiar las reglas de puntuación de cada deporte.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+De inicio, ArenaSwap busca el partido que está cerrado, avanzado y de ida y vuelta. Eso es **Clásico**. Si quieres otra cosa en tu pantalla, cambia lo que busca en Ajustes, en **Puntuación**.
+
+<Demo name='modes' />
+
+## Elige el tipo de partido que quieres
+
+- **Clásico:** partidos cerrados, drama de último momento y remontadas. Un empate en los minutos finales es el sueño.
+- **Palizas:** partidos disparejos, para cuando quieres ver a un equipo arrasar con otro. Los partidos cerrados siguen apareciendo en una noche sin goleadas, pero una paliza de verdad siempre gana.
+- **Fantasy:** partidos con tus jugadores. Sigue en qué punto del juego están (quién tiene el balón, quién está al bat, quién está en la zona roja) y cuántos puntos de fantasy han sumado últimamente.
+- **Personalizado:** un modo distinto para cada liga. Quizá la NFL usa Fantasy, el basquetbol universitario usa Clásico y todo lo demás usa Palizas. Una liga que no configures usa Clásico.
+
+Los partidos de todas las ligas se califican en la misma escala de 0 a 100, así que un partido de Fantasy y uno de Clásico pueden competir por tu pestaña. Cuánto mejor tiene que ser un partido para que ArenaSwap te cambie sigue dependiendo de tus [ajustes de cambio](/arenaswap/docs/extension/switching-and-sensitivity/).
+
+## No te pierdas a tus jugadores
+
+1. Pon el modo de puntuación en **Fantasy**, o en **Personalizado** con Fantasy en las ligas que quieras.
+2. Abre **Tus jugadores** y busca a un jugador por nombre. Agrégalo desde los resultados. Puedes agregar hasta 50.
+3. Define **Cuánto impulsan tus jugadores sus partidos**. Súbelo y tu plantilla cuenta más. Bájalo y solo desempata.
+
+Fantasy cubre la NFL, NBA, WNBA, MLB y NHL. Una plantilla de futbol americano también puede incluir la defensiva de un equipo. Un partido con uno de tus jugadores solo puede subir en la lista, nunca bajar.
+
+En **Reglas de puntuación** puedes cambiar cuántos puntos de fantasy vale cada estadística. ArenaSwap empieza con los puntos estándar de cada deporte.
+
+## Apaga lo que no te importa
+
+Cada modo mide algunas cosas, llamadas señales. Las de Clásico son Igualdad, Recta final, Racha, Cambios de ventaja y Remontada. En **Señales del PowerScore** puedes apagar cualquiera, siempre que una se quede encendida. Consulta la [página de señales](/arenaswap/docs/powerscore/signals/) para saber qué significa cada una.
+
+<Demo name='breakdown' />
+
+## Puntos que agregas tú
+
+Funcionan en todos los modos:
+
+- **Impulso de equipo favorito** suma puntos a los partidos con un equipo que sigues. Consulta [equipos favoritos](/arenaswap/docs/extension/favorite-teams/).
+- **Impulso de postemporada** suma puntos a los partidos de playoffs y eliminación directa, más en las rondas finales. No aplica en Palizas.
+- **Impulso del partido** suma puntos a un partido que elijas, de 0 a 100. Usa el campo de Impulso del partido en la pantalla de detalles del partido o en la [Guía](/arenaswap/docs/extension/guide/). Dura hasta que cierres tu navegador.
+
+## Relacionado
+
+- [Referencia de ajustes de ArenaSwap](/arenaswap/docs/extension/settings/) enumera los ajustes de puntuación y sus valores predeterminados.
+- [Cómo controlar cuándo ArenaSwap cambia de pestaña](/arenaswap/docs/extension/switching-and-sensitivity/) explica cuánto mejor tiene que ser un partido para que ArenaSwap te cambie.
+- [Señales del PowerScore en todos los modos](/arenaswap/docs/powerscore/signals/) explica cada señal en detalle.

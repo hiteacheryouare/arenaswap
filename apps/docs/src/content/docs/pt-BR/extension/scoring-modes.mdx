@@ -1,0 +1,60 @@
+---
+sourceHash: 'c22a44d5493c'
+title: Como mudar o que o ArenaSwap procura em um jogo
+description: Escolha Clássico para jogos apertados, Atropelos para goleadas ou Fantasy para os jogos em que seus jogadores estão, ou defina um modo diferente para cada liga.
+section: extension
+order: 6
+navLabel: Modos de pontuação
+faq:
+  - q: Qual modo de pontuação devo usar?
+    a: Clássico para o jogo mais disputado e tenso, que é como o ArenaSwap funciona de fábrica. Atropelos se você prefere ver alguém passar o rolo compressor. Fantasy se o que mais importa são os seus próprios jogadores. Personalizado deixa você escolher um modo diferente para cada liga.
+  - q: Por que o Fantasy não faz nada quando eu ativo?
+    a: O Fantasy precisa de jogadores. Adicione alguns em Seus jogadores, nas Configurações. Até você fazer isso, e em qualquer jogo em que nenhum deles esteja jogando, o ArenaSwap usa o Clássico.
+  - q: Posso usar o Fantasy em um esporte que não seja futebol americano?
+    a: Pode. O Fantasy funciona para NFL, NBA, WNBA, MLB e NHL, e você pode mudar as regras de pontuação de cada esporte.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+De fábrica, o ArenaSwap sai atrás do jogo que está apertado, perto do fim e indo de um lado para o outro. Esse é o **Clássico**. Se você quer outra coisa na tela, mude o que ele procura nas Configurações, em **Pontuação**.
+
+<Demo name='modes' />
+
+## Escolha o tipo de jogo que você quer
+
+- **Clássico:** jogos apertados, drama no fim e viradas. Um empate nos minutos finais é o sonho.
+- **Atropelos:** jogos desequilibrados, para quando você quer ver um time passar por cima do outro. Jogos apertados ainda aparecem numa noite sem atropelo, mas um atropelo de verdade sempre vence.
+- **Fantasy:** jogos com os seus jogadores. Ele acompanha onde eles estão na partida (quem está com a bola, quem está rebatendo, quem está na red zone) e quantos pontos de fantasy eles fizeram recentemente.
+- **Personalizado:** um modo diferente para cada liga. Talvez a NFL fique com Fantasy, o basquete universitário com Clássico e todo o resto com Atropelos. Uma liga que você não definir usa o Clássico.
+
+Jogos de todas as ligas são classificados na mesma escala de 0 a 100, então um jogo de Fantasy e um de Clássico ainda podem disputar a sua aba. O quanto um jogo precisa ser melhor para o ArenaSwap te mover continua nas suas [configurações de troca](/arenaswap/docs/extension/switching-and-sensitivity/).
+
+## Nunca perca seus jogadores
+
+1. Defina o modo de pontuação como **Fantasy**, ou **Personalizado** com Fantasy nas ligas que você quiser.
+2. Abra **Seus jogadores** e busque um jogador pelo nome. Adicione-o a partir dos resultados. Dá para adicionar até 50.
+3. Ajuste **O quanto seus jogadores elevam os jogos deles**. Deslize para cima e seu elenco conta mais. Deslize para baixo e ele só desempata.
+
+O Fantasy cobre NFL, NBA, WNBA, MLB e NHL. Um elenco de futebol americano também pode incluir a defesa de um time. Um jogo com um dos seus jogadores só pode subir na lista, nunca descer.
+
+Em **Regras de pontuação**, você pode mudar quantos pontos de fantasy vale cada estatística. O ArenaSwap começa com os pontos padrão de cada esporte.
+
+## Desligue o que não te interessa
+
+Cada modo mede algumas coisas, chamadas de Sinais. Os do Clássico são Equilíbrio, Fase final, Dinâmica, Mudanças de liderança e Virada. Em **Sinais do PowerScore**, você pode desligar qualquer um deles, desde que um continue ligado. Veja a [página de sinais](/arenaswap/docs/powerscore/signals/) para entender o que cada um significa.
+
+<Demo name='breakdown' />
+
+## Pontos que você mesmo adiciona
+
+Estes funcionam em todos os modos:
+
+- **Impulso de time favorito** soma pontos a jogos com um time que você segue. Veja [times favoritos](/arenaswap/docs/extension/favorite-teams/).
+- **Impulso de pós-temporada** soma pontos a jogos de playoff e mata-mata, mais nas rodadas finais. Não vale no modo Atropelos.
+- **Impulso do jogo** soma pontos a um jogo que você escolhe, de 0 a 100. Use o campo Impulso do jogo na tela de detalhes do jogo ou no [Guia](/arenaswap/docs/extension/guide/). Dura até você fechar o navegador.
+
+## Relacionados
+
+- [Referência das configurações do ArenaSwap](/arenaswap/docs/extension/settings/) lista as configurações de pontuação e seus padrões.
+- [Como controlar quando o ArenaSwap troca de aba](/arenaswap/docs/extension/switching-and-sensitivity/) explica o quanto um jogo precisa ser melhor para o ArenaSwap te mover.
+- [Sinais do PowerScore em todos os modos](/arenaswap/docs/powerscore/signals/) explica cada sinal em detalhe.

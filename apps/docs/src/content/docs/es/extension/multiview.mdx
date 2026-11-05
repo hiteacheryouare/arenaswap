@@ -1,0 +1,74 @@
+---
+sourceHash: '6aafbef8b446'
+title: Cómo usar Multiview
+description: Mira tus partidos más emocionantes lado a lado en una sola pestaña del navegador, con el sonido del mejor. Actívalo y elige cuándo se abre.
+section: extension
+order: 10
+navLabel: Multiview
+faq:
+  - q: ¿Cómo veo varios partidos en una pantalla en mi navegador?
+    a: Activa Multiview en los ajustes de ArenaSwap y luego asigna una pestaña a cada partido que estés viendo. Cuando dos o más de esos partidos se ponen emocionantes a la vez, ArenaSwap abre una pestaña con cada partido en su propio cuadro.
+  - q: ¿Multiview funciona en Firefox?
+    a: No. Multiview está en las versiones de ArenaSwap para Chrome y Edge. La versión para Firefox tiene todo lo demás.
+  - q: ¿Por qué no se abrió Multiview?
+    a: Revisa que Activar cambio automático esté activado, que hayas asignado pestañas a al menos dos partidos en vivo y que al menos dos de ellos hayan llegado a tu Emocionante desde. ArenaSwap también espera primero tu Tiempo de espera entre cambios y tu Retardo de cambio.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Multiview pone tus partidos emocionantes en una sola pantalla, para que dejes de elegir entre ellos. El partido más emocionante recibe el cuadro más grande y el sonido.
+
+Está en Chrome y Edge. Firefox no lo tiene.
+
+## Actívalo
+
+1. Abre Ajustes y elige **Multiview**.
+2. Activa **Activar Multiview**.
+3. Una guía breve explica qué esperar. Haz clic en **Siguiente** y luego en **Continuar**.
+4. Tu navegador pregunta si ArenaSwap puede "Leer y cambiar todos tus datos en todos los sitios web". Permítelo. Así es como tus transmisiones aparecen juntas en una pestaña.
+
+Si haces clic en **Ahora no** o le dices que no a tu navegador, Multiview se queda apagado. Todo lo demás funciona igual.
+
+<Demo name='multiview' />
+
+## Dale una pestaña a cada partido
+
+Abre la transmisión de cada partido en su propia pestaña y luego elige esa pestaña en el menú **Asigna una pestaña** de la tarjeta del partido. [Cómo ver varios partidos a la vez](/arenaswap/docs/extension/watching-multiple-games/) lo explica paso a paso.
+
+Deja **Activar cambio automático** encendido. Multiview se cierra cuando está apagado.
+
+## Elige cuándo se abre
+
+Tres ajustes en **Multiview** lo deciden:
+
+- **Emocionante desde** es el PowerScore que necesita un partido para contar como emocionante, de 0 a 100. El valor predeterminado es 55. Desliza hacia **Se abre más seguido** para más Multiview. Desliza hacia **Solo momentos grandes** para menos.
+- **Mostrar** elige quién recibe un cuadro. **Partidos emocionantes** muestra solo los partidos que están en tu puntuación o por encima. **Todos mis partidos** muestra cada partido que tenga una pestaña.
+- **Máximo de cuadros** limita cuántos partidos aparecen a la vez, de 2 a 8. El valor predeterminado es 4. Si califican más, los PowerScore más altos se quedan con los cuadros.
+
+Multiview se abre cuando al menos dos de tus partidos llegan a tu puntuación de **Emocionante desde**. Respeta tu **Tiempo de espera entre cambios** y tu **Retardo de cambio**, igual que cualquier otro cambio. [Cómo controlar cuándo ArenaSwap cambia](/arenaswap/docs/extension/switching-and-sensitivity/) explica ambos.
+
+Cuando un partido es emocionante y otro está a 10 puntos de tu puntuación de **Emocionante desde**, se abre una pestaña de Multiview en silencio al final de tu barra de pestañas y empieza a cargar esos partidos. Si el segundo partido baja, la pestaña se queda 2 minutos por si vuelve a subir. Cierra esa pestaña y Multiview espera tu Tiempo de espera entre cambios antes de intentarlo de nuevo.
+
+## Mientras está abierto
+
+ArenaSwap mueve la pestaña de Multiview junto a tu partido, o abre una nueva ahí, y te lleva a ella. Con las notificaciones activadas, recibes una notificación **Cambiado → Multiview**.
+
+El cuadro más grande, arriba a la izquierda, es del partido más emocionante y es el único con sonido. Los demás partidos se acomodan a su alrededor. Tus pestañas de partidos siguen abiertas y silenciadas en segundo plano.
+
+## Cuándo se cierra
+
+Una vez que Multiview se abre, se queda al menos tu Tiempo de espera entre cambios, y hasta que una de sus transmisiones empiece a reproducirse.
+
+Cuando solo queda un partido emocionante, ese partido llena la pestaña de Multiview durante 2 minutos. Si otro partido vuelve a ser emocionante en ese tiempo, regresan todos los cuadros. Si no, ArenaSwap te lleva a la pestaña propia de ese partido y cierra Multiview. Se salta los 2 minutos cuando el otro partido ya terminó, o cuando uno de tus partidos sin cuadro se adelanta lo suficiente como para cambiar a él.
+
+Un partido conserva su cuadro durante una pausa comercial.
+
+Cierra tú la pestaña de Multiview y puede volver a abrirse cuando pase tu Tiempo de espera entre cambios. Llévala a otra página web y se detiene, y no volverá a abrir esos partidos durante 10 minutos.
+
+Si ninguna de las transmisiones empieza a reproducirse en un minuto, ArenaSwap te regresa a tu mejor partido y lo intenta de nuevo en 10 minutos. Si un cuadro nunca reproduce, abre esa transmisión en su propia pestaña y comprueba que ahí sí se reproduzca.
+
+## Relacionado
+
+- [Cómo ver varios partidos a la vez](/arenaswap/docs/extension/watching-multiple-games/) explica cómo asignar pestañas.
+- [Cómo controlar cuándo ArenaSwap cambia de pestaña](/arenaswap/docs/extension/switching-and-sensitivity/) explica el tiempo de espera y el retardo.
+- [Referencia de ajustes de ArenaSwap](/arenaswap/docs/extension/settings/) enumera todos los ajustes de Multiview.

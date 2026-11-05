@@ -1,0 +1,74 @@
+---
+sourceHash: '6aafbef8b446'
+title: Paano gamitin ang Multiview
+description: Panoorin nang magkakatabi ang pinaka-exciting mong mga laro sa isang browser tab, na may tunog mula sa pinakamaganda. I-on ito at piliin kung kailan ito bubukas.
+section: extension
+order: 10
+navLabel: Multiview
+faq:
+  - q: Paano manood ng ilang laro sa isang screen sa browser ko?
+    a: I-on ang Multiview sa mga setting ng ArenaSwap, tapos mag-assign ng tab sa bawat larong ini-stream mo. Kapag dalawa o higit pa sa mga larong iyon ang sabay na naging exciting, magbubukas ang ArenaSwap ng isang tab na may sariling box ang bawat laro.
+  - q: Gumagana ba ang Multiview sa Firefox?
+    a: Hindi. Nasa bersyon ng ArenaSwap para sa Chrome at Edge ang Multiview. Nasa bersyon para sa Firefox ang lahat ng iba pa.
+  - q: Bakit hindi nagbukas ang Multiview?
+    a: Tiyaking naka-on ang I-enable ang awtomatikong paglipat, may naka-assign kang tab sa hindi bababa sa dalawang live na laro, at hindi bababa sa dalawa sa mga ito ang umabot sa Kapana-panabik sa na score mo. Hinihintay muna ng ArenaSwap ang Cooldown ng Paglipat at Delay ng Paglipat mo.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Inilalagay ng Multiview ang mga exciting mong laro sa iisang screen, para hindi ka na namimili. Ang pinaka-exciting na laro ang makakakuha ng pinakamalaking box at ng tunog.
+
+Nasa Chrome at Edge ito. Wala nito ang Firefox.
+
+## I-on ito
+
+1. Buksan ang Mga Setting at piliin ang **Multiview**.
+2. I-on ang **I-enable ang Multiview**.
+3. May maikling gabay na magpapaliwanag ng aasahan. I-click ang **Susunod**, tapos **Magpatuloy**.
+4. Tatanungin ng browser mo kung puwedeng "Basahin at baguhin ang lahat ng iyong data sa lahat ng website" ang ArenaSwap. Payagan ito. Doon nagsasama-sama ang mga stream mo sa isang tab.
+
+Kung i-click mo ang **Hindi Muna** o tumanggi ka sa browser mo, mananatiling off ang Multiview. Pareho pa rin ang takbo ng lahat ng iba.
+
+<Demo name='multiview' />
+
+## Bigyan ng tab ang bawat laro
+
+Buksan ang stream ng bawat laro sa sarili nitong tab, tapos piliin ang tab na iyon sa **Mag-assign ng tab** na dropdown sa card ng laro. Gagabayan ka ng [Manood ng maraming laro](/arenaswap/docs/extension/watching-multiple-games/).
+
+Iwanang naka-on ang **I-enable ang awtomatikong paglipat**. Nagsasara ang Multiview kapag naka-off ito.
+
+## Piliin kung kailan ito bubukas
+
+Tatlong setting sa ilalim ng **Multiview** ang nagpapasya:
+
+- Ang **Kapana-panabik sa** ang PowerScore na kailangan ng laro para ituring na exciting, mula 0 hanggang 100. 55 ang default. I-slide papunta sa **Mas madalas magbukas** para mas madalas ang Multiview. I-slide papunta sa **Malalaking moment lang** para mas bihira.
+- Pinipili ng **Ipakita** kung sino ang magkakaroon ng box. Ang **Mga kapana-panabik na laro** ay nagpapakita lang ng mga laro na nasa o lampas sa score mo. Ang **Lahat ng laro ko** ay nagpapakita ng bawat laro na may tab.
+- Nililimitahan ng **Pinakamaraming box** kung ilang laro ang lalabas nang sabay, mula 2 hanggang 8. 4 ang default. Kung mas marami ang pasok, ang may pinakamataas na PowerScore ang bibigyan ng box.
+
+Nagbubukas ang Multiview kapag hindi bababa sa dalawa sa mga laro mo ang umabot sa **Kapana-panabik sa** na score mo. Sumusunod ito sa **Cooldown ng Paglipat** at **Delay ng Paglipat** mo, gaya ng ibang paglipat. Ang [Pagkontrol kung kailan lumilipat ang ArenaSwap](/arenaswap/docs/extension/switching-and-sensitivity/) ay tungkol sa dalawa.
+
+Kapag may isang laro nang exciting at ang isa pa ay nasa loob ng 10 puntos ng **Kapana-panabik sa** na score mo, magbubukas ang naka-mute na Multiview tab sa dulo ng tab strip mo at sisimulan nitong i-load ang mga larong iyon. Kung bumaba ulit ang pangalawang laro, mananatili ang tab nang 2 minuto kung sakaling bumalik ito. Isara ang tab na iyon at maghihintay ang Multiview sa Cooldown ng Paglipat mo bago subukan ulit.
+
+## Habang bukas ito
+
+Inililipat ng ArenaSwap ang Multiview tab sa tabi ng laro mo, o nagbubukas ng bago roon, at dinadala ka rito. Kapag naka-on ang mga abiso, makakatanggap ka ng abisong **Lumipat → Multiview**.
+
+Ang pinakamalaking box, sa kaliwang itaas, ay para sa pinaka-exciting na laro, at ito lang ang may tunog. Nakapaligid dito ang iba pang laro. Nananatiling bukas at naka-mute sa background ang mga game tab mo.
+
+## Kapag nagsasara ito
+
+Kapag nagbukas ang Multiview, mananatili ito nang hindi bababa sa Cooldown ng Paglipat mo, at hanggang magsimulang mag-play ang isa sa mga stream nito.
+
+Kapag isang laro na lang ang exciting, pupunuin ng larong iyon ang Multiview tab nang 2 minuto. Kung maging exciting ulit ang isa pang laro sa loob ng oras na iyon, babalik ang lahat ng box. Kung hindi, dadalhin ka ng ArenaSwap sa sariling tab ng larong iyon at isasara ang Multiview. Nilalaktawan nito ang 2 minuto kapag tapos na ang kabilang laro, o kapag may laro mo na walang box na lumamang nang sapat para paglipatan.
+
+Nananatili ang box ng isang laro habang may commercial break.
+
+Isara mismo ang Multiview tab at puwede itong magbukas ulit kapag lumipas na ang Cooldown ng Paglipat mo. Ipadala ito sa ibang web page at titigil ito, at hindi na bubuksan ang mga larong iyon nang 10 minuto.
+
+Kung wala sa mga stream ang nagsimulang mag-play sa loob ng isang minuto, ibabalik ka ng ArenaSwap sa pinakamagandang laro mo at susubukan ulit pagkalipas ng 10 minuto. Kung may box na hindi nagpe-play, buksan ang stream na iyon sa sarili nitong tab at tiyaking nagpe-play ito roon.
+
+## Kaugnay
+
+- Ang [Paano manood ng maraming laro nang sabay](/arenaswap/docs/extension/watching-multiple-games/) ay tungkol sa pag-assign ng mga tab.
+- Ang [Paano kontrolin kung kailan lumilipat ang ArenaSwap ng tab](/arenaswap/docs/extension/switching-and-sensitivity/) ay tungkol sa cooldown at delay.
+- Inililista ng [Gabay sa mga setting ng ArenaSwap](/arenaswap/docs/extension/settings/) ang bawat setting ng Multiview.

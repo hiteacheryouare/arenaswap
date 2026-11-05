@@ -1,4 +1,4 @@
-import { contrast, luminance, toRgb } from '../colour';
+import { contrast } from '../colour';
 
 // The site follows the OS until a visitor picks a theme in the nav, and the head's boot script
 // decides before the first paint. Colours are read off computed styles: a theme that sets the right
@@ -86,18 +86,6 @@ describe('the site theme', () => {
 	it('puts the Bootstrap surfaces the dark page re-themed on light ones', () => {
 		emulateScheme('light');
 		cy.visit('/de/docs/extension/getting-started/');
-		cy.get('.untranslated-notice').should($notice => {
-			const surface = getComputedStyle($notice[0]).backgroundColor;
-			expect(luminance(surface), 'a light surface').to.be.greaterThan(0.6);
-			$notice.find('p').each((_, line) => {
-				const style = getComputedStyle(line);
-				const ink = toRgb(style.color);
-				const ground = toRgb(surface);
-				const opacity = Number(style.opacity);
-				const seen = `rgb(${ink.map((channel, index) => ground[index]! + (channel - ground[index]!) * opacity).join(', ')})`;
-				expect(contrast(surface, seen), `${line.className} contrast`).to.be.greaterThan(4.5);
-			});
-		});
 
 		cy.get('.lang-switch-trigger').click();
 		cy.get('.lang-switch-menu').should('have.css', 'background-color', 'rgb(245, 245, 245)');

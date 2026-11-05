@@ -1,0 +1,97 @@
+---
+sourceHash: '3f391bc4d95c'
+title: Referencia de ajustes de ArenaSwap
+description: Qué cambia cada ajuste de ArenaSwap, agrupados como los agrupa la ventana emergente, con el valor predeterminado de cada uno.
+section: extension
+order: 7
+navLabel: Ajustes
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Toca el engrane en la barra superior de la ventana emergente para abrir Ajustes. Usa el cuadro de búsqueda de arriba para encontrar un ajuste por nombre o por lo que quieres que haga. Los ajustes se agrupan en Cambios, Puntuación, Equipos favoritos, Ligas, Visualización, Standby Stream, Multiview y Perfiles y copia. Firefox no tiene Multiview.
+
+## Cambios
+
+- **Sensibilidad de cambio** (**Equilibrado**): cuánto más emocionante tiene que ser otro partido para que ArenaSwap te cambie. Siete niveles, de **Apenas activo** a **Ludicrous Speed**. Más alto significa más cambios.
+- **Tiempo de espera entre cambios** (45 segundos): la espera mínima entre dos cambios. De **Desactivado** a 3 minutos.
+- **Retardo de cambio** (Desactivado): cuánto espera ArenaSwap antes de cambiar de pestaña, para que una transmisión que va atrasada se ponga al corriente. De **Desactivado** a 3 minutos.
+- **Cambio en pausas del juego** (Desactivado): retiene un cambio hasta que el partido que dejas llegue a una pausa en el juego. Puede que te pierdas un momento del partido al que cambia.
+- **Notificaciones de cambio** (Activado): una notificación con el marcador y el motivo cada vez que ArenaSwap cambia.
+- **Cuando un partido finaliza** (**Dejar la pestaña como está**): qué pasa con la pestaña de un partido cuando termina. **Liberarla de ArenaSwap** deja la pestaña abierta y le quita el silencio. **Cerrar la pestaña** la cierra. La pestaña que estás viendo no se toca hasta que te cambies a otra.
+- **Página de tapadera** (una pestaña en blanco): a dónde te lleva el botón del jefe. También silencia todas las pestañas que administra ArenaSwap y pausa el cambio automático. Consulta [cómo usar el botón del jefe](/arenaswap/docs/extension/boss-button/).
+- **Modo demostración** (Desactivado): cambia los partidos en vivo por partidos guionados, para que pruebes ArenaSwap sin esperar a un partido real. **Simular que es** aparece mientras está activado y solo cambia la decoración de temporada.
+
+<Demo name='toggle' setting='contentAwareSwitching.label' checked={false} />
+
+Más sobre esto en [cómo controlar cuándo ArenaSwap cambia de pestaña](/arenaswap/docs/extension/switching-and-sensitivity/).
+
+## Puntuación
+
+- **Qué busca el PowerScore** (Clásico): **Clásico** para partidos cerrados, **Palizas** para partidos disparejos, **Fantasy** para partidos con tus jugadores, **Personalizado** para un modo distinto por liga.
+- **Modo por liga** (Clásico): aparece con **Personalizado**. Una liga que no toques usa Clásico.
+- **Señales del PowerScore** (todas activadas): lo que mide cada modo. Apaga las que no te importen, pero al menos una tiene que quedarse encendida.
+- **Cuánto impulsan tus jugadores sus partidos** (60%): cuánto cuenta tu plantilla. De **Nada** a **Su puntuación completa**.
+- **Tus jugadores** (vacío): hasta 50 jugadores para que Fantasy los siga. NFL, NBA, WNBA, MLB y NHL.
+- **Reglas de puntuación** (puntos estándar): cuántos puntos de fantasy vale cada estadística.
+- **Impulso de equipo favorito** (10): puntos que se suman a los partidos con un equipo que sigues.
+- **Impulso de postemporada** (8): puntos que se suman a los partidos de playoffs. Las rondas finales reciben más. No aplica en Palizas.
+
+Más sobre esto en [cómo cambiar lo que ArenaSwap busca en un partido](/arenaswap/docs/extension/scoring-modes/).
+
+## Equipos favoritos
+
+- **Equipos que sigues** (ninguno): los equipos que sigues se quedan al principio de la lista y sus partidos reciben el impulso de equipo favorito.
+
+## Ligas
+
+- **Ligas activas** (las que elegiste durante la configuración): las ligas que ArenaSwap vigila. Activa más y encuentra el mejor partido entre todas.
+- **Divisiones y conferencias universitarias**: qué partidos universitarios aparecen. Elige otras divisiones o conferencias para ampliar o reducir la lista, o muestra solo el Top 25. Las rondas de campeonato como el March Madness y el College Football Playoff siempre aparecen, igual que los partidos con tus equipos favoritos.
+
+## Visualización
+
+- **Mostrar próximos partidos** (Activado): agrega una sección A continuación para partidos que no han empezado, para que asignes pestañas con anticipación.
+- **Días de anticipación** (7): qué tan adelante busca A continuación, de 1 a 14 días.
+- **Mantener partidos finalizados** (Desactivado): conserva un partido 24 horas después de que termina, en una sección Finalizados. Puedes leer el boxscore, pero no asignarle una pestaña.
+- **Consejos** (Activado): consejos breves en la pantalla principal.
+- **Mostrar apuestas y cuotas** (Desactivado): muestra líneas de apuestas en las tarjetas de partidos y en la pantalla de detalles.
+- **Unidad de temperatura** (°F): **°F** o **°C** para el clima en la pantalla de detalles de un partido.
+- **Tema** (Oscuro): **Oscuro**, **Claro** o **Predeterminado del sistema**.
+- **Animación de apertura** (Activado): un póster del enfrentamiento de cada partido cuando abres ArenaSwap.
+- **Decoración de temporada** (Activado): nieve, luces y hojas en las épocas del año que corresponden. Nieve, Luces y Hojas tienen cada una su propio interruptor.
+- **Agrupar partidos por liga** (Desactivado en instalaciones nuevas): pone los partidos bajo un encabezado por liga en lugar de una sola lista. Tus equipos favoritos se quedan arriba de cualquier forma.
+- **Orden de visualización**: aparece con **Agrupar partidos por liga**. Arrastra las ligas, o usa las flechas, para definir cuál va primero.
+
+## Standby Stream
+
+- **Activar Standby Stream** (Desactivado): elige una pestaña de respaldo en la que te deja cuando todos los partidos que ves se ponen tranquilos.
+- **En espera por debajo de** (20): qué tan tranquilo es tranquilo, de 0 a 100. Más alto significa que la espera entra antes.
+- **Pestaña de espera** (ninguna): la pestaña a la que te lleva ArenaSwap.
+
+Más en [cómo configurar Standby Stream](/arenaswap/docs/extension/standby-stream/).
+
+## Multiview
+
+Solo en Chrome y Edge. Consulta [cómo usar Multiview](/arenaswap/docs/extension/multiview/).
+
+- **Activar Multiview** (Desactivado): cuando dos o más de tus partidos son emocionantes a la vez, los muestra juntos en una pestaña. El partido más emocionante recibe el cuadro más grande y el único sonido. Al activarlo, tu navegador pide permiso para leer y cambiar todos los sitios web. Si dices que no, Multiview se queda apagado.
+- **Emocionante desde** (55): qué tan emocionante tiene que ser un partido para unirse. Más bajo abre Multiview más seguido. Más alto lo guarda para los momentos grandes.
+- **Mostrar** (**Partidos emocionantes**): **Partidos emocionantes** o **Todos mis partidos**.
+- **Máximo de cuadros** (4): la mayor cantidad de partidos en pantalla a la vez, de 2 a 8.
+
+## Perfiles y copia
+
+Consulta [cómo usar perfiles y respaldar tus ajustes](/arenaswap/docs/extension/profiles-and-backup/).
+
+- **Perfiles**: configuraciones separadas entre las que puedes cambiar, como una para los domingos de futbol americano y otra para marzo. Empieza una nueva desde una copia de tu configuración actual o de cero.
+- **Crear copia o restaurar**: descarga tu configuración como archivo, o importa una. Al importar, se agrega un perfil nuevo o se reemplazan todos los ajustes del que estás usando.
+
+## Relacionado
+
+- [Cómo controlar cuándo ArenaSwap cambia de pestaña](/arenaswap/docs/extension/switching-and-sensitivity/)
+- [Cómo cambiar lo que ArenaSwap busca en un partido](/arenaswap/docs/extension/scoring-modes/)
+- [Cómo elegir equipos favoritos en ArenaSwap](/arenaswap/docs/extension/favorite-teams/)
+- [Cómo configurar Standby Stream](/arenaswap/docs/extension/standby-stream/)
+- [La Guía](/arenaswap/docs/extension/guide/)
+- [Detalles del partido](/arenaswap/docs/extension/game-details/)
+- [Prueba ArenaSwap con el modo demostración](/arenaswap/docs/extension/demo-mode/)

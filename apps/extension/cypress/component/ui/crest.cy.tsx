@@ -29,14 +29,15 @@ describe('Crest', () => {
 		cy.mount(<Crest logo={url} abbreviation='PHI' className='team-crest' />);
 
 		cy.get('.crest').should('have.attr', 'data-crest-state', 'pending');
-		cy.get('.crest-fallback').should('be.visible').and('have.text', 'PHI');
+		cy.get('.crest-initials').should('be.visible').and('have.text', 'PHI');
 	});
 
 	it('hides the placeholder once the logo lands', () => {
 		cy.mount(<Crest logo={loadableLogo} abbreviation='PHI' className='team-crest' />);
 
 		cy.get('.crest').should('have.attr', 'data-crest-state', 'loaded');
-		cy.get('.crest-fallback').should('not.be.visible');
+		cy.get('.crest-initials').should('not.be.visible');
+		cy.get('.crest').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 		cy.get('.crest img').should('be.visible');
 	});
 
@@ -44,7 +45,7 @@ describe('Crest', () => {
 		cy.mount(<Crest logo={brokenLogo} abbreviation='PHI' className='team-crest' />);
 
 		cy.get('.crest').should('have.attr', 'data-crest-state', 'failed');
-		cy.get('.crest-fallback').should('be.visible').and('have.text', 'PHI');
+		cy.get('.crest-initials').should('be.visible').and('have.text', 'PHI');
 		cy.get('.crest img').should('not.be.visible');
 	});
 
@@ -52,7 +53,7 @@ describe('Crest', () => {
 		cy.mount(<Crest abbreviation='PHI' className='team-crest' />);
 
 		cy.get('.crest').should('have.attr', 'data-crest-state', 'missing');
-		cy.get('.crest-fallback').should('be.visible');
+		cy.get('.crest-initials').should('be.visible');
 		cy.get('.crest img').should('not.exist');
 	});
 
@@ -106,11 +107,7 @@ describe('Crest', () => {
 			expect(box.width).to.equal(64);
 			expect(box.height).to.equal(64);
 		});
-		cy.get('[data-crest-state="pending"] .crest-fallback').then($fallback => {
-			const box = $fallback[0].getBoundingClientRect();
-			expect(box.width).to.equal(64);
-			expect(box.height).to.equal(64);
-		});
+		cy.get('[data-crest-state="pending"]').should('have.css', 'background-color', 'rgb(248, 249, 250)');
 	});
 
 	it('omits the placeholder entirely when asked to, and still holds its box', () => {
@@ -118,10 +115,37 @@ describe('Crest', () => {
 		stallRequest(url);
 		cy.mount(<Crest logo={url} abbreviation='PHI' className='gd-bar-logo' fallback='none' />);
 
-		cy.get('.crest-fallback').should('not.exist');
-		cy.get('.crest').then($crest => {
+		cy.get('.crest-initials').should('not.exist');
+		cy.get('.crest').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)').then($crest => {
 			expect($crest[0].getBoundingClientRect().width).to.equal(18);
 		});
+	});
+
+	it('draws a round placeholder and a square logo', () => {
+		const url = slowLogo();
+		stallRequest(url);
+		cy.mount(
+			<>
+				<Crest logo={url} abbreviation='PHI' className='team-crest' />
+				<Crest logo={loadableLogo} abbreviation='DAL' className='team-crest' />
+			</>,
+		);
+		cy.get('[data-crest-state="pending"]').should('have.css', 'border-radius', '50%');
+		cy.get('[data-crest-state="loaded"]').should('have.css', 'border-radius', '0px');
+		cy.get('[data-crest-state="loaded"] img').should('have.css', 'border-radius', '0px');
+	});
+
+	it('sizes the initials off the box, whatever unit sized it', () => {
+		cy.mount(
+			<>
+				<Crest abbreviation='PHI' className='team-crest' />
+				<span style={{ display: 'inline-block', width: 40, height: 40 }}>
+					<Crest abbreviation='DAL' className='gd-atbat-face-crest' />
+				</span>
+			</>,
+		);
+		cy.contains('.crest-initials', 'PHI').should('have.css', 'font-size', '19.2px');
+		cy.contains('.crest-initials', 'DAL').should('have.css', 'font-size', '12px');
 	});
 
 	it('is a Bootstrap avatar, with the logo as its image', () => {
@@ -137,22 +161,22 @@ describe('Crest', () => {
 				<Crest abbreviation='GLD' className='team-crest' teamColor='#FFB81C' />
 			</>,
 		);
-		cy.contains('.crest-fallback', 'NAV')
+		cy.contains('.crest', 'NAV')
 			.should('have.css', 'background-color', 'rgb(12, 35, 64)')
 			.and('have.css', 'color', 'rgb(255, 255, 255)');
-		cy.contains('.crest-fallback', 'GLD')
+		cy.contains('.crest', 'GLD')
 			.should('have.css', 'background-color', 'rgb(255, 184, 28)')
 			.and('have.css', 'color', 'rgb(17, 24, 39)');
 	});
 
 	it('keeps the call site\'s own neutral disc without a usable team colour', () => {
 		cy.mount(<Crest abbreviation='PHI' className='team-crest' teamColor='navy' />);
-		cy.get('.crest-fallback').should('have.css', 'background-color', 'rgb(248, 249, 250)');
+		cy.get('.crest').should('have.css', 'background-color', 'rgb(248, 249, 250)');
 	});
 
 	it('draws an icon in place of the abbreviation when given one', () => {
 		cy.mount(<Crest abbreviation='' icon='bi-globe2' className='tab-favicon' />);
-		cy.get('.crest-fallback .bi-globe2').should('be.visible');
+		cy.get('.crest > .bi-globe2').should('be.visible');
 	});
 
 	it('names itself only when nothing else does', () => {

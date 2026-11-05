@@ -22,6 +22,6 @@
 	});
 </script>
 
-<!-- Without the script the crests never leave `pending`, and every placeholder would sit behind a
-     loaded crest, showing through the transparent parts of it. -->
-<noscript><style>[data-crest-settle] .crest-fallback { display: none; }</style></noscript>
+<!-- Without the script the crests never leave `pending`, and every placeholder would show through
+     the transparent parts of a loaded crest. -->
+<noscript><style>[data-crest-settle] .crest { border-radius: var(--crest-logo-radius); background-color: transparent; } [data-crest-settle] .crest > :not(img) { display: none; }</style></noscript>

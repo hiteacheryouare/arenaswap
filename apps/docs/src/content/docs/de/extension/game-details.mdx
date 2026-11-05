@@ -1,0 +1,82 @@
+---
+sourceHash: '01e24339f21e'
+title: So liest du den Detailbildschirm eines Spiels in ArenaSwap
+description: Klick auf ein Spiel und sieh, warum es so platziert ist, wie es bisher läuft, wer spielt und wo du zuschauen kannst. Mit einem Spielboost schiebst du ein Spiel nach oben.
+section: extension
+order: 14
+navLabel: Spieldetails
+faq:
+  - q: Wie sehe ich, warum ein Spiel seinen PowerScore hat?
+    a: Klick im Popup auf die Karte des Spiels oder im Guide auf seinen Balken. Bei einem Live-Spiel zeigt die PowerScore-Aufschlüsselung auf dem Tab Übersicht, was Punkte bringt, mit einer Zeile in einfachen Worten ganz unten. Fahr mit der Maus über die Info-Symbole, um zu sehen, was jeder Teil bedeutet.
+  - q: Was macht der Spielboost in ArenaSwap?
+    a: Er addiert 0 bis 100 Punkte zum PowerScore eines Spiels, damit ArenaSwap es bevorzugt. Setz ihn auf 0 zurück, um ihn zu entfernen.
+  - q: Warum sehe ich auf dem Detailbildschirm eines Spiels keine Wettquote?
+    a: Sie bleibt versteckt, solange Wetten & Quoten anzeigen in den Einstellungen nicht eingeschaltet ist.
+  - q: Warum hat dieses Spiel keinen Tab Duell, Boxscore oder Tabelle?
+    a: Tabs erscheinen nur, wenn es etwas hineinzulegen gibt. Duell gibt es für Spiele, die noch nicht begonnen haben, Boxscore für Spiele, die laufen. Nicht jede Liga hat eine Tabelle.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Klick auf ein beliebiges Spiel, und du siehst, warum es so platziert ist und worum es geht.
+
+## Spiel öffnen
+
+Klick im Popup auf eine Spielkarte. Im [Guide](/arenaswap/docs/extension/guide/) klickst du auf den Balken eines Spiels, dann öffnet es sich in einer Seitenleiste. **Zurück** bringt dich zur Liste, im Guide schließt **Schließen** die Leiste.
+
+Unter dem Spielstand sitzt eine Reihe von Tabs: **Übersicht** ist immer da, **Duell** erscheint vor dem Spielbeginn, **Boxscore** sobald das Spiel läuft, und **Tabelle**, wenn deine Liga eine hat. Passen nicht alle in die Zeile, landet der Rest unter **Mehr**.
+
+## Sehen, warum ein Spiel so weit oben steht
+
+Öffne ein Live-Spiel und schau dir die **PowerScore-Aufschlüsselung** auf **Übersicht** an. Sie zeigt, was das Spiel sehenswert macht:
+
+- **Ausgeglichenheit**: wie eng der Spielstand ist.
+- **Spielschluss**: wie nah das Ende ist, solange noch alles offen ist.
+- **Schwung**: ob ein Team gerade eine Serie spielt.
+- **Führungswechsel**: wie oft die Führung zuletzt gewechselt hat.
+- **Comeback**: ob das zurückliegende Team wieder herankommt.
+
+Jedes Signal zeigt seine Punkte, danach folgen alle Boosts (Extrapunkte, etwa für dein Lieblingsteam) und Strafen (Punktabzug, etwa während einer Werbepause) und zuletzt der **PowerScore gesamt**. Die Zeile unter der Summe sagt, was gerade den Ausschlag gibt.
+
+<Demo name='breakdown' />
+
+Ein Spiel, das für **Halbzeit**, eine **Pause** oder eine Verzögerung unterbrochen ist, zeigt 0, bis wieder gespielt wird. Beendete Spiele bekommen keinen PowerScore. Wie du ändern kannst, was zählt, steht unter [Wertungsmodi](/arenaswap/docs/extension/scoring-modes/).
+
+## Verfolgen, wie das Spiel läuft
+
+Die Diagramme unter der Aufschlüsselung füllen sich, während gespielt wird. **PowerScore über die Zeit** zeigt, wann das Spiel gut wurde, und **Siegwahrscheinlichkeit**, wie die Chancen hin- und hergeschwankt sind. Dazu gibt es Diagramme für Spielstand und Vorsprung.
+
+<Demo name='charts' />
+
+Live-Spiele zeigen je nach Sportart mehr. **Letzter Spielzug** zeigt, was gerade passiert ist, und im Baseball nennt **Als Nächstes am Schlag**, wer an die Platte kommt. Football zeigt Down und Distanz, Basketball Timeouts und Bonus. Playoff-Spiele zeigen den Serienstand.
+
+## Vor dem Spiel startklar machen
+
+Ein Spiel, das noch nicht begonnen hat, hat eine Karte **Bereit für den Anstoß** (je nach Sportart Sprungball, Puck-Einwurf oder erster Wurf). Hier kannst du einen Spielboost setzen und im Popup den Tab wählen, in dem das Spiel aufgehen soll.
+
+Darunter findest du, wo es passt, **Voraussichtliche Pitcher** oder **Voraussichtliche Torhüter**, **Team-Topspieler** und den Tab **Duell** mit **Aktuelle Form**, **Saisonstatistik** und **Verletzungen**. Um einem Team zu folgen, tippst du auf den Stern neben seinem Wappen. Was das bewirkt, steht unter [Lieblingsteams](/arenaswap/docs/extension/favorite-teams/).
+
+## Boxscore und Tabelle prüfen
+
+Der **Boxscore** zeigt den Spielstand Periode für Periode, Teamstatistiken und Spielerzeilen für die Sportart, die du schaust. Die **Tabelle** zeigt die Ligatabelle mit den beiden Teams hervorgehoben.
+
+## Sehen, wo es läuft
+
+Unter **Spielinfos** stehen Sender oder Dienst, Spielort und Wetter. Beendete Spiele zeigen auch die Zuschauerzahl. Bei kommenden Spielen kann es einen Link zu **Tickets** geben.
+
+Die Wettquote erscheint nur, wenn du in den Einstellungen **Wetten & Quoten anzeigen** eingeschaltet hast.
+
+## Spielboost setzen
+
+Du willst ein Spiel auf dem Bildschirm, egal was der Spielstand sagt? Der **Spielboost** addiert Punkte zu seinem PowerScore, damit ArenaSwap es öfter wählt. Tipp eine Zahl von 0 bis 100 ein, mit 0 nimmst du ihn wieder weg.
+
+<Demo name='game-boost' />
+
+Das Feld für den Spielboost gibt es bei Live-Spielen und kommenden Spielen. Er ist das Einzige, was einen PowerScore über 100 schieben kann, und die Aufschlüsselung zeigt ihn als „Spielboost“.
+
+## Verwandt
+
+- [So planst du mit dem Guide, was du schaust](/arenaswap/docs/extension/guide/) öffnet diesen Bildschirm von der Zeitleiste aus.
+- [Wertungsmodi](/arenaswap/docs/extension/scoring-modes/) erklärt, worauf jeder Modus achtet.
+- [So legst du in ArenaSwap Lieblingsteams fest](/arenaswap/docs/extension/favorite-teams/) behandelt Sterne und den Lieblingsteam-Boost.
+- [Die ArenaSwap-Einstellungen im Überblick](/arenaswap/docs/extension/settings/) führt Wetten & Quoten anzeigen und Temperatureinheit auf.

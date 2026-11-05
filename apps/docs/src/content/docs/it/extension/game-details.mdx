@@ -1,0 +1,82 @@
+---
+sourceHash: '01e24339f21e'
+title: Come leggere la schermata di dettaglio di una partita in ArenaSwap
+description: Clicca una partita per vedere perché è dove si trova in classifica, come sta andando, chi gioca e dove guardarla. Aggiungi un Boost partita per spingerne una verso l'alto.
+section: extension
+order: 14
+navLabel: Dettagli della partita
+faq:
+  - q: Come vedo perché una partita ha quel PowerScore?
+    a: Clicca la scheda della partita nel popup, o la sua barra nella Guida. In una partita in diretta, il Dettaglio PowerScore nella scheda Panoramica mostra cosa aggiunge punti, con una riga in parole semplici in fondo. Passa il mouse sulle icone info per capire cosa significa ogni parte.
+  - q: Cosa fa Boost partita in ArenaSwap?
+    a: Aggiunge punti, da 0 a 100, al PowerScore di una partita così ArenaSwap la favorisce. Rimettilo a 0 per toglierlo.
+  - q: Perché non vedo la quota delle scommesse nella schermata di dettaglio di una partita?
+    a: È nascosta a meno che Mostra scommesse e quote non sia attivo nelle Impostazioni.
+  - q: Perché questa partita non ha la scheda Sfida, Boxscore o Classifica?
+    a: Le schede compaiono solo quando c'è qualcosa da metterci. Sfida è per le partite non ancora iniziate, e Boxscore per quelle già iniziate. Non tutte le leghe hanno una classifica.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Clicca una partita qualsiasi per vedere perché si trova dove si trova in classifica, e cosa c'è in gioco.
+
+## Apri una partita
+
+Clicca la scheda di una partita nel popup. Nella [Guida](/arenaswap/docs/extension/guide/), clicca la barra di una partita e si apre in un pannello laterale. Clicca **Indietro** per tornare alla lista, o **Chiudi** nella Guida.
+
+Sotto il punteggio c'è una riga di schede: **Panoramica** c'è sempre, **Sfida** compare prima che la partita inizi, **Boxscore** quando è in corso e **Classifica** quando la tua lega ha una tabella. Se non ci stanno tutte, le altre finiscono sotto **Altro**.
+
+## Scopri perché una partita è così in alto
+
+Apri una partita in diretta e guarda il **Dettaglio PowerScore** in **Panoramica**. Mostra cosa rende la partita da guardare:
+
+- **Equilibrio**: quanto è tirato il punteggio.
+- **Fine gara**: quanto è vicina la fine, mentre tutto è ancora aperto.
+- **Momentum**: se una squadra è in serie positiva.
+- **Sorpassi**: quanto spesso il vantaggio è passato di mano di recente.
+- **Rimonta**: se la squadra che sta sotto sta risalendo.
+
+Ognuno mostra i suoi punti, seguiti da eventuali boost (punti extra, come per la tua squadra preferita) e penalità (punti in meno, come durante una pausa pubblicitaria), e poi il **PowerScore finale**. La riga sotto il totale dice cosa lo sta guidando adesso.
+
+<Demo name='breakdown' />
+
+Una partita in pausa per l'**Intervallo**, una **Pausa** o un'interruzione mostra 0 finché il gioco non riparte. Le partite finite non ricevono un PowerScore. [Modalità di punteggio](/arenaswap/docs/extension/scoring-modes/) spiega come cambiare cosa conta.
+
+## Segui come sta andando la partita
+
+I grafici sotto il dettaglio si riempiono mentre si gioca. **PowerScore nel tempo** mostra quando la partita è diventata bella, e **Probabilità di vittoria** mostra come sono oscillate le quote. Ci sono anche grafici per il punteggio e per il vantaggio.
+
+<Demo name='charts' />
+
+Le partite in diretta aggiungono altro, a seconda dello sport. **Ultima azione** mostra cosa è appena successo, e nel baseball **Prossimi battitori** mostra chi sta per arrivare in battuta. Il football mostra down e distanza, il basket mostra timeout e bonus. Le partite di playoff mostrano il punteggio della serie.
+
+## Preparati prima che la partita inizi
+
+Una partita non ancora iniziata ha una scheda **Preparati per il calcio d'inizio** (palla a due, primo disco o primo lancio, a seconda dello sport). Qui puoi aggiungere un Boost partita e, nel popup, scegliere la scheda in cui aprire la partita.
+
+Sotto trovi **Lanciatori probabili** o **Portieri probabili** dove servono, **Leader di squadra**, e la scheda **Sfida** con **Forma recente**, **Statistiche stagionali** e **Infortuni**. Per seguire una squadra, tocca la stella accanto al suo stemma. [Squadre preferite](/arenaswap/docs/extension/favorite-teams/) spiega cosa fa.
+
+## Controlla il boxscore e la classifica
+
+**Boxscore** ha il punteggio periodo per periodo, le statistiche di squadra e le righe dei giocatori per lo sport che guardi. **Classifica** mostra la tabella della lega con queste due squadre evidenziate.
+
+## Trova dove guardarla
+
+**Info partita** elenca il canale o il servizio, lo stadio e il meteo. Le partite finite mostrano anche il pubblico. Le partite in arrivo possono rimandare a **Biglietti**.
+
+La quota delle scommesse compare solo se hai attivato **Mostra scommesse e quote** nelle Impostazioni.
+
+## Aggiungi un Boost partita
+
+Vuoi una partita sullo schermo a prescindere dal punteggio? **Boost partita** aggiunge punti al suo PowerScore così ArenaSwap la sceglie più spesso. Scrivi un numero da 0 a 100, e usa 0 per toglierlo.
+
+<Demo name='game-boost' />
+
+Il campo Boost partita c'è nelle partite in diretta e in arrivo. È l'unica cosa che può portare un PowerScore sopra 100, e il dettaglio lo mostra come "Boost partita".
+
+## Argomenti correlati
+
+- [Come usare la Guida per pianificare cosa guardare](/arenaswap/docs/extension/guide/) apre questa schermata dalla timeline.
+- [Modalità di punteggio](/arenaswap/docs/extension/scoring-modes/) spiega cosa conta in ogni modalità.
+- [Come impostare le squadre preferite in ArenaSwap](/arenaswap/docs/extension/favorite-teams/) spiega le stelle e il Boost squadra preferita.
+- [Guida alle impostazioni di ArenaSwap](/arenaswap/docs/extension/settings/) elenca Mostra scommesse e quote e Unità di temperatura.

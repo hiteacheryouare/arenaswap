@@ -1,0 +1,18 @@
+---
+import type { ScoringModeChoice } from '@arenaswap/core/types';
+import SelectDropdown from '@arenaswap/ui/src/components/selectDropdown';
+import { modeIcons, modeNameKeys } from '@arenaswap/ui/src/components/scoringModeMeta';
+import { demoTranslator } from './demoStrings';
+import { currentLocale } from '../../i18n/ui';
+
+const demoText = demoTranslator(currentLocale(Astro.currentLocale));
+
+const modeChoices: ScoringModeChoice[] = ['classic', 'blowouts', 'fantasy', 'custom'];
+const options = modeChoices.map(mode => ({ value: mode, label: demoText(modeNameKeys[mode]), icon: modeIcons[mode] }));
+---
+<div class='doc-demo-popup doc-demo-panel doc-demo-modes'>
+	<div class='fw-bold popup-section-label'><i class='bi bi-compass'></i>{demoText('setup.scoringModeSection')}</div>
+	<div class='fg-secondary setting-toggle-label mb-1'>{demoText('setup.scoringMode')}</div>
+	<SelectDropdown value='classic' options={options} onChange={() => {}} ariaLabel={demoText('setup.scoringMode')} open />
+	<div class='setting-explainer mt-1'>{demoText('setup.modeExplainerClassic')}</div>
+</div>

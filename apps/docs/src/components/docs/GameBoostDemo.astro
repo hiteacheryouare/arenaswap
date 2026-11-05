@@ -1,0 +1,22 @@
+---
+import { boostPointsMax } from '@arenaswap/core/constants';
+import { demoTranslator } from './demoStrings';
+import { currentLocale } from '../../i18n/ui';
+
+const demoText = demoTranslator(currentLocale(Astro.currentLocale));
+
+interface Props {
+	value?: number;
+}
+
+const { value = 5 } = Astro.props;
+---
+<div class='doc-demo-popup doc-demo-panel'>
+	<div class='game-detail-boost-section'>
+		<div class='game-detail-boost-heading'>{demoText('gameBoost.heading')}</div>
+		<div class='game-detail-boost-row'>
+			<span class='game-detail-boost-explainer'>{demoText('gameBoost.explainer')}</span>
+			<input type='number' class='powerscore-boost-input' min='0' max={boostPointsMax} step='1' value={value} aria-label={demoText('gameBoost.heading')} />
+		</div>
+	</div>
+</div>

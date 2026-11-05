@@ -1,0 +1,59 @@
+---
+title: How to change what ArenaSwap looks for in a game
+description: Pick Classic for tight games, Blowouts for beatdowns, or Fantasy for the games your players are in, or set a different one for each league.
+section: extension
+order: 6
+navLabel: Scoring modes
+faq:
+  - q: Which scoring mode should I use?
+    a: Classic for the closest, tensest game, which is how ArenaSwap works out of the box. Blowouts if you'd rather watch somebody get run off the field. Fantasy if you care most about your own players. Custom lets you pick a different one for each league.
+  - q: Why doesn't Fantasy do anything when I turn it on?
+    a: Fantasy needs players. Add some to Your Players in Settings. Until you do, and in any game none of them are playing in, ArenaSwap uses Classic.
+  - q: Can I use Fantasy for a sport that isn't football?
+    a: Yes. Fantasy works for the NFL, NBA, WNBA, MLB and NHL, and you can change the scoring rules for each sport.
+---
+
+import Demo from '../../../components/docs/Demo.astro';
+
+Out of the box, ArenaSwap goes looking for the game that's close, late and swinging. That's **Classic**. If you want something else on your screen, change what it looks for in Settings, under **Scoring**.
+
+<Demo name='modes' />
+
+## Pick the kind of game you want
+
+- **Classic:** close games, late drama and comebacks. A tie in the final minutes is the dream.
+- **Blowouts:** lopsided games, for when you want to watch one team flatten another. Close games still show up on a night with no beatdown, but a real one always wins.
+- **Fantasy:** games with your players in them. It follows where they are in the game (who has the ball, who's at bat, who's in the red zone) and how many fantasy points they've scored lately.
+- **Custom:** a different mode for each league. Maybe the NFL gets Fantasy, college basketball gets Classic, and everything else gets Blowouts. A league you don't set uses Classic.
+
+Games from every league are ranked on the same 0 to 100 scale, so a Fantasy game and a Classic game can still compete for your tab. How much better a game has to be before ArenaSwap moves you is still up to your [switching settings](/arenaswap/docs/extension/switching-and-sensitivity/).
+
+## Never miss your players
+
+1. Set the scoring mode to **Fantasy**, or **Custom** with Fantasy on the leagues you want.
+2. Open **Your Players** and search for a player by name. Add them from the results. You can add up to 50.
+3. Set **How much your players lift their games**. Slide it up and your roster counts for more. Slide it down and it just breaks ties.
+
+Fantasy covers the NFL, NBA, WNBA, MLB and NHL. A football roster can also hold a team defense. A game with one of your players in it can only move up the list, never down.
+
+Under **Scoring Rules**, you can change how many fantasy points each stat is worth. ArenaSwap starts with the standard points for each sport.
+
+## Switch off what you don't care about
+
+Each mode has a few things it measures, called Signals. Classic's are Closeness, Late-game, Momentum, Lead changes and Comeback. Under **PowerScore Signals**, you can switch any of them off, as long as one stays on. See the [signals page](/arenaswap/docs/powerscore/signals/) for what each one means.
+
+<Demo name='breakdown' />
+
+## Points you add yourself
+
+These work in every mode:
+
+- **Favorite team boost** adds points to games with a team you follow. See [favorite teams](/arenaswap/docs/extension/favorite-teams/).
+- **Postseason boost** adds points to playoff and knockout games, more for later rounds. It doesn't apply in Blowouts.
+- **Game Boost** adds points to one game you pick, from 0 to 100. Use the Game Boost field on the game's detail screen or in the [Guide](/arenaswap/docs/extension/guide/). It lasts until you close your browser.
+
+## Related
+
+- [ArenaSwap settings reference](/arenaswap/docs/extension/settings/) lists the scoring settings and their defaults.
+- [How to control when ArenaSwap switches tabs](/arenaswap/docs/extension/switching-and-sensitivity/) covers how much better a game has to be before ArenaSwap moves you.
+- [PowerScore signals in every mode](/arenaswap/docs/powerscore/signals/) explains each signal in detail.

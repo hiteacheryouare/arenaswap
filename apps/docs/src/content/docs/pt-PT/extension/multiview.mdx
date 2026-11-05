@@ -1,0 +1,74 @@
+---
+sourceHash: '6aafbef8b446'
+title: Como usar o Multiview
+description: Vê os teus jogos mais emocionantes lado a lado num só separador do navegador, com o som do melhor. Ativa-o e escolhe quando abre.
+section: extension
+order: 10
+navLabel: Multiview
+faq:
+  - q: Como vejo vários jogos num só ecrã do navegador?
+    a: Ativa o Multiview nas definições do ArenaSwap e associa um separador a cada jogo que estás a ver. Quando dois ou mais desses jogos ficam emocionantes ao mesmo tempo, o ArenaSwap abre um separador com cada jogo na sua caixa.
+  - q: O Multiview funciona no Firefox?
+    a: Não. O Multiview existe nas versões do ArenaSwap para Chrome e Edge. A versão para Firefox tem tudo o resto.
+  - q: Porque é que o Multiview não abriu?
+    a: Verifica se a opção Ativar mudança automática está ligada, se associaste separadores a pelo menos dois jogos em direto e se pelo menos dois deles chegaram à tua pontuação de Emocionante a partir de. O ArenaSwap também espera primeiro o teu Tempo de espera entre mudanças e o Atraso de mudança.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+O Multiview põe os teus jogos emocionantes num só ecrã, para deixares de ter de escolher entre eles. O jogo mais emocionante fica com a caixa maior e o som.
+
+Existe no Chrome e no Edge. O Firefox não o tem.
+
+## Ativar
+
+1. Abre as Definições e escolhe **Multiview**.
+2. Ativa **Ativar Multiview**.
+3. Um guia curto explica o que esperar. Clica em **Seguinte** e depois em **Continuar**.
+4. O teu navegador pergunta se o ArenaSwap pode "Ler e alterar todos os seus dados em todos os Websites". Permite. É assim que as tuas transmissões aparecem juntas num só separador.
+
+Se clicares em **Agora não** ou disseres que não ao navegador, o Multiview fica desativado. Tudo o resto funciona igual.
+
+<Demo name='multiview' />
+
+## Dar um separador a cada jogo
+
+Abre a transmissão de cada jogo no seu próprio separador e escolhe esse separador no menu **Associa um separador** do cartão do jogo. [Ver vários jogos](/arenaswap/docs/extension/watching-multiple-games/) explica o processo.
+
+Mantém **Ativar mudança automática** ligado. O Multiview fecha quando está desligado.
+
+## Escolher quando abre
+
+Três definições em **Multiview** decidem isso:
+
+- **Emocionante a partir de** é o PowerScore que um jogo precisa para contar como emocionante, de 0 a 100. A predefinição é 55. Desliza para **Abre com mais frequência** para teres mais Multiview. Desliza para **Só grandes momentos** para teres menos.
+- **Mostrar** escolhe quem recebe uma caixa. **Jogos emocionantes** mostra apenas os jogos iguais ou acima da tua pontuação. **Todos os meus jogos** mostra todos os jogos com separador.
+- **Máximo de quadros** limita quantos jogos aparecem ao mesmo tempo, de 2 a 8. A predefinição é 4. Se mais jogos se qualificarem, as caixas vão para os PowerScores mais altos.
+
+O Multiview abre quando pelo menos dois dos teus jogos chegam à pontuação de **Emocionante a partir de**. Respeita o teu **Tempo de espera entre mudanças** e o teu **Atraso de mudança**, como qualquer outra mudança. [Controlar quando o ArenaSwap muda](/arenaswap/docs/extension/switching-and-sensitivity/) explica ambos.
+
+Quando um jogo está emocionante e outro está a 10 pontos da tua pontuação de **Emocionante a partir de**, um separador do Multiview silenciado abre no fim da tua barra de separadores e começa a carregar esses jogos. Se o segundo jogo recuar, o separador fica 2 minutos, caso ele volte. Fecha esse separador e o Multiview espera o teu Tempo de espera entre mudanças antes de tentar outra vez.
+
+## Enquanto está aberto
+
+O ArenaSwap põe o separador do Multiview junto ao teu jogo, ou abre lá um novo, e leva-te até ele. Com as notificações ativas, recebes uma notificação **Mudado → Multiview**.
+
+A caixa maior, em cima à esquerda, pertence ao jogo mais emocionante e é a única com som. Os outros jogos alinham-se à volta. Os separadores dos teus jogos ficam abertos e silenciados em segundo plano.
+
+## Quando fecha
+
+Depois de o Multiview abrir, fica pelo menos o teu Tempo de espera entre mudanças, e até uma das transmissões começar a reproduzir.
+
+Quando só um jogo continua emocionante, esse jogo ocupa o separador do Multiview durante 2 minutos. Se outro jogo voltar a ficar emocionante nesse tempo, todas as caixas voltam. Se não, o ArenaSwap leva-te ao separador desse jogo e fecha o Multiview. Salta os 2 minutos quando o outro jogo terminou, ou quando um dos teus jogos sem caixa ganha vantagem suficiente para o ArenaSwap mudar para ele.
+
+Um jogo mantém a caixa durante um intervalo publicitário.
+
+Fecha tu o separador do Multiview e ele pode voltar a abrir assim que o teu Tempo de espera entre mudanças passar. Envia-o para outra página web e ele pára, e não volta a abrir esses jogos durante 10 minutos.
+
+Se nenhuma das transmissões começar a reproduzir num minuto, o ArenaSwap leva-te de volta ao teu melhor jogo e tenta outra vez dentro de 10 minutos. Se uma caixa nunca reproduzir, abre essa transmissão no seu próprio separador e confirma que reproduz aí.
+
+## Relacionado
+
+- [Como ver vários jogos ao mesmo tempo](/arenaswap/docs/extension/watching-multiple-games/) explica como associar separadores.
+- [Como controlar quando o ArenaSwap muda de separador](/arenaswap/docs/extension/switching-and-sensitivity/) fala do tempo de espera e do atraso.
+- [Referência das definições do ArenaSwap](/arenaswap/docs/extension/settings/) lista todas as definições do Multiview.

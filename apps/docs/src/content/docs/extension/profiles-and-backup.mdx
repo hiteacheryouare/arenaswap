@@ -1,0 +1,81 @@
+---
+title: How to use profiles and back up your settings
+description: Keep a separate ArenaSwap setup for each kind of viewing night, then save one to a file to use in another browser or after a reinstall.
+section: extension
+order: 12
+navLabel: Profiles and backup
+faq:
+  - q: How do I move my ArenaSwap settings to another browser?
+    a: "Open Settings, choose Profiles & Backup, and click Back up or restore. Download a backup, then open the same page in the other browser and drop the file in. You can add it as a new profile or replace the one you're using."
+  - q: Do ArenaSwap profiles sync between browsers?
+    a: Your current profile syncs whenever sync is turned on in your browser. Your other profiles stay in the browser where you made them. To take one with you, save it to a file.
+---
+
+import Demo from '../../../components/docs/Demo.astro';
+
+A playoff night and a Sunday of fantasy football want different setups. Profiles let you keep both and switch in a click. Backups let you take a setup to another browser.
+
+## Make a profile
+
+Everyone starts with one profile, **main**.
+
+1. Open Settings, then **Profiles & Backup**.
+2. Click **New profile** and type a name.
+3. Click **Copy main** to start from your current settings, or **Start fresh** for the defaults. (The button shows the name of your current profile.)
+
+Two profiles can't share a name. A profile holds your settings and your Fantasy roster. The new one becomes your current profile.
+
+<Demo name='profiles' />
+
+## Switch profiles
+
+Click a profile's name in the **Profiles** list. A checkmark marks the one in use. Your leagues, favorite teams and scoring mode change right away.
+
+## Rename, export or delete
+
+Click the three dots next to a profile.
+
+- **Rename** lets you pick a new name.
+- **Export** opens the backup page with that profile ready to save.
+- **Delete** removes the profile, along with its settings and Fantasy roster. Export it first if you want a copy.
+
+You can't delete the profile you're using. Switch to another one first.
+
+## Keep your setup in sync
+
+Under **Syncs With Your Browser**, ArenaSwap lists what your current profile holds: leagues on, favorite teams, scoring mode and your Fantasy roster. That all follows you to other computers when sync is on in your browser. Other profiles stay put.
+
+## Save a backup
+
+1. Click **Back up or restore…**. It opens in a new tab.
+2. If you have more than one profile, pick one from the **Profile** menu.
+3. Click **Download backup**.
+
+The file's name has the profile and today's date, like `arenaswap-settings-main-2026-11-03.json`.
+
+## Use a backup
+
+Open **Back up or restore…** in the browser you're moving to. If you're still in first-time setup, click **Have a backup file? Skip setup and import it**.
+
+1. Drop the file onto **Drop a backup here**, or click **Choose a file**.
+2. Compare the file's setup with yours.
+3. Pick one:
+   - **Add as a new profile** keeps everything you have and adds the file's setup beside it.
+   - **Replace** swaps every setting in your current profile for the ones in the file. If the backup was taken in Demo mode, you'll be back in Demo mode.
+4. When you see "is all moved in," click **Close tab**.
+
+Picked the wrong file? **Choose another file** starts over.
+
+<Demo name='backup' />
+
+If something goes wrong:
+
+- "…held that file up to the light and couldn't make out a word": the file is damaged. Save a fresh backup.
+- "…a perfectly good file, just not one of ours": it didn't come from ArenaSwap. Pick one you saved.
+- "This file came from a newer ArenaSwap": update the extension, then try again.
+- "That didn't save": try again.
+
+## Related
+
+- [ArenaSwap settings reference](/arenaswap/docs/extension/settings/) lists the Profiles and Back up or restore settings.
+- [Get started with ArenaSwap](/arenaswap/docs/extension/getting-started/) covers first-time setup.

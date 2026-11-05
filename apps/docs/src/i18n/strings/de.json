@@ -444,6 +444,47 @@
 			"Aufholjagd"
 		]
 	},
+	"docDemos": {
+		"popup": "Das ArenaSwap-Popup mit drei Live-Spielen nach PowerScore: Boston bei New York, 100:100 mit 2:10 auf der Uhr (85), Philadelphia bei Pittsburgh, 2:2 im dritten Drittel (76), und Chelsea führt gegen Arsenal 2:1 in der 78. Minute (63).",
+		"popupTabs": "Das ArenaSwap-Popup mit drei Live-Spielen nach PowerScore, jeweils mit dem Tab, in dem es läuft: Boston bei New York, 100:100 mit 2:10 auf der Uhr (85), Philadelphia bei Pittsburgh, 2:2 im dritten Drittel (76), und Chelsea führt gegen Arsenal 2:1 in der 78. Minute (63).",
+		"liveCard": "Eine Karte für ein Live-Spiel: Boston Celtics bei New York Knicks, 100:100 mit 2:10 Restzeit im vierten Viertel, PowerScore 85 von 100.",
+		"liveCardFavorite": "Eine Karte für ein Live-Spiel: Boston Celtics bei New York Knicks, 100:100 mit 2:10 Restzeit im vierten Viertel, PowerScore 85 von 100, die Celtics sind als Lieblingsteam mit einem Stern markiert.",
+		"liveCardTab": "Eine Karte für ein Live-Spiel: Boston Celtics bei New York Knicks, 100:100 mit 2:10 Restzeit im vierten Viertel, PowerScore 85 von 100, dem Tab Boston bei New York zugewiesen.",
+		"liveCardFavoriteTab": "Eine Karte für ein Live-Spiel: Boston Celtics bei New York Knicks, 100:100 mit 2:10 Restzeit im vierten Viertel, PowerScore 85 von 100, die Celtics sind als Lieblingsteam mit einem Stern markiert, dem Tab Boston bei New York zugewiesen.",
+		"upcomingCard": "Eine Karte für ein bevorstehendes Spiel: Kansas City Chiefs bei Buffalo Bills, Sonntag um 16:25 Uhr im Highmark Stadium.",
+		"finalCard": "Eine Karte für ein beendetes Spiel: Ohio State 27, Michigan 24, im Ohio Stadium.",
+		"charts": "Vier Diagramme aus den Details eines Spiels: PowerScore im Zeitverlauf, der Spielstand im Zeitverlauf, die Siegwahrscheinlichkeit und der Anteil jedes Signals am PowerScore.",
+		"breakdown": "Ein Bereich {heading}: {closeness} 38 von 42, {lateGame} 31 von 38, {momentum} 8 von 38, {leadChanges} 5 von 18 und {comeback} 3 von 20 ergeben eine Signalsumme von 85. Ein {gameBoost} von 5 Punkten hebt den Wert ({final}) auf 90 von 100. {reason}.",
+		"gameBoost": "Das Feld {heading} in den Details eines Spiels, auf {points} Punkte gesetzt.",
+		"suggestBanner": "Das Banner {title} oben im Popup, mit einem Button {action} und einem Schließen-Button.",
+		"guide": "Der Guide um 21:40 Uhr: eine Zeitleiste von 19 Uhr bis Mitternacht mit Spielen aus NBA, NHL und NCAA Basketball als Balken, einer Linie für die aktuelle Uhrzeit und der besten Zeit zum Einschalten, von 21:15 bis 22:15 hervorgehoben.",
+		"browserTabs": "Ein Browser mit drei offenen Spiel-Tabs. Boston bei New York ist der aktive Tab und spielt Ton ab, die anderen beiden sind stummgeschaltet.",
+		"notification": "Eine Benachrichtigung: {title}. {message}",
+		"sliderSensitivity": "Der Regler {label} auf seinem Standardwert, {value}.",
+		"sliderCooldown": "Der Regler {label} auf seinem Standardwert, 45 Sekunden.",
+		"sliderDelay": "Der Regler {label} auf seinem Standardwert, {value}.",
+		"toggleOn": "Der Schalter {label} in den Einstellungen, eingeschaltet.",
+		"toggleOff": "Der Schalter {label} in den Einstellungen, ausgeschaltet.",
+		"modes": "Die Auswahl {section}, geöffnet bei {classic}, mit {classic}, {blowouts}, {fantasy} und {custom}.",
+		"multiview": "Ein Multiview-Tab mit vier Spielen in einem 2×2-Raster. Boston bei New York, oben links, ist umrandet und hat den Ton.",
+		"standby": "Ein Browser auf einem Standby-Stream-Tab namens {tab}, daneben zwei stummgeschaltete Spiel-Tabs, und die Zeile im Popup: {line}",
+		"profiles": "Die Liste {section} in den Einstellungen mit zwei Profilen, {current} in Benutzung und sein Menü geöffnet bei {rename} und {export}, über den Buttons {new} und {backup}.",
+		"backup": "Der Backup-Tab mit einer geladenen Datei: {addAsNew} oder {replace}, und was die Datei ändern würde. Eine Liga mehr, dieselben Lieblingsteams, und der Wertungsmodus wechselt von {from} zu {to}.",
+		"bossButton": "Die Tastenkombination für den Chef-Button, Alt + Shift + X, und der Tarn-Tab mit einer Tabelle, den sie öffnet, während die Spiel-Tabs stummgeschaltet sind.",
+		"notificationNow": "jetzt",
+		"profileWeeknights": "Unter der Woche",
+		"profileFantasySunday": "Fantasy-Sonntag",
+		"standbyTab": "Highlights",
+		"decoyTab": "Prognose Q3",
+		"decoyRegion": "Region",
+		"decoyQuarter": "Q{quarter}",
+		"decoyRegions": [
+			"Nordost",
+			"Mittlerer Westen",
+			"Süd",
+			"West"
+		]
+	},
 	"ui": {
 		"gameCard": {
 			"live": "LIVE",

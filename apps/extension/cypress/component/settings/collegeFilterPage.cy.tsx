@@ -162,7 +162,7 @@ describe('collegeFilterPage', () => {
 	it('gives a conference with no crest its initials', () => {
 		installStorage([football]);
 		cy.mount(<Harness leagueId='ncaaf' />);
-		cy.get('#college-conference-177').closest('.league-toggle-row').find('.crest-fallback').should('have.text', 'UAC');
+		cy.get('#college-conference-177').closest('.league-toggle-row').find('.crest-initials').should('have.text', 'UAC');
 	});
 
 	it('labels hockey\'s poll by its own size and gives baseball an Other bucket', () => {

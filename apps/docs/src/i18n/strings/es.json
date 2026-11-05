@@ -444,6 +444,47 @@
 			"Remontada"
 		]
 	},
+	"docDemos": {
+		"popup": "La ventana emergente de ArenaSwap con tres partidos en vivo ordenados por PowerScore: Boston vs. New York, empatados 100–100 con 2:10 por jugar (85), Philadelphia vs. Pittsburgh, empatados 2–2 en el tercer periodo (76), y Chelsea ganando 2–1 a Arsenal en el minuto 78 (63).",
+		"popupTabs": "La ventana emergente de ArenaSwap con tres partidos en vivo ordenados por PowerScore, cada uno con la pestaña en la que se juega: Boston vs. New York, empatados 100–100 con 2:10 por jugar (85), Philadelphia vs. Pittsburgh, empatados 2–2 en el tercer periodo (76), y Chelsea ganando 2–1 a Arsenal en el minuto 78 (63).",
+		"liveCard": "Una tarjeta de partido en vivo: Boston Celtics vs. New York Knicks, empatados 100–100 con 2:10 por jugar en el cuarto periodo, PowerScore 85 de 100.",
+		"liveCardFavorite": "Una tarjeta de partido en vivo: Boston Celtics vs. New York Knicks, empatados 100–100 con 2:10 por jugar en el cuarto periodo, PowerScore 85 de 100, con los Celtics marcados con una estrella como favorito.",
+		"liveCardTab": "Una tarjeta de partido en vivo: Boston Celtics vs. New York Knicks, empatados 100–100 con 2:10 por jugar en el cuarto periodo, PowerScore 85 de 100, asignada a la pestaña Boston vs. New York.",
+		"liveCardFavoriteTab": "Una tarjeta de partido en vivo: Boston Celtics vs. New York Knicks, empatados 100–100 con 2:10 por jugar en el cuarto periodo, PowerScore 85 de 100, con los Celtics marcados con una estrella como favorito, asignada a la pestaña Boston vs. New York.",
+		"upcomingCard": "Una tarjeta de partido por venir: Kansas City Chiefs vs. Buffalo Bills, el domingo a las 4:25 PM en Highmark Stadium.",
+		"finalCard": "Una tarjeta de partido finalizado: Ohio State 27, Michigan 24, en Ohio Stadium.",
+		"charts": "Cuatro gráficas de los detalles de un partido: el PowerScore a lo largo del tiempo, el marcador a lo largo del tiempo, la probabilidad de victoria y la parte que aporta cada señal al PowerScore.",
+		"breakdown": "Un {heading}: {closeness} 38 de 42, {lateGame} 31 de 38, {momentum} 8 de 38, {leadChanges} 5 de 18 y {comeback} 3 de 20 suman un total de señales de 85. Un {gameBoost} de 5 puntos lleva el {final} a 90 de 100. {reason}.",
+		"gameBoost": "El campo {heading} en los detalles de un partido, definido en {points} puntos.",
+		"suggestBanner": "El banner {title} en la parte de arriba de la ventana emergente, con un botón {action} y un botón para cerrar.",
+		"guide": "La Guía a las 9:40 PM: una línea de tiempo de las 7 PM a la medianoche con partidos de la NBA, la NHL y el basquetbol de la NCAA como barras, una línea en la hora actual y el mejor momento para ver sombreado de las 9:15 a las 10:15.",
+		"browserTabs": "Un navegador con tres pestañas de partidos abiertas. Boston vs. New York es la pestaña activa y tiene el sonido; las otras dos están silenciadas.",
+		"notification": "Una notificación que dice: {title}. {message}",
+		"sliderSensitivity": "El control deslizante {label} en su valor predeterminado, {value}.",
+		"sliderCooldown": "El control deslizante {label} en su valor predeterminado, 45 segundos.",
+		"sliderDelay": "El control deslizante {label} en su valor predeterminado, {value}.",
+		"toggleOn": "El interruptor {label} en Ajustes, activado.",
+		"toggleOff": "El interruptor {label} en Ajustes, desactivado.",
+		"modes": "El selector {section} abierto en {classic}, con {classic}, {blowouts}, {fantasy} y {custom}.",
+		"multiview": "Una pestaña de Multiview con cuatro partidos en una cuadrícula de 2×2. Boston vs. New York, arriba a la izquierda, tiene el contorno resaltado y el sonido.",
+		"standby": "Un navegador estacionado en una pestaña de Standby Stream llamada {tab}, con dos pestañas de partidos silenciadas al lado, y la línea de la ventana emergente: {line}",
+		"profiles": "La lista {section} en Ajustes con dos perfiles, {current} en uso y su menú abierto en {rename} y {export}, arriba de los botones {new} y {backup}.",
+		"backup": "La pestaña de copia de seguridad con un archivo cargado: {addAsNew} o {replace}, y lo que cambiaría el archivo. Una liga más, los mismos equipos favoritos y el modo de puntuación pasando de {from} a {to}.",
+		"bossButton": "El atajo del botón del jefe, Alt + Shift + X, y la pestaña señuelo de hoja de cálculo que abre, con las pestañas de partidos silenciadas.",
+		"notificationNow": "ahora",
+		"profileWeeknights": "Entre semana",
+		"profileFantasySunday": "Domingo de Fantasy",
+		"standbyTab": "Resúmenes",
+		"decoyTab": "Pronóstico T3",
+		"decoyRegion": "Región",
+		"decoyQuarter": "T{quarter}",
+		"decoyRegions": [
+			"Noreste",
+			"Medio Oeste",
+			"Sur",
+			"Oeste"
+		]
+	},
 	"ui": {
 		"gameCard": {
 			"live": "EN VIVO",

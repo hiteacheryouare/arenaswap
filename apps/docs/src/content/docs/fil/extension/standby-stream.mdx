@@ -1,0 +1,47 @@
+---
+sourceHash: '7a9d6a58a2ff'
+title: Paano i-set up ang Standby Stream
+description: Pumili ng tab na pagpa-parkingan kapag tumahimik ang lahat ng larong pinapanood mo, at dadalhin ka roon ng ArenaSwap at ibabalik kapag bumalik ang aksyon.
+section: extension
+order: 5
+navLabel: Standby Stream
+faq:
+  - q: Ano ang Standby Stream sa ArenaSwap?
+    a: Isang tab na pinili mo nang maaga. Kapag tumahimik ang lahat ng laro na may naka-assign kang tab, dadalhin ka ng ArenaSwap dito. Kapag uminit ulit ang isang laro, ibabalik ka ng ArenaSwap.
+  - q: Bakit walang ginagawa ang Standby Stream kahit naka-on ito?
+    a: Tiyaking pumili ka ng Standby na Tab sa Mga Setting, may naka-assign kang tab sa kahit isang live na laro, at naka-on ang I-enable ang awtomatikong paglipat. Kung may ipinapakitang Multiview, mauuna ito.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+May mga gabing sabay-sabay na nakakaantok ang lahat ng laro mo: mga blowout, rain delay, halftime. Binibigyan ng Standby Stream ang ArenaSwap ng mas magandang mapaglalagyan sa iyo, gaya ng highlight show o studio broadcast.
+
+## I-set up ito
+
+1. Buksan ang tab na gusto mong gawing fallback at iwanan itong bukas.
+2. Sa Mga Setting, buksan ang **Standby Stream** at i-on ang **I-enable ang Standby Stream**.
+3. Piliin ang tab mo sa **Standby na Tab** na dropdown.
+
+Kung **Pumili ng tab** pa rin ang nakalagay sa dropdown, walang mangyayari kapag tumahimik ang mga laro mo.
+
+Sa unang beses na i-on mo ito, magpapakita ang maikling dalawang-hakbang na gabay ng parehong mga hakbang. I-tap ang **Gets Ko!** sa ikalawang screen kapag tapos ka na.
+
+<Demo name='standby' />
+
+## Piliin kung gaano katahimik ang tahimik
+
+Ang **Standby sa ibaba ng** ay slider mula 0 hanggang 100, nakatakda sa 20 bilang default. Itaas ito at mas maaga kang ipa-park ng ArenaSwap sa standby, habang medyo interesante pa ang mga laro. Ibaba ito at mas matagal na ipapanatili ng ArenaSwap sa screen ang mga laro mo bago sumuko sa kanila.
+
+## Ano ang aasahan
+
+Kapag tumahimik ang lahat ng laro na may naka-assign kang tab, lilipat ang ArenaSwap sa standby tab mo. Kapag uminit ulit ang alinman sa mga ito, ibabalik ka nito.
+
+Kung mag-click ka sa ibang tab, ililipat ka ng ArenaSwap sa pinakamagandang laro mo. Kung wala pang umiinit pagdating ng dulo ng cooldown, ibabalik ka nito sa standby tab. Para mag-browse nang hindi ka ginagalaw, i-off ang **I-enable ang awtomatikong paglipat**.
+
+Mga laro lang na may naka-assign kang tab ang binabantayan ng Standby Stream. Kung walang naka-assign na game tab, wala itong mababalikan.
+
+## Kaugnay
+
+- Ang [Paano manood ng maraming laro nang sabay](/arenaswap/docs/extension/watching-multiple-games/) ay tungkol sa pag-assign ng mga tab sa mga laro.
+- Inililista ng [Gabay sa mga setting ng ArenaSwap](/arenaswap/docs/extension/settings/) ang default ng bawat setting ng Standby Stream.
+- Ipinapakita ng [Paano gamitin ang Multiview](/arenaswap/docs/extension/multiview/) ang ilang exciting na laro sa isang tab, para kapag higit sa isa ang sulit panoorin.

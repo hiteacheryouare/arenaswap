@@ -1,0 +1,75 @@
+---
+sourceHash: '5ceb10000624'
+title: Como ver vários jogos ao mesmo tempo
+description: Abre cada jogo no seu próprio separador, associa o separador ao jogo no ArenaSwap e ele leva-te para o melhor, silenciando os restantes.
+section: extension
+order: 2
+navLabel: Vários jogos
+faq:
+  - q: Como vejo vários jogos ao mesmo tempo num só navegador?
+    a: Abre cada jogo no seu próprio separador e escolhe esse separador no cartão do jogo no ArenaSwap. O ArenaSwap leva-te para o melhor jogo e silencia os outros.
+  - q: O ArenaSwap funciona com qualquer serviço de streaming?
+    a: Sim. Se um jogo dá num separador do navegador, o ArenaSwap pode usá-lo. Isso inclui Peacock, Prime Video, YouTube TV e o site do teu operador de TV por cabo.
+  - q: Quantos jogos posso acompanhar ao mesmo tempo?
+    a: Tantos quantos os separadores que tiveres abertos.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Abre os teus jogos em separadores diferentes, diz ao ArenaSwap qual é qual e ele trata do comando.
+
+## Abrir cada jogo no seu separador
+
+Põe cada jogo a dar como costumas, no serviço que o tem. O ArenaSwap não quer saber qual é, desde que cada jogo tenha o seu separador.
+
+## Associar cada separador ao seu jogo
+
+No popup, procura o cartão de um jogo e usa o menu **Associa um separador** para escolher o separador dele. Os jogos futuros têm o mesmo menu, por isso podes associar um separador antes do arranque.
+
+Um separador que já está associado a outro jogo aparece a cinzento e marcado com **(em uso)**. Desassocia-o desse jogo primeiro para o mudares.
+
+<Demo name='popup' tabs />
+
+## Deixar o ArenaSwap associá-los por ti
+
+Se os separadores que já tens abertos parecem jogos, aparece um aviso **Estes separadores parecem jogos** por cima da lista. Clica em **Espreitar** para veres cada jogo ao lado do separador que o ArenaSwap acha que lhe corresponde. As correspondências fortes começam assinaladas. Desmarca as que ele errou e clica em **Associar 3 separadores** (ou quantos estiverem assinalados).
+
+<Demo name='suggest-banner' />
+
+Fecha o aviso para saltares as sugestões.
+
+## Orientar-te na lista
+
+- **Separadores ativos** tem os teus jogos associados, os melhores primeiro, com os jogos das tuas equipas com estrela no topo.
+- **Jogos em direto** é tudo o resto que está a dar, caso valha a pena arranjar um separador.
+- **A seguir** é o que aí vem, um dia de cada vez. Usa as setas para mudar de dia e o ícone de pesquisa para procurar uma equipa, liga ou canal.
+- **Terminados** mostra jogos que acabaram de acabar, mas só se **Manter jogos terminados** estiver ativo. Não podes associar um separador a estes.
+
+Preferes uma lista por liga? Ativa **Agrupar jogos por liga**.
+
+## Deixar correr
+
+Com dois ou mais separadores associados, o ArenaSwap decide em qual estás. Silencia todos os separadores associados exceto o que estás a ver e leva-te para um jogo assim que ele for claramente melhor do que o que está no ecrã. Não precisas de andar a clicar nem de carregar em silenciar.
+
+Para tirar um separador da rotação, desassocia-o no menu. Para parares de mudar por completo, desliga **Ativar mudança automática** na barra superior.
+
+## Escolher o que acontece quando um jogo acaba
+
+**Quando um jogo termina**, nas Definições, tem três opções:
+
+- **Deixar o separador como está** é a predefinição.
+- **Libertar o separador do ArenaSwap** desassocia e volta a ativar o som do separador e deixa-o aberto.
+- **Fechar o separador** fecha-o.
+
+Seja qual for a que escolheres, espera até teres saído desse separador. O último separador de uma janela é libertado em vez de fechado, para que nunca desapareça uma janela inteira. Da próxima vez que abrires o ArenaSwap, ele diz-te quantos separadores voltaram, como "2 separadores voltaram a ser teus."
+
+## Usar mais do que uma janela
+
+O menu **Associa um separador** lista os separadores da janela a partir da qual abriste o ArenaSwap. Para associar um separador noutra janela, abre o ArenaSwap aí. Quando o ArenaSwap muda para um jogo noutra janela, essa janela vem para a frente e o [ecrã inteiro](/arenaswap/docs/extension/switching-and-sensitivity/#stay-full-screen-through-every-switch) vai com ela.
+
+## Relacionado
+
+- [Como controlar quando o ArenaSwap muda de separador](/arenaswap/docs/extension/switching-and-sensitivity/) explica como o deixar mais rápido ou mais paciente.
+- [Como definir equipas favoritas no ArenaSwap](/arenaswap/docs/extension/favorite-teams/) põe os jogos das tuas equipas no topo.
+- [Como configurar o Standby Stream](/arenaswap/docs/extension/standby-stream/) explica o que acontece quando todos os jogos associados ficam sossegados.
+- [Como usar o Multiview](/arenaswap/docs/extension/multiview/) põe antes vários jogos num só ecrã.

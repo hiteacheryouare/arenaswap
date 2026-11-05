@@ -1627,11 +1627,23 @@ describe('keeping finished games', () => {
 		for (const options of fetchOptions()) expect(options.includeFinal).toBe(true);
 	});
 
-	test('and never asks for them while it is off', async () => {
-		await loadBackground({ prefs: { enabledLeagues: ['nba' as LeagueId], keepFinalGames: false } });
+	// The poll is one dateless request either way, and the guide needs it to see each game go final.
+	// The slate's reach back stays gated: see 'does not reach back for finals when the setting is off'.
+	test('and the poll still asks for them while it is off', async () => {
+		await loadBackground({ prefs: { enabledLeagues: ['nba' as LeagueId], keepFinalGames: false, finishedTabAction: 'keep' } });
 		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
-		expect(fetchOptions().length).toBeGreaterThan(0);
-		for (const options of fetchOptions()) expect(options.includeFinal).toBe(false);
+		const pollOptions = fetchOptions().filter(options => options.includeUpcoming === false);
+		expect(pollOptions.length).toBeGreaterThan(0);
+		for (const options of pollOptions) expect(options.includeFinal).toBe(true);
+	});
+
+	test('and keeps them off the popup', async () => {
+		await loadBackground({
+			prefs: { enabledLeagues: ['nba' as LeagueId], keepFinalGames: false },
+			fetchReturnValue: { games: [finishedGame('done', 1), liveGame('playing')], leagueLogos: {}, shedLeagues: [] },
+		});
+		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
+		expect((await stateGames()).map(game => game.id)).toEqual(['playing']);
 	});
 
 	test('a finished game reaches the popup state', async () => {
@@ -2454,6 +2466,27 @@ describe('when a guide game actually ended', () => {
 		fetchMock.mockResolvedValue({ games: [game('g', 'post')], leagueLogos: {}, shedLeagues: [] });
 		await poll();
 		const sawFinalAt = Date.now();
+
+		const { endTimes } = await guideSlate();
+		expect(endTimes.g).toBeLessThanOrEqual(sawFinalAt);
+		expect(endTimes.g).toBeGreaterThan(sawFinalAt - 5_000);
+	});
+
+	// The fetch drops finals unless asked, so this is the poll seeing the game end, not the guide
+	// seeing it the next time it opens.
+	test('stamps the end from the poll with finished games hidden from the popup', async () => {
+		await loadBackground({
+			prefs: { ...nbaOnly, keepFinalGames: false, finishedTabAction: 'keep' },
+			fetchReturnValue: { games: [game('g', 'in')], leagueLogos: {}, shedLeagues: [] },
+		});
+		await guideSlate();
+
+		fetchMock.mockImplementation(async (_leagues: unknown, options?: { includeFinal?: boolean }) => (
+			{ games: options?.includeFinal ? [game('g', 'post')] : [], leagueLogos: {}, shedLeagues: [] }
+		));
+		await poll();
+		const sawFinalAt = Date.now();
+		jest.advanceTimersByTime(8 * 60 * 60_000);
 
 		const { endTimes } = await guideSlate();
 		expect(endTimes.g).toBeLessThanOrEqual(sawFinalAt);

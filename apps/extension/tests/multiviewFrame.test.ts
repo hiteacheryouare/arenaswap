@@ -109,6 +109,25 @@ describe('a frame whose top origin is hidden', () => {
 });
 
 describe('a frame inside the Multiview page', () => {
+	test('reports the moment its clock starts moving, then goes back to once a second', async () => {
+		const { listeners, video, sendMessage } = setup({ ancestorOrigins: [extensionOrigin], reply: { muted: true } });
+		await run();
+		await drain();
+		expect(sendMessage).toHaveBeenCalledTimes(1);
+
+		video.paused = false;
+		video.currentTime = 0.25;
+		listeners.get('timeupdate')?.();
+		await drain();
+		expect(sendMessage).toHaveBeenCalledTimes(2);
+		expect(sendMessage).toHaveBeenLastCalledWith(expect.objectContaining({ playing: true, time: 0.25 }));
+
+		video.currentTime = 0.5;
+		listeners.get('timeupdate')?.();
+		await drain();
+		expect(sendMessage).toHaveBeenCalledTimes(2);
+	});
+
 	test('silences its video on play, and gives it back when told to unmute', async () => {
 		const { listeners, video } = setup({ ancestorOrigins: [extensionOrigin], replies: [{ muted: true }], reply: { muted: false } });
 		await run();

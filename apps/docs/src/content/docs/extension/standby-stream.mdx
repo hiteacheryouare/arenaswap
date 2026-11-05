@@ -1,0 +1,46 @@
+---
+title: How to set up Standby Stream
+description: Pick a tab to park on when every game you're watching goes quiet, and ArenaSwap takes you there and brings you back when the action returns.
+section: extension
+order: 5
+navLabel: Standby Stream
+faq:
+  - q: What is Standby Stream in ArenaSwap?
+    a: A tab you pick ahead of time. When every game you've assigned a tab to goes quiet, ArenaSwap takes you to it. When a game heats back up, ArenaSwap takes you back.
+  - q: Why isn't Standby Stream doing anything even though it's turned on?
+    a: Check that you've picked a Standby tab in Settings, assigned a tab to at least one live game, and turned on Enable auto-switching. If Multiview is showing, it goes first.
+---
+
+import Demo from '../../../components/docs/Demo.astro';
+
+Some nights every game you're watching goes dull at once: blowouts, a rain delay, halftime. Standby Stream gives ArenaSwap somewhere better to put you, like a highlight show or a studio broadcast.
+
+## Set it up
+
+1. Open the tab you want as your fallback and leave it open.
+2. In Settings, open **Standby Stream** and turn on **Enable Standby Stream**.
+3. Pick your tab from the **Standby tab** dropdown.
+
+If the dropdown still says **Select a tab**, nothing happens when your games go quiet.
+
+The first time you turn it on, a short two-step guide shows the same steps. Tap **Got it** on the second screen when you're done.
+
+<Demo name='standby' />
+
+## Choose how quiet is quiet
+
+**Standby below** is a slider from 0 to 100, set to 20 by default. Slide it up and ArenaSwap parks you on standby sooner, while games are still mildly interesting. Slide it down and ArenaSwap keeps your games on screen longer before it gives up on them.
+
+## What to expect
+
+When every game you've assigned a tab to goes quiet, ArenaSwap switches to your standby tab. When any one of them heats back up, it switches you back.
+
+If you click over to another tab, ArenaSwap moves you to your best game. If nothing has heated up by the end of the cooldown, it brings you back to the standby tab. To browse without being moved at all, turn off **Enable auto-switching**.
+
+Standby Stream only watches games you've assigned a tab to. With no game tabs assigned, it has nothing to fall back from.
+
+## Related
+
+- [How to watch multiple games at once](/arenaswap/docs/extension/watching-multiple-games/) covers assigning tabs to games.
+- [ArenaSwap settings reference](/arenaswap/docs/extension/settings/) lists the default for every Standby Stream setting.
+- [How to use Multiview](/arenaswap/docs/extension/multiview/) shows several exciting games in one tab, for when more than one is worth watching.

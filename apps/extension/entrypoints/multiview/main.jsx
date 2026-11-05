@@ -8,6 +8,8 @@ import ErrorBoundary from '../popup/errorBoundary';
 import { LocaleContext } from '@arenaswap/ui/src/components/i18nContext';
 import { displayLocale } from '../../utils/displayLocale';
 
+document.documentElement.lang = displayLocale();
+
 reactDomClient.createRoot(document.getElementById('root')).render(
 	<React.StrictMode>
 		<LocaleContext.Provider value={displayLocale()}>

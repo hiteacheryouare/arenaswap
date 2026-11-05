@@ -1,0 +1,97 @@
+---
+sourceHash: '3f391bc4d95c'
+title: Gabay sa mga setting ng ArenaSwap
+description: Kung ano ang binabago ng bawat setting ng ArenaSwap, naka-group gaya ng pag-group ng popup, kasama ang default ng bawat isa.
+section: extension
+order: 7
+navLabel: Mga setting
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+I-tap ang gear sa top bar ng popup para buksan ang Mga Setting. Gamitin ang search box sa itaas para hanapin ang setting ayon sa pangalan o sa gusto mong mangyari. Naka-group ang mga setting sa Paglipat, Scoring, Mga Paboritong Team, Mga Liga, Display, Standby Stream, Multiview, at Mga Profile at Backup. Walang Multiview ang Firefox.
+
+## Paglipat
+
+- **Sensitivity ng Paglipat** (**Balanse**): kung gaano ka-exciting dapat ang ibang laro bago ka ilipat ng ArenaSwap. Pitong antas, mula **Halos Tulog** hanggang **Ludicrous Speed**. Mas mataas, mas madalas lumipat.
+- **Cooldown ng Paglipat** (45 segundo): ang pinakamaikling paghihintay sa pagitan ng dalawang paglipat. Mula **Off** hanggang 3 minuto.
+- **Delay ng Paglipat** (Off): kung gaano katagal maghihintay ang ArenaSwap bago magpalit ng tab, para maabutan ng stream na nahuhuli. Mula **Off** hanggang 3 minuto.
+- **Paglipat sa Break ng Laro** (Off): pinipigilan ang paglipat hanggang umabot sa break ang larong iiwan mo. Baka may ma-miss kang sandali sa larong lilipatan.
+- **Mga Abiso sa Paglipat** (On): abiso na may score at dahilan tuwing lumilipat ang ArenaSwap.
+- **Kapag natapos ang laro** (**Iwanan na lang ang tab**): ang mangyayari sa tab ng laro pagkatapos nitong matapos. Iniiwang bukas at ina-unmute ng **I-free mula sa ArenaSwap** ang tab. Isinasara ito ng **Isara ang tab**. Hindi gagalawin ang tab na tinitingnan mo hangga't hindi ka umaalis dito.
+- **Pekeng pahina** (blangkong tab): kung saan ka dadalhin ng boss button. Ime-mute rin nito ang bawat tab na pinamamahalaan ng ArenaSwap at ipo-pause ang awtomatikong paglipat. Tingnan ang [paano gamitin ang boss button](/arenaswap/docs/extension/boss-button/).
+- **Demo Mode** (Off): pinapalitan ang mga live na laro ng scripted na laro, para masubukan mo ang ArenaSwap nang hindi naghihintay ng totoong laro. Lumalabas ang **Magpanggap na** habang naka-on ito at holiday decoration lang ang binabago.
+
+<Demo name='toggle' setting='contentAwareSwitching.label' checked={false} />
+
+Mas marami pa tungkol dito sa [paano kontrolin kung kailan lumilipat ang ArenaSwap ng tab](/arenaswap/docs/extension/switching-and-sensitivity/).
+
+## Scoring
+
+- **Ano ang hinahanap ng PowerScore** (Classic): **Classic** para sa mga dikitang laro, **Blowouts** para sa mga lamang na lamang, **Fantasy** para sa mga larong may player mo, **Custom** para sa magkaibang mode kada liga.
+- **Mode kada liga** (Classic): lumalabas kasama ang **Custom**. Classic ang gamit ng ligang hindi mo ginalaw.
+- **PowerScore Signals** (lahat naka-on): ang mga sinusukat ng bawat mode. I-off ang mga hindi mo pinapahalagahan, pero kailangang may matira kahit isa.
+- **Gaano katindi ang angat ng mga player mo sa mga laro nila** (60%): kung gaano kabigat ang roster mo. Mula **Wala talaga** hanggang **Buong score nila**.
+- **Mga Player Mo** (walang laman): hanggang 50 player na susundan ng Fantasy. NFL, NBA, WNBA, MLB at NHL.
+- **Mga Scoring Rule** (standard na puntos): kung ilang fantasy point ang halaga ng bawat stat.
+- **Boost ng Paboritong Team** (10): puntos na idinadagdag sa mga larong may team na sinusundan mo.
+- **Boost sa Postseason** (8): puntos na idinadagdag sa mga playoff na laro. Mas marami sa mga huling round. Hindi umaandar sa Blowouts.
+
+Mas marami pa tungkol dito sa [paano baguhin ang hinahanap ng ArenaSwap sa isang laro](/arenaswap/docs/extension/scoring-modes/).
+
+## Mga Paboritong Team
+
+- **Mga Team na Sinusundan Mo** (wala): nananatili sa itaas ng listahan ang mga sinusundan na team, at nakakakuha ng boost ng paboritong team ang mga laro nila.
+
+## Mga Liga
+
+- **Mga naka-enable na liga** (ang mga pinili mo noong setup): ang mga ligang binabantayan ng ArenaSwap. Mag-on pa ng iba at hahanapin nito ang pinakamagandang laro sa lahat.
+- **Mga division at conference sa college**: kung aling mga laro sa college ang lalabas. Pumili ng ibang division o conference para palawakin o paliitin ang listahan, o ipakita lang ang Top 25. Laging lumalabas ang mga championship round gaya ng March Madness at College Football Playoff, pati ang mga laro ng mga paboritong team mo.
+
+## Display
+
+- **Ipakita ang mga paparating na laro** (On): nagdaragdag ng seksyong Susunod para sa mga larong hindi pa nagsisimula, para makapag-assign ka ng tab nang maaga.
+- **Ilang araw ang ipapakita** (7): kung gaano kalayo ang tinitingnan ng Susunod, mula 1 hanggang 14 na araw.
+- **Panatilihin ang mga tapos nang laro** (Off): itinatago ang laro nang 24 oras pagkatapos nitong matapos, sa seksyong Final. Mababasa mo ang box score, pero hindi ka makakapag-assign ng tab dito.
+- **Mga Pro Tip** (On): maiikling tip sa pangunahing screen.
+- **Ipakita ang betting at odds** (Off): ipinapakita ang betting line sa mga game card at detail screen.
+- **Yunit ng Temperatura** (°F): **°F** o **°C** para sa panahon sa detail screen ng laro.
+- **Theme** (Dark): **Dark**, **Light**, o **Sundin ang sistema**.
+- **Panimulang animation** (On): matchup poster para sa bawat laro kapag binuksan mo ang ArenaSwap.
+- **Mga dekorasyon sa holiday** (On): snow, ilaw, at dahon sa tamang panahon ng taon. May sarili nilang switch ang Snow, Lights, at Leaves.
+- **I-group ang mga laro ayon sa liga** (Off sa mga bagong install): inilalagay ang mga laro sa ilalim ng header ng bawat liga sa halip na isang listahan. Nasa itaas pa rin ang mga paboritong team mo sa alinmang paraan.
+- **Ayos ng Display**: lumalabas kasama ang **I-group ang mga laro ayon sa liga**. I-drag ang mga liga, o gamitin ang mga arrow, para itakda kung aling liga ang una.
+
+## Standby Stream
+
+- **I-enable ang Standby Stream** (Off): pumipili ng fallback tab na pagpa-parkingan sa iyo kapag tumahimik ang lahat ng larong pinapanood mo.
+- **Standby sa ibaba ng** (20): gaano katahimik ang tahimik, mula 0 hanggang 100. Mas mataas, mas maaga papasok ang standby.
+- **Standby na Tab** (wala): ang tab na pupuntahan mo sa ArenaSwap.
+
+Mas marami pa sa [paano i-set up ang Standby Stream](/arenaswap/docs/extension/standby-stream/).
+
+## Multiview
+
+Chrome at Edge lang. Tingnan ang [paano gamitin ang Multiview](/arenaswap/docs/extension/multiview/).
+
+- **I-enable ang Multiview** (Off): kapag dalawa o higit pa sa mga laro mo ang sabay na exciting, ipinapakita ang mga ito nang magkakasama sa isang tab. Ang pinaka-exciting na laro ang may pinakamalaking box at nag-iisang may tunog. Kapag in-on mo ito, hihingi ng pahintulot sa browser mo na basahin at baguhin ang lahat ng website. Kung tumanggi ka, mananatiling off ang Multiview.
+- **Kapana-panabik sa** (55): gaano ka-exciting ang laro para makasali. Kapag mas mababa, mas madalas magbukas ang Multiview. Kapag mas mataas, itinatabi ito para sa malalaking sandali.
+- **Ipakita** (**Mga kapana-panabik na laro**): **Mga kapana-panabik na laro** o **Lahat ng laro ko**.
+- **Pinakamaraming box** (4): ang pinakamaraming laro sa screen nang sabay, mula 2 hanggang 8.
+
+## Mga Profile at Backup
+
+Tingnan ang [paano gamitin ang mga profile at i-back up ang mga setting mo](/arenaswap/docs/extension/profiles-and-backup/).
+
+- **Mga Profile**: magkakahiwalay na setup na puwede mong palit-palitan, gaya ng isa para sa mga Linggo ng football at isa para sa Marso. Magsimula ng bago mula sa kopya ng kasalukuyan mong setup o mula sa simula.
+- **I-back up o i-restore**: i-download ang setup mo bilang file, o mag-import ng isa. Kapag nag-import, magdaragdag ito ng bagong profile o papalitan ang bawat setting sa ginagamit mo.
+
+## Kaugnay
+
+- [Paano kontrolin kung kailan lumilipat ang ArenaSwap ng tab](/arenaswap/docs/extension/switching-and-sensitivity/)
+- [Paano baguhin ang hinahanap ng ArenaSwap sa isang laro](/arenaswap/docs/extension/scoring-modes/)
+- [Paano magtakda ng mga paboritong team sa ArenaSwap](/arenaswap/docs/extension/favorite-teams/)
+- [Paano i-set up ang Standby Stream](/arenaswap/docs/extension/standby-stream/)
+- [Ang Guide](/arenaswap/docs/extension/guide/)
+- [Detalye ng laro](/arenaswap/docs/extension/game-details/)
+- [Subukan ang ArenaSwap gamit ang Demo mode](/arenaswap/docs/extension/demo-mode/)

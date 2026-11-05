@@ -1,0 +1,82 @@
+---
+sourceHash: '9d5d749f8bfc'
+title: Come usare i profili e fare il backup delle impostazioni
+description: Tieni una configurazione di ArenaSwap per ogni tipo di serata, poi salvane una in un file da usare in un altro browser o dopo una reinstallazione.
+section: extension
+order: 12
+navLabel: Profili e backup
+faq:
+  - q: Come sposto le mie impostazioni di ArenaSwap in un altro browser?
+    a: "Apri le Impostazioni, scegli Profili e backup e clicca Backup o ripristino. Scarica un backup, poi apri la stessa pagina nell'altro browser e trascina dentro il file. Puoi aggiungerlo come nuovo profilo o sostituire quello che stai usando."
+  - q: I profili di ArenaSwap si sincronizzano tra i browser?
+    a: Il profilo attuale si sincronizza ogni volta che la sincronizzazione è attiva nel tuo browser. Gli altri profili restano nel browser dove li hai creati. Per portarne uno con te, salvalo in un file.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Una serata di playoff e una domenica di fantasy football vogliono configurazioni diverse. I profili ti fanno tenere entrambe e passare dall'una all'altra con un clic. I backup ti fanno portare una configurazione in un altro browser.
+
+## Crea un profilo
+
+Tutti partono con un profilo, **main**.
+
+1. Apri le Impostazioni, poi **Profili e backup**.
+2. Clicca **Nuovo profilo** e scrivi un nome.
+3. Clicca **Copia main** per partire dalle impostazioni attuali, oppure **Ricomincia da zero** per quelle predefinite. (Il pulsante mostra il nome del tuo profilo attuale.)
+
+Due profili non possono avere lo stesso nome. Un profilo contiene le tue impostazioni e la tua rosa Fantasy. Quello nuovo diventa il profilo attuale.
+
+<Demo name='profiles' />
+
+## Cambia profilo
+
+Clicca il nome di un profilo nella lista **Profili**. Un segno di spunta indica quello in uso. Leghe, squadre preferite e modalità di punteggio cambiano subito.
+
+## Rinomina, esporta o elimina
+
+Clicca i tre puntini accanto a un profilo.
+
+- **Rinomina** ti fa scegliere un nuovo nome.
+- **Esporta** apre la pagina di backup con quel profilo pronto da salvare.
+- **Elimina** rimuove il profilo, insieme alle sue impostazioni e alla rosa Fantasy. Esportalo prima se ne vuoi una copia.
+
+Non puoi eliminare il profilo che stai usando. Passa prima a un altro.
+
+## Tieni la configurazione sincronizzata
+
+Sotto **Si sincronizza con il browser**, ArenaSwap elenca cosa contiene il tuo profilo attuale: leghe attive, squadre preferite, modalità di punteggio e la tua rosa Fantasy. Tutto questo ti segue sugli altri computer quando la sincronizzazione è attiva nel browser. Gli altri profili restano dove sono.
+
+## Salva un backup
+
+1. Clicca **Backup o ripristino…**. Si apre in una nuova scheda.
+2. Se hai più di un profilo, sceglilo dal menu **Profilo**.
+3. Clicca **Scarica il backup**.
+
+Il nome del file contiene il profilo e la data di oggi, tipo `arenaswap-settings-main-2026-11-03.json`.
+
+## Usa un backup
+
+Apri **Backup o ripristino…** nel browser dove ti stai spostando. Se sei ancora nella configurazione iniziale, clicca **Hai un file di backup? Salta la configurazione e importalo**.
+
+1. Trascina il file su **Trascina qui un backup**, oppure clicca **Scegli un file**.
+2. Confronta la configurazione del file con la tua.
+3. Scegli una strada:
+   - **Aggiungi come nuovo profilo** tiene tutto quello che hai e aggiunge accanto la configurazione del file.
+   - **Sostituisci** cambia ogni impostazione del tuo profilo attuale con quelle del file. Se il backup è stato fatto in Modalità demo, tornerai in Modalità demo.
+4. Quando vedi "Trasloco di … completato" clicca **Chiudi scheda**.
+
+Hai scelto il file sbagliato? **Scegli un altro file** ricomincia da capo.
+
+<Demo name='backup' />
+
+Se qualcosa va storto:
+
+- "Le nostre fonti hanno guardato quel file in controluce e non sono riuscite a decifrare nemmeno una parola.": il file è danneggiato. Salva un backup nuovo.
+- "È un file perfettamente valido, ma non è dei nostri.": non arriva da ArenaSwap. Scegline uno che hai salvato tu.
+- "Questo file arriva da una versione più recente di ArenaSwap": aggiorna l'estensione e riprova.
+- "Non è stato salvato.": riprova.
+
+## Argomenti correlati
+
+- [Guida alle impostazioni di ArenaSwap](/arenaswap/docs/extension/settings/) elenca le impostazioni di Profili e di Backup o ripristino.
+- [Inizia con ArenaSwap](/arenaswap/docs/extension/getting-started/) spiega la configurazione iniziale.

@@ -1,0 +1,74 @@
+---
+sourceHash: '6aafbef8b446'
+title: Como usar o Multiview
+description: Assista aos seus jogos mais emocionantes lado a lado em uma só aba do navegador, com o som do melhor deles. Ative e escolha quando ele abre.
+section: extension
+order: 10
+navLabel: Multiview
+faq:
+  - q: Como assisto a vários jogos em uma tela só no navegador?
+    a: Ative o Multiview nas configurações do ArenaSwap e atribua uma aba a cada jogo que você estiver transmitindo. Quando dois ou mais desses jogos ficam emocionantes ao mesmo tempo, o ArenaSwap abre uma aba com todos os jogos, cada um no seu quadro.
+  - q: O Multiview funciona no Firefox?
+    a: Não. O Multiview está nas versões do ArenaSwap para Chrome e Edge. A versão para Firefox tem todo o resto.
+  - q: Por que o Multiview não abriu?
+    a: Confira se Ativar troca automática está ligado, se você atribuiu abas a pelo menos dois jogos ao vivo e se pelo menos dois deles chegaram ao seu valor de Emocionante a partir de. O ArenaSwap também espera passar o seu Cooldown entre trocas e o Atraso de troca antes.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+O Multiview coloca seus jogos emocionantes em uma tela só, para você parar de escolher entre eles. O jogo mais emocionante ganha o maior quadro e o som.
+
+Ele está no Chrome e no Edge. O Firefox não tem.
+
+## Ative
+
+1. Abra as Configurações e escolha **Multiview**.
+2. Ative **Ativar Multiview**.
+3. Um guia rápido explica o que esperar. Clique em **Próximo** e depois em **Continuar**.
+4. Seu navegador pergunta se o ArenaSwap pode "Ler e mudar seus dados em qualquer site". Permita. É assim que suas transmissões aparecem juntas em uma aba.
+
+Se você clicar em **Agora não** ou disser não ao navegador, o Multiview fica desativado. O resto funciona do mesmo jeito.
+
+<Demo name='multiview' />
+
+## Dê uma aba a cada jogo
+
+Abra a transmissão de cada jogo na própria aba e depois escolha essa aba no menu **Atribuir uma aba** do card do jogo. [Assistindo a vários jogos](/arenaswap/docs/extension/watching-multiple-games/) mostra o passo a passo.
+
+Mantenha **Ativar troca automática** ligado. O Multiview fecha quando ela está desligada.
+
+## Escolha quando ele abre
+
+Três configurações em **Multiview** decidem isso:
+
+- **Emocionante a partir de** é o PowerScore que um jogo precisa ter para contar como emocionante, de 0 a 100. O padrão é 55. Deslize para **Abre com mais frequência** para ter mais Multiview. Deslize para **Só grandes momentos** para ter menos.
+- **Mostrar** escolhe quem ganha um quadro. **Jogos emocionantes** mostra só os jogos com pontuação igual ou acima da sua. **Todos os meus jogos** mostra todos os jogos que têm uma aba.
+- **Máximo de quadros** limita quantos jogos aparecem de uma vez, de 2 a 8. O padrão é 4. Se mais jogos se qualificarem, os quadros vão para os maiores PowerScores.
+
+O Multiview abre quando pelo menos dois dos seus jogos alcançam o valor de **Emocionante a partir de**. Ele segue o seu **Cooldown entre trocas** e o seu **Atraso de troca**, como qualquer outra troca. [Controlando quando o ArenaSwap troca](/arenaswap/docs/extension/switching-and-sensitivity/) explica os dois.
+
+Quando um jogo está emocionante e outro está a até 10 pontos do seu valor de **Emocionante a partir de**, uma aba silenciada do Multiview abre no fim da sua fileira de abas e começa a carregar esses jogos. Se o segundo jogo esfriar, a aba fica por 2 minutos, caso ele volte. Feche essa aba e o Multiview espera passar o seu Cooldown entre trocas antes de tentar de novo.
+
+## Enquanto ele está aberto
+
+O ArenaSwap move a aba do Multiview para perto do seu jogo, ou abre uma nova ali, e te leva até ela. Com as notificações ativadas, você recebe uma notificação **Trocado → Multiview**.
+
+O maior quadro, no canto superior esquerdo, é do jogo mais emocionante, e é o único com som. Os outros jogos se organizam ao redor dele. As abas dos seus jogos continuam abertas e silenciadas ao fundo.
+
+## Quando ele fecha
+
+Depois que o Multiview abre, ele fica pelo menos pelo seu Cooldown entre trocas, e até que uma das transmissões comece a rodar.
+
+Quando só um jogo continua emocionante, esse jogo ocupa a aba do Multiview por 2 minutos. Se outro jogo voltar a ficar emocionante nesse tempo, todos os quadros voltam. Se não, o ArenaSwap te leva à aba própria desse jogo e fecha o Multiview. Ele pula os 2 minutos quando o outro jogo terminou, ou quando um dos seus jogos sem quadro abre vantagem suficiente para o ArenaSwap trocar para ele.
+
+Um jogo mantém o quadro durante o intervalo comercial.
+
+Se você mesmo fechar a aba do Multiview, ele pode abrir de novo quando o seu Cooldown entre trocas passar. Se você levar a aba para outra página da web, ele para e não reabre esses jogos por 10 minutos.
+
+Se nenhuma das transmissões começar a rodar em um minuto, o ArenaSwap te leva de volta ao seu melhor jogo e tenta de novo em 10 minutos. Se um quadro nunca roda, abra essa transmissão na própria aba e confira se ela toca por lá.
+
+## Relacionados
+
+- [Como assistir a vários jogos ao mesmo tempo](/arenaswap/docs/extension/watching-multiple-games/) explica como atribuir abas.
+- [Como controlar quando o ArenaSwap troca de aba](/arenaswap/docs/extension/switching-and-sensitivity/) explica o cooldown e o atraso.
+- [Referência das configurações do ArenaSwap](/arenaswap/docs/extension/settings/) lista todas as configurações do Multiview.

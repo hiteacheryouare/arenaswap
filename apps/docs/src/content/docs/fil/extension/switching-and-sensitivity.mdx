@@ -1,0 +1,61 @@
+---
+sourceHash: '160ac78129f6'
+title: Paano kontrolin kung kailan lumilipat ang ArenaSwap ng tab
+description: Gawing mas madalas o mas bihira ang paglipat ng ArenaSwap, maghintay habang inaabutan ng stream mo ang laro, at manatili sa laro hanggang matapos ang play na pinapanood mo.
+section: extension
+order: 3
+navLabel: Paglipat
+faq:
+  - q: Paano ko pipigilan ang ArenaSwap sa sobrang paglipat ng tab?
+    a: Ibaba ang Sensitivity ng Paglipat, itaas ang Cooldown ng Paglipat, o i-unassign ang tab na ayaw mong galawin. Ang pag-off ng I-enable ang awtomatikong paglipat ay ganap itong titigil.
+  - q: Bakit paulit-ulit na lumilipat-lipat ang ArenaSwap sa dalawang laro?
+    a: Nagpapalitan ng lead ang dalawa mong laro bilang mas exciting. Itaas ang Cooldown ng Paglipat para mas matagal na manatili ang ArenaSwap sa isang laro bago lumipat ulit.
+  - q: Bakit lumilipat ang ArenaSwap bago ko makita ang malaking play?
+    a: Nahuhuli ang stream mo sa live na laro. Magdagdag ng Delay ng Paglipat para maabutan ng feed mo ang laro bago magpalit ang tab.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Nasa Mga Setting ang lahat ng kontrol na ito, sa ilalim ng **Paglipat**. Piliin ang tugma sa ikinaiinis mo.
+
+## Mas bihirang paglipat
+
+Buksan ang **Sensitivity ng Paglipat** at i-slide ito papunta sa **Halos Tulog**. Maghihintay na ang ArenaSwap na mas maging exciting ang ibang laro kaysa sa pinapanood mo bago ka ilipat. **Balanse** ang default.
+
+<Demo name='slider' kind='sensitivity' />
+
+Kung mabagal na nahuhuli ng ArenaSwap ang larong halatang umiinit, i-slide ito sa kabilang direksyon, papunta sa **Sabik** o **Ludicrous Speed**.
+
+## Pigilan ang paglipat-lipat
+
+Ang **Cooldown ng Paglipat** ang pinakamaikling paghihintay sa pagitan ng dalawang paglipat, mula **Off** hanggang 3 minuto. 45 segundo ang default. Itaas ito at mas magtatagal sa isang laro ang ArenaSwap, kahit saglit na mauna ang isa pa. Ibaba ito para masundan ang bawat swing sa magulong dulo ng laro.
+
+Nagsisimula rin ng cooldown kapag ikaw mismo ang nag-click sa isa sa mga game tab mo, kaya hindi ka bubuhatin ng ArenaSwap palayo sa larong kapipili mo lang.
+
+<Demo name='slider' kind='cooldown' />
+
+## Bigyan ng oras ang stream mo
+
+Nahuhuli ang mga stream sa totoong laro. Pinapaghintay ng **Delay ng Paglipat** ang ArenaSwap bago magpalit ng tab, mula **Off** hanggang 3 minuto. Kung lagi kang napupunta sa laro bago pa lumabas sa screen mo ang malaking play, magdagdag ng 15 o 30 segundo. Sinusuri ulit ng ArenaSwap ang laro bago lumipat, kaya hindi ka ipapadala sa larong tumahimik habang naghihintay.
+
+## Huwag maputol sa gitna ng play
+
+I-on ang **Paglipat sa Break ng Laro** at hihintayin ng ArenaSwap na umabot sa natural na break ang larong iiwan mo: dulo ng at-bat, pito, dulo ng play. Makikita mo muna kung paano natapos, tapos saka ka lilipat.
+
+Kung hindi dumating ang break, lilipat pa rin pagkatapos ng maikling paghihintay. Hindi ito naghihintay kapag nasa timeout, TV break, o intermission na ang laro, kapag blowout, o kapag nasa mapagpasyang sandali ang kabilang laro. Agad lumilipat ang soccer, college football, at college hockey.
+
+Habang naghihintay ang paglipat, ipinapakita ng popup kung aling laro ang susunod. Kapag naka-on ang **Mga Abiso sa Paglipat**, may abiso ring "Susunod". Ang kapalit: baka may ma-miss ka sa larong lilipatan mo.
+
+## I-pause ang paglipat nang buo
+
+Ang toggle sa top bar, **I-enable ang awtomatikong paglipat**, ang master switch. I-off ito at mananatili sa kinalalagyan nila ang mga tab mo. I-on ulit at itutuloy ng ArenaSwap mula doon.
+
+## Manatiling full screen kapag lumilipat
+
+Gawing full screen ang browser window bago magsimula ang laro: **⌃⌘F** sa Mac, **F11** sa lahat ng iba. Mananatiling full screen ang window sa bawat paglipat, pati paglipat sa laro sa ibang window. Kung ang sariling full screen button ng video player ang ginamit mo, ibabalik ng ArenaSwap sa full screen ang window pagkatapos ng bawat paglipat.
+
+## Kaugnay
+
+- Inililista ng [Gabay sa mga setting ng ArenaSwap](/arenaswap/docs/extension/settings/) ang bawat setting ng Paglipat at default nito.
+- Ang [Paano manood ng maraming laro nang sabay](/arenaswap/docs/extension/watching-multiple-games/) ay tungkol sa pagpili ng mga tab na lilipatan ng ArenaSwap.
+- Ang [Ayusin ang problema sa ArenaSwap](/arenaswap/docs/extension/troubleshooting/) ay tungkol sa paglipat na mukhang bug pero hindi naman.

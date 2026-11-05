@@ -5,6 +5,14 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Crest placeholders are plain Bootstrap avatars — 2026-11-04
+
+A crest's own `.avatar` box is now its placeholder, with the initials as its text and the logo laid over it, replacing the separate `.crest-fallback` disc and the twenty-odd font sizes call sites set on it. Initials are 30% of the box and icons 80%, measured with container units because Bootstrap's `--avatar-size` calc breaks on crests sized in `%` or `em`. The disc's shape is `--as-avatar-border-radius`, the logo's is `--crest-logo-radius` (square by default), and `--crest-wash` lightens a disc that sits on its own team colour.
+
+## Multiview stays put long enough to load — 2026-11-05
+
+Multiview now holds for the Switch cooldown and until a stream plays, keeps a game boxed through a commercial break, and when it's down to one exciting game shows it alone for 2 minutes (`multiviewSoloGraceMs`) with the other boxes still playing at opacity 0 behind it, so a game that heats back up returns without reloading. Exciting at now defaults to 55, the sports analyst's pick from replaying Oct 3–11 (scripts in `temporary/multiviewThreshold/`): it catches 92% of football two-minute drills against 44% at 65, and together these rules cut openings that close within 2 minutes from 40% to 6%.
+
 ## Long searches and roster names fit in settings — 2026-11-05
 
 A long search with no spaces in Favorite Teams or the fantasy roster made the no-match line run off the popup, and now wraps. Rostered players' names and details that get cut short show in full on hover, and every settings page and onboarding step now runs through the safety net in every locale.
@@ -28,6 +36,30 @@ A final whose end nobody saw now ends no later than the present, so it can't str
 ## A shared safety net for cut-off and overflowing UI — 2026-11-04
 
 `cy.assertContained()` fails when anything runs past the content edge of the box that clips it, when text is cut short without its full value as a title, or when the surface scrolls sideways; `cypress/support/safetyNet/` pairs it with the longest real names, venues and scores from the recordings, every shipped locale, and Guide time edges. It caught the picker-arrow bug at the commit before its fix, and found two more, now fixed: popup menus keep the popup's 12px side margin, and long profile names show in full on hover.
+
+## The docs and release notes speak all twelve languages — 2026-11-04
+
+Every help article, PowerScore page and release note now has a translation in `apps/docs/src/content/{docs,releases}/<locale>/`, with its own canonical, hreflang and sitemap entry, English heading ids so anchors work everywhere, and the help-article demos reading the extension's own strings in the reader's language. `apps/docs/tests/translations.test.ts` fails when a translation is missing or its `sourceHash` no longer matches the English, so after editing an English article, re-translate the change in all 11 and set the `sourceHash` the failure message prints.
+
+## The help articles talk to fans, with the screens beside them — 2026-11-04
+
+All 14 extension help articles are rewritten around what a viewer wants to do, with the implementation details cut, and the ones that show a screen are now `.mdx` with a `<Demo name='…' />` tag. The demos in `apps/docs/src/components/docs/` render the shared cards, popup header and charts for real, and draw simplified mockups of extension-only screens (the breakdown, sliders, Guide, profiles, backup) from strings copied word for word out of `en.json`. Everything but the charts renders at build time with no JavaScript.
+
+## Multiview warms up before it opens — 2026-11-04
+
+Once one game is exciting and another is within 10 points of Exciting at, Multiview opens muted at the end of the tab strip, so each box's site, sign-in and player load out of sight. When it qualifies, the tab moves beside the game and you switch to it. Chrome still holds back a never-shown tab's video, so the 30-second never-played fallback only counts once the tab is on screen, a warm tab lasts 2 minutes after the games drift apart, and frames report the moment their clock moves instead of on the next one-second tick.
+
+## The Thanksgiving leaf pile is a real pile — 2026-11-04
+
+The leaf pile at the foot of a game's details used to be loose almond shapes with the page showing through, and is now a solid raked heap of maple, oak and aspen leaves, shaded deeper in and sunlit along the top. The falling leaves share those shapes from `leafArt.ts` and tumble as they fall.
+
+## A closed Multiview looks closed — 2026-11-04
+
+A Multiview tab with no live session, such as one the browser restored, used to keep the moving beams and arrows behind one small line of text, so it looked like it was still loading. It now shows the boxes' off-air look across the whole tab: black, the wordmark, "That's a Wrap", the same sentence, and a Close tab button.
+
+## Guide finals end when they ended — 2026-11-04
+
+With Keep finished games off and finished tabs kept, the poll never saw a game go final, so the Guide stamped each final's end whenever it next opened, and a 7pm tip-off drew a bar to the next morning. The poll now always fetches finals (same request, nothing extra) and each consumer applies its own setting, so the popup still hides them.
 
 ## The extension typechecks in 5 seconds, not 90 — 2026-11-04
 

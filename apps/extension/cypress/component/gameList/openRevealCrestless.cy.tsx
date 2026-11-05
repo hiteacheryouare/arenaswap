@@ -77,7 +77,7 @@ const begins = (animation: Animation) => (animation.startTime as number) + Numbe
 
 const awayName = '.game-card-reveal-opening-field.is-away .game-card-reveal-opening-field-name';
 const awayCrest = '.game-card-reveal-wipe.is-away .game-card-reveal-crest';
-const awayDisc = `${awayCrest}.is-named .crest-fallback`;
+const awayDisc = `${awayCrest}.is-named .crest`;
 
 describe('the open reveal for a club with no crest', () => {
 	beforeEach(() => {
@@ -156,12 +156,13 @@ describe('the open reveal for a club with no crest', () => {
 	it('lands a disc that matches the one on the card', () => {
 		cy.mount(<Harness subject={game(lions, blazers)} />);
 		scrubTo(spineMs(revealBaseDurationMs) - 10);
-		cy.get('.game-card .team-crest .crest-fallback').first().then($real => {
+		cy.get('.game-card .team-crest').first().then($real => {
 			const real = getComputedStyle($real[0]);
 			cy.get(awayDisc).should($disc => {
 				const drawn = getComputedStyle($disc[0]);
 				expect($disc.text()).to.equal($real.text());
-				expect(drawn.fontSize, 'font size').to.equal(real.fontSize);
+				expect(getComputedStyle($disc.find('.crest-initials')[0]).fontSize, 'font size')
+					.to.equal(getComputedStyle($real.find('.crest-initials')[0]).fontSize);
 				expect(drawn.color, 'ink').to.equal(real.color);
 				expect(real.backgroundImage, 'the card\'s tint').to.contain('rgba(255, 255, 255, 0.16)');
 				expect(drawn.backgroundImage, 'the same tint').to.contain('rgba(255, 255, 255, 0.16)');
@@ -173,7 +174,7 @@ describe('the open reveal for a club with no crest', () => {
 	it('lands the light disc a finished card draws', () => {
 		cy.mount(<Harness subject={game(lions, blazers, 'post')} />);
 		scrubTo(spineMs(revealBaseDurationMs) - 10);
-		cy.get('.game-card .team-crest .crest-fallback').first().then($real => {
+		cy.get('.game-card .team-crest').first().then($real => {
 			const real = getComputedStyle($real[0]);
 			cy.get(awayDisc).should($disc => {
 				const drawn = getComputedStyle($disc[0]);

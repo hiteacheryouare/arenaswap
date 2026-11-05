@@ -444,6 +444,47 @@
 			"Virada"
 		]
 	},
+	"docDemos": {
+		"popup": "O popup do ArenaSwap listando três jogos ao vivo por PowerScore: Boston em New York, empatado em 100 a 100 com 2:10 para o fim (85), Philadelphia em Pittsburgh, empatado em 2 a 2 no terceiro período (76), e Chelsea na frente do Arsenal por 2 a 1 aos 78 minutos (63).",
+		"popupTabs": "O popup do ArenaSwap listando três jogos ao vivo por PowerScore, cada um com a aba em que passa: Boston em New York, empatado em 100 a 100 com 2:10 para o fim (85), Philadelphia em Pittsburgh, empatado em 2 a 2 no terceiro período (76), e Chelsea na frente do Arsenal por 2 a 1 aos 78 minutos (63).",
+		"liveCard": "Um card de jogo ao vivo: Boston Celtics em New York Knicks, empatado em 100 a 100 com 2:10 para o fim do quarto período, PowerScore 85 de 100.",
+		"liveCardFavorite": "Um card de jogo ao vivo: Boston Celtics em New York Knicks, empatado em 100 a 100 com 2:10 para o fim do quarto período, PowerScore 85 de 100, com os Celtics marcados com estrela como favorito.",
+		"liveCardTab": "Um card de jogo ao vivo: Boston Celtics em New York Knicks, empatado em 100 a 100 com 2:10 para o fim do quarto período, PowerScore 85 de 100, atribuído à aba Boston at New York.",
+		"liveCardFavoriteTab": "Um card de jogo ao vivo: Boston Celtics em New York Knicks, empatado em 100 a 100 com 2:10 para o fim do quarto período, PowerScore 85 de 100, com os Celtics marcados com estrela como favorito, atribuído à aba Boston at New York.",
+		"upcomingCard": "Um card de jogo futuro: Kansas City Chiefs em Buffalo Bills, domingo às 16h25 no Highmark Stadium.",
+		"finalCard": "Um card de jogo encerrado: Ohio State 27, Michigan 24, no Ohio Stadium.",
+		"charts": "Quatro gráficos dos detalhes de um jogo: PowerScore ao longo do tempo, o placar ao longo do tempo, probabilidade de vitória e a participação de cada sinal no PowerScore.",
+		"breakdown": "Um {heading}: {closeness} 38 de 42, {lateGame} 31 de 38, {momentum} 8 de 38, {leadChanges} 5 de 18 e {comeback} 3 de 20 somam um total de sinais de 85. Um {gameBoost} de 5 pontos leva o {final} a 90 de 100. {reason}.",
+		"gameBoost": "O campo {heading} nos detalhes de um jogo, definido em {points} pontos.",
+		"suggestBanner": "O banner {title} no topo do popup, com um botão {action} e um botão de fechar.",
+		"guide": "O Guia às 21h40: uma linha do tempo das 19h à meia-noite com jogos da NBA, da NHL e do basquete da NCAA como barras, uma linha no horário atual e o melhor momento para assistir sombreado das 21h15 às 22h15.",
+		"browserTabs": "Um navegador com três abas de jogos abertas. Boston at New York é a aba ativa e está tocando som; as outras duas estão silenciadas.",
+		"notification": "Uma notificação com o texto: {title}. {message}",
+		"sliderSensitivity": "O controle {label} no valor padrão, {value}.",
+		"sliderCooldown": "O controle {label} no valor padrão, 45 segundos.",
+		"sliderDelay": "O controle {label} no valor padrão, {value}.",
+		"toggleOn": "O interruptor {label} nas Configurações, ligado.",
+		"toggleOff": "O interruptor {label} nas Configurações, desligado.",
+		"modes": "O seletor {section} aberto em {classic}, listando {classic}, {blowouts}, {fantasy} e {custom}.",
+		"multiview": "Uma aba do Multiview com quatro jogos numa grade 2×2. Boston at New York, no alto à esquerda, está destacado e tem o som.",
+		"standby": "Um navegador parado numa aba de Standby Stream chamada {tab}, com duas abas de jogos silenciadas ao lado, e a linha do popup: {line}",
+		"profiles": "A lista {section} nas Configurações com dois perfis, {current} em uso e o menu dele aberto em {rename} e {export}, acima dos botões {new} e {backup}.",
+		"backup": "A aba de backup com um arquivo carregado: {addAsNew} ou {replace}, e o que o arquivo mudaria. Mais uma liga, os mesmos times favoritos e o modo de pontuação indo de {from} para {to}.",
+		"bossButton": "O atalho do botão do chefe, Alt + Shift + X, e a aba de planilha de disfarce que ele abre, com as abas de jogos silenciadas.",
+		"notificationNow": "agora",
+		"profileWeeknights": "Noites de semana",
+		"profileFantasySunday": "Domingo de fantasy",
+		"standbyTab": "Melhores momentos",
+		"decoyTab": "Previsão do 3º tri",
+		"decoyRegion": "Região",
+		"decoyQuarter": "T{quarter}",
+		"decoyRegions": [
+			"Nordeste",
+			"Centro-Oeste",
+			"Sul",
+			"Oeste"
+		]
+	},
 	"ui": {
 		"gameCard": {
 			"live": "AO VIVO",

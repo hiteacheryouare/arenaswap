@@ -1,0 +1,47 @@
+---
+sourceHash: '7a9d6a58a2ff'
+title: 如何设置 Standby Stream
+description: 选一个标签页，在您正在看的所有比赛都冷场时停在那里。ArenaSwap 把您带过去，等精彩回归时再把您带回来。
+section: extension
+order: 5
+navLabel: Standby Stream
+faq:
+  - q: ArenaSwap 里的 Standby Stream 是什么？
+    a: 一个您提前选好的标签页。当您分配过标签页的所有比赛都冷场时，ArenaSwap 会带您过去。有比赛重新升温时，ArenaSwap 再把您带回来。
+  - q: 为什么 Standby Stream 已经打开了，却没有任何反应？
+    a: 请检查您是否在设置里选了待机标签页，是否至少给一场直播比赛分配了标签页，以及是否打开了“启用自动切换”。如果 Multiview 正在显示，它优先。
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+有些夜晚，您正在看的所有比赛同时变得索然无味：大比分碾压、雨中断赛、中场休息。Standby Stream 让 ArenaSwap 有个更好的去处可以把您放过去，比如集锦节目或演播室直播。
+
+## 设置它
+
+1. 打开您想用作备用的标签页，并让它一直开着。
+2. 在设置里打开 **Standby Stream**，然后打开**启用 Standby Stream**。
+3. 在**待机标签页**下拉菜单里选出您的标签页。
+
+如果下拉菜单仍然显示**选择标签页**，那么比赛冷场时什么也不会发生。
+
+第一次打开它时，会有一份两步的简短说明，展示同样的步骤。看完后，在第二个画面点击**明白了**。
+
+<Demo name='standby' />
+
+## 选择多冷清才算冷清
+
+**低于以下值时待机**是一个 0 到 100 的滑块，默认是 20。往上滑，ArenaSwap 会更早把您停在待机页，这时比赛还算有点意思。往下滑，ArenaSwap 会让您的比赛在屏幕上留得更久，再放弃它们。
+
+## 会发生什么
+
+当您分配过标签页的所有比赛都冷场时，ArenaSwap 会切换到您的待机标签页。其中任何一场重新升温，它就把您切换回去。
+
+如果您点到了别的标签页，ArenaSwap 会带您去最好看的比赛。如果冷却结束时仍没有比赛升温，它会把您带回待机标签页。想随意浏览而完全不被带走，请关闭**启用自动切换**。
+
+Standby Stream 只监控您分配过标签页的比赛。没有分配任何比赛标签页，就没有什么可以让它退守的。
+
+## 相关内容
+
+- [如何同时观看多场比赛](/arenaswap/docs/extension/watching-multiple-games/)介绍如何给比赛分配标签页。
+- [ArenaSwap 设置参考](/arenaswap/docs/extension/settings/)列出了每项 Standby Stream 设置的默认值。
+- [如何使用 Multiview](/arenaswap/docs/extension/multiview/)能在一个标签页里显示多场精彩比赛，适合不止一场值得看的时候。

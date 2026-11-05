@@ -1,0 +1,60 @@
+---
+sourceHash: '2f02624226c3'
+title: Come usare il pulsante del capo
+description: Un clic o Alt+Shift+X silenzia le tue partite, mette in pausa ArenaSwap e porta sullo schermo una pagina che sembra lavoro. Qui scegli la pagina e la scorciatoia.
+section: extension
+order: 11
+navLabel: Pulsante del capo
+faq:
+  - q: Cosa fa il pulsante del capo in ArenaSwap?
+    a: Silenzia le schede delle partite, mette in pausa il cambio automatico e ti porta su una pagina scelta in anticipo, come un foglio di calcolo. Riattiva Attiva il cambio automatico quando rivuoi le partite.
+  - q: Qual è la scorciatoia da tastiera del pulsante del capo?
+    a: Di default Alt+Shift+X. Puoi cambiarla nella pagina delle scorciatoie delle estensioni del browser. Passa il mouse sul pulsante del capo nel popup per vedere la scorciatoia attuale.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Qualcuno passa dietro di te, e una scheda piena di tempi supplementari è la cosa sbagliata da avere sullo schermo. Il pulsante del capo nasconde le partite in una mossa sola.
+
+## Cosa fa
+
+Quando lo premi, ArenaSwap:
+
+- Silenzia le schede delle partite.
+- Mette in pausa il cambio automatico, così niente ti riporta da solo su una partita.
+- Ti porta alla tua pagina di copertura.
+
+<Demo name='boss-button' />
+
+## Premilo
+
+- Clicca l'icona incognito nella barra in alto del popup.
+- Oppure premi **Alt+Shift+X** da qualsiasi scheda. Non serve aprire prima il popup.
+
+## Scegli la pagina di copertura
+
+Apri le Impostazioni, poi **Cambio**, e trova **Pagina di copertura**. Scrivi un indirizzo web qualsiasi che sembri impegnativo, come un foglio di calcolo o un documento. Premi Invio o clicca fuori dalla casella per salvare.
+
+- Se la pagina è già aperta, il pulsante del capo salta a quella scheda.
+- Se non lo è, ArenaSwap la apre per te.
+- Lascia la casella vuota e ottieni una scheda vuota.
+- Funzionano solo gli indirizzi web. Qualsiasi altra cosa mostra "Non sembra un indirizzo web."
+
+## Riavere le partite
+
+Il pulsante del capo non si annulla da solo. Quando il pericolo è passato, apri il popup e riattiva **Attiva il cambio automatico**. Le schede e le partite assegnate sono ancora lì.
+
+## Cambia la scorciatoia
+
+Imposta un nuovo tasto per **Arriva il capo** nella pagina delle scorciatoie delle estensioni del browser:
+
+- Chrome: `chrome://extensions/shortcuts`
+- Edge: `edge://extensions/shortcuts`
+- Firefox: Gestione componenti aggiuntivi, il menu a ingranaggio, poi **Manage Extension Shortcuts**
+
+Se un'altra estensione usa già Alt+Shift+X, scegli lì un tasto diverso. Senza una scorciatoia impostata, il pulsante funziona comunque con un clic.
+
+## Argomenti correlati
+
+- [Come guardare più partite insieme](/arenaswap/docs/extension/watching-multiple-games/) spiega le schede delle partite che il pulsante del capo silenzia.
+- [Guida alle impostazioni di ArenaSwap](/arenaswap/docs/extension/settings/) elenca Pagina di copertura insieme al resto di Cambio.

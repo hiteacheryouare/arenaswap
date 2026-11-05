@@ -1,0 +1,47 @@
+---
+sourceHash: '7a9d6a58a2ff'
+title: Configurer Standby Stream
+description: Choisis un onglet où te garer quand tous les matchs que tu regardes s'endorment, et ArenaSwap t'y emmène puis te ramène quand l'action revient.
+section: extension
+order: 5
+navLabel: Standby Stream
+faq:
+  - q: Qu'est-ce que Standby Stream dans ArenaSwap ?
+    a: Un onglet que tu choisis à l'avance. Quand tous les matchs auxquels tu as associé un onglet s'endorment, ArenaSwap t'y emmène. Quand un match se réchauffe, ArenaSwap te ramène dessus.
+  - q: Pourquoi Standby Stream ne fait rien alors qu'il est activé ?
+    a: Vérifie que tu as choisi un Onglet de standby dans les Paramètres, associé un onglet à au moins un match en direct, et activé Activer le changement automatique. Si Multiview est affiché, il passe en premier.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Certains soirs, tous les matchs que tu regardes deviennent ternes en même temps : raclées, interruption pour la pluie, mi-temps. Standby Stream donne à ArenaSwap un meilleur endroit où te mettre, comme une émission de temps forts ou un plateau télé.
+
+## Le configurer
+
+1. Ouvre l'onglet que tu veux comme repli et laisse-le ouvert.
+2. Dans les Paramètres, ouvre **Standby Stream** et active **Activer Standby Stream**.
+3. Choisis ton onglet dans le menu **Onglet de standby**.
+
+Si le menu indique encore **Sélectionner un onglet**, il ne se passe rien quand tes matchs s'endorment.
+
+La première fois que tu l'actives, un court guide en deux étapes montre les mêmes étapes. Touche **Compris** sur le deuxième écran quand tu as fini.
+
+<Demo name='standby' />
+
+## Choisir ce que veut dire s'endormir
+
+**Standby en dessous de** est un curseur de 0 à 100, réglé sur 20 par défaut. Monte-le et ArenaSwap te gare en standby plus tôt, alors que les matchs sont encore moyennement intéressants. Baisse-le et ArenaSwap garde tes matchs à l'écran plus longtemps avant de les lâcher.
+
+## À quoi t'attendre
+
+Quand tous les matchs auxquels tu as associé un onglet s'endorment, ArenaSwap passe sur ton onglet de standby. Quand l'un d'eux se réchauffe, il te ramène dessus.
+
+Si tu cliques sur un autre onglet, ArenaSwap t'emmène vers ton meilleur match. Si rien ne s'est réchauffé à la fin du délai, il te ramène sur l'onglet de standby. Pour naviguer sans être déplacé du tout, désactive **Activer le changement automatique**.
+
+Standby Stream ne surveille que les matchs auxquels tu as associé un onglet. Sans onglet de match associé, il n'a rien dont se replier.
+
+## À lire aussi
+
+- [Regarder plusieurs matchs en même temps](/arenaswap/docs/extension/watching-multiple-games/) couvre l'association d'onglets aux matchs.
+- [Référence des paramètres d'ArenaSwap](/arenaswap/docs/extension/settings/) liste la valeur par défaut de chaque paramètre de Standby Stream.
+- [Utiliser Multiview](/arenaswap/docs/extension/multiview/) affiche plusieurs matchs palpitants dans un onglet, pour quand plus d'un mérite d'être regardé.

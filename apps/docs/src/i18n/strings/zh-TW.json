@@ -444,6 +444,47 @@
 			"逆轉"
 		]
 	},
+	"docDemos": {
+		"popup": "ArenaSwap 彈出視窗依 PowerScore 列出三場進行中的比賽：Boston at New York，100–100 平手，剩 2:10（85）；Philadelphia at Pittsburgh，第三節 2–2 平手（76）；Chelsea 在第 78 分鐘以 2–1 領先 Arsenal（63）。",
+		"popupTabs": "ArenaSwap 彈出視窗依 PowerScore 列出三場進行中的比賽，各附上播放它的分頁：Boston at New York，100–100 平手，剩 2:10（85）；Philadelphia at Pittsburgh，第三節 2–2 平手（76）；Chelsea 在第 78 分鐘以 2–1 領先 Arsenal（63）。",
+		"liveCard": "一張進行中的比賽卡片：Boston Celtics 對 New York Knicks，第四節剩 2:10，100–100 平手，PowerScore 85（滿分 100）。",
+		"liveCardFavorite": "一張進行中的比賽卡片：Boston Celtics 對 New York Knicks，第四節剩 2:10，100–100 平手，PowerScore 85（滿分 100），Celtics 被標星為收藏球隊。",
+		"liveCardTab": "一張進行中的比賽卡片：Boston Celtics 對 New York Knicks，第四節剩 2:10，100–100 平手，PowerScore 85（滿分 100），已指派到「Boston at New York」分頁。",
+		"liveCardFavoriteTab": "一張進行中的比賽卡片：Boston Celtics 對 New York Knicks，第四節剩 2:10，100–100 平手，PowerScore 85（滿分 100），Celtics 被標星為收藏球隊，已指派到「Boston at New York」分頁。",
+		"upcomingCard": "一張即將開賽的比賽卡片：Kansas City Chiefs 對 Buffalo Bills，週日下午 4:25，在 Highmark Stadium。",
+		"finalCard": "一張已結束的比賽卡片：Ohio State 27，Michigan 24，在 Ohio Stadium。",
+		"charts": "比賽詳細畫面的四張圖表：PowerScore 隨時間變化、比分隨時間變化、勝率，以及各信號在 PowerScore 中的占比。",
+		"breakdown": "{heading}：{closeness} 38（滿分 42）、{lateGame} 31（滿分 38）、{momentum} 8（滿分 38）、{leadChanges} 5（滿分 18）和 {comeback} 3（滿分 20），信號總計 85。加上 5 分的 {gameBoost}，{final}來到 90（滿分 100）。{reason}。",
+		"gameBoost": "比賽詳細畫面上的 {heading} 欄位，設為 {points} 分。",
+		"suggestBanner": "彈出視窗頂端的 {title} 橫幅，附有 {action} 按鈕和關閉按鈕。",
+		"guide": "晚上 9:40 的節目表：一條從晚上 7 點到午夜的時間軸，NBA、NHL 和 NCAA Basketball 的比賽以長條呈現，一條線標出現在的時間，9:15 到 10:15 的最佳觀賽時間以底色標示。",
+		"browserTabs": "一個瀏覽器開著三個比賽分頁。Boston at New York 是目前的分頁，正在播放聲音，另外兩個已靜音。",
+		"notification": "一則通知寫著：{title}。{message}",
+		"sliderSensitivity": "{label} 滑桿在預設值 {value}。",
+		"sliderCooldown": "{label} 滑桿在預設值 45 秒。",
+		"sliderDelay": "{label} 滑桿在預設值 {value}。",
+		"toggleOn": "設定裡的 {label} 開關，已開啟。",
+		"toggleOff": "設定裡的 {label} 開關，已關閉。",
+		"modes": "{section}選單展開，目前選的是 {classic}，列出 {classic}、{blowouts}、{fantasy} 和 {custom}。",
+		"multiview": "一個 Multiview 分頁，四場比賽排成 2×2 的格子。左上角的 Boston at New York 有外框，並且有聲音。",
+		"standby": "瀏覽器停在一個名為 {tab} 的 Standby Stream 分頁，旁邊是兩個已靜音的比賽分頁，彈出視窗上寫著：{line}",
+		"profiles": "設定裡的{section}清單，有兩個個人資料，使用中的是 {current}，它的選單展開，顯示 {rename} 和 {export}，下方是 {new} 和 {backup} 按鈕。",
+		"backup": "已載入檔案的備份分頁：{addAsNew} 或 {replace}，以及這個檔案會改變什麼。多一個聯賽、相同的收藏球隊，評分模式從 {from} 變成 {to}。",
+		"bossButton": "老闆鍵快速鍵 Alt + Shift + X，以及它打開的偽裝試算表分頁，比賽分頁已靜音。",
+		"notificationNow": "現在",
+		"profileWeeknights": "平日夜晚",
+		"profileFantasySunday": "夢幻週日",
+		"standbyTab": "精華片段",
+		"decoyTab": "第三季預測",
+		"decoyRegion": "地區",
+		"decoyQuarter": "Q{quarter}",
+		"decoyRegions": [
+			"東北部",
+			"中西部",
+			"南部",
+			"西部"
+		]
+	},
 	"ui": {
 		"gameCard": {
 			"live": "直播",

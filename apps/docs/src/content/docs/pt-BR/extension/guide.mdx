@@ -1,0 +1,66 @@
+---
+sourceHash: 'b4eec15f0860'
+title: Como usar o Guia para planejar o que assistir
+description: O Guia mostra todos os jogos em uma linha do tempo, destaca o melhor momento do dia para assistir e deixa você dar um impulso a um jogo antes de ele começar.
+section: extension
+order: 13
+navLabel: O Guia
+faq:
+  - q: Até quantos dias à frente o Guia mostra jogos no ArenaSwap?
+    a: "Até onde a configuração Dias de antecedência permitir, de 1 a 14 dias. O padrão é 7. O Guia sempre mostra pelo menos 3 dias e mantém os jogos que terminaram no último dia."
+  - q: O que significa Melhor horário para assistir no Guia?
+    a: A parte do dia com mais jogos acontecendo, contando em dobro os trechos finais e os jogos dos seus times favoritos. O cabeçalho informa o horário e quantos jogos são seus.
+  - q: Um Impulso do jogo definido no Guia muda para onde o ArenaSwap troca?
+    a: Muda. É o mesmo Impulso do jogo que você definiria na tela de detalhes do jogo, e funciona do mesmo jeito.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+O popup mostra o que está passando agora. O Guia mostra o resto do dia, para você saber a hora de liberar o sofá.
+
+## Abra o Guia
+
+Clique no ícone de calendário chamado **Guia** na barra superior do popup. Ele abre na própria aba do navegador, então dá para deixá-lo ao lado dos seus jogos.
+
+## Leia a linha do tempo
+
+Cada linha é um jogo, agrupado por liga, com as horas no topo.
+
+- Uma barra vai do início do jogo até mais ou menos a hora em que ele deve acabar.
+- Uma linha marca o horário atual, e a página de hoje abre rolada até ela.
+- Um jogo futuro mostra o horário de início e o canal. Um jogo ao vivo mostra o placar e o relógio. Um jogo encerrado mostra o placar e **Final**.
+- Uma estrela preenchida em uma barra significa que um dos seus times está jogando.
+- Passe o mouse sobre uma barra para ver o confronto e o horário de início.
+
+<Demo name='guide' />
+
+Você só vê as ligas que ativou nas Configurações.
+
+## Veja outros dias
+
+Use **Dia anterior** e **Próximo dia** para andar um dia por vez. Dias sem jogos são pulados.
+
+O quanto você pode avançar é definido por **Dias de antecedência**, em Lista de jogos nas Configurações. Vai de 1 a 14 dias e o padrão é 7. O Guia sempre mostra pelo menos 3 dias. Jogos que terminaram no último dia continuam na grade.
+
+## Encontre o melhor horário para assistir
+
+**Melhor horário para assistir** vem ativado por padrão. Ele destaca o trecho do dia com mais jogos ao mesmo tempo. Jogos perto do fim valem mais que jogos recém-começados, e seus times favoritos também.
+
+O cabeçalho detalha, como em "3 jogos · 1 favorito". Desligue a chave para esconder o destaque.
+
+## Abra um jogo
+
+Clique em qualquer barra e o jogo abre em um painel à direita. [Detalhes do jogo](/arenaswap/docs/extension/game-details/) explica o que tem nele.
+
+- Clique em outra barra para trocar de jogo, e em **Fechar** ou Esc para guardar o painel.
+- Antes de um jogo começar, marque com estrela qualquer um dos times. A estrela aparece em todas as barras desse time.
+- Adicione um **Impulso do jogo** a um jogo que você não quer perder. Faça isso antes do início e o ArenaSwap o começa com vantagem.
+
+Para vincular um jogo a uma aba, use o popup. O Guia não faz isso.
+
+## Relacionados
+
+- [Detalhes do jogo](/arenaswap/docs/extension/game-details/) explica a tela que o Guia abre, incluindo o Impulso do jogo.
+- [Como definir times favoritos no ArenaSwap](/arenaswap/docs/extension/favorite-teams/) explica as estrelas.
+- [Referência das configurações do ArenaSwap](/arenaswap/docs/extension/settings/) lista Dias de antecedência e Mostrar jogos futuros.
+- [Como assistir a vários jogos ao mesmo tempo](/arenaswap/docs/extension/watching-multiple-games/) explica como vincular abas aos jogos que você planeja assistir.

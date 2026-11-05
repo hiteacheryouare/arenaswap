@@ -1,0 +1,108 @@
+---
+import {
+	defaultCooldownSecs,
+	defaultSensitivity,
+	defaultSwitchDelaySecs,
+	secondsSliderSteps,
+	sensitivityThresholds,
+} from '@arenaswap/core/constants';
+import { demoTranslator } from './demoStrings';
+import { currentLocale } from '../../i18n/ui';
+import type { DemoStringKey } from './demoStrings';
+
+const demoText = demoTranslator(currentLocale(Astro.currentLocale));
+
+export type SliderKind = 'sensitivity' | 'cooldown' | 'delay';
+
+interface Props {
+	kind: SliderKind;
+}
+
+interface SliderView {
+	icon: string;
+	label: string;
+	value: string;
+	fill: number;
+	min: number;
+	max: number;
+	position: number;
+	ticks?: string[];
+	ends?: [string, string];
+}
+
+const { kind } = Astro.props;
+
+const levels = Object.keys(sensitivityThresholds).map(Number).toSorted((a, b) => a - b);
+
+// The extension's formatSecondsLabel: "45s", "1m 30s", "3m".
+const formatSeconds = (secs: number, offKey: DemoStringKey) => {
+	if (secs === 0) return demoText(offKey);
+	const minutes = Math.floor(secs / 60);
+	const seconds = secs % 60;
+	const secondsText = `${seconds}${demoText('detail.unitSeconds')}`;
+	if (minutes === 0) return secondsText;
+	const minutesText = `${minutes}${demoText('detail.unitMinutes')}`;
+	return seconds > 0 ? `${minutesText} ${secondsText}` : minutesText;
+};
+
+const secondsSlider = (icon: string, labelKey: DemoStringKey, offKey: DemoStringKey, value: number): SliderView => {
+	const position = secondsSliderSteps.indexOf(value);
+	const last = secondsSliderSteps.length - 1;
+	return {
+		icon,
+		label: demoText(labelKey),
+		value: formatSeconds(value, offKey),
+		fill: position / last,
+		min: 0,
+		max: last,
+		position,
+		ends: [formatSeconds(secondsSliderSteps[0]!, offKey), formatSeconds(secondsSliderSteps[last]!, offKey)],
+	};
+};
+
+const views: Record<SliderKind, () => SliderView> = {
+	sensitivity: () => ({
+		icon: 'bi-sliders',
+		label: demoText('sensitivity.label'),
+		value: demoText('sensitivity.valueLabel', {
+			label: demoText(`sensitivity.level.l${defaultSensitivity}` as DemoStringKey),
+			gap: sensitivityThresholds[defaultSensitivity]!,
+		}),
+		fill: (defaultSensitivity - levels[0]!) / (levels.at(-1)! - levels[0]!),
+		min: levels[0]!,
+		max: levels.at(-1)!,
+		position: defaultSensitivity,
+		ticks: levels.map(level => String(sensitivityThresholds[level])),
+	}),
+	cooldown: () => secondsSlider('bi-clock', 'cooldown.label', 'cooldown.off', defaultCooldownSecs),
+	delay: () => secondsSlider('bi-hourglass-split', 'switchDelay.label', 'switchDelay.off', defaultSwitchDelaySecs),
+};
+
+const view = views[kind]();
+const tickColumns = view.ticks ? `0fr repeat(${view.ticks.length - 1}, 1fr) 0fr` : undefined;
+---
+<div class='doc-demo-popup doc-demo-panel'>
+	<div class='d-flex justify-content-between align-items-center gap-2 mb-1'>
+		<span class='d-flex align-items-center gap-1 min-w-0'>
+			<span class='fg-secondary setting-toggle-label'><i class={`bi ${view.icon} me-1 fg-primary`}></i>{view.label}</span>
+			<span class='setting-tooltip-btn'><i class='bi bi-question-circle'></i></span>
+		</span>
+		<span class='fw-semibold setting-value-label text-end'>{view.value}</span>
+	</div>
+	<div class='form-range' style={{ '--bs-range-fill': view.fill }}>
+		<input type='range' class='form-range-input' min={view.min} max={view.max} step='1' value={view.position} aria-label={view.label} />
+		{view.ticks && (
+			<div class='form-range-ticks' style={{ gridTemplateColumns: tickColumns }}>
+				{view.ticks.map((tick, index) => (
+					<span class='form-range-tick' style={{ gridColumnStart: index + 2 }}><span class='form-range-tick-label'>{tick}</span></span>
+				))}
+			</div>
+		)}
+	</div>
+	{view.ends && (
+		<div class='d-flex justify-content-between'>
+			<span class='setting-explainer'>{view.ends[0]}</span>
+			<span class='setting-explainer'>{view.ends[1]}</span>
+		</div>
+	)}
+</div>

@@ -380,22 +380,14 @@
 		--as-avatar-color: #495057;
 	}
 
-	.team-crest .crest-fallback {
-		font-size: 0.7rem;
-	}
-
 	// The walkthrough's mock scoreboards, which draw their own crests at two smaller sizes.
 	.team-crest-32 {
 		--as-avatar-size: 32px;
 	}
 
-	.team-crest-32 .crest-fallback { font-size: 0.62rem; }
-
 	.team-crest-28 {
 		--as-avatar-size: 28px;
 	}
-
-	.team-crest-28 .crest-fallback { font-size: 0.6rem; }
 
 	.team-column {
 		min-width: 60px;
@@ -698,10 +690,7 @@
 		.team-crest {
 			--as-avatar-bg: transparent;
 			--as-avatar-color: currentColor;
-		}
-
-		.team-crest .crest-fallback {
-			background-image: linear-gradient(rgba(255, 255, 255, 0.16) 0 0);
+			--crest-wash: linear-gradient(rgba(255, 255, 255, 0.16) 0 0);
 		}
 
 		// The yellow shade and the DELAY label carry a delay here. Dimming the score as the plate card

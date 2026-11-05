@@ -63,19 +63,14 @@
 	}
 
 	.college-crest {
-		--as-avatar-size:  36px;
-		--as-avatar-bg:    var(--as-border-color);
-		--as-avatar-color: var(--as-fg-body);
+		--as-avatar-size:          36px;
+		--as-avatar-border-radius: 0.3rem;
+		--as-avatar-bg:            var(--as-border-color);
+		--as-avatar-color:         var(--as-fg-body);
 	}
 
 	.college-crest-disc:not(.is-bare) .college-crest {
 		--as-avatar-size: 27px;
-	}
-
-	.college-crest .crest-fallback {
-		border-radius:  0.3rem;
-		font-size:      0.5rem;
-		letter-spacing: 0.04em;
 	}
 
 	.college-filter-status {

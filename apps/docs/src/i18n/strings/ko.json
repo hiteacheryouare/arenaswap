@@ -444,6 +444,47 @@
 			"추격"
 		]
 	},
+	"docDemos": {
+		"popup": "PowerScore 순으로 진행 중인 경기 세 개가 나열된 ArenaSwap 팝업: Boston at New York은 2:10 남은 상황에서 100–100 동점(85), Philadelphia at Pittsburgh는 3피리어드 2–2 동점(76), Chelsea가 78분에 Arsenal을 2–1로 앞서는 경기(63).",
+		"popupTabs": "PowerScore 순으로 진행 중인 경기 세 개와 각 경기가 열리는 탭이 나열된 ArenaSwap 팝업: Boston at New York은 2:10 남은 상황에서 100–100 동점(85), Philadelphia at Pittsburgh는 3피리어드 2–2 동점(76), Chelsea가 78분에 Arsenal을 2–1로 앞서는 경기(63).",
+		"liveCard": "진행 중인 경기 카드: Boston Celtics at New York Knicks, 4쿼터 2:10 남은 상황에서 100–100 동점, PowerScore 100점 만점에 85점.",
+		"liveCardFavorite": "진행 중인 경기 카드: Boston Celtics at New York Knicks, 4쿼터 2:10 남은 상황에서 100–100 동점, PowerScore 100점 만점에 85점. Celtics에 응원팀 별표가 표시되어 있어요.",
+		"liveCardTab": "진행 중인 경기 카드: Boston Celtics at New York Knicks, 4쿼터 2:10 남은 상황에서 100–100 동점, PowerScore 100점 만점에 85점. Boston at New York 탭에 배정되어 있어요.",
+		"liveCardFavoriteTab": "진행 중인 경기 카드: Boston Celtics at New York Knicks, 4쿼터 2:10 남은 상황에서 100–100 동점, PowerScore 100점 만점에 85점. Celtics에 응원팀 별표가 표시되어 있고, Boston at New York 탭에 배정되어 있어요.",
+		"upcomingCard": "예정된 경기 카드: Kansas City Chiefs at Buffalo Bills, 일요일 오후 4:25, Highmark Stadium.",
+		"finalCard": "종료된 경기 카드: Ohio State 27, Michigan 24, Ohio Stadium.",
+		"charts": "경기 상세 정보의 차트 네 개: 시간대별 PowerScore, 시간대별 점수, 승리 확률, 그리고 PowerScore에서 각 Signal이 차지하는 비중.",
+		"breakdown": "{heading}: {closeness} 42점 중 38점, {lateGame} 38점 중 31점, {momentum} 38점 중 8점, {leadChanges} 18점 중 5점, {comeback} 20점 중 3점으로 Signal 합계는 85점이에요. 5점짜리 {gameBoost}가 더해져 {final}은 100점 만점에 90점이 돼요. {reason}.",
+		"gameBoost": "경기 상세 정보의 {heading} 항목이 {points}점으로 설정된 모습.",
+		"suggestBanner": "팝업 맨 위의 {title} 배너. {action} 버튼과 닫기 버튼이 있어요.",
+		"guide": "오후 9:40의 가이드: 오후 7시부터 자정까지의 타임라인에 NBA, NHL, NCAA 농구 경기가 막대로 표시되어 있고, 현재 시각에 선이 그어져 있으며, 시청하기 가장 좋은 시간대인 9:15부터 10:15까지가 음영으로 강조되어 있어요.",
+		"browserTabs": "경기 탭 세 개가 열린 브라우저. Boston at New York이 활성 탭으로 소리가 나오고, 나머지 두 탭은 음소거 상태예요.",
+		"notification": "알림: {title}. {message}",
+		"sliderSensitivity": "기본값 {value}로 설정된 {label} 슬라이더.",
+		"sliderCooldown": "기본값 45초로 설정된 {label} 슬라이더.",
+		"sliderDelay": "기본값 {value}로 설정된 {label} 슬라이더.",
+		"toggleOn": "설정에서 켜진 {label} 스위치.",
+		"toggleOff": "설정에서 꺼진 {label} 스위치.",
+		"modes": "{classic}이(가) 선택된 {section} 선택기가 열려 있고, {classic}, {blowouts}, {fantasy}, {custom}이(가) 나열되어 있어요.",
+		"multiview": "경기 네 개가 2×2 격자로 배치된 Multiview 탭. 왼쪽 위의 Boston at New York에는 테두리가 있고 소리가 나와요.",
+		"standby": "{tab}이라는 Standby Stream 탭에 머물러 있는 브라우저. 옆에는 음소거된 경기 탭 두 개가 있고, 팝업에는 다음 문구가 떠 있어요: {line}",
+		"profiles": "설정의 {section} 목록에 프로필 두 개가 있어요. 사용 중인 {current}의 메뉴가 열려 {rename}과(와) {export}이(가) 보이고, 그 아래에 {new} 및 {backup} 버튼이 있어요.",
+		"backup": "파일이 불러와진 백업 탭: {addAsNew} 또는 {replace}, 그리고 파일이 바꿀 내용. 리그가 하나 늘고, 응원팀은 그대로이며, 점수 모드가 {from}에서 {to}(으)로 바뀌어요.",
+		"bossButton": "상사가 온다 버튼 단축키 Alt + Shift + X와, 눌렀을 때 열리는 가짜 스프레드시트 탭. 경기 탭은 음소거되어 있어요.",
+		"notificationNow": "지금",
+		"profileWeeknights": "평일 밤",
+		"profileFantasySunday": "판타지 일요일",
+		"standbyTab": "하이라이트",
+		"decoyTab": "3분기 전망",
+		"decoyRegion": "지역",
+		"decoyQuarter": "{quarter}분기",
+		"decoyRegions": [
+			"북동부",
+			"중서부",
+			"남부",
+			"서부"
+		]
+	},
 	"ui": {
 		"gameCard": {
 			"live": "LIVE",

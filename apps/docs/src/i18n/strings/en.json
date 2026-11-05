@@ -444,6 +444,47 @@
 			"Comeback"
 		]
 	},
+	"docDemos": {
+		"popup": "The ArenaSwap popup listing three live games by PowerScore: Boston at New York, tied 100–100 with 2:10 left (85), Philadelphia at Pittsburgh, tied 2–2 in the third period (76), and Chelsea leading Arsenal 2–1 in the 78th minute (63).",
+		"popupTabs": "The ArenaSwap popup listing three live games by PowerScore, each with the tab it plays in: Boston at New York, tied 100–100 with 2:10 left (85), Philadelphia at Pittsburgh, tied 2–2 in the third period (76), and Chelsea leading Arsenal 2–1 in the 78th minute (63).",
+		"liveCard": "A live game card: Boston Celtics at New York Knicks, tied 100–100 with 2:10 left in the fourth quarter, PowerScore 85 of 100.",
+		"liveCardFavorite": "A live game card: Boston Celtics at New York Knicks, tied 100–100 with 2:10 left in the fourth quarter, PowerScore 85 of 100, with the Celtics starred as a favorite.",
+		"liveCardTab": "A live game card: Boston Celtics at New York Knicks, tied 100–100 with 2:10 left in the fourth quarter, PowerScore 85 of 100, assigned to the tab Boston at New York.",
+		"liveCardFavoriteTab": "A live game card: Boston Celtics at New York Knicks, tied 100–100 with 2:10 left in the fourth quarter, PowerScore 85 of 100, with the Celtics starred as a favorite, assigned to the tab Boston at New York.",
+		"upcomingCard": "An upcoming game card: Kansas City Chiefs at Buffalo Bills, Sunday at 4:25 PM at Highmark Stadium.",
+		"finalCard": "A final game card: Ohio State 27, Michigan 24, at Ohio Stadium.",
+		"charts": "Four charts from a game's details: PowerScore over time, the score over time, win probability, and each signal's share of the PowerScore.",
+		"breakdown": "A {heading}: {closeness} 38 of 42, {lateGame} 31 of 38, {momentum} 8 of 38, {leadChanges} 5 of 18 and {comeback} 3 of 20 make a signals total of 85. A 5-point {gameBoost} brings the {final} to 90 of 100. {reason}.",
+		"gameBoost": "The {heading} field on a game's details, set to {points} points.",
+		"suggestBanner": "The {title} banner at the top of the popup, with a {action} button and a close button.",
+		"guide": "The Guide at 9:40 PM: a timeline from 7 PM to midnight with NBA, NHL and NCAA Basketball games as bars, a line at the current time, and the best time to watch shaded from 9:15 to 10:15.",
+		"browserTabs": "A browser with three game tabs open. Boston at New York is the active tab and playing sound; the other two are muted.",
+		"notification": "A notification reading: {title}. {message}",
+		"sliderSensitivity": "The {label} slider at its default, {value}.",
+		"sliderCooldown": "The {label} slider at its default, 45 seconds.",
+		"sliderDelay": "The {label} slider at its default, {value}.",
+		"toggleOn": "The {label} switch in Settings, turned on.",
+		"toggleOff": "The {label} switch in Settings, turned off.",
+		"modes": "The {section} picker open on {classic}, listing {classic}, {blowouts}, {fantasy} and {custom}.",
+		"multiview": "A Multiview tab with four games in a 2×2 grid. Boston at New York, top left, is outlined and has the sound.",
+		"standby": "A browser parked on a Standby Stream tab called {tab}, with two muted game tabs beside it, and the popup line: {line}",
+		"profiles": "The {section} list in Settings with two profiles, {current} in use and its menu open on {rename} and {export}, above the {new} and {backup} buttons.",
+		"backup": "The backup tab with a file loaded: {addAsNew} or {replace}, and what the file would change. One more league, the same favorite teams, and the scoring mode going from {from} to {to}.",
+		"bossButton": "The boss button shortcut, Alt + Shift + X, and the decoy spreadsheet tab it opens, with the game tabs muted.",
+		"notificationNow": "now",
+		"profileWeeknights": "Weeknights",
+		"profileFantasySunday": "Fantasy Sunday",
+		"standbyTab": "Highlights",
+		"decoyTab": "Q3 forecast",
+		"decoyRegion": "Region",
+		"decoyQuarter": "Q{quarter}",
+		"decoyRegions": [
+			"Northeast",
+			"Midwest",
+			"South",
+			"West"
+		]
+	},
 	"ui": {
 		"gameCard": {
 			"live": "LIVE",

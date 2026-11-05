@@ -1,0 +1,75 @@
+---
+sourceHash: '5ceb10000624'
+title: Regarder plusieurs matchs en même temps
+description: Ouvre chaque match dans son propre onglet, lie l'onglet au match dans ArenaSwap, et il t'emmène vers le meilleur match en coupant le son des autres.
+section: extension
+order: 2
+navLabel: Plusieurs matchs
+faq:
+  - q: Comment regarder plusieurs matchs en même temps dans un seul navigateur ?
+    a: Ouvre chaque match dans son propre onglet, puis choisis cet onglet sur la carte du match dans ArenaSwap. ArenaSwap t'emmène vers le meilleur match et coupe le son des autres.
+  - q: ArenaSwap fonctionne-t-il avec n'importe quel service de streaming ?
+    a: Oui. Si un match passe dans un onglet du navigateur, ArenaSwap peut l'utiliser. Ça comprend Peacock, Prime Video, YouTube TV et le site de ton fournisseur de câble.
+  - q: Combien de matchs puis-je suivre en même temps ?
+    a: Autant que tu as d'onglets ouverts.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Ouvre tes matchs dans des onglets séparés, dis à ArenaSwap quel onglet est lequel, et il s'occupe de la télécommande.
+
+## Ouvrir chaque match dans son propre onglet
+
+Lance chaque match comme d'habitude, sur le service qui l'a. ArenaSwap s'en moque, tant que chaque match a son propre onglet.
+
+## Lier chaque onglet à son match
+
+Dans la fenêtre d'ArenaSwap, trouve la carte d'un match et utilise son menu **Associer un onglet** pour choisir son onglet. Les matchs à venir ont le même menu, donc tu peux lier un onglet avant le coup d'envoi.
+
+Un onglet déjà lié à un autre match est grisé et marqué **(utilisé)**. Dissocie-le d'abord de ce match pour le déplacer.
+
+<Demo name='popup' tabs />
+
+## Laisser ArenaSwap les associer pour toi
+
+Si des onglets déjà ouverts ressemblent à des matchs, une bannière **Ces onglets ressemblent à des matchs** apparaît au-dessus de la liste. Clique sur **Jeter un œil** pour voir chaque match à côté de l'onglet qu'ArenaSwap pense lui correspondre. Les associations solides sont cochées au départ. Décoche celles qu'il a ratées, puis clique sur **Associer 3 onglets** (ou autant que tu en as coché).
+
+<Demo name='suggest-banner' />
+
+Ferme la bannière pour ignorer les suggestions.
+
+## S'y retrouver dans la liste
+
+- **Onglets actifs** contient tes matchs liés, les meilleurs d'abord, avec les matchs de tes équipes favorites en haut.
+- **Matchs en direct** est tout le reste de ce qui passe, au cas où quelque chose mériterait un onglet.
+- **À suivre** est ce qui arrive, un jour à la fois. Utilise les flèches pour changer de jour et l'icône de recherche pour chercher une équipe, une ligue ou une chaîne.
+- **Terminés** montre les matchs qui viennent de finir, mais seulement si **Conserver les matchs terminés** est activé. Tu ne peux pas lier d'onglet à ceux-là.
+
+Tu préfères une liste par ligue ? Active **Grouper les matchs par ligue**.
+
+## Le laisser tourner
+
+Avec deux onglets liés ou plus, ArenaSwap décide sur lequel tu es. Il coupe le son de chaque onglet lié sauf celui que tu regardes, et t'emmène vers un match dès qu'il est nettement meilleur que celui à l'écran. Pas besoin de cliquer partout ni d'appuyer sur muet.
+
+Pour sortir un onglet de la rotation, dissocie-le depuis le menu. Pour arrêter complètement le changement, désactive **Activer le changement automatique** dans la barre du haut.
+
+## Choisir ce qui se passe à la fin d'un match
+
+**Quand un match se termine** dans les Paramètres a trois choix :
+
+- **Laisser l'onglet tel quel** est la valeur par défaut.
+- **Libérer l'onglet d'ArenaSwap** dissocie l'onglet, remet le son et le laisse ouvert.
+- **Fermer l'onglet** le ferme.
+
+Ton choix attend que tu aies quitté cet onglet. Le dernier onglet d'une fenêtre est libéré plutôt que fermé, pour qu'une fenêtre ne disparaisse jamais sous tes yeux. À la prochaine ouverture d'ArenaSwap, il te dit combien d'onglets sont revenus, par exemple « 2 onglets sont de nouveau à toi ».
+
+## Utiliser plusieurs fenêtres
+
+Le menu **Associer un onglet** liste les onglets de la fenêtre depuis laquelle tu as ouvert ArenaSwap. Pour lier un onglet d'une autre fenêtre, ouvre ArenaSwap là-bas. Quand ArenaSwap passe à un match dans une autre fenêtre, cette fenêtre passe au premier plan, et le [plein écran](/arenaswap/docs/extension/switching-and-sensitivity/#stay-full-screen-through-every-switch) la suit.
+
+## À lire aussi
+
+- [Contrôler quand ArenaSwap change d'onglet](/arenaswap/docs/extension/switching-and-sensitivity/) règle sa vivacité ou sa patience.
+- [Définir tes équipes favorites dans ArenaSwap](/arenaswap/docs/extension/favorite-teams/) met les matchs de tes équipes en haut.
+- [Configurer Standby Stream](/arenaswap/docs/extension/standby-stream/) couvre ce qui se passe quand tous les matchs liés s'endorment.
+- [Utiliser Multiview](/arenaswap/docs/extension/multiview/) met plutôt plusieurs matchs sur un seul écran.

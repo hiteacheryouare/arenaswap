@@ -1,0 +1,57 @@
+---
+import Crest from '@arenaswap/ui/src/components/crest';
+
+// The hero's Chrome window, cut down to the tab strip and toolbar, with an optional page under them.
+
+export interface DemoBrowserTab {
+	title: string;
+	favicon?: string;
+	icon?: string;
+	sound?: 'audible' | 'muted';
+}
+
+interface Props {
+	tabs: DemoBrowserTab[];
+	active: number;
+	host: string;
+	path?: string;
+}
+
+const { tabs, active, host, path = '' } = Astro.props;
+const soundIcon = { audible: 'bi-volume-up-fill', muted: 'bi-volume-mute-fill' } as const;
+---
+<div class='doc-demo-browser'>
+	<div class='browser-titlebar'>
+		<span class='browser-lights'><i></i><i></i><i></i></span>
+		<div class='browser-tabs'>
+			{tabs.map((tab, index) => (
+				<span class:list={['browser-tab', { 'is-active': index === active }]}>
+					{tab.favicon
+						? <Crest logo={tab.favicon} abbreviation='' icon='bi-globe2' className='browser-tab-favicon' />
+						: <i class={`bi ${tab.icon ?? 'bi-globe2'} browser-tab-favicon`}></i>}
+					<span class='browser-tab-title'>{tab.title}</span>
+					{tab.sound && <i class:list={['bi', soundIcon[tab.sound], 'doc-demo-browser-sound', { 'is-audible': tab.sound === 'audible' }]}></i>}
+					<span class='browser-tab-close'><i class='bi bi-x-lg'></i></span>
+					<span class='browser-tab-flare'></span>
+				</span>
+			))}
+		</div>
+	</div>
+	<div class='browser-toolbar'>
+		<span class='browser-nav'>
+			<i class='bi bi-arrow-left'></i>
+			<i class='bi bi-arrow-right'></i>
+			<i class='bi bi-arrow-clockwise'></i>
+		</span>
+		<span class='browser-omnibox'>
+			<i class='bi bi-sliders2 browser-omnibox-info'></i>
+			<span class='browser-omnibox-url'>{host}<span class='browser-omnibox-path'>{path}</span></span>
+		</span>
+		<span class='browser-toolbar-end'>
+			<span class='browser-extension'>
+				<img src={`${import.meta.env.BASE_URL}images/icon_white_on_transparent.svg`} alt='' />
+			</span>
+		</span>
+	</div>
+	<slot />
+</div>

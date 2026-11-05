@@ -27,7 +27,6 @@ interface crestProps {
 	label?: string;
 	title?: string;
 	fallback?: 'abbreviation' | 'blank' | 'none';
-	fallbackStyle?: CSSProperties;
 	// The team's own colour, where the call site knows it: the placeholder is filled with it and the
 	// initials take whichever ink reads on it. Anything else gets the neutral disc.
 	teamColor?: string;
@@ -65,15 +64,15 @@ export const resolveCrestState = (logo: string | undefined, outcome: crestOutcom
 	return verdict === 'pending' && state !== 'failed' ? 'pending' : state;
 };
 
-// A team colour goes in through the avatar tokens the placeholder paints with, inline, so it beats a
-// call site's own neutral tone the way that tone beats the default.
-export const crestFill = (teamColor: string | undefined): CSSProperties | undefined => (
-	isHex(teamColor)
+// Inline, so a team colour beats a call site's own neutral tone the way that tone beats the default.
+export const crestFill = (teamColor: string | undefined, fallback: crestProps['fallback'] = 'abbreviation'): CSSProperties | undefined => {
+	if (fallback === 'none') return { '--as-avatar-bg': 'transparent' } as CSSProperties;
+	return isHex(teamColor)
 		? { '--as-avatar-bg': teamColor, '--as-avatar-color': readableOnBlack(teamColor) } as CSSProperties
-		: undefined
-);
+		: undefined;
+};
 
-// The placeholder and the image share one box, and CSS picks between them off `data-crest-state`.
+// A Bootstrap avatar whose own box is the placeholder, with the logo laid over it as `.avatar-img`.
 // Layering rather than swapping means a crest already in the cache paints in the first frame, and
 // it lets the docs' static markup (`CrestSettle.astro`) drive the same stylesheet by hand.
 const Crest = ({
@@ -83,7 +82,6 @@ const Crest = ({
 	label,
 	title,
 	fallback = 'abbreviation',
-	fallbackStyle,
 	teamColor,
 	icon,
 	loading,
@@ -117,20 +115,16 @@ const Crest = ({
 	return (
 		<span
 			className={className ? `avatar crest ${className}` : 'avatar crest'}
-			style={crestFill(teamColor)}
+			style={crestFill(teamColor, fallback)}
 			data-crest-state={resolveCrestState(logo, outcome, verdict)}
 			data-crest-verdict={verdict}
 			role={label ? 'img' : undefined}
 			aria-label={label}
 			title={title}
 		>
-			{/* Before the image, because both layers are absolutely positioned and paint order is
-			    DOM order — reorder these two and the placeholder covers the crest. */}
-			{fallback !== 'none' && (
-				<span className='crest-fallback' style={fallbackStyle} aria-hidden='true'>
-					{fallback === 'blank' ? null : icon ? <i className={`bi ${icon}`} /> : abbreviation}
-				</span>
-			)}
+			{fallback === 'abbreviation' && (icon
+				? <i className={`bi ${icon}`} aria-hidden='true' />
+				: <span className='crest-initials' aria-hidden='true'>{abbreviation}</span>)}
 			{logo && (
 				<img
 					ref={settle}

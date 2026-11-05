@@ -1,0 +1,81 @@
+---
+title: How to read a game's detail screen in ArenaSwap
+description: Click a game to see why it's ranked where it is, how it's been going, who's playing, and where to watch. Add a Game Boost to push one game up.
+section: extension
+order: 14
+navLabel: Game details
+faq:
+  - q: How do I see why a game has the PowerScore it does?
+    a: Click the game's card in the popup, or its bar in the Guide. On a live game, the PowerScore Breakdown on the Overview tab shows what's adding points, with a line in plain words at the bottom. Hover the info icons for what each part means.
+  - q: What does Game Boost do in ArenaSwap?
+    a: It adds points, from 0 to 100, to one game's PowerScore so ArenaSwap favors it. Set it back to 0 to remove it.
+  - q: Why don't I see the betting line on a game's detail screen?
+    a: It's hidden unless Show betting & odds is on in Settings.
+  - q: Why is there no Matchup, Box Score or Standings tab on this game?
+    a: Tabs only show up when there's something to put in them. Matchup is for games that haven't started, and Box Score is for games that have. Not every league has standings.
+---
+
+import Demo from '../../../components/docs/Demo.astro';
+
+Click any game to see why it's ranked where it is, and what's riding on it.
+
+## Open a game
+
+Click a game card in the popup. In the [Guide](/arenaswap/docs/extension/guide/), click a game's bar and it opens in a side panel. Click **Back** to return to the list, or **Close** in the Guide.
+
+A row of tabs sits under the score: **Overview** is always there, **Matchup** shows up before a game starts, **Box Score** once it's under way, and **Standings** when your league has a table. If they don't all fit, the rest go under **More**.
+
+## See why a game is ranked so high
+
+Open a live game and look at the **PowerScore Breakdown** on **Overview**. It shows what's making the game worth watching:
+
+- **Closeness**: how tight the score is.
+- **Late-game**: how close the end is, while it's still anyone's game.
+- **Momentum**: whether one team is on a run.
+- **Lead changes**: how often the lead has swapped lately.
+- **Comeback**: whether the team behind is climbing back in.
+
+Each one shows its points, followed by any Boosts (extra points, like for your favorite team) and Penalties (points off, like during a commercial break), and then the **Final PowerScore**. The line under the total says what's driving it right now.
+
+<Demo name='breakdown' />
+
+A game paused for **Halftime**, an **Intermission**, or a delay shows 0 until play starts again. Finished games don't get a PowerScore. [Scoring modes](/arenaswap/docs/extension/scoring-modes/) covers how to change what counts.
+
+## Follow how the game's going
+
+The charts under the breakdown fill in as play goes on. **PowerScore Over Time** shows when the game got good, and **Win Probability** shows how the odds have swung. There are also charts for the score and the lead.
+
+<Demo name='charts' />
+
+Live games add more, depending on the sport. **Latest Play** shows what just happened, and in baseball **Due Up** shows who's coming to the plate. Football shows down and distance, and basketball shows timeouts and bonus. Playoff games show the series score.
+
+## Get ready before the game starts
+
+A game that hasn't started has a **Get Ready for Kickoff** card (tip-off, puck drop, or first pitch, depending on the sport). Here you can add a Game Boost and, in the popup, pick the tab to open the game in.
+
+Below it you'll find **Probable Pitchers** or **Probable Goalies** where they apply, **Team Leaders**, and the **Matchup** tab with **Recent form**, **Season stats**, and **Injuries**. To follow a team, tap the star next to its crest. [Favorite teams](/arenaswap/docs/extension/favorite-teams/) explains what that does.
+
+## Check the box score and standings
+
+**Box Score** has the score period by period, team stats, and player lines for the sport you're watching. **Standings** shows the league table with these two teams highlighted.
+
+## Find where to watch
+
+**Game Info** lists the channel or service, the venue, and the weather. Finished games also show attendance. Upcoming games can link to **Tickets**.
+
+The betting line only shows if you've turned on **Show betting & odds** in Settings.
+
+## Add a Game Boost
+
+Want a game on screen no matter what the score says? **Game Boost** adds points to its PowerScore so ArenaSwap picks it more often. Type a number from 0 to 100, and use 0 to take it off.
+
+<Demo name='game-boost' />
+
+The Game Boost field is on live and upcoming games. It's the one thing that can push a PowerScore above 100, and the breakdown shows it as "Game boost".
+
+## Related
+
+- [How to use the Guide to plan your viewing](/arenaswap/docs/extension/guide/) opens this screen from the timeline.
+- [Scoring modes](/arenaswap/docs/extension/scoring-modes/) explains what each mode cares about.
+- [How to set favorite teams in ArenaSwap](/arenaswap/docs/extension/favorite-teams/) covers stars and the Favorite team boost.
+- [ArenaSwap settings reference](/arenaswap/docs/extension/settings/) lists Show betting & odds and Temperature unit.

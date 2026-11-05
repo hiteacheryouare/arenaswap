@@ -1,0 +1,60 @@
+---
+title: How to control when ArenaSwap switches tabs
+description: Make ArenaSwap switch more or less often, hold off while your stream catches up, and stay on a game through the play you're watching.
+section: extension
+order: 3
+navLabel: Switching
+faq:
+  - q: How do I stop ArenaSwap from switching tabs so much?
+    a: Lower Switch sensitivity, raise Switch cooldown, or unassign the tab you don't want it touching. Turning off Enable auto-switching stops it completely.
+  - q: Why does ArenaSwap keep bouncing between two games?
+    a: Two of your games are trading the lead as the more exciting one. Raise Switch cooldown so ArenaSwap stays on a game longer before it moves again.
+  - q: Why does ArenaSwap switch before I see the big play?
+    a: Your stream is running behind the live game. Add a Switch delay so your feed can catch up before the tab changes.
+---
+
+import Demo from '../../../components/docs/Demo.astro';
+
+All of these controls are in Settings, under **Switching**. Pick the one that matches what's bugging you.
+
+## Switch less often
+
+Open **Switch sensitivity** and slide it toward **Barely Active**. ArenaSwap then waits for another game to be a lot more exciting than the one you're watching before it moves you. The default is **Balanced**.
+
+<Demo name='slider' kind='sensitivity' />
+
+If ArenaSwap is slow to catch a game that's clearly heating up, slide it the other way, toward **Eager** or **Ludicrous Speed**.
+
+## Stop it from bouncing between games
+
+**Switch cooldown** is the shortest wait between two switches, from **Off** up to 3 minutes. The default is 45 seconds. Raise it and ArenaSwap sticks with a game longer, even when the other one briefly pulls ahead. Lower it to follow every swing in a wild finish.
+
+Clicking over to one of your game tabs yourself starts the cooldown too, so ArenaSwap won't yank you off a game you just chose.
+
+<Demo name='slider' kind='cooldown' />
+
+## Give your stream time to catch up
+
+Streams run behind the real game. **Switch delay** makes ArenaSwap wait before it changes tabs, from **Off** up to 3 minutes. If you keep landing on a game just before the big play shows up on your screen, add 15 or 30 seconds. ArenaSwap checks the game again before it switches, so you won't be sent to one that went quiet while it waited.
+
+## Don't get cut off mid-play
+
+Turn on **Content-aware switching** and ArenaSwap holds a switch until the game you're leaving reaches a natural break: the end of the at-bat, a whistle, the end of the play. You see how it turns out, then you go.
+
+If the break never comes, the switch happens anyway after a short wait. It doesn't wait at all when the game you're leaving is already in a timeout, a TV break or an intermission, when it's a blowout, or when the other game is at a deciding moment. Soccer, college football and college hockey switch right away.
+
+While a switch is waiting, the popup shows which game is up next. With **Switch notifications** on, you get an "Up next" notification too. The catch: you may miss something in the game you're about to switch to.
+
+## Pause switching completely
+
+The toggle in the top bar, **Enable auto-switching**, is the master switch. Turn it off and your tabs stay where they are. Turn it back on and ArenaSwap picks up from there.
+
+## Stay full screen when it switches
+
+Make the browser window full screen before the game starts: **⌃⌘F** on a Mac, **F11** everywhere else. The window stays full screen through every switch, including a switch to a game in another window. If you use the video player's own full screen button instead, ArenaSwap puts the window back in full screen after each switch.
+
+## Related
+
+- [ArenaSwap settings reference](/arenaswap/docs/extension/settings/) lists every Switching setting and its default.
+- [How to watch multiple games at once](/arenaswap/docs/extension/watching-multiple-games/) covers choosing the tabs ArenaSwap switches between.
+- [Troubleshoot ArenaSwap](/arenaswap/docs/extension/troubleshooting/) covers switching that looks like a bug but isn't.

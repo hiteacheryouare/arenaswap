@@ -1,0 +1,60 @@
+---
+sourceHash: '2f02624226c3'
+title: So nutzt du den Chef-Button
+description: Ein Klick oder Alt+Shift+X schaltet deine Spiele stumm, pausiert ArenaSwap und zeigt eine Seite, die nach Arbeit aussieht. Seite und Tastenkürzel legst du hier fest.
+section: extension
+order: 11
+navLabel: Chef-Button
+faq:
+  - q: Was macht der Chef-Button in ArenaSwap?
+    a: Er schaltet deine Spiel-Tabs stumm, pausiert das automatische Wechseln und bringt dich zu einer vorher gewählten Seite, zum Beispiel einer Tabelle. Schalte „Automatisches Wechseln aktivieren“ wieder ein, wenn du die Spiele zurückhaben willst.
+  - q: Welches Tastenkürzel gehört zum Chef-Button?
+    a: Standardmäßig Alt+Shift+X. Du kannst es auf der Seite für Erweiterungs-Tastenkürzel deines Browsers ändern. Fahr im Popup mit der Maus über den Chef-Button, um dein aktuelles Kürzel zu sehen.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Jemand läuft vorbei, und ein Tab voller Verlängerung ist genau das Falsche auf dem Bildschirm. Der Chef-Button versteckt die Spiele in einem Zug.
+
+## Was er macht
+
+Drück ihn, und ArenaSwap:
+
+- Schaltet deine Spiel-Tabs stumm.
+- Pausiert das automatische Wechseln, damit dich nichts von selbst zu einem Spiel zurückholt.
+- Bringt dich zu deiner Tarnseite.
+
+<Demo name='boss-button' />
+
+## Drück ihn
+
+- Klick im Popup in der oberen Leiste auf das Inkognito-Symbol.
+- Oder drück **Alt+Shift+X** in einem beliebigen Tab. Das Popup musst du dafür nicht öffnen.
+
+## Tarnseite wählen
+
+Öffne die Einstellungen, dann **Wechseln**, und such **Tarnseite**. Tipp eine beliebige Webadresse ein, die nach viel Arbeit aussieht, etwa eine Tabelle oder ein Dokument. Mit Enter oder einem Klick neben das Feld wird sie gespeichert.
+
+- Ist die Seite schon offen, springt der Chef-Button zu diesem Tab.
+- Wenn nicht, öffnet ArenaSwap sie für dich.
+- Lässt du das Feld leer, bekommst du einen leeren Tab.
+- Nur Webadressen funktionieren. Alles andere zeigt „Das sieht nicht nach einer Webadresse aus“.
+
+## Spiele zurückholen
+
+Der Chef-Button macht sich nicht von selbst rückgängig. Ist die Luft rein, öffne das Popup und schalte **Automatisches Wechseln aktivieren** wieder ein. Deine Tabs und Spielzuweisungen sind noch da.
+
+## Kürzel ändern
+
+Leg für **Chef kommt** auf der Seite für Erweiterungs-Tastenkürzel deines Browsers eine neue Taste fest:
+
+- Chrome: `chrome://extensions/shortcuts`
+- Edge: `edge://extensions/shortcuts`
+- Firefox: Add-ons-Manager, das Zahnrad-Menü, dann **Erweiterungstastenkürzel verwalten**
+
+Nutzt schon eine andere Erweiterung Alt+Shift+X, wähl dort eine andere Taste. Ohne Kürzel funktioniert der Button weiterhin per Klick.
+
+## Verwandt
+
+- [So schaust du mehrere Spiele gleichzeitig](/arenaswap/docs/extension/watching-multiple-games/) behandelt die Spiel-Tabs, die der Chef-Button stumm schaltet.
+- [Die ArenaSwap-Einstellungen im Überblick](/arenaswap/docs/extension/settings/) führt die Tarnseite zusammen mit dem Rest von Wechseln auf.

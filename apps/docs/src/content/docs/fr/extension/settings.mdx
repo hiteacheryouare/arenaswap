@@ -1,0 +1,97 @@
+---
+sourceHash: '3f391bc4d95c'
+title: Référence des paramètres d'ArenaSwap
+description: Ce que change chaque paramètre d'ArenaSwap, regroupés comme dans la fenêtre, avec la valeur par défaut de chacun.
+section: extension
+order: 7
+navLabel: Paramètres
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Touche l'engrenage dans la barre du haut de la fenêtre pour ouvrir les Paramètres. Utilise la zone de recherche en haut pour trouver un paramètre par son nom ou par ce que tu veux qu'il fasse. Les paramètres sont regroupés en Changement, Notation, Équipes favorites, Ligues, Affichage, Standby Stream, Multiview, et Profils et sauvegarde. Firefox n'a pas Multiview.
+
+## Changement
+
+- **Sensibilité de changement** (**Équilibré**) : de combien un autre match doit être plus palpitant avant qu'ArenaSwap te déplace. Sept crans, de **À peine actif** à **Ludicrous Speed**. Plus haut, plus de changements.
+- **Délai entre les changements** (45 secondes) : l'attente minimale entre deux changements. De **Désactivé** à 3 minutes.
+- **Délai de changement** (Désactivé) : combien de temps ArenaSwap attend avant de changer d'onglet, pour qu'un flux en retard puisse rattraper. De **Désactivé** à 3 minutes.
+- **Changement aux pauses** (Désactivé) : retient un changement jusqu'à ce que le match que tu quittes arrive à une pause dans le jeu. Tu risques de rater un moment du match vers lequel il bascule.
+- **Notifications de changement** (Activées) : une notification avec le score et la raison à chaque changement d'ArenaSwap.
+- **Quand un match se termine** (**Laisser l'onglet tel quel**) : ce qui arrive à l'onglet d'un match une fois le match fini. **Libérer l'onglet d'ArenaSwap** laisse l'onglet ouvert et remet le son. **Fermer l'onglet** le ferme. L'onglet que tu regardes n'est jamais touché tant que tu ne le quittes pas.
+- **Page de couverture** (un onglet vierge) : où te mène le bouton « Le chef arrive ». Il coupe aussi le son de chaque onglet géré par ArenaSwap et met le changement automatique en pause. Voir [utiliser le bouton « Le chef arrive »](/arenaswap/docs/extension/boss-button/).
+- **Mode démo** (Désactivé) : remplace les matchs en direct par des matchs scénarisés, pour essayer ArenaSwap sans attendre un vrai match. **Faire comme si on était** apparaît quand il est activé et ne change que les décorations de fête.
+
+<Demo name='toggle' setting='contentAwareSwitching.label' checked={false} />
+
+Plus de détails dans [contrôler quand ArenaSwap change d'onglet](/arenaswap/docs/extension/switching-and-sensitivity/).
+
+## Notation
+
+- **Ce que cherche le PowerScore** (Classique) : **Classique** pour les matchs serrés, **Raclées** pour les matchs déséquilibrés, **Fantasy** pour les matchs avec tes joueurs, **Personnalisé** pour un mode différent par ligue.
+- **Mode par ligue** (Classique) : apparaît avec **Personnalisé**. Une ligue que tu ne règles pas utilise Classique.
+- **Signaux PowerScore** (tous activés) : ce que mesure chaque mode. Désactive ceux qui ne t'intéressent pas, mais au moins un doit rester activé.
+- **À quel point tes joueurs font monter leurs matchs** (60 %) : le poids de ton effectif. De **Pas du tout** à **Leur score complet**.
+- **Tes joueurs** (vide) : jusqu'à 50 joueurs que Fantasy suit. NFL, NBA, WNBA, MLB et NHL.
+- **Règles de score** (points standard) : combien de points fantasy vaut chaque statistique.
+- **Bonus d'équipe favorite** (10) : points ajoutés aux matchs avec une équipe que tu suis.
+- **Bonus de playoffs** (8) : points ajoutés aux matchs de playoffs. Les tours avancés en reçoivent plus. Ne s'applique pas dans Raclées.
+
+Plus de détails dans [changer ce qu'ArenaSwap cherche dans un match](/arenaswap/docs/extension/scoring-modes/).
+
+## Équipes favorites
+
+- **Équipes que tu suis** (aucune) : les équipes suivies restent en haut de la liste, et leurs matchs reçoivent le bonus d'équipe favorite.
+
+## Ligues
+
+- **Ligues activées** (celles que tu as choisies à la configuration) : les ligues qu'ArenaSwap surveille. Active-en plus et il trouve le meilleur match parmi toutes.
+- **Divisions et conférences universitaires** : quels matchs universitaires s'affichent. Choisis d'autres divisions ou conférences pour élargir ou restreindre la liste, ou n'affiche que le Top 25. Les phases finales comme la March Madness et le College Football Playoff s'affichent toujours, tout comme les matchs de tes équipes favorites.
+
+## Affichage
+
+- **Afficher les matchs à venir** (Activé) : ajoute une section À suivre pour les matchs qui n'ont pas commencé, pour associer des onglets en avance.
+- **Jours à l'avance** (7) : jusqu'où À suivre regarde, de 1 à 14 jours.
+- **Conserver les matchs terminés** (Désactivé) : garde un match 24 heures après sa fin, dans une section Terminés. Tu peux lire le boxscore, mais pas lui associer un onglet.
+- **Conseils** (Activé) : de courts conseils sur l'écran principal.
+- **Afficher les paris et les cotes** (Désactivé) : affiche les lignes de paris sur les cartes de match et l'écran de détails.
+- **Unité de température** (°F) : **°F** ou **°C** pour la météo sur l'écran de détails d'un match.
+- **Thème** (Sombre) : **Sombre**, **Clair** ou **Comme mon système**.
+- **Animation d'ouverture** (Activée) : une affiche de duel pour chaque match à l'ouverture d'ArenaSwap.
+- **Décorations de fête** (Activées) : neige, lumières et feuilles aux bonnes périodes de l'année. Neige, Lumières et Feuilles ont chacune leur interrupteur.
+- **Grouper les matchs par ligue** (Désactivé sur les nouvelles installations) : place les matchs sous un en-tête par ligue au lieu d'une seule liste. Tes équipes favorites restent en haut dans les deux cas.
+- **Ordre d'affichage** : apparaît avec **Grouper les matchs par ligue**. Fais glisser les ligues, ou utilise les flèches, pour choisir laquelle vient en premier.
+
+## Standby Stream
+
+- **Activer Standby Stream** (Désactivé) : choisit un onglet de repli où te garer quand tous les matchs que tu regardes s'endorment.
+- **Standby en dessous de** (20) : ce que veut dire s'endormir, de 0 à 100. Plus haut, le standby se déclenche plus tôt.
+- **Onglet de standby** (aucun) : l'onglet où ArenaSwap t'emmène.
+
+Plus de détails dans [configurer Standby Stream](/arenaswap/docs/extension/standby-stream/).
+
+## Multiview
+
+Chrome et Edge uniquement. Voir [utiliser Multiview](/arenaswap/docs/extension/multiview/).
+
+- **Activer Multiview** (Désactivé) : quand au moins deux de tes matchs sont palpitants en même temps, les affiche ensemble dans un seul onglet. Le match le plus palpitant a la plus grande case et le seul son. L'activer demande à ton navigateur l'autorisation de lire et modifier tous les sites web. Si tu refuses, Multiview reste désactivé.
+- **Palpitant dès** (55) : à quel point un match doit être palpitant pour s'y joindre. Plus bas, Multiview s'ouvre plus souvent. Plus haut, il est gardé pour les grands moments.
+- **Afficher** (**Matchs palpitants**) : **Matchs palpitants** ou **Tous mes matchs**.
+- **Max de cases** (4) : le nombre maximal de matchs à l'écran en même temps, de 2 à 8.
+
+## Profils et sauvegarde
+
+Voir [utiliser les profils et sauvegarder tes paramètres](/arenaswap/docs/extension/profiles-and-backup/).
+
+- **Profils** : des configurations séparées entre lesquelles tu peux passer, par exemple une pour les dimanches de football et une pour mars. Démarre-en une nouvelle depuis une copie de ta configuration actuelle ou de zéro.
+- **Sauvegarder ou restaurer** : télécharge ta configuration dans un fichier, ou importe-en une. L'import ajoute un nouveau profil ou remplace chaque paramètre de celui que tu utilises.
+
+## À lire aussi
+
+- [Contrôler quand ArenaSwap change d'onglet](/arenaswap/docs/extension/switching-and-sensitivity/)
+- [Changer ce qu'ArenaSwap cherche dans un match](/arenaswap/docs/extension/scoring-modes/)
+- [Définir tes équipes favorites dans ArenaSwap](/arenaswap/docs/extension/favorite-teams/)
+- [Configurer Standby Stream](/arenaswap/docs/extension/standby-stream/)
+- [Le Guide](/arenaswap/docs/extension/guide/)
+- [Détails d'un match](/arenaswap/docs/extension/game-details/)
+- [Essayer ArenaSwap avec le mode démo](/arenaswap/docs/extension/demo-mode/)

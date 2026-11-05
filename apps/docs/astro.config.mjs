@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
@@ -10,10 +11,20 @@ import { localeCodes } from './src/i18n/locales.ts';
 import bootstrapTokenPrefix from '@arenaswap/ui/src/bootstrapTokenPrefix.ts';
 import relativeDocLinks from './src/lib/relativeDocLinks.ts';
 import scrollableTables from './src/lib/scrollableTables.ts';
+import translatedHeadingIds from './src/lib/translatedHeadingIds.ts';
+import { translatedPagePaths } from './src/lib/translationSource.ts';
 
-const untranslatedLocalePages = new RegExp(
-	`/arenaswap/(${localeCodes.filter(code => code !== 'en').join('|')})/(docs|releases)/`,
+const localeReadingPage = new RegExp(
+	`/arenaswap/((?:${localeCodes.filter(code => code !== 'en').join('|')})/(?:docs|releases)/.*)$`,
 );
+const translatedPages = translatedPagePaths(
+	fileURLToPath(new URL('./src/content/docs/', import.meta.url)),
+	fileURLToPath(new URL('./src/content/releases/', import.meta.url)),
+);
+const isUntranslatedLocalePage = page => {
+	const path = page.match(localeReadingPage)?.[1];
+	return path !== undefined && !translatedPages.has(path);
+};
 
 const year = new Date().getFullYear();
 const version = pkg.version;
@@ -39,9 +50,9 @@ export default defineConfig({
 		mdx(),
 		// The nine /screenshots/ pages are store assets, rendered to be captured rather than
 		// landed on. They stay out of the sitemap and carry noindex of their own. So do the docs and
-		// release notes under a locale prefix, which are English copies.
+		// release notes under a locale prefix that are still English copies.
 		sitemap({
-			filter: page => !page.includes('/screenshots/') && !untranslatedLocalePages.test(page),
+			filter: page => !page.includes('/screenshots/') && !isUntranslatedLocalePage(page),
 			// Emits the hreflang alternates into the sitemap as well as into each page's head. The
 			// keys are URL segments and the values are the hreflang codes, which for this site are
 			// the same string — `defaultLocale` is what tells the integration which one owns the
@@ -53,7 +64,7 @@ export default defineConfig({
 		}),
 	],
 	markdown: {
-		processor: satteri({ hastPlugins: [relativeDocLinks, scrollableTables] }),
+		processor: satteri({ hastPlugins: [relativeDocLinks, translatedHeadingIds, scrollableTables] }),
 	},
 	// English keeps the root, so every URL this site has ever published still resolves. The other
 	// eleven take one segment: /arenaswap/de/, /arenaswap/pt-BR/ and so on.

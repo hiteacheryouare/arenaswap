@@ -40,8 +40,6 @@
 	.fantasy-player-shot {
 		width:  28px;
 		height: 28px;
-
-		.crest-fallback { font-size: 0.5rem; }
 	}
 
 	.fantasy-pick-row:disabled {
@@ -127,7 +125,5 @@
 		--as-avatar-size:  15px;
 		--as-avatar-bg:    transparent;
 		--as-avatar-color: #111827;
-
-		.crest-fallback { font-size: 0.4rem; }
 	}
 }

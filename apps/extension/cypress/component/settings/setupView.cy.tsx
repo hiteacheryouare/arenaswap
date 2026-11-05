@@ -37,7 +37,7 @@ const defaultPrefs: UserPreferences = {
 	standbyStreamEnabled: false,
 	standbyStreamThreshold: 20,
 	multiviewEnabled: false,
-	multiviewThreshold: 65,
+	multiviewThreshold: 55,
 	multiviewGames: 'hot' as const,
 	multiviewMaxBoxes: 4,
 	bettingEnabled: false,
@@ -667,7 +667,7 @@ describe('setupView multiview', () => {
 		cy.get('#multiviewThresholdSlider').should('not.exist');
 		cy.mount(<SetupView {...defaultProps} multiviewOn />);
 		openGroup('multiview');
-		cy.get('#multiviewThresholdSlider').should('have.value', '65');
+		cy.get('#multiviewThresholdSlider').should('have.value', '55');
 		cy.get('#multiviewMaxBoxesSlider').should('have.attr', 'min', '2').and('have.attr', 'max', '8');
 		cy.get('#multiviewGamesSelect').should('exist');
 	});

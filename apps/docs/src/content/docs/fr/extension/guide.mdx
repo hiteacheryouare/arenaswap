@@ -1,0 +1,66 @@
+---
+sourceHash: 'b4eec15f0860'
+title: Utiliser le Guide pour planifier ce que tu regardes
+description: Le Guide place chaque match sur une frise, met en surbrillance le meilleur moment de la journée pour regarder et te laisse booster un match avant son début.
+section: extension
+order: 13
+navLabel: Le Guide
+faq:
+  - q: Jusqu'où le Guide d'ArenaSwap affiche-t-il les matchs à venir ?
+    a: "Autant que ton réglage Jours à l'avance, de 1 à 14 jours. Il démarre à 7. Le Guide affiche toujours au moins 3 jours, et garde les matchs terminés depuis moins d'un jour."
+  - q: Que veut dire Meilleur moment pour regarder dans le Guide ?
+    a: Le moment de la journée avec le plus de matchs en cours, où les fins de match et les matchs de tes équipes favorites comptent double. L'en-tête t'indique les heures et combien de matchs sont à toi.
+  - q: Un Coup de boost défini dans le Guide change-t-il le match vers lequel ArenaSwap bascule ?
+    a: Oui. C'est le même Coup de boost que celui de l'écran de détails du match, et il fonctionne de la même façon.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+La fenêtre montre ce qui passe maintenant. Le Guide montre le reste de la journée, pour savoir quand dégager le canapé.
+
+## Ouvrir le Guide
+
+Clique sur l'icône de calendrier **Guide** dans la barre du haut de la fenêtre. Il s'ouvre dans son propre onglet, que tu peux laisser à côté de tes matchs.
+
+## Lire la frise
+
+Chaque ligne est un match, groupé par ligue, avec les heures en haut.
+
+- Une barre va du début du match jusqu'à peu près sa fin prévue.
+- Un trait marque l'heure actuelle, et la page du jour s'ouvre déjà défilée jusque-là.
+- Un match à venir affiche son heure de début et sa chaîne. Un match en direct affiche le score et le chrono. Un match terminé affiche son score et **Terminé**.
+- Une étoile pleine sur une barre signifie que l'une de tes équipes joue.
+- Survole une barre pour voir l'affiche et l'heure de début.
+
+<Demo name='guide' />
+
+Tu ne verras que les ligues que tu as activées dans les Paramètres.
+
+## Regarder les autres jours
+
+Utilise **Jour précédent** et **Jour suivant** pour avancer d'un jour à la fois. Les jours sans match sont sautés.
+
+La distance maximale est **Jours à l'avance**, sous Liste des matchs dans les Paramètres. Elle va de 1 à 14 jours et démarre à 7. Le Guide affiche toujours au moins 3 jours. Les matchs terminés depuis moins d'un jour restent sur la grille.
+
+## Trouver le meilleur moment pour regarder
+
+**Meilleur moment pour regarder** est activé par défaut. Il met en surbrillance la partie de la journée avec le plus de matchs en même temps. Les matchs proches de la fin comptent plus que ceux qui commencent, et tes équipes favorites aussi.
+
+L'en-tête le détaille, par exemple « 3 matchs · 1 favori ». Désactive l'interrupteur pour masquer la surbrillance.
+
+## Ouvrir un match
+
+Clique sur n'importe quelle barre et le match s'ouvre dans un panneau à droite. [Détails d'un match](/arenaswap/docs/extension/game-details/) explique ce qu'il contient.
+
+- Clique sur une autre barre pour changer de match, et sur **Fermer** ou Échap pour ranger le panneau.
+- Avant le début d'un match, mets l'une des équipes en favori. L'étoile s'affiche sur chaque barre de cette équipe.
+- Ajoute un **Coup de boost** à un match que tu ne veux pas rater. Fais-le avant le coup d'envoi et ArenaSwap le démarre avec de l'avance.
+
+Pour lier un match à un onglet, passe par la fenêtre d'ArenaSwap. Le Guide ne peut pas le faire.
+
+## À lire aussi
+
+- [Détails d'un match](/arenaswap/docs/extension/game-details/) couvre l'écran que le Guide ouvre, y compris le Coup de boost.
+- [Définir tes équipes favorites dans ArenaSwap](/arenaswap/docs/extension/favorite-teams/) explique les étoiles.
+- [Référence des paramètres d'ArenaSwap](/arenaswap/docs/extension/settings/) liste Jours à l'avance et Afficher les matchs à venir.
+- [Regarder plusieurs matchs en même temps](/arenaswap/docs/extension/watching-multiple-games/) explique comment lier des onglets aux matchs que tu prévois de regarder.

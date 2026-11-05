@@ -846,13 +846,7 @@
 		--as-avatar-border-radius: 0.3rem;
 		--as-avatar-bg:            var(--as-border-color);
 		--as-avatar-color:         var(--as-fg-body);
-	}
-
-	// League marks are rounded rects, not discs, so the placeholder cannot inherit the shared circle.
-	.league-toggle-logo .crest-fallback {
-		border-radius:  0.3rem;
-		font-size:      0.5rem;
-		letter-spacing: 0.04em;
+		--crest-logo-radius:       0.3rem;
 	}
 
 	.popup-root {
@@ -1066,7 +1060,7 @@
 
 	.onb-league-logo {
 		--as-avatar-size:          28px;
-		--as-avatar-border-radius: 50%;
+		--crest-logo-radius:       50%;
 		--as-avatar-bg:            var(--as-border-color);
 		--as-avatar-color:         var(--as-fg-body);
 	}
@@ -1114,15 +1108,6 @@
 		--as-avatar-size:  21px;
 		--as-avatar-bg:    transparent;
 		--as-avatar-color: #111827;
-	}
-
-	.team-pick-crest-logo .crest-fallback {
-		font-size: 0.46rem;
-	}
-
-	.onb-league-logo .crest-fallback {
-		font-size:      0.5rem;
-		letter-spacing: 0.04em;
 	}
 
 	.league-toggle-grid {
@@ -1177,8 +1162,6 @@
 		// The shared LeagueLogo is sized for the toggle grid; shrink it for these compact rows.
 		.league-toggle-logo {
 			--as-avatar-size: 22px;
-
-			.crest-fallback { font-size: 0.4rem; }
 		}
 
 		&.is-dragging {
@@ -1292,15 +1275,9 @@
 
 	.gd-poster-crest-logo {
 		--as-avatar-size: 64px;
+		// With no team colour to fill it, the placeholder stays clear: a grey disc on a team's own half
+		// of the poster reads as a hole.
 		--as-avatar-bg: transparent;
-	}
-
-	// With no team colour to fill it, the placeholder stays clear: a grey disc on a team's own half of
-	// the poster reads as a hole.
-	.gd-poster-crest-logo .crest-fallback {
-		@include gc.scoreboard-figures;
-		font-size: 1.25rem;
-		letter-spacing: 0.02em;
 	}
 
 	.gd-poster-name {
@@ -1502,15 +1479,9 @@
 
 	// `cover` rather than the crest's own `contain`: a headshot is a 350x254 crop of a person, and
 	// letterboxing one inside a circle leaves bands above and below the head.
-	//
-	// Nothing here restates `.crest-fallback`. _crest.scss lays the placeholder out and hides it with
-	// `[data-crest-state='loaded'] > .crest-fallback`, which is the same specificity as a nested rule
-	// here would be — so re-declaring `display: flex` wins on source order and pins the placeholder up
-	// for good. Team logos never showed it because they are opaque; these headshots are transparent
-	// PNGs, so the disc reads as a white halo around the player's head.
 	.gd-pregame-disc-crest {
 		--as-avatar-size:          100%;
-		--as-avatar-border-radius: 50%;
+		--crest-logo-radius:       50%;
 		--as-avatar-bg:            transparent;
 		--as-avatar-color:         #111827;
 
@@ -1598,9 +1569,6 @@
 	.gd-pregame-leader-shot {
 		width:  20px;
 		height: 20px;
-
-		// Only the size, so the hide rule in _crest.scss keeps its say.
-		.crest-fallback { font-size: 0.44rem; }
 	}
 
 	.gd-pregame-leader-team {
@@ -2519,13 +2487,7 @@
 		--as-avatar-size: 52px;
 		--as-avatar-bg: transparent;
 		--as-avatar-color: rgba(255, 255, 255, 0.85);
-	}
-
-	// Inset rather than sized, so the placeholder disc stays centred in the box: 46px inside 52px. The
-	// wash goes over a team colour too, so the placeholder looks the same on a hero painted in it.
-	.game-detail-team-logo .crest-fallback {
-		inset: 3px;
-		background-image: linear-gradient(rgba(255, 255, 255, 0.16) 0 0);
+		--crest-wash: linear-gradient(rgba(255, 255, 255, 0.16) 0 0);
 	}
 
 	.game-detail-center {
@@ -2837,7 +2799,7 @@
 
 	.gd-atbat-face-crest {
 		--as-avatar-size:          100%;
-		--as-avatar-border-radius: 50%;
+		--crest-logo-radius:       50%;
 		--as-avatar-bg:            transparent;
 		--as-avatar-color:         rgba(255, 255, 255, 0.85);
 
@@ -2847,10 +2809,6 @@
 			object-fit:      cover;
 			object-position: top center;
 		}
-	}
-
-	.gd-atbat-face-crest .crest-fallback {
-		font-size: 0.56rem;
 	}
 
 	.gd-atbat-text {

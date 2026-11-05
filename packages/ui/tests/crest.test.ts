@@ -51,4 +51,9 @@ describe('crestFill', () => {
 		expect(crestFill('')).toBeUndefined();
 		expect(crestFill('navy')).toBeUndefined();
 	});
+
+	test('paints no disc at all when the crest has no placeholder, team colour or not', () => {
+		expect(crestFill('#0C2340', 'none')).toEqual({ '--as-avatar-bg': 'transparent' });
+		expect(crestFill(undefined, 'none')).toEqual({ '--as-avatar-bg': 'transparent' });
+	});
 });

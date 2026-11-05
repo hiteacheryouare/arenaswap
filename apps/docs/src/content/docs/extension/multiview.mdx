@@ -1,0 +1,73 @@
+---
+title: How to use Multiview
+description: Watch your most exciting games side by side in one browser tab, with sound from the best one. Turn it on and choose when it opens.
+section: extension
+order: 10
+navLabel: Multiview
+faq:
+  - q: How do I watch several games on one screen in my browser?
+    a: Turn on Multiview in ArenaSwap settings, then assign a tab to each game you're streaming. When two or more of those games get exciting at once, ArenaSwap opens one tab with every game in its own box.
+  - q: Does Multiview work in Firefox?
+    a: No. Multiview is in the Chrome and Edge versions of ArenaSwap. The Firefox version has everything else.
+  - q: Why didn't Multiview open?
+    a: Check that Enable auto-switching is on, that you've assigned tabs to at least two live games, and that at least two of them have reached your Exciting at score. ArenaSwap also waits out your Switch cooldown and Switch delay first.
+---
+
+import Demo from '../../../components/docs/Demo.astro';
+
+Multiview puts your exciting games on one screen, so you stop choosing between them. The most exciting game gets the biggest box and the sound.
+
+It's in Chrome and Edge. Firefox doesn't have it.
+
+## Turn it on
+
+1. Open Settings and choose **Multiview**.
+2. Turn on **Enable Multiview**.
+3. A short guide explains what to expect. Click **Next**, then **Continue**.
+4. Your browser asks if ArenaSwap can "Read and change all your data on all websites." Allow it. That's how your streams show up together in one tab.
+
+If you click **Not Now** or say no to your browser, Multiview stays off. Everything else works the same.
+
+<Demo name='multiview' />
+
+## Give each game a tab
+
+Open each game's stream in its own tab, then pick that tab from the **Assign a tab** dropdown on the game's card. [Watching multiple games](/arenaswap/docs/extension/watching-multiple-games/) walks through it.
+
+Keep **Enable auto-switching** on. Multiview closes when it's off.
+
+## Choose when it opens
+
+Three settings under **Multiview** decide it:
+
+- **Exciting at** is the PowerScore a game needs to count as exciting, from 0 to 100. The default is 55. Slide toward **Opens more often** for more Multiview. Slide toward **Big moments only** for less.
+- **Show** picks who gets a box. **Exciting games** shows only the games at or above your score. **All my games** shows every game with a tab.
+- **Most boxes** caps how many games appear at once, from 2 to 8. The default is 4. If more qualify, the highest PowerScores get the boxes.
+
+Multiview opens when at least two of your games reach your **Exciting at** score. It follows your **Switch cooldown** and **Switch delay**, just like any other switch. [Controlling when ArenaSwap switches](/arenaswap/docs/extension/switching-and-sensitivity/) covers both.
+
+Once one game is exciting and another is within 10 points of your **Exciting at** score, a muted Multiview tab opens at the end of your tab strip and starts loading those games. If the second game drops back, the tab stays for 2 minutes in case it comes back. Close that tab and Multiview waits out your Switch cooldown before it tries again.
+
+## While it's open
+
+ArenaSwap moves the Multiview tab next to your game, or opens a new one there, and takes you to it. With notifications on, you get a **Switched → Multiview** notification.
+
+The biggest box, top left, belongs to the most exciting game, and it's the only one with sound. The other games line up around it. Your game tabs stay open and muted in the background.
+
+## When it closes
+
+Once Multiview opens, it stays for at least your Switch cooldown, and until one of its streams starts playing.
+
+When only one game is still exciting, that game fills the Multiview tab for 2 minutes. If another game gets exciting again in that time, every box comes back. If not, ArenaSwap takes you to that game's own tab and closes Multiview. It skips the 2 minutes when the other game has ended, or when one of your games without a box pulls far enough ahead to switch to.
+
+A game keeps its box through a commercial break.
+
+Close the Multiview tab yourself and it can open again once your Switch cooldown passes. Send it to another web page and it stops, and won't reopen those games for 10 minutes.
+
+If none of the streams start playing within a minute, ArenaSwap takes you back to your best game and tries again in 10 minutes. If one box never plays, open that stream in its own tab and make sure it plays there.
+
+## Related
+
+- [How to watch multiple games at once](/arenaswap/docs/extension/watching-multiple-games/) covers assigning tabs.
+- [How to control when ArenaSwap switches tabs](/arenaswap/docs/extension/switching-and-sensitivity/) covers cooldown and delay.
+- [ArenaSwap settings reference](/arenaswap/docs/extension/settings/) lists every Multiview setting.

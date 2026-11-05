@@ -1,0 +1,47 @@
+---
+sourceHash: '7a9d6a58a2ff'
+title: Como configurar o Standby Stream
+description: Escolhe um separador onde ficar quando todos os jogos que estás a ver ficam sossegados, e o ArenaSwap leva-te para lá e traz-te de volta quando a ação regressa.
+section: extension
+order: 5
+navLabel: Standby Stream
+faq:
+  - q: O que é o Standby Stream no ArenaSwap?
+    a: Um separador que escolhes com antecedência. Quando todos os jogos a que atribuíste um separador ficam sossegados, o ArenaSwap leva-te até ele. Quando um jogo volta a aquecer, o ArenaSwap traz-te de volta.
+  - q: Porque é que o Standby Stream não faz nada, mesmo estando ativo?
+    a: Verifica se escolheste um Separador de espera nas Definições, se associaste um separador a pelo menos um jogo em direto e se ativaste Ativar mudança automática. Se o Multiview estiver a mostrar jogos, ele tem prioridade.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Há noites em que todos os jogos que estás a ver ficam sensaboros ao mesmo tempo: goleadas, uma paragem por chuva, o intervalo. O Standby Stream dá ao ArenaSwap um sítio melhor onde te pôr, como um programa de resumos ou uma emissão de estúdio.
+
+## Configurar
+
+1. Abre o separador que queres como alternativa e deixa-o aberto.
+2. Nas Definições, abre **Standby Stream** e ativa **Ativar Standby Stream**.
+3. Escolhe o teu separador no menu **Separador de espera**.
+
+Se o menu ainda disser **Seleciona um separador**, nada acontece quando os teus jogos ficam sossegados.
+
+Na primeira vez que o ativas, um guia curto de dois passos mostra os mesmos passos. Toca em **Percebido** no segundo ecrã quando acabares.
+
+<Demo name='standby' />
+
+## Escolher o que é sossegado
+
+**Em espera abaixo de** é um controlo deslizante de 0 a 100, com 20 por predefinição. Sobe-o e o ArenaSwap põe-te em espera mais cedo, enquanto os jogos ainda têm algum interesse. Desce-o e o ArenaSwap mantém os teus jogos no ecrã mais tempo antes de desistir deles.
+
+## O que esperar
+
+Quando todos os jogos a que atribuíste um separador ficam sossegados, o ArenaSwap muda para o teu separador de espera. Quando qualquer um deles volta a aquecer, muda-te de volta.
+
+Se clicares noutro separador, o ArenaSwap leva-te para o teu melhor jogo. Se nada tiver aquecido no fim do tempo de espera, traz-te de volta ao separador de espera. Para navegares sem seres movido de todo, desativa **Ativar mudança automática**.
+
+O Standby Stream só vigia jogos a que atribuíste um separador. Sem separadores de jogos atribuídos, não tem de onde recuar.
+
+## Relacionado
+
+- [Como ver vários jogos ao mesmo tempo](/arenaswap/docs/extension/watching-multiple-games/) explica como atribuir separadores a jogos.
+- [Referência das definições do ArenaSwap](/arenaswap/docs/extension/settings/) lista o valor predefinido de cada definição do Standby Stream.
+- [Como usar o Multiview](/arenaswap/docs/extension/multiview/) mostra vários jogos emocionantes num só separador, para quando mais do que um vale a pena.

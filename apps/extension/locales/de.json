@@ -1250,7 +1250,9 @@
 	},
 	"multiview": {
 		"empty": "Dieses Multiview ist geschlossen. Ein neues öffnet sich, wenn zwei deiner Spiele gleichzeitig spannend sind.",
-		"soundOn": "Ton an"
+		"soundOn": "Ton an",
+		"closedTitle": "Das war's",
+		"closeTab": "Tab schließen"
 	},
 	"empty": {
 		"leaguesTitle": "Wähle Ligen zum Starten",

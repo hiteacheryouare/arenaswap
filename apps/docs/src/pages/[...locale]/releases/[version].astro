@@ -1,5 +1,5 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import Shell from '../../../layouts/Shell.astro';
 import UntranslatedNotice from '../../../components/UntranslatedNotice.astro';
@@ -7,18 +7,19 @@ import { defaultLocale, localePath, localeRoutesFor, type LocaleCode } from '../
 import { useTranslations } from '../../../i18n/ui';
 import formatReleaseDate from '../../../lib/releaseDate';
 import publicImageSize from '../../../lib/publicImageSize';
+import { getOriginals, localizeEntry } from '../../../lib/localizedContent';
 
 // A release note reads like an announcement, so it is laid out like one: centred masthead, an
 // optional lead image, one column of prose, and the note's own section headings pinned beside it.
 
 export const getStaticPaths = async () => {
-	const releases = (await getCollection('releases', ({ data }) => !data.draft))
+	const releases = (await getOriginals('releases'))
 		.toSorted((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 	return localeRoutesFor(releases.map((release, index) => ({
 		params: { version: release.data.version },
 		props: {
-			release,
+			original: release,
 			// Sorted newest first, so the next index is the older release.
 			newer: releases[index - 1],
 			older: releases[index + 1],
@@ -27,13 +28,16 @@ export const getStaticPaths = async () => {
 };
 
 interface Props {
-	release: CollectionEntry<'releases'>;
+	original: CollectionEntry<'releases'>;
 	newer?: CollectionEntry<'releases'>;
 	older?: CollectionEntry<'releases'>;
 	locale: LocaleCode;
 }
 
-const { release, newer, older, locale } = Astro.props;
+const { original, newer, older, locale } = Astro.props;
+const { entry: release, translated } = await localizeEntry('releases', original, locale);
+const newerTitle = newer && (await localizeEntry('releases', newer, locale));
+const olderTitle = older && (await localizeEntry('releases', older, locale));
 const { Content, headings } = await render(release);
 
 // Only the note's own top-level sections. Deeper headings would turn the aside into an outline of
@@ -41,7 +45,7 @@ const { Content, headings } = await render(release);
 const sections = headings.filter(heading => heading.depth === 2);
 
 const t = useTranslations(locale);
-const contentLang = locale === defaultLocale ? undefined : 'en';
+const contentLang = translated ? undefined : 'en';
 const formatted = formatReleaseDate(release.data.date, locale);
 const imageSize = release.data.image ? publicImageSize(release.data.image) : undefined;
 ---
@@ -49,7 +53,7 @@ const imageSize = release.data.image ? publicImageSize(release.data.image) : und
 	title={`${release.data.title} | ArenaSwap ${release.data.version}`}
 	description={release.data.summary}
 	path={`releases/${release.data.version}/`}
-	translated={false}
+	translated={translated}
 	ogType='article'
 	image={release.data.image}
 	imageAlt={release.data.imageAlt}
@@ -59,7 +63,7 @@ const imageSize = release.data.image ? publicImageSize(release.data.image) : und
 			<a class='release-back' href={localePath(locale, 'releases/')}>
 				<span aria-hidden='true'>←</span> {t('reading.backToReleases')}
 			</a>
-			<UntranslatedNotice />
+			{!translated && <UntranslatedNotice />}
 		</div>
 
 		<header class='release-masthead'>
@@ -97,16 +101,16 @@ const imageSize = release.data.image ? publicImageSize(release.data.image) : und
 				)}
 			</div>
 
-			{(newer || older) && (
-				<nav class='release-adjacent' aria-label={t('reading.otherReleases')} lang={contentLang}>
-					{older && (
-						<a href={localePath(locale, `releases/${older.data.version}/`)}>
-							<span aria-hidden='true'>← </span>{older.data.version}<span aria-hidden='true'> · </span>{older.data.title}
+			{(newerTitle || olderTitle) && (
+				<nav class='release-adjacent' aria-label={t('reading.otherReleases')}>
+					{olderTitle && (
+						<a href={localePath(locale, `releases/${olderTitle.entry.data.version}/`)} lang={olderTitle.translated ? undefined : 'en'}>
+							<span aria-hidden='true'>← </span>{olderTitle.entry.data.version}<span aria-hidden='true'> · </span>{olderTitle.entry.data.title}
 						</a>
 					)}
-					{newer && (
-						<a href={localePath(locale, `releases/${newer.data.version}/`)} class='release-adjacent-next'>
-							{newer.data.version}<span aria-hidden='true'> · </span>{newer.data.title}<span aria-hidden='true'> →</span>
+					{newerTitle && (
+						<a href={localePath(locale, `releases/${newerTitle.entry.data.version}/`)} class='release-adjacent-next' lang={newerTitle.translated ? undefined : 'en'}>
+							{newerTitle.entry.data.version}<span aria-hidden='true'> · </span>{newerTitle.entry.data.title}<span aria-hidden='true'> →</span>
 						</a>
 					)}
 				</nav>

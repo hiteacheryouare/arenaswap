@@ -444,6 +444,47 @@
 			"Comeback"
 		]
 	},
+	"docDemos": {
+		"popup": "Ang popup ng ArenaSwap na naglilista ng tatlong live na laro ayon sa PowerScore: Boston sa New York, tabla sa 100–100 na may 2:10 na natitira (85), Philadelphia sa Pittsburgh, tabla sa 2–2 sa third period (76), at Chelsea na lamang kay Arsenal, 2–1, sa ika-78 minuto (63).",
+		"popupTabs": "Ang popup ng ArenaSwap na naglilista ng tatlong live na laro ayon sa PowerScore, bawat isa ay may tab na pinapalabasan nito: Boston sa New York, tabla sa 100–100 na may 2:10 na natitira (85), Philadelphia sa Pittsburgh, tabla sa 2–2 sa third period (76), at Chelsea na lamang kay Arsenal, 2–1, sa ika-78 minuto (63).",
+		"liveCard": "Isang live na game card: Boston Celtics sa New York Knicks, tabla sa 100–100 na may 2:10 na natitira sa fourth quarter, PowerScore 85 sa 100.",
+		"liveCardFavorite": "Isang live na game card: Boston Celtics sa New York Knicks, tabla sa 100–100 na may 2:10 na natitira sa fourth quarter, PowerScore 85 sa 100, na may star ang Celtics bilang paborito.",
+		"liveCardTab": "Isang live na game card: Boston Celtics sa New York Knicks, tabla sa 100–100 na may 2:10 na natitira sa fourth quarter, PowerScore 85 sa 100, naka-assign sa tab na Boston at New York.",
+		"liveCardFavoriteTab": "Isang live na game card: Boston Celtics sa New York Knicks, tabla sa 100–100 na may 2:10 na natitira sa fourth quarter, PowerScore 85 sa 100, na may star ang Celtics bilang paborito, naka-assign sa tab na Boston at New York.",
+		"upcomingCard": "Isang game card ng paparating na laro: Kansas City Chiefs sa Buffalo Bills, Linggo ng 4:25 PM sa Highmark Stadium.",
+		"finalCard": "Isang game card ng tapos na laro: Ohio State 27, Michigan 24, sa Ohio Stadium.",
+		"charts": "Apat na chart mula sa detalye ng laro: PowerScore sa paglipas ng oras, ang score sa paglipas ng oras, win probability, at ang bahagi ng bawat signal sa PowerScore.",
+		"breakdown": "{heading}: ang {closeness} 38 sa 42, {lateGame} 31 sa 38, {momentum} 8 sa 38, {leadChanges} 5 sa 18 at {comeback} 3 sa 20 ay bumubuo ng total ng mga signal na 85. Ang 5-puntos na {gameBoost} ay nagdadala sa {final} sa 90 sa 100. {reason}.",
+		"gameBoost": "Ang field na {heading} sa detalye ng laro, nakatakda sa {points} puntos.",
+		"suggestBanner": "Ang banner na {title} sa itaas ng popup, may button na {action} at close button.",
+		"guide": "Ang Guide sa 9:40 PM: timeline mula 7 PM hanggang hatinggabi na may mga laro ng NBA, NHL at NCAA Basketball bilang mga bar, isang linya sa kasalukuyang oras, at ang pinakamagandang oras panoorin na may shade mula 9:15 hanggang 10:15.",
+		"browserTabs": "Isang browser na may tatlong bukas na tab ng laro. Ang Boston sa New York ang aktibong tab at may tunog; naka-mute ang dalawa pa.",
+		"notification": "Isang abisong may nakasulat na: {title}. {message}",
+		"sliderSensitivity": "Ang slider na {label} sa default nito, {value}.",
+		"sliderCooldown": "Ang slider na {label} sa default nito, 45 segundo.",
+		"sliderDelay": "Ang slider na {label} sa default nito, {value}.",
+		"toggleOn": "Ang switch na {label} sa Mga Setting, naka-on.",
+		"toggleOff": "Ang switch na {label} sa Mga Setting, naka-off.",
+		"modes": "Ang picker na {section} na bukas sa {classic}, na naglilista ng {classic}, {blowouts}, {fantasy} at {custom}.",
+		"multiview": "Isang Multiview tab na may apat na laro sa 2×2 na grid. Ang Boston sa New York, sa itaas na kaliwa, ay may outline at may tunog.",
+		"standby": "Isang browser na nakaparada sa Standby Stream tab na tinatawag na {tab}, na may dalawang naka-mute na tab ng laro sa tabi nito, at ang linya ng popup: {line}",
+		"profiles": "Ang listahan ng {section} sa Mga Setting na may dalawang profile, ang {current} ang ginagamit at bukas ang menu nito sa {rename} at {export}, sa itaas ng mga button na {new} at {backup}.",
+		"backup": "Ang backup tab na may nakaload na file: {addAsNew} o {replace}, at kung ano ang babaguhin ng file. Isa pang liga, parehong mga paboritong team, at ang scoring mode na mula {from} ay magiging {to}.",
+		"bossButton": "Ang shortcut ng boss button, Alt + Shift + X, at ang pekeng spreadsheet tab na binubuksan nito, na naka-mute ang mga tab ng laro.",
+		"notificationNow": "ngayon",
+		"profileWeeknights": "Mga Gabi ng Weekday",
+		"profileFantasySunday": "Fantasy Linggo",
+		"standbyTab": "Highlights",
+		"decoyTab": "Forecast sa Q3",
+		"decoyRegion": "Rehiyon",
+		"decoyQuarter": "Q{quarter}",
+		"decoyRegions": [
+			"Hilagang-silangan",
+			"Midwest",
+			"Timog",
+			"Kanluran"
+		]
+	},
 	"ui": {
 		"gameCard": {
 			"live": "LIVE",

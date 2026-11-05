@@ -1,0 +1,56 @@
+---
+import DemoBrowser from './DemoBrowser.astro';
+import { celticsKnicks, flyersPenguins, leagueFavicon } from './demoGames';
+import { demoTranslator } from './demoStrings';
+import { currentLocale, useTranslations } from '../../i18n/ui';
+
+const locale = currentLocale(Astro.currentLocale);
+const demoText = demoTranslator(locale);
+const t = useTranslations(locale);
+const number = new Intl.NumberFormat(locale);
+
+// The manifest's suggested key, from apps/extension/wxt.config.ts.
+const shortcut = ['Alt', 'Shift', 'X'];
+
+const games = [celticsKnicks, flyersPenguins].map(entry => ({
+	title: entry.tabTitle,
+	favicon: leagueFavicon(entry.game.league),
+	sound: 'muted' as const,
+}));
+const tabs = [...games, { title: t('docDemos.decoyTab'), icon: 'bi-file-earmark-spreadsheet-fill' }];
+
+const quarters = [1, 2, 3];
+const columns = [t('docDemos.decoyRegion'), ...quarters.map(quarter => t('docDemos.decoyQuarter', { quarter }))];
+const figures = [
+	[41200, 43950, 46120],
+	[28730, 29410, 31005],
+	[52600, 55180, 57940],
+	[37090, 38860, 40215],
+];
+const rows = t.list<string>('docDemos.decoyRegions').map((region, index) => [region, ...figures[index]!.map(figure => number.format(figure))]);
+---
+<div class='doc-demo-stack'>
+	<div class='doc-demo-keys'>
+		<span class='doc-demo-keys-label'><i class='bi bi-incognito'></i>{demoText('main.bossButton')}</span>
+		<span class='doc-demo-keys-combo'>
+			{shortcut.map((key, index) => (
+				<>
+					{index > 0 && <span class='doc-demo-keys-plus'>+</span>}
+					<kbd>{key}</kbd>
+				</>
+			))}
+		</span>
+	</div>
+	<DemoBrowser tabs={tabs} active={tabs.length - 1} host='docs.google.com' path='/spreadsheets'>
+		<div class='doc-demo-sheet'>
+			<table>
+				<thead>
+					<tr>{columns.map(column => <th>{column}</th>)}</tr>
+				</thead>
+				<tbody>
+					{rows.map(row => <tr>{row.map(cell => <td>{cell}</td>)}</tr>)}
+				</tbody>
+			</table>
+		</div>
+	</DemoBrowser>
+</div>

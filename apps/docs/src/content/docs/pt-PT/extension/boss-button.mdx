@@ -1,0 +1,60 @@
+---
+sourceHash: '2f02624226c3'
+title: Como usar o botão do chefe
+description: Um clique ou Alt+Shift+X silencia os teus jogos, pausa o ArenaSwap e põe no ecrã uma página com ar de trabalho. Escolhe aqui a página e o atalho.
+section: extension
+order: 11
+navLabel: Botão do chefe
+faq:
+  - q: O que faz o botão do chefe no ArenaSwap?
+    a: Silencia os separadores dos jogos, pausa a mudança automática e leva-te para uma página que escolheste antes, como uma folha de cálculo. Volta a ativar a opção Ativar mudança automática quando quiseres os jogos de volta.
+  - q: Qual é o atalho de teclado do botão do chefe?
+    a: Alt+Shift+X por predefinição. Podes alterá-lo na página de atalhos de extensões do navegador. Passa o rato por cima do botão do chefe no popup para veres o teu atalho atual.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Passa alguém e um separador cheio de prolongamento é a coisa errada para estares a ver. O botão do chefe esconde os jogos de uma só vez.
+
+## O que faz
+
+Carrega nele e o ArenaSwap:
+
+- Silencia os separadores dos jogos.
+- Pausa a mudança automática, para que nada te puxe de volta a um jogo sozinho.
+- Leva-te para a tua página de disfarce.
+
+<Demo name='boss-button' />
+
+## Carregar no botão
+
+- Clica no ícone de incógnito na barra superior do popup.
+- Ou carrega em **Alt+Shift+X** em qualquer separador. Não precisas de abrir o popup primeiro.
+
+## Escolher a página de disfarce
+
+Abre as Definições, depois **Mudanças**, e procura **Página de disfarce**. Escreve qualquer endereço web que pareça ocupado, como uma folha de cálculo ou um documento. Carrega em Enter ou clica fora da caixa para guardar.
+
+- Se a página já estiver aberta, o botão do chefe salta para esse separador.
+- Se não estiver, o ArenaSwap abre-a por ti.
+- Deixa a caixa vazia e ficas com um separador em branco.
+- Só funcionam endereços web. Qualquer outra coisa mostra "Isso não parece um endereço web."
+
+## Recuperar os jogos
+
+O botão do chefe não se desfaz sozinho. Quando a barra estiver limpa, abre o popup e volta a ativar **Ativar mudança automática**. Os teus separadores e atribuições de jogos continuam lá.
+
+## Mudar o atalho
+
+Define uma nova tecla para **Vem aí o chefe** na página de atalhos de extensões do navegador:
+
+- Chrome: `chrome://extensions/shortcuts`
+- Edge: `edge://extensions/shortcuts`
+- Firefox: Gestor de extras, o menu da roda dentada, depois **Gerir atalhos das extensões**
+
+Se outra extensão já usar Alt+Shift+X, escolhe aí uma tecla diferente. Sem atalho definido, o botão continua a funcionar com um clique.
+
+## Relacionado
+
+- [Como ver vários jogos ao mesmo tempo](/arenaswap/docs/extension/watching-multiple-games/) fala dos separadores de jogos que o botão do chefe silencia.
+- [Referência das definições do ArenaSwap](/arenaswap/docs/extension/settings/) lista a Página de disfarce com o resto das Mudanças.

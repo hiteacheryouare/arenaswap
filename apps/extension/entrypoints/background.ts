@@ -765,6 +765,9 @@ export default defineBackground(() => {
 		createTab: async ({ url, windowId, index }) => (
 			await browser.tabs.create({ url: browser.runtime.getURL(url as '/multiview.html'), active: false, windowId, index })
 		).id,
+		moveTab: async (tabId, { windowId, index }) => {
+			await browser.tabs.move(tabId, { windowId, index: index ?? -1 });
+		},
 		removeTab: tabId => browser.tabs.remove(tabId),
 		// Scoped to the Multiview tab alone, so no other page loses the headers that keep it from being framed.
 		allowFrames: async tabId => {
@@ -852,11 +855,12 @@ export default defineBackground(() => {
 			now: pass.now,
 		});
 		// A tab opened on this pass is missing from the snapshot the rest of the poll mutes against,
-		// and it has to be silent from the start: the big box's sound would play over the game.
+		// and it has to be silent from the start: the big box's sound would play over the game. A
+		// warm-up is not a switch, so ordinary switching still gets its turn.
 		const openedTabId = multiview.tabId();
 		if (!outcome.settled && openedTabId !== null && !tabsById.has(openedTabId)) {
 			await syncManagedTabMuteState(prefs.enabled);
-			return { ...outcome, settled: true };
+			return { ...outcome, settled: outcome.active };
 		}
 		return outcome;
 	};
@@ -1090,12 +1094,14 @@ export default defineBackground(() => {
 		prefs.keepFinalGames ? retainedFinalGames.filter(g => isWithinFinalRetention(g)) : []
 	);
 
-	// Two reasons to ask the poll for finished games, and only one of them puts them on screen.
-	// Handing a tab back needs to *see* ESPN call the game final: absence from a payload cannot
-	// stand in for it, because a payload legitimately drops games it is still serving elsewhere —
-	// college football's dateless board did exactly that. So the fetch keeps them and the merge
-	// below drops them again when the display preference says they are not wanted.
-	const wantsFinalGames = (): boolean => prefs.keepFinalGames || prefs.finishedTabAction !== 'keep';
+	// The poll always keeps finished games, whatever the display preferences say, because two things
+	// need to *see* ESPN call a game final: handing its tab back, and stamping when it ended for the
+	// guide. Absence from a payload cannot stand in for either — a payload legitimately drops games it
+	// is still serving elsewhere, as college football's dateless board did. Each consumer applies its
+	// own preference, and `displayableGames` drops them from the popup when they are not wanted.
+	// Gating this on those preferences once left the guide stamping a final with whenever it was next
+	// opened, so a 7pm tip-off drew a bar to the next morning.
+	const pollFetchOptions = { includeUpcoming: false, includeFinal: true } as const;
 
 	const displayableGames = (fetched: Game[]): Game[] => (
 		prefs.keepFinalGames ? fetched : fetched.filter(game => game.status !== 'post')
@@ -1327,7 +1333,7 @@ export default defineBackground(() => {
 			await refreshStaleSlate();
 			let fetched: Game[];
 			try {
-				const fetchResult = await fetchFilteredGames(enabledLeagues, { includeUpcoming: false, includeFinal: wantsFinalGames() });
+				const fetchResult = await fetchFilteredGames(enabledLeagues, pollFetchOptions);
 				// Every league refused is not an empty slate, it is no answer at all. Replacing `games`
 				// from it would clear a live list and report a quiet night to the popup.
 				if (enabledLeagues.length > 0 && fetchResult.shedLeagues.length === enabledLeagues.length) {
@@ -1363,7 +1369,7 @@ export default defineBackground(() => {
 		let finishedGames: Game[] = [];
 		await refreshStaleSlate();
 		try {
-			const fetchResult = await fetchFilteredGames([leagueId], { includeUpcoming: false, includeFinal: wantsFinalGames() });
+			const fetchResult = await fetchFilteredGames([leagueId], pollFetchOptions);
 			// Thrown rather than merged: a shed league comes back with no games, and the tail of this
 			// function would read that as a successful tick with nothing live, hand it to
 			// `recordPollResult`, and walk a league down into dormant while its games are being played.

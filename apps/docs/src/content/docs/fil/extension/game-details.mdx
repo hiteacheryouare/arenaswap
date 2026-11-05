@@ -1,0 +1,82 @@
+---
+sourceHash: '01e24339f21e'
+title: Paano basahin ang detail screen ng laro sa ArenaSwap
+description: I-click ang laro para makita kung bakit ganito ang ranggo nito, kung paano ang takbo, sinong naglalaro, at saan mapapanood. Magdagdag ng Boost ng Laro para itaas ang isang laro.
+section: extension
+order: 14
+navLabel: Detalye ng laro
+faq:
+  - q: Paano ko makikita kung bakit ganito ang PowerScore ng laro?
+    a: I-click ang card ng laro sa popup, o ang bar nito sa Guide. Sa live na laro, ipinapakita ng Breakdown ng PowerScore sa tab na Overview kung ano ang nagdadagdag ng puntos, may linya sa simpleng salita sa ibaba. I-hover ang mga info icon para sa ibig sabihin ng bawat bahagi.
+  - q: Ano ang ginagawa ng Boost ng Laro sa ArenaSwap?
+    a: Nagdaragdag ito ng puntos, mula 0 hanggang 100, sa PowerScore ng isang laro para paboran ito ng ArenaSwap. Ibalik sa 0 para alisin.
+  - q: Bakit hindi ko makita ang betting line sa detail screen ng laro?
+    a: Nakatago ito maliban kung naka-on ang Ipakita ang betting at odds sa Mga Setting.
+  - q: Bakit walang tab na Matchup, Boxscore, o Standings sa larong ito?
+    a: Lumalabas lang ang mga tab kung may mailalagay sa mga ito. Ang Matchup ay para sa mga larong hindi pa nagsisimula, at ang Boxscore ay para sa mga nagsimula na. Hindi lahat ng liga ay may standings.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+I-click ang kahit anong laro para makita kung bakit ganito ang ranggo nito, at kung ano ang nakataya.
+
+## Magbukas ng laro
+
+I-click ang game card sa popup. Sa [Guide](/arenaswap/docs/extension/guide/), i-click ang bar ng laro at magbubukas ito sa side panel. I-click ang **Bumalik** para bumalik sa listahan, o **Isara** sa Guide.
+
+May hanay ng mga tab sa ilalim ng score: laging nandiyan ang **Overview**, lumalabas ang **Matchup** bago magsimula ang laro, ang **Boxscore** kapag nagsimula na, at ang **Standings** kapag may table ang liga mo. Kung hindi magkasya ang lahat, mapupunta ang iba sa ilalim ng **Iba pa**.
+
+## Tingnan kung bakit mataas ang ranggo ng laro
+
+Magbukas ng live na laro at tingnan ang **Breakdown ng PowerScore** sa **Overview**. Ipinapakita nito kung ano ang nagpapa-sulit panoorin sa laro:
+
+- **Kalapitan**: gaano kadikit ang score.
+- **Huling Yugto**: gaano kalapit ang dulo, habang kahit sino pa ang mananalo.
+- **Momentum**: kung may team na nasa run.
+- **Pagbabago ng Lead**: gaano kadalas nagpalitan ng lead kamakailan.
+- **Comeback**: kung umaahon ang team na nahuhuli.
+
+Ipinapakita ng bawat isa ang puntos nito, kasunod ang anumang Boost (dagdag na puntos, gaya ng para sa paboritong team mo) at Penalty (bawas na puntos, gaya ng habang commercial break), at saka ang **Final na PowerScore**. Sinasabi ng linya sa ilalim ng kabuuan kung ano ang nagtutulak dito ngayon.
+
+<Demo name='breakdown' />
+
+Ang larong naka-pause para sa **Halftime**, **Pahinga**, o delay ay 0 hanggang magpatuloy ang laro. Walang PowerScore ang mga tapos nang laro. Ang [Mga scoring mode](/arenaswap/docs/extension/scoring-modes/) ay tungkol sa kung paano baguhin ang binibilang.
+
+## Sundan ang takbo ng laro
+
+Napupunan ang mga chart sa ilalim ng breakdown habang tumatakbo ang laro. Ipinapakita ng **Pag-usad ng PowerScore** kung kailan gumanda ang laro, at ipinapakita ng **Posibilidad ng Panalo** kung paano nagbago ang tsansa. May mga chart din para sa score at lead.
+
+<Demo name='charts' />
+
+Nagdaragdag pa ng iba ang mga live na laro, depende sa sport. Ipinapakita ng **Huling Play** ang kakatapos lang, at sa baseball, ipinapakita ng **Mga Susunod na Batter** kung sino ang susunod sa plate. Ipinapakita ng football ang down at distance, at ipinapakita ng basketball ang mga timeout at bonus. Ipinapakita ng mga playoff na laro ang score ng series.
+
+## Maghanda bago magsimula ang laro
+
+May card na **Maghanda para sa kickoff** ang larong hindi pa nagsisimula (tip-off, puck drop, o first pitch, depende sa sport). Dito ka puwedeng magdagdag ng Boost ng Laro at, sa popup, pumili ng tab na pagbubukasan ng laro.
+
+Sa ibaba nito makikita mo ang **Mga Posibleng Pitcher** o **Mga Posibleng Goalie** kung naaangkop, **Mga Lider ng Team**, at ang tab na **Matchup** na may **Recent form**, **Season stats**, at **Injuries**. Para sundan ang team, i-tap ang star sa tabi ng crest nito. Ipinapaliwanag ng [Mga paboritong team](/arenaswap/docs/extension/favorite-teams/) kung ano ang ginagawa nito.
+
+## Tingnan ang boxscore at standings
+
+Ang **Boxscore** ay may score kada period, stats ng team, at linya ng mga player para sa sport na pinapanood mo. Ipinapakita ng **Standings** ang table ng liga na naka-highlight ang dalawang team na ito.
+
+## Alamin kung saan mapapanood
+
+Inililista ng **Impormasyon ng Laro** ang channel o service, ang venue, at ang panahon. Ipinapakita rin ng mga tapos nang laro ang dami ng nanood. Puwedeng may link sa **Tickets** ang mga paparating na laro.
+
+Lalabas lang ang betting line kung in-on mo ang **Ipakita ang betting at odds** sa Mga Setting.
+
+## Magdagdag ng Boost ng Laro
+
+Gusto mo bang nasa screen ang isang laro kahit ano pa ang score? Nagdaragdag ang **Boost ng Laro** ng puntos sa PowerScore nito para mas madalas itong piliin ng ArenaSwap. Mag-type ng numero mula 0 hanggang 100, at gamitin ang 0 para alisin.
+
+<Demo name='game-boost' />
+
+Nasa mga live at paparating na laro ang field na Boost ng Laro. Ito lang ang makakapagtulak ng PowerScore na lampas 100, at ipinapakita ito ng breakdown bilang "Boost ng Laro".
+
+## Kaugnay
+
+- Binubuksan ng [Paano gamitin ang Guide para planuhin ang panonood mo](/arenaswap/docs/extension/guide/) ang screen na ito mula sa timeline.
+- Ipinapaliwanag ng [Mga scoring mode](/arenaswap/docs/extension/scoring-modes/) kung ano ang binibigyang-halaga ng bawat mode.
+- Ang [Paano magtakda ng mga paboritong team sa ArenaSwap](/arenaswap/docs/extension/favorite-teams/) ay tungkol sa mga star at sa Boost ng Paboritong Team.
+- Inililista ng [Gabay sa mga setting ng ArenaSwap](/arenaswap/docs/extension/settings/) ang Ipakita ang betting at odds at Yunit ng Temperatura.

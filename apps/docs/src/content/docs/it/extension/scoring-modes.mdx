@@ -1,0 +1,60 @@
+---
+sourceHash: 'c22a44d5493c'
+title: Come cambiare cosa cerca ArenaSwap in una partita
+description: Scegli Classica per le partite tirate, Senso unico per le batoste o Fantasy per le partite dove giocano i tuoi giocatori, oppure una diversa per ogni lega.
+section: extension
+order: 6
+navLabel: Modalità di punteggio
+faq:
+  - q: Quale modalità di punteggio devo usare?
+    a: Classica per la partita più tirata e tesa, ed è come funziona ArenaSwap appena installato. Senso unico se preferisci vedere qualcuno asfaltato. Fantasy se ti importa soprattutto dei tuoi giocatori. Personalizzata ti fa sceglierne una diversa per ogni lega.
+  - q: Perché Fantasy non fa niente quando lo attivo?
+    a: Fantasy ha bisogno di giocatori. Aggiungine qualcuno in I tuoi giocatori nelle Impostazioni. Finché non lo fai, e in ogni partita in cui nessuno di loro gioca, ArenaSwap usa Classica.
+  - q: Posso usare Fantasy per uno sport che non sia il football?
+    a: Sì. Fantasy funziona per NFL, NBA, WNBA, MLB e NHL, e puoi cambiare le regole di punteggio per ogni sport.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Appena installato, ArenaSwap va in cerca della partita tirata, a fine gara e piena di ribaltoni. Quella è **Classica**. Se vuoi altro sullo schermo, cambia cosa cerca nelle Impostazioni, sotto **Punteggio**.
+
+<Demo name='modes' />
+
+## Scegli che tipo di partita vuoi
+
+- **Classica:** partite tirate, suspense a fine gara e rimonte. Un pareggio negli ultimi minuti è il sogno.
+- **Senso unico:** partite a senso unico, per quando vuoi vedere una squadra schiacciarne un'altra. Le partite tirate compaiono comunque in una serata senza batoste, ma una batosta vera vince sempre.
+- **Fantasy:** partite con i tuoi giocatori dentro. Segue dove sono nella partita (chi ha la palla, chi è alla battuta, chi è in red zone) e quanti punti fantasy hanno fatto di recente.
+- **Personalizzata:** una modalità diversa per ogni lega. Magari la NFL prende Fantasy, il basket universitario Classica e tutto il resto Senso unico. Una lega che non imposti usa Classica.
+
+Le partite di ogni lega sono classificate sulla stessa scala da 0 a 100, quindi una partita Fantasy e una Classica possono comunque contendersi la tua scheda. Quanto deve essere meglio una partita perché ArenaSwap ti sposti dipende sempre dalle tue [impostazioni di cambio](/arenaswap/docs/extension/switching-and-sensitivity/).
+
+## Non perdere mai i tuoi giocatori
+
+1. Imposta la modalità di punteggio su **Fantasy**, oppure su **Personalizzata** con Fantasy sulle leghe che vuoi.
+2. Apri **I tuoi giocatori** e cerca un giocatore per nome. Aggiungilo dai risultati. Puoi aggiungerne fino a 50.
+3. Imposta **Quanto i tuoi giocatori fanno salire le loro partite**. Spostalo verso l'alto e la tua rosa conta di più. Spostalo verso il basso e serve solo a decidere i pareggi.
+
+Fantasy copre NFL, NBA, WNBA, MLB e NHL. Una rosa di football può contenere anche la difesa di una squadra. Una partita con uno dei tuoi giocatori può solo salire nella lista, mai scendere.
+
+Sotto **Regole di punteggio** puoi cambiare quanti punti fantasy vale ogni statistica. ArenaSwap parte con i punti standard di ogni sport.
+
+## Spegni quello che non ti interessa
+
+Ogni modalità misura alcune cose, chiamate segnali. Quelli di Classica sono Equilibrio, Fine gara, Momentum, Sorpassi e Rimonta. Sotto **Segnali PowerScore** puoi disattivarne qualsiasi, purché ne resti uno attivo. La [pagina dei segnali](/arenaswap/docs/powerscore/signals/) spiega cosa significa ciascuno.
+
+<Demo name='breakdown' />
+
+## Punti che aggiungi tu
+
+Valgono in ogni modalità:
+
+- **Boost squadra preferita** aggiunge punti alle partite con una squadra che segui. Vedi [squadre preferite](/arenaswap/docs/extension/favorite-teams/).
+- **Boost postseason** aggiunge punti alle partite di playoff e a eliminazione, di più per i turni avanzati. Non vale in Senso unico.
+- **Boost partita** aggiunge punti a una partita che scegli, da 0 a 100. Usa il campo Boost partita nella schermata di dettaglio della partita o nella [Guida](/arenaswap/docs/extension/guide/). Dura finché non chiudi il browser.
+
+## Argomenti correlati
+
+- [Guida alle impostazioni di ArenaSwap](/arenaswap/docs/extension/settings/) elenca le impostazioni di punteggio e i valori predefiniti.
+- [Come controllare quando ArenaSwap cambia scheda](/arenaswap/docs/extension/switching-and-sensitivity/) spiega quanto deve essere meglio una partita perché ArenaSwap ti sposti.
+- [I segnali di PowerScore in ogni modalità](/arenaswap/docs/powerscore/signals/) spiega ogni segnale nel dettaglio.

@@ -1,0 +1,60 @@
+---
+sourceHash: '2f02624226c3'
+title: Cómo usar el botón del jefe
+description: Un clic o Alt+Shift+X silencia tus partidos, pausa ArenaSwap y pone en pantalla una página que parece trabajo. Aquí eliges la página y el atajo.
+section: extension
+order: 11
+navLabel: Botón del jefe
+faq:
+  - q: ¿Qué hace el botón del jefe en ArenaSwap?
+    a: Silencia tus pestañas de partidos, pausa el cambio automático y te lleva a una página que elegiste antes, como una hoja de cálculo. Vuelve a activar Activar cambio automático cuando quieras los partidos de regreso.
+  - q: ¿Cuál es el atajo de teclado del botón del jefe?
+    a: Alt+Shift+X de forma predeterminada. Puedes cambiarlo en la página de atajos de extensiones de tu navegador. Pasa el cursor sobre el botón del jefe en la ventana emergente para ver tu atajo actual.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Alguien pasa por detrás y una pestaña llena de tiempo extra es lo último que quieres que vea. El botón del jefe esconde los partidos de un solo movimiento.
+
+## Qué hace
+
+Al presionarlo, ArenaSwap:
+
+- Silencia tus pestañas de partidos.
+- Pausa el cambio automático, para que nada te regrese solo a un partido.
+- Te lleva a tu página de tapadera.
+
+<Demo name='boss-button' />
+
+## Presiónalo
+
+- Haz clic en el ícono de incógnito en la barra superior de la ventana emergente.
+- O presiona **Alt+Shift+X** desde cualquier pestaña. No hace falta abrir antes la ventana emergente.
+
+## Elige tu página de tapadera
+
+Abre Ajustes, luego **Cambios**, y busca **Página de tapadera**. Escribe cualquier dirección web que se vea ocupada, como una hoja de cálculo o un documento. Presiona Enter o haz clic fuera del cuadro para guardar.
+
+- Si la página ya está abierta, el botón del jefe salta a esa pestaña.
+- Si no lo está, ArenaSwap la abre por ti.
+- Deja el cuadro vacío y obtienes una pestaña en blanco.
+- Solo funcionan direcciones web. Cualquier otra cosa muestra "Eso no parece una dirección web."
+
+## Recupera los partidos
+
+El botón del jefe no se deshace solo. Cuando pase el peligro, abre la ventana emergente y vuelve a activar **Activar cambio automático**. Tus pestañas y la asignación de tus partidos siguen ahí.
+
+## Cambia el atajo
+
+Define una nueva tecla para **Viene el jefe** en la página de atajos de extensiones de tu navegador:
+
+- Chrome: `chrome://extensions/shortcuts`
+- Edge: `edge://extensions/shortcuts`
+- Firefox: el administrador de complementos, el menú del engrane y luego **Administrar atajos de extensión**
+
+Si otra extensión ya usa Alt+Shift+X, elige otra tecla ahí. Sin atajo, el botón sigue funcionando con un clic.
+
+## Relacionado
+
+- [Cómo ver varios partidos a la vez](/arenaswap/docs/extension/watching-multiple-games/) explica las pestañas de partidos que silencia el botón del jefe.
+- [Referencia de ajustes de ArenaSwap](/arenaswap/docs/extension/settings/) incluye Página de tapadera junto con el resto de Cambios.

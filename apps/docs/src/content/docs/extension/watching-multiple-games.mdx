@@ -1,0 +1,74 @@
+---
+title: How to watch multiple games at once
+description: Open each game in its own tab, link the tab to the game in ArenaSwap, and it moves you to whichever game is best, muting the rest.
+section: extension
+order: 2
+navLabel: Multiple games
+faq:
+  - q: How do I watch multiple games at once in one browser?
+    a: Open each game in its own tab, then pick that tab on the game's card in ArenaSwap. ArenaSwap moves you to the best game and mutes the others.
+  - q: Does ArenaSwap work with any streaming service?
+    a: Yes. If a game plays in a browser tab, ArenaSwap can use it. That includes Peacock, Prime Video, YouTube TV, and your cable provider's site.
+  - q: How many games can I track at once?
+    a: As many as you have tabs open for.
+---
+
+import Demo from '../../../components/docs/Demo.astro';
+
+Open your games in separate tabs, tell ArenaSwap which tab is which, and it handles the remote.
+
+## Open each game in its own tab
+
+Start every game the way you normally do, on whatever service has it. ArenaSwap doesn't care which one, as long as each game has its own tab.
+
+## Link each tab to its game
+
+In the popup, find a game's card and use its **Assign a tab** dropdown to pick its tab. Upcoming games have the same dropdown, so you can link a tab before kickoff.
+
+A tab that's already linked to another game is grayed out and marked **(in use)**. Unlink it from that game first to move it.
+
+<Demo name='popup' tabs />
+
+## Let ArenaSwap match them for you
+
+If tabs you already have open look like games, a **These Tabs Look Like Games** banner shows up above the list. Click **Take a look** to see each game next to the tab ArenaSwap thinks goes with it. Strong matches start checked. Uncheck any it got wrong, then click **Assign 3 tabs** (or however many are checked).
+
+<Demo name='suggest-banner' />
+
+Close the banner to skip the suggestions.
+
+## Find your way around the list
+
+- **Active Tabs** holds your linked games, best first, with your starred teams' games on top.
+- **Live Games** is everything else that's on, in case something's worth grabbing a tab for.
+- **Up Next** is what's coming, one day at a time. Use the arrows to change days and the search icon to look for a team, league, or channel.
+- **Final** shows games that just ended, but only if **Keep finished games** is on. You can't link a tab to these.
+
+Prefer one list per league? Turn on **Group games by league**.
+
+## Let it run
+
+With two or more tabs linked, ArenaSwap decides which one you're on. It mutes every linked tab except the one you're watching, and moves you to a game once it's clearly better than the one on screen. You don't need to click around or hit mute.
+
+To take one tab out of the rotation, unlink it from the dropdown. To stop switching altogether, turn off **Enable auto-switching** in the top bar.
+
+## Choose what happens when a game ends
+
+**When a game finishes** in Settings has three choices:
+
+- **Leave the tab alone** is the default.
+- **Free it from ArenaSwap** unlinks and unmutes the tab and leaves it open.
+- **Close the tab** closes it.
+
+Whatever you pick waits until you've moved off that tab. The last tab in a window is freed instead of closed, so a window never disappears on you. Next time you open ArenaSwap, it tells you how many tabs came back, like "2 tabs are yours again."
+
+## Use more than one window
+
+The **Assign a tab** dropdown lists the tabs in the window you opened ArenaSwap from. To link a tab in another window, open ArenaSwap there. When ArenaSwap switches to a game in another window, that window comes to the front, and [full screen](/arenaswap/docs/extension/switching-and-sensitivity/#stay-full-screen-through-every-switch) comes with it.
+
+## Related
+
+- [How to control when ArenaSwap switches tabs](/arenaswap/docs/extension/switching-and-sensitivity/) covers how quick or patient it is.
+- [How to set favorite teams in ArenaSwap](/arenaswap/docs/extension/favorite-teams/) puts your teams' games on top.
+- [How to set up Standby Stream](/arenaswap/docs/extension/standby-stream/) covers what happens when every game you've linked goes quiet.
+- [How to use Multiview](/arenaswap/docs/extension/multiview/) puts several games on one screen instead.

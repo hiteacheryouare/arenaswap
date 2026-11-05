@@ -1,0 +1,25 @@
+---
+// The frame every help-article demo sits in. What is inside is a picture of the extension, so it is
+// inert and hidden from assistive tech, the figure carries the description instead, and the site's
+// orange full stops stay out of the extension's own strings.
+interface Props {
+	description: string;
+	caption?: string;
+	// Enlarges a single popup control once the column has room for it.
+	closeup?: boolean;
+	// For a demo wider than a phone: it scrolls sideways inside the frame instead of shrinking.
+	scroll?: boolean;
+	// Left operable, for the charts' hover readouts.
+	live?: boolean;
+}
+
+const { description, caption, closeup = false, scroll = false, live = false } = Astro.props;
+---
+<figure class='doc-demo' aria-label={description}>
+	<div class:list={['doc-demo-body', { 'is-scrolling': scroll }]} tabindex={scroll ? 0 : undefined}>
+		<div class:list={['doc-demo-stage', { 'is-closeup': closeup }]} inert={!live} aria-hidden='true' data-no-dots>
+			<slot />
+		</div>
+	</div>
+	{caption && <figcaption class='doc-demo-caption'>{caption}</figcaption>}
+</figure>

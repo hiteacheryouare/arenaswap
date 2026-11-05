@@ -1,0 +1,60 @@
+---
+sourceHash: '2f02624226c3'
+title: Como usar o botão do chefe
+description: Um clique ou Alt+Shift+X silencia seus jogos, pausa o ArenaSwap e coloca na tela uma página com cara de trabalho. Escolha a página e o atalho aqui.
+section: extension
+order: 11
+navLabel: Botão do chefe
+faq:
+  - q: O que o botão do chefe faz no ArenaSwap?
+    a: Ele silencia as abas dos jogos, pausa a troca automática e te leva para uma página que você escolheu antes, como uma planilha. Ative Ativar troca automática de novo quando quiser os jogos de volta.
+  - q: Qual é o atalho de teclado do botão do chefe?
+    a: Alt+Shift+X por padrão. Você pode mudar na página de atalhos de extensões do navegador. Passe o mouse sobre o botão do chefe no popup para ver o seu atalho atual.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Alguém passa por perto, e uma aba cheia de prorrogação é a última coisa que você quer deixar à vista. O botão do chefe esconde os jogos em um movimento só.
+
+## O que ele faz
+
+Ao apertar, o ArenaSwap:
+
+- Silencia as abas dos seus jogos.
+- Pausa a troca automática, para nada te puxar de volta a um jogo sozinho.
+- Te leva para a sua página de disfarce.
+
+<Demo name='boss-button' />
+
+## Como acioná-lo
+
+- Clique no ícone de aba anônima na barra superior do popup.
+- Ou aperte **Alt+Shift+X** em qualquer aba. Não precisa abrir o popup antes.
+
+## Escolha sua página de disfarce
+
+Abra as Configurações, vá em **Trocas** e encontre **Página de disfarce**. Digite qualquer endereço da web com cara de ocupado, como uma planilha ou um documento. Aperte Enter ou clique fora da caixa para salvar.
+
+- Se a página já estiver aberta, o botão do chefe vai direto para essa aba.
+- Se não estiver, o ArenaSwap abre para você.
+- Deixe a caixa vazia e você ganha uma aba em branco.
+- Só funcionam endereços da web. Qualquer outra coisa mostra "Isso não parece um endereço da web."
+
+## Traga os jogos de volta
+
+O botão do chefe não se desfaz sozinho. Quando a barra estiver limpa, abra o popup e ative **Ativar troca automática** de novo. Suas abas e os jogos atribuídos continuam lá.
+
+## Mude o atalho
+
+Defina uma nova tecla para **O chefe vem aí** na página de atalhos de extensões do navegador:
+
+- Chrome: `chrome://extensions/shortcuts`
+- Edge: `edge://extensions/shortcuts`
+- Firefox: Gerenciador de Complementos, o menu de engrenagem e depois **Gerenciar atalhos de extensões**
+
+Se outra extensão já usa Alt+Shift+X, escolha outra tecla por lá. Sem atalho definido, o botão continua funcionando com o clique.
+
+## Relacionados
+
+- [Como assistir a vários jogos ao mesmo tempo](/arenaswap/docs/extension/watching-multiple-games/) explica as abas de jogos que o botão do chefe silencia.
+- [Referência das configurações do ArenaSwap](/arenaswap/docs/extension/settings/) lista a Página de disfarce junto com o resto de Trocas.

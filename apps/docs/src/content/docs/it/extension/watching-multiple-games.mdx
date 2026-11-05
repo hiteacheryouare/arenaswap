@@ -1,0 +1,75 @@
+---
+sourceHash: '5ceb10000624'
+title: Come guardare più partite insieme
+description: Apri ogni partita nella sua scheda, collega la scheda alla partita in ArenaSwap, e ti porta su quella migliore silenziando le altre.
+section: extension
+order: 2
+navLabel: Più partite
+faq:
+  - q: Come guardo più partite insieme in un solo browser?
+    a: Apri ogni partita nella sua scheda, poi scegli quella scheda nella scheda della partita in ArenaSwap. ArenaSwap ti porta sulla partita migliore e silenzia le altre.
+  - q: ArenaSwap funziona con qualsiasi servizio di streaming?
+    a: Sì. Se una partita gira in una scheda del browser, ArenaSwap può usarla. Compresi Peacock, Prime Video, YouTube TV e il sito del tuo operatore.
+  - q: Quante partite posso seguire insieme?
+    a: Tante quante sono le schede che hai aperto.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Apri le partite in schede separate, di' ad ArenaSwap quale scheda è quale, e il telecomando lo gestisce lui.
+
+## Apri ogni partita nella sua scheda
+
+Avvia ogni partita come fai di solito, sul servizio che la trasmette. ArenaSwap non guarda quale, basta che ogni partita abbia la sua scheda.
+
+## Collega ogni scheda alla sua partita
+
+Nel popup trova la scheda di una partita e usa il suo menu **Assegna una scheda** per scegliere la scheda giusta. Anche le partite in arrivo hanno lo stesso menu, così puoi collegare una scheda prima del calcio d'inizio.
+
+Una scheda già collegata a un'altra partita appare in grigio e con l'indicazione **(in uso)**. Scollegala prima da quella partita per spostarla.
+
+<Demo name='popup' tabs />
+
+## Lascia che ArenaSwap le abbini per te
+
+Se le schede che hai già aperto sembrano partite, sopra la lista compare un banner **Queste schede sembrano partite**. Clicca **Dai un'occhiata** per vedere ogni partita accanto alla scheda che ArenaSwap pensa le corrisponda. Gli abbinamenti sicuri partono già spuntati. Togli la spunta a quelli sbagliati, poi clicca **Assegna 3 schede** (o quante ne hai spuntate).
+
+<Demo name='suggest-banner' />
+
+Chiudi il banner per saltare i suggerimenti.
+
+## Orientarsi nella lista
+
+- **Schede attive** contiene le partite collegate, le migliori per prime, con le partite delle squadre con la stella in cima.
+- **In diretta** è tutto il resto che è in corso, nel caso valga la pena prendersi una scheda.
+- **A seguire** è quello che arriva, un giorno alla volta. Usa le frecce per cambiare giorno e l'icona di ricerca per cercare una squadra, una lega o un canale.
+- **Terminate** mostra le partite appena finite, ma solo se **Mantieni le partite terminate** è attivo. A queste non puoi collegare una scheda.
+
+Preferisci una lista per lega? Attiva **Raggruppa le partite per lega**.
+
+## Lascia fare
+
+Con due o più schede collegate, ArenaSwap decide su quale sei. Silenzia ogni scheda collegata tranne quella che guardi, e ti porta su una partita quando è chiaramente meglio di quella sullo schermo. Non serve cliccare in giro né premere muto.
+
+Per togliere una scheda dalla rotazione, scollegala dal menu. Per fermare del tutto il cambio, disattiva **Attiva il cambio automatico** nella barra in alto.
+
+## Scegli cosa succede quando una partita finisce
+
+**Quando una partita termina** nelle Impostazioni ha tre opzioni:
+
+- **Lascia la scheda com'è** è quella predefinita.
+- **Liberala da ArenaSwap** scollega e riattiva l'audio della scheda e la lascia aperta.
+- **Chiudi la scheda** la chiude.
+
+Qualunque tu scelga, aspetta che ti sia spostato da quella scheda. L'ultima scheda di una finestra viene liberata invece che chiusa, così una finestra non sparisce mai. La prossima volta che apri ArenaSwap ti dice quante schede sono tornate, tipo "2 schede sono di nuovo tue."
+
+## Usa più finestre
+
+Il menu **Assegna una scheda** elenca le schede della finestra da cui hai aperto ArenaSwap. Per collegare una scheda di un'altra finestra, apri ArenaSwap lì. Quando ArenaSwap passa a una partita in un'altra finestra, quella finestra viene in primo piano, e lo [schermo intero](/arenaswap/docs/extension/switching-and-sensitivity/#stay-full-screen-through-every-switch) con essa.
+
+## Argomenti correlati
+
+- [Come controllare quando ArenaSwap cambia scheda](/arenaswap/docs/extension/switching-and-sensitivity/) spiega quanto è rapido o paziente.
+- [Come impostare le squadre preferite in ArenaSwap](/arenaswap/docs/extension/favorite-teams/) mette in cima le partite delle tue squadre.
+- [Come configurare Standby Stream](/arenaswap/docs/extension/standby-stream/) spiega cosa succede quando tutte le partite collegate si spengono.
+- [Come usare Multiview](/arenaswap/docs/extension/multiview/) mette invece più partite su uno schermo.

@@ -1,0 +1,83 @@
+---
+import {
+	scoreMaxCloseness,
+	scoreMaxComeback,
+	scoreMaxLateGame,
+	scoreMaxLeadChanges,
+	scoreMaxMomentum,
+	scoreMaxTotal,
+} from '@arenaswap/core/constants';
+import { signalColors } from '@arenaswap/ui/src/components/signalColors';
+import { boostPresentation } from '@arenaswap/ui/src/components/scoringModeMeta';
+import { celticsKnicks } from './demoGames';
+import { demoTranslator, tiedReason } from './demoStrings';
+import { currentLocale } from '../../i18n/ui';
+import type { DemoStringKey } from './demoStrings';
+
+const demoText = demoTranslator(currentLocale(Astro.currentLocale));
+
+const { result } = celticsKnicks;
+const gameBoost = 5;
+
+const signals: { name: DemoStringKey; points: number; max: number; color: string }[] = [
+	{ name: 'powerScore.signalCloseness', points: result.closeness, max: scoreMaxCloseness, color: signalColors.closeness },
+	{ name: 'powerScore.signalLateGame', points: result.lateGame, max: scoreMaxLateGame, color: signalColors.lateGame },
+	{ name: 'powerScore.signalMomentum', points: result.momentum, max: scoreMaxMomentum, color: signalColors.momentum },
+	{ name: 'powerScore.signalLeadChanges', points: result.leadChanges, max: scoreMaxLeadChanges, color: signalColors.leadChanges },
+	{ name: 'powerScore.signalComeback', points: result.comeback, max: scoreMaxComeback, color: signalColors.comeback },
+];
+const signalsTotal = signals.reduce((total, signal) => total + signal.points, 0);
+const finalScore = signalsTotal + gameBoost;
+const boost = boostPresentation.gameBoost;
+---
+<div class='doc-demo-popup doc-demo-panel'>
+	<section class='powerscore-breakdown'>
+		<div class='powerscore-breakdown-heading'>{demoText('powerScore.heading')}</div>
+
+		<div class='powerscore-breakdown-section-heading'>
+			{demoText('powerScore.signalsHeading')}
+			<i class='bi bi-chevron-down powerscore-section-chevron'></i>
+		</div>
+		<div class='powerscore-signal-list'>
+			{signals.map(signal => (
+				<div class='powerscore-signal-row'>
+					<span class='powerscore-signal-dot' style={{ backgroundColor: signal.color }}></span>
+					<span class='powerscore-signal-name'>{demoText(signal.name)}</span>
+					<span class='setting-tooltip-btn'><i class='bi bi-question-circle'></i></span>
+					<div class='progress powerscore-signal-progress'>
+						<div class='progress-bar' style={{ width: `${(signal.points / signal.max) * 100}%`, backgroundColor: signal.color }}></div>
+					</div>
+					<span class='powerscore-signal-value'>{signal.points}<span class='powerscore-signal-max'>/{signal.max}</span></span>
+				</div>
+			))}
+		</div>
+		<div class='powerscore-breakdown-row powerscore-breakdown-row-subtotal'>
+			<span>{demoText('powerScore.signalsTotal')}</span>
+			<span>{signalsTotal}</span>
+		</div>
+
+		<div class='powerscore-breakdown-section-heading'>
+			{demoText('powerScore.generalHeading')}
+			<i class='bi bi-chevron-down powerscore-section-chevron'></i>
+		</div>
+		<div class='powerscore-breakdown-row'>
+			<span class='d-flex align-items-center gap-1'>
+				<i class={`bi bi-${boost.icon} powerscore-factor-icon`} style={{ color: boost.color }}></i>
+				{demoText('powerScore.gameBoost')}
+				<span class='setting-tooltip-btn'><i class='bi bi-question-circle'></i></span>
+			</span>
+			<span class='powerscore-breakdown-value' style={{ color: boost.ink }}>+{gameBoost}</span>
+		</div>
+		<div class='powerscore-breakdown-note'>{demoText('boostDetail.gameBoostSet')}</div>
+		<div class='powerscore-breakdown-row powerscore-breakdown-row-subtotal'>
+			<span>{demoText('powerScore.generalTotal')}</span>
+			<span>+{gameBoost}</span>
+		</div>
+
+		<div class='powerscore-breakdown-row powerscore-breakdown-row-total'>
+			<span>{demoText('powerScore.finalPowerScore')}</span>
+			<span>{demoText('detail.totalLabel', { total: finalScore, max: scoreMaxTotal })}</span>
+		</div>
+		<div class='powerscore-breakdown-reason'>{tiedReason(demoText)}</div>
+	</section>
+</div>

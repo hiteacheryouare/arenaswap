@@ -1250,7 +1250,9 @@
 	},
 	"multiview": {
 		"empty": "Sarado na ang Multiview na ito. May bubukas na bago kapag dalawa sa mga laro mo ang sabay na kapana-panabik.",
-		"soundOn": "Naka-on ang tunog"
+		"soundOn": "Naka-on ang tunog",
+		"closedTitle": "Tapos na ang Palabas",
+		"closeTab": "Isara ang tab"
 	},
 	"empty": {
 		"leaguesTitle": "Pumili ng Liga Para Makapagsimula",

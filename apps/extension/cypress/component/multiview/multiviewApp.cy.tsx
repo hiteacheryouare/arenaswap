@@ -24,9 +24,10 @@ const streamPage = (label: string, color: string) => `data:text/html,${encodeURI
 	`<body style="margin:0;display:grid;place-items:center;height:100vh;background:${color};color:#fff;font:600 32px system-ui">${label}</body>`,
 )}`;
 
-const lineupOf = (count: number, featuredGameId = 'g1'): MultiviewLineup => ({
+const lineupOf = (count: number, featuredGameId = 'g1', solo = false): MultiviewLineup => ({
 	boxes: games.slice(0, count).map((game, index) => ({ gameId: game.id, url: streamPage(game.awayTeam.abbreviation, ['#1b2a41', '#3a1f2b', '#1f3a2b', '#2b2b3a'][index]) })),
 	featuredGameId,
+	solo,
 	games: games.slice(0, count),
 });
 
@@ -38,6 +39,7 @@ const lineupOnSites = (urls: string[]): MultiviewLineup => {
 	return {
 		boxes: urls.map((url, index) => ({ gameId: games[index].id, url })),
 		featuredGameId: 'g1',
+		solo: false,
 		games: games.slice(0, urls.length),
 	};
 };
@@ -77,6 +79,7 @@ const mountMultiview = (lineup: MultiviewLineup | null) => {
 				mutes.push({ frameId, muted: message.muted });
 				return Promise.resolve();
 			},
+			remove: () => Promise.resolve(),
 		},
 		webNavigation: { getFrame: () => Promise.resolve(null) },
 		i18n: { getUILanguage: () => 'en-US' },
@@ -134,6 +137,9 @@ const heard = (gameId: string) => {
 describe('Multiview page', () => {
 	afterEach(() => {
 		cy.wrap(emulateReducedMotion(false));
+		cy.document({ log: false }).then(doc => {
+			delete (doc as { visibilityState?: unknown }).visibilityState;
+		});
 	});
 
 	it('puts every box in its place at once, each behind its off-air card until its stream plays', () => {
@@ -182,6 +188,27 @@ describe('Multiview page', () => {
 		offAir('g2');
 		cy.tick(2000);
 		onAir('g2');
+		onAir('g1');
+	});
+
+	it('keeps every card up while it warms up out of sight, and starts the half minute once the tab is shown', () => {
+		let visibility: DocumentVisibilityState = 'hidden';
+		cy.document().then(doc => Object.defineProperty(doc, 'visibilityState', { configurable: true, get: () => visibility }));
+		cy.clock(0, ['Date', 'setInterval', 'clearInterval', 'setTimeout', 'clearTimeout']);
+		mountMultiview(lineupOf(2));
+		cy.tick(60_000);
+		offAir('g1');
+		offAir('g2');
+		cy.document().then(doc => {
+			visibility = 'visible';
+			doc.dispatchEvent(new Event('visibilitychange'));
+		});
+		// Being shown changes nothing on screen to retry on, so React gets a real moment to commit
+		// the effect that starts the half minute.
+		cy.wait(50);
+		cy.tick(29_000);
+		offAir('g1');
+		cy.tick(2000);
 		onAir('g1');
 	});
 
@@ -286,6 +313,41 @@ describe('Multiview page', () => {
 		});
 	});
 
+	it('shows the big box alone across the grid, with the others see-through behind it and still loaded', () => {
+		mountMultiview(lineupOf(3));
+		['g1', 'g2', 'g3'].forEach((gameId, index) => play(gameId, 11 + index));
+
+		cy.get('iframe').then($before => {
+			cy.get<multiviewHandle>('@multiview').then(handle => handle.update(lineupOf(3, 'g2', true)));
+			cy.get('.multiview-grid').then($grid => {
+				cy.get('[data-game-id="g2"]').should($solo => {
+					const grid = $grid[0].getBoundingClientRect();
+					const solo = $solo[0].getBoundingClientRect();
+					expect(getComputedStyle($solo[0]).transform).to.equal('none');
+					expect(solo.width).to.be.closeTo(grid.width, 1);
+					expect(solo.height).to.be.closeTo(grid.height, 1);
+					expect(getComputedStyle($solo[0]).opacity).to.equal('1');
+				});
+			});
+			for (const gameId of ['g1', 'g3']) {
+				cy.get(`[data-game-id="${gameId}"]`).should($hidden => {
+					expect(getComputedStyle($hidden[0]).opacity).to.equal('0');
+					expect(getComputedStyle($hidden[0]).visibility).to.equal('visible');
+					expect($hidden[0].getBoundingClientRect().width).to.be.greaterThan(0);
+					expect($hidden[0]).to.have.attr('inert');
+				});
+			}
+			cy.get('iframe').should($after => expect($after.toArray()).to.deep.equal($before.toArray()));
+		});
+		heard('g2');
+
+		cy.get<multiviewHandle>('@multiview').then(handle => handle.update(lineupOf(3, 'g2')));
+		cy.get('[data-game-id="g1"]').should($back => {
+			expect(getComputedStyle($back[0]).opacity).to.equal('1');
+			expect($back[0]).not.to.have.attr('inert');
+		});
+	});
+
 	it('slides a box from its old place into its new one', () => {
 		mountMultiview(lineupOf(3));
 		['g1', 'g2', 'g3'].forEach((gameId, index) => play(gameId, 11 + index));
@@ -316,10 +378,18 @@ describe('Multiview page', () => {
 		heard('g3');
 	});
 
-	it('says it is closed when the background did not open it', () => {
+	it('goes off the air when the background did not open it, and closes its own tab', () => {
 		mountMultiview(null);
+		cy.get('.multiview-closed-title').should('have.text', "That's a Wrap");
 		cy.get('.multiview-empty').should('contain.text', 'This Multiview is closed');
-		cy.get('.multiview-backdrop').should('exist');
+		cy.get('.multiview-backdrop').should('not.exist');
+		cy.get('.multiview-closed').should($page => {
+			expect(getComputedStyle($page[0]).backgroundColor).to.equal('rgb(0, 0, 0)');
+		});
+
+		cy.window().then(win => cy.stub((win as unknown as { browser: { tabs: { remove: () => Promise<void> } } }).browser.tabs, 'remove').as('remove').resolves());
+		cy.contains('button', 'Close tab').click();
+		cy.get('@remove').should('have.been.calledOnceWith', multiviewTabId);
 	});
 
 	it('sweeps four orange beams behind the boxes, each on its own clock, under the grain', () => {

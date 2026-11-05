@@ -444,6 +444,47 @@
 			"Recuperação"
 		]
 	},
+	"docDemos": {
+		"popup": "O popup do ArenaSwap com três jogos em direto ordenados por PowerScore: Boston em New York, empatados a 100–100 com 2:10 para o fim (85), Philadelphia em Pittsburgh, empatados a 2–2 no terceiro período (76), e o Chelsea a vencer o Arsenal por 2–1 aos 78 minutos (63).",
+		"popupTabs": "O popup do ArenaSwap com três jogos em direto ordenados por PowerScore, cada um com o separador onde está a passar: Boston em New York, empatados a 100–100 com 2:10 para o fim (85), Philadelphia em Pittsburgh, empatados a 2–2 no terceiro período (76), e o Chelsea a vencer o Arsenal por 2–1 aos 78 minutos (63).",
+		"liveCard": "Um cartão de jogo em direto: Boston Celtics em New York Knicks, empatados a 100–100 com 2:10 para o fim do quarto período, PowerScore 85 em 100.",
+		"liveCardFavorite": "Um cartão de jogo em direto: Boston Celtics em New York Knicks, empatados a 100–100 com 2:10 para o fim do quarto período, PowerScore 85 em 100, com os Celtics marcados com uma estrela como favoritos.",
+		"liveCardTab": "Um cartão de jogo em direto: Boston Celtics em New York Knicks, empatados a 100–100 com 2:10 para o fim do quarto período, PowerScore 85 em 100, associado ao separador Boston em New York.",
+		"liveCardFavoriteTab": "Um cartão de jogo em direto: Boston Celtics em New York Knicks, empatados a 100–100 com 2:10 para o fim do quarto período, PowerScore 85 em 100, com os Celtics marcados com uma estrela como favoritos, associado ao separador Boston em New York.",
+		"upcomingCard": "Um cartão de jogo futuro: Kansas City Chiefs em Buffalo Bills, domingo às 16:25 no Highmark Stadium.",
+		"finalCard": "Um cartão de jogo terminado: Ohio State 27, Michigan 24, no Ohio Stadium.",
+		"charts": "Quatro gráficos dos detalhes de um jogo: o PowerScore ao longo do tempo, o resultado ao longo do tempo, a probabilidade de vitória e a parte de cada sinal no PowerScore.",
+		"breakdown": "Um {heading}: {closeness} 38 em 42, {lateGame} 31 em 38, {momentum} 8 em 38, {leadChanges} 5 em 18 e {comeback} 3 em 20 somam um total de sinais de 85. Um {gameBoost} de 5 pontos leva o {final} a 90 em 100. {reason}.",
+		"gameBoost": "O campo {heading} nos detalhes de um jogo, definido para {points} pontos.",
+		"suggestBanner": "O banner {title} no topo do popup, com um botão {action} e um botão para fechar.",
+		"guide": "O Guia às 21:40: uma linha do tempo das 19:00 à meia-noite com jogos da NBA, da NHL e de basquetebol da NCAA como barras, uma linha na hora atual e o melhor horário para ver sombreado das 21:15 às 22:15.",
+		"browserTabs": "Um navegador com três separadores de jogos abertos. Boston em New York é o separador ativo e tem som; os outros dois estão sem som.",
+		"notification": "Uma notificação que diz: {title}. {message}",
+		"sliderSensitivity": "O slider {label} no valor predefinido, {value}.",
+		"sliderCooldown": "O slider {label} no valor predefinido, 45 segundos.",
+		"sliderDelay": "O slider {label} no valor predefinido, {value}.",
+		"toggleOn": "O interruptor {label} nas Definições, ligado.",
+		"toggleOff": "O interruptor {label} nas Definições, desligado.",
+		"modes": "O seletor {section} aberto em {classic}, com {classic}, {blowouts}, {fantasy} e {custom}.",
+		"multiview": "Um separador Multiview com quatro jogos numa grelha 2×2. Boston em New York, em cima à esquerda, tem contorno e tem o som.",
+		"standby": "Um navegador estacionado num separador Standby Stream chamado {tab}, com dois separadores de jogos sem som ao lado, e a linha do popup: {line}",
+		"profiles": "A lista {section} nas Definições com dois perfis, {current} em uso e o seu menu aberto em {rename} e {export}, por cima dos botões {new} e {backup}.",
+		"backup": "O separador de backup com um ficheiro carregado: {addAsNew} ou {replace}, e o que o ficheiro mudaria. Mais uma liga, as mesmas equipas favoritas e o modo de pontuação a passar de {from} para {to}.",
+		"bossButton": "O atalho do botão do chefe, Alt + Shift + X, e o separador de folha de cálculo de disfarce que ele abre, com os separadores de jogos sem som.",
+		"notificationNow": "agora",
+		"profileWeeknights": "Noites de semana",
+		"profileFantasySunday": "Domingo de Fantasy",
+		"standbyTab": "Resumos",
+		"decoyTab": "Previsão do 3.º trimestre",
+		"decoyRegion": "Região",
+		"decoyQuarter": "T{quarter}",
+		"decoyRegions": [
+			"Nordeste",
+			"Centro",
+			"Sul",
+			"Oeste"
+		]
+	},
 	"ui": {
 		"gameCard": {
 			"live": "EM DIRETO",

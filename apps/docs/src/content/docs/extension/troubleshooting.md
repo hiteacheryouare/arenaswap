@@ -1,78 +1,78 @@
 ---
 title: Troubleshoot ArenaSwap
-description: Fixes for the most common ArenaSwap problems, from an empty game list to switches that never happen, traced back to what the extension is actually doing.
+description: Quick fixes for an empty game list, switches that never happen, tabs missing from the dropdown, and missing notifications.
 section: extension
 order: 9
 navLabel: Troubleshooting
 faq:
   - q: Why doesn't ArenaSwap show any games?
-    a: Either no leagues are enabled, and ArenaSwap shows a Choose Leagues to Get Started prompt. Or your enabled leagues genuinely have nothing live right now, and you see a quieter empty-state message instead.
+    a: If you see Choose Leagues to Get Started, no leagues are turned on yet. Click Pick leagues in Settings and turn some on. If you have leagues on and still see an empty list, nothing is live in them right now. Click Refresh, or try Demo mode.
   - q: Why won't ArenaSwap switch tabs?
-    a: Check that Enable auto-switching is on in the top bar and that you've assigned a tab to at least one live game. With nothing assigned, there's nothing for ArenaSwap to switch to.
+    a: Check that Enable auto-switching is on in the top bar and that at least one live game has a tab assigned to it. ArenaSwap only switches between tabs you've given it.
 ---
 
-Most of what looks like a bug in ArenaSwap is a setting that isn't where you'd expect it. Sometimes it's a step in the setup that got skipped. Here's what to check, worst offenders first.
+Most problems come down to a setting that's off or a tab that was never assigned. Start with the one that sounds like yours.
 
-## Why is the game list empty?
+## The game list is empty
 
-If you see **Choose Leagues to Get Started**, no league is enabled yet. ArenaSwap needs at least one before it can find anything to track. Click **Pick leagues in Settings**. Turn at least one on.
+If you see **Choose Leagues to Get Started**, no leagues are on yet. Click **Pick leagues in Settings** and turn on at least one.
 
-If instead you see a quieter message like "It's a slow sports day," your enabled leagues genuinely have nothing live at the moment. Click **Refresh** to check again. If you want games to work with regardless, open [Demo mode](/arenaswap/docs/extension/demo-mode/).
+If you see a message like "It's a slow sports day," your leagues have nothing live right now. Click **Refresh** to check again. Or turn on [Demo mode](/arenaswap/docs/extension/demo-mode/) for something to play with.
 
-If a banner says **Our sources went quiet. Couldn't load games.**, ArenaSwap couldn't reach the scoreboard. Click **Retry**. If it keeps failing, check your connection.
+If a banner says **Our sources went quiet. Couldn't load games.**, click **Retry**. If it keeps happening, check your internet connection.
 
-## Why won't ArenaSwap switch tabs at all?
+## ArenaSwap isn't switching tabs
 
 Check these in order:
 
-1. **Enable auto-switching**, the toggle in the top bar, has to be on. When it's off, ArenaSwap keeps scoring games but never touches a tab.
-2. At least one live game needs a tab assigned to it. Use the **Assign a tab** dropdown on a game card. ArenaSwap will never switch to a tab it hasn't been told to manage.
-3. With only one game assigned, ArenaSwap only moves you to it from a tab that isn't a game. To see it switch between games, assign a second stream.
+1. **Enable auto-switching** in the top bar is on.
+2. At least one live game has a tab assigned. Use the **Assign a tab** dropdown on its card.
+3. You have a second game assigned. With only one, ArenaSwap can take you to it from a tab that isn't a game, but it has nothing to switch between.
 
-If all three check out and switching still isn't happening, a low **Switch sensitivity**, a long **Switch cooldown**, or a long **Switch delay** could be why. See [how to control when ArenaSwap switches tabs](/arenaswap/docs/extension/switching-and-sensitivity/) for what to change.
+Still nothing? **Switch sensitivity** may be set low, or **Switch cooldown** or **Switch delay** may be long. [Controlling when ArenaSwap switches](/arenaswap/docs/extension/switching-and-sensitivity/) shows what to change.
 
-## Why did ArenaSwap grab my tab when I wasn't even watching a game?
+## ArenaSwap pulled me away from what I was doing
 
-This is expected, not a bug. Sensitivity only applies when you're actively watching one of your assigned games. If the tab you're on isn't registered to any game, ArenaSwap treats you as not watching anything. The best-scoring assigned game then wins your tab, as soon as its PowerScore rises above zero. No gap is required in that case. If you don't want to be pulled away while doing something else in the browser, turn off **Enable auto-switching** first.
+If the tab you're on isn't assigned to a game, ArenaSwap treats you as free and moves you to the best assigned game as soon as one heats up. To browse in peace, turn off **Enable auto-switching** first.
 
-## Why does ArenaSwap keep bouncing between two games?
+## It keeps bouncing between two games
 
-Two of your assigned games are close enough in PowerScore that the lead keeps trading between them. Your cooldown is short enough to let ArenaSwap follow every swing. Raise **Switch cooldown** in Settings so the leader has to hold on longer before another swap can happen. See [how to control when ArenaSwap switches tabs](/arenaswap/docs/extension/switching-and-sensitivity/) for the full range.
+Two of your games are neck and neck, and ArenaSwap follows every swing. Raise **Switch cooldown** in Settings so the leader has to hold on longer before the next switch. [Controlling when ArenaSwap switches](/arenaswap/docs/extension/switching-and-sensitivity/) has the range.
 
-## Why is a tab missing from the assign dropdown, or shown grayed out?
+## A tab is missing from the dropdown, or grayed out
 
-The **Assign a tab** dropdown lists the open tabs in the window you opened ArenaSwap from, and skips the browser's own pages. A stream has to be open in its own tab before it shows up here. To assign a tab in another window, open ArenaSwap from that window. A tab you open while ArenaSwap is showing appears the next time you open it. A tab already assigned to a different game appears grayed out with **(in use)** next to it. To reassign that tab, unassign it from the other game first.
+The **Assign a tab** dropdown lists the tabs open in the window you opened ArenaSwap from. Open the stream in its own tab first. For a tab in another window, open ArenaSwap from that window. A tab you open while the popup is showing appears the next time you open it.
 
-## Why did a tab get freed or closed after a game ended?
+A tab marked **(in use)** is assigned to a different game. Unassign it there first.
 
-Your **When a game finishes** setting did it. It's in Settings under Switching, and it's set to **Free it from ArenaSwap** or **Close the tab**. Set it back to **Leave the tab alone** to stop. A message when you next open ArenaSwap says how many tabs were handed back. See [what happens when a game ends](/arenaswap/docs/extension/watching-multiple-games/#choose-what-happens-when-a-game-ends).
+## A tab got closed or freed after a game ended
 
-## Why did I get an "Up next" notification, but ArenaSwap hasn't switched yet?
+Your **When a game finishes** setting did it. You'll find it in Settings under **Switching**. Set it to **Leave the tab alone** to stop. [What happens when a game ends](/arenaswap/docs/extension/watching-multiple-games/#choose-what-happens-when-a-game-ends) has the options.
 
-**Content-aware switching** is waiting for a break in play. The notification says what it's waiting for, like "Switching after this play." or "Switching at the next whistle." The switch goes ahead on its own once play stops or the wait runs out. Turn off **Content-aware switching** in Settings to switch right away. [How the wait works](/arenaswap/docs/extension/switching-and-sensitivity/#dont-get-cut-off-mid-play) has the details.
+## I got an "Up next" notification, but no switch
 
-## Why didn't Multiview open?
+**Content-aware switching** is waiting for a break in play, like a whistle or the end of an at-bat. The notification says what it's waiting for. ArenaSwap switches when play stops, or after a short wait. To switch right away, turn off **Content-aware switching** in Settings. [Don't get cut off mid-play](/arenaswap/docs/extension/switching-and-sensitivity/#dont-get-cut-off-mid-play) has more.
 
-The [Multiview page](/arenaswap/docs/extension/multiview/) answers that one.
+## Multiview didn't open
 
-## Why isn't Standby Stream doing anything?
+The [Multiview page](/arenaswap/docs/extension/multiview/) has the checklist.
 
-Standby Stream needs two things set up before it can act, and it silently does nothing without either:
+## Standby Stream isn't doing anything
 
-1. A tab picked in the **Standby tab** dropdown under Settings → Standby Stream. If it still reads **Select a tab**, nothing has been chosen.
-2. At least one live game with a tab assigned to it. Standby Stream only compares against games you've registered, so with no registered games there's nothing for it to fall back from.
+Standby Stream needs two things:
 
-It also stands down while **Enable auto-switching** is off, waits out your **Switch cooldown** like any other switch, and steps aside while Multiview is showing.
+1. A tab picked in the **Standby tab** dropdown under Settings, then **Standby Stream**. If it still says **Select a tab**, pick one.
+2. At least one live game with a tab assigned.
 
-See [how to set up Standby Stream](/arenaswap/docs/extension/standby-stream/) for the full setup.
+It also waits while **Enable auto-switching** is off, and while Multiview is open. [How to set up Standby Stream](/arenaswap/docs/extension/standby-stream/) has the full steps.
 
-## Why didn't I get a switch notification?
+## No switch notifications
 
-Check that **Switch notifications** is turned on in Settings, under Switching. If it's already on and you're still not seeing anything, check your operating system's notification settings for your browser. ArenaSwap asks the browser to show a notification either way. If the OS is blocking notifications from the browser itself, ArenaSwap's never arrive either.
+Turn on **Switch notifications** in Settings, under **Switching**. If it's already on, check your computer's notification settings and make sure your browser is allowed to show them.
 
 ## Related
 
-- [How to watch multiple games at once](/arenaswap/docs/extension/watching-multiple-games/) covers assigning tabs from the start.
-- [How to control when ArenaSwap switches tabs](/arenaswap/docs/extension/switching-and-sensitivity/) covers sensitivity, cooldown, and switch delay in full.
+- [How to watch multiple games at once](/arenaswap/docs/extension/watching-multiple-games/) covers assigning tabs.
+- [How to control when ArenaSwap switches tabs](/arenaswap/docs/extension/switching-and-sensitivity/) covers sensitivity, cooldown and delay.
 - [ArenaSwap settings reference](/arenaswap/docs/extension/settings/) lists every setting's default and range.
-- The [FAQ](/arenaswap/faq/) covers broader questions about leagues, streaming services, and data.
+- The [FAQ](/arenaswap/faq/) covers leagues, streaming services and data.

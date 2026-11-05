@@ -444,6 +444,47 @@
 			"Retour"
 		]
 	},
+	"docDemos": {
+		"popup": "La fenêtre ArenaSwap listant trois matchs en direct par PowerScore : Boston à New York, égalité 100–100 à 2:10 de la fin (85), Philadelphie à Pittsburgh, égalité 2–2 en troisième période (76), et Chelsea devant Arsenal 2–1 à la 78e minute (63).",
+		"popupTabs": "La fenêtre ArenaSwap listant trois matchs en direct par PowerScore, chacun avec l'onglet où il passe : Boston à New York, égalité 100–100 à 2:10 de la fin (85), Philadelphie à Pittsburgh, égalité 2–2 en troisième période (76), et Chelsea devant Arsenal 2–1 à la 78e minute (63).",
+		"liveCard": "Une carte de match en direct : Boston Celtics à New York Knicks, égalité 100–100 à 2:10 de la fin du quatrième quart-temps, PowerScore 85 sur 100.",
+		"liveCardFavorite": "Une carte de match en direct : Boston Celtics à New York Knicks, égalité 100–100 à 2:10 de la fin du quatrième quart-temps, PowerScore 85 sur 100, avec les Celtics marqués d'une étoile comme favoris.",
+		"liveCardTab": "Une carte de match en direct : Boston Celtics à New York Knicks, égalité 100–100 à 2:10 de la fin du quatrième quart-temps, PowerScore 85 sur 100, assigné à l'onglet Boston à New York.",
+		"liveCardFavoriteTab": "Une carte de match en direct : Boston Celtics à New York Knicks, égalité 100–100 à 2:10 de la fin du quatrième quart-temps, PowerScore 85 sur 100, avec les Celtics marqués d'une étoile comme favoris, assigné à l'onglet Boston à New York.",
+		"upcomingCard": "Une carte de match à venir : Kansas City Chiefs à Buffalo Bills, dimanche à 16 h 25 au Highmark Stadium.",
+		"finalCard": "Une carte de match terminé : Ohio State 27, Michigan 24, à l'Ohio Stadium.",
+		"charts": "Quatre graphiques des détails d'un match : le PowerScore au fil du temps, le score au fil du temps, la probabilité de victoire et la part de chaque signal dans le PowerScore.",
+		"breakdown": "Un bloc {heading} : {closeness} 38 sur 42, {lateGame} 31 sur 38, {momentum} 8 sur 38, {leadChanges} 5 sur 18 et {comeback} 3 sur 20 donnent un total des signaux de 85. Un {gameBoost} de 5 points porte le {final} à 90 sur 100. {reason}.",
+		"gameBoost": "Le champ {heading} dans les détails d'un match, réglé sur {points} points.",
+		"suggestBanner": "La bannière {title} en haut de la fenêtre, avec un bouton {action} et un bouton de fermeture.",
+		"guide": "Le Guide à 21 h 40 : une frise de 19 h à minuit avec des matchs de NBA, de NHL et de basketball NCAA en barres, un trait à l'heure actuelle, et le meilleur moment pour regarder en surbrillance de 21 h 15 à 22 h 15.",
+		"browserTabs": "Un navigateur avec trois onglets de match ouverts. Boston à New York est l'onglet actif et diffuse le son ; les deux autres sont en sourdine.",
+		"notification": "Une notification qui indique : {title}. {message}",
+		"sliderSensitivity": "Le curseur {label} à sa valeur par défaut, {value}.",
+		"sliderCooldown": "Le curseur {label} à sa valeur par défaut, 45 secondes.",
+		"sliderDelay": "Le curseur {label} à sa valeur par défaut, {value}.",
+		"toggleOn": "L'interrupteur {label} dans les Paramètres, activé.",
+		"toggleOff": "L'interrupteur {label} dans les Paramètres, désactivé.",
+		"modes": "Le sélecteur {section} ouvert sur {classic}, listant {classic}, {blowouts}, {fantasy} et {custom}.",
+		"multiview": "Un onglet Multiview avec quatre matchs en grille 2×2. Boston à New York, en haut à gauche, est entouré et a le son.",
+		"standby": "Un navigateur posé sur un onglet Standby Stream nommé {tab}, avec deux onglets de match en sourdine à côté, et la ligne de la fenêtre : {line}",
+		"profiles": "La liste {section} dans les Paramètres avec deux profils, {current} en cours d'utilisation et son menu ouvert sur {rename} et {export}, au-dessus des boutons {new} et {backup}.",
+		"backup": "L'onglet de sauvegarde avec un fichier chargé : {addAsNew} ou {replace}, et ce que le fichier changerait. Une ligue de plus, les mêmes équipes favorites, et le mode de score qui passe de {from} à {to}.",
+		"bossButton": "Le raccourci du bouton « le chef arrive », Alt + Shift + X, et l'onglet de tableur leurre qu'il ouvre, avec les onglets de match en sourdine.",
+		"notificationNow": "à l'instant",
+		"profileWeeknights": "Soirées de semaine",
+		"profileFantasySunday": "Fantasy du dimanche",
+		"standbyTab": "Temps forts",
+		"decoyTab": "Prévisions T3",
+		"decoyRegion": "Région",
+		"decoyQuarter": "T{quarter}",
+		"decoyRegions": [
+			"Nord-Est",
+			"Midwest",
+			"Sud",
+			"Ouest"
+		]
+	},
 	"ui": {
 		"gameCard": {
 			"live": "EN DIRECT",

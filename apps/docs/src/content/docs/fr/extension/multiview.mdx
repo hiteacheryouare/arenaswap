@@ -1,0 +1,74 @@
+---
+sourceHash: '6aafbef8b446'
+title: Utiliser Multiview
+description: Regarde tes matchs les plus palpitants côte à côte dans un seul onglet, avec le son du meilleur. Active-le et choisis quand il s'ouvre.
+section: extension
+order: 10
+navLabel: Multiview
+faq:
+  - q: Comment regarder plusieurs matchs sur un seul écran dans mon navigateur ?
+    a: Active Multiview dans les paramètres d'ArenaSwap, puis associe un onglet à chaque match que tu diffuses. Quand au moins deux de ces matchs deviennent palpitants en même temps, ArenaSwap ouvre un onglet avec chaque match dans sa propre case.
+  - q: Multiview fonctionne-t-il sur Firefox ?
+    a: Non. Multiview est dans les versions Chrome et Edge d'ArenaSwap. La version Firefox a tout le reste.
+  - q: Pourquoi Multiview ne s'est-il pas ouvert ?
+    a: Vérifie que Activer le changement automatique est activé, que tu as associé des onglets à au moins deux matchs en direct, et qu'au moins deux d'entre eux ont atteint ton seuil Palpitant dès. ArenaSwap attend aussi d'abord la fin de ton Délai entre les changements et de ton Délai de changement.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Multiview met tes matchs palpitants sur un seul écran, pour que tu arrêtes de choisir entre eux. Le match le plus palpitant a la plus grande case et le son.
+
+Il est sur Chrome et Edge. Firefox ne l'a pas.
+
+## L'activer
+
+1. Ouvre les Paramètres et choisis **Multiview**.
+2. Active **Activer Multiview**.
+3. Un court guide explique à quoi t'attendre. Clique sur **Suivant**, puis sur **Continuer**.
+4. Ton navigateur te demande si ArenaSwap peut « Lire et modifier toutes vos données sur tous les sites Web ». Autorise. C'est ce qui réunit tes flux dans un seul onglet.
+
+Si tu cliques sur **Pas maintenant** ou refuses dans ton navigateur, Multiview reste désactivé. Tout le reste fonctionne comme avant.
+
+<Demo name='multiview' />
+
+## Donner un onglet à chaque match
+
+Ouvre le flux de chaque match dans son propre onglet, puis choisis cet onglet dans le menu **Associer un onglet** de la carte du match. [Regarder plusieurs matchs](/arenaswap/docs/extension/watching-multiple-games/) t'explique comment faire.
+
+Garde **Activer le changement automatique** activé. Multiview se ferme quand il est désactivé.
+
+## Choisir quand il s'ouvre
+
+Trois paramètres sous **Multiview** en décident :
+
+- **Palpitant dès** est le PowerScore qu'un match doit atteindre pour compter comme palpitant, de 0 à 100. La valeur par défaut est 55. Pousse vers **S'ouvre plus souvent** pour plus de Multiview. Pousse vers **Grands moments seulement** pour moins.
+- **Afficher** choisit qui a une case. **Matchs palpitants** n'affiche que les matchs à ton seuil ou au-dessus. **Tous mes matchs** affiche chaque match qui a un onglet.
+- **Max de cases** limite le nombre de matchs affichés en même temps, de 2 à 8. La valeur par défaut est 4. Si plus de matchs se qualifient, les PowerScores les plus hauts obtiennent les cases.
+
+Multiview s'ouvre quand au moins deux de tes matchs atteignent ton seuil **Palpitant dès**. Il respecte ton **Délai entre les changements** et ton **Délai de changement**, comme n'importe quel autre changement. [Contrôler quand ArenaSwap change d'onglet](/arenaswap/docs/extension/switching-and-sensitivity/) couvre les deux.
+
+Dès qu'un match est palpitant et qu'un autre est à 10 points de ton seuil **Palpitant dès**, un onglet Multiview en sourdine s'ouvre à la fin de ta barre d'onglets et commence à charger ces matchs. Si le deuxième match retombe, l'onglet reste 2 minutes au cas où il reviendrait. Ferme cet onglet et Multiview attend la fin de ton Délai entre les changements avant de réessayer.
+
+## Quand il est ouvert
+
+ArenaSwap place l'onglet Multiview à côté de ton match, ou en ouvre un nouveau à cet endroit, et t'y emmène. Avec les notifications activées, tu reçois une notification **Basculé → Multiview**.
+
+La plus grande case, en haut à gauche, revient au match le plus palpitant, et c'est la seule avec du son. Les autres matchs se rangent autour. Tes onglets de match restent ouverts et en sourdine en arrière-plan.
+
+## Quand il se ferme
+
+Une fois ouvert, Multiview reste au moins aussi longtemps que ton Délai entre les changements, et jusqu'à ce que l'un de ses flux démarre.
+
+Quand un seul match reste palpitant, ce match remplit l'onglet Multiview pendant 2 minutes. Si un autre match redevient palpitant pendant ce temps, toutes les cases reviennent. Sinon, ArenaSwap t'emmène vers l'onglet propre à ce match et ferme Multiview. Les 2 minutes sont sautées quand l'autre match est terminé, ou quand l'un de tes matchs sans case prend assez d'avance pour qu'ArenaSwap bascule dessus.
+
+Un match garde sa case pendant une pause publicitaire.
+
+Ferme l'onglet Multiview toi-même et il peut se rouvrir une fois ton Délai entre les changements écoulé. Envoie-le vers une autre page web et il s'arrête, sans rouvrir ces matchs pendant 10 minutes.
+
+Si aucun des flux ne démarre en une minute, ArenaSwap te ramène vers ton meilleur match et réessaie dans 10 minutes. Si une case ne lit jamais rien, ouvre ce flux dans son propre onglet et vérifie qu'il y fonctionne.
+
+## À lire aussi
+
+- [Regarder plusieurs matchs en même temps](/arenaswap/docs/extension/watching-multiple-games/) couvre l'association des onglets.
+- [Contrôler quand ArenaSwap change d'onglet](/arenaswap/docs/extension/switching-and-sensitivity/) couvre le délai entre les changements et le délai de changement.
+- [Référence des paramètres d'ArenaSwap](/arenaswap/docs/extension/settings/) liste chaque paramètre de Multiview.

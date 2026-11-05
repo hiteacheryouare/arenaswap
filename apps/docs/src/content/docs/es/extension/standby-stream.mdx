@@ -1,0 +1,47 @@
+---
+sourceHash: '7a9d6a58a2ff'
+title: Cómo configurar Standby Stream
+description: Elige una pestaña donde quedarte cuando todos los partidos que ves se pongan tranquilos, y ArenaSwap te lleva ahí y te regresa cuando vuelva la acción.
+section: extension
+order: 5
+navLabel: Standby Stream
+faq:
+  - q: ¿Qué es Standby Stream en ArenaSwap?
+    a: Una pestaña que eliges de antemano. Cuando todos los partidos a los que asignaste una pestaña se ponen tranquilos, ArenaSwap te lleva a ella. Cuando un partido vuelve a calentarse, ArenaSwap te regresa.
+  - q: ¿Por qué Standby Stream no hace nada aunque está activado?
+    a: Revisa que hayas elegido una Pestaña de espera en Ajustes, que hayas asignado una pestaña a al menos un partido en vivo y que tengas activado Activar cambio automático. Si Multiview está en pantalla, va primero.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Hay noches en que todos los partidos que ves se ponen aburridos al mismo tiempo: palizas, una demora por lluvia, el medio tiempo. Standby Stream le da a ArenaSwap un lugar mejor donde dejarte, como un programa de resúmenes o una transmisión de estudio.
+
+## Configúralo
+
+1. Abre la pestaña que quieres como respaldo y déjala abierta.
+2. En Ajustes, abre **Standby Stream** y activa **Activar Standby Stream**.
+3. Elige tu pestaña en el menú **Pestaña de espera**.
+
+Si el menú todavía dice **Selecciona una pestaña**, no pasa nada cuando tus partidos se ponen tranquilos.
+
+La primera vez que lo activas, una guía breve de dos pasos muestra los mismos pasos. Toca **Entendido** en la segunda pantalla cuando termines.
+
+<Demo name='standby' />
+
+## Elige qué tan tranquilo es tranquilo
+
+**En espera por debajo de** es un control deslizante de 0 a 100, en 20 de inicio. Súbelo y ArenaSwap te deja en espera antes, mientras los partidos todavía son medio interesantes. Bájalo y ArenaSwap mantiene tus partidos en pantalla más tiempo antes de rendirse con ellos.
+
+## Qué esperar
+
+Cuando todos los partidos a los que asignaste una pestaña se ponen tranquilos, ArenaSwap cambia a tu pestaña de espera. Cuando cualquiera de ellos se vuelve a calentar, te regresa.
+
+Si cambias tú a otra pestaña, ArenaSwap te lleva a tu mejor partido. Si nada se ha calentado al terminar el tiempo de espera, te regresa a la pestaña de espera. Para navegar sin que te muevan, desactiva **Activar cambio automático**.
+
+Standby Stream solo vigila los partidos a los que asignaste una pestaña. Sin pestañas de partidos asignadas, no tiene de qué retroceder.
+
+## Relacionado
+
+- [Cómo ver varios partidos a la vez](/arenaswap/docs/extension/watching-multiple-games/) explica cómo asignar pestañas a los partidos.
+- [Referencia de ajustes de ArenaSwap](/arenaswap/docs/extension/settings/) enumera el valor predeterminado de cada ajuste de Standby Stream.
+- [Cómo usar Multiview](/arenaswap/docs/extension/multiview/) muestra varios partidos emocionantes en una pestaña, para cuando vale la pena ver más de uno.

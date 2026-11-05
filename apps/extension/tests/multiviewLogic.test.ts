@@ -1,4 +1,4 @@
-import { chooseFeatured, isFrameableUrl, planMultiview } from '../utils/multiviewLogic';
+import { chooseFeatured, isFrameableUrl, isOvertaken, planMultiview } from '../utils/multiviewLogic';
 import type { multiviewPlanInput } from '../utils/multiviewLogic';
 
 const candidate = (gameId: string, tabId: number, url = `https://stream.example/${gameId}`) => ({ gameId, tabId, url });
@@ -7,6 +7,7 @@ const base: multiviewPlanInput = {
 	candidates: [candidate('a', 1), candidate('b', 2), candidate('c', 3)],
 	scores: [{ gameId: 'a', total: 80 }, { gameId: 'b', total: 70 }, { gameId: 'c', total: 30 }],
 	boxedGameIds: [],
+	shown: true,
 	threshold: 65,
 	games: 'hot',
 	maxBoxes: 4,
@@ -19,9 +20,37 @@ describe('planMultiview', () => {
 		expect(planMultiview(base)).toMatchObject({ open: true, gameIds: ['a', 'b'] });
 	});
 
-	test('stays shut with one hot game', () => {
-		const plan = planMultiview({ ...base, scores: [{ gameId: 'a', total: 90 }, { gameId: 'b', total: 64 }, { gameId: 'c', total: 30 }] });
-		expect(plan).toMatchObject({ open: false, gameIds: [] });
+	test('stays shut with one hot game and nothing close behind it', () => {
+		const plan = planMultiview({ ...base, scores: [{ gameId: 'a', total: 90 }, { gameId: 'b', total: 54 }, { gameId: 'c', total: 30 }] });
+		expect(plan).toMatchObject({ open: false, warm: false, gameIds: [] });
+	});
+
+	test('warms up once a second game is within 10 points of the threshold', () => {
+		const plan = planMultiview({ ...base, scores: [{ gameId: 'a', total: 90 }, { gameId: 'b', total: 55 }, { gameId: 'c', total: 30 }] });
+		expect(plan).toMatchObject({ open: false, warm: true, gameIds: ['a', 'b'] });
+	});
+
+	test('does not warm up for two close games when neither is over the threshold', () => {
+		const plan = planMultiview({ ...base, scores: [{ gameId: 'a', total: 64 }, { gameId: 'b', total: 60 }] });
+		expect(plan).toMatchObject({ open: false, warm: false });
+	});
+
+	test('keeps a box on screen through its commercial break, however far the break drops it', () => {
+		const onBreak = [{ gameId: 'a', total: 80 }, { gameId: 'b', total: 40, onBreak: true }, { gameId: 'c', total: 30 }];
+		expect(planMultiview({ ...base, scores: onBreak, boxedGameIds: ['a', 'b'] })).toMatchObject({ open: true, gameIds: ['a', 'b'] });
+		expect(planMultiview({ ...base, scores: onBreak, boxedGameIds: ['a', 'b'], shown: false })).toMatchObject({ open: false });
+		expect(planMultiview({ ...base, scores: onBreak, boxedGameIds: [] })).toMatchObject({ open: false });
+	});
+
+	test('warms up every registered game when Multiview shows all of them', () => {
+		const plan = planMultiview({ ...base, games: 'all', scores: [{ gameId: 'a', total: 90 }, { gameId: 'b', total: 60 }, { gameId: 'c', total: 30 }] });
+		expect(plan).toMatchObject({ warm: true, gameIds: ['a', 'b', 'c'] });
+	});
+
+	test('gives boxes that are still warming up no margin under the threshold', () => {
+		const warming = { ...base, boxedGameIds: ['a', 'b'], shown: false, scores: [{ gameId: 'a', total: 80 }, { gameId: 'b', total: 60 }] };
+		expect(planMultiview(warming)).toMatchObject({ open: false, warm: true, gameIds: ['a', 'b'] });
+		expect(planMultiview({ ...warming, shown: true }).open).toBe(true);
 	});
 
 	test('keeps a boxed game until it sinks a Sensitivity margin under the threshold', () => {
@@ -105,5 +134,26 @@ describe('chooseFeatured', () => {
 
 	test('has nothing to feature without a box', () => {
 		expect(chooseFeatured({ ...input, gameIds: [] })).toBeNull();
+	});
+});
+
+describe('isOvertaken', () => {
+	const overtakenBase = { soloGameId: 'a', boxedGameIds: ['a', 'b'], candidateGameIds: ['a', 'b', 'c'], sensitivity: 4 as const };
+
+	test('a game outside Multiview past the solo game by the Sensitivity margin overtakes it', () => {
+		expect(isOvertaken({ ...overtakenBase, scores: [{ gameId: 'a', total: 66 }, { gameId: 'c', total: 77 }] })).toBe(true);
+		expect(isOvertaken({ ...overtakenBase, scores: [{ gameId: 'a', total: 66 }, { gameId: 'c', total: 76 }] })).toBe(false);
+	});
+
+	test('a boxed game never does, since it takes the big box instead', () => {
+		expect(isOvertaken({ ...overtakenBase, scores: [{ gameId: 'a', total: 40 }, { gameId: 'b', total: 90 }] })).toBe(false);
+	});
+
+	test('a game without an open tab never does', () => {
+		expect(isOvertaken({ ...overtakenBase, scores: [{ gameId: 'a', total: 40 }, { gameId: 'd', total: 90 }] })).toBe(false);
+	});
+
+	test('a solo game with no score left is overtaken by default', () => {
+		expect(isOvertaken({ ...overtakenBase, scores: [] })).toBe(true);
 	});
 });

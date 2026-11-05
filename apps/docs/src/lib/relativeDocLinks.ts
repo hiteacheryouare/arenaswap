@@ -9,7 +9,7 @@ const docsRoot = '/src/content/docs/';
 // /arenaswap/docs/... sent a German reader back to the English site. Written relative to the
 // article's own URL, the same link resolves under whichever prefix the reader arrived on.
 const articlePath = (filePath: string) => {
-	const [section, file] = filePath.slice(filePath.indexOf(docsRoot) + docsRoot.length).split('/');
+	const [section, file] = filePath.slice(filePath.indexOf(docsRoot) + docsRoot.length).split('/').slice(-2);
 	return `docs/${section}/${file!.replace(/\.mdx?$/, '')}/`;
 };
 

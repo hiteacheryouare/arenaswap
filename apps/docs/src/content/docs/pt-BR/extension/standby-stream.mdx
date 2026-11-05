@@ -1,0 +1,47 @@
+---
+sourceHash: '7a9d6a58a2ff'
+title: Como configurar o Standby Stream
+description: Escolha uma aba para ficar quando todos os jogos que você acompanha esfriarem, e o ArenaSwap te leva até lá e te traz de volta quando a ação voltar.
+section: extension
+order: 5
+navLabel: Standby Stream
+faq:
+  - q: O que é o Standby Stream no ArenaSwap?
+    a: Uma aba que você escolhe antes. Quando todos os jogos aos quais você atribuiu uma aba esfriam, o ArenaSwap te leva até ela. Quando um jogo esquenta de novo, o ArenaSwap te leva de volta.
+  - q: Por que o Standby Stream não faz nada, mesmo ativado?
+    a: Confira se você escolheu uma Aba de espera nas Configurações, atribuiu uma aba a pelo menos um jogo ao vivo e ativou Ativar troca automática. Se o Multiview estiver aparecendo, ele vem primeiro.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Tem noite em que todos os jogos que você acompanha ficam sem graça ao mesmo tempo: atropelos, uma paralisação por chuva, o intervalo. O Standby Stream dá ao ArenaSwap um lugar melhor para te colocar, como um programa de melhores momentos ou uma transmissão de estúdio.
+
+## Configure
+
+1. Abra a aba que você quer como reserva e deixe-a aberta.
+2. Nas Configurações, abra **Standby Stream** e ative **Ativar Standby Stream**.
+3. Escolha a sua aba no menu **Aba de espera**.
+
+Se o menu ainda mostra **Selecione uma aba**, nada acontece quando seus jogos esfriam.
+
+Na primeira vez que você ativa, um guia curto de dois passos mostra os mesmos passos. Toque em **Entendido** na segunda tela quando terminar.
+
+<Demo name='standby' />
+
+## Escolha o que é "esfriar"
+
+**Em espera abaixo de** é um controle deslizante de 0 a 100, com padrão em 20. Deslize para cima e o ArenaSwap te coloca em espera mais cedo, enquanto os jogos ainda estão meio interessantes. Deslize para baixo e o ArenaSwap mantém seus jogos na tela por mais tempo antes de desistir deles.
+
+## O que esperar
+
+Quando todos os jogos aos quais você atribuiu uma aba esfriam, o ArenaSwap troca para a sua aba de espera. Quando qualquer um deles esquenta de novo, ele troca de volta.
+
+Se você clicar em outra aba, o ArenaSwap te leva ao seu melhor jogo. Se nada tiver esquentado no fim do cooldown, ele te traz de volta à aba de espera. Para navegar sem ser movido de jeito nenhum, desligue **Ativar troca automática**.
+
+O Standby Stream só vigia jogos aos quais você atribuiu uma aba. Sem abas de jogos atribuídas, ele não tem de onde recuar.
+
+## Relacionados
+
+- [Como assistir a vários jogos ao mesmo tempo](/arenaswap/docs/extension/watching-multiple-games/) explica como atribuir abas a jogos.
+- [Referência das configurações do ArenaSwap](/arenaswap/docs/extension/settings/) lista o padrão de cada configuração do Standby Stream.
+- [Como usar o Multiview](/arenaswap/docs/extension/multiview/) mostra vários jogos emocionantes em uma aba, para quando mais de um vale a pena.

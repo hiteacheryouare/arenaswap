@@ -1,0 +1,82 @@
+---
+sourceHash: '01e24339f21e'
+title: Cómo leer la pantalla de detalles de un partido en ArenaSwap
+description: Haz clic en un partido para ver por qué está donde está en la lista, cómo va, quién juega y dónde verlo. Agrega un Impulso del partido para subir uno.
+section: extension
+order: 14
+navLabel: Detalles del partido
+faq:
+  - q: ¿Cómo veo por qué un partido tiene el PowerScore que tiene?
+    a: Haz clic en la tarjeta del partido en la ventana emergente, o en su barra en la Guía. En un partido en vivo, el Desglose del PowerScore en la pestaña Resumen muestra qué suma puntos, con una línea en palabras sencillas al final. Pasa el cursor sobre los íconos de información para saber qué significa cada parte.
+  - q: ¿Qué hace el Impulso del partido en ArenaSwap?
+    a: Suma puntos, de 0 a 100, al PowerScore de un partido para que ArenaSwap lo prefiera. Ponlo otra vez en 0 para quitarlo.
+  - q: ¿Por qué no veo la línea de apuestas en la pantalla de detalles de un partido?
+    a: Está oculta a menos que Mostrar apuestas y cuotas esté activado en Ajustes.
+  - q: ¿Por qué este partido no tiene pestaña de Duelo, Boxscore o Tabla?
+    a: Las pestañas solo aparecen cuando hay algo que poner en ellas. Duelo es para partidos que no han empezado y Boxscore para los que ya empezaron. No todas las ligas tienen tabla de posiciones.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Haz clic en cualquier partido para ver por qué está donde está y qué tanto hay en juego.
+
+## Abre un partido
+
+Haz clic en la tarjeta de un partido en la ventana emergente. En la [Guía](/arenaswap/docs/extension/guide/), haz clic en la barra de un partido y se abre en un panel lateral. Haz clic en **Atrás** para volver a la lista, o en **Cerrar** en la Guía.
+
+Una fila de pestañas queda bajo el marcador: **Resumen** siempre está, **Duelo** aparece antes de que empiece el partido, **Boxscore** cuando ya está en marcha y **Tabla** cuando tu liga tiene tabla de posiciones. Si no caben todas, el resto va en **Más**.
+
+## Mira por qué un partido está tan arriba
+
+Abre un partido en vivo y busca el **Desglose del PowerScore** en **Resumen**. Muestra qué hace que valga la pena verlo:
+
+- **Igualdad**: qué tan parejo está el marcador.
+- **Recta final**: qué tan cerca está el final, mientras todavía es cualquier cosa.
+- **Racha**: si un equipo trae una racha.
+- **Cambios de ventaja**: cuántas veces ha cambiado la ventaja últimamente.
+- **Remontada**: si el equipo que va perdiendo se está acercando.
+
+Cada una muestra sus puntos, seguidos de los impulsos (puntos extra, como por tu equipo favorito) y las penalizaciones (puntos menos, como durante un corte comercial), y al final el **PowerScore final**. La línea bajo el total dice qué lo impulsa en este momento.
+
+<Demo name='breakdown' />
+
+Un partido en pausa por el **Descanso**, un **Intermedio** o una demora muestra 0 hasta que se reanude el juego. Los partidos terminados no reciben PowerScore. [Modos de puntuación](/arenaswap/docs/extension/scoring-modes/) explica cómo cambiar lo que cuenta.
+
+## Sigue cómo va el partido
+
+Las gráficas bajo el desglose se llenan conforme avanza el juego. **PowerScore a lo largo del tiempo** muestra cuándo se puso bueno el partido, y **Probabilidad de victoria** muestra cómo han oscilado las probabilidades. También hay gráficas del marcador y de la ventaja.
+
+<Demo name='charts' />
+
+Los partidos en vivo agregan más, según el deporte. **Última jugada** muestra lo que acaba de pasar, y en el beisbol **Próximos bateadores** muestra quién viene al plato. El futbol americano muestra down y distancia, y el basquetbol muestra tiempos fuera y bono. Los partidos de playoffs muestran el marcador de la serie.
+
+## Prepárate antes de que empiece
+
+Un partido que no ha empezado tiene una tarjeta **Listo para el saque inicial** (salto inicial, puck inicial o primer lanzamiento, según el deporte). Aquí puedes agregar un Impulso del partido y, en la ventana emergente, elegir la pestaña donde abrir el partido.
+
+Debajo encontrarás **Abridores probables** o **Porteros probables** donde aplique, **Líderes del equipo** y la pestaña **Duelo** con **Últimos resultados**, **Estadísticas de temporada** y **Lesiones**. Para seguir a un equipo, toca la estrella junto a su escudo. [Equipos favoritos](/arenaswap/docs/extension/favorite-teams/) explica qué hace eso.
+
+## Revisa el boxscore y la tabla
+
+**Boxscore** tiene el marcador por periodo, estadísticas de equipo y líneas de jugadores del deporte que estás viendo. **Tabla** muestra la tabla de la liga con estos dos equipos resaltados.
+
+## Encuentra dónde verlo
+
+**Info del partido** enumera el canal o servicio, la sede y el clima. Los partidos terminados también muestran la asistencia. Los partidos próximos pueden enlazar a **Boletos**.
+
+La línea de apuestas solo aparece si activaste **Mostrar apuestas y cuotas** en Ajustes.
+
+## Agrega un Impulso del partido
+
+¿Quieres un partido en pantalla pase lo que pase en el marcador? El **Impulso del partido** suma puntos a su PowerScore para que ArenaSwap lo elija más seguido. Escribe un número de 0 a 100, y usa 0 para quitarlo.
+
+<Demo name='game-boost' />
+
+El campo de Impulso del partido está en los partidos en vivo y próximos. Es lo único que puede subir un PowerScore por encima de 100, y el desglose lo muestra como "Impulso del partido".
+
+## Relacionado
+
+- [Cómo usar la Guía para planear tu día de partidos](/arenaswap/docs/extension/guide/) abre esta pantalla desde la línea de tiempo.
+- [Modos de puntuación](/arenaswap/docs/extension/scoring-modes/) explica qué le importa a cada modo.
+- [Cómo elegir equipos favoritos en ArenaSwap](/arenaswap/docs/extension/favorite-teams/) cubre las estrellas y el Impulso de equipo favorito.
+- [Referencia de ajustes de ArenaSwap](/arenaswap/docs/extension/settings/) enumera Mostrar apuestas y cuotas y Unidad de temperatura.

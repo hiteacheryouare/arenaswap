@@ -1,10 +1,10 @@
 ---
-import { getCollection } from 'astro:content';
 import Shell from '../../../layouts/Shell.astro';
 import UntranslatedNotice from '../../../components/UntranslatedNotice.astro';
 import { defaultLocale, localePath, localeRoutes } from '../../../i18n/locales';
 import { useTranslations } from '../../../i18n/ui';
 import formatReleaseDate from '../../../lib/releaseDate';
+import { getLocalizedCollection } from '../../../lib/localizedContent';
 
 // The home of the release notes: the newest one gets the room, everything before it gets a line.
 // No side nav — it used to list every version beside a page that is already a list of every
@@ -14,9 +14,10 @@ export const getStaticPaths = localeRoutes;
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
-const contentLang = locale === defaultLocale ? undefined : 'en';
-const releases = (await getCollection('releases', ({ data }) => !data.draft))
-	.toSorted((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const releases = (await getLocalizedCollection('releases', locale))
+	.toSorted((a, b) => b.original.data.date.valueOf() - a.original.data.date.valueOf());
+const fullyTranslated = releases.every(release => release.translated);
+const contentLang = (release: { translated: boolean }) => (release.translated ? undefined : 'en');
 
 const [latest, ...earlier] = releases;
 
@@ -26,7 +27,7 @@ const formatDate = (date: Date) => formatReleaseDate(date, locale);
 	title={t('reading.releasesMetaTitle')}
 	description={t('reading.releasesMetaDescription')}
 	path='releases/'
-	translated={false}
+	translated={fullyTranslated}
 >
 	<div class='container release-index-page'>
 		<div class='page-head'>
@@ -36,7 +37,7 @@ const formatDate = (date: Date) => formatReleaseDate(date, locale);
 			</p>
 		</div>
 
-		<UntranslatedNotice />
+		{!fullyTranslated && <UntranslatedNotice />}
 
 		<div class='release-index'>
 			{!latest && <p class='page-lede'>{t('reading.releasesEmpty')}</p>}
@@ -44,14 +45,14 @@ const formatDate = (date: Date) => formatReleaseDate(date, locale);
 			{latest && (
 				<article class='release-latest'>
 					<p class='release-meta'>
-						<time datetime={latest.data.date.toISOString()}>{formatDate(latest.data.date)}</time>
+						<time datetime={latest.entry.data.date.toISOString()}>{formatDate(latest.entry.data.date)}</time>
 						<span aria-hidden='true'> · </span>
-						{t('reading.releaseVersion', { version: latest.data.version })}
+						{t('reading.releaseVersion', { version: latest.entry.data.version })}
 					</p>
-					<h2 class='release-latest-title' lang={contentLang}>
-						<a href={localePath(locale, `releases/${latest.data.version}/`)}>{latest.data.title}</a>
+					<h2 class='release-latest-title' lang={contentLang(latest)}>
+						<a href={localePath(locale, `releases/${latest.entry.data.version}/`)}>{latest.entry.data.title}</a>
 					</h2>
-					<p class='release-latest-summary' lang={contentLang}>{latest.data.summary}</p>
+					<p class='release-latest-summary' lang={contentLang(latest)}>{latest.entry.data.summary}</p>
 				</article>
 			)}
 
@@ -60,14 +61,14 @@ const formatDate = (date: Date) => formatReleaseDate(date, locale);
 					{earlier.map(release => (
 						<li>
 							<p class='release-meta'>
-								<time datetime={release.data.date.toISOString()}>{formatDate(release.data.date)}</time>
+								<time datetime={release.entry.data.date.toISOString()}>{formatDate(release.entry.data.date)}</time>
 								<span aria-hidden='true'> · </span>
-								{t('reading.releaseVersion', { version: release.data.version })}
+								{t('reading.releaseVersion', { version: release.entry.data.version })}
 							</p>
-							<h3 lang={contentLang}>
-								<a href={localePath(locale, `releases/${release.data.version}/`)}>{release.data.title}</a>
+							<h3 lang={contentLang(release)}>
+								<a href={localePath(locale, `releases/${release.entry.data.version}/`)}>{release.entry.data.title}</a>
 							</h3>
-							<p class='release-list-summary' lang={contentLang}>{release.data.summary}</p>
+							<p class='release-list-summary' lang={contentLang(release)}>{release.entry.data.summary}</p>
 						</li>
 					))}
 				</ul>

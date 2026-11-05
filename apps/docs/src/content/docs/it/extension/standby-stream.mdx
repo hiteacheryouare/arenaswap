@@ -1,0 +1,47 @@
+---
+sourceHash: '7a9d6a58a2ff'
+title: Come configurare Standby Stream
+description: Scegli una scheda dove parcheggiarti quando tutte le partite che segui si spengono, e ArenaSwap ti ci porta e ti riporta indietro quando l'azione riparte.
+section: extension
+order: 5
+navLabel: Standby Stream
+faq:
+  - q: Cos'è Standby Stream in ArenaSwap?
+    a: Una scheda che scegli in anticipo. Quando tutte le partite a cui hai assegnato una scheda si spengono, ArenaSwap ti porta lì. Quando una partita si riaccende, ArenaSwap ti riporta indietro.
+  - q: Perché Standby Stream non fa niente anche se è attivo?
+    a: Controlla di aver scelto una Scheda standby nelle Impostazioni, di aver assegnato una scheda ad almeno una partita in diretta e di aver attivato Attiva il cambio automatico. Se Multiview è in primo piano, ha la precedenza.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Certe sere tutte le partite che guardi si spengono insieme: senso unico, un'interruzione per pioggia, l'intervallo. Standby Stream dà ad ArenaSwap un posto migliore dove portarti, come un programma di highlight o una trasmissione da studio.
+
+## Configuralo
+
+1. Apri la scheda che vuoi come ripiego e lasciala aperta.
+2. Nelle Impostazioni apri **Standby Stream** e attiva **Attiva Standby Stream**.
+3. Scegli la tua scheda dal menu **Scheda standby**.
+
+Se il menu dice ancora **Seleziona una scheda**, non succede niente quando le tue partite si spengono.
+
+La prima volta che lo attivi, una breve guida in due passaggi mostra gli stessi passi. Tocca **Capito** nella seconda schermata quando hai finito.
+
+<Demo name='standby' />
+
+## Scegli quanto è "spento"
+
+**Standby sotto** è un cursore da 0 a 100, impostato a 20 di default. Spostalo verso l'alto e ArenaSwap ti parcheggia in standby prima, quando le partite sono ancora appena interessanti. Spostalo verso il basso e ArenaSwap tiene le tue partite sullo schermo più a lungo prima di arrendersi.
+
+## Cosa aspettarti
+
+Quando tutte le partite a cui hai assegnato una scheda si spengono, ArenaSwap passa alla tua scheda standby. Quando una qualsiasi si riaccende, ti riporta lì.
+
+Se clicchi su un'altra scheda, ArenaSwap ti sposta sulla tua partita migliore. Se alla fine del tempo di attesa non si è riscaldato niente, ti riporta alla scheda standby. Per navigare senza essere spostato mai, disattiva **Attiva il cambio automatico**.
+
+Standby Stream guarda solo le partite a cui hai assegnato una scheda. Senza schede assegnate, non ha niente da cui ripiegare.
+
+## Argomenti correlati
+
+- [Come guardare più partite insieme](/arenaswap/docs/extension/watching-multiple-games/) spiega come assegnare le schede alle partite.
+- [Guida alle impostazioni di ArenaSwap](/arenaswap/docs/extension/settings/) elenca il valore predefinito di ogni impostazione di Standby Stream.
+- [Come usare Multiview](/arenaswap/docs/extension/multiview/) mostra più partite emozionanti in una scheda, per quando ne vale la pena più di una.

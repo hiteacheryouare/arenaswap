@@ -1,0 +1,1211 @@
+// The demos inside the help articles (src/components/docs). Each is a piece of the extension drawn at
+// the popup's own size; the sizes and colours below that are not tokens are the extension's own, from
+// apps/extension/assets.
+@use '@arenaswap/ui/src/bootstrap' as bs;
+@use '@arenaswap/ui/src/airbrush';
+@use '@arenaswap/ui/src/game-card' as gc;
+@use '@arenaswap/ui/src/popup';
+@layer custom {
+
+	$chrome-strip: #1c1f24;
+	$chrome-toolbar: #282c34;
+	$chrome-icon: #9aa4b2;
+
+	// ─── Frame ───────────────────────────────────────────────────────────────────
+	.doc-demo {
+		container: doc-demo / inline-size;
+		margin-block: 2rem;
+		font-size: 1rem;
+		line-height: 1.5;
+		color: var(--color-text);
+	}
+
+	.doc-demo-body {
+		display: flex;
+		justify-content: center;
+		padding: 1rem 0.75rem;
+		background-color: var(--as-bg-1);
+		background-image: radial-gradient(color-mix(in srgb, var(--as-fg-body) 16%, transparent) 1px, transparent 1.5px);
+		background-size: 24px 24px;
+		background-position: center;
+		border: 1px solid var(--as-border-muted);
+		border-radius: 0.75rem;
+
+		&.is-scrolling {
+			justify-content: flex-start;
+			overflow-x: auto;
+			scrollbar-width: thin;
+
+			&:focus-visible {
+				outline: 2px solid var(--color-primary);
+				outline-offset: 2px;
+			}
+
+			// Centring a demo wider than the frame would push its left edge out of scroll reach.
+			> .doc-demo-stage {
+				justify-content: flex-start;
+				width: max-content;
+				min-width: 100%;
+			}
+		}
+	}
+
+	@container doc-demo (min-width: 30rem) {
+		.doc-demo-body {
+			padding: 2rem 1.5rem;
+		}
+
+		// A single control is a close-up. At the popup's own size its 10px labels are a squint at
+		// reading distance, so it comes up a third once the column can take it.
+		.doc-demo-stage.is-closeup > * {
+			zoom: 1.3;
+		}
+	}
+
+	.doc-demo-stage {
+		display: flex;
+		justify-content: center;
+		width: 100%;
+		min-width: 0;
+		text-align: left;
+	}
+
+	// The island wrapper is `display: contents`, so the grid inside it is the stage's flex item.
+	.doc-demo-stage .charts-grid {
+		width: 100%;
+	}
+
+	.doc-demo-caption {
+		margin-top: 0.6rem;
+		font-size: 0.875rem;
+		line-height: 1.5;
+		color: var(--color-muted);
+		text-align: center;
+	}
+
+	// ─── Article styles that must not reach inside ───────────────────────────────
+	// `.prose img` rounds and auto-heights every image, which would squash each crest out of its box.
+	.doc-demo img {
+		border-radius: 0;
+	}
+
+	.doc-demo .crest > img {
+		height: 100%;
+	}
+
+	// Nothing on a static page runs Crest's load check, so its placeholder would show through the
+	// transparent parts of every logo. A crest with an image is drawn as loaded outright.
+	.doc-demo .crest:has(> img) {
+		border-radius:    var(--crest-logo-radius);
+		background-color: transparent;
+
+		> :not(img) { display: none; }
+	}
+
+	// ─── Popup surfaces ──────────────────────────────────────────────────────────
+	.doc-demo-popup,
+	.doc-demo-popup-frame {
+		@include airbrush.popup-tokens;
+		font-size: 0.9375rem;
+		color: var(--as-fg-body);
+
+		.menu {
+			@include popup.menu-skin;
+		}
+	}
+
+	.doc-demo-popup-frame {
+		&.popup-container {
+			height: auto;
+			overflow: hidden;
+			flex-shrink: 0;
+			border: 1px solid var(--as-border-color);
+			border-radius: 0.75rem;
+		}
+	}
+
+	// A switch drawn disabled reads as off. These are pictures, already inert, so they keep the
+	// enabled look.
+	.doc-demo .switch:has(input:disabled) {
+		opacity: 1;
+	}
+
+	.doc-demo-card-frame .game-card {
+		margin-bottom: 0;
+	}
+
+	.doc-demo-panel {
+		width: 320px;
+		max-width: 100%;
+		flex-shrink: 0;
+		padding: 0.75rem;
+		background: var(--as-bg-body);
+		border: 1px solid var(--as-border-color);
+		border-radius: 0.75rem;
+	}
+
+	.doc-demo-stack {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+		width: 100%;
+	}
+
+	// ─── Settings rows ───────────────────────────────────────────────────────────
+	.doc-demo-popup {
+		.setting-toggle-label {
+			font-size: 0.65rem;
+		}
+
+		.setting-value-label {
+			font-size: 0.6rem;
+			font-family: 'Geist Figures', 'DM Sans', system-ui, sans-serif;
+			font-variant-numeric: tabular-nums;
+		}
+
+		.setting-explainer {
+			font-size: 0.55rem;
+			line-height: 1.3;
+			color: var(--as-faint);
+		}
+
+		.setting-tooltip-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			color: var(--as-faint);
+			font-size: 0.62rem;
+			line-height: 1;
+		}
+
+		.form-range {
+			--as-range-thumb-bg: #{bs.$primary};
+			--as-range-track-bg: var(--as-border-color);
+			--as-range-tick-height: 0;
+		}
+
+		.form-range-input {
+			display: inline-block;
+			height: calc(var(--as-range-thumb-height) + 0.5rem);
+		}
+
+		.form-range-ticks {
+			height: 0.85rem;
+			margin-top: 0.15rem;
+			padding-inline: calc(var(--as-range-thumb-width) * 0.5);
+		}
+
+		.form-range-tick:first-child,
+		.form-range-tick:last-child {
+			align-items: center;
+		}
+
+		.form-range-tick-label {
+			margin-top: 0;
+			font-size: 0.5rem;
+			color: var(--as-secondary-fg);
+		}
+	}
+
+	// The picker's menu drawn open and in the flow, so the four modes sit under the control instead
+	// of over the line below it.
+	.doc-demo-modes {
+		.popup-section-label {
+			margin-top: 0;
+			color: var(--as-fg-body);
+			letter-spacing: -0.01em;
+		}
+
+		.select-dropdown-menu {
+			position: static;
+			width: 100%;
+			max-width: none;
+			margin-top: 0.25rem;
+		}
+	}
+
+	// ─── Notices ─────────────────────────────────────────────────────────────────
+	.doc-demo-popup .alert.popup-notice {
+		--as-alert-bg: var(--as-bg-1);
+		--as-alert-color: var(--as-fg-body);
+		--as-alert-border-color: var(--as-border-color);
+		--as-alert-padding-x: 0.6rem;
+		--as-alert-padding-y: 0.5rem;
+		margin-bottom: 0;
+		font-size: 0.72rem;
+		line-height: 1.35;
+
+		.btn-close {
+			--as-btn-close-size: 1em;
+			width: 1em;
+			height: 1em;
+			padding: 0.25em;
+			font-size: 0.55rem;
+		}
+	}
+
+	.doc-demo-popup {
+		.popup-notice-title {
+			font-size: 0.78rem;
+		}
+
+		.popup-notice-icon {
+			color: var(--as-accent-ink);
+			line-height: 1.35;
+		}
+
+		.popup-notice-action {
+			--as-btn-border-radius: 0.25rem;
+			font-size: 0.68rem;
+			white-space: nowrap;
+		}
+	}
+
+	// ─── PowerScore Breakdown and Game Boost ─────────────────────────────────────
+	// The popup's one light card, light in both themes.
+	.doc-demo-popup {
+		.powerscore-breakdown,
+		.game-detail-boost-section {
+			background: #f8fafc;
+			border: 1px solid #d1d5db;
+			border-radius: 0.35rem;
+			padding: 0.4rem 0.5rem;
+			color: #111827;
+		}
+
+		.powerscore-breakdown-heading,
+		.game-detail-boost-heading {
+			font-size: 0.62rem;
+			font-weight: 700;
+			border-bottom: 1px solid #d1d5db;
+			padding-bottom: 0.16rem;
+		}
+
+		.game-detail-boost-heading {
+			margin-bottom: 0.25rem;
+		}
+
+		.powerscore-breakdown-section-heading {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-top: 0.3rem;
+			font-size: 0.6rem;
+			font-weight: 700;
+			color: #4b5563;
+		}
+
+		.powerscore-section-chevron {
+			font-size: 0.5rem;
+		}
+
+		.powerscore-breakdown-row {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			gap: 0.5rem;
+			font-size: 0.6rem;
+			margin-top: 0.1rem;
+			padding-top: 0.1rem;
+			border-top: 1px solid #d1d5db;
+
+			> span:last-child {
+				font-weight: 700;
+				letter-spacing: 0.01em;
+			}
+		}
+
+		.powerscore-breakdown-value {
+			@include gc.scoreboard-figures;
+		}
+
+		.powerscore-signal-list {
+			display: grid;
+			grid-template-columns: auto max-content auto minmax(0, 1fr) auto;
+			column-gap: 0.28rem;
+			margin-top: 0.1rem;
+			border-top: 1px solid #d1d5db;
+		}
+
+		.powerscore-signal-row {
+			display: grid;
+			grid-column: 1 / -1;
+			grid-template-columns: subgrid;
+			align-items: center;
+			font-size: 0.6rem;
+			padding: 0.12rem 0;
+
+			& + & {
+				border-top: 1px solid #d1d5db;
+			}
+		}
+
+		.powerscore-signal-dot {
+			width: 6px;
+			height: 6px;
+			border-radius: 999px;
+		}
+
+		.powerscore-factor-icon {
+			display: inline-flex;
+			width: 0.68rem;
+			font-size: 0.62rem;
+			line-height: 1;
+			flex-shrink: 0;
+		}
+
+		.powerscore-signal-name {
+			white-space: nowrap;
+			color: #374151;
+		}
+
+		.powerscore-signal-progress {
+			--as-progress-bg: #e9ecef;
+			height: 5px;
+		}
+
+		.powerscore-signal-value {
+			@include gc.scoreboard-figures;
+			width: 2.5rem;
+			font-weight: 700;
+			text-align: right;
+			color: #111827;
+		}
+
+		.powerscore-signal-max {
+			font-weight: 400;
+			color: #6b7280;
+		}
+
+		.powerscore-breakdown .setting-tooltip-btn {
+			color: #6b7280;
+			font-size: 0.55rem;
+		}
+
+		.powerscore-breakdown-row-subtotal {
+			margin-top: 0.16rem;
+			padding-top: 0.14rem;
+			border-top: 2px solid #111827;
+			font-size: 0.64rem;
+			font-weight: 700;
+		}
+
+		.powerscore-breakdown-note {
+			margin-top: 0.08rem;
+			font-size: 0.54rem;
+			line-height: 1.3;
+			color: #4b5563;
+		}
+
+		.powerscore-breakdown-row-total {
+			margin-top: 0.22rem;
+			padding-top: 0.18rem;
+			border-top: 2px solid #111827;
+			font-size: 0.65rem;
+			font-weight: 700;
+			text-transform: uppercase;
+		}
+
+		.powerscore-breakdown-reason {
+			margin-top: 0.2rem;
+			padding-top: 0.13rem;
+			border-top: 1px solid #d1d5db;
+			font-size: 0.55rem;
+			line-height: 1.3;
+			color: #4b5563;
+		}
+
+		.game-detail-boost-row {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 0.5rem;
+		}
+
+		.game-detail-boost-explainer {
+			flex: 1;
+			font-size: 0.58rem;
+			line-height: 1.3;
+			color: #4b5563;
+		}
+
+		.powerscore-boost-input {
+			width: 3.5rem;
+			padding: 0.1rem 0.25rem;
+			border: 1px solid #d1d5db;
+			border-radius: 0.2rem;
+			background: #ffffff;
+			color: #111827;
+			font-size: 0.6rem;
+			color-scheme: light;
+		}
+	}
+
+	// ─── Notification ────────────────────────────────────────────────────────────
+	// An operating-system banner rather than a piece of the popup, so it takes the page's surfaces.
+	.doc-demo-notification {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+		width: 22rem;
+		max-width: 100%;
+		padding: 0.75rem 0.9rem;
+		background: color-mix(in srgb, var(--as-bg-3) 55%, var(--as-bg-body));
+		border: 1px solid var(--as-border-color);
+		border-radius: 1rem;
+		box-shadow: 0 10px 30px var(--lift-shadow);
+		font-size: 0.8125rem;
+		line-height: 1.35;
+	}
+
+	.doc-demo-notification-icon {
+		flex-shrink: 0;
+		width: 2.5rem;
+		height: 2.5rem;
+	}
+
+	.doc-demo .doc-demo-notification-icon {
+		border-radius: 0.6rem;
+	}
+
+	.doc-demo-notification-body {
+		min-width: 0;
+	}
+
+	.doc-demo-notification-source {
+		display: flex;
+		justify-content: space-between;
+		gap: 0.75rem;
+		font-size: 0.72rem;
+		color: var(--color-muted);
+	}
+
+	.doc-demo-notification-title {
+		margin-top: 0.1rem;
+		font-weight: 600;
+		color: var(--color-text);
+	}
+
+	.doc-demo-notification-message {
+		color: var(--as-fg-1);
+	}
+
+	// ─── Browser ─────────────────────────────────────────────────────────────────
+	// The hero's Chrome classes, with the hero's narrow-screen rules undone: this strip shrinks its
+	// tabs to fit rather than scrolling them.
+	.doc-demo-browser {
+		width: 100%;
+		max-width: 40rem;
+		overflow: hidden;
+		border-radius: 0.7rem;
+		background: $chrome-strip;
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 1px 2px rgba(0, 0, 0, 0.5);
+
+		.browser-tabs {
+			overflow: visible;
+		}
+
+		.browser-tab {
+			flex: 1 1 12rem;
+			max-width: 13.5rem;
+			gap: 0.4rem;
+		}
+
+		.browser-tab-favicon {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			flex-shrink: 0;
+			font-size: 0.85rem;
+		}
+
+		.browser-toolbar-end {
+			display: flex;
+		}
+	}
+
+	.doc-demo-browser-sound {
+		flex-shrink: 0;
+		font-size: 0.75rem;
+		opacity: 0.6;
+
+		&.is-audible {
+			opacity: 1;
+		}
+	}
+
+	.doc-demo-browser-page {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 2.5rem;
+		aspect-ratio: 16 / 6;
+		background: linear-gradient(
+			135deg,
+			color-mix(in oklab, var(--away-tint) 38%, #060607),
+			color-mix(in oklab, var(--home-tint) 38%, #060607)
+		);
+
+		.crest {
+			--as-avatar-bg: transparent;
+			width: clamp(2.5rem, 12cqi, 4.5rem);
+			height: clamp(2.5rem, 12cqi, 4.5rem);
+			opacity: 0.9;
+		}
+	}
+
+	@media (max-width: 575.98px) {
+		.doc-demo-browser {
+			.browser-lights,
+			.browser-tab-close,
+			.browser-nav {
+				display: none;
+			}
+
+			.browser-titlebar {
+				padding-left: 0.5rem;
+			}
+
+			.browser-tab {
+				padding: 0 0.5rem;
+			}
+		}
+	}
+
+	// A spreadsheet that has never once been about sports.
+	.doc-demo-sheet {
+		padding: 0.75rem;
+		background: #ffffff;
+		color: #1f2328;
+		overflow: hidden;
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 0.72rem;
+			font-variant-numeric: tabular-nums;
+		}
+
+		th,
+		td {
+			padding: 0.3rem 0.5rem;
+			border: 1px solid #dadce0;
+			text-align: right;
+			color: #1f2328;
+		}
+
+		th {
+			background: #f1f3f4;
+			font-weight: 600;
+		}
+
+		th:first-child,
+		td:first-child {
+			text-align: left;
+		}
+	}
+
+	.doc-demo-keys {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: 0.75rem;
+		font-size: 0.875rem;
+	}
+
+	.doc-demo-keys-label {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		color: var(--color-muted);
+	}
+
+	.doc-demo-keys-combo {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+	}
+
+	.doc-demo-keys kbd {
+		min-width: 2.25rem;
+		padding: 0.3rem 0.6rem;
+		border: 1px solid var(--as-border-color);
+		border-bottom-width: 3px;
+		border-radius: 0.4rem;
+		background: var(--as-bg-body);
+		color: var(--color-text);
+		font-family: inherit;
+		font-size: 0.875rem;
+		font-weight: 600;
+		text-align: center;
+		box-shadow: none;
+	}
+
+	.doc-demo-keys-plus {
+		color: var(--color-muted);
+	}
+
+	// ─── Multiview ───────────────────────────────────────────────────────────────
+	.doc-demo-multiview {
+		@include airbrush.tokens;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 4px;
+		width: 100%;
+		max-width: 40rem;
+		padding: 4px;
+		border-radius: 0.75rem;
+		background: #000000;
+	}
+
+	.doc-demo-multiview-box {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+		overflow: hidden;
+		border-radius: var(--as-radius-3);
+		background: #000000;
+
+		&.is-audible::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border: 3px solid var(--as-primary-base);
+			border-radius: inherit;
+		}
+	}
+
+	.doc-demo-multiview-bar {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: 2.25rem;
+		padding: 0 0.5rem;
+		font-size: 0.8125rem;
+		font-weight: 700;
+		letter-spacing: 0.02em;
+
+		.crest {
+			--as-avatar-bg: transparent;
+			width: 1.5rem;
+			height: 1.5rem;
+		}
+	}
+
+	.doc-demo-multiview-team {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		min-width: 0;
+
+		&.is-left {
+			color: var(--matchup-ink-left);
+			text-shadow: var(--matchup-shadow-left);
+		}
+
+		&.is-right {
+			color: var(--matchup-ink-right);
+			text-shadow: var(--matchup-shadow-right);
+		}
+	}
+
+	.doc-demo-multiview-sound {
+		position: absolute;
+		left: 50%;
+		transform: translateX(-50%);
+		color: #ffffff;
+		font-size: 1.1rem;
+		line-height: 1;
+		text-shadow: 0 1px 2px rgb(3 7 12 / 0.55);
+	}
+
+	.doc-demo-multiview-picture {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 18%;
+		aspect-ratio: 16 / 9;
+		background: linear-gradient(
+			135deg,
+			color-mix(in oklab, var(--left-tint) 32%, #060607),
+			color-mix(in oklab, var(--right-tint) 32%, #060607)
+		);
+
+		.crest {
+			--as-avatar-bg: transparent;
+			width: 22%;
+			height: auto;
+			aspect-ratio: 1;
+			opacity: 0.85;
+		}
+	}
+
+	@container doc-demo (max-width: 26rem) {
+		.doc-demo-multiview-bar {
+			height: 1.9rem;
+			padding: 0 0.35rem;
+			font-size: 0.6875rem;
+
+			.crest {
+				width: 1.15rem;
+				height: 1.15rem;
+			}
+		}
+
+		.doc-demo-multiview-sound {
+			font-size: 0.9rem;
+		}
+	}
+
+	// ─── Guide ───────────────────────────────────────────────────────────────────
+	.doc-demo-guide {
+		--doc-guide-gutter: 7.25rem;
+		--doc-guide-ruler: 2.25rem;
+		--doc-guide-live: light-dark(#d5dbe3, #2d333b);
+		--doc-guide-live-border: light-dark(#a9b2be, #4d5561);
+		--doc-guide-live-ink: light-dark(#0b1016, #f0f6fc);
+		--doc-guide-rule: light-dark(#eceff3, #1e242c);
+		--doc-guide-gridline: light-dark(#e1e5ea, #262d37);
+		width: 100%;
+		min-width: 35rem;
+		overflow: clip;
+		border: 1px solid var(--as-border-color);
+		border-radius: 0.75rem;
+		background: var(--as-bg-body);
+		font-size: 0.72rem;
+	}
+
+	.doc-demo-guide-ruler {
+		display: flex;
+		height: var(--doc-guide-ruler);
+		border-bottom: 1px solid var(--as-border-color);
+	}
+
+	// The league column stays put while a phone scrolls the hours under it, as in the real Guide.
+	.doc-demo-guide-corner {
+		position: sticky;
+		left: 0;
+		z-index: 4;
+		background: var(--as-bg-body);
+		flex: 0 0 var(--doc-guide-gutter);
+		border-right: 1px solid var(--as-border-color);
+	}
+
+	.doc-demo-guide-track {
+		position: relative;
+		flex: 1;
+	}
+
+	.doc-demo-guide-ruler-band {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		background: color-mix(in srgb, var(--as-primary-base) 14%, transparent);
+		border-bottom: 2px solid var(--as-primary-base);
+	}
+
+	.doc-demo-guide-mark {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 0;
+
+		&::after {
+			content: '';
+			position: absolute;
+			left: 0;
+			bottom: 0;
+			width: 1px;
+			height: 5px;
+			background: var(--as-border-color);
+		}
+	}
+
+	.doc-demo-guide-league-label {
+		overflow-wrap: anywhere;
+	}
+
+	.doc-demo-guide-mark-label {
+		position: absolute;
+		top: 0.7rem;
+		left: 0;
+		transform: translateX(-50%);
+		color: var(--as-fg-3);
+		white-space: nowrap;
+	}
+
+	.doc-demo-guide-mark:first-of-type .doc-demo-guide-mark-label {
+		transform: none;
+		padding-left: 4px;
+	}
+
+	.doc-demo-guide-mark:last-of-type .doc-demo-guide-mark-label {
+		transform: translateX(-100%);
+		padding-right: 4px;
+	}
+
+	.doc-demo-guide-body {
+		position: relative;
+	}
+
+	.doc-demo-guide-plot,
+	.doc-demo-guide-overlay {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: var(--doc-guide-gutter);
+		right: 0;
+	}
+
+	.doc-demo-guide-overlay {
+		z-index: 3;
+	}
+
+	.doc-demo-guide-gridline {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 1px;
+		background: var(--doc-guide-gridline);
+	}
+
+	.doc-demo-guide-band {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		background: color-mix(in srgb, var(--as-primary-base) 7%, transparent);
+	}
+
+	.doc-demo-guide-now {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 2px;
+		background: var(--as-primary-base);
+
+		&::before {
+			content: '';
+			position: absolute;
+			top: -3px;
+			left: -2.5px;
+			width: 7px;
+			height: 7px;
+			border-radius: 50%;
+			background: var(--as-primary-base);
+		}
+	}
+
+	.doc-demo-guide-group {
+		position: relative;
+		display: flex;
+
+		& + & > * {
+			border-top: 1px solid var(--as-border-color);
+		}
+	}
+
+	.doc-demo-guide-league {
+		position: sticky;
+		left: 0;
+		z-index: 4;
+		display: flex;
+		align-items: flex-start;
+		gap: 0.4rem;
+		flex: 0 0 var(--doc-guide-gutter);
+		min-width: 0;
+		padding: 0.55rem 0.5rem 0.4rem 0.75rem;
+		border-right: 1px solid var(--as-border-color);
+		background: var(--as-bg-body);
+		font-weight: 600;
+		letter-spacing: 0.02em;
+		line-height: 1.15;
+	}
+
+	.doc-demo-guide-league-disc {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: 1.2rem;
+		height: 1.2rem;
+		border-radius: 999px;
+		box-shadow: 0 0 0 1px color-mix(in srgb, var(--as-overlay) 22%, transparent);
+
+		.crest {
+			--as-avatar-size: 0.85rem;
+		}
+	}
+
+	.doc-demo-guide-league-label {
+		padding-top: 0.1rem;
+	}
+
+	.doc-demo-guide-rows {
+		position: relative;
+		flex: 1;
+		min-width: 0;
+		padding: 0.4rem 0;
+	}
+
+	.doc-demo-guide-row {
+		position: relative;
+		height: 30px;
+		border-bottom: 1px solid var(--doc-guide-rule);
+
+		&:nth-child(odd) {
+			background: color-mix(in srgb, var(--as-overlay) 1.4%, transparent);
+		}
+	}
+
+	.doc-demo-guide-bar {
+		position: absolute;
+		top: 4px;
+		z-index: 2;
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		height: 22px;
+		padding: 0 0.55rem;
+		overflow: hidden;
+		border: 1px solid var(--as-border-color);
+		border-radius: 5px;
+		background: var(--as-bg-2);
+		color: var(--as-fg-body);
+		white-space: nowrap;
+
+		&::before,
+		&::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 3px;
+		}
+
+		&::before {
+			left: 0;
+			background: var(--guide-left);
+		}
+
+		&::after {
+			right: 0;
+			background: var(--guide-right);
+		}
+
+		&[data-status='in'] {
+			background: var(--doc-guide-live);
+			border-color: var(--doc-guide-live-border);
+			color: var(--doc-guide-live-ink);
+		}
+
+		&[data-status='post'] {
+			background: var(--as-bg-1);
+			border-color: var(--doc-guide-gridline);
+			color: var(--as-fg-3);
+		}
+	}
+
+	.doc-demo-guide-side {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+
+		&.is-loser {
+			color: var(--as-faint);
+		}
+	}
+
+	.doc-demo-guide-crest {
+		--as-avatar-size: 0.95rem;
+		--as-avatar-bg: transparent;
+	}
+
+	.doc-demo-guide-score {
+		@include gc.scoreboard-figures;
+		font-weight: 700;
+		font-size: 0.78rem;
+	}
+
+	.doc-demo-guide-time,
+	.doc-demo-guide-network,
+	.doc-demo-guide-at {
+		color: var(--as-fg-3);
+	}
+
+	.doc-demo-guide-status {
+		margin-left: 0.1rem;
+		font-size: 0.68rem;
+		font-weight: 600;
+		color: var(--as-ink-soft);
+
+		.doc-demo-guide-bar[data-status='post'] & {
+			color: var(--as-faint);
+		}
+	}
+
+	.doc-demo-guide-star {
+		color: bs.$warning;
+		font-size: 0.62rem;
+	}
+
+	// ─── Profiles and backup ─────────────────────────────────────────────────────
+	// The extension's own rules for these live in apps/extension/assets, which the site does not load.
+	.doc-demo-profiles {
+		.profile-list {
+			display: flex;
+			flex-direction: column;
+			gap: 0.25rem;
+			margin-top: 0.5rem;
+		}
+
+		.profile-row {
+			display: flex;
+			align-items: center;
+			border-radius: 0.35rem;
+			background: var(--as-bg-1);
+			border: 1px solid var(--as-bg-2);
+
+			&[data-active='true'] {
+				border-color: color-mix(in srgb, var(--as-primary-base) 55%, transparent);
+			}
+		}
+
+		.profile-row-switch {
+			display: flex;
+			flex: 1 1 auto;
+			align-items: center;
+			gap: 0.5rem;
+			min-width: 0;
+			padding: 0.4rem 0.6rem;
+		}
+
+		.profile-row-icon {
+			flex-shrink: 0;
+			color: var(--as-fg-3);
+
+			[aria-current] > & {
+				color: var(--as-primary-base);
+			}
+		}
+
+		.profile-row-name {
+			overflow: hidden;
+			font-size: 0.78rem;
+			font-weight: 600;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+
+		.profile-row-more {
+			padding: 0.2rem 0.55rem;
+			color: var(--as-fg-body);
+			line-height: 1;
+		}
+
+		// Open under the dots, the way the real menu lands with placement bottom-end.
+		.doc-demo-profile-menu {
+			position: absolute;
+			top: calc(100% + 0.25rem);
+			right: 0;
+			z-index: 1;
+			display: block;
+			min-width: 9rem;
+		}
+
+		.menu-item {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+		}
+
+		// Room for the open menu to hang below the last row.
+		.profile-row:last-child {
+			margin-bottom: 3.5rem;
+		}
+	}
+
+	.doc-demo-backup {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		width: 22rem;
+		max-width: 100%;
+	}
+
+	.doc-demo-backup-card {
+		padding: 1.25rem;
+		border: 1px solid var(--as-border-color);
+		border-radius: 0.75rem;
+		background: var(--as-bg-1);
+	}
+
+	.doc-demo-backup-heading {
+		font-size: 1rem;
+		font-weight: 700;
+	}
+
+	.doc-demo-backup-hint {
+		font-size: 0.78rem;
+		color: var(--as-faint);
+		text-wrap: pretty;
+	}
+
+	.doc-demo-backup-rows {
+		margin-top: 0.75rem;
+	}
+
+	.doc-demo-backup-row {
+		display: grid;
+		grid-template-columns: 6.5rem minmax(0, 1fr) auto;
+		gap: 0.75rem;
+		align-items: center;
+		min-height: 3rem;
+		padding: 0.55rem 0;
+		border-top: 1px solid var(--as-bg-2);
+	}
+
+	.doc-demo-backup-label {
+		font-size: 0.8rem;
+		color: var(--as-fg-3);
+	}
+
+	.doc-demo-backup-value {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.35rem;
+		min-width: 0;
+		font-size: 0.85rem;
+		color: var(--as-fg-3);
+	}
+
+	// The extension's .team-pick-crest: a white disc, which a static page never gets to tint.
+	.doc-demo-backup-disc {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		border-radius: 999px;
+		overflow: hidden;
+		box-shadow: 0 0 0 1px color-mix(in srgb, var(--as-overlay) 28%, transparent);
+	}
+
+	.doc-demo-backup-disc-logo {
+		--as-avatar-size: 21px;
+		--as-avatar-bg: transparent;
+		--as-avatar-color: #111827;
+	}
+
+	.doc-demo-backup-change {
+		font-family: 'Geist Figures', 'DM Sans', system-ui, sans-serif;
+		font-size: 0.8rem;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+	}
+}

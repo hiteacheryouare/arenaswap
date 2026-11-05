@@ -1,0 +1,74 @@
+---
+sourceHash: '6aafbef8b446'
+title: Come usare Multiview
+description: Guarda le partite più emozionanti affiancate in una sola scheda del browser, con l'audio della migliore. Attivalo e scegli quando si apre.
+section: extension
+order: 10
+navLabel: Multiview
+faq:
+  - q: Come guardo più partite su uno schermo nel browser?
+    a: Attiva Multiview nelle impostazioni di ArenaSwap, poi assegna una scheda a ogni partita che stai guardando in streaming. Quando due o più di quelle partite si fanno emozionanti insieme, ArenaSwap apre una scheda con ogni partita nel suo riquadro.
+  - q: Multiview funziona su Firefox?
+    a: No. Multiview c'è nelle versioni di ArenaSwap per Chrome ed Edge. La versione per Firefox ha tutto il resto.
+  - q: Perché Multiview non si è aperto?
+    a: Controlla che Attiva il cambio automatico sia attivo, di aver assegnato le schede ad almeno due partite in diretta e che almeno due di loro abbiano raggiunto il tuo punteggio Emozionante da. ArenaSwap aspetta anche prima il tuo Tempo di attesa tra i cambi e il Ritardo di cambio.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Multiview mette le tue partite emozionanti su un solo schermo, così non devi più scegliere tra loro. La partita più emozionante ha il riquadro più grande e l'audio.
+
+C'è su Chrome ed Edge. Firefox non ce l'ha.
+
+## Attivalo
+
+1. Apri le Impostazioni e scegli **Multiview**.
+2. Attiva **Attiva Multiview**.
+3. Una breve guida spiega cosa aspettarti. Clicca **Avanti**, poi **Continua**.
+4. Il browser chiede se ArenaSwap può «Leggere e modificare tutti i tuoi dati su tutti i siti web». Consenti. È così che i tuoi streaming compaiono insieme in una scheda.
+
+Se clicchi **Non ora** o dici di no al browser, Multiview resta spento. Tutto il resto funziona allo stesso modo.
+
+<Demo name='multiview' />
+
+## Dai una scheda a ogni partita
+
+Apri lo streaming di ogni partita nella sua scheda, poi scegli quella scheda dal menu **Assegna una scheda** nella scheda della partita. [Guardare più partite](/arenaswap/docs/extension/watching-multiple-games/) te lo spiega passo passo.
+
+Tieni attivo **Attiva il cambio automatico**. Multiview si chiude quando è spento.
+
+## Scegli quando si apre
+
+Tre impostazioni sotto **Multiview** lo decidono:
+
+- **Emozionante da** è il PowerScore che una partita deve avere per contare come emozionante, da 0 a 100. Il valore predefinito è 55. Spostalo verso **Si apre più spesso** per più Multiview. Spostalo verso **Solo momenti clou** per meno.
+- **Mostra** sceglie chi ottiene un riquadro. **Partite emozionanti** mostra solo le partite pari o sopra il tuo punteggio. **Tutte le mie partite** mostra ogni partita con una scheda.
+- **Massimo di riquadri** limita quante partite compaiono insieme, da 2 a 8. Il valore predefinito è 4. Se ne qualificano di più, i riquadri vanno ai PowerScore più alti.
+
+Multiview si apre quando almeno due delle tue partite raggiungono il tuo punteggio **Emozionante da**. Segue il tuo **Tempo di attesa tra i cambi** e il **Ritardo di cambio**, come qualsiasi altro cambio. [Controllare quando ArenaSwap cambia](/arenaswap/docs/extension/switching-and-sensitivity/) spiega entrambi.
+
+Quando una partita è emozionante e un'altra è a meno di 10 punti dal tuo punteggio **Emozionante da**, una scheda Multiview silenziata si apre in fondo alla barra delle schede e inizia a caricare quelle partite. Se la seconda partita cala, la scheda resta per 2 minuti nel caso si riprenda. Se chiudi quella scheda, Multiview aspetta il tuo Tempo di attesa tra i cambi prima di riprovare.
+
+## Mentre è aperto
+
+ArenaSwap sposta la scheda Multiview accanto alla tua partita, oppure ne apre una nuova lì, e ti ci porta. Con le notifiche attive ricevi una notifica **Cambiato → Multiview**.
+
+Il riquadro più grande, in alto a sinistra, è della partita più emozionante, ed è l'unico con l'audio. Le altre partite gli si dispongono intorno. Le schede delle partite restano aperte e silenziate sullo sfondo.
+
+## Quando si chiude
+
+Una volta aperto, Multiview resta almeno per il tuo Tempo di attesa tra i cambi, e finché uno dei suoi streaming non parte.
+
+Quando resta emozionante una sola partita, quella partita riempie la scheda Multiview per 2 minuti. Se in quel periodo un'altra partita torna a essere emozionante, tornano tutti i riquadri. Altrimenti ArenaSwap ti porta sulla scheda di quella partita e chiude Multiview. Salta i 2 minuti quando l'altra partita è finita, o quando una delle tue partite senza riquadro passa in vantaggio quanto basta perché ArenaSwap cambi su di essa.
+
+Una partita mantiene il suo riquadro durante una pausa pubblicitaria.
+
+Chiudi tu la scheda Multiview e può riaprirsi una volta passato il tuo Tempo di attesa tra i cambi. Mandala su un'altra pagina web e si ferma, e non riaprirà quelle partite per 10 minuti.
+
+Se nessuno streaming parte entro un minuto, ArenaSwap ti riporta sulla tua partita migliore e riprova dopo 10 minuti. Se un riquadro non parte mai, apri quello streaming nella sua scheda e controlla che si avvii lì.
+
+## Argomenti correlati
+
+- [Come guardare più partite insieme](/arenaswap/docs/extension/watching-multiple-games/) spiega come assegnare le schede.
+- [Come controllare quando ArenaSwap cambia scheda](/arenaswap/docs/extension/switching-and-sensitivity/) spiega attesa e ritardo.
+- [Guida alle impostazioni di ArenaSwap](/arenaswap/docs/extension/settings/) elenca ogni impostazione di Multiview.

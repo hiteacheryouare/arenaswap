@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { fallingKind } from '../../../utils/holidayDecorations';
 import type { ResolvedTheme } from '@arenaswap/core/types';
+import { drawLeaf, leafPalette, leafShadow, leafShapeCount, mixColor, type rgbColor } from './leafArt';
 
 interface holidayFallProps {
 	kind: fallingKind;
@@ -16,10 +17,11 @@ interface particle {
 	swayRange: number;
 	spin: number;
 	angle: number;
-	color: string;
+	shape: number;
+	curl: number;
+	tumblePhase: number;
+	color: rgbColor;
 }
-
-const leafColors = ['#c2571a', '#d98324', '#a33b12', '#e0a539', '#7d3b0e'];
 
 // White flakes on a white page are not there at all, so on light they are frosted, with an edge.
 const snowInk: Record<ResolvedTheme, { fill: string; edge?: string }> = {
@@ -45,17 +47,11 @@ const makeParticle = (kind: fallingKind, width: number, height: number, atTop: b
 		swayRange: config.swayRange * randomBetween(0.4, 1),
 		spin: randomBetween(-0.03, 0.03),
 		angle: Math.random() * Math.PI * 2,
-		color: leafColors[Math.floor(Math.random() * leafColors.length)]!,
+		shape: Math.floor(Math.random() * leafShapeCount),
+		curl: Math.random() - 0.5,
+		tumblePhase: Math.random() * Math.PI * 2,
+		color: mixColor(leafPalette[Math.floor(Math.random() * leafPalette.length)]!, leafShadow, Math.random() * 0.2),
 	};
-};
-
-const drawLeafShape = (ctx: CanvasRenderingContext2D, size: number) => {
-	ctx.beginPath();
-	ctx.moveTo(0, -size);
-	ctx.quadraticCurveTo(size * 0.75, -size * 0.25, 0, size);
-	ctx.quadraticCurveTo(-size * 0.75, -size * 0.25, 0, -size);
-	ctx.closePath();
-	ctx.fill();
 };
 
 // Falling only. The pile it lands in lives at the foot of the page in holidayDrift, which is a
@@ -112,13 +108,19 @@ const holidayFall = ({ kind, theme = 'dark' }: holidayFallProps) => {
 						ctx.stroke();
 					}
 				} else {
-					ctx.save();
-					ctx.translate(x, p.y);
-					ctx.rotate(p.angle);
-					ctx.fillStyle = p.color;
 					ctx.globalAlpha = 0.9;
-					drawLeafShape(ctx, p.size);
-					ctx.restore();
+					drawLeaf(ctx, {
+						x,
+						y: p.y,
+						size: p.size,
+						// Flattens and widens as it turns over on the way down.
+						tilt: 0.3 + 0.7 * Math.abs(Math.cos(frame / 45 + p.tumblePhase)),
+						angle: p.angle,
+						shape: p.shape,
+						curl: p.curl,
+						color: p.color,
+					});
+					ctx.globalAlpha = 1;
 				}
 			}
 

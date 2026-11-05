@@ -1,5 +1,3 @@
-import { luminance } from '../colour';
-
 // What a browser can answer and a unit test cannot: whether the twelve languages fit the layout
 // they were written for, and whether a visit stays in the language it started in.
 //
@@ -68,8 +66,8 @@ describe('the install button holds its label', () => {
 
 describe('a visit stays in the language it started in', () => {
 	locales.forEach(locale => {
-		// Three hops deep, through the documentation, which is the tree that is not translated and
-		// therefore the one that used to drop you back into English along with the whole chrome.
+		// Three hops deep, through the documentation, which used to drop you back into English along
+		// with the whole chrome.
 		it(`survives the documentation in ${locale}`, () => {
 			cy.viewport(1280, 900);
 			cy.visit(`/${locale}/`);
@@ -82,7 +80,7 @@ describe('a visit stays in the language it started in', () => {
 			cy.get('.nav-desktop-links a').eq(2).click();
 			cy.location('pathname').should('eq', `/arenaswap/${locale}/docs/`);
 			cy.get('html').should('have.attr', 'lang', locale);
-			cy.get('.untranslated-notice').should('be.visible');
+			cy.get('.untranslated-notice').should('not.exist');
 
 			cy.get('.docs-hub-list a').first().click();
 			cy.location('pathname').should('match', new RegExp(`^/arenaswap/${locale}/docs/`));
@@ -90,7 +88,8 @@ describe('a visit stays in the language it started in', () => {
 			cy.get('.docs-nav a').eq(3).click();
 			cy.location('pathname').should('match', new RegExp(`^/arenaswap/${locale}/docs/`));
 			cy.get('html').should('have.attr', 'lang', locale);
-			cy.get('.untranslated-notice').should('be.visible');
+			cy.get('.untranslated-notice').should('not.exist');
+			cy.get('article.prose').should('not.have.attr', 'lang');
 
 			cy.get('footer .footer-links a').each($link => {
 				const href = $link[0].getAttribute('href') ?? '';
@@ -107,11 +106,12 @@ describe('a visit stays in the language it started in', () => {
 		cy.get('.untranslated-notice').should('not.exist');
 	});
 
-	// An untranslated page announces no alternates, because an alternate announces a translation.
-	it('points an untranslated page at the English original', () => {
+	it('gives a translated article its own canonical and all twelve alternates', () => {
 		cy.request('/de/docs/extension/getting-started/').its('body').then((html: string) => {
-			expect(html).to.contain('<link rel="canonical" href="https://hiteacheryouare.github.io/arenaswap/docs/extension/getting-started/"');
-			expect(html).not.to.contain('<link rel="alternate" hreflang');
+			const alternates = [...html.matchAll(/<link rel="alternate" hreflang="([a-zA-Z-]+)"/g)].map(match => match[1]);
+			expect(alternates).to.have.members([...locales, 'en', 'x-default']);
+			expect(html).to.contain('<link rel="canonical" href="https://hiteacheryouare.github.io/arenaswap/de/docs/extension/getting-started/"');
+			expect(html).to.contain('"inLanguage":"de"');
 		});
 	});
 
@@ -156,7 +156,7 @@ describe('the language switcher', () => {
 		cy.get('html').should('have.attr', 'lang', 'de');
 	});
 
-	it('keeps your place on a page that was never translated', () => {
+	it('keeps your place in the documentation', () => {
 		cy.visit('/docs/extension/getting-started/');
 		cy.get('.lang-switch-note').should('not.exist');
 		cy.get('.lang-switch-trigger').click();
@@ -185,29 +185,21 @@ describe('the language switcher', () => {
 	});
 });
 
-describe('the untranslated notice', () => {
-	// Bootstrap's alert surfaces come in a light and a dark tone, and a light one is a pale slab on
-	// this page.
-	it('is a Bootstrap alert that reads on the dark page', () => {
-		cy.visit('/de/docs/extension/getting-started/', { onBeforeLoad: pinDarkTheme });
-		cy.get('.untranslated-notice').should('have.class', 'alert').then($notice => {
-			const style = getComputedStyle($notice[0]);
-			const surface = luminance(style.backgroundColor);
-			const ink = luminance(style.color);
-			expect(surface, 'a dark surface').to.be.lessThan(0.05);
-			expect((ink + 0.05) / (surface + 0.05), 'contrast').to.be.greaterThan(4.5);
+describe('the translated documentation', () => {
+	// A translated heading keeps the English id, so a link written against the English article
+	// lands on the same section in every language.
+	it('keeps the English anchors on translated headings', () => {
+		locales.forEach(locale => {
+			cy.request(`/${locale}/docs/powerscore/signals/`).its('body').then((html: string) => {
+				expect(html, locale).to.contain('id="closeness"');
+				expect(html, locale).to.contain('id="why-the-ceilings-add-up-to-more-than-the-total"');
+			});
 		});
 	});
 
-	it('names the language it is written in, in every locale', () => {
-		locales.forEach(locale => {
-			cy.visit(`/${locale}/docs/`);
-			cy.get('.untranslated-notice-heading').should('not.be.empty');
-			cy.get('.untranslated-notice-body').should('not.be.empty');
-			cy.get('.untranslated-notice').then($notice => {
-				expect($notice[0].getBoundingClientRect().width, 'notice inside the reading column')
-					.to.be.lessThan(1281);
-			});
-		});
+	it('translates the release notes', () => {
+		cy.visit('/de/releases/2.2.0/');
+		cy.get('.untranslated-notice').should('not.exist');
+		cy.get('.release-title').should('not.have.attr', 'lang');
 	});
 });

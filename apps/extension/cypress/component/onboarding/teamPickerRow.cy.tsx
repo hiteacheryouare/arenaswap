@@ -32,10 +32,10 @@ describe('teamPickerRow', () => {
 	it('sets the placeholder initials dark, against that white disc', () => {
 		cy.mount(<TeamPickerRow team={team({ logo: undefined })} isFavorite={false} onToggle={() => {}} />);
 
-		cy.get('.crest-fallback')
+		cy.get('.crest-initials')
 			.should('have.text', 'BOS')
-			.and('have.css', 'color', 'rgb(17, 24, 39)')
-			.and('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
+			.and('have.css', 'color', 'rgb(17, 24, 39)');
+		cy.get('.crest').should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 	});
 
 	// The star used to be the only target, about 16px at the end of a 300px row.

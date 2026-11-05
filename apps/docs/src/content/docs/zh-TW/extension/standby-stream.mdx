@@ -1,0 +1,47 @@
+---
+sourceHash: '7a9d6a58a2ff'
+title: 如何設定 Standby Stream
+description: 挑一個分頁，在你正在看的每場比賽都冷下來時停靠，ArenaSwap 會帶你過去，等精彩回來再帶你回去。
+section: extension
+order: 5
+navLabel: Standby Stream
+faq:
+  - q: ArenaSwap 的 Standby Stream 是什麼？
+    a: 一個你事先挑好的分頁。當你指派過分頁的每場比賽都冷下來，ArenaSwap 會帶你到那個分頁。有比賽重新升溫時，ArenaSwap 會帶你回去。
+  - q: 為什麼 Standby Stream 明明開著卻沒有任何動作？
+    a: 檢查你是否已在設定裡挑了待機分頁、是否已為至少一場進行中的比賽指派分頁，以及是否開啟了啟用自動切換。如果正在顯示 Multiview，會以它優先。
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+有些夜晚，你正在看的每場比賽同時變得無聊：一面倒的比分、雨天延賽、中場休息。Standby Stream 讓 ArenaSwap 有個更好的地方可以放你，像是精華節目或攝影棚直播。
+
+## 設定
+
+1. 打開你想當備用的分頁，並讓它保持開啟。
+2. 在設定裡，打開 **Standby Stream**，開啟 **啟用 Standby Stream**。
+3. 從 **待機分頁** 下拉選單挑你的分頁。
+
+如果下拉選單還顯示 **選擇分頁**，你的比賽冷下來時就不會有任何動作。
+
+第一次開啟時，會有一份簡短的兩步驟導覽，列出同樣的步驟。完成後，在第二個畫面點 **了解**。
+
+<Demo name='standby' />
+
+## 決定多冷才算冷
+
+**低於此分數時待機** 是 0 到 100 的滑桿，預設為 20。往上拉，ArenaSwap 會更早把你停靠到待機，這時比賽還算有點意思。往下拉，ArenaSwap 會讓比賽在螢幕上待更久才放棄它們。
+
+## 會發生什麼事
+
+當你指派過分頁的每場比賽都冷下來，ArenaSwap 會切換到你的待機分頁。只要其中任何一場重新升溫，它就會帶你切回去。
+
+如果你自己點到別的分頁，ArenaSwap 會帶你到最好看的比賽。如果到冷卻結束時還沒有任何比賽升溫，它會把你帶回待機分頁。想完全不被移動地瀏覽，就關閉 **啟用自動切換**。
+
+Standby Stream 只監看你指派過分頁的比賽。沒有指派任何比賽分頁的話，它就沒有可以退下來的對象。
+
+## 相關內容
+
+- [如何同時觀看多場比賽](/arenaswap/docs/extension/watching-multiple-games/)說明如何為比賽指派分頁。
+- [ArenaSwap 設定參考](/arenaswap/docs/extension/settings/)列出每一項 Standby Stream 設定的預設值。
+- [如何使用 Multiview](/arenaswap/docs/extension/multiview/)能在同一個分頁顯示多場精彩比賽，適合不只一場值得看的時候。

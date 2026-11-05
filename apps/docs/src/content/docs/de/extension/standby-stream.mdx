@@ -1,0 +1,47 @@
+---
+sourceHash: '7a9d6a58a2ff'
+title: So richtest du Standby Stream ein
+description: Wähl einen Tab zum Parken, wenn jedes Spiel, das du schaust, ruhig wird. ArenaSwap bringt dich hin und wieder zurück, sobald die Action wiederkommt.
+section: extension
+order: 5
+navLabel: Standby Stream
+faq:
+  - q: Was ist Standby Stream in ArenaSwap?
+    a: Ein Tab, den du vorher wählst. Wird jedes Spiel, dem du einen Tab zugewiesen hast, ruhig, bringt ArenaSwap dich dorthin. Wird ein Spiel wieder heiß, bringt ArenaSwap dich zurück.
+  - q: Warum tut Standby Stream nichts, obwohl es eingeschaltet ist?
+    a: Prüf, ob du in den Einstellungen einen Standby-Tab gewählt, mindestens einem Live-Spiel einen Tab zugewiesen und Automatisches Wechseln aktivieren eingeschaltet hast. Zeigt Multiview gerade Spiele, hat es Vorrang.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+An manchen Abenden wird jedes Spiel, das du schaust, gleichzeitig langweilig: Kantersiege, eine Regenpause, Halbzeit. Standby Stream gibt ArenaSwap einen besseren Ort, an den es dich setzen kann, etwa eine Highlight-Show oder eine Studio-Übertragung.
+
+## Einrichten
+
+1. Öffne den Tab, den du als Ausweich haben willst, und lass ihn offen.
+2. Öffne in den Einstellungen **Standby Stream** und schalte **Standby Stream aktivieren** ein.
+3. Wähl deinen Tab im Dropdown **Standby-Tab**.
+
+Steht im Dropdown noch **Tab auswählen**, passiert nichts, wenn deine Spiele ruhig werden.
+
+Beim ersten Einschalten zeigt dir eine kurze Anleitung in zwei Schritten dieselben Schritte. Tipp auf dem zweiten Bildschirm auf **Verstanden**, wenn du fertig bist.
+
+<Demo name='standby' />
+
+## Festlegen, wie ruhig ruhig ist
+
+**Standby unter** ist ein Regler von 0 bis 100, standardmäßig auf 20. Schieb ihn nach oben, und ArenaSwap parkt dich früher im Standby, solange Spiele noch mäßig interessant sind. Schieb ihn nach unten, und ArenaSwap lässt deine Spiele länger auf dem Bildschirm, bevor es sie aufgibt.
+
+## Was dich erwartet
+
+Wird jedes Spiel, dem du einen Tab zugewiesen hast, ruhig, wechselt ArenaSwap zu deinem Standby-Tab. Wird eines davon wieder heiß, wechselt es dich zurück.
+
+Klickst du selbst auf einen anderen Tab, bringt ArenaSwap dich zu deinem besten Spiel. Ist am Ende des Cooldowns nichts heißer geworden, holt es dich zurück zum Standby-Tab. Um zu stöbern, ohne dass du überhaupt umgesetzt wirst, schalte **Automatisches Wechseln aktivieren** aus.
+
+Standby Stream beobachtet nur Spiele, denen du einen Tab zugewiesen hast. Ohne zugewiesene Spiel-Tabs gibt es nichts, wovon es ausweichen könnte.
+
+## Verwandt
+
+- [Mehrere Spiele gleichzeitig schauen](/arenaswap/docs/extension/watching-multiple-games/) behandelt das Zuweisen von Tabs zu Spielen.
+- [Die ArenaSwap-Einstellungen im Überblick](/arenaswap/docs/extension/settings/) führt den Standardwert jeder Standby-Stream-Einstellung auf.
+- [So nutzt du Multiview](/arenaswap/docs/extension/multiview/) zeigt mehrere spannende Spiele in einem Tab, für Momente, in denen mehr als eines sehenswert ist.

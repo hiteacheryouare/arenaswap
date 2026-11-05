@@ -1,0 +1,60 @@
+---
+sourceHash: '2f02624226c3'
+title: Utiliser le bouton « Le chef arrive »
+description: Un clic ou Alt+Shift+X coupe le son de tes matchs, met ArenaSwap en pause et affiche une page qui a l'air de bosser. Choisis la page et le raccourci ici.
+section: extension
+order: 11
+navLabel: Bouton « Le chef arrive »
+faq:
+  - q: À quoi sert le bouton « Le chef arrive » dans ArenaSwap ?
+    a: Il coupe le son de tes onglets de match, met le changement automatique en pause et t'envoie sur une page choisie à l'avance, par exemple un tableur. Réactive Activer le changement automatique quand tu veux retrouver tes matchs.
+  - q: Quel est le raccourci clavier du bouton « Le chef arrive » ?
+    a: Alt+Shift+X par défaut. Tu peux le changer sur la page des raccourcis d'extensions de ton navigateur. Survole le bouton dans la fenêtre d'ArenaSwap pour voir ton raccourci actuel.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Quelqu'un passe derrière toi, et un onglet plein de prolongations, ce n'est pas ce qu'il faut avoir sous les yeux. Le bouton « Le chef arrive » cache les matchs d'un seul geste.
+
+## Ce qu'il fait
+
+Quand tu l'actives, ArenaSwap :
+
+- coupe le son de tes onglets de match ;
+- met le changement automatique en pause, pour que rien ne te ramène tout seul à un match ;
+- t'envoie sur ta page de couverture.
+
+<Demo name='boss-button' />
+
+## Comment l'activer
+
+- Clique sur l'icône de navigation privée dans la barre du haut de la fenêtre.
+- Ou appuie sur **Alt+Shift+X** depuis n'importe quel onglet. Pas besoin d'ouvrir la fenêtre d'abord.
+
+## Choisir ta page de couverture
+
+Ouvre les Paramètres, puis **Changement**, et trouve **Page de couverture**. Saisis n'importe quelle adresse web qui a l'air occupée, comme un tableur ou un document. Appuie sur Entrée ou clique en dehors du champ pour enregistrer.
+
+- Si la page est déjà ouverte, le bouton saute sur cet onglet.
+- Sinon, ArenaSwap l'ouvre pour toi.
+- Laisse le champ vide et tu obtiens un onglet vierge.
+- Seules les adresses web fonctionnent. Autre chose affiche « Ça ne ressemble pas à une adresse web. »
+
+## Retrouver les matchs
+
+Le bouton ne s'annule pas tout seul. Une fois la voie libre, ouvre la fenêtre et réactive **Activer le changement automatique**. Tes onglets et tes matchs assignés sont toujours là.
+
+## Changer le raccourci
+
+Définis une nouvelle touche pour **Le chef arrive** sur la page des raccourcis d'extensions de ton navigateur :
+
+- Chrome : `chrome://extensions/shortcuts`
+- Edge : `edge://extensions/shortcuts`
+- Firefox : le gestionnaire de modules complémentaires, le menu en forme d'engrenage, puis **Gérer les raccourcis des extensions**
+
+Si une autre extension utilise déjà Alt+Shift+X, choisis une autre touche là-bas. Sans raccourci défini, le bouton reste utilisable d'un clic.
+
+## À lire aussi
+
+- [Regarder plusieurs matchs en même temps](/arenaswap/docs/extension/watching-multiple-games/) couvre les onglets de match dont le bouton coupe le son.
+- [Référence des paramètres d'ArenaSwap](/arenaswap/docs/extension/settings/) liste la page de couverture avec le reste de Changement.

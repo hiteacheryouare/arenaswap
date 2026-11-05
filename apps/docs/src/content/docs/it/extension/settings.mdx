@@ -1,0 +1,97 @@
+---
+sourceHash: '3f391bc4d95c'
+title: Guida alle impostazioni di ArenaSwap
+description: Cosa cambia ogni impostazione di ArenaSwap, raggruppata come la raggruppa il popup, con il valore predefinito di ciascuna.
+section: extension
+order: 7
+navLabel: Impostazioni
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Tocca l'ingranaggio nella barra in alto del popup per aprire le Impostazioni. Usa la casella di ricerca in alto per trovare un'impostazione dal nome o da quello che vuoi ottenere. Le impostazioni sono raggruppate in Cambio, Punteggio, Squadre preferite, Leghe, Visualizzazione, Standby Stream, Multiview e Profili e backup. Firefox non ha Multiview.
+
+## Cambio
+
+- **Sensibilità di cambio** (**Equilibrato**): quanto più emozionante deve essere un'altra partita prima che ArenaSwap ti sposti. Sette livelli, da **Appena attivo** a **Ludicrous Speed**. Più alto significa più cambi.
+- **Tempo di attesa tra i cambi** (45 secondi): l'attesa minima tra due cambi. Da **Off** a 3 minuti.
+- **Ritardo di cambio** (Off): quanto aspetta ArenaSwap prima di cambiare scheda, così uno streaming in ritardo si può allineare. Da **Off** a 3 minuti.
+- **Cambio nelle pause** (Off): trattiene un cambio finché la partita che lasci non arriva a una pausa del gioco. Potresti perderti un momento nella partita su cui passa.
+- **Notifiche di cambio** (On): una notifica con il punteggio e il motivo a ogni cambio di ArenaSwap.
+- **Quando una partita termina** (**Lascia la scheda com'è**): cosa succede alla scheda di una partita quando finisce. **Liberala da ArenaSwap** lascia la scheda aperta e ne riattiva l'audio. **Chiudi la scheda** la chiude. La scheda che stai guardando non viene toccata finché non te ne sposti.
+- **Pagina di copertura** (una scheda vuota): dove ti porta il pulsante del capo. Silenzia anche ogni scheda gestita da ArenaSwap e mette in pausa il cambio automatico. Vedi [come usare il pulsante del capo](/arenaswap/docs/extension/boss-button/).
+- **Modalità demo** (Off): sostituisce le partite in diretta con partite scriptate, così puoi provare ArenaSwap senza aspettare una partita vera. **Fai finta che sia** compare quando è attiva e cambia solo le decorazioni delle feste.
+
+<Demo name='toggle' setting='contentAwareSwitching.label' checked={false} />
+
+Di più su queste in [come controllare quando ArenaSwap cambia scheda](/arenaswap/docs/extension/switching-and-sensitivity/).
+
+## Punteggio
+
+- **Cosa cerca il PowerScore** (Classica): **Classica** per le partite tirate, **Senso unico** per quelle a senso unico, **Fantasy** per le partite con i tuoi giocatori, **Personalizzata** per una modalità diversa per lega.
+- **Modalità per lega** (Classica): compare con **Personalizzata**. Una lega che lasci stare usa Classica.
+- **Segnali PowerScore** (tutti attivi): le cose che ogni modalità misura. Disattiva quelle che non ti interessano, ma almeno una deve restare attiva.
+- **Quanto i tuoi giocatori fanno salire le loro partite** (60%): quanto conta la tua rosa. Da **Per niente** a **Il loro punteggio pieno**.
+- **I tuoi giocatori** (vuoto): fino a 50 giocatori da far seguire a Fantasy. NFL, NBA, WNBA, MLB e NHL.
+- **Regole di punteggio** (punti standard): quanti punti fantasy vale ogni statistica.
+- **Boost squadra preferita** (10): punti aggiunti alle partite con una squadra che segui.
+- **Boost postseason** (8): punti aggiunti alle partite di playoff. I turni avanzati ne ricevono di più. Non vale in Senso unico.
+
+Di più su queste in [come cambiare cosa cerca ArenaSwap in una partita](/arenaswap/docs/extension/scoring-modes/).
+
+## Squadre preferite
+
+- **Squadre che segui** (nessuna): le squadre seguite restano in cima alla lista e le loro partite ricevono il boost per la squadra preferita.
+
+## Leghe
+
+- **Leghe attive** (quelle scelte durante la configurazione): le leghe che ArenaSwap guarda. Attivane altre e trova la partita migliore tra tutte.
+- **Division e conference universitarie**: quali partite universitarie compaiono. Scegli altre division o conference per allargare o restringere la lista, o mostra solo la Top 25. I turni finali come March Madness e il College Football Playoff compaiono sempre, e anche le partite delle tue squadre preferite.
+
+## Visualizzazione
+
+- **Mostra le partite in arrivo** (On): aggiunge una sezione A seguire per le partite non ancora iniziate, così puoi assegnare le schede in anticipo.
+- **Giorni di anticipo** (7): fin dove guarda A seguire, da 1 a 14 giorni.
+- **Mantieni le partite terminate** (Off): tiene una partita per 24 ore dopo la fine, in una sezione Terminate. Puoi leggere il boxscore, ma non assegnarle una scheda.
+- **Consigli** (On): brevi consigli nella schermata principale.
+- **Mostra scommesse e quote** (Off): mostra le quote delle scommesse nelle schede delle partite e nella schermata di dettaglio.
+- **Unità di temperatura** (°F): **°F** o **°C** per il meteo nella schermata di dettaglio di una partita.
+- **Tema** (Scuro): **Scuro**, **Chiaro** o **Come il sistema**.
+- **Animazione di apertura** (On): un poster della sfida per ogni partita quando apri ArenaSwap.
+- **Decorazioni delle feste** (On): neve, luci e foglie nei periodi giusti dell'anno. Neve, Luci e Foglie hanno ciascuna il proprio interruttore.
+- **Raggruppa le partite per lega** (Off nelle nuove installazioni): mette le partite sotto un'intestazione per ogni lega invece che in un'unica lista. Le tue squadre preferite restano in cima in entrambi i casi.
+- **Ordine di visualizzazione**: compare con **Raggruppa le partite per lega**. Trascina le leghe, o usa le frecce, per decidere quale viene prima.
+
+## Standby Stream
+
+- **Attiva Standby Stream** (Off): sceglie una scheda di ripiego dove parcheggiarti quando tutte le partite che guardi si spengono.
+- **Standby sotto** (20): quanto è "spento", da 0 a 100. Più alto significa che lo standby scatta prima.
+- **Scheda standby** (nessuna): la scheda su cui ti porta ArenaSwap.
+
+Di più in [come configurare Standby Stream](/arenaswap/docs/extension/standby-stream/).
+
+## Multiview
+
+Solo Chrome ed Edge. Vedi [come usare Multiview](/arenaswap/docs/extension/multiview/).
+
+- **Attiva Multiview** (Off): quando due o più delle tue partite sono emozionanti insieme, le mostra assieme in una scheda. La partita più emozionante ha il riquadro più grande e l'unico audio. Attivarlo chiede al browser il permesso di leggere e modificare tutti i siti web. Se dici di no, Multiview resta spento.
+- **Emozionante da** (55): quanto deve essere emozionante una partita per entrare. Più basso apre Multiview più spesso. Più alto lo tiene per i grandi momenti.
+- **Mostra** (**Partite emozionanti**): **Partite emozionanti** o **Tutte le mie partite**.
+- **Massimo di riquadri** (4): il massimo di partite insieme sullo schermo, da 2 a 8.
+
+## Profili e backup
+
+Vedi [come usare i profili e fare il backup delle impostazioni](/arenaswap/docs/extension/profiles-and-backup/).
+
+- **Profili**: configurazioni separate tra cui passare, come una per le domeniche di football e una per marzo. Inizia una nuova da una copia della configurazione attuale o da zero.
+- **Backup o ripristino**: scarica la tua configurazione in un file, o importane una. L'importazione aggiunge un nuovo profilo oppure sostituisce ogni impostazione di quello che usi.
+
+## Argomenti correlati
+
+- [Come controllare quando ArenaSwap cambia scheda](/arenaswap/docs/extension/switching-and-sensitivity/)
+- [Come cambiare cosa cerca ArenaSwap in una partita](/arenaswap/docs/extension/scoring-modes/)
+- [Come impostare le squadre preferite in ArenaSwap](/arenaswap/docs/extension/favorite-teams/)
+- [Come configurare Standby Stream](/arenaswap/docs/extension/standby-stream/)
+- [La Guida](/arenaswap/docs/extension/guide/)
+- [Dettagli della partita](/arenaswap/docs/extension/game-details/)
+- [Prova ArenaSwap con la Modalità demo](/arenaswap/docs/extension/demo-mode/)

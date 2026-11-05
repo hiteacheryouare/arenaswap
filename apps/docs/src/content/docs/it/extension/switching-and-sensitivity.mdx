@@ -1,0 +1,61 @@
+---
+sourceHash: '160ac78129f6'
+title: Come controllare quando ArenaSwap cambia scheda
+description: Fai cambiare ArenaSwap più o meno spesso, fallo aspettare mentre il tuo streaming si allinea e resta su una partita fino alla fine dell'azione che stai guardando.
+section: extension
+order: 3
+navLabel: Cambio
+faq:
+  - q: Come impedisco ad ArenaSwap di cambiare scheda così spesso?
+    a: Abbassa la Sensibilità di cambio, alza il Tempo di attesa tra i cambi, oppure scollega la scheda che non vuoi fargli toccare. Disattivare Attiva il cambio automatico lo ferma del tutto.
+  - q: Perché ArenaSwap continua a rimbalzare tra due partite?
+    a: Due delle tue partite si scambiano il ruolo di più emozionante. Alza il Tempo di attesa tra i cambi, così ArenaSwap resta su una partita più a lungo prima di spostarsi di nuovo.
+  - q: Perché ArenaSwap cambia prima che io veda l'azione decisiva?
+    a: Il tuo streaming è in ritardo rispetto alla partita dal vivo. Aggiungi un Ritardo di cambio così la tua diretta si allinea prima che la scheda cambi.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Tutti questi controlli stanno nelle Impostazioni, sotto **Cambio**. Scegli quello che corrisponde a ciò che ti dà fastidio.
+
+## Cambia meno spesso
+
+Apri **Sensibilità di cambio** e spostala verso **Appena attivo**. ArenaSwap aspetta allora che un'altra partita sia molto più emozionante di quella che guardi prima di spostarti. Il valore predefinito è **Equilibrato**.
+
+<Demo name='slider' kind='sensitivity' />
+
+Se ArenaSwap è lento ad accorgersi di una partita che si sta chiaramente scaldando, spostala dall'altra parte, verso **Scattante** o **Ludicrous Speed**.
+
+## Evita che rimbalzi tra le partite
+
+**Tempo di attesa tra i cambi** è l'attesa minima tra due cambi, da **Off** fino a 3 minuti. Il valore predefinito è 45 secondi. Alzalo e ArenaSwap resta più a lungo su una partita, anche quando l'altra passa brevemente in vantaggio. Abbassalo per seguire ogni ribaltone in un finale pazzo.
+
+Anche cliccare tu stesso su una delle schede delle partite fa partire l'attesa, così ArenaSwap non ti strappa da una partita che hai appena scelto.
+
+<Demo name='slider' kind='cooldown' />
+
+## Dai tempo al tuo streaming
+
+Gli streaming sono in ritardo rispetto alla partita vera. **Ritardo di cambio** fa aspettare ArenaSwap prima di cambiare scheda, da **Off** fino a 3 minuti. Se finisci sempre su una partita poco prima che l'azione decisiva arrivi sul tuo schermo, aggiungi 15 o 30 secondi. ArenaSwap ricontrolla la partita prima di cambiare, quindi non ti manda su una che si è spenta nell'attesa.
+
+## Non farti interrompere a metà azione
+
+Attiva **Cambio nelle pause** e ArenaSwap trattiene il cambio finché la partita che stai lasciando non arriva a una pausa naturale: la fine del turno di battuta, un fischio, la fine dell'azione. Vedi come va a finire, poi vai.
+
+Se la pausa non arriva, il cambio avviene comunque dopo una breve attesa. Non aspetta affatto quando la partita che lasci è già in un timeout, in una pausa pubblicitaria o in un intervallo, quando è a senso unico, o quando l'altra partita è a un momento decisivo. Calcio, football universitario e hockey universitario cambiano subito.
+
+Mentre un cambio è in attesa, il popup mostra quale partita è la prossima. Con **Notifiche di cambio** attive ricevi anche una notifica "A seguire". Il rovescio della medaglia: potresti perderti qualcosa nella partita su cui stai per passare.
+
+## Metti in pausa il cambio del tutto
+
+L'interruttore nella barra in alto, **Attiva il cambio automatico**, è quello generale. Spegnilo e le tue schede restano dove sono. Riaccendilo e ArenaSwap riparte da lì.
+
+## Resta a schermo intero quando cambia
+
+Metti la finestra del browser a schermo intero prima che inizi la partita: **⌃⌘F** su Mac, **F11** ovunque altro. La finestra resta a schermo intero a ogni cambio, anche verso una partita in un'altra finestra. Se invece usi il pulsante schermo intero del player video, ArenaSwap rimette la finestra a schermo intero dopo ogni cambio.
+
+## Argomenti correlati
+
+- [Guida alle impostazioni di ArenaSwap](/arenaswap/docs/extension/settings/) elenca ogni impostazione di Cambio e il suo valore predefinito.
+- [Come guardare più partite insieme](/arenaswap/docs/extension/watching-multiple-games/) spiega come scegliere le schede tra cui cambia ArenaSwap.
+- [Risolvi i problemi di ArenaSwap](/arenaswap/docs/extension/troubleshooting/) spiega i cambi che sembrano un bug ma non lo sono.

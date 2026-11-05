@@ -234,10 +234,6 @@
 			opacity: 0.9;
 			transition: opacity m.$motion-instant m.$motion-ease;
 		}
-
-		.crest-fallback {
-			font-size: 0.52rem;
-		}
 	}
 
 	.team-strip:hover .team-strip-logos .crest {
@@ -602,7 +598,7 @@
 		// The plate is on the image rather than the box, so it goes with the image when the image fails.
 		.crest {
 			--as-avatar-size: 1.3rem;
-			--as-avatar-border-radius: 4px;
+			--crest-logo-radius: 4px;
 		}
 
 		.crest > img {

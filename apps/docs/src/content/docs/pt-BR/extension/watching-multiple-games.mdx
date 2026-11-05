@@ -1,0 +1,75 @@
+---
+sourceHash: '5ceb10000624'
+title: Como assistir a vários jogos ao mesmo tempo
+description: Abra cada jogo na própria aba, vincule a aba ao jogo no ArenaSwap e ele te leva para o melhor jogo, silenciando o resto.
+section: extension
+order: 2
+navLabel: Vários jogos
+faq:
+  - q: Como assisto a vários jogos ao mesmo tempo em um só navegador?
+    a: Abra cada jogo na própria aba e escolha essa aba no card do jogo no ArenaSwap. O ArenaSwap te leva para o melhor jogo e silencia os outros.
+  - q: O ArenaSwap funciona com qualquer serviço de streaming?
+    a: Funciona. Se um jogo roda em uma aba do navegador, o ArenaSwap consegue usá-lo. Isso inclui Peacock, Prime Video, YouTube TV e o site da sua operadora de TV.
+  - q: Quantos jogos posso acompanhar ao mesmo tempo?
+    a: Quantos você tiver abas abertas.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Abra seus jogos em abas separadas, diga ao ArenaSwap qual aba é qual e deixe o controle remoto com ele.
+
+## Abra cada jogo na própria aba
+
+Comece cada jogo do jeito que você costuma, no serviço que o transmite. O ArenaSwap não liga para qual é, desde que cada jogo tenha a própria aba.
+
+## Vincule cada aba ao seu jogo
+
+No popup, encontre o card de um jogo e use o menu **Atribuir uma aba** para escolher a aba dele. Jogos futuros têm o mesmo menu, então dá para vincular uma aba antes do início.
+
+Uma aba que já está vinculada a outro jogo fica acinzentada e marcada com **(em uso)**. Desvincule-a do outro jogo primeiro para movê-la.
+
+<Demo name='popup' tabs />
+
+## Deixe o ArenaSwap combinar para você
+
+Se abas que você já tem abertas parecem jogos, um banner **Essas abas parecem jogos** aparece acima da lista. Clique em **Dar uma olhada** para ver cada jogo ao lado da aba que o ArenaSwap acha que combina com ele. Combinações fortes já vêm marcadas. Desmarque as que ele errou e clique em **Atribuir 3 abas** (ou quantas estiverem marcadas).
+
+<Demo name='suggest-banner' />
+
+Feche o banner para ignorar as sugestões.
+
+## Oriente-se pela lista
+
+- **Abas ativas** guarda seus jogos vinculados, os melhores primeiro, com os jogos dos times que você marcou com estrela no topo.
+- **Jogos ao vivo** é todo o resto que está passando, caso valha a pena abrir uma aba para algum.
+- **A seguir** é o que vem por aí, um dia por vez. Use as setas para mudar de dia e o ícone de lupa para procurar um time, uma liga ou um canal.
+- **Encerrados** mostra jogos que acabaram de terminar, mas só se **Manter jogos encerrados** estiver ativado. Você não pode vincular uma aba a eles.
+
+Prefere uma lista por liga? Ative **Agrupar jogos por liga**.
+
+## Deixe rolar
+
+Com duas ou mais abas vinculadas, o ArenaSwap decide em qual você está. Ele silencia todas as abas vinculadas, menos a que você está assistindo, e te leva a um jogo quando ele é claramente melhor que o da tela. Você não precisa ficar clicando nem apertar o mudo.
+
+Para tirar uma aba da rotação, desvincule-a no menu. Para parar as trocas de vez, desligue **Ativar troca automática** na barra superior.
+
+## Escolha o que acontece quando um jogo termina
+
+**Quando um jogo termina**, nas Configurações, tem três opções:
+
+- **Deixar a aba como está** é o padrão.
+- **Liberar a aba do ArenaSwap** desvincula e reativa o som da aba e a deixa aberta.
+- **Fechar a aba** fecha.
+
+O que você escolher espera até você sair daquela aba. A última aba de uma janela é liberada em vez de fechada, para uma janela nunca sumir na sua cara. Na próxima vez que você abrir o ArenaSwap, ele conta quantas abas voltaram, como "2 abas são suas de novo."
+
+## Use mais de uma janela
+
+O menu **Atribuir uma aba** lista as abas da janela em que você abriu o ArenaSwap. Para vincular uma aba de outra janela, abra o ArenaSwap lá. Quando o ArenaSwap troca para um jogo em outra janela, essa janela vem para a frente, e a [tela cheia](/arenaswap/docs/extension/switching-and-sensitivity/#stay-full-screen-through-every-switch) vai junto.
+
+## Relacionados
+
+- [Como controlar quando o ArenaSwap troca de aba](/arenaswap/docs/extension/switching-and-sensitivity/) explica o quão rápido ou paciente ele é.
+- [Como definir times favoritos no ArenaSwap](/arenaswap/docs/extension/favorite-teams/) coloca os jogos dos seus times no topo.
+- [Como configurar o Standby Stream](/arenaswap/docs/extension/standby-stream/) explica o que acontece quando todos os jogos vinculados esfriam.
+- [Como usar o Multiview](/arenaswap/docs/extension/multiview/) coloca vários jogos em uma tela só.

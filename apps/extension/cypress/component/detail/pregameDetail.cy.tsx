@@ -141,7 +141,7 @@ describe('pre-game detail screen', () => {
 			const box = $crest[0]!.getBoundingClientRect();
 			expect(box.width, 'crest width').to.equal(64);
 			expect(box.height, 'crest height').to.equal(64);
-			expect(getComputedStyle($crest[0]!.querySelector('.crest-fallback')!).backgroundColor,
+			expect(getComputedStyle($crest[0]!).backgroundColor,
 				'the team\'s own colour').to.be.oneOf(['rgb(0, 51, 141)', 'rgb(227, 24, 55)']);
 		});
 	});
@@ -401,7 +401,7 @@ describe('pre-game detail screen', () => {
 			mountPre(pitchers);
 			cy.get('.gd-pregame-leader-row').eq(0).within(() => {
 				cy.get('img').should('not.exist');
-				cy.get('.crest-fallback').should('have.text', 'KC');
+				cy.get('.crest-initials').should('have.text', 'KC');
 			});
 			cy.get('.gd-pregame-leader-row').eq(0).then(([withFallback]: JQuery<HTMLElement>) => {
 				cy.get('.gd-pregame-leader-row').eq(1).then(([withImage]: JQuery<HTMLElement>) => {
@@ -415,8 +415,7 @@ describe('pre-game detail screen', () => {
 
 
 		// ESPN headshots are transparent PNGs, so a placeholder left in the layout behind one reads
-		// as a white halo around the player's head. That is what happened: a nested `.crest-fallback`
-		// rule here matched the hide rule in _crest.scss on specificity and beat it on source order.
+		// as a white halo around the player's head.
 		it('hides the initials once a headshot has loaded', () => {
 			mountPre({
 				...pitchers,
@@ -432,8 +431,8 @@ describe('pre-game detail screen', () => {
 				},
 			});
 			cy.get('.gd-pregame-starter-shot .crest').should('have.attr', 'data-crest-state', 'loaded');
-			cy.get('.gd-pregame-stats .crest-fallback').should('have.length', 4);
-			cy.get('.gd-pregame-stats .crest-fallback').each(($el: JQuery<HTMLElement>) => {
+			cy.get('.gd-pregame-stats .crest-initials').should('have.length', 4);
+			cy.get('.gd-pregame-stats .crest-initials').each(($el: JQuery<HTMLElement>) => {
 				expect(getComputedStyle($el[0]!).display, 'placeholder is out of the layout').to.equal('none');
 			});
 		});
@@ -442,7 +441,7 @@ describe('pre-game detail screen', () => {
 		it('keeps the initials when there is no headshot to load', () => {
 			mountPre(goalies);
 			cy.get('.gd-pregame-starter-shot .crest').should('have.attr', 'data-crest-state', 'missing');
-			cy.get('.gd-pregame-starter-shot .crest-fallback').each(($el: JQuery<HTMLElement>) => {
+			cy.get('.gd-pregame-starter-shot .crest-initials').each(($el: JQuery<HTMLElement>) => {
 				expect(getComputedStyle($el[0]!).display).to.not.equal('none');
 			});
 		});
@@ -485,10 +484,10 @@ describe('pre-game detail screen', () => {
 				awayTeam: { ...goalies.awayTeam, color: '#0C2340', alternateColor: '#0C2340' },
 			};
 			mountPre(gold);
-			cy.get('.gd-pregame-starter-shot .crest-fallback').eq(1).then(([onGold]: JQuery<HTMLElement>) => {
+			cy.get('.gd-pregame-starter-shot .crest-initials').eq(1).then(([onGold]: JQuery<HTMLElement>) => {
 				expect(getComputedStyle(onGold).color).to.equal('rgb(17, 24, 39)');
 			});
-			cy.get('.gd-pregame-starter-shot .crest-fallback').eq(0).then(([onNavy]: JQuery<HTMLElement>) => {
+			cy.get('.gd-pregame-starter-shot .crest-initials').eq(0).then(([onNavy]: JQuery<HTMLElement>) => {
 				expect(getComputedStyle(onNavy).color).to.equal('rgb(255, 255, 255)');
 			});
 		});

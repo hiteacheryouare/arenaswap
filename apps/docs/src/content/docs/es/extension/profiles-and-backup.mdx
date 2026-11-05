@@ -1,0 +1,82 @@
+---
+sourceHash: '9d5d749f8bfc'
+title: Cómo usar perfiles y respaldar tus ajustes
+description: Ten una configuración de ArenaSwap distinta para cada tipo de noche de partidos y guarda una en un archivo para usarla en otro navegador o tras reinstalar.
+section: extension
+order: 12
+navLabel: Perfiles y copia
+faq:
+  - q: ¿Cómo paso mis ajustes de ArenaSwap a otro navegador?
+    a: "Abre Ajustes, elige Perfiles y copia y haz clic en Crear copia o restaurar. Descarga una copia, abre la misma página en el otro navegador y suelta el archivo. Puedes agregarlo como perfil nuevo o reemplazar el que usas."
+  - q: ¿Los perfiles de ArenaSwap se sincronizan entre navegadores?
+    a: Tu perfil actual se sincroniza siempre que la sincronización esté activada en tu navegador. Tus otros perfiles se quedan en el navegador donde los creaste. Para llevarte uno, guárdalo en un archivo.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Una noche de playoffs y un domingo de fantasy football piden configuraciones distintas. Los perfiles te dejan tener las dos y cambiar con un clic. Las copias te permiten llevar una configuración a otro navegador.
+
+## Crea un perfil
+
+Todos empiezan con un perfil, **main**.
+
+1. Abre Ajustes y luego **Perfiles y copia**.
+2. Haz clic en **Perfil nuevo** y escribe un nombre.
+3. Haz clic en **Copiar main** para empezar con tus ajustes actuales, o en **Empezar de cero** para los valores predeterminados. (El botón muestra el nombre de tu perfil actual.)
+
+Dos perfiles no pueden tener el mismo nombre. Un perfil guarda tus ajustes y tu plantilla de Fantasy. El nuevo se convierte en tu perfil actual.
+
+<Demo name='profiles' />
+
+## Cambia de perfil
+
+Haz clic en el nombre de un perfil en la lista **Perfiles**. Una palomita marca el que está en uso. Tus ligas, equipos favoritos y modo de puntuación cambian al instante.
+
+## Cambia el nombre, exporta o elimina
+
+Haz clic en los tres puntos junto a un perfil.
+
+- **Cambiar nombre** te deja elegir un nombre nuevo.
+- **Exportar** abre la página de copias con ese perfil listo para guardar.
+- **Eliminar** quita el perfil, junto con sus ajustes y su plantilla de Fantasy. Expórtalo antes si quieres una copia.
+
+No puedes eliminar el perfil que estás usando. Cambia primero a otro.
+
+## Mantén tu configuración sincronizada
+
+En **Se sincroniza con tu navegador**, ArenaSwap enumera lo que guarda tu perfil actual: ligas activas, equipos favoritos, modo de puntuación y tu plantilla de Fantasy. Todo eso te sigue a otras computadoras cuando la sincronización está activada en tu navegador. Los otros perfiles se quedan donde están.
+
+## Guarda una copia
+
+1. Haz clic en **Crear copia o restaurar…**. Se abre en una pestaña nueva.
+2. Si tienes más de un perfil, elige uno en el menú **Perfil**.
+3. Haz clic en **Descargar copia**.
+
+El nombre del archivo lleva el perfil y la fecha de hoy, como `arenaswap-settings-main-2026-11-03.json`.
+
+## Usa una copia
+
+Abre **Crear copia o restaurar…** en el navegador al que te mudas. Si todavía estás en la configuración inicial, haz clic en **¿Tienes un archivo de copia? Sáltate la configuración e impórtalo**.
+
+1. Suelta el archivo en **Suelta una copia aquí**, o haz clic en **Elegir un archivo**.
+2. Compara la configuración del archivo con la tuya.
+3. Elige una:
+   - **Agregar como perfil nuevo** conserva todo lo que tienes y agrega la configuración del archivo al lado.
+   - **Reemplazar** cambia todos los ajustes de tu perfil actual por los del archivo. Si la copia se hizo en modo demostración, volverás al modo demostración.
+4. Cuando veas "ya se mudó por completo", haz clic en **Cerrar pestaña**.
+
+¿Elegiste el archivo equivocado? **Elegir otro archivo** empieza de nuevo.
+
+<Demo name='backup' />
+
+Si algo sale mal:
+
+- "…pusieron ese archivo a contraluz y no lograron descifrar ni una palabra": el archivo está dañado. Guarda una copia nueva.
+- "…un archivo perfectamente válido, pero no es de los nuestros": no vino de ArenaSwap. Elige uno que hayas guardado tú.
+- "Este archivo viene de una versión más reciente de ArenaSwap": actualiza la extensión y vuelve a intentarlo.
+- "Eso no se ha guardado": inténtalo otra vez.
+
+## Relacionado
+
+- [Referencia de ajustes de ArenaSwap](/arenaswap/docs/extension/settings/) enumera los ajustes de Perfiles y Crear copia o restaurar.
+- [Primeros pasos con ArenaSwap](/arenaswap/docs/extension/getting-started/) cubre la configuración inicial.

@@ -1,0 +1,75 @@
+---
+sourceHash: '5ceb10000624'
+title: Cómo ver varios partidos a la vez
+description: Abre cada partido en su propia pestaña, vincula la pestaña con el partido en ArenaSwap y te lleva al mejor partido, silenciando el resto.
+section: extension
+order: 2
+navLabel: Varios partidos
+faq:
+  - q: ¿Cómo veo varios partidos a la vez en un solo navegador?
+    a: Abre cada partido en su propia pestaña y luego elige esa pestaña en la tarjeta del partido en ArenaSwap. ArenaSwap te lleva al mejor partido y silencia los demás.
+  - q: ¿ArenaSwap funciona con cualquier servicio de streaming?
+    a: Sí. Si un partido se reproduce en una pestaña del navegador, ArenaSwap puede usarla. Eso incluye Peacock, Prime Video, YouTube TV y el sitio de tu proveedor de cable.
+  - q: ¿Cuántos partidos puedo seguir a la vez?
+    a: Tantos como pestañas tengas abiertas.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Abre tus partidos en pestañas separadas, dile a ArenaSwap qué pestaña es cuál y él se encarga del control remoto.
+
+## Abre cada partido en su propia pestaña
+
+Inicia cada partido como lo haces normalmente, en el servicio que lo tenga. A ArenaSwap no le importa cuál, siempre que cada partido tenga su propia pestaña.
+
+## Vincula cada pestaña con su partido
+
+En la ventana emergente, busca la tarjeta de un partido y usa su menú **Asigna una pestaña** para elegir su pestaña. Los partidos próximos tienen el mismo menú, así que puedes vincular una pestaña antes del arranque.
+
+Una pestaña que ya está vinculada a otro partido aparece en gris y marcada **(en uso)**. Desvincúlala primero de ese partido para moverla.
+
+<Demo name='popup' tabs />
+
+## Deja que ArenaSwap las relacione por ti
+
+Si las pestañas que ya tienes abiertas parecen partidos, aparece un aviso **Estas pestañas parecen partidos** sobre la lista. Haz clic en **Echar un vistazo** para ver cada partido junto a la pestaña que ArenaSwap cree que le corresponde. Las coincidencias sólidas vienen marcadas. Desmarca las que haya fallado y haz clic en **Asignar 3 pestañas** (o las que hayas dejado marcadas).
+
+<Demo name='suggest-banner' />
+
+Cierra el aviso para omitir las sugerencias.
+
+## Muévete por la lista
+
+- **Pestañas activas** contiene tus partidos vinculados, los mejores primero, con los partidos de tus equipos con estrella arriba.
+- **Partidos en vivo** es todo lo demás que está en juego, por si algo vale la pena para abrirle una pestaña.
+- **A continuación** es lo que viene, un día a la vez. Usa las flechas para cambiar de día y el ícono de lupa para buscar un equipo, liga o canal.
+- **Finalizados** muestra partidos que acaban de terminar, pero solo si **Mantener partidos finalizados** está activado. No puedes vincularles una pestaña.
+
+¿Prefieres una lista por liga? Activa **Agrupar partidos por liga**.
+
+## Déjalo correr
+
+Con dos o más pestañas vinculadas, ArenaSwap decide en cuál estás. Silencia todas las pestañas vinculadas excepto la que estás viendo y te lleva a un partido en cuanto es claramente mejor que el que está en pantalla. No necesitas hacer clic de un lado a otro ni silenciar nada.
+
+Para sacar una pestaña de la rotación, desvincúlala desde el menú. Para detener los cambios por completo, apaga **Activar cambio automático** en la barra superior.
+
+## Elige qué pasa cuando termina un partido
+
+**Cuando un partido finaliza** en Ajustes tiene tres opciones:
+
+- **Dejar la pestaña como está** es la predeterminada.
+- **Liberarla de ArenaSwap** desvincula la pestaña, le quita el silencio y la deja abierta.
+- **Cerrar la pestaña** la cierra.
+
+Lo que elijas espera hasta que te hayas ido de esa pestaña. La última pestaña de una ventana se libera en lugar de cerrarse, para que una ventana nunca desaparezca. La próxima vez que abras ArenaSwap, te dice cuántas pestañas regresaron, como "2 pestañas vuelven a ser tuyas."
+
+## Usa más de una ventana
+
+El menú **Asigna una pestaña** enumera las pestañas de la ventana desde la que abriste ArenaSwap. Para vincular una pestaña de otra ventana, abre ArenaSwap ahí. Cuando ArenaSwap cambia a un partido en otra ventana, esa ventana pasa al frente, y la [pantalla completa](/arenaswap/docs/extension/switching-and-sensitivity/#stay-full-screen-through-every-switch) la acompaña.
+
+## Relacionado
+
+- [Cómo controlar cuándo ArenaSwap cambia de pestaña](/arenaswap/docs/extension/switching-and-sensitivity/) explica qué tan rápido o paciente es.
+- [Cómo elegir equipos favoritos en ArenaSwap](/arenaswap/docs/extension/favorite-teams/) pone los partidos de tus equipos arriba.
+- [Cómo configurar Standby Stream](/arenaswap/docs/extension/standby-stream/) explica qué pasa cuando todos los partidos que vinculaste se ponen tranquilos.
+- [Cómo usar Multiview](/arenaswap/docs/extension/multiview/) pone varios partidos en una sola pantalla.

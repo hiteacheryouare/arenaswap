@@ -1,5 +1,5 @@
-import { getCollection } from 'astro:content';
 import type { APIRoute } from 'astro';
+import { getOriginals } from '../../lib/localizedContent';
 
 // Hand-rolled rather than pulling in @astrojs/rss for one endpoint. The feed carries the summary
 // only, not the body: an item that changes shape every time a release note is edited is worse for
@@ -19,7 +19,7 @@ export const GET: APIRoute = async ({ site }) => {
 	const feedUrl = new URL(`${base}releases/rss.xml`, origin).href;
 	const indexUrl = new URL(`${base}releases/`, origin).href;
 
-	const releases = (await getCollection('releases', ({ data }) => !data.draft))
+	const releases = (await getOriginals('releases'))
 		.toSorted((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 	const items = releases.map(release => {

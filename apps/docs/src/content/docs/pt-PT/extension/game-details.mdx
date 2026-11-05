@@ -1,0 +1,82 @@
+---
+sourceHash: '01e24339f21e'
+title: Como ler o ecrã de detalhes de um jogo no ArenaSwap
+description: Clica num jogo para ver porque está onde está no ranking, como tem corrido, quem joga e onde ver. Adiciona um Impulso do jogo para subir um jogo.
+section: extension
+order: 14
+navLabel: Detalhes do jogo
+faq:
+  - q: Como vejo porque é que um jogo tem o PowerScore que tem?
+    a: Clica no cartão do jogo no popup, ou na barra dele no Guia. Num jogo em direto, a Análise do PowerScore no separador Resumo mostra o que está a somar pontos, com uma frase em linguagem simples no fim. Passa o rato pelos ícones de informação para saberes o que cada parte significa.
+  - q: O que faz o Impulso do jogo no ArenaSwap?
+    a: Soma pontos, de 0 a 100, ao PowerScore de um jogo para o ArenaSwap o favorecer. Volta a pôr em 0 para o retirar.
+  - q: Porque é que não vejo a linha de apostas no ecrã de detalhes de um jogo?
+    a: Fica escondida, a não ser que Mostrar apostas e odds esteja ativo nas Definições.
+  - q: Porque é que este jogo não tem separador Confronto, Boxscore ou Classificação?
+    a: Os separadores só aparecem quando há algo para lá pôr. O Confronto é para jogos que ainda não começaram e o Boxscore para os que já começaram. Nem todas as ligas têm classificação.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Clica em qualquer jogo para ver porque está onde está no ranking e o que está em jogo.
+
+## Abrir um jogo
+
+Clica num cartão de jogo no popup. No [Guia](/arenaswap/docs/extension/guide/), clica na barra de um jogo e ele abre num painel lateral. Clica em **Voltar** para regressares à lista, ou em **Fechar** no Guia.
+
+Uma fila de separadores fica por baixo do marcador: **Resumo** está sempre lá, **Confronto** aparece antes de o jogo começar, **Boxscore** quando já vai a decorrer, e **Classificação** quando a tua liga tem tabela. Se não couberem todos, os restantes ficam em **Mais**.
+
+## Ver porque um jogo está tão bem classificado
+
+Abre um jogo em direto e olha para a **Análise do PowerScore** em **Resumo**. Mostra o que torna o jogo digno de ser visto:
+
+- **Equilíbrio**: quão apertado está o marcador.
+- **Fase final**: quão perto está o fim, enquanto ainda está tudo em aberto.
+- **Dinâmica**: se uma equipa está lançada.
+- **Mudanças de liderança**: quantas vezes a vantagem trocou de mãos ultimamente.
+- **Remontada**: se a equipa que perde está a recuperar.
+
+Cada um mostra os seus pontos, seguidos de quaisquer Impulsos (pontos extra, como pela tua equipa favorita) e Penalizações (pontos a menos, como durante uma pausa para publicidade), e depois o **PowerScore final**. A frase por baixo do total diz o que o está a puxar neste momento.
+
+<Demo name='breakdown' />
+
+Um jogo parado por **Intervalo** ou por um atraso mostra 0 até o jogo recomeçar. Os jogos terminados não têm PowerScore. [Modos de pontuação](/arenaswap/docs/extension/scoring-modes/) explica como mudar o que conta.
+
+## Acompanhar como vai o jogo
+
+Os gráficos por baixo da análise vão-se preenchendo à medida que o jogo avança. **PowerScore ao longo do tempo** mostra quando o jogo ficou bom e **Probabilidade de vitória** mostra como as probabilidades oscilaram. Há também gráficos do marcador e da vantagem.
+
+<Demo name='charts' />
+
+Os jogos em direto acrescentam mais, conforme o desporto. **Última jogada** mostra o que acabou de acontecer e, no basebol, **Próximos batedores** mostra quem vem a seguir ao bastão. O futebol americano mostra o down e a distância, e o basquetebol mostra os tempos mortos e o bónus. Os jogos de playoffs mostram o resultado da série.
+
+## Preparar-te antes de o jogo começar
+
+Um jogo que ainda não começou tem um cartão **Prepara-te para o pontapé de saída** (salto inicial, face-off ou primeiro lançamento, conforme o desporto). Aqui podes adicionar um Impulso do jogo e, no popup, escolher o separador onde abrir o jogo.
+
+Por baixo encontras **Lançadores prováveis** ou **Guarda-redes prováveis** onde se aplicar, **Líderes da equipa**, e o separador **Confronto** com **Últimos jogos**, **Estatísticas da época** e **Lesões**. Para seguires uma equipa, toca na estrela junto ao emblema dela. [Equipas favoritas](/arenaswap/docs/extension/favorite-teams/) explica o que isso faz.
+
+## Ver o boxscore e a classificação
+
+O **Boxscore** tem o marcador período a período, estatísticas da equipa e linhas dos jogadores para o desporto que estás a ver. A **Classificação** mostra a tabela da liga com estas duas equipas destacadas.
+
+## Descobrir onde ver
+
+A **Informação do jogo** indica o canal ou serviço, o local e o tempo. Os jogos terminados mostram também a assistência. Os jogos futuros podem ter uma ligação para **Bilhetes**.
+
+A linha de apostas só aparece se tiveres ativado **Mostrar apostas e odds** nas Definições.
+
+## Adicionar um Impulso do jogo
+
+Queres um jogo no ecrã, diga o marcador o que disser? O **Impulso do jogo** soma pontos ao PowerScore dele para o ArenaSwap o escolher mais vezes. Escreve um número de 0 a 100 e usa 0 para o retirar.
+
+<Demo name='game-boost' />
+
+O campo do Impulso do jogo está nos jogos em direto e nos futuros. É a única coisa que pode empurrar um PowerScore acima de 100, e a análise mostra-o como "Impulso do jogo".
+
+## Relacionado
+
+- [Como usar o Guia para planear o que vês](/arenaswap/docs/extension/guide/) abre este ecrã a partir da linha cronológica.
+- [Modos de pontuação](/arenaswap/docs/extension/scoring-modes/) explica o que cada modo valoriza.
+- [Como definir equipas favoritas no ArenaSwap](/arenaswap/docs/extension/favorite-teams/) fala das estrelas e do Impulso de equipa favorita.
+- [Referência das definições do ArenaSwap](/arenaswap/docs/extension/settings/) lista Mostrar apostas e odds e Unidade de temperatura.

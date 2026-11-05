@@ -1,0 +1,66 @@
+---
+sourceHash: 'b4eec15f0860'
+title: Come usare la Guida per pianificare cosa guardare
+description: La Guida mette ogni partita su una timeline, evidenzia la fascia migliore della giornata per guardare e ti lascia dare un boost a una partita prima che inizi.
+section: extension
+order: 13
+navLabel: La Guida
+faq:
+  - q: Fino a quanto in anticipo mostra le partite la Guida di ArenaSwap?
+    a: "Quanto dice l'impostazione Giorni di anticipo, da 1 a 14 giorni. Parte da 7. La Guida mostra sempre almeno 3 giorni e tiene le partite finite nell'ultimo giorno."
+  - q: Cosa significa Momento migliore per guardare nella Guida?
+    a: La parte della giornata con più partite in corso, contando di più i finali di partita e le partite delle tue squadre preferite. L'intestazione ti dice le ore e quante partite sono tue.
+  - q: Un Boost partita impostato nella Guida cambia su cosa passa ArenaSwap?
+    a: Sì. È lo stesso Boost partita che imposteresti nella schermata di dettaglio della partita, e funziona allo stesso modo.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Il popup mostra cosa c'è adesso. La Guida mostra il resto della giornata, così sai quando sgomberare il divano.
+
+## Apri la Guida
+
+Clicca l'icona del calendario con la scritta **Guida** nella barra in alto del popup. Si apre in una scheda del browser tutta sua, così puoi tenerla accanto alle tue partite.
+
+## Leggi la timeline
+
+Ogni riga è una partita, raggruppata per lega, con le ore in alto.
+
+- Una barra va dall'inizio della partita a circa quando dovrebbe finire.
+- Una linea segna l'ora attuale, e la pagina di oggi si apre già scorsa fin lì.
+- Una partita in arrivo mostra orario d'inizio e canale. Una partita in diretta mostra punteggio e tempo. Una partita finita mostra il punteggio e **Terminate**.
+- Una stella piena su una barra significa che gioca una delle tue squadre.
+- Passa il mouse su una barra per vedere la sfida e l'orario d'inizio.
+
+<Demo name='guide' />
+
+Vedrai solo le leghe che hai attivato nelle Impostazioni.
+
+## Guarda gli altri giorni
+
+Usa **Giorno precedente** e **Giorno successivo** per muoverti un giorno alla volta. I giorni senza partite vengono saltati.
+
+Quanto puoi andare avanti lo decide **Giorni di anticipo**, sotto Elenco partite nelle Impostazioni. Va da 1 a 14 giorni e parte da 7. La Guida mostra sempre almeno 3 giorni. Le partite finite nell'ultimo giorno restano sulla griglia.
+
+## Trova il momento migliore per guardare
+
+**Momento migliore per guardare** è attivo di default. Evidenzia la fascia della giornata con più partite in corso insieme. Le partite vicine al finale contano più di quelle appena iniziate, e lo stesso vale per le tue squadre preferite.
+
+L'intestazione lo scrive chiaro, tipo "3 partite · 1 tua". Spegni l'interruttore per nascondere l'evidenziazione.
+
+## Apri una partita
+
+Clicca una barra qualsiasi e la partita si apre in un pannello a destra. [Dettagli della partita](/arenaswap/docs/extension/game-details/) spiega cosa contiene.
+
+- Clicca un'altra barra per cambiare partita, e **Chiudi** o Esc per riporre il pannello.
+- Prima che una partita inizi, metti la stella a una delle due squadre. La stella compare su ogni barra di quella squadra.
+- Aggiungi un **Boost partita** a una partita che non vuoi perderti. Fallo prima del calcio d'inizio e ArenaSwap la fa partire con un vantaggio.
+
+Per collegare una partita a una scheda usa il popup. La Guida non può farlo.
+
+## Argomenti correlati
+
+- [Dettagli della partita](/arenaswap/docs/extension/game-details/) spiega la schermata che apre la Guida, compreso Boost partita.
+- [Come impostare le squadre preferite in ArenaSwap](/arenaswap/docs/extension/favorite-teams/) spiega le stelle.
+- [Guida alle impostazioni di ArenaSwap](/arenaswap/docs/extension/settings/) elenca Giorni di anticipo e Mostra le partite in arrivo.
+- [Come guardare più partite insieme](/arenaswap/docs/extension/watching-multiple-games/) spiega come collegare le schede alle partite che pensi di guardare.

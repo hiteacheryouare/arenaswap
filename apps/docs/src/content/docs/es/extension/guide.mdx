@@ -1,0 +1,66 @@
+---
+sourceHash: 'b4eec15f0860'
+title: Cómo usar la Guía para planear tu día de partidos
+description: La Guía pone todos los partidos en una línea de tiempo, sombrea el mejor tramo del día para verlos y te deja darle impulso a un partido antes de que empiece.
+section: extension
+order: 13
+navLabel: La Guía
+faq:
+  - q: ¿Con cuánta anticipación muestra partidos la Guía de ArenaSwap?
+    a: "Hasta donde diga tu ajuste Días de anticipación, de 1 a 14 días. Empieza en 7. La Guía siempre muestra al menos 3 días y conserva los partidos que terminaron en el último día."
+  - q: ¿Qué significa Mejor momento para ver en la Guía?
+    a: La parte del día con más partidos en juego, contando de más los tramos finales y los partidos de tus equipos favoritos. El encabezado te dice las horas y cuántos partidos son tuyos.
+  - q: ¿Un Impulso del partido definido en la Guía cambia a qué partido cambia ArenaSwap?
+    a: Sí. Es el mismo Impulso del partido que defines en la pantalla de detalles del partido, y funciona igual.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+La ventana emergente muestra lo que hay ahora. La Guía muestra el resto del día, para que sepas cuándo despejar el sillón.
+
+## Abre la Guía
+
+Haz clic en el ícono de calendario con la etiqueta **Guía** en la barra superior de la ventana emergente. Se abre en su propia pestaña del navegador, así que puedes dejarla junto a tus partidos.
+
+## Lee la línea de tiempo
+
+Cada fila es un partido, agrupado por liga, con las horas en la parte de arriba.
+
+- Una barra va desde el inicio del partido hasta más o menos cuando debería terminar.
+- Una línea marca la hora actual, y la página de hoy se abre desplazada hasta ahí.
+- Un partido próximo muestra su hora de inicio y su canal. Un partido en vivo muestra el marcador y el reloj. Un partido terminado muestra su marcador y **Final**.
+- Una estrella rellena en una barra significa que juega uno de tus equipos.
+- Pasa el cursor sobre una barra para ver el partido y la hora de inicio.
+
+<Demo name='guide' />
+
+Solo verás las ligas que activaste en Ajustes.
+
+## Mira otros días
+
+Usa **Día anterior** y **Día siguiente** para moverte un día a la vez. Los días sin partidos se saltan.
+
+Qué tan adelante puedes ir lo define **Días de anticipación**, en Lista de partidos dentro de Ajustes. Va de 1 a 14 días y empieza en 7. La Guía siempre muestra al menos 3 días. Los partidos que terminaron en el último día se quedan en la cuadrícula.
+
+## Encuentra el mejor momento para ver
+
+**Mejor momento para ver** viene activado de inicio. Sombrea el tramo del día con más partidos en juego a la vez. Los partidos cerca del final cuentan más que los que apenas empiezan, y también tus equipos favoritos.
+
+El encabezado lo detalla, algo como "3 partidos · 1 favorito". Apaga el interruptor para ocultar el sombreado.
+
+## Abre un partido
+
+Haz clic en cualquier barra y el partido se abre en un panel a la derecha. [Detalles del partido](/arenaswap/docs/extension/game-details/) explica qué contiene.
+
+- Haz clic en otra barra para cambiar de partido, y en **Cerrar** o presiona Escape para guardar el panel.
+- Antes de que empiece un partido, marca con estrella a cualquiera de los equipos. La estrella aparece en todas las barras de ese equipo.
+- Agrega un **Impulso del partido** a un partido que no quieras perderte. Hazlo antes del arranque y ArenaSwap lo empieza con ventaja.
+
+Para vincular un partido con una pestaña, usa la ventana emergente. La Guía no puede hacerlo.
+
+## Relacionado
+
+- [Detalles del partido](/arenaswap/docs/extension/game-details/) explica la pantalla que abre la Guía, incluido el Impulso del partido.
+- [Cómo elegir equipos favoritos en ArenaSwap](/arenaswap/docs/extension/favorite-teams/) explica las estrellas.
+- [Referencia de ajustes de ArenaSwap](/arenaswap/docs/extension/settings/) enumera Días de anticipación y Mostrar próximos partidos.
+- [Cómo ver varios partidos a la vez](/arenaswap/docs/extension/watching-multiple-games/) explica cómo vincular pestañas con los partidos que piensas ver.

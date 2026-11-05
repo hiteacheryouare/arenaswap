@@ -1250,7 +1250,9 @@
 	},
 	"multiview": {
 		"empty": "Este Multiview está cerrado. Se abre uno nuevo cuando dos de tus partidos son emocionantes a la vez.",
-		"soundOn": "Sonido activado"
+		"soundOn": "Sonido activado",
+		"closedTitle": "Se acabó la transmisión",
+		"closeTab": "Cerrar pestaña"
 	},
 	"empty": {
 		"leaguesTitle": "Elige ligas para empezar",

@@ -126,7 +126,7 @@ describe('fantasy roster page', () => {
 			cy.get('.bi-plus-lg').should('exist');
 		});
 		// No headshot, so the disc carries initials.
-		cy.contains('.fantasy-pick-row', longName.name).find('.crest-fallback').should('contain.text', 'CA');
+		cy.contains('.fantasy-pick-row', longName.name).find('.crest-initials').should('contain.text', 'CA');
 	});
 
 	it('shows the add as pending until the player is looked up, then files him under his league', () => {

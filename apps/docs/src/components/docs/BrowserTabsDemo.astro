@@ -1,0 +1,21 @@
+---
+import Crest from '@arenaswap/ui/src/components/crest';
+import DemoBrowser from './DemoBrowser.astro';
+import { arsenalChelsea, celticsKnicks, flyersPenguins, leagueFavicon } from './demoGames';
+
+const entries = [flyersPenguins, celticsKnicks, arsenalChelsea];
+const active = 1;
+const onScreen = entries[active]!;
+const { awayTeam: away, homeTeam: home } = onScreen.game;
+const tabs = entries.map((entry, index) => ({
+	title: entry.tabTitle,
+	favicon: leagueFavicon(entry.game.league),
+	sound: index === active ? 'audible' as const : 'muted' as const,
+}));
+---
+<DemoBrowser tabs={tabs} active={active} host={onScreen.tabHost} path='/watch/live'>
+	<div class='doc-demo-browser-page' style={{ '--away-tint': away.color, '--home-tint': home.color }}>
+		<Crest logo={away.logo} abbreviation={away.abbreviation} teamColor={away.color} />
+		<Crest logo={home.logo} abbreviation={home.abbreviation} teamColor={home.color} />
+	</div>
+</DemoBrowser>

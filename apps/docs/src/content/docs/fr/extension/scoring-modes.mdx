@@ -1,0 +1,60 @@
+---
+sourceHash: 'c22a44d5493c'
+title: Changer ce qu'ArenaSwap cherche dans un match
+description: Choisis Classique pour les matchs serrés, Raclées pour les cartons, ou Fantasy pour les matchs où jouent tes joueurs, ou règle un mode différent pour chaque ligue.
+section: extension
+order: 6
+navLabel: Modes de score
+faq:
+  - q: Quel mode de score dois-je utiliser ?
+    a: Classique pour le match le plus serré et le plus tendu, c'est comme ça qu'ArenaSwap fonctionne d'origine. Raclées si tu préfères voir quelqu'un se faire dérouler. Fantasy si tes propres joueurs comptent avant tout. Personnalisé te laisse choisir un mode différent pour chaque ligue.
+  - q: Pourquoi Fantasy ne fait-il rien quand je l'active ?
+    a: Fantasy a besoin de joueurs. Ajoutes-en dans Tes joueurs, dans les Paramètres. Tant que tu n'en as pas, et dans tout match où aucun d'eux ne joue, ArenaSwap utilise Classique.
+  - q: Puis-je utiliser Fantasy pour un autre sport que le football américain ?
+    a: Oui. Fantasy fonctionne pour la NFL, la NBA, la WNBA, la MLB et la NHL, et tu peux changer les règles de score de chaque sport.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+D'origine, ArenaSwap cherche le match serré, tardif et plein de rebondissements. C'est **Classique**. Si tu veux autre chose à l'écran, change ce qu'il cherche dans les Paramètres, sous **Notation**.
+
+<Demo name='modes' />
+
+## Choisir le genre de match que tu veux
+
+- **Classique :** matchs serrés, drames de fin de match et remontées. Une égalité dans les dernières minutes, c'est le rêve.
+- **Raclées :** matchs déséquilibrés, pour quand tu veux voir une équipe en écraser une autre. Les matchs serrés s'affichent quand même un soir sans carton, mais une vraie raclée gagne toujours.
+- **Fantasy :** matchs où jouent tes joueurs. Il suit où ils en sont dans le match (qui a le ballon, qui est au bâton, qui est dans la zone rouge) et combien de points fantasy ils ont marqués récemment.
+- **Personnalisé :** un mode différent pour chaque ligue. Peut-être Fantasy pour la NFL, Classique pour le basketball universitaire, et Raclées pour tout le reste. Une ligue que tu ne règles pas utilise Classique.
+
+Les matchs de toutes les ligues sont classés sur la même échelle de 0 à 100, donc un match Fantasy et un match Classique peuvent quand même se disputer ton onglet. De combien un match doit être meilleur avant qu'ArenaSwap te déplace dépend toujours de tes [paramètres de changement](/arenaswap/docs/extension/switching-and-sensitivity/).
+
+## Ne jamais rater tes joueurs
+
+1. Règle le mode de score sur **Fantasy**, ou sur **Personnalisé** avec Fantasy pour les ligues voulues.
+2. Ouvre **Tes joueurs** et cherche un joueur par son nom. Ajoute-le depuis les résultats. Tu peux en ajouter jusqu'à 50.
+3. Règle **À quel point tes joueurs font monter leurs matchs**. Monte le curseur et ton effectif compte davantage. Baisse-le et il sert juste à départager.
+
+Fantasy couvre la NFL, la NBA, la WNBA, la MLB et la NHL. Un effectif de football peut aussi contenir une défense d'équipe. Un match avec un de tes joueurs ne peut que monter dans la liste, jamais descendre.
+
+Sous **Règles de score**, tu peux changer combien de points fantasy vaut chaque statistique. ArenaSwap démarre avec les points standard de chaque sport.
+
+## Désactiver ce qui ne t'intéresse pas
+
+Chaque mode mesure quelques éléments, appelés signaux. Ceux de Classique sont Serré, Fin de match, Élan, Changements de tête et Remontée. Sous **Signaux PowerScore**, tu peux désactiver n'importe lequel, tant qu'il en reste un d'activé. Consulte la [page des signaux](/arenaswap/docs/powerscore/signals/) pour savoir ce que chacun signifie.
+
+<Demo name='breakdown' />
+
+## Les points que tu ajoutes toi-même
+
+Ils fonctionnent dans tous les modes :
+
+- **Bonus d'équipe favorite** ajoute des points aux matchs avec une équipe que tu suis. Voir [équipes favorites](/arenaswap/docs/extension/favorite-teams/).
+- **Bonus de playoffs** ajoute des points aux matchs de playoffs et d'élimination directe, plus pour les tours avancés. Il ne s'applique pas dans Raclées.
+- **Coup de boost** ajoute des points à un match que tu choisis, de 0 à 100. Utilise le champ Coup de boost sur l'écran de détails du match ou dans le [Guide](/arenaswap/docs/extension/guide/). Il dure jusqu'à la fermeture de ton navigateur.
+
+## À lire aussi
+
+- [Référence des paramètres d'ArenaSwap](/arenaswap/docs/extension/settings/) liste les paramètres de score et leurs valeurs par défaut.
+- [Contrôler quand ArenaSwap change d'onglet](/arenaswap/docs/extension/switching-and-sensitivity/) couvre de combien un match doit être meilleur avant qu'ArenaSwap te déplace.
+- [Les signaux PowerScore dans chaque mode](/arenaswap/docs/powerscore/signals/) explique chaque signal en détail.

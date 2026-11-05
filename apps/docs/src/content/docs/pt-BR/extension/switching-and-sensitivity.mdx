@@ -1,0 +1,61 @@
+---
+sourceHash: '160ac78129f6'
+title: Como controlar quando o ArenaSwap troca de aba
+description: Faça o ArenaSwap trocar mais ou menos vezes, esperar a sua transmissão alcançar o jogo e ficar em um jogo durante a jogada que você está vendo.
+section: extension
+order: 3
+navLabel: Trocas
+faq:
+  - q: Como evito que o ArenaSwap troque de aba o tempo todo?
+    a: Diminua a Sensibilidade de troca, aumente o Cooldown entre trocas ou desatribua a aba que você não quer que ele mexa. Desligar Ativar troca automática para tudo de vez.
+  - q: Por que o ArenaSwap fica pulando entre dois jogos?
+    a: Dois dos seus jogos estão se revezando como o mais emocionante. Aumente o Cooldown entre trocas para o ArenaSwap ficar mais tempo em um jogo antes de se mover de novo.
+  - q: Por que o ArenaSwap troca antes de eu ver a grande jogada?
+    a: Sua transmissão está atrasada em relação ao jogo ao vivo. Adicione um Atraso de troca para o seu vídeo alcançar antes de a aba mudar.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Todos esses controles estão nas Configurações, em **Trocas**. Escolha o que combina com o que está te incomodando.
+
+## Troque menos vezes
+
+Abra **Sensibilidade de troca** e deslize para **Quase inativo**. O ArenaSwap então espera outro jogo ser bem mais emocionante que o que você está vendo antes de te mover. O padrão é **Equilibrado**.
+
+<Demo name='slider' kind='sensitivity' />
+
+Se o ArenaSwap demora a perceber um jogo que está claramente esquentando, deslize para o outro lado, rumo a **Ansioso** ou **Ludicrous Speed**.
+
+## Impeça que ele fique pulando entre jogos
+
+O **Cooldown entre trocas** é a menor espera entre duas trocas, de **Desativado** até 3 minutos. O padrão é 45 segundos. Aumente e o ArenaSwap fica mais tempo em um jogo, mesmo quando o outro passa à frente por um instante. Diminua para acompanhar cada reviravolta de um final maluco.
+
+Clicar você mesmo em uma das abas dos seus jogos também inicia o cooldown, então o ArenaSwap não te arranca de um jogo que você acabou de escolher.
+
+<Demo name='slider' kind='cooldown' />
+
+## Dê tempo para sua transmissão alcançar
+
+As transmissões rodam atrás do jogo de verdade. O **Atraso de troca** faz o ArenaSwap esperar antes de mudar de aba, de **Desativado** até 3 minutos. Se você sempre cai em um jogo logo antes de a grande jogada aparecer na sua tela, adicione 15 ou 30 segundos. O ArenaSwap confere o jogo de novo antes de trocar, então você não é enviado para um que esfriou durante a espera.
+
+## Não seja cortado no meio da jogada
+
+Ative **Troca nas pausas** e o ArenaSwap segura a troca até o jogo que você está deixando chegar a uma pausa natural: o fim da vez no bastão, um apito, o fim da jogada. Você vê como termina e só então vai.
+
+Se a pausa nunca vier, a troca acontece mesmo assim depois de uma espera curta. Ele não espera nada quando o jogo que você está deixando já está em pedido de tempo, em pausa de TV ou em intervalo, quando é um atropelo ou quando o outro jogo está num momento decisivo. Futebol, futebol americano universitário e hóquei universitário trocam na hora.
+
+Enquanto uma troca está esperando, o popup mostra qual jogo vem a seguir. Com **Notificações de troca** ativadas, você também recebe uma notificação "A seguir". O porém: você pode perder algo no jogo para o qual está prestes a trocar.
+
+## Pause as trocas por completo
+
+A chave na barra superior, **Ativar troca automática**, é o interruptor geral. Desligue e suas abas ficam onde estão. Ligue de novo e o ArenaSwap continua de onde parou.
+
+## Continue em tela cheia quando ele trocar
+
+Coloque a janela do navegador em tela cheia antes de o jogo começar: **⌃⌘F** no Mac, **F11** em qualquer outro sistema. A janela continua em tela cheia a cada troca, inclusive uma troca para um jogo em outra janela. Se você usar o botão de tela cheia do próprio player de vídeo, o ArenaSwap coloca a janela de volta em tela cheia depois de cada troca.
+
+## Relacionados
+
+- [Referência das configurações do ArenaSwap](/arenaswap/docs/extension/settings/) lista todas as configurações de Trocas e seus padrões.
+- [Como assistir a vários jogos ao mesmo tempo](/arenaswap/docs/extension/watching-multiple-games/) explica como escolher as abas entre as quais o ArenaSwap troca.
+- [Solução de problemas do ArenaSwap](/arenaswap/docs/extension/troubleshooting/) explica trocas que parecem um bug, mas não são.

@@ -1,0 +1,42 @@
+---
+sourceHash: '9668aab491fb'
+title: Como definir times favoritos no ArenaSwap
+description: Marque seus times com estrela e os jogos deles ganham um impulso rumo à sua tela e um lugar no topo da lista. Todos os outros jogos ficam onde estavam.
+section: extension
+order: 4
+navLabel: Times favoritos
+faq:
+  - q: Marcar um time favorito esconde os outros jogos?
+    a: Não. Todos os jogos continuam aparecendo. Os jogos dos seus times só ficam no topo da lista e vencem mais trocas.
+  - q: E se os dois times de um jogo forem favoritos?
+    a: O jogo recebe o bônus duas vezes, uma por time.
+  - q: Por que o jogo do meu time não trocou minha aba?
+    a: Um jogo parado, como no intervalo, na pausa entre períodos ou numa interrupção, vale zero até a bola voltar a rolar, então uma estrela não consegue garantir a troca. Ele continua no topo da lista.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Marque um time com estrela e o ArenaSwap passa a torcer pelos jogos dele. Jogos disputados ainda vencem goleadas, mas quando dois jogos estão mais ou menos empatados em qualidade, quem decide é o seu time.
+
+## Marque um time
+
+Você pode marcar times durante a configuração, em **Escolha seus times**. Depois, marque ou desmarque por qualquer um destes caminhos:
+
+- A estrela ao lado do nome de um time no card do jogo.
+- A estrela ao lado do escudo de um time na tela de detalhes de um jogo futuro.
+- Configurações, em **Times favoritos**, onde você pode buscar qualquer time das suas ligas.
+
+<Demo name='live-card' favorite />
+
+## O que a estrela faz
+
+Os jogos dos seus times ganham pontos extras na disputa para ser o jogo para o qual o ArenaSwap troca. Se os dois times de um jogo têm estrela, ele ganha os pontos extras duas vezes.
+
+Os jogos dos seus times também ficam no topo da lista, acima de jogos mais emocionantes que não são de ninguém que você segue. Com **Agrupar jogos por liga** ativado, eles ficam no topo da própria liga.
+
+Para mudar o tamanho do impulso, ajuste **Impulso de time favorito** em Pontuação, nas Configurações. O valor inicial é 10 pontos.
+
+## Relacionados
+
+- [Como assistir a vários jogos ao mesmo tempo](/arenaswap/docs/extension/watching-multiple-games/) explica como a lista de jogos é organizada.
+- [Referência das configurações do ArenaSwap](/arenaswap/docs/extension/settings/) traz a faixa de valores do impulso de time favorito.

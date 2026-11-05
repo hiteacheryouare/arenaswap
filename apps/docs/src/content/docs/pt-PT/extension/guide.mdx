@@ -1,0 +1,66 @@
+---
+sourceHash: 'b4eec15f0860'
+title: Como usar o Guia para planear o que vês
+description: O Guia mostra todos os jogos numa linha cronológica, sombreia a melhor parte do dia para ver e deixa-te dar um impulso a um jogo antes de ele começar.
+section: extension
+order: 13
+navLabel: O Guia
+faq:
+  - q: Com quanta antecedência o Guia mostra jogos no ArenaSwap?
+    a: "Até ao que definires em Dias de antecedência, de 1 a 14 dias. Começa nos 7. O Guia mostra sempre pelo menos 3 dias e mantém os jogos que terminaram no último dia."
+  - q: O que significa Melhor horário para ver no Guia?
+    a: A parte do dia com mais jogos a decorrer, contando a dobrar as fases finais e os jogos das tuas equipas favoritas. O cabeçalho diz-te as horas e quantos jogos são teus.
+  - q: Um Impulso do jogo definido no Guia muda para onde o ArenaSwap muda?
+    a: Sim. É o mesmo Impulso do jogo que definirias no ecrã de detalhes do jogo, e funciona da mesma forma.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+O popup mostra o que está a dar agora. O Guia mostra o resto do dia, para saberes quando limpar o sofá.
+
+## Abrir o Guia
+
+Clica no ícone de calendário com o nome **Guia** na barra superior do popup. Abre no seu próprio separador do navegador, por isso podes deixá-lo ao lado dos teus jogos.
+
+## Ler a linha cronológica
+
+Cada linha é um jogo, agrupado por liga, com as horas no topo.
+
+- Uma barra vai do início do jogo até mais ou menos à hora em que deve acabar.
+- Uma linha marca a hora atual, e a página de hoje abre já posicionada nela.
+- Um jogo futuro mostra a hora de início e o canal. Um jogo em direto mostra o marcador e o relógio. Um jogo terminado mostra o resultado e **Final**.
+- Uma estrela preenchida numa barra quer dizer que uma das tuas equipas está a jogar.
+- Passa o rato por cima de uma barra para veres o confronto e a hora de início.
+
+<Demo name='guide' />
+
+Só vês as ligas que ativaste nas Definições.
+
+## Ver outros dias
+
+Usa **Dia anterior** e **Dia seguinte** para andar um dia de cada vez. Os dias sem jogos são saltados.
+
+Até onde podes ir depende de **Dias de antecedência**, em Lista de jogos nas Definições. Vai de 1 a 14 dias e começa nos 7. O Guia mostra sempre pelo menos 3 dias. Os jogos que terminaram no último dia ficam na grelha.
+
+## Descobrir o melhor horário para ver
+
+**Melhor horário para ver** vem ativo à partida. Sombreia a parte do dia com mais jogos ao mesmo tempo. Os jogos perto do fim contam mais do que os que estão a começar, e as tuas equipas favoritas também.
+
+O cabeçalho explica, por exemplo "3 jogos · 1 favorito". Desliga o interruptor para esconder o sombreado.
+
+## Abrir um jogo
+
+Clica em qualquer barra e o jogo abre num painel à direita. [Detalhes do jogo](/arenaswap/docs/extension/game-details/) explica o que lá está.
+
+- Clica noutra barra para trocar de jogo, e em **Fechar** ou Escape para arrumar o painel.
+- Antes de um jogo começar, marca qualquer uma das equipas com uma estrela. A estrela aparece em todas as barras dessa equipa.
+- Adiciona um **Impulso do jogo** a um jogo que não queiras perder. Se o fizeres antes do arranque, o ArenaSwap começa-o com avanço.
+
+Para associar um jogo a um separador, usa o popup. O Guia não consegue.
+
+## Relacionado
+
+- [Detalhes do jogo](/arenaswap/docs/extension/game-details/) explica o ecrã que o Guia abre, incluindo o Impulso do jogo.
+- [Como definir equipas favoritas no ArenaSwap](/arenaswap/docs/extension/favorite-teams/) explica as estrelas.
+- [Referência das definições do ArenaSwap](/arenaswap/docs/extension/settings/) lista Dias de antecedência e Mostrar jogos futuros.
+- [Como ver vários jogos ao mesmo tempo](/arenaswap/docs/extension/watching-multiple-games/) explica como associar separadores aos jogos que planeias ver.

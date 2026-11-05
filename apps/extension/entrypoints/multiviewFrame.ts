@@ -51,15 +51,26 @@ export default defineUnlistedScript({
 			if (elements.length > 0) playPending = false;
 		};
 
+		// What the page last heard, so a clock that starts moving is told at once rather than on the
+		// next tick. The page only counts a stream as playing once two reports show its clock moving.
+		let reportedTime: number | undefined;
+		let reportedAdvancing = false;
+		let reporting = false;
+		const reportProgress = () => {
+			if (!reportedAdvancing && !reporting) void report();
+		};
+
 		let listening = false;
 		const listenForMedia = () => {
 			if (listening) return;
 			listening = true;
 			document.addEventListener('play', enforceMute, true);
 			document.addEventListener('volumechange', enforceMute, true);
+			document.addEventListener('timeupdate', reportProgress, true);
 		};
 
 		const report = async () => {
+			reporting = true;
 			const video = playingVideo();
 			const status: MultiviewFrameStatusMessage = {
 				type: 'MULTIVIEW_FRAME_STATUS',
@@ -70,6 +81,8 @@ export default defineUnlistedScript({
 				paused: video?.paused ?? true,
 				time: video?.currentTime ?? 0,
 			};
+			reportedAdvancing = status.playing && reportedTime !== undefined && status.time > reportedTime;
+			reportedTime = status.time;
 			try {
 				const reply = await browser.runtime.sendMessage(status) as { muted?: boolean } | undefined;
 				// Only the Multiview page answers, so even an empty reply means this frame is one of its boxes.
@@ -80,6 +93,7 @@ export default defineUnlistedScript({
 					enforceMute();
 				}
 			} catch {}
+			reporting = false;
 			if (unsure && !answered) clearInterval(timer);
 		};
 

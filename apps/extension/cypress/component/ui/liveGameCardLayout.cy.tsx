@@ -160,9 +160,6 @@ describe('liveGameCard crest placeholder', () => {
 			const box = $crest[0].getBoundingClientRect();
 			expect(box.width, 'crest width').to.equal(64);
 			expect(box.height, 'crest height').to.equal(64);
-
-			const fallback = $crest[0].querySelector<HTMLElement>('.crest-fallback')!;
-			expect(fallback.getBoundingClientRect()).to.deep.include({ width: 64, height: 64 });
 		});
 		cy.get('.team-crest').first().should('have.text', 'CAR');
 	});

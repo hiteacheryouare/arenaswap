@@ -1250,7 +1250,9 @@
 	},
 	"multiview": {
 		"empty": "這個 Multiview 已關閉。當你的兩場比賽同時變得精彩時，會開啟新的 Multiview。",
-		"soundOn": "聲音已開啟"
+		"soundOn": "聲音已開啟",
+		"closedTitle": "轉播到此結束",
+		"closeTab": "關閉分頁"
 	},
 	"empty": {
 		"leaguesTitle": "選擇聯賽以開始使用",

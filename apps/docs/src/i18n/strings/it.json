@@ -444,6 +444,47 @@
 			"Rimonta"
 		]
 	},
+	"docDemos": {
+		"popup": "Il popup di ArenaSwap con tre partite in diretta ordinate per PowerScore: Boston a New York, in parità 100–100 con 2:10 da giocare (85), Philadelphia a Pittsburgh, in parità 2–2 nel terzo tempo (76), e Chelsea in vantaggio 2–1 sull'Arsenal al 78º minuto (63).",
+		"popupTabs": "Il popup di ArenaSwap con tre partite in diretta ordinate per PowerScore, ognuna con la scheda in cui si guarda: Boston a New York, in parità 100–100 con 2:10 da giocare (85), Philadelphia a Pittsburgh, in parità 2–2 nel terzo tempo (76), e Chelsea in vantaggio 2–1 sull'Arsenal al 78º minuto (63).",
+		"liveCard": "Una scheda di partita in diretta: Boston Celtics a New York Knicks, in parità 100–100 con 2:10 da giocare nel quarto quarto, PowerScore 85 su 100.",
+		"liveCardFavorite": "Una scheda di partita in diretta: Boston Celtics a New York Knicks, in parità 100–100 con 2:10 da giocare nel quarto quarto, PowerScore 85 su 100, con i Celtics segnati con la stella come preferiti.",
+		"liveCardTab": "Una scheda di partita in diretta: Boston Celtics a New York Knicks, in parità 100–100 con 2:10 da giocare nel quarto quarto, PowerScore 85 su 100, assegnata alla scheda Boston at New York.",
+		"liveCardFavoriteTab": "Una scheda di partita in diretta: Boston Celtics a New York Knicks, in parità 100–100 con 2:10 da giocare nel quarto quarto, PowerScore 85 su 100, con i Celtics segnati con la stella come preferiti, assegnata alla scheda Boston at New York.",
+		"upcomingCard": "Una scheda di partita in arrivo: Kansas City Chiefs a Buffalo Bills, domenica alle 16:25 all'Highmark Stadium.",
+		"finalCard": "Una scheda di partita terminata: Ohio State 27, Michigan 24, all'Ohio Stadium.",
+		"charts": "Quattro grafici dal dettaglio di una partita: il PowerScore nel tempo, il punteggio nel tempo, la probabilità di vittoria e la quota di ogni segnale sul PowerScore.",
+		"breakdown": "Un {heading}: {closeness} 38 su 42, {lateGame} 31 su 38, {momentum} 8 su 38, {leadChanges} 5 su 18 e {comeback} 3 su 20 fanno un totale dei segnali di 85. Un {gameBoost} da 5 punti porta il {final} a 90 su 100. {reason}.",
+		"gameBoost": "Il campo {heading} nel dettaglio di una partita, impostato a {points} punti.",
+		"suggestBanner": "Il banner {title} in cima al popup, con un pulsante {action} e un pulsante di chiusura.",
+		"guide": "La Guida alle 21:40: una linea del tempo dalle 19 a mezzanotte con le partite di NBA, NHL e basket NCAA come barre, una linea all'ora attuale e il momento migliore per guardare evidenziato dalle 21:15 alle 22:15.",
+		"browserTabs": "Un browser con tre schede di partita aperte. Boston at New York è la scheda attiva e ha l'audio; le altre due sono silenziate.",
+		"notification": "Una notifica che dice: {title}. {message}",
+		"sliderSensitivity": "Il cursore {label} al valore predefinito, {value}.",
+		"sliderCooldown": "Il cursore {label} al valore predefinito, 45 secondi.",
+		"sliderDelay": "Il cursore {label} al valore predefinito, {value}.",
+		"toggleOn": "L'interruttore {label} nelle Impostazioni, attivo.",
+		"toggleOff": "L'interruttore {label} nelle Impostazioni, disattivo.",
+		"modes": "Il selettore {section} aperto su {classic}, con {classic}, {blowouts}, {fantasy} e {custom}.",
+		"multiview": "Una scheda Multiview con quattro partite in una griglia 2×2. Boston at New York, in alto a sinistra, è evidenziata e ha l'audio.",
+		"standby": "Un browser fermo su una scheda Standby Stream chiamata {tab}, con due schede di partita silenziate accanto, e la riga del popup: {line}",
+		"profiles": "L'elenco {section} nelle Impostazioni con due profili, {current} in uso e il suo menu aperto su {rename} e {export}, sopra i pulsanti {new} e {backup}.",
+		"backup": "La scheda del backup con un file caricato: {addAsNew} o {replace}, e cosa cambierebbe il file. Una lega in più, le stesse squadre preferite e la modalità di punteggio che passa da {from} a {to}.",
+		"bossButton": "La scorciatoia del pulsante del capo, Alt + Shift + X, e il finto foglio di calcolo che apre in una scheda, con le schede delle partite silenziate.",
+		"notificationNow": "adesso",
+		"profileWeeknights": "Sere feriali",
+		"profileFantasySunday": "Domenica Fantasy",
+		"standbyTab": "Highlights",
+		"decoyTab": "Previsioni T3",
+		"decoyRegion": "Area",
+		"decoyQuarter": "T{quarter}",
+		"decoyRegions": [
+			"Nord-Est",
+			"Nord-Ovest",
+			"Sud",
+			"Centro"
+		]
+	},
 	"ui": {
 		"gameCard": {
 			"live": "DIRETTA",

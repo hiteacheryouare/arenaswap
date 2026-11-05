@@ -1,0 +1,97 @@
+---
+sourceHash: '3f391bc4d95c'
+title: Referência das definições do ArenaSwap
+description: O que muda cada definição do ArenaSwap, agrupadas como o popup as agrupa, com o valor predefinido de cada uma.
+section: extension
+order: 7
+navLabel: Definições
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Toca na roda dentada na barra superior do popup para abrir as Definições. Usa a caixa de pesquisa no topo para encontrar uma definição pelo nome ou pelo que queres que ela faça. As definições estão agrupadas em Mudanças, Pontuação, Equipas favoritas, Ligas, Apresentação, Standby Stream, Multiview e Perfis e backup. O Firefox não tem Multiview.
+
+## Mudanças
+
+- **Sensibilidade de mudança** (**Equilibrado**): quanto mais emocionante outro jogo tem de ser para o ArenaSwap te mudar. Sete níveis, de **Quase inativo** a **Ludicrous Speed**. Mais alto significa mais mudanças.
+- **Tempo de espera entre mudanças** (45 segundos): a espera mínima entre duas mudanças. De **Desativado** a 3 minutos.
+- **Atraso de mudança** (Desativado): quanto tempo o ArenaSwap espera antes de trocar de separador, para uma transmissão atrasada se pôr em dia. De **Desativado** a 3 minutos.
+- **Mudança nas pausas** (Desativado): retém uma mudança até o jogo que estás a deixar chegar a uma pausa. Podes perder um momento do jogo para onde ele muda.
+- **Notificações de mudança** (Ativado): uma notificação com o resultado e o motivo sempre que o ArenaSwap muda.
+- **Quando um jogo termina** (**Deixar o separador como está**): o que acontece ao separador de um jogo quando ele acaba. **Libertar o separador do ArenaSwap** deixa o separador aberto e volta a ativar o som. **Fechar o separador** fecha-o. O separador que estás a ver nunca é tocado até saíres dele.
+- **Página de disfarce** (um separador em branco): para onde te leva o botão do chefe. Também silencia todos os separadores que o ArenaSwap gere e pausa a mudança automática. Vê [como usar o botão do chefe](/arenaswap/docs/extension/boss-button/).
+- **Modo de demonstração** (Desativado): troca os jogos em direto por jogos inventados, para experimentares o ArenaSwap sem esperar por um jogo a sério. **Fingir que é** aparece enquanto está ativo e muda só a decoração de época.
+
+<Demo name='toggle' setting='contentAwareSwitching.label' checked={false} />
+
+Mais sobre isto em [como controlar quando o ArenaSwap muda de separador](/arenaswap/docs/extension/switching-and-sensitivity/).
+
+## Pontuação
+
+- **O que o PowerScore procura** (Clássico): **Clássico** para jogos equilibrados, **Goleadas** para os desnivelados, **Fantasy** para jogos com os teus jogadores, **Personalizado** para um modo diferente por liga.
+- **Modo por liga** (Clássico): aparece com **Personalizado**. Uma liga que deixes em paz usa o Clássico.
+- **Sinais do PowerScore** (todos ativos): as coisas que cada modo mede. Desliga as que não te interessam, mas pelo menos uma tem de ficar ligada.
+- **Quanto os teus jogadores elevam os jogos deles** (60%): quanto conta o teu plantel. De **Nada** a **A pontuação toda**.
+- **Os teus jogadores** (vazio): até 50 jogadores para o Fantasy acompanhar. NFL, NBA, WNBA, MLB e NHL.
+- **Regras de pontuação** (pontos padrão): quantos pontos de fantasy vale cada estatística.
+- **Impulso de equipa favorita** (10): pontos somados a jogos com uma equipa que segues.
+- **Impulso de pós-temporada** (8): pontos somados a jogos de playoffs. As rondas finais dão mais. Não se aplica em Goleadas.
+
+Mais sobre isto em [como mudar o que o ArenaSwap procura num jogo](/arenaswap/docs/extension/scoring-modes/).
+
+## Equipas favoritas
+
+- **Equipas que segues** (nenhuma): as equipas seguidas ficam no topo da lista e os jogos delas recebem o impulso de equipa favorita.
+
+## Ligas
+
+- **Ligas ativas** (as que escolheste na configuração): as ligas que o ArenaSwap vigia. Ativa mais e ele encontra o melhor jogo entre todas.
+- **Divisões e conferências universitárias**: que jogos universitários aparecem. Escolhe outras divisões ou conferências para alargar ou estreitar a lista, ou mostra só o Top 25. As rondas decisivas, como a March Madness e o College Football Playoff, aparecem sempre, tal como os jogos das tuas equipas favoritas.
+
+## Apresentação
+
+- **Mostrar jogos futuros** (Ativado): acrescenta uma secção A seguir para jogos que ainda não começaram, para poderes associar separadores mais cedo.
+- **Dias de antecedência** (7): até onde A seguir olha, de 1 a 14 dias.
+- **Manter jogos terminados** (Desativado): mantém um jogo durante 24 horas depois de acabar, numa secção Terminados. Podes ler o boxscore, mas não podes associar-lhe um separador.
+- **Dicas** (Ativado): dicas curtas no ecrã principal.
+- **Mostrar apostas e odds** (Desativado): mostra linhas de apostas nos cartões de jogo e no ecrã de detalhes.
+- **Unidade de temperatura** (°F): **°F** ou **°C** para o tempo no ecrã de detalhes de um jogo.
+- **Tema** (Escuro): **Escuro**, **Claro** ou **Seguir o sistema**.
+- **Animação de abertura** (Ativado): um cartaz do confronto de cada jogo quando abres o ArenaSwap.
+- **Decoração de época** (Ativado): neve, luzes e folhas nas alturas certas do ano. Neve, Luzes e Folhas têm cada uma o seu interruptor.
+- **Agrupar jogos por liga** (Desativado em novas instalações): põe os jogos sob um cabeçalho por liga em vez de uma só lista. As tuas equipas favoritas ficam no topo de qualquer forma.
+- **Ordem de apresentação**: aparece com **Agrupar jogos por liga**. Arrasta as ligas, ou usa as setas, para definir qual vem primeiro.
+
+## Standby Stream
+
+- **Ativar Standby Stream** (Desativado): escolhe um separador alternativo onde te deixar quando todos os jogos que estás a ver ficam sossegados.
+- **Em espera abaixo de** (20): o que é sossegado, de 0 a 100. Mais alto significa que o standby entra mais cedo.
+- **Separador de espera** (nenhum): o separador para onde o ArenaSwap te leva.
+
+Mais em [como configurar o Standby Stream](/arenaswap/docs/extension/standby-stream/).
+
+## Multiview
+
+Só no Chrome e no Edge. Vê [como usar o Multiview](/arenaswap/docs/extension/multiview/).
+
+- **Ativar Multiview** (Desativado): quando dois ou mais dos teus jogos estão emocionantes ao mesmo tempo, mostra-os juntos num só separador. O jogo mais emocionante fica com a caixa maior e o único som. Ao ativá-lo, o navegador pede permissão para ler e alterar todos os Websites. Se disseres que não, o Multiview fica desativado.
+- **Emocionante a partir de** (55): quão emocionante um jogo tem de ser para entrar. Mais baixo abre o Multiview com mais frequência. Mais alto guarda-o para os grandes momentos.
+- **Mostrar** (**Jogos emocionantes**): **Jogos emocionantes** ou **Todos os meus jogos**.
+- **Máximo de quadros** (4): o máximo de jogos no ecrã ao mesmo tempo, de 2 a 8.
+
+## Perfis e backup
+
+Vê [como usar perfis e fazer backup das definições](/arenaswap/docs/extension/profiles-and-backup/).
+
+- **Perfis**: configurações separadas entre as quais podes alternar, como uma para os domingos de futebol americano e outra para março. Começa um novo a partir de uma cópia da tua configuração atual ou de raiz.
+- **Fazer backup ou restaurar**: descarrega a tua configuração como ficheiro, ou importa uma. Importar adiciona um novo perfil ou substitui todas as definições do que estás a usar.
+
+## Relacionado
+
+- [Como controlar quando o ArenaSwap muda de separador](/arenaswap/docs/extension/switching-and-sensitivity/)
+- [Como mudar o que o ArenaSwap procura num jogo](/arenaswap/docs/extension/scoring-modes/)
+- [Como definir equipas favoritas no ArenaSwap](/arenaswap/docs/extension/favorite-teams/)
+- [Como configurar o Standby Stream](/arenaswap/docs/extension/standby-stream/)
+- [O Guia](/arenaswap/docs/extension/guide/)
+- [Detalhes do jogo](/arenaswap/docs/extension/game-details/)
+- [Experimenta o ArenaSwap com o Modo de demonstração](/arenaswap/docs/extension/demo-mode/)

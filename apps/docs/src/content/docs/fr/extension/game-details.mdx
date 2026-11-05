@@ -1,0 +1,82 @@
+---
+sourceHash: '01e24339f21e'
+title: Lire l'écran de détails d'un match dans ArenaSwap
+description: Clique sur un match pour voir pourquoi il est classé où il est, comment il se déroule, qui joue et où le regarder. Ajoute un Coup de boost pour faire monter un match.
+section: extension
+order: 14
+navLabel: Détails d'un match
+faq:
+  - q: Comment voir pourquoi un match a son PowerScore ?
+    a: Clique sur la carte du match dans la fenêtre d'ArenaSwap, ou sur sa barre dans le Guide. Pour un match en direct, la Décomposition du PowerScore dans l'onglet Aperçu montre ce qui ajoute des points, avec une ligne en langage clair en bas. Survole les icônes d'info pour savoir ce que chaque partie signifie.
+  - q: À quoi sert le Coup de boost dans ArenaSwap ?
+    a: Il ajoute des points, de 0 à 100, au PowerScore d'un match pour qu'ArenaSwap le favorise. Remets-le à 0 pour l'enlever.
+  - q: Pourquoi je ne vois pas la ligne de paris sur l'écran de détails d'un match ?
+    a: Elle est masquée tant que Afficher les paris et les cotes n'est pas activé dans les Paramètres.
+  - q: Pourquoi ce match n'a-t-il pas d'onglet Duel, Boxscore ou Classement ?
+    a: Un onglet n'apparaît que s'il a quelque chose à montrer. Duel est pour les matchs qui n'ont pas commencé, et Boxscore pour ceux qui ont commencé. Toutes les ligues n'ont pas de classement.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Clique sur n'importe quel match pour voir pourquoi il est classé où il est, et ce qui est en jeu.
+
+## Ouvrir un match
+
+Clique sur une carte de match dans la fenêtre d'ArenaSwap. Dans le [Guide](/arenaswap/docs/extension/guide/), clique sur la barre d'un match et il s'ouvre dans un panneau latéral. Clique sur **Retour** pour revenir à la liste, ou sur **Fermer** dans le Guide.
+
+Une rangée d'onglets se trouve sous le score : **Aperçu** est toujours là, **Duel** apparaît avant le début d'un match, **Boxscore** une fois qu'il est lancé, et **Classement** quand ta ligue a un tableau. S'ils ne tiennent pas tous, les autres vont sous **Plus**.
+
+## Voir pourquoi un match est si haut classé
+
+Ouvre un match en direct et regarde la **Décomposition du PowerScore** dans **Aperçu**. Elle montre ce qui rend le match intéressant à regarder :
+
+- **Serré** : à quel point le score est serré.
+- **Fin de match** : à quel point la fin approche, tant que tout est encore possible.
+- **Élan** : si une équipe est sur une série.
+- **Changements de tête** : combien de fois la tête a changé de main récemment.
+- **Remontée** : si l'équipe menée revient dans le match.
+
+Chacun affiche ses points, suivis des bonus éventuels (des points en plus, comme pour ton équipe favorite) et des pénalités (des points en moins, comme pendant une pause pub), puis le **PowerScore final**. La ligne sous le total dit ce qui le fait bouger en ce moment.
+
+<Demo name='breakdown' />
+
+Un match en pause pour la **Mi-temps**, une **Pause** ou une interruption affiche 0 jusqu'à la reprise du jeu. Les matchs terminés n'ont pas de PowerScore. [Modes de score](/arenaswap/docs/extension/scoring-modes/) explique comment changer ce qui compte.
+
+## Suivre le déroulement du match
+
+Les graphiques sous la décomposition se remplissent au fil du jeu. **PowerScore dans le temps** montre quand le match est devenu bon, et **Probabilité de victoire** montre comment les chances ont basculé. Il y a aussi des graphiques pour le score et l'écart.
+
+<Demo name='charts' />
+
+Les matchs en direct ajoutent d'autres infos selon le sport. **Dernière action** montre ce qui vient de se passer, et au baseball **Prochains frappeurs** montre qui arrive au bâton. Le football américain affiche la descente et la distance, et le basketball les temps morts et le bonus. Les matchs de playoffs affichent le score de la série.
+
+## Se préparer avant le début du match
+
+Un match qui n'a pas commencé a une carte **Prêt pour le coup d'envoi** (entre-deux, mise au jeu ou premier lancer, selon le sport). Tu peux y ajouter un Coup de boost et, dans la fenêtre d'ArenaSwap, choisir l'onglet où ouvrir le match.
+
+En dessous, tu trouves les **Lanceurs probables** ou les **Gardiens probables** quand ils existent, les **Leaders d'équipe**, et l'onglet **Duel** avec **Forme récente**, **Stats de la saison** et **Blessures**. Pour suivre une équipe, touche l'étoile à côté de son blason. [Équipes favorites](/arenaswap/docs/extension/favorite-teams/) explique ce que ça change.
+
+## Consulter le boxscore et le classement
+
+**Boxscore** donne le score période par période, les stats d'équipe et les lignes des joueurs pour le sport que tu regardes. **Classement** montre le tableau de la ligue avec ces deux équipes en surbrillance.
+
+## Trouver où regarder
+
+**Infos du match** liste la chaîne ou le service, le lieu et la météo. Les matchs terminés affichent aussi l'affluence. Les matchs à venir peuvent renvoyer vers les **Billets**.
+
+La ligne de paris ne s'affiche que si tu as activé **Afficher les paris et les cotes** dans les Paramètres.
+
+## Ajouter un Coup de boost
+
+Tu veux un match à l'écran quel que soit le score ? **Coup de boost** ajoute des points à son PowerScore pour qu'ArenaSwap le choisisse plus souvent. Saisis un nombre de 0 à 100, et utilise 0 pour l'enlever.
+
+<Demo name='game-boost' />
+
+Le champ Coup de boost est disponible sur les matchs en direct et à venir. C'est la seule chose qui peut pousser un PowerScore au-dessus de 100, et la décomposition l'affiche comme « Coup de boost ».
+
+## À lire aussi
+
+- [Utiliser le Guide pour planifier ce que tu regardes](/arenaswap/docs/extension/guide/) ouvre cet écran depuis la frise.
+- [Modes de score](/arenaswap/docs/extension/scoring-modes/) explique ce qui compte pour chaque mode.
+- [Définir tes équipes favorites dans ArenaSwap](/arenaswap/docs/extension/favorite-teams/) couvre les étoiles et le Bonus d'équipe favorite.
+- [Référence des paramètres d'ArenaSwap](/arenaswap/docs/extension/settings/) liste Afficher les paris et les cotes et Unité de température.

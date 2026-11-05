@@ -1,0 +1,96 @@
+---
+title: ArenaSwap settings reference
+description: What every ArenaSwap setting changes, grouped the way the popup groups them, with the default for each.
+section: extension
+order: 7
+navLabel: Settings
+---
+
+import Demo from '../../../components/docs/Demo.astro';
+
+Tap the gear in the popup's top bar to open Settings. Use the search box at the top to find a setting by name or by what you want it to do. The settings are grouped into Switching, Scoring, Favorite Teams, Leagues, Display, Standby Stream, Multiview, and Profiles & Backup. Firefox doesn't have Multiview.
+
+## Switching
+
+- **Switch sensitivity** (**Balanced**): how much more exciting another game has to be before ArenaSwap moves you. Seven steps, from **Barely Active** to **Ludicrous Speed**. Higher means more switches.
+- **Switch cooldown** (45 seconds): the shortest wait between two switches. **Off** to 3 minutes.
+- **Switch delay** (Off): how long ArenaSwap waits before it changes tabs, so a stream that runs behind can catch up. **Off** to 3 minutes.
+- **Content-aware switching** (Off): holds a switch until the game you're leaving reaches a break in play. You may miss a moment in the game it's switching to.
+- **Switch notifications** (On): a notification with the score and the reason every time ArenaSwap switches.
+- **When a game finishes** (**Leave the tab alone**): what happens to a game's tab once the game ends. **Free it from ArenaSwap** leaves the tab open and unmutes it. **Close the tab** closes it. The tab you're looking at is never touched until you move off it.
+- **Decoy page** (a blank tab): where the boss button takes you. It also mutes every tab ArenaSwap manages and pauses auto-switching. See [how to use the boss button](/arenaswap/docs/extension/boss-button/).
+- **Demo mode** (Off): swaps live games for scripted ones, so you can try ArenaSwap without waiting for a real game. **Pretend it is** appears while it's on and changes only the holiday decorations.
+
+<Demo name='toggle' setting='contentAwareSwitching.label' checked={false} />
+
+More on these in [how to control when ArenaSwap switches tabs](/arenaswap/docs/extension/switching-and-sensitivity/).
+
+## Scoring
+
+- **What PowerScore looks for** (Classic): **Classic** for close games, **Blowouts** for lopsided ones, **Fantasy** for games with your players, **Custom** for a different mode per league.
+- **Mode by league** (Classic): appears with **Custom**. A league you leave alone uses Classic.
+- **PowerScore Signals** (all on): the things each mode measures. Switch off any you don't care about, but at least one has to stay on.
+- **How much your players lift their games** (60%): how much your roster counts. **Not at all** to **Their full score**.
+- **Your Players** (empty): up to 50 players for Fantasy to follow. NFL, NBA, WNBA, MLB and NHL.
+- **Scoring Rules** (standard points): how many fantasy points each stat is worth.
+- **Favorite team boost** (10): points added to games with a team you follow.
+- **Postseason boost** (8): points added to playoff games. Later rounds get more. Doesn't apply in Blowouts.
+
+More on these in [how to change what ArenaSwap looks for in a game](/arenaswap/docs/extension/scoring-modes/).
+
+## Favorite Teams
+
+- **Teams you follow** (none): followed teams stay at the top of the list, and their games get the favorite team boost.
+
+## Leagues
+
+- **Enabled leagues** (the ones you picked during setup): the leagues ArenaSwap watches. Turn on more and it finds the best game across all of them.
+- **College divisions and conferences**: which college games show up. Pick other divisions or conferences to widen or narrow the list, or show only the Top 25. Championship rounds like March Madness and the College Football Playoff always show, and so do games with your favorite teams.
+
+## Display
+
+- **Show upcoming games** (On): adds an Up Next section for games that haven't started, so you can assign tabs early.
+- **Days ahead** (7): how far ahead Up Next looks, from 1 to 14 days.
+- **Keep finished games** (Off): keeps a game around for 24 hours after it ends, in a Final section. You can read the box score, but can't assign a tab to it.
+- **Pro tips** (On): short tips on the main screen.
+- **Show betting & odds** (Off): shows betting lines on game cards and the detail screen.
+- **Temperature unit** (°F): **°F** or **°C** for the weather on a game's detail screen.
+- **Theme** (Dark): **Dark**, **Light**, or **Match my system**.
+- **Opening animation** (On): a matchup poster for each game when you open ArenaSwap.
+- **Holiday decorations** (On): snow, lights and leaves at the right times of year. Snow, Lights and Leaves each have their own switch.
+- **Group games by league** (Off on new installs): puts games under a header for each league instead of one list. Your favorite teams stay on top either way.
+- **Display order**: appears with **Group games by league**. Drag leagues, or use the arrows, to set which league comes first.
+
+## Standby Stream
+
+- **Enable Standby Stream** (Off): picks a fallback tab to park you on when every game you're watching goes quiet.
+- **Standby below** (20): how quiet is quiet, from 0 to 100. Higher means standby kicks in sooner.
+- **Standby tab** (none): the tab ArenaSwap takes you to.
+
+More in [how to set up Standby Stream](/arenaswap/docs/extension/standby-stream/).
+
+## Multiview
+
+Chrome and Edge only. See [how to use Multiview](/arenaswap/docs/extension/multiview/).
+
+- **Enable Multiview** (Off): when two or more of your games are exciting at once, shows them together in one tab. The most exciting game gets the biggest box and the only sound. Turning it on asks your browser for permission to read and change all websites. If you say no, Multiview stays off.
+- **Exciting at** (55): how exciting a game has to be to join. Lower opens Multiview more often. Higher saves it for big moments.
+- **Show** (**Exciting games**): **Exciting games** or **All my games**.
+- **Most boxes** (4): the most games on screen at once, from 2 to 8.
+
+## Profiles & Backup
+
+See [how to use profiles and back up your settings](/arenaswap/docs/extension/profiles-and-backup/).
+
+- **Profiles**: separate setups you can switch between, such as one for football Sundays and one for March. Start a new one from a copy of your current setup or from scratch.
+- **Back up or restore**: download your setup as a file, or import one. Importing either adds a new profile or replaces every setting in the one you're using.
+
+## Related
+
+- [How to control when ArenaSwap switches tabs](/arenaswap/docs/extension/switching-and-sensitivity/)
+- [How to change what ArenaSwap looks for in a game](/arenaswap/docs/extension/scoring-modes/)
+- [How to set favorite teams in ArenaSwap](/arenaswap/docs/extension/favorite-teams/)
+- [How to set up Standby Stream](/arenaswap/docs/extension/standby-stream/)
+- [The Guide](/arenaswap/docs/extension/guide/)
+- [Game details](/arenaswap/docs/extension/game-details/)
+- [Try ArenaSwap with Demo mode](/arenaswap/docs/extension/demo-mode/)

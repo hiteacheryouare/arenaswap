@@ -179,7 +179,7 @@ describe('suggestView crest discs', () => {
 	// than as a crest still loading.
 	it('drops the grey placeholder inside the plate', () => {
 		cy.mount(<SuggestView {...defaultProps} />);
-		cy.get('.suggest-crest .crest-fallback').first()
+		cy.get('.suggest-crest').first()
 			.should('have.css', 'background-color', 'rgba(0, 0, 0, 0)');
 	});
 

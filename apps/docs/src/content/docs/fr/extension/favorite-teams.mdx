@@ -1,0 +1,42 @@
+---
+sourceHash: '9668aab491fb'
+title: Définir tes équipes favorites dans ArenaSwap
+description: 'Mets tes équipes en favori : leurs matchs gagnent un coup de pouce pour passer à l''écran et une place en haut de la liste. Les autres matchs ne bougent pas.'
+section: extension
+order: 4
+navLabel: Équipes favorites
+faq:
+  - q: Mettre une équipe en favori cache-t-il les autres matchs ?
+    a: Non. Tous les matchs restent affichés. Ceux de tes équipes montent simplement en haut de la liste et remportent plus de changements.
+  - q: Que se passe-t-il si les deux équipes d'un match sont mes favorites ?
+    a: Le match reçoit le bonus deux fois, une fois pour chaque équipe.
+  - q: Pourquoi le match de mon équipe n'a-t-il pas changé mon onglet ?
+    a: Un match en pause, comme à la mi-temps, pendant un entracte ou lors d'une interruption, vaut zéro jusqu'à la reprise du jeu, donc une étoile ne peut pas lui faire gagner un changement. Il reste en haut de la liste.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Mets une équipe en favori et ArenaSwap penche vers ses matchs. Les matchs serrés battent toujours les matchs à sens unique, mais quand deux matchs se valent à peu près, c'est ton équipe qui décide.
+
+## Mettre une équipe en favori
+
+Tu peux le faire à la configuration, sur **Choisis tes équipes**. Ensuite, ajoute ou retire l'étoile depuis :
+
+- L'étoile à côté du nom d'une équipe sur une carte de match.
+- L'étoile à côté du blason d'une équipe sur l'écran de détails d'un match à venir.
+- Les Paramètres, sous **Équipes favorites**, où tu peux chercher toutes les équipes de tes ligues.
+
+<Demo name='live-card' favorite />
+
+## Ce que fait une étoile
+
+Les matchs de tes équipes gagnent des points supplémentaires pour devenir celui vers lequel ArenaSwap bascule. Si les deux équipes d'un match ont une étoile, il reçoit ces points deux fois.
+
+Tes matchs sont aussi placés en haut de la liste, au-dessus de matchs plus excitants mais qui n'impliquent personne que tu suis. Avec **Grouper les matchs par ligue** activé, ils se placent plutôt en haut de leur ligue.
+
+Pour changer la taille du coup de pouce, règle **Bonus d'équipe favorite** sous Notation dans les Paramètres. Il démarre à 10 points.
+
+## À lire aussi
+
+- [Regarder plusieurs matchs en même temps](/arenaswap/docs/extension/watching-multiple-games/) explique comment la liste des matchs est organisée.
+- [Référence des paramètres d'ArenaSwap](/arenaswap/docs/extension/settings/) donne la plage du bonus d'équipe favorite.

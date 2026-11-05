@@ -1,0 +1,75 @@
+---
+sourceHash: '5ceb10000624'
+title: Mehrere Spiele gleichzeitig schauen
+description: Öffne jedes Spiel in einem eigenen Tab, verknüpfe den Tab in ArenaSwap mit dem Spiel, und es bringt dich zum besten Spiel und schaltet den Rest stumm.
+section: extension
+order: 2
+navLabel: Mehrere Spiele
+faq:
+  - q: Wie schaue ich in einem Browser mehrere Spiele gleichzeitig?
+    a: Öffne jedes Spiel in einem eigenen Tab und wähl diesen Tab dann auf der Karte des Spiels in ArenaSwap. ArenaSwap bringt dich zum besten Spiel und schaltet die anderen stumm.
+  - q: Funktioniert ArenaSwap mit jedem Streaming-Dienst?
+    a: Ja. Läuft ein Spiel in einem Browser-Tab, kann ArenaSwap es nutzen. Dazu gehören Peacock, Prime Video, YouTube TV und die Website deines Kabelanbieters.
+  - q: Wie viele Spiele kann ich gleichzeitig verfolgen?
+    a: So viele, wie du Tabs offen hast.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Öffne deine Spiele in getrennten Tabs, sag ArenaSwap, welcher Tab welcher ist, und es übernimmt die Fernbedienung.
+
+## Jedes Spiel in einem eigenen Tab öffnen
+
+Starte jedes Spiel so, wie du es sonst auch tust, bei dem Dienst, der es zeigt. ArenaSwap ist egal, bei welchem, solange jedes Spiel seinen eigenen Tab hat.
+
+## Jeden Tab mit seinem Spiel verknüpfen
+
+Such im Popup die Karte eines Spiels und wähl seinen Tab im Dropdown **Tab zuweisen**. Kommende Spiele haben dasselbe Dropdown, du kannst also schon vor dem Anstoß einen Tab verknüpfen.
+
+Ein Tab, der schon mit einem anderen Spiel verknüpft ist, ist ausgegraut und mit **(belegt)** markiert. Heb die Verknüpfung dort zuerst auf, um ihn umzuziehen.
+
+<Demo name='popup' tabs />
+
+## ArenaSwap für dich zuordnen lassen
+
+Sehen Tabs, die du schon offen hast, nach Spielen aus, erscheint über der Liste ein Banner **Diese Tabs sehen nach Spielen aus**. Klick auf **Mal reinschauen**, um jedes Spiel neben dem Tab zu sehen, den ArenaSwap dazu passend findet. Starke Treffer sind vorab angehakt. Entfern den Haken bei falschen und klick dann auf **3 Tabs zuweisen** (oder so viele, wie angehakt sind).
+
+<Demo name='suggest-banner' />
+
+Schließ das Banner, um die Vorschläge zu überspringen.
+
+## Dich in der Liste zurechtfinden
+
+- **Aktive Tabs** enthält deine verknüpften Spiele, die besten zuerst, mit den Spielen deiner markierten Teams ganz oben.
+- **Live-Spiele** ist alles andere, was gerade läuft, falls sich ein Tab dafür lohnt.
+- **Als Nächstes** ist, was kommt, Tag für Tag. Mit den Pfeilen wechselst du den Tag, mit dem Suchsymbol suchst du nach einem Team, einer Liga oder einem Sender.
+- **Beendet** zeigt Spiele, die gerade zu Ende gingen, aber nur, wenn **Beendete Spiele behalten** an ist. Diesen kannst du keinen Tab zuweisen.
+
+Lieber eine Liste pro Liga? Schalte **Spiele nach Liga gruppieren** ein.
+
+## Laufen lassen
+
+Sind zwei oder mehr Tabs verknüpft, entscheidet ArenaSwap, auf welchem du bist. Es schaltet jeden verknüpften Tab außer dem, den du schaust, stumm und setzt dich zu einem Spiel um, sobald es eindeutig besser ist als das auf dem Bildschirm. Du musst nicht herumklicken oder stumm schalten.
+
+Um einen Tab aus dem Wechsel zu nehmen, heb seine Verknüpfung im Dropdown auf. Um das Wechseln ganz zu stoppen, schalte oben in der Leiste **Automatisches Wechseln aktivieren** aus.
+
+## Festlegen, was nach einem Spielende passiert
+
+**Wenn ein Spiel endet** hat in den Einstellungen drei Möglichkeiten:
+
+- **Tab in Ruhe lassen** ist der Standard.
+- **Aus ArenaSwap freigeben** löst die Verknüpfung, hebt die Stummschaltung auf und lässt den Tab offen.
+- **Tab schließen** schließt ihn.
+
+Was du auch wählst, es wartet, bis du diesen Tab verlassen hast. Der letzte Tab in einem Fenster wird freigegeben statt geschlossen, damit dir nie ein Fenster verschwindet. Beim nächsten Öffnen von ArenaSwap erfährst du, wie viele Tabs zurück sind, etwa „2 Tabs gehören wieder dir.“
+
+## Mehr als ein Fenster nutzen
+
+Das Dropdown **Tab zuweisen** listet die Tabs im Fenster, aus dem du ArenaSwap geöffnet hast. Um einen Tab in einem anderen Fenster zu verknüpfen, öffne ArenaSwap dort. Wechselt ArenaSwap zu einem Spiel in einem anderen Fenster, kommt dieses Fenster nach vorn, und der [Vollbildmodus](/arenaswap/docs/extension/switching-and-sensitivity/#stay-full-screen-through-every-switch) kommt mit.
+
+## Verwandt
+
+- [So steuerst du, wann ArenaSwap die Tabs wechselt](/arenaswap/docs/extension/switching-and-sensitivity/) regelt, wie flink oder geduldig es ist.
+- [So legst du in ArenaSwap Lieblingsteams fest](/arenaswap/docs/extension/favorite-teams/) setzt die Spiele deiner Teams nach oben.
+- [So richtest du Standby Stream ein](/arenaswap/docs/extension/standby-stream/) behandelt, was passiert, wenn jedes Spiel, das du verknüpft hast, ruhig wird.
+- [So nutzt du Multiview](/arenaswap/docs/extension/multiview/) bringt stattdessen mehrere Spiele auf einen Bildschirm.

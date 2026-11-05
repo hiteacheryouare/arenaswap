@@ -1,0 +1,141 @@
+---
+import { leagueLabels } from '@arenaswap/core/constants';
+import type { Game, LeagueId } from '@arenaswap/core/types';
+import Crest from '@arenaswap/ui/src/components/crest';
+import { formatGameClock, formatPeriod } from '@arenaswap/ui/src/components/gameCardShared';
+import { arizonaPurdue, celticsKnicks, flyersPenguins } from './demoGames';
+import { demoTranslator } from './demoStrings';
+import { currentLocale } from '../../i18n/ui';
+
+const locale = currentLocale(Astro.currentLocale);
+const demoText = demoTranslator(locale);
+
+const espnTeamLogo = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
+
+// One evening, 7 PM to midnight, read at 9:40 PM. Times are built in local time and printed in local
+// time, so the labels come out the same wherever the site is built.
+const at = (hour: number, minute = 0) => new Date(2026, 10, 4, hour, minute).getTime();
+const axisFrom = at(19);
+const axisTo = at(24);
+const now = at(21, 40);
+const band = { from: at(21, 15), to: at(22, 15) };
+const span = axisTo - axisFrom;
+const percent = (ms: number) => `${((Math.min(ms, axisTo) - axisFrom) / span) * 100}%`;
+const timeLabel = (ms: number) => new Date(ms).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' });
+const hourMarks = Array.from({ length: 6 }, (_, index) => axisFrom + index * 3_600_000);
+
+const michiganStateKentucky: Game = {
+	id: 'demo-guide-ncaab-final',
+	league: 'ncaab',
+	sportType: 'basketball',
+	status: 'post',
+	period: 2,
+	clockSeconds: 0,
+	awayTeam: { id: '127', name: 'Michigan State Spartans', abbreviation: 'MSU', score: 71, logo: espnTeamLogo('ncaa/500/127'), color: '#18453B' },
+	homeTeam: { id: '96', name: 'Kentucky Wildcats', abbreviation: 'UK', score: 77, logo: espnTeamLogo('ncaa/500/96'), color: '#0033A0' },
+};
+
+const lakersWarriors: Game = {
+	id: 'demo-guide-nba-pre',
+	league: 'nba',
+	sportType: 'basketball',
+	status: 'pre',
+	period: 0,
+	clockSeconds: 0,
+	broadcasts: ['TNT'],
+	awayTeam: { id: '13', name: 'Los Angeles Lakers', abbreviation: 'LAL', score: 0, logo: espnTeamLogo('nba/500/lal'), color: '#552583' },
+	homeTeam: { id: '9', name: 'Golden State Warriors', abbreviation: 'GS', score: 0, logo: espnTeamLogo('nba/500/gs'), color: '#1D428A' },
+};
+
+interface GuideBar {
+	game: Game;
+	start: number;
+	end: number;
+	favorite?: boolean;
+}
+
+const groups: { league: LeagueId; bars: GuideBar[] }[] = [
+	{ league: 'nba', bars: [
+		{ game: celticsKnicks.game, start: at(19, 30), end: at(22), favorite: true },
+		{ game: lakersWarriors, start: at(22), end: at(24, 30) },
+	] },
+	{ league: 'nhl', bars: [
+		{ game: flyersPenguins.game, start: at(19), end: at(21, 45) },
+	] },
+	{ league: 'ncaab', bars: [
+		{ game: michiganStateKentucky, start: at(19), end: at(21, 20) },
+		{ game: arizonaPurdue.game, start: at(20), end: at(22, 30) },
+	] },
+];
+
+const statusOf = (game: Game) => {
+	if (game.status === 'post') return demoText('gameCard.final');
+	return `${formatPeriod(game)} • ${formatGameClock(game)}`;
+};
+---
+<div class='doc-demo-popup doc-demo-guide'>
+	<div class='doc-demo-guide-ruler'>
+		<div class='doc-demo-guide-corner'></div>
+		<div class='doc-demo-guide-track'>
+			<div class='doc-demo-guide-ruler-band' style={{ left: percent(band.from), width: `${((band.to - band.from) / span) * 100}%` }}></div>
+			{hourMarks.map(mark => (
+				<span class='doc-demo-guide-mark' style={{ left: percent(mark) }}>
+					<span class='doc-demo-guide-mark-label'>{timeLabel(mark)}</span>
+				</span>
+			))}
+		</div>
+	</div>
+
+	<div class='doc-demo-guide-body'>
+		<div class='doc-demo-guide-plot'>
+			{hourMarks.map(mark => <span class='doc-demo-guide-gridline' style={{ left: percent(mark) }}></span>)}
+			<div class='doc-demo-guide-band' style={{ left: percent(band.from), width: `${((band.to - band.from) / span) * 100}%` }}></div>
+		</div>
+
+		{groups.map(group => (
+			<div class='doc-demo-guide-group'>
+				<div class='doc-demo-guide-league'>
+					<span class='doc-demo-guide-league-disc'>
+						<Crest logo={`${import.meta.env.BASE_URL}images/leagues/${group.league}.png`} abbreviation='' fallback='blank' />
+					</span>
+					<span class='doc-demo-guide-league-label'>{leagueLabels[group.league]}</span>
+				</div>
+				<div class='doc-demo-guide-rows'>
+					{group.bars.map(({ game, start, end, favorite }) => (
+						<div class='doc-demo-guide-row'>
+							<div
+								class='doc-demo-guide-bar'
+								data-status={game.status}
+								style={{
+									left: percent(start),
+									width: `${((Math.min(end, axisTo) - start) / span) * 100}%`,
+									'--guide-left': game.awayTeam.color,
+									'--guide-right': game.homeTeam.color,
+								}}
+							>
+								{game.status === 'pre' && <span class='doc-demo-guide-time'>{timeLabel(start)}</span>}
+								{[game.awayTeam, game.homeTeam].map((team, index) => (
+									<>
+										{index === 1 && game.status === 'pre' && <span class='doc-demo-guide-at'>{demoText('guide.at')}</span>}
+										<span class:list={['doc-demo-guide-side', { 'is-loser': game.status === 'post' && team.score < (index === 0 ? game.homeTeam.score : game.awayTeam.score) }]}>
+											<Crest logo={team.logo} abbreviation={team.abbreviation} teamColor={team.color} className='doc-demo-guide-crest' />
+											<span>{team.abbreviation}</span>
+											{game.status !== 'pre' && <span class='doc-demo-guide-score'>{team.score}</span>}
+										</span>
+									</>
+								))}
+								{favorite && <i class='bi bi-star-fill doc-demo-guide-star'></i>}
+								{game.status !== 'pre' && <span class='doc-demo-guide-status'>{statusOf(game)}</span>}
+								{game.status === 'pre' && <span class='doc-demo-guide-network'>{game.broadcasts?.[0]}</span>}
+							</div>
+						</div>
+					))}
+				</div>
+			</div>
+		))}
+
+		<div class='doc-demo-guide-overlay'>
+			<div class='doc-demo-guide-now' style={{ left: percent(now) }}></div>
+		</div>
+	</div>
+</div>

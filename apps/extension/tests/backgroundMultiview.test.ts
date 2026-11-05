@@ -1,5 +1,6 @@
 import { createDefaultUserPreferences, normalizeUserPreferences, pollIntervalMs } from '@arenaswap/core/constants';
 import type { Game, LeagueId, MultiviewLineup, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import { multiviewSoloGraceMs } from '../utils/multiview';
 
 jest.mock('@porkyproductions/hat', () => ({
 	randomInRange: jest.fn().mockImplementation((_min: number, max: number) => max),
@@ -41,6 +42,7 @@ let fetchMock: jest.Mock;
 let tabsUpdate: jest.Mock;
 let tabsCreate: jest.Mock;
 let tabsRemove: jest.Mock;
+let tabsMove: jest.Mock;
 let sessionRules: jest.Mock;
 let registerScripts: jest.Mock;
 let permissionsContains: jest.Mock;
@@ -78,6 +80,7 @@ const startWorker = async (games: Game[], prefs: Partial<UserPreferences>) => {
 		openTabIds = openTabIds.filter(id => id !== tabId);
 		return Promise.resolve();
 	});
+	tabsMove = jest.fn().mockResolvedValue(undefined);
 	sessionRules = jest.fn().mockResolvedValue(undefined);
 	registerScripts = jest.fn().mockResolvedValue(undefined);
 	permissionsContains = jest.fn().mockResolvedValue(true);
@@ -115,6 +118,7 @@ const startWorker = async (games: Game[], prefs: Partial<UserPreferences>) => {
 			update: tabsUpdate,
 			create: tabsCreate,
 			remove: tabsRemove,
+			move: tabsMove,
 			onActivated: { addListener: () => {} },
 			onRemoved: { addListener: (h: typeof onRemovedHandler) => { onRemovedHandler = h; } },
 			onUpdated: { addListener: (h: typeof onUpdatedHandler) => { onUpdatedHandler = h; } },
@@ -142,6 +146,10 @@ const poll = async () => {
 	await drain();
 };
 
+const pollThrough = async (ms: number) => {
+	for (let waited = 0; waited < ms; waited += pollIntervalMs + 5_000) await poll();
+};
+
 const mkGame = (id: string, home: number, away: number, clockSeconds: number): Game => ({
 	id,
 	league: 'nba' as LeagueId,
@@ -155,6 +163,8 @@ const mkGame = (id: string, home: number, away: number, clockSeconds: number): G
 
 const thriller = (id: string) => mkGame(id, 100, 100, 20);
 const runaway = (id: string) => mkGame(id, 120, 90, 300);
+// A few points under the default Exciting line, inside the 10 that warm Multiview up.
+const closeBehind = (id: string) => mkGame(id, 100, 96, 200);
 
 const multiviewPrefs: Partial<UserPreferences> = {
 	enabled: true,
@@ -164,6 +174,7 @@ const multiviewPrefs: Partial<UserPreferences> = {
 	switchDelaySeconds: 0,
 	notificationsEnabled: false,
 	multiviewEnabled: true,
+	multiviewThreshold: 65,
 };
 
 const activations = (): number[] => tabsUpdate.mock.calls
@@ -177,7 +188,7 @@ afterEach(() => {
 });
 
 describe('Multiview in the background', () => {
-	test('switches to Multiview the moment two games are exciting, and hands back when one cools', async () => {
+	test('switches to Multiview the moment two games are exciting, shows the one left alone when one cools, then hands back', async () => {
 		await startWorker([thriller('g2'), thriller('g3')], multiviewPrefs);
 		await poll();
 
@@ -204,6 +215,10 @@ describe('Multiview in the background', () => {
 		fetchMock.mockResolvedValue({ games: [thriller('g2'), runaway('g3')], leagueLogos: {}, shedLeagues: [] });
 		await poll();
 
+		expect(activations()).toEqual([]);
+		expect(await sendMessage({ type: 'GET_MULTIVIEW' }, multiviewTabId)).toMatchObject({ featuredGameId: 'g2', solo: true });
+
+		await pollThrough(multiviewSoloGraceMs);
 		expect(activations()).toEqual([2]);
 		expect(tabsRemove).toHaveBeenCalledWith(multiviewTabId);
 		expect(sessionRules).toHaveBeenLastCalledWith({ removeRuleIds: [multiviewTabId] });
@@ -214,6 +229,23 @@ describe('Multiview in the background', () => {
 		await poll();
 		expect(tabsCreate).not.toHaveBeenCalled();
 		expect(activations()).toEqual([3]);
+	});
+
+	test('warms up muted at the end of the strip while switching carries on, then shows that tab', async () => {
+		await startWorker([closeBehind('g2'), thriller('g3')], multiviewPrefs);
+		await poll();
+
+		expect(tabsCreate).toHaveBeenCalledWith({ url: 'chrome-extension://x/multiview.html', active: false, windowId: 1, index: undefined });
+		expect(activations()).toEqual([3]);
+		expect(lastMute(multiviewTabId)).toEqual({ muted: true });
+
+		fetchMock.mockResolvedValue({ games: [thriller('g2'), thriller('g3')], leagueLogos: {}, shedLeagues: [] });
+		await poll();
+
+		expect(tabsCreate).toHaveBeenCalledTimes(1);
+		expect(tabsMove).toHaveBeenCalledWith(multiviewTabId, { windowId: 1, index: 4 });
+		expect(activations()).toEqual([3, multiviewTabId]);
+		expect(lastMute(multiviewTabId)).toEqual({ muted: false });
 	});
 
 	test('stays out of the way once the permission it needs is taken back', async () => {
@@ -273,7 +305,7 @@ describe('Multiview in the background', () => {
 			expect(await sendMessage({ type: 'GET_MULTIVIEW' }, multiviewTabId)).not.toBeNull();
 
 			fetchMock.mockResolvedValue({ games: [thriller('g2'), runaway('g3')], leagueLogos: {}, shedLeagues: [] });
-			await poll();
+			await pollThrough(multiviewSoloGraceMs);
 			expect(tabsRemove).toHaveBeenCalledWith(multiviewTabId);
 			onUpdatedHandler(multiviewTabId, { url: 'https://elsewhere.example/' });
 			await drain();

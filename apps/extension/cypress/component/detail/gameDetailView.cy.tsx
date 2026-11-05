@@ -325,16 +325,16 @@ describe('gameDetailView hero', () => {
 		cy.get('.gd-hero').should('not.contain.text', 'OKC');
 	});
 
-	// Blank rather than lettered, since the abbreviation is already directly below it — but it still
-	// holds the 46px disc inside its 52px box so the grid does not move when a logo arrives.
+	// Blank rather than lettered, since the abbreviation is already directly below it, but it still
+	// holds its box so the grid does not move when a logo arrives. The wash keeps the disc visible on
+	// a hero painted in the team's own colour.
 	it('holds a blank crest box above each team name', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.get('.game-detail-team-logo').should('have.length', 2).each(($crest: JQuery<HTMLElement>) => {
 			expect($crest.attr('data-crest-state')).to.equal('missing');
 			expect($crest[0]!.getBoundingClientRect()).to.deep.include({ width: 52, height: 52 });
 			expect($crest.text(), 'no letters in this one').to.equal('');
-			expect($crest[0]!.querySelector('.crest-fallback')!.getBoundingClientRect())
-				.to.deep.include({ width: 46, height: 46 });
+			expect(getComputedStyle($crest[0]!).backgroundImage).to.contain('rgba(255, 255, 255, 0.16)');
 		});
 	});
 

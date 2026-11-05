@@ -1,0 +1,97 @@
+---
+sourceHash: '3f391bc4d95c'
+title: Die ArenaSwap-Einstellungen im Überblick
+description: Was jede ArenaSwap-Einstellung ändert, so gruppiert wie im Popup, mit dem Standardwert zu jeder.
+section: extension
+order: 7
+navLabel: Einstellungen
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Tipp in der oberen Leiste des Popups auf das Zahnrad, um die Einstellungen zu öffnen. Mit dem Suchfeld oben findest du eine Einstellung nach Namen oder danach, was sie tun soll. Die Einstellungen sind in Wechseln, Bewertung, Lieblingsteams, Ligen, Anzeige, Standby Stream, Multiview und Profile & Backup gruppiert. Firefox hat kein Multiview.
+
+## Wechseln
+
+- **Wechselempfindlichkeit** (**Ausgewogen**): wie viel spannender ein anderes Spiel sein muss, bevor ArenaSwap dich umsetzt. Sieben Stufen, von **Kaum aktiv** bis **Ludicrous Speed**. Höher heißt mehr Wechsel.
+- **Wechsel-Cooldown** (45 Sekunden): die kürzeste Wartezeit zwischen zwei Wechseln. Von **Aus** bis 3 Minuten.
+- **Wechselverzögerung** (Aus): wie lange ArenaSwap wartet, bevor es die Tabs wechselt, damit ein Stream, der hinterherhängt, aufholen kann. Von **Aus** bis 3 Minuten.
+- **Wechsel bei Spielpause** (Aus): hält einen Wechsel zurück, bis das Spiel, das du verlässt, eine Spielpause erreicht. Dir kann im Spiel, zu dem gewechselt wird, ein Moment entgehen.
+- **Wechsel-Benachrichtigungen** (An): bei jedem Wechsel von ArenaSwap eine Benachrichtigung mit Spielstand und Grund.
+- **Wenn ein Spiel endet** (**Tab in Ruhe lassen**): was mit dem Tab eines Spiels passiert, sobald es endet. **Aus ArenaSwap freigeben** lässt den Tab offen und hebt die Stummschaltung auf. **Tab schließen** schließt ihn. Den Tab, den du gerade ansiehst, fasst ArenaSwap nie an, bis du ihn verlässt.
+- **Tarnseite** (ein leerer Tab): wohin dich der Chef-Button bringt. Er schaltet außerdem jeden Tab stumm, den ArenaSwap verwaltet, und pausiert das automatische Wechseln. Siehe [So nutzt du den Chef-Button](/arenaswap/docs/extension/boss-button/).
+- **Demo-Modus** (Aus): ersetzt Live-Spiele durch vorgefertigte, damit du ArenaSwap ausprobieren kannst, ohne auf ein echtes Spiel zu warten. **Tu so, als wäre** erscheint, solange er an ist, und ändert nur den Festtagsschmuck.
+
+<Demo name='toggle' setting='contentAwareSwitching.label' checked={false} />
+
+Mehr dazu unter [So steuerst du, wann ArenaSwap die Tabs wechselt](/arenaswap/docs/extension/switching-and-sensitivity/).
+
+## Bewertung
+
+- **Worauf der PowerScore achtet** (Klassisch): **Klassisch** für knappe Spiele, **Kantersiege** für einseitige, **Fantasy** für Spiele mit deinen Spielern, **Individuell** für einen anderen Modus pro Liga.
+- **Modus pro Liga** (Klassisch): erscheint bei **Individuell**. Eine Liga, die du in Ruhe lässt, nutzt Klassisch.
+- **PowerScore-Signale** (alle an): die Dinge, die jeder Modus misst. Schalte ab, was dich nicht interessiert, aber mindestens eines muss an bleiben.
+- **Wie stark deine Spieler ihre Spiele nach oben ziehen** (60 %): wie viel dein Kader zählt. Von **Gar nicht** bis **Volle Punktzahl**.
+- **Deine Spieler** (leer): bis zu 50 Spieler, denen Fantasy folgt. NFL, NBA, WNBA, MLB und NHL.
+- **Wertungsregeln** (Standardpunkte): wie viele Fantasy-Punkte jede Statistik wert ist.
+- **Lieblingsteam-Boost** (10): Punkte, die Spielen mit einem Team, dem du folgst, gutgeschrieben werden.
+- **Postseason-Boost** (8): Punkte, die Playoff-Spielen gutgeschrieben werden. Spätere Runden bekommen mehr. Bei Kantersiege gilt er nicht.
+
+Mehr dazu unter [So änderst du, worauf ArenaSwap in einem Spiel achtet](/arenaswap/docs/extension/scoring-modes/).
+
+## Lieblingsteams
+
+- **Deine favorisierten Teams** (keine): Teams, denen du folgst, bleiben oben in der Liste, und ihre Spiele bekommen den Lieblingsteam-Boost.
+
+## Ligen
+
+- **Aktivierte Ligen** (die, die du bei der Einrichtung gewählt hast): die Ligen, die ArenaSwap beobachtet. Schalte mehr ein, und es findet das beste Spiel aus allen.
+- **College-Divisionen und -Conferences**: welche College-Spiele erscheinen. Wähl andere Divisionen oder Conferences, um die Liste zu erweitern oder einzuengen, oder zeig nur die Top 25. Meisterschaftsrunden wie die March Madness und die College Football Playoff erscheinen immer, ebenso Spiele deiner Lieblingsteams.
+
+## Anzeige
+
+- **Bevorstehende Spiele anzeigen** (An): fügt einen Bereich Als Nächstes für Spiele hinzu, die noch nicht begonnen haben, damit du früh Tabs zuweisen kannst.
+- **Tage im Voraus** (7): wie weit Als Nächstes vorausschaut, von 1 bis 14 Tagen.
+- **Beendete Spiele behalten** (Aus): behält ein Spiel nach seinem Ende 24 Stunden lang in einem Bereich Beendet. Du kannst den Boxscore lesen, ihm aber keinen Tab zuweisen.
+- **Profi-Tipps** (An): kurze Tipps auf dem Hauptbildschirm.
+- **Wetten & Quoten anzeigen** (Aus): zeigt Wettquoten auf Spielkarten und dem Detailbildschirm.
+- **Temperatureinheit** (°F): **°F** oder **°C** für das Wetter auf dem Detailbildschirm eines Spiels.
+- **Design** (Dunkel): **Dunkel**, **Hell** oder **Systemeinstellung**.
+- **Öffnungsanimation** (An): ein Matchup-Plakat für jedes Spiel, wenn du ArenaSwap öffnest.
+- **Festtagsschmuck** (An): Schnee, Lichter und Laub zur passenden Jahreszeit. Schnee, Lichter und Laub haben je einen eigenen Schalter.
+- **Spiele nach Liga gruppieren** (Aus bei Neuinstallationen): legt Spiele unter eine Überschrift je Liga statt in eine einzige Liste. Deine Lieblingsteams bleiben in beiden Fällen oben.
+- **Anzeigereihenfolge**: erscheint mit **Spiele nach Liga gruppieren**. Zieh Ligen oder nutz die Pfeile, um festzulegen, welche Liga zuerst kommt.
+
+## Standby Stream
+
+- **Standby Stream aktivieren** (Aus): wählt einen Ausweich-Tab, auf dem du geparkt wirst, wenn jedes Spiel, das du schaust, ruhig wird.
+- **Standby unter** (20): wie ruhig ruhig ist, von 0 bis 100. Höher heißt, der Standby greift früher.
+- **Standby-Tab** (keiner): der Tab, zu dem ArenaSwap dich bringt.
+
+Mehr dazu unter [So richtest du Standby Stream ein](/arenaswap/docs/extension/standby-stream/).
+
+## Multiview
+
+Nur Chrome und Edge. Siehe [So nutzt du Multiview](/arenaswap/docs/extension/multiview/).
+
+- **Multiview aktivieren** (Aus): zeigt, wenn zwei oder mehr deiner Spiele gleichzeitig spannend sind, sie zusammen in einem Tab. Das spannendste Spiel bekommt die größte Box und den einzigen Ton. Beim Einschalten fragt dein Browser nach der Erlaubnis, alle Websites zu lesen und zu ändern. Sagst du Nein, bleibt Multiview aus.
+- **Spannend ab** (55): wie spannend ein Spiel sein muss, um mitzumachen. Niedriger öffnet Multiview öfter. Höher spart es für große Momente auf.
+- **Anzeigen** (**Spannende Spiele**): **Spannende Spiele** oder **Alle meine Spiele**.
+- **Max. Boxen** (4): die meisten Spiele gleichzeitig auf dem Bildschirm, von 2 bis 8.
+
+## Profile & Backup
+
+Siehe [So nutzt du Profile und sicherst deine Einstellungen](/arenaswap/docs/extension/profiles-and-backup/).
+
+- **Profile**: getrennte Setups, zwischen denen du wechseln kannst, etwa eines für Football-Sonntage und eines für den März. Leg ein neues als Kopie deines aktuellen Setups an oder von null.
+- **Sichern oder wiederherstellen**: lade dein Setup als Datei herunter oder importiere eines. Beim Import wird entweder ein neues Profil hinzugefügt oder jede Einstellung des Profils ersetzt, das du gerade nutzt.
+
+## Verwandt
+
+- [So steuerst du, wann ArenaSwap die Tabs wechselt](/arenaswap/docs/extension/switching-and-sensitivity/)
+- [So änderst du, worauf ArenaSwap in einem Spiel achtet](/arenaswap/docs/extension/scoring-modes/)
+- [So legst du in ArenaSwap Lieblingsteams fest](/arenaswap/docs/extension/favorite-teams/)
+- [So richtest du Standby Stream ein](/arenaswap/docs/extension/standby-stream/)
+- [Der Guide](/arenaswap/docs/extension/guide/)
+- [Spieldetails](/arenaswap/docs/extension/game-details/)
+- [ArenaSwap im Demo-Modus ausprobieren](/arenaswap/docs/extension/demo-mode/)

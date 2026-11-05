@@ -1,0 +1,61 @@
+---
+sourceHash: '160ac78129f6'
+title: Como controlar quando o ArenaSwap muda de separador
+description: Faz o ArenaSwap mudar mais ou menos vezes, espera enquanto a tua transmissão se põe em dia e fica num jogo até acabar a jogada que estás a ver.
+section: extension
+order: 3
+navLabel: Mudanças
+faq:
+  - q: Como evito que o ArenaSwap mude tanto de separador?
+    a: Baixa a Sensibilidade de mudança, aumenta o Tempo de espera entre mudanças ou desassocia o separador em que não queres que mexa. Desativar Ativar mudança automática pára-o por completo.
+  - q: Porque é que o ArenaSwap anda sempre a saltar entre dois jogos?
+    a: Dois dos teus jogos estão a trocar o primeiro lugar de mais emocionante. Aumenta o Tempo de espera entre mudanças para o ArenaSwap ficar mais tempo num jogo antes de se mexer outra vez.
+  - q: Porque é que o ArenaSwap muda antes de eu ver a grande jogada?
+    a: A tua transmissão está atrasada em relação ao jogo em direto. Acrescenta um Atraso de mudança para a tua emissão se pôr em dia antes de o separador mudar.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Todos estes controlos estão nas Definições, em **Mudanças**. Escolhe o que corresponde ao que te está a chatear.
+
+## Mudar menos vezes
+
+Abre **Sensibilidade de mudança** e desliza-a para **Quase inativo**. O ArenaSwap passa a esperar que outro jogo seja bastante mais emocionante do que aquele que estás a ver antes de te mudar. A predefinição é **Equilibrado**.
+
+<Demo name='slider' kind='sensitivity' />
+
+Se o ArenaSwap demora a apanhar um jogo que claramente está a aquecer, desliza para o outro lado, para **Ansioso** ou **Ludicrous Speed**.
+
+## Impedi-lo de saltar entre jogos
+
+O **Tempo de espera entre mudanças** é a espera mínima entre duas mudanças, de **Desativado** até 3 minutos. A predefinição é 45 segundos. Aumenta-o e o ArenaSwap fica mais tempo num jogo, mesmo quando o outro passa à frente por instantes. Baixa-o para acompanhares todas as oscilações de um final louco.
+
+Clicares tu num dos separadores dos teus jogos também começa o tempo de espera, por isso o ArenaSwap não te tira de um jogo que acabaste de escolher.
+
+<Demo name='slider' kind='cooldown' />
+
+## Dar tempo à transmissão para se pôr em dia
+
+As transmissões vão atrasadas em relação ao jogo real. O **Atraso de mudança** faz o ArenaSwap esperar antes de mudar de separador, de **Desativado** até 3 minutos. Se andas sempre a chegar a um jogo mesmo antes de a grande jogada aparecer no teu ecrã, acrescenta 15 ou 30 segundos. O ArenaSwap volta a verificar o jogo antes de mudar, por isso não és enviado para um que ficou sossegado enquanto esperava.
+
+## Não ser cortado a meio da jogada
+
+Ativa a **Mudança nas pausas** e o ArenaSwap retém uma mudança até o jogo que estás a deixar chegar a uma pausa natural: o fim da vez de bater, um apito, o fim da jogada. Vês como acaba e depois vais.
+
+Se a pausa nunca chegar, a mudança acontece na mesma, após uma espera curta. Não espera de todo quando o jogo que estás a deixar já está num tempo morto, numa pausa para a TV ou num intervalo, quando é uma goleada, ou quando o outro jogo está num momento decisivo. O futebol, o futebol americano universitário e o hóquei universitário mudam logo.
+
+Enquanto uma mudança está à espera, o popup mostra qual é o jogo seguinte. Com as **Notificações de mudança** ativas, recebes também uma notificação "A seguir". O senão: podes perder algo no jogo para onde estás prestes a mudar.
+
+## Pausar a mudança por completo
+
+O interruptor na barra superior, **Ativar mudança automática**, é o interruptor principal. Desliga-o e os teus separadores ficam onde estão. Volta a ligá-lo e o ArenaSwap retoma a partir daí.
+
+## Manter o ecrã inteiro nas mudanças
+
+Põe a janela do navegador em ecrã inteiro antes de o jogo começar: **⌃⌘F** num Mac, **F11** em todos os outros. A janela fica em ecrã inteiro em todas as mudanças, incluindo uma mudança para um jogo noutra janela. Se usares o botão de ecrã inteiro do próprio leitor de vídeo, o ArenaSwap volta a pôr a janela em ecrã inteiro depois de cada mudança.
+
+## Relacionado
+
+- [Referência das definições do ArenaSwap](/arenaswap/docs/extension/settings/) lista todas as definições de Mudanças e o respetivo valor predefinido.
+- [Como ver vários jogos ao mesmo tempo](/arenaswap/docs/extension/watching-multiple-games/) explica como escolher os separadores entre os quais o ArenaSwap muda.
+- [Resolução de problemas do ArenaSwap](/arenaswap/docs/extension/troubleshooting/) trata de mudanças que parecem um erro, mas não são.

@@ -1,0 +1,47 @@
+---
+sourceHash: '7a9d6a58a2ff'
+title: Standby Stream 설정하는 법
+description: 보고 있는 경기가 모두 조용해질 때 머물 탭을 골라 두면, ArenaSwap이 거기로 데려가고 경기가 달아오르면 다시 데려와요.
+section: extension
+order: 5
+navLabel: Standby Stream
+faq:
+  - q: ArenaSwap의 Standby Stream은 뭔가요?
+    a: 미리 골라 두는 탭이에요. 탭을 할당한 경기가 모두 조용해지면 ArenaSwap이 그 탭으로 데려가요. 경기가 다시 달아오르면 다시 돌려보내 줘요.
+  - q: Standby Stream을 켰는데 왜 아무 일도 안 일어나나요?
+    a: 설정에서 대기 탭을 골랐는지, 생중계 경기 하나 이상에 탭을 할당했는지, 자동 전환 활성화를 켰는지 확인하세요. Multiview가 표시 중이면 그쪽이 먼저예요.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+보고 있는 경기가 한꺼번에 시들해지는 밤이 있어요. 대승, 우천 지연, 하프타임이죠. Standby Stream은 ArenaSwap이 하이라이트 쇼나 스튜디오 중계처럼 더 나은 곳으로 데려갈 수 있게 해 줘요.
+
+## 설정하기
+
+1. 대기용으로 쓸 탭을 열어서 열어 두세요.
+2. 설정에서 **Standby Stream**을 열고 **Standby Stream 활성화**를 켜세요.
+3. **대기 탭** 드롭다운에서 탭을 고르세요.
+
+드롭다운에 아직 **탭 선택**이라고 나온다면 경기가 조용해져도 아무 일도 안 일어나요.
+
+처음 켜면 같은 단계를 보여 주는 짧은 2단계 안내가 나와요. 끝나면 두 번째 화면에서 **확인**을 탭하세요.
+
+<Demo name='standby' />
+
+## 얼마나 조용해야 조용한 건지 정하기
+
+**대기 기준점**은 0에서 100까지의 슬라이더고 기본은 20이에요. 올리면 경기가 아직 어느 정도 재밌을 때도 ArenaSwap이 일찍 대기로 데려가요. 내리면 ArenaSwap이 경기를 더 오래 화면에 두다가 포기해요.
+
+## 어떻게 되나요
+
+탭을 할당한 경기가 모두 조용해지면 ArenaSwap이 대기 탭으로 전환해요. 그중 하나라도 달아오르면 다시 돌려보내요.
+
+다른 탭으로 직접 넘어가면 ArenaSwap이 가장 좋은 경기로 데려가요. 쿨다운이 끝날 때까지 달아오른 경기가 없으면 대기 탭으로 다시 데려와요. 아예 안 움직이고 둘러보려면 **자동 전환 활성화**를 끄세요.
+
+Standby Stream은 탭을 할당한 경기만 지켜봐요. 할당한 경기 탭이 없으면 물러날 곳이 없어요.
+
+## 관련 문서
+
+- [여러 경기를 한꺼번에 보는 법](/arenaswap/docs/extension/watching-multiple-games/)에서 경기에 탭을 할당하는 법을 다뤄요.
+- [ArenaSwap 설정 레퍼런스](/arenaswap/docs/extension/settings/)에 모든 Standby Stream 설정의 기본값이 나와 있어요.
+- [Multiview 사용법](/arenaswap/docs/extension/multiview/)은 흥미진진한 경기가 둘 이상일 때 한 탭에 여러 경기를 보여 줘요.

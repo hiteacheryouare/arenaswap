@@ -1250,7 +1250,9 @@
 	},
 	"multiview": {
 		"empty": "이 Multiview는 닫혔어요. 내 경기 중 두 경기가 동시에 흥미진진해지면 새로 열려요.",
-		"soundOn": "소리 켜짐"
+		"soundOn": "소리 켜짐",
+		"closedTitle": "오늘 방송은 여기까지",
+		"closeTab": "탭 닫기"
 	},
 	"empty": {
 		"leaguesTitle": "시작하려면 리그를 선택하세요",

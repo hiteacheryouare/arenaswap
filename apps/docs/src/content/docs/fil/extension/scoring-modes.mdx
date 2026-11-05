@@ -1,0 +1,60 @@
+---
+sourceHash: 'c22a44d5493c'
+title: Paano baguhin ang hinahanap ng ArenaSwap sa isang laro
+description: Piliin ang Classic para sa mga dikitang laro, Blowouts para sa mga bugbugan, o Fantasy para sa mga larong may player mo, o magtakda ng iba para sa bawat liga.
+section: extension
+order: 6
+navLabel: Mga scoring mode
+faq:
+  - q: Aling scoring mode ang dapat kong gamitin?
+    a: Classic para sa pinakadikit at pinakakabado na laro, na siyang default ng ArenaSwap. Blowouts kung mas gusto mong makitang mapag-iwanan ang isang team. Fantasy kung mas mahalaga sa iyo ang sarili mong mga player. Hinahayaan ka ng Custom na pumili ng iba para sa bawat liga.
+  - q: Bakit walang nangyayari kapag in-on ko ang Fantasy?
+    a: Kailangan ng Fantasy ng mga player. Magdagdag ng ilan sa Mga Player Mo sa Mga Setting. Hangga't wala, at sa anumang larong walang naglalaro sa kanila, Classic ang gagamitin ng ArenaSwap.
+  - q: Puwede ko bang gamitin ang Fantasy sa sport na hindi football?
+    a: Oo. Gumagana ang Fantasy sa NFL, NBA, WNBA, MLB at NHL, at puwede mong baguhin ang scoring rule ng bawat sport.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Sa default, hinahanap ng ArenaSwap ang larong dikit, nasa huling yugto, at pabago-bago ang takbo. Iyon ang **Classic**. Kung iba ang gusto mong makita sa screen, palitan ang hinahanap nito sa Mga Setting, sa ilalim ng **Scoring**.
+
+<Demo name='modes' />
+
+## Piliin ang klase ng laro na gusto mo
+
+- **Classic:** mga dikitang laro, late drama, at comeback. Pangarap ang tabla sa huling minuto.
+- **Blowouts:** mga lamang na lamang na laro, para kapag gusto mong makitang pulbusin ng isang team ang isa pa. Lalabas pa rin ang mga dikitang laro sa gabing walang bugbugan, pero laging mananalo ang totoong blowout.
+- **Fantasy:** mga larong may player mo. Sinusundan nito kung nasaan sila sa laro (sino ang may bola, sino ang nasa bat, sino ang nasa red zone) at kung ilang fantasy point ang naiskor nila kamakailan.
+- **Custom:** magkaibang mode para sa bawat liga. Halimbawa, Fantasy sa NFL, Classic sa college basketball, at Blowouts sa lahat ng iba. Classic ang gamit ng ligang hindi mo itinakda.
+
+Sa iisang 0 hanggang 100 na scale ni-rank ang mga laro mula sa bawat liga, kaya puwedeng magpaligsahan ang Fantasy na laro at Classic na laro para sa tab mo. Nasa [mga setting ng paglipat](/arenaswap/docs/extension/switching-and-sensitivity/) mo pa rin kung gaano kalaki ang kailangang kalamangan ng laro bago ka ilipat ng ArenaSwap.
+
+## Huwag palampasin ang mga player mo
+
+1. Itakda ang scoring mode sa **Fantasy**, o **Custom** na may Fantasy sa mga ligang gusto mo.
+2. Buksan ang **Mga Player Mo** at maghanap ng player ayon sa pangalan. Idagdag mula sa mga resulta. Hanggang 50 ang puwede.
+3. Itakda ang **Gaano katindi ang angat ng mga player mo sa mga laro nila**. Itaas ito at mas bibigat ang roster mo. Ibaba ito at pantabla na lang ito.
+
+Sakop ng Fantasy ang NFL, NBA, WNBA, MLB at NHL. Puwede ring maglaman ng team defense ang football roster. Ang larong may player mo ay puwede lang umakyat sa listahan, hindi bumaba.
+
+Sa ilalim ng **Mga Scoring Rule**, puwede mong baguhin kung ilang fantasy point ang halaga ng bawat stat. Nagsisimula ang ArenaSwap sa karaniwang puntos ng bawat sport.
+
+## I-off ang hindi mo pinapahalagahan
+
+May ilang sinusukat ang bawat mode, na tinatawag na Signal. Ang sa Classic ay Kalapitan, Huling Yugto, Momentum, Pagbabago ng Lead, at Comeback. Sa ilalim ng **PowerScore Signals**, puwede mong i-off ang alinman sa mga ito, basta may isang matitira. Tingnan ang [pahina ng mga signal](/arenaswap/docs/powerscore/signals/) para sa ibig sabihin ng bawat isa.
+
+<Demo name='breakdown' />
+
+## Mga puntos na ikaw ang nagdaragdag
+
+Gumagana ang mga ito sa bawat mode:
+
+- Nagdaragdag ang **Boost ng Paboritong Team** ng puntos sa mga larong may team na sinusundan mo. Tingnan ang [mga paboritong team](/arenaswap/docs/extension/favorite-teams/).
+- Nagdaragdag ang **Boost sa Postseason** ng puntos sa mga playoff at knockout na laro, mas marami sa mga huling round. Hindi ito umaandar sa Blowouts.
+- Nagdaragdag ang **Boost ng Laro** ng puntos sa isang laro na pinili mo, mula 0 hanggang 100. Gamitin ang Boost ng Laro na field sa detail screen ng laro o sa [Guide](/arenaswap/docs/extension/guide/). Tumatagal ito hanggang isara mo ang browser.
+
+## Kaugnay
+
+- Inililista ng [Gabay sa mga setting ng ArenaSwap](/arenaswap/docs/extension/settings/) ang mga scoring setting at default ng mga ito.
+- Ang [Paano kontrolin kung kailan lumilipat ang ArenaSwap ng tab](/arenaswap/docs/extension/switching-and-sensitivity/) ay tungkol sa kung gaano kalaki ang kailangang kalamangan ng laro bago ka ilipat ng ArenaSwap.
+- Ipinapaliwanag ng [Mga PowerScore signal sa bawat mode](/arenaswap/docs/powerscore/signals/) ang bawat signal nang detalyado.

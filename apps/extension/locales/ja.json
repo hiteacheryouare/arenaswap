@@ -1250,7 +1250,9 @@
 	},
 	"multiview": {
 		"empty": "このMultiviewは閉じています。2試合が同時に盛り上がると、新しいMultiviewが開きます。",
-		"soundOn": "音声オン"
+		"soundOn": "音声オン",
+		"closedTitle": "本日の放送は終了",
+		"closeTab": "タブを閉じる"
 	},
 	"empty": {
 		"leaguesTitle": "まずリーグを選んでください",

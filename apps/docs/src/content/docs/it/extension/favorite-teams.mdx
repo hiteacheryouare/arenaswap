@@ -1,0 +1,42 @@
+---
+sourceHash: '9668aab491fb'
+title: Come impostare le squadre preferite in ArenaSwap
+description: Metti la stella alle tue squadre e le loro partite ricevono una spinta verso il tuo schermo e un posto in cima alla lista. Tutte le altre restano dove sono.
+section: extension
+order: 4
+navLabel: Squadre preferite
+faq:
+  - q: Mettere la stella a una squadra nasconde le altre partite?
+    a: No. Ogni partita compare comunque. Le partite delle tue squadre stanno solo in cima alla lista e vincono più cambi.
+  - q: Cosa succede se entrambe le squadre di una partita sono tra le mie preferite?
+    a: La partita riceve il bonus due volte, una per squadra.
+  - q: Perché la partita della mia squadra non mi ha cambiato scheda?
+    a: Una partita in pausa, come l'intervallo, una pausa tra i tempi o un'interruzione, vale zero finché il gioco non riparte, quindi la stella non può farle vincere un cambio. Resta comunque in cima alla lista.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Metti la stella a una squadra e ArenaSwap si schiera dalla parte delle sue partite. Le partite equilibrate battono comunque quelle a senso unico, ma quando due partite si equivalgono, decide la tua squadra.
+
+## Metti la stella a una squadra
+
+Puoi mettere le stelle durante la configurazione, in **Scegli le tue squadre**. Dopo, aggiungi o togli la stella da uno di questi punti:
+
+- La stella accanto al nome di una squadra nella scheda di una partita.
+- La stella accanto allo stemma di una squadra nella schermata di dettaglio di una partita in arrivo.
+- Le Impostazioni, sotto **Squadre preferite**, dove puoi cercare tra tutte le squadre delle tue leghe.
+
+<Demo name='live-card' favorite />
+
+## Cosa fa una stella
+
+Le partite delle tue squadre ricevono punti extra per essere quella su cui ArenaSwap cambia. Se entrambe le squadre di una partita hanno la stella, i punti extra arrivano due volte.
+
+Le partite delle tue squadre stanno anche in cima alla lista, sopra quelle più emozionanti ma di squadre che non segui. Con **Raggruppa le partite per lega** attivo, stanno invece in cima alla loro lega.
+
+Per cambiare l'entità della spinta, regola **Boost squadra preferita** sotto Punteggio nelle Impostazioni. Parte da 10 punti.
+
+## Argomenti correlati
+
+- [Come guardare più partite insieme](/arenaswap/docs/extension/watching-multiple-games/) spiega come è organizzata la lista delle partite.
+- [Guida alle impostazioni di ArenaSwap](/arenaswap/docs/extension/settings/) indica l'intervallo del boost per la squadra preferita.

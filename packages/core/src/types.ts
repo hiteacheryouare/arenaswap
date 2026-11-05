@@ -536,6 +536,8 @@ export interface MultiviewLineup {
 	boxes: MultiviewBox[];
 	// The game in the big box, which is the only one with sound.
 	featuredGameId: string | null;
+	// Only the featured box is on screen. The others keep playing out of sight in case their games come back.
+	solo: boolean;
 	games: Game[];
 }
 

@@ -134,8 +134,8 @@ describe('the due-up block', () => {
 	it('draws a portrait where there is one and initials where there is not', () => {
 		mountPanel(liveGame);
 		cy.get('.gd-dueup-row').eq(0).find('img').should('exist');
-		cy.get('.gd-dueup-row').eq(1).find('.crest-fallback').should('contain.text', 'CE');
-		cy.get('.gd-dueup-row').eq(2).find('.crest-fallback').should('contain.text', 'XB');
+		cy.get('.gd-dueup-row').eq(1).find('.crest-initials').should('contain.text', 'CE');
+		cy.get('.gd-dueup-row').eq(2).find('.crest-initials').should('contain.text', 'XB');
 	});
 
 	// Both halves of the between-innings gap carry the side that bats next, and they spell it

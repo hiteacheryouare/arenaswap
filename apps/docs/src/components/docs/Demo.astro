@@ -1,0 +1,163 @@
+---
+import DetailCharts from '../landing/DetailCharts';
+import BackupDemo from './BackupDemo.astro';
+import BossButtonDemo from './BossButtonDemo.astro';
+import BreakdownDemo from './BreakdownDemo.astro';
+import BrowserTabsDemo from './BrowserTabsDemo.astro';
+import DocDemo from './DocDemo.astro';
+import GameBoostDemo from './GameBoostDemo.astro';
+import GameCardDemo from './GameCardDemo';
+import GuideDemo from './GuideDemo.astro';
+import ModesDemo from './ModesDemo.astro';
+import MultiviewDemo from './MultiviewDemo.astro';
+import NotificationDemo from './NotificationDemo.astro';
+import PopupDemo from './PopupDemo';
+import ProfilesDemo from './ProfilesDemo.astro';
+import SliderDemo from './SliderDemo.astro';
+import type { SliderKind } from './SliderDemo.astro';
+import StandbyDemo from './StandbyDemo.astro';
+import SuggestBannerDemo from './SuggestBannerDemo.astro';
+import ToggleDemo from './ToggleDemo.astro';
+import { celticsKnicks, notificationScore } from './demoGames';
+import { demoTranslator, demoUiStrings, tiedReason } from './demoStrings';
+import { defaultSensitivity, sensitivityThresholds } from '@arenaswap/core/constants';
+import { currentLocale, uiStrings, useTranslations } from '../../i18n/ui';
+
+// One tag for every demo in the help articles: <Demo name='live-card' favorite />.
+
+export type DemoName =
+	| 'popup'
+	| 'live-card'
+	| 'upcoming-card'
+	| 'final-card'
+	| 'charts'
+	| 'breakdown'
+	| 'game-boost'
+	| 'suggest-banner'
+	| 'guide'
+	| 'browser-tabs'
+	| 'notification'
+	| 'slider'
+	| 'toggle'
+	| 'modes'
+	| 'multiview'
+	| 'standby'
+	| 'boss-button'
+	| 'profiles'
+	| 'backup';
+
+interface Props {
+	name: DemoName;
+	caption?: string;
+	// Replaces the built-in description screen readers hear.
+	description?: string;
+	tabs?: boolean;
+	tab?: boolean;
+	favorite?: boolean;
+	kind?: SliderKind;
+	// An extension string key, e.g. `setup.demoMode`.
+	setting?: string;
+	checked?: boolean;
+	icon?: string;
+	info?: boolean;
+	value?: number;
+}
+
+const { name, caption, tabs = false, tab = false, favorite = false, kind = 'sensitivity', setting = '', checked = true, icon, info, value } = Astro.props;
+
+const locale = currentLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const demoText = demoTranslator(locale);
+const strings = demoUiStrings(locale);
+
+const tied = tiedReason(demoText);
+const weeknights = t('docDemos.profileWeeknights');
+
+const sliderDescriptions: Record<SliderKind, () => string> = {
+	sensitivity: () => t('docDemos.sliderSensitivity', {
+		label: demoText('sensitivity.label'),
+		value: demoText('sensitivity.valueLabel', { label: demoText(`sensitivity.level.l${defaultSensitivity}`), gap: sensitivityThresholds[defaultSensitivity]! }),
+	}),
+	cooldown: () => t('docDemos.sliderCooldown', { label: demoText('cooldown.label') }),
+	delay: () => t('docDemos.sliderDelay', { label: demoText('switchDelay.label'), value: demoText('switchDelay.off') }),
+};
+
+const liveCardKey = favorite ? (tab ? 'liveCardFavoriteTab' : 'liveCardFavorite') : (tab ? 'liveCardTab' : 'liveCard');
+
+const descriptions: Record<DemoName, () => string> = {
+	'popup': () => t(tabs ? 'docDemos.popupTabs' : 'docDemos.popup'),
+	'live-card': () => t(`docDemos.${liveCardKey}`),
+	'upcoming-card': () => t('docDemos.upcomingCard'),
+	'final-card': () => t('docDemos.finalCard'),
+	'charts': () => t('docDemos.charts'),
+	'breakdown': () => t('docDemos.breakdown', {
+		heading: demoText('powerScore.heading'),
+		closeness: demoText('powerScore.signalCloseness'),
+		lateGame: demoText('powerScore.signalLateGame'),
+		momentum: demoText('powerScore.signalMomentum'),
+		leadChanges: demoText('powerScore.signalLeadChanges'),
+		comeback: demoText('powerScore.signalComeback'),
+		gameBoost: demoText('powerScore.gameBoost'),
+		final: demoText('powerScore.finalPowerScore'),
+		reason: tied,
+	}),
+	'game-boost': () => t('docDemos.gameBoost', { heading: demoText('gameBoost.heading'), points: value ?? 5 }),
+	'suggest-banner': () => t('docDemos.suggestBanner', { title: demoText('suggest.bannerTitle'), action: demoText('suggest.bannerAction') }),
+	'guide': () => t('docDemos.guide'),
+	'browser-tabs': () => t('docDemos.browserTabs'),
+	'notification': () => t('docDemos.notification', {
+		title: demoText('notification.switchedTitle', { score: notificationScore }),
+		message: demoText('notification.switchedMessageWithReason', { reason: tied, venue: celticsKnicks.game.venueName ?? '' }),
+	}),
+	'slider': () => sliderDescriptions[kind](),
+	'toggle': () => t(checked ? 'docDemos.toggleOn' : 'docDemos.toggleOff', { label: demoText(setting) }),
+	'modes': () => t('docDemos.modes', {
+		section: demoText('setup.scoringModeSection'),
+		classic: demoText('powerScore.modeClassic'),
+		blowouts: demoText('powerScore.modeBlowouts'),
+		fantasy: demoText('powerScore.modeFantasy'),
+		custom: demoText('powerScore.modeCustom'),
+	}),
+	'multiview': () => t('docDemos.multiview'),
+	'standby': () => t('docDemos.standby', { tab: t('docDemos.standbyTab'), line: demoText('main.onStandbyStream') }),
+	'profiles': () => t('docDemos.profiles', {
+		section: demoText('profiles.section'),
+		current: weeknights,
+		rename: demoText('profiles.rename'),
+		export: demoText('profiles.export'),
+		new: demoText('profiles.new'),
+		backup: demoText('backup.open'),
+	}),
+	'backup': () => t('docDemos.backup', {
+		addAsNew: demoText('backupImport.addAsNew'),
+		replace: demoText('backupImport.replace', { name: weeknights }),
+		from: demoText('powerScore.modeClassic'),
+		to: demoText('powerScore.modeFantasy'),
+	}),
+	'boss-button': () => t('docDemos.bossButton'),
+};
+
+const description = Astro.props.description ?? descriptions[name]();
+const closeups: DemoName[] = ['breakdown', 'game-boost', 'suggest-banner', 'slider', 'toggle', 'modes'];
+---
+<DocDemo description={description} caption={caption} closeup={closeups.includes(name)} scroll={name === 'guide'} live={name === 'charts'}>
+	{name === 'popup' && <PopupDemo tabs={tabs} strings={strings} />}
+	{name === 'live-card' && <GameCardDemo status='live' tab={tab} favorite={favorite} strings={strings} />}
+	{name === 'upcoming-card' && <GameCardDemo status='upcoming' strings={strings} />}
+	{name === 'final-card' && <GameCardDemo status='final' strings={strings} />}
+	{name === 'charts' && <DetailCharts client:visible strings={uiStrings(locale)} />}
+	{name === 'breakdown' && <BreakdownDemo />}
+	{name === 'game-boost' && <GameBoostDemo value={value} />}
+	{name === 'suggest-banner' && <SuggestBannerDemo />}
+	{name === 'guide' && <GuideDemo />}
+	{name === 'browser-tabs' && <BrowserTabsDemo />}
+	{name === 'notification' && <NotificationDemo />}
+	{name === 'slider' && <SliderDemo kind={kind} />}
+	{name === 'toggle' && <ToggleDemo label={demoText(setting)} setting={setting} checked={checked} icon={icon} info={info} />}
+	{name === 'modes' && <ModesDemo />}
+	{name === 'multiview' && <MultiviewDemo />}
+	{name === 'standby' && <StandbyDemo />}
+	{name === 'boss-button' && <BossButtonDemo />}
+	{name === 'profiles' && <ProfilesDemo />}
+	{name === 'backup' && <BackupDemo />}
+</DocDemo>

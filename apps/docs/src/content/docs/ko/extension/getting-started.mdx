@@ -1,0 +1,62 @@
+---
+sourceHash: 'ab94bc5a8b26'
+title: ArenaSwap 시작하기
+description: ArenaSwap을 설치하고, 리그와 팀을 고르고, 탭 두 개에 생중계 두 경기를 열면 더 재밌는 쪽으로 알아서 옮겨 줘요.
+section: extension
+order: 1
+navLabel: 시작하기
+faq:
+  - q: ArenaSwap을 쓰려면 계정이 필요한가요?
+    a: 아니요. 가입할 게 없어요. 설치하고 리그와 팀을 고르면 바로 작동해요.
+  - q: ArenaSwap은 Chrome, Firefox, Edge에서 다 작동하나요?
+    a: 네, 세 브라우저 모두 돼요. 한 화면에 여러 경기를 띄우는 Multiview는 Chrome과 Edge에서만 돼요.
+  - q: 지금 진행 중인 경기가 두 개가 안 되면 어떻게 하나요?
+    a: 설정에서 데모 모드를 켜세요. 각본이 있는 경기를 재생해서, 진짜 경기를 기다리지 않아도 ArenaSwap이 전환하는 걸 볼 수 있어요.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+ArenaSwap을 한 번 설정하고 경기 두 개를 열어 두면, 더 재밌는 쪽으로 옮겨 줘요. 몇 분이면 끝나요.
+
+## 설치하고 리그 고르기
+
+Chrome 웹 스토어, Firefox 부가 기능, Edge 부가 기능 스토어에서 ArenaSwap을 추가한 다음 툴바 아이콘을 클릭하세요. 짧은 설정 과정이 나머지를 안내해 줘요.
+
+첫 화면은 환영 화면이에요. **확인**을 클릭하세요. 다른 컴퓨터에서 ArenaSwap을 써 봤다면 **백업 파일이 있나요? 설정을 건너뛰고 가져오기**로 설정을 가져올 수 있어요. 파일에 관해서는 [프로필과 백업](/arenaswap/docs/extension/profiles-and-backup/)에 나와 있어요.
+
+**어떤 스포츠를 보시나요?**에서 즐겨 보는 리그를 체크하세요. 처음에는 NBA, NFL, NHL, MLB가 체크돼 있어요. 종목마다 **전체** 상자가 있어서 그룹 전체를 한 번에 고를 수 있어요. **다음**을 클릭하세요. 이 목록은 언제든 설정에서 바꿀 수 있어요.
+
+## 응원팀에 별표 달기
+
+**응원팀을 선택하세요**에서 팀을 탭하면 별표가 붙어요. 별표 단 팀은 ArenaSwap이 경기를 고를 때 가산점을 받아서 그 팀 경기가 전환에서 더 자주 이겨요. 자세한 건 [응원팀](/arenaswap/docs/extension/favorite-teams/)에 있어요.
+
+**완료**를 클릭하세요. 아직 고르고 싶지 않으면 **건너뛰기**를 클릭하세요.
+
+**준비 완료!** 화면이 나와요. **투어 시작하기**를 클릭하면 짧은 안내를 볼 수 있고, **바로 시작하기**를 클릭하면 바로 쓸 수 있어요. 나중에 투어를 다시 보려면 위쪽의 **?** 버튼을 누르세요.
+
+## 생중계 두 경기 열기
+
+평소 보던 곳에서 경기 두 개를 각각 다른 브라우저 탭에 열어 두세요. 지금 진행 중인 경기가 두 개가 안 되나요? [데모 모드](/arenaswap/docs/extension/demo-mode/)를 켜고 각본 경기를 쓰세요.
+
+## 탭마다 경기 연결하기
+
+ArenaSwap 팝업을 여세요. 경기 카드마다 **탭 할당** 드롭다운에서 그 경기용으로 연 탭을 고르세요.
+
+이미 스트림을 열어 놨다면 **이 탭들, 경기 같아 보여요** 배너가 자동으로 맞춰 주겠다고 제안할 수 있어요. **살짝 보기**를 클릭해서 추측이 맞는지 확인하세요.
+
+<Demo name='popup' tabs />
+
+연결된 경기는 목록 맨 위 **활성 탭**으로 올라가요. ArenaSwap은 연결한 탭 사이에서만 전환해요.
+
+## 전환되는 모습 보기
+
+두 탭을 열어 둔 채 경기를 보세요. 다른 경기가 더 흥미진진해지면 ArenaSwap이 그쪽으로 데려가고, 음소거를 풀고, 떠나온 탭은 음소거해요. **전환 알림**이 켜져 있으면(기본값이에요) 무슨 일이 있었는지, 왜 전환했는지 짧은 알림도 와요.
+
+<Demo name='browser-tabs' />
+
+## 다음 단계
+
+- [여러 경기를 한꺼번에 보는 법](/arenaswap/docs/extension/watching-multiple-games/)에서 탭을 여러 개 연결하는 법과 경기 목록 구성을 다뤄요.
+- [Multiview 사용법](/arenaswap/docs/extension/multiview/)은 Chrome과 Edge에서 여러 경기를 한 화면에 띄워 줘요.
+- [ArenaSwap이 탭을 전환하는 시점 조절하기](/arenaswap/docs/extension/switching-and-sensitivity/)에서 얼마나 빠르게 또는 느긋하게 움직일지 정해요.
+- [ArenaSwap 설정 레퍼런스](/arenaswap/docs/extension/settings/)에 모든 설정이 나와 있어요.

@@ -1,0 +1,31 @@
+---
+import ToggleSwitch from '@arenaswap/ui/src/components/toggleSwitch';
+
+interface Props {
+	label: string;
+	setting: string;
+	checked?: boolean;
+	// A Bootstrap Icons class, e.g. `bi-pause-circle`.
+	icon?: string;
+	info?: boolean;
+}
+
+// The rows in Settings that carry an icon or a help mark, so naming the setting is enough.
+const knownRows: Record<string, { icon?: string; info?: boolean }> = {
+	'contentAwareSwitching.label': { icon: 'bi-pause-circle', info: true },
+	'setup.demoMode': { info: true },
+};
+
+const { label, setting, checked = true } = Astro.props;
+const icon = Astro.props.icon ?? knownRows[setting]?.icon;
+const info = Astro.props.info ?? knownRows[setting]?.info ?? false;
+---
+<div class='doc-demo-popup doc-demo-panel'>
+	<div class='d-flex justify-content-between align-items-center'>
+		<span class='d-flex align-items-center gap-1'>
+			<span class='fg-secondary setting-toggle-label'>{icon && <i class={`bi ${icon} me-1 fg-primary`}></i>}{label}</span>
+			{info && <span class='setting-tooltip-btn'><i class='bi bi-question-circle'></i></span>}
+		</span>
+		<ToggleSwitch checked={checked} readOnly aria-label={label} />
+	</div>
+</div>

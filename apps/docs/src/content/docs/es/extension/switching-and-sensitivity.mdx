@@ -1,0 +1,61 @@
+---
+sourceHash: '160ac78129f6'
+title: Cómo controlar cuándo ArenaSwap cambia de pestaña
+description: Haz que ArenaSwap cambie más o menos seguido, espera a que tu transmisión se ponga al corriente y quédate en un partido durante la jugada que estás viendo.
+section: extension
+order: 3
+navLabel: Cambios
+faq:
+  - q: ¿Cómo evito que ArenaSwap cambie tanto de pestaña?
+    a: Baja la Sensibilidad de cambio, sube el Tiempo de espera entre cambios o desasigna la pestaña que no quieres que toque. Desactivar Activar cambio automático lo detiene por completo.
+  - q: ¿Por qué ArenaSwap no deja de rebotar entre dos partidos?
+    a: Dos de tus partidos se están turnando el puesto de más emocionante. Sube el Tiempo de espera entre cambios para que ArenaSwap se quede más tiempo en un partido antes de moverse otra vez.
+  - q: ¿Por qué ArenaSwap cambia antes de que vea la gran jugada?
+    a: Tu transmisión va atrasada respecto al partido en vivo. Agrega un Retardo de cambio para que tu señal se ponga al corriente antes de que cambie la pestaña.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Todos estos controles están en Ajustes, en **Cambios**. Elige el que coincida con lo que te molesta.
+
+## Cambia con menos frecuencia
+
+Abre **Sensibilidad de cambio** y deslízala hacia **Apenas activo**. Entonces ArenaSwap espera a que otro partido sea mucho más emocionante que el que estás viendo antes de moverte. El valor predeterminado es **Equilibrado**.
+
+<Demo name='slider' kind='sensitivity' />
+
+Si ArenaSwap tarda en detectar un partido que claramente se está calentando, deslízala al otro lado, hacia **Ansioso** o **Ludicrous Speed**.
+
+## Evita que rebote entre partidos
+
+**Tiempo de espera entre cambios** es la espera mínima entre dos cambios, de **Desactivado** hasta 3 minutos. El valor predeterminado es de 45 segundos. Súbelo y ArenaSwap se queda más tiempo en un partido, incluso cuando el otro se adelanta un momento. Bájalo para seguir cada vaivén de un final loco.
+
+Hacer clic tú mismo en una de tus pestañas de partidos también inicia el tiempo de espera, así que ArenaSwap no te sacará de un partido que acabas de elegir.
+
+<Demo name='slider' kind='cooldown' />
+
+## Dale tiempo a tu transmisión para ponerse al corriente
+
+Las transmisiones van atrasadas respecto al partido real. **Retardo de cambio** hace que ArenaSwap espere antes de cambiar de pestaña, de **Desactivado** hasta 3 minutos. Si siempre llegas a un partido justo antes de que la gran jugada aparezca en tu pantalla, agrega 15 o 30 segundos. ArenaSwap revisa el partido otra vez antes de cambiar, así que no te mandará a uno que se calmó mientras esperaba.
+
+## Que no te corten a media jugada
+
+Activa **Cambio en pausas del juego** y ArenaSwap retiene un cambio hasta que el partido que dejas llegue a una pausa natural: el final del turno al bate, un silbatazo, el final de la jugada. Ves cómo termina y luego te vas.
+
+Si la pausa nunca llega, el cambio ocurre de todos modos tras una espera corta. No espera nada cuando el partido que dejas ya está en un tiempo fuera, un corte comercial o un intermedio, cuando es una paliza, o cuando el otro partido está en un momento decisivo. El futbol, el futbol americano universitario y el hockey universitario cambian de inmediato.
+
+Mientras un cambio espera, la ventana emergente muestra qué partido sigue. Con **Notificaciones de cambio** activadas, también recibes una notificación "A continuación". El inconveniente: puede que te pierdas algo del partido al que estás por cambiar.
+
+## Pausa los cambios por completo
+
+El interruptor de la barra superior, **Activar cambio automático**, es el interruptor general. Apágalo y tus pestañas se quedan donde están. Vuelve a encenderlo y ArenaSwap continúa desde ahí.
+
+## Mantén la pantalla completa al cambiar
+
+Pon la ventana del navegador en pantalla completa antes de que empiece el partido: **⌃⌘F** en Mac, **F11** en cualquier otro sistema. La ventana se queda en pantalla completa en cada cambio, incluido un cambio a un partido en otra ventana. Si usas el botón de pantalla completa del propio reproductor de video, ArenaSwap vuelve a poner la ventana en pantalla completa después de cada cambio.
+
+## Relacionado
+
+- [Referencia de ajustes de ArenaSwap](/arenaswap/docs/extension/settings/) enumera todos los ajustes de Cambios y su valor predeterminado.
+- [Cómo ver varios partidos a la vez](/arenaswap/docs/extension/watching-multiple-games/) explica cómo elegir las pestañas entre las que cambia ArenaSwap.
+- [Solución de problemas de ArenaSwap](/arenaswap/docs/extension/troubleshooting/) cubre cambios que parecen un error pero no lo son.

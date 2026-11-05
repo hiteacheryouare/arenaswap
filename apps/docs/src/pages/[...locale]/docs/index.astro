@@ -2,7 +2,7 @@
 import Shell from '../../../layouts/Shell.astro';
 import { docPath, docsSectionCopy, docsSectionOrder, getSectionDocs } from '../../../lib/docs';
 import UntranslatedNotice from '../../../components/UntranslatedNotice.astro';
-import { defaultLocale, localePath, localeRoutes } from '../../../i18n/locales';
+import { localePath, localeRoutes } from '../../../i18n/locales';
 import { useTranslations } from '../../../i18n/ui';
 
 // The hub. Two trees with two audiences: people watching sports, and people scoring games in their
@@ -12,25 +12,25 @@ export const getStaticPaths = localeRoutes;
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
-const contentLang = locale === defaultLocale ? undefined : 'en';
 
 const trees = await Promise.all(docsSectionOrder.map(async section => ({
 	section,
 	meta: docsSectionCopy(t, section),
-	pages: await getSectionDocs(section),
+	pages: await getSectionDocs(section, locale),
 })));
+const fullyTranslated = trees.every(tree => tree.pages.every(page => page.translated));
 ---
 <Shell
 	title={t('reading.docsMetaTitle')}
 	description={t('reading.docsMetaDescription')}
 	path='docs/'
-	translated={false}
+	translated={fullyTranslated}
 >
 	<div class='container'>
 		<div class='page-head'>
 			<h1 class='page-title'>{t('reading.docsHeading')}</h1>
 		</div>
-		<UntranslatedNotice />
+		{!fullyTranslated && <UntranslatedNotice />}
 
 		<div class='docs-hub'>
 			{trees.map(tree => (
@@ -43,9 +43,9 @@ const trees = await Promise.all(docsSectionOrder.map(async section => ({
 					{tree.pages.length === 0 ? (
 						<p class='docs-hub-empty'>{t('reading.docsBeingWritten')}</p>
 					) : (
-						<ul class='docs-hub-list' lang={contentLang}>
-							{tree.pages.map(page => (
-								<li><a href={localePath(locale, docPath(page))}>{page.data.title}</a></li>
+						<ul class='docs-hub-list'>
+							{tree.pages.map(({ entry: page, translated }) => (
+								<li lang={translated ? undefined : 'en'}><a href={localePath(locale, docPath(page))}>{page.data.title}</a></li>
 							))}
 						</ul>
 					)}

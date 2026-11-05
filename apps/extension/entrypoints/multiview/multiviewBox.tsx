@@ -9,6 +9,8 @@ interface multiviewBoxProps {
 	box: MultiviewBoxData;
 	game?: Game;
 	placement: gridPlacement;
+	// Out of sight behind a solo box, still playing.
+	hidden: boolean;
 	onAir: boolean;
 	// Has played at some point since the box opened.
 	played: boolean;
@@ -17,10 +19,12 @@ interface multiviewBoxProps {
 	started: boolean;
 	// Its frame has ended up on another box's game.
 	stray: boolean;
+	// The tab has been on screen, which a warm-up's has not.
+	pageShown: boolean;
 }
 
-// How long a box that has never played keeps its card before the player is shown anyway, in case
-// it is waiting on a sign-in or a play button.
+// How long a box that has never played keeps its card once the tab is on screen before the player
+// is shown anyway, in case it is waiting on a sign-in or a play button.
 const neverPlayedMs = 30_000;
 
 const frameAllow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
@@ -71,22 +75,30 @@ const OffAirCard = ({ game, onAir }: { game?: Game; onAir: boolean }) => {
 	);
 };
 
-const MultiviewBox = ({ box, game, placement, onAir, played, audible, started, stray }: multiviewBoxProps) => {
+const boxClassName = (audible: boolean, hidden: boolean) => [
+	'multiview-box',
+	audible && 'multiview-box-audible',
+	hidden && 'multiview-box-hidden',
+].filter(Boolean).join(' ');
+
+const MultiviewBox = ({ box, game, placement, hidden, onAir, played, audible, started, stray, pageShown }: multiviewBoxProps) => {
 	const [waitedOut, setWaitedOut] = useState(false);
 	const [reloaded, setReloaded] = useState(false);
 	useEffect(() => {
-		if (!started) return;
+		if (!started || !pageShown) return;
 		const timer = setTimeout(() => setWaitedOut(true), neverPlayedMs);
 		return () => clearTimeout(timer);
-	}, [started]);
+	}, [started, pageShown]);
 	// Once only, so a site that insists cannot keep the box reloading.
 	if (stray && !reloaded) setReloaded(true);
 	const showPicture = onAir || (waitedOut && !played);
 
 	return (
 		<section
-			className={audible ? 'multiview-box multiview-box-audible' : 'multiview-box'}
+			className={boxClassName(audible, hidden)}
 			style={{ gridColumn: placement.column, gridRow: placement.row }}
+			aria-hidden={hidden || undefined}
+			inert={hidden}
 			data-game-id={box.gameId}
 			data-on-air={showPicture}
 		>

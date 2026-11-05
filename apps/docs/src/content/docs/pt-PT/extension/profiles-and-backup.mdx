@@ -1,0 +1,82 @@
+---
+sourceHash: '9d5d749f8bfc'
+title: Como usar perfis e fazer backup das definições
+description: Mantém uma configuração do ArenaSwap para cada tipo de noite de jogos e depois guarda uma num ficheiro para usar noutro navegador ou depois de reinstalar.
+section: extension
+order: 12
+navLabel: Perfis e backup
+faq:
+  - q: Como passo as minhas definições do ArenaSwap para outro navegador?
+    a: "Abre as Definições, escolhe Perfis e backup e clica em Fazer backup ou restaurar. Descarrega um backup, abre a mesma página no outro navegador e larga lá o ficheiro. Podes adicioná-lo como novo perfil ou substituir o que estás a usar."
+  - q: Os perfis do ArenaSwap sincronizam entre navegadores?
+    a: O teu perfil atual sincroniza sempre que a sincronização estiver ativa no navegador. Os outros perfis ficam no navegador onde os criaste. Para levares um contigo, guarda-o num ficheiro.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Uma noite de playoffs e um domingo de fantasy football pedem configurações diferentes. Os perfis deixam-te ter as duas e alternar com um clique. Os backups deixam-te levar uma configuração para outro navegador.
+
+## Criar um perfil
+
+Toda a gente começa com um perfil, o **main**.
+
+1. Abre as Definições e depois **Perfis e backup**.
+2. Clica em **Novo perfil** e escreve um nome.
+3. Clica em **Copiar main** para começares com as tuas definições atuais, ou em **Começar de raiz** para as predefinições. (O botão mostra o nome do teu perfil atual.)
+
+Dois perfis não podem ter o mesmo nome. Um perfil guarda as tuas definições e o teu plantel Fantasy. O novo passa a ser o teu perfil atual.
+
+<Demo name='profiles' />
+
+## Mudar de perfil
+
+Clica no nome de um perfil na lista **Perfis**. Uma marca de verificação indica o que está em uso. As tuas ligas, equipas favoritas e modo de pontuação mudam logo.
+
+## Renomear, exportar ou eliminar
+
+Clica nos três pontos junto a um perfil.
+
+- **Renomear** deixa-te escolher um novo nome.
+- **Exportar** abre a página de backup com esse perfil pronto a guardar.
+- **Eliminar** remove o perfil, com as respetivas definições e o plantel Fantasy. Exporta-o primeiro se quiseres uma cópia.
+
+Não podes eliminar o perfil que estás a usar. Muda primeiro para outro.
+
+## Manter a configuração sincronizada
+
+Em **Sincroniza com o navegador**, o ArenaSwap lista o que o teu perfil atual guarda: ligas ativas, equipas favoritas, modo de pontuação e o teu plantel Fantasy. Tudo isso acompanha-te para outros computadores quando a sincronização está ativa no navegador. Os outros perfis ficam onde estão.
+
+## Guardar um backup
+
+1. Clica em **Fazer backup ou restaurar…**. Abre num novo separador.
+2. Se tiveres mais do que um perfil, escolhe um no menu **Perfil**.
+3. Clica em **Descarregar backup**.
+
+O nome do ficheiro tem o perfil e a data de hoje, como `arenaswap-settings-main-2026-11-03.json`.
+
+## Usar um backup
+
+Abre **Fazer backup ou restaurar…** no navegador para onde te estás a mudar. Se ainda estiveres na configuração inicial, clica em **Tens um ficheiro de cópia? Salta a configuração e importa-o**.
+
+1. Larga o ficheiro em **Larga um backup aqui**, ou clica em **Escolher um ficheiro**.
+2. Compara a configuração do ficheiro com a tua.
+3. Escolhe uma:
+   - **Adicionar como novo perfil** mantém tudo o que tens e acrescenta a configuração do ficheiro ao lado.
+   - **Substituir** troca todas as definições do teu perfil atual pelas do ficheiro. Se o backup foi feito em Modo de demonstração, voltas ao Modo de demonstração.
+4. Quando vires "Mudança de … concluída", clica em **Fechar separador**.
+
+Escolheste o ficheiro errado? **Escolher outro ficheiro** recomeça.
+
+<Demo name='backup' />
+
+Se algo correr mal:
+
+- "…puseram esse ficheiro contra a luz e não decifraram uma única palavra": o ficheiro está danificado. Guarda um backup novo.
+- "…é um ficheiro perfeitamente bom, só não é dos nossos": não veio do ArenaSwap. Escolhe um que tenhas guardado.
+- "Este ficheiro veio de uma versão mais recente do ArenaSwap": atualiza a extensão e tenta outra vez.
+- "Isso não ficou guardado": tenta outra vez.
+
+## Relacionado
+
+- [Referência das definições do ArenaSwap](/arenaswap/docs/extension/settings/) lista as definições de Perfis e Fazer backup ou restaurar.
+- [Começa a usar o ArenaSwap](/arenaswap/docs/extension/getting-started/) explica a configuração inicial.

@@ -1,0 +1,61 @@
+---
+sourceHash: '160ac78129f6'
+title: Contrôler quand ArenaSwap change d'onglet
+description: Fais changer ArenaSwap plus ou moins souvent, fais-le patienter pendant que ton flux rattrape son retard, et reste sur un match jusqu'à la fin de l'action en cours.
+section: extension
+order: 3
+navLabel: Changement
+faq:
+  - q: Comment empêcher ArenaSwap de changer d'onglet si souvent ?
+    a: Baisse la Sensibilité de changement, augmente le Délai entre les changements, ou dissocie l'onglet que tu ne veux pas qu'il touche. Désactiver Activer le changement automatique l'arrête complètement.
+  - q: Pourquoi ArenaSwap n'arrête-t-il pas de rebondir entre deux matchs ?
+    a: Deux de tes matchs se disputent la place du plus palpitant. Augmente le Délai entre les changements pour qu'ArenaSwap reste plus longtemps sur un match avant de bouger à nouveau.
+  - q: Pourquoi ArenaSwap change-t-il avant que je voie la grosse action ?
+    a: Ton flux a du retard sur le match en direct. Ajoute un Délai de changement pour que ton flux rattrape avant le changement d'onglet.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Tous ces contrôles sont dans les Paramètres, sous **Changement**. Choisis celui qui correspond à ce qui t'agace.
+
+## Changer moins souvent
+
+Ouvre **Sensibilité de changement** et pousse-la vers **À peine actif**. ArenaSwap attend alors qu'un autre match soit bien plus palpitant que celui que tu regardes avant de te déplacer. La valeur par défaut est **Équilibré**.
+
+<Demo name='slider' kind='sensitivity' />
+
+Si ArenaSwap tarde à repérer un match qui s'enflamme clairement, pousse-la dans l'autre sens, vers **Dynamique** ou **Ludicrous Speed**.
+
+## L'empêcher de rebondir entre les matchs
+
+**Délai entre les changements** est l'attente minimale entre deux changements, de **Désactivé** jusqu'à 3 minutes. La valeur par défaut est 45 secondes. Augmente-la et ArenaSwap reste plus longtemps sur un match, même quand l'autre passe brièvement devant. Baisse-la pour suivre chaque renversement dans une fin de match folle.
+
+Cliquer toi-même sur l'un de tes onglets de match lance aussi le délai, donc ArenaSwap ne t'arrachera pas à un match que tu viens de choisir.
+
+<Demo name='slider' kind='cooldown' />
+
+## Laisser ton flux rattraper son retard
+
+Les flux ont du retard sur le vrai match. **Délai de changement** fait attendre ArenaSwap avant de changer d'onglet, de **Désactivé** jusqu'à 3 minutes. Si tu arrives toujours sur un match juste avant que la grosse action n'apparaisse à ton écran, ajoute 15 ou 30 secondes. ArenaSwap vérifie à nouveau le match avant de changer, donc tu ne seras pas envoyé vers un match qui s'est calmé pendant l'attente.
+
+## Ne pas être coupé en pleine action
+
+Active **Changement aux pauses** et ArenaSwap retient un changement jusqu'à ce que le match que tu quittes arrive à une pause naturelle : la fin du passage au bâton, un coup de sifflet, la fin de l'action. Tu vois comment ça se termine, puis tu pars.
+
+Si la pause n'arrive jamais, le changement a lieu quand même après une courte attente. Il n'attend pas du tout quand le match que tu quittes est déjà en temps mort, en pause pub ou en pause, quand c'est une raclée, ou quand l'autre match est à un moment décisif. Le football, le football américain universitaire et le hockey universitaire changent tout de suite.
+
+Pendant qu'un changement attend, la fenêtre montre quel match est le prochain. Avec **Notifications de changement** activées, tu reçois aussi une notification « À suivre ». Le revers : tu risques de rater un moment du match vers lequel tu vas basculer.
+
+## Mettre le changement complètement en pause
+
+L'interrupteur de la barre du haut, **Activer le changement automatique**, est l'interrupteur général. Désactive-le et tes onglets restent où ils sont. Réactive-le et ArenaSwap reprend à partir de là.
+
+## Rester en plein écran pendant un changement
+
+Mets la fenêtre du navigateur en plein écran avant le début du match : **⌃⌘F** sur Mac, **F11** partout ailleurs. La fenêtre reste en plein écran à chaque changement, y compris vers un match dans une autre fenêtre. Si tu utilises plutôt le bouton plein écran du lecteur vidéo, ArenaSwap remet la fenêtre en plein écran après chaque changement.
+
+## À lire aussi
+
+- [Référence des paramètres d'ArenaSwap](/arenaswap/docs/extension/settings/) liste chaque paramètre de Changement et sa valeur par défaut.
+- [Regarder plusieurs matchs en même temps](/arenaswap/docs/extension/watching-multiple-games/) explique comment choisir les onglets entre lesquels ArenaSwap change.
+- [Dépanner ArenaSwap](/arenaswap/docs/extension/troubleshooting/) couvre les changements qui ressemblent à un bug mais n'en sont pas.

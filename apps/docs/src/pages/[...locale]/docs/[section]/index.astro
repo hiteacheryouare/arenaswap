@@ -3,7 +3,7 @@ import Shell from '../../../../layouts/Shell.astro';
 import DocsNav from '../../../../components/DocsNav.astro';
 import { docPath, docsSectionCopy, getSectionDocs, type DocsSection } from '../../../../lib/docs';
 import UntranslatedNotice from '../../../../components/UntranslatedNotice.astro';
-import { defaultLocale, localePath, localeRoutesFor } from '../../../../i18n/locales';
+import { localePath, localeRoutesFor } from '../../../../i18n/locales';
 import { useTranslations } from '../../../../i18n/ui';
 
 // Written out rather than derived from docsSectionOrder: Astro hoists getStaticPaths into its own
@@ -18,15 +18,15 @@ const { locale } = Astro.props;
 const section = Astro.params.section as DocsSection;
 const t = useTranslations(locale);
 const meta = docsSectionCopy(t, section);
-const contentLang = locale === defaultLocale ? undefined : 'en';
-
-const pages = await getSectionDocs(section);
+const pages = await getSectionDocs(section, locale);
+const fullyTranslated = pages.every(page => page.translated);
+const contentLang = fullyTranslated ? undefined : 'en';
 ---
 <Shell
 	title={t('reading.docsSectionMetaTitle', { heading: meta.heading })}
 	description={meta.description}
 	path={`docs/${section}/`}
-	translated={false}
+	translated={fullyTranslated}
 >
 	<div class='container'>
 		<div class='page-head'>
@@ -34,7 +34,7 @@ const pages = await getSectionDocs(section);
 			<p class='page-lede'>{meta.description}</p>
 		</div>
 
-		<UntranslatedNotice />
+		{!fullyTranslated && <UntranslatedNotice />}
 
 		<div class='reading-shell'>
 			<DocsNav current={`docs/${section}/`} />
@@ -49,9 +49,9 @@ const pages = await getSectionDocs(section);
 						</p>
 					</div>
 				) : (
-					<ul class='docs-index' lang={contentLang}>
-						{pages.map(page => (
-							<li>
+					<ul class='docs-index'>
+						{pages.map(({ entry: page, translated }) => (
+							<li lang={translated ? undefined : 'en'}>
 								<h2><a href={localePath(locale, docPath(page))}>{page.data.title}</a></h2>
 								<p>{page.data.description}</p>
 							</li>

@@ -1,47 +1,48 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
 import Shell from '../../../../layouts/Shell.astro';
 import DocsNav from '../../../../components/DocsNav.astro';
-import { docPath, docSlug, docsSectionCopy, type DocsSection } from '../../../../lib/docs';
+import { docPath, docSlug, docsSectionCopy, getSectionDocs, type DocsSection } from '../../../../lib/docs';
+import { getOriginals, localizeEntry } from '../../../../lib/localizedContent';
 import UntranslatedNotice from '../../../../components/UntranslatedNotice.astro';
 import { defaultLocale, localePath, localeRoutesFor } from '../../../../i18n/locales';
 import { useTranslations } from '../../../../i18n/ui';
 
 // One article, one URL per locale. Drafts are excluded from the route table, so a draft is a 404
-// rather than a page nothing links to.
+// rather than a page nothing links to. Each locale's page swaps in its translation where one exists.
 export const getStaticPaths = async () => {
-	const pages = await getCollection('docs', ({ data }) => !data.draft);
+	const originals = await getOriginals('docs');
 
-	return localeRoutesFor(pages.map(page => ({
-		params: { section: page.data.section, slug: docSlug(page) },
-		props: { page },
+	return localeRoutesFor(originals.map(original => ({
+		params: { section: original.data.section, slug: docSlug(original) },
+		props: { original },
 	})));
 };
 
-const { page, locale } = Astro.props;
+const { original, locale } = Astro.props;
+const { entry: page, translated } = await localizeEntry('docs', original, locale);
 const { title, description, faq } = page.data;
 const section = page.data.section as DocsSection;
 const t = useTranslations(locale);
-// The breadcrumb's structured data describes the English article, so it names the section in English.
-const englishMeta = docsSectionCopy(useTranslations(defaultLocale), section);
-const contentLang = locale === defaultLocale ? undefined : 'en';
+// Structured data describes the copy the canonical points at: this translation, or the English.
+const metaLocale = translated ? locale : defaultLocale;
+const sectionMeta = docsSectionCopy(useTranslations(metaLocale), section);
+const contentLang = translated ? undefined : 'en';
 const path = docPath(page);
 
 const { Content } = await render(page);
 
 // Previous and next inside this section only. Walking from the last extension article into the
 // first PowerScore one would hand a reader documentation for a package they never asked about.
-const siblings = (await getCollection('docs', ({ data }) => !data.draft && data.section === section))
-	.toSorted((a, b) => a.data.order - b.data.order);
-const index = siblings.findIndex(sibling => sibling.id === page.id);
+const siblings = await getSectionDocs(section, locale);
+const index = siblings.findIndex(sibling => sibling.original.id === original.id);
 const previous = siblings[index - 1];
 const next = siblings[index + 1];
 
 const site = Astro.site ?? new URL('https://hiteacheryouare.github.io');
-// The structured data describes the English article, which is the copy every locale's URL carries
-// and the one the canonical points at. Twelve URLs claiming to be twelve distinct articles would
-// be twelve claims about the same piece of writing.
-const url = new URL(localePath(defaultLocale, path), site).href;
+// An untranslated article describes the English one, which its canonical points at. Twelve URLs
+// claiming to be twelve distinct articles would be twelve claims about the same piece of writing.
+const url = new URL(localePath(metaLocale, path), site).href;
 
 const structuredData: Record<string, unknown>[] = [
 	{
@@ -50,11 +51,11 @@ const structuredData: Record<string, unknown>[] = [
 		headline: title,
 		description,
 		url,
-		inLanguage: 'en',
+		inLanguage: metaLocale,
 		isPartOf: {
 			'@type': 'WebSite',
 			name: 'ArenaSwap',
-			url: new URL(localePath(defaultLocale), site).href,
+			url: new URL(localePath(metaLocale), site).href,
 		},
 		publisher: {
 			'@type': 'Organization',
@@ -65,8 +66,8 @@ const structuredData: Record<string, unknown>[] = [
 		'@context': 'https://schema.org',
 		'@type': 'BreadcrumbList',
 		itemListElement: [
-			{ '@type': 'ListItem', position: 1, name: 'Documentation', item: new URL(localePath(defaultLocale, 'docs/'), site).href },
-			{ '@type': 'ListItem', position: 2, name: englishMeta.title, item: new URL(localePath(defaultLocale, `docs/${section}/`), site).href },
+			{ '@type': 'ListItem', position: 1, name: useTranslations(metaLocale)('reading.docsNavLabel'), item: new URL(localePath(metaLocale, 'docs/'), site).href },
+			{ '@type': 'ListItem', position: 2, name: sectionMeta.title, item: new URL(localePath(metaLocale, `docs/${section}/`), site).href },
 			{ '@type': 'ListItem', position: 3, name: title, item: url },
 		],
 	},
@@ -88,7 +89,7 @@ if (faq?.length) {
 	title={`${title} | ArenaSwap`}
 	description={description}
 	path={path}
-	translated={false}
+	translated={translated}
 	ogType='article'
 >
 	<div class='container'>
@@ -97,7 +98,7 @@ if (faq?.length) {
 			<p class='page-lede'>{description}</p>
 		</div>
 
-		<UntranslatedNotice />
+		{!translated && <UntranslatedNotice />}
 
 		<div class='reading-shell'>
 			<DocsNav current={path} />
@@ -126,13 +127,13 @@ if (faq?.length) {
 				{(previous || next) && (
 					<nav class='docs-adjacent' aria-label={t('reading.nearbyArticles')}>
 						{previous && (
-							<a href={localePath(locale, docPath(previous))} lang={contentLang}>
-								<span aria-hidden='true'>← </span>{previous.data.title}
+							<a href={localePath(locale, docPath(previous.entry))} lang={previous.translated ? undefined : 'en'}>
+								<span aria-hidden='true'>← </span>{previous.entry.data.title}
 							</a>
 						)}
 						{next && (
-							<a class='docs-adjacent-next' href={localePath(locale, docPath(next))} lang={contentLang}>
-								{next.data.title}<span aria-hidden='true'> →</span>
+							<a class='docs-adjacent-next' href={localePath(locale, docPath(next.entry))} lang={next.translated ? undefined : 'en'}>
+								{next.entry.data.title}<span aria-hidden='true'> →</span>
 							</a>
 						)}
 					</nav>

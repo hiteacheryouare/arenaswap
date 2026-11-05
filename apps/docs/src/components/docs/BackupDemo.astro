@@ -1,0 +1,48 @@
+---
+import CrestDisc from '@arenaswap/ui/src/components/crestDisc';
+import { celticsKnicks, flyersPenguins } from './demoGames';
+import { demoTranslator } from './demoStrings';
+import { currentLocale, useTranslations } from '../../i18n/ui';
+
+const locale = currentLocale(Astro.currentLocale);
+const demoText = demoTranslator(locale);
+const t = useTranslations(locale);
+
+// The backup tab once a file is in: the two ways to bring it in, and what the file would change.
+const current = t('docDemos.profileWeeknights');
+const exported = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date('2026-10-26T12:00:00Z'));
+const favorites = [celticsKnicks.game.awayTeam, flyersPenguins.game.awayTeam];
+---
+<div class='doc-demo-popup doc-demo-backup'>
+	<section class='doc-demo-backup-card'>
+		<div class='doc-demo-backup-heading'>{demoText('backupImport.title')}</div>
+		<div class='d-flex flex-column gap-2 mt-3'>
+			<span class='btn btn-solid theme-primary'>{demoText('backupImport.addAsNew')}</span>
+			<span class='btn btn-outline theme-accent'>{demoText('backupImport.replace', { name: current })}</span>
+		</div>
+		<p class='doc-demo-backup-hint mt-2 mb-0'>{demoText('backupImport.replaceWarning', { name: current })}</p>
+		<span class='btn btn-link btn-sm p-0 mt-3 fg-secondary'>{demoText('backupImport.startOver')}</span>
+	</section>
+	<section class='doc-demo-backup-card'>
+		<div class='doc-demo-backup-heading'>{demoText('backupImport.fromFile')}</div>
+		<p class='doc-demo-backup-hint mt-1 mb-0'>{demoText('backupImport.fileMeta', { name: t('docDemos.profileFantasySunday'), date: exported })}</p>
+		<div class='doc-demo-backup-rows'>
+			<div class='doc-demo-backup-row'>
+				<span class='doc-demo-backup-label'>{demoText('backup.rowLeagues')}</span>
+				<span class='doc-demo-backup-value'>NBA, NFL, NHL, Premier League</span>
+				<span class='doc-demo-backup-change'>+1</span>
+			</div>
+			<div class='doc-demo-backup-row'>
+				<span class='doc-demo-backup-label'>{demoText('backup.rowFavorites')}</span>
+				<span class='doc-demo-backup-value'>
+					{favorites.map(team => <CrestDisc logo={team.logo} abbreviation={team.abbreviation} discClassName='doc-demo-backup-disc' crestClassName='doc-demo-backup-disc-logo' />)}
+				</span>
+				<span class='doc-demo-backup-change'>{demoText('backup.noChange')}</span>
+			</div>
+			<div class='doc-demo-backup-row'>
+				<span class='doc-demo-backup-label'>{demoText('backup.rowScoring')}</span>
+				<span class='doc-demo-backup-value'>{demoText('powerScore.modeClassic')} <i class='bi bi-arrow-right mx-1'></i><span class='fw-semibold fg-body'>{demoText('powerScore.modeFantasy')}</span></span>
+			</div>
+		</div>
+	</section>
+</div>

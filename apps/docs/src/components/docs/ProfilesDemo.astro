@@ -1,0 +1,38 @@
+---
+import { demoTranslator } from './demoStrings';
+import { currentLocale, useTranslations } from '../../i18n/ui';
+
+const locale = currentLocale(Astro.currentLocale);
+const demoText = demoTranslator(locale);
+const t = useTranslations(locale);
+
+// The Profiles list in Settings, with the menu open on the profile in use.
+const profiles = [
+	{ name: t('docDemos.profileWeeknights'), active: true },
+	{ name: t('docDemos.profileFantasySunday'), active: false },
+];
+---
+<div class='doc-demo-popup doc-demo-panel doc-demo-profiles'>
+	<div class='fw-bold popup-section-label'><i class='bi bi-people'></i>{demoText('profiles.section')}</div>
+	<div class='profile-list'>
+		{profiles.map(profile => (
+			<div class='profile-row' data-active={String(profile.active)}>
+				<span class='profile-row-switch' aria-current={profile.active ? 'true' : undefined}>
+					<i class={`bi ${profile.active ? 'bi-check2' : 'bi-person'} profile-row-icon`}></i>
+					<span class='profile-row-name'>{profile.name}</span>
+				</span>
+				<span class='position-relative'>
+					<span class='btn btn-sm btn-link profile-row-more'><i class='bi bi-three-dots'></i></span>
+					{profile.active && (
+						<span class='menu show doc-demo-profile-menu'>
+							<span class='menu-item'><i class='bi bi-pencil'></i>{demoText('profiles.rename')}</span>
+							<span class='menu-item'><i class='bi bi-download'></i>{demoText('profiles.export')}</span>
+						</span>
+					)}
+				</span>
+			</div>
+		))}
+	</div>
+	<span class='btn btn-outline theme-accent w-100 mt-2'><i class='bi bi-plus-lg me-2'></i>{demoText('profiles.new')}</span>
+	<span class='btn btn-solid theme-primary w-100 mt-4'>{demoText('backup.open')}</span>
+</div>

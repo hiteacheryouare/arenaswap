@@ -444,6 +444,47 @@
 			"逆转"
 		]
 	},
+	"docDemos": {
+		"popup": "ArenaSwap 弹窗按 PowerScore 列出三场直播比赛：波士顿对纽约，剩 2:10 时 100–100 战平（85 分）；费城对匹兹堡，第三节 2–2 战平（76 分）；切尔西在第 78 分钟以 2–1 领先阿森纳（63 分）。",
+		"popupTabs": "ArenaSwap 弹窗按 PowerScore 列出三场直播比赛，每场都标着它所在的标签页：波士顿对纽约，剩 2:10 时 100–100 战平（85 分）；费城对匹兹堡，第三节 2–2 战平（76 分）；切尔西在第 78 分钟以 2–1 领先阿森纳（63 分）。",
+		"liveCard": "一张直播比赛卡片：波士顿凯尔特人对纽约尼克斯，第四节剩 2:10 时 100–100 战平，PowerScore 85（满分 100）。",
+		"liveCardFavorite": "一张直播比赛卡片：波士顿凯尔特人对纽约尼克斯，第四节剩 2:10 时 100–100 战平，PowerScore 85（满分 100），凯尔特人带星标，是收藏球队。",
+		"liveCardTab": "一张直播比赛卡片：波士顿凯尔特人对纽约尼克斯，第四节剩 2:10 时 100–100 战平，PowerScore 85（满分 100），已分配给标签页“Boston at New York”。",
+		"liveCardFavoriteTab": "一张直播比赛卡片：波士顿凯尔特人对纽约尼克斯，第四节剩 2:10 时 100–100 战平，PowerScore 85（满分 100），凯尔特人带星标，是收藏球队，已分配给标签页“Boston at New York”。",
+		"upcomingCard": "一张即将开赛的比赛卡片：堪萨斯城酋长对布法罗比尔，周日 4:25 PM，在 Highmark Stadium。",
+		"finalCard": "一张已结束的比赛卡片：俄亥俄州立 27，密歇根 24，在 Ohio Stadium。",
+		"charts": "比赛详情里的四张图表：PowerScore 随时间的变化、比分随时间的变化、胜率，以及每个信号在 PowerScore 中所占的份额。",
+		"breakdown": "一个“{heading}”：{closeness} 38/42，{lateGame} 31/38，{momentum} 8/38，{leadChanges} 5/18，{comeback} 3/20，信号总计 85。一个 5 分的{gameBoost}把{final}提到 90（满分 100）。{reason}。",
+		"gameBoost": "比赛详情里的“{heading}”字段，设为 {points} 分。",
+		"suggestBanner": "弹窗顶部的“{title}”横幅，带一个“{action}”按钮和一个关闭按钮。",
+		"guide": "晚上 9:40 的节目表：时间轴从晚上 7 点排到午夜，NBA、NHL 和 NCAA 篮球的比赛是一条条横杠，一条线标出当前时间，9:15 到 10:15 之间用阴影标出最佳观赛时段。",
+		"browserTabs": "一个打开了三个比赛标签页的浏览器。Boston at New York 是当前标签页，正在出声；另外两个已静音。",
+		"notification": "一条通知：{title}。{message}",
+		"sliderSensitivity": "“{label}”滑块在默认位置：{value}。",
+		"sliderCooldown": "“{label}”滑块在默认位置：45 秒。",
+		"sliderDelay": "“{label}”滑块在默认位置：{value}。",
+		"toggleOn": "设置里的“{label}”开关，已打开。",
+		"toggleOff": "设置里的“{label}”开关，已关闭。",
+		"modes": "“{section}”选择器已展开，当前选中{classic}，选项有{classic}、{blowouts}、{fantasy}和{custom}。",
+		"multiview": "一个 Multiview 标签页，四场比赛排成 2×2 的网格。左上角的 Boston at New York 有轮廓框，并且有声音。",
+		"standby": "浏览器停在一个叫“{tab}”的 Standby Stream 标签页上，旁边是两个已静音的比赛标签页，弹窗里写着：{line}",
+		"profiles": "设置里的“{section}”列表有两个个人资料，正在使用的是“{current}”，它的菜单展开着，显示“{rename}”和“{export}”，列表下方是“{new}”和“{backup}”按钮。",
+		"backup": "已载入文件的备份标签页：“{addAsNew}”或“{replace}”，以及文件会带来的改动。多一个联赛，收藏球队不变，评分模式从{from}变成{to}。",
+		"bossButton": "老板键快捷键 Alt + Shift + X，以及它打开的诱饵电子表格标签页，比赛标签页已静音。",
+		"notificationNow": "刚刚",
+		"profileWeeknights": "工作日夜晚",
+		"profileFantasySunday": "梦幻周日",
+		"standbyTab": "精彩集锦",
+		"decoyTab": "第三季度预测",
+		"decoyRegion": "地区",
+		"decoyQuarter": "第{quarter}季度",
+		"decoyRegions": [
+			"东北",
+			"中西部",
+			"南部",
+			"西部"
+		]
+	},
 	"ui": {
 		"gameCard": {
 			"live": "直播",

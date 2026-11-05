@@ -1,0 +1,82 @@
+---
+sourceHash: '9d5d749f8bfc'
+title: Utiliser les profils et sauvegarder tes paramètres
+description: Garde une configuration ArenaSwap par type de soirée, puis enregistre-en une dans un fichier pour la retrouver dans un autre navigateur ou après une réinstallation.
+section: extension
+order: 12
+navLabel: Profils et sauvegarde
+faq:
+  - q: Comment transférer mes paramètres ArenaSwap vers un autre navigateur ?
+    a: "Ouvre les Paramètres, choisis Profils et sauvegarde, puis clique sur Sauvegarder ou restaurer. Télécharge une sauvegarde, puis ouvre la même page dans l'autre navigateur et dépose le fichier. Tu peux l'ajouter comme nouveau profil ou remplacer celui que tu utilises."
+  - q: Les profils ArenaSwap se synchronisent-ils entre navigateurs ?
+    a: Ton profil actuel se synchronise dès que la synchro est activée dans ton navigateur. Tes autres profils restent dans le navigateur où tu les as créés. Pour en emporter un, enregistre-le dans un fichier.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Une soirée de playoffs et un dimanche de football fantasy demandent des configurations différentes. Les profils te permettent de garder les deux et de passer de l'une à l'autre d'un clic. Les sauvegardes te permettent d'emporter une configuration dans un autre navigateur.
+
+## Créer un profil
+
+Tout le monde commence avec un profil, **main**.
+
+1. Ouvre les Paramètres, puis **Profils et sauvegarde**.
+2. Clique sur **Nouveau profil** et saisis un nom.
+3. Clique sur **Copier main** pour partir de tes paramètres actuels, ou sur **Repartir de zéro** pour les valeurs par défaut. (Le bouton affiche le nom de ton profil actuel.)
+
+Deux profils ne peuvent pas porter le même nom. Un profil contient tes paramètres et ton effectif Fantasy. Le nouveau devient ton profil actuel.
+
+<Demo name='profiles' />
+
+## Changer de profil
+
+Clique sur le nom d'un profil dans la liste **Profils**. Une coche marque celui qui est utilisé. Tes ligues, tes équipes favorites et ton mode de score changent aussitôt.
+
+## Renommer, exporter ou supprimer
+
+Clique sur les trois points à côté d'un profil.
+
+- **Renommer** te laisse choisir un nouveau nom.
+- **Exporter** ouvre la page de sauvegarde avec ce profil prêt à enregistrer.
+- **Supprimer** retire le profil, avec ses paramètres et son effectif Fantasy. Exporte-le d'abord si tu veux en garder une copie.
+
+Tu ne peux pas supprimer le profil que tu utilises. Passe d'abord sur un autre.
+
+## Garder ta configuration synchronisée
+
+Sous **Se synchronise avec ton navigateur**, ArenaSwap liste ce que contient ton profil actuel : les ligues actives, les équipes favorites, le mode de score et ton effectif Fantasy. Tout ça te suit sur tes autres ordinateurs quand la synchro est activée dans ton navigateur. Les autres profils restent sur place.
+
+## Enregistrer une sauvegarde
+
+1. Clique sur **Sauvegarder ou restaurer…**. La page s'ouvre dans un nouvel onglet.
+2. Si tu as plus d'un profil, choisis-en un dans le menu **Profil**.
+3. Clique sur **Télécharger la sauvegarde**.
+
+Le nom du fichier contient le profil et la date du jour, par exemple `arenaswap-settings-main-2026-11-03.json`.
+
+## Utiliser une sauvegarde
+
+Ouvre **Sauvegarder ou restaurer…** dans le navigateur où tu emménages. Si tu en es encore à la première configuration, clique sur **Tu as un fichier de sauvegarde ? Passe la configuration et importe-le**.
+
+1. Dépose le fichier sur **Dépose une sauvegarde ici**, ou clique sur **Choisir un fichier**.
+2. Compare la configuration du fichier avec la tienne.
+3. Choisis une option :
+   - **Ajouter comme nouveau profil** garde tout ce que tu as et ajoute la configuration du fichier à côté.
+   - **Remplacer** échange tous les paramètres de ton profil actuel contre ceux du fichier. Si la sauvegarde a été faite en mode démo, tu te retrouveras en mode démo.
+4. Quand tu vois « a fini d'emménager », clique sur **Fermer l'onglet**.
+
+Mauvais fichier ? **Choisir un autre fichier** repart de zéro.
+
+<Demo name='backup' />
+
+Si quelque chose ne va pas :
+
+- « …ont tenu ce fichier à contre-jour et n'ont pas déchiffré un seul mot » : le fichier est abîmé. Enregistre une nouvelle sauvegarde.
+- « …un fichier tout à fait correct, mais pas des nôtres » : il ne vient pas d'ArenaSwap. Choisis-en un que tu as enregistré.
+- « Ce fichier vient d'une version plus récente d'ArenaSwap » : mets l'extension à jour, puis réessaie.
+- « Ça ne s'est pas enregistré » : réessaie.
+
+## À lire aussi
+
+- [Référence des paramètres d'ArenaSwap](/arenaswap/docs/extension/settings/) liste les paramètres des profils et de Sauvegarder ou restaurer.
+- [Démarrer avec ArenaSwap](/arenaswap/docs/extension/getting-started/) couvre la première configuration.

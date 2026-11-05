@@ -1,0 +1,66 @@
+---
+sourceHash: 'b4eec15f0860'
+title: So planst du mit dem Guide, was du schaust
+description: Der Guide legt jedes Spiel auf eine Zeitleiste, schattiert die beste Zeit des Tages zum Zuschauen und lässt dich ein Spiel boosten, bevor es beginnt.
+section: extension
+order: 13
+navLabel: Der Guide
+faq:
+  - q: Wie weit voraus zeigt der Guide in ArenaSwap Spiele an?
+    a: "So weit, wie deine Einstellung Tage im Voraus reicht, von 1 bis 14 Tagen. Sie startet bei 7. Der Guide zeigt immer mindestens 3 Tage und behält Spiele, die am Vortag zu Ende gingen."
+  - q: Was bedeutet Beste Zeit zum Zuschauen im Guide?
+    a: Der Teil des Tages mit den meisten laufenden Spielen, wobei Schlussphasen und die Spiele deiner Lieblingsteams extra zählen. Die Kopfzeile nennt dir die Uhrzeiten und wie viele Spiele deine sind.
+  - q: Ändert ein im Guide gesetzter Spielboost, wohin ArenaSwap wechselt?
+    a: Ja. Es ist derselbe Spielboost wie auf dem Detailbildschirm des Spiels, und er wirkt genauso.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Das Popup zeigt, was gerade läuft. Der Guide zeigt den Rest des Tages, damit du weißt, wann du das Sofa freiräumst.
+
+## Den Guide öffnen
+
+Klick in der oberen Leiste des Popups auf das Kalendersymbol **Guide**. Er öffnet sich in einem eigenen Browser-Tab, du kannst ihn also neben deine Spiele legen.
+
+## Die Zeitleiste lesen
+
+Jede Zeile ist ein Spiel, nach Liga gruppiert, mit den Uhrzeiten oben.
+
+- Ein Balken läuft vom Spielbeginn bis ungefähr zum erwarteten Ende.
+- Eine Linie markiert die aktuelle Zeit, und die Seite für heute öffnet sich dort.
+- Ein kommendes Spiel zeigt Anfangszeit und Sender. Ein Live-Spiel zeigt Spielstand und Uhr. Ein beendetes Spiel zeigt seinen Spielstand und **Beendet**.
+- Ein ausgefüllter Stern auf einem Balken heißt, dass eines deiner Teams spielt.
+- Fahr mit der Maus über einen Balken, um Paarung und Anfangszeit zu sehen.
+
+<Demo name='guide' />
+
+Du siehst nur die Ligen, die du in den Einstellungen eingeschaltet hast.
+
+## Andere Tage ansehen
+
+Mit **Vorheriger Tag** und **Nächster Tag** gehst du einen Tag weiter. Tage ohne Spiele werden übersprungen.
+
+Wie weit du vorausschauen kannst, bestimmt **Tage im Voraus** in den Einstellungen unter Spielliste. Der Bereich geht von 1 bis 14 Tagen und startet bei 7. Der Guide zeigt immer mindestens 3 Tage. Spiele, die am Vortag zu Ende gingen, bleiben im Raster.
+
+## Die beste Zeit zum Zuschauen finden
+
+**Beste Zeit zum Zuschauen** ist standardmäßig an. Es schattiert den Teil des Tages, in dem die meisten Spiele gleichzeitig laufen. Spiele kurz vor dem Ende zählen mehr als Spiele, die gerade anfangen, und deine Lieblingsteams ebenso.
+
+Die Kopfzeile buchstabiert es aus, etwa „3 Spiele · 1 Favorit“. Schalte den Schalter aus, um die Schattierung auszublenden.
+
+## Ein Spiel öffnen
+
+Klick auf einen beliebigen Balken, und das Spiel öffnet sich in einem Fenster rechts. Was darin steht, erklärt [Spieldetails](/arenaswap/docs/extension/game-details/).
+
+- Klick auf einen anderen Balken, um das Spiel zu wechseln, und auf **Schließen** oder Escape, um das Fenster wegzuräumen.
+- Markiere vor einem Spielbeginn eines der beiden Teams mit einem Stern. Der Stern erscheint auf jedem Balken dieses Teams.
+- Gib einem Spiel, das du nicht verpassen willst, einen **Spielboost**. Tust du das vor dem Anstoß, startet ArenaSwap es mit Vorsprung.
+
+Um ein Spiel mit einem Tab zu verknüpfen, nutzt du das Popup. Der Guide kann das nicht.
+
+## Verwandt
+
+- [Spieldetails](/arenaswap/docs/extension/game-details/) behandelt den Bildschirm, den der Guide öffnet, einschließlich Spielboost.
+- [So legst du in ArenaSwap Lieblingsteams fest](/arenaswap/docs/extension/favorite-teams/) erklärt die Sterne.
+- [Die ArenaSwap-Einstellungen im Überblick](/arenaswap/docs/extension/settings/) führt Tage im Voraus und Bevorstehende Spiele anzeigen auf.
+- [Mehrere Spiele gleichzeitig schauen](/arenaswap/docs/extension/watching-multiple-games/) behandelt das Verknüpfen von Tabs mit den Spielen, die du schauen willst.

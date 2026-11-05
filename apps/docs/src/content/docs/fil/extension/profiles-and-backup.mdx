@@ -1,0 +1,82 @@
+---
+sourceHash: '9d5d749f8bfc'
+title: Paano gamitin ang mga profile at i-back up ang mga setting mo
+description: Magkaroon ng hiwalay na ArenaSwap setup para sa bawat klase ng gabi ng panonood, tapos i-save ang isa sa file para magamit sa ibang browser o pagkatapos mag-reinstall.
+section: extension
+order: 12
+navLabel: Mga profile at backup
+faq:
+  - q: Paano ko ililipat ang mga setting ko sa ArenaSwap sa ibang browser?
+    a: "Buksan ang Mga Setting, piliin ang Mga Profile at Backup, at i-click ang I-back up o i-restore. Mag-download ng backup, tapos buksan ang parehong page sa kabilang browser at i-drop ang file. Puwede mo itong idagdag bilang bagong profile o ipalit sa ginagamit mo ngayon."
+  - q: Nagsi-sync ba ang mga profile ng ArenaSwap sa pagitan ng mga browser?
+    a: Nagsi-sync ang kasalukuyan mong profile kapag naka-on ang sync sa browser mo. Nananatili sa browser kung saan mo ginawa ang iba mong profile. Para dalhin ang isa, i-save ito sa file.
+---
+
+import Demo from '../../../../components/docs/Demo.astro';
+
+Magkaiba ang kailangan ng playoff night at ng Linggo ng fantasy football. Hinahayaan ka ng mga profile na magtabi ng dalawa at lumipat sa isang click. Hinahayaan ka naman ng mga backup na dalhin ang setup sa ibang browser.
+
+## Gumawa ng profile
+
+Isang profile ang meron ang lahat sa simula, ang **main**.
+
+1. Buksan ang Mga Setting, tapos **Mga Profile at Backup**.
+2. I-click ang **Bagong profile** at mag-type ng pangalan.
+3. I-click ang **Kopyahin ang main** para magsimula sa kasalukuyan mong mga setting, o **Magsimula nang bago** para sa mga default. (Ang pangalan ng kasalukuyan mong profile ang nakalagay sa button.)
+
+Hindi puwedeng magkapareho ng pangalan ang dalawang profile. Laman ng profile ang mga setting mo at ang Fantasy roster mo. Ang bago ang magiging kasalukuyan mong profile.
+
+<Demo name='profiles' />
+
+## Magpalit ng profile
+
+I-click ang pangalan ng profile sa listahan ng **Mga Profile**. May checkmark ang ginagamit ngayon. Agad magbabago ang mga liga, paboritong team, at scoring mode mo.
+
+## Palitan ang pangalan, i-export, o burahin
+
+I-click ang tatlong tuldok sa tabi ng profile.
+
+- Hinahayaan ka ng **Palitan ang pangalan** na pumili ng bagong pangalan.
+- Binubuksan ng **I-export** ang backup page na handa nang i-save ang profile na iyon.
+- Binubura ng **Burahin** ang profile, kasama ang mga setting at Fantasy roster nito. I-export muna ito kung gusto mo ng kopya.
+
+Hindi mo mabubura ang profile na ginagamit mo. Lumipat muna sa iba.
+
+## Panatilihing naka-sync ang setup mo
+
+Sa ilalim ng **Nagsi-sync sa browser mo**, inililista ng ArenaSwap ang laman ng kasalukuyan mong profile: mga naka-on na liga, paboritong team, scoring mode, at Fantasy roster mo. Sumusunod ang lahat ng iyan sa ibang computer kapag naka-on ang sync sa browser mo. Hindi gumagalaw ang ibang profile.
+
+## Mag-save ng backup
+
+1. I-click ang **I-back up o i-restore…**. Magbubukas ito sa bagong tab.
+2. Kung higit sa isa ang profile mo, pumili ng isa sa **Profile** na menu.
+3. I-click ang **I-download ang backup**.
+
+Nasa pangalan ng file ang profile at ang petsa ngayon, gaya ng `arenaswap-settings-main-2026-11-03.json`.
+
+## Gumamit ng backup
+
+Buksan ang **I-back up o i-restore…** sa browser na lilipatan mo. Kung nasa first-time setup ka pa, i-click ang **May backup file ka? Laktawan ang setup at i-import ito**.
+
+1. I-drop ang file sa **I-drop dito ang backup**, o i-click ang **Pumili ng file**.
+2. Ihambing ang setup sa file sa setup mo.
+3. Pumili ng isa:
+   - Pinapanatili ng **Idagdag bilang bagong profile** ang lahat ng meron ka at idinadagdag ang setup ng file sa tabi nito.
+   - Pinapalitan ng **Palitan ang main** (o ang pangalan ng profile mo) ang bawat setting sa kasalukuyan mong profile ng mga nasa file. Kung ginawa ang backup sa Demo mode, babalik ka sa Demo mode.
+4. Kapag nakita mo ang "Nakalipat nang buo," i-click ang **Isara ang tab**.
+
+Mali ang napiling file? Ang **Pumili ng ibang file** ang magsisimula ulit.
+
+<Demo name='backup' />
+
+Kung may pumalpak:
+
+- "Itinapat ng mga source namin ang file na iyon sa ilaw at wala silang mabasang kahit isang salita": sira ang file. Mag-save ng bagong backup.
+- "Maayos naman ang file na iyan, hindi lang amin": hindi ito galing sa ArenaSwap. Pumili ng na-save mo.
+- "Galing sa mas bagong ArenaSwap ang file na ito": i-update ang extension, tapos subukan ulit.
+- "Hindi ito na-save": subukan ulit.
+
+## Kaugnay
+
+- Nasa [Gabay sa mga setting ng ArenaSwap](/arenaswap/docs/extension/settings/) ang mga setting ng Mga Profile at I-back up o i-restore.
+- Ang [Simulan ang ArenaSwap](/arenaswap/docs/extension/getting-started/) ay tungkol sa first-time setup.
