@@ -133,7 +133,11 @@ describe('a state ESPN has not used before', () => {
 	});
 
 	test('a game before its first period is upcoming', async () => {
-		expect(await slateFor({ period: 0, type: { state: 'warmups', completed: false } })).toEqual(['pre']);
+		// Dated an hour out, so it reads as a game still to come rather than one that never started.
+		const tonight = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+		const client = mockScoreboard([liveEvent({ status: { period: 0, type: { state: 'warmups', completed: false } }, event: { date: tonight } })]);
+		const result = await client.fetchGamesWithLeagueLogos(['nba'] as LeagueId[], { includeUpcoming: false });
+		expect(result.games.map(game => game.status)).toEqual(['pre']);
 	});
 
 	test('a game is final only when the feed says it is completed', () => {

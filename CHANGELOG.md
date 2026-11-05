@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Games that never started leave Up Next — 2026-11-05
+
+A scheduled game is dropped once its sport's whole broadcast window has passed without it starting (`hasMissedItsWindow`), because our sources can leave a game that never happened on scheduled for days; it put a Tuesday game at the top of Up Next on Thursday. The rule sits in `keepGame` and on the background's held Up Next and Guide lists, and a game that does start late comes back on its first live poll.
+
 ## Release notes get their own guide — 2026-11-05
 
 `.agents/RELEASENOTES.md` sets how release notes are written: an opener built from this week's sports news, a joke in every line, no technical details, a themed fix list and a five-star sign-off. Every release note already in `apps/docs/src/content/releases/` is named as an approved model, with the 2.3 notes quoted in full and four Transit samples, and agents are told to ignore the technical details and em dashes in the older ones. `AGENTS.md`, `VOICE.md` and the content-writer agent point to it.

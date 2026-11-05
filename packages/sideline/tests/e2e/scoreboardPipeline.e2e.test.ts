@@ -91,6 +91,17 @@ const basketballEvent = (params: {
 });
 
 describe('core API + excitement e2e flow', () => {
+	// The payloads are dated February 2026, and a scheduled game is called off once its broadcast
+	// window has passed. Pinning only the date, to the day before, keeps them scheduled.
+	beforeEach(() => {
+		jest.useFakeTimers({
+			now: new Date('2026-02-10T12:00:00.000Z'),
+			advanceTimers: true,
+			doNotFake: ['hrtime', 'nextTick', 'performance', 'queueMicrotask', 'requestAnimationFrame', 'cancelAnimationFrame', 'requestIdleCallback', 'cancelIdleCallback', 'setImmediate', 'clearImmediate', 'setInterval', 'clearInterval', 'setTimeout', 'clearTimeout'],
+		});
+	});
+	afterEach(() => jest.useRealTimers());
+
 	beforeEach(() => {
 		jest.resetModules();
 	});

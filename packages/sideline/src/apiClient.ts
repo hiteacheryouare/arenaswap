@@ -1,4 +1,4 @@
-import { collegeFetchGroups, isWithinFinalRetention, leagueConfigMap, logWarn, pollLookaheadDays, pollMaxEagerMs, pollMinEagerMs, resolveLeagueLogoUrl, upcomingGamesDaysMax } from '@arenaswap/core';
+import { collegeFetchGroups, hasMissedItsWindow, isWithinFinalRetention, leagueConfigMap, logWarn, pollLookaheadDays, pollMaxEagerMs, pollMinEagerMs, resolveLeagueLogoUrl, upcomingGamesDaysMax } from '@arenaswap/core';
 import type { AtBat, AtBatPlayer, Game, GameCondition, RedCardEvent, SeriesState, GameOdds, LeagueConfig, LeagueId, LeagueLogoMap, LeagueSchedule, LeagueScheduleMap, ProbableStarter, TeamLeader, TeamMonoLogoMap, TeamMonoMarks } from '@arenaswap/core';
 import { deriveBasketballPossession } from './basketballPossession';
 import { readCollegeBracket } from './collegeBracket';
@@ -1054,6 +1054,7 @@ const fetchLeagueGames = async (config: LeagueConfig, options: LeagueFetchOption
 	// only while it is inside the retention window, so an ageing one falls off on its own rather
 	// than needing a sweep.
 	const keepGame = (game: Game): boolean => {
+		if (game.status === 'pre') return !hasMissedItsWindow(game);
 		if (game.status !== 'post') return true;
 		return includeFinal && isWithinFinalRetention(game);
 	};

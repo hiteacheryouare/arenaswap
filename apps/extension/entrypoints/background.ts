@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { createWinProbabilityTracker, summaryStillNeeded, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, computeRetryDelayMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextCommercialBreak, checkHeldSwitch, holdSwitch, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
+import { createWinProbabilityTracker, summaryStillNeeded, hasMissedItsWindow, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, computeRetryDelayMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextCommercialBreak, checkHeldSwitch, holdSwitch, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
 import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, fetchNextScheduledStart, scoreboardRefreshMs, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces } from '@arenaswap/sideline';
 import type { CommercialBreakEntry, HeldSwitch, PlayBreakSport } from '@arenaswap/core';
 import { computeStandbyStreamDecision, usableStandbyTabId } from '../utils/standbyStreamLogic';
@@ -170,7 +170,7 @@ const describeOpenWindows = (allTabs: { id?: number; windowId?: number }[]) => {
 // the slate was fetched is still in it as upcoming, and shows twice unless the live copy wins.
 const slateBeside = (onScreen: Game[], slate: Game[]): Game[] => {
 	const shownIds = new Set(onScreen.map(g => g.id));
-	return slate.filter(g => !shownIds.has(g.id));
+	return slate.filter(g => !shownIds.has(g.id) && !hasMissedItsWindow(g));
 };
 
 export default defineBackground(() => {
@@ -1009,7 +1009,7 @@ export default defineBackground(() => {
 			const heldFor = (list: Game[]): Game[] => keepRefusedLeagues(list, result.shedLeagues);
 
 			upcomingGames = prefs.showUpcomingGames
-				? [...heldFor(upcomingGames), ...result.games.filter(g => g.status === 'pre')]
+				? [...heldFor(upcomingGames).filter(g => !hasMissedItsWindow(g)), ...result.games.filter(g => g.status === 'pre')]
 				: [];
 			retainedFinalGames = prefs.keepFinalGames
 				? [
@@ -1085,7 +1085,7 @@ export default defineBackground(() => {
 	const mergeGuideSlate = (fresh: Game[]) => {
 		if (guideSlateAt === 0) return;
 		const freshIds = new Set(fresh.map(g => g.id));
-		guideSlate = [...guideSlate.filter(g => !freshIds.has(g.id)), ...fresh];
+		guideSlate = [...guideSlate.filter(g => !freshIds.has(g.id) && !hasMissedItsWindow(g)), ...fresh];
 	};
 
 	// Re-checked on every merge rather than only on refetch, so a game ages out of the list on its
@@ -1386,7 +1386,7 @@ export default defineBackground(() => {
 			// with the other leagues' games, so one league's poll re-checks the whole set's
 			// retention instead of each league only ageing out when its own turn comes round.
 			const otherGames = games.filter(g => g.league !== leagueId && g.status !== 'post');
-			const leagueUpcoming = upcomingGames.filter(g => g.league === leagueId && !freshGameIds.has(g.id));
+			const leagueUpcoming = upcomingGames.filter(g => g.league === leagueId && !freshGameIds.has(g.id) && !hasMissedItsWindow(g));
 			const retainedFinals = liveRetainedFinals().filter(g => !freshGameIds.has(g.id));
 			games = [...otherGames, ...displayableGames(fetchResult.games), ...leagueUpcoming, ...retainedFinals];
 			leagueLogos = { ...leagueLogos, ...fetchResult.leagueLogos };
