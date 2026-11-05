@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Long searches and roster names fit in settings — 2026-11-05
+
+A long search with no spaces in Favorite Teams or the fantasy roster made the no-match line run off the popup, and now wraps. Rostered players' names and details that get cut short show in full on hover, and every settings page and onboarding step now runs through the safety net in every locale.
+
 ## Long speed signs hyphenate instead of running off the popup — 2026-11-04
 
 The Ludicrous Speed signs used to stay on one line, so German's LICHTGESCHWINDIGKEIT ran past the popup's edge and the overlay scrolled sideways. A sign now breaks a long word at a real hyphenation point in the reader's language, and every sign that fits stays on one line.

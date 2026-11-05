@@ -17,3 +17,4 @@
 - [Guide sweep](project_guide_sweep.md) — 2026-11-04: 7 reds in bar/axis geometry, all fixed the same night; realistic-bar fixture and click traps
 - [gameList sweep](project_gamelist_sweep.md) — 2026-11-04: 2 reds (suggest tab title fixed; ludicrous de sign fixed by hyphenation); Math.random stub + mainView stub traps
 - [UI sweep: detail](project_ui_sweep_detail.md) — detail specs, mountDetailView trap, mock ids, charts stubbed, the one red (fixed 2026-11-04)
+- [UI sweep: settings](project_ui_sweep_settings.md) — 2026-11-04 settings/onboarding containment specs, 3 reds (all fixed 2026-11-05), mount and scratchpad traps

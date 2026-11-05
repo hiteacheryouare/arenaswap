@@ -86,10 +86,10 @@ const PickRow = ({ shot, name, detail, error, state, disabled, onClick }: pickRo
 		<span className='d-flex align-items-center gap-3 min-w-0'>
 			{shot}
 			<span className='d-block min-w-0'>
-				<span className='d-block fw-semibold fg-body lh-xs small text-truncate'>{name}</span>
+				<span className='d-block fw-semibold fg-body lh-xs small text-truncate' title={name}>{name}</span>
 				{error
 					? <span className='d-block setting-explainer lh-xs fg-danger'>{error}</span>
-					: detail && <span className='d-block setting-explainer lh-xs text-truncate'>{detail}</span>}
+					: detail && <span className='d-block setting-explainer lh-xs text-truncate' title={detail}>{detail}</span>}
 			</span>
 		</span>
 		{state === 'pending'
@@ -261,7 +261,7 @@ const fantasyRosterPage = ({ roster, onRosterChange, services = liveServices }: 
 			)}
 
 			{current?.results && players.length === 0 && defenses.length === 0 && (
-				<div className='small fg-secondary text-center mt-5'>{i18n.t('fantasy.noMatch', { query: query.trim() })}</div>
+				<div className='small fg-secondary text-center text-break mt-5'>{i18n.t('fantasy.noMatch', { query: query.trim() })}</div>
 			)}
 		</>
 	);
@@ -275,13 +275,14 @@ const fantasyRosterPage = ({ roster, onRosterChange, services = liveServices }: 
 				{group.entries.map(entry => {
 					const key = rosterKey(entry);
 					const team = teamById.get(`${entry.league}:${entry.teamId}`);
+					const detail = joinDetail(positionLabel(entry.position), team?.name);
 					return (
 						<div key={key} className='d-flex align-items-center justify-content-between gap-3 mt-1 py-1 fantasy-roster-row'>
 							<span className='d-flex align-items-center gap-3 min-w-0'>
 								{entry.position === 'DST' ? teamShot(team, entry.name) : playerShot(entry.name, rosterHeadshot(entry))}
 								<span className='d-block min-w-0'>
-									<span className='d-block fw-semibold fg-body lh-xs small text-truncate'>{entry.name}</span>
-									<span className='d-block setting-explainer lh-xs text-truncate'>{joinDetail(positionLabel(entry.position), team?.name)}</span>
+									<span className='d-block fw-semibold fg-body lh-xs small text-truncate' title={entry.name}>{entry.name}</span>
+									<span className='d-block setting-explainer lh-xs text-truncate' title={detail}>{detail}</span>
 								</span>
 							</span>
 							<button

@@ -98,7 +98,7 @@ const teamPickerList = ({
 							</div>
 						))}
 						{groups.length === 0 && query && (
-							<div className='small fg-secondary text-center mt-5'>
+							<div className='small fg-secondary text-center text-break mt-5'>
 								{i18n.t('teamPicker.noMatch', { query })}
 							</div>
 						)}
