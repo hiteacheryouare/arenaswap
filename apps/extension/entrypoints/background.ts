@@ -2,7 +2,7 @@ import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
 import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, computePowerScore, isWithinFinalRetention, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, postseasonBoostShare } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
-import { gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
+import { gameEndRetentionMs, gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
 import type { gameEndRecords } from '../utils/gameEndTimes';
 import { isMonoLogoCacheFresh, missingMonoLogoLeagues, monoLogoCacheKey } from '../utils/monoLogoCache';
 import {
@@ -159,6 +159,16 @@ const getOpenTabIds = async (): Promise<Set<number>> => {
 			.map(tab => tab.id)
 			.filter((tabId): tabId is number => tabId !== undefined)
 	);
+};
+
+// Activating a tab in a window behind this one changes nothing anyone can see. And a player in full
+// screen drops out of it once its tab stops being the active one; only a click can put the new
+// tab's player back, but the window needs none, so it goes back and the game still fills the screen.
+const bringWindowForward = async (windowId: number, watchedWindow: { id?: number; state?: string }) => {
+	if (windowId !== watchedWindow.id) await browser.windows.update(windowId, { focused: true });
+	if (watchedWindow.state !== 'fullscreen') return;
+	const { state } = await browser.windows.get(windowId);
+	if (state !== 'fullscreen') await browser.windows.update(windowId, { state: 'fullscreen' });
 };
 
 // What the popup reads on its next open to say how many tabs were handed back while it was shut.
@@ -418,6 +428,16 @@ export default defineBackground(() => {
 		});
 	};
 
+	// By age rather than by membership in `games`: the Guide draws a final's wrap from this long after
+	// the popup has dropped the game, for as far back as its slate reaches.
+	const pruneStaleHistory = (now: number) => {
+		for (const map of [history, powerScoreHistory] as Map<string, { timestamp: number }[]>[]) {
+			for (const [gameId, snapshots] of map) {
+				if (now - (snapshots.at(-1)?.timestamp ?? 0) > gameEndRetentionMs) map.delete(gameId);
+			}
+		}
+	};
+
 	const serializeScoreHistory = (): ScoreHistoryMap => (
 		Object.fromEntries(
 			[...history.entries()].map(([gameId, snapshots]) => [gameId, snapshots.map(snapshot => ({ ...snapshot }))]),
@@ -580,12 +600,28 @@ export default defineBackground(() => {
 		const [activeTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true });
 		if (activeTab?.id === tabId) return;
 
-		const allTabs = await browser.tabs.query({});
-		const tabExists = allTabs.some(tab => tab.id === tabId);
-		if (!tabExists) return;
+		const [allTabs, watchedWindow] = await Promise.all([browser.tabs.query({}), browser.windows.getLastFocused()]);
+		const targetTab = allTabs.find(tab => tab.id === tabId);
+		if (!targetTab) return;
 
-		await browser.tabs.update(tabId, { active: true });
-		setLastSwitchTime(Date.now());
+		try {
+			await browser.tabs.update(tabId, { active: true });
+		} catch (err) {
+			// The tab closed between the query above and the update.
+			logWarn(`Failed to switch to tab ${tabId}.`, err);
+			return;
+		}
+		// Before the mute sync, which follows whichever window was focused last.
+		if (targetTab.windowId !== undefined) {
+			try {
+				await bringWindowForward(targetTab.windowId, watchedWindow);
+			} catch (err) {
+				logWarn(`Failed to bring the window for tab ${tabId} forward.`, err);
+			}
+		}
+		// Parking on standby is not a switch the cooldown should count: it would hold the user there
+		// while a game that just woke up plays out.
+		if (gameId) setLastSwitchTime(Date.now());
 		await syncManagedTabMuteState(true);
 		if (gameId) await recordSuccessfulSwitchForReviewPrompt(lastSwitchTime);
 
@@ -821,9 +857,11 @@ export default defineBackground(() => {
 	// A changedLeagueId scopes stall tracking and history to just that league; null processes
 	// every live game. `finishedGames` is what the fetch saw go final on this pass, which is not
 	// the same as what is in `games` — with Keep finished games off they are dropped on the way in.
-	const afterFetch = async (changedLeagueId: LeagueId | null, allowTabSwitch: boolean, finishedGames: Game[] = []) => {
+	// `observed` is false for a re-score of games already in hand, which must not read as another
+	// poll: a clock that has not moved since the last real one would count as stalled.
+	const afterFetch = async (changedLeagueId: LeagueId | null, allowTabSwitch: boolean, finishedGames: Game[] = [], observed = true) => {
 		const liveGames = games.filter(g => g.status === 'in');
-		const freshGames = changedLeagueId ? liveGames.filter(g => g.league === changedLeagueId) : liveGames;
+		const freshGames = !observed ? [] : changedLeagueId ? liveGames.filter(g => g.league === changedLeagueId) : liveGames;
 
 		for (const game of freshGames) {
 			const config = sportTypeConfigMap[game.sportType];
@@ -902,6 +940,7 @@ export default defineBackground(() => {
 		currentScores = scores;
 		updateHistory(freshGames);
 		updatePowerScoreHistory(liveGames, scores, changedLeagueId);
+		pruneStaleHistory(Date.now());
 		persistHistoryToSession();
 
 		await settleFinishedTabs(finishedGames);
@@ -939,6 +978,10 @@ export default defineBackground(() => {
 		// state machine. When standby takes over, the queued game is below the threshold anyway.
 		if (standbyDecision === 'switchToStandby') {
 			clearPendingSwitch();
+			// The same rule chooseSwitchTarget applies: a game picked by hand holds for the cooldown,
+			// quiet or not.
+			const inCooldown = prefs.cooldownSeconds > 0 && Date.now() - lastSwitchTime <= prefs.cooldownSeconds * 1000;
+			if (inCooldown) return;
 			onStandbyStream = true;
 			await executeSwitch(standbyStreamTabId!);
 			return;
@@ -1016,6 +1059,8 @@ export default defineBackground(() => {
 			// function would read that as a successful tick with nothing live, hand it to
 			// `recordPollResult`, and walk a league down into dormant while its games are being played.
 			// Failure keeps the mode it already had, which is the faster of the two.
+			// Switched off while this was in flight: its games must not come back.
+			if (!prefs.enabledLeagues.includes(leagueId)) return;
 			if (fetchResult.shedLeagues.length > 0) throw new Error(`ESPN shed the ${leagueId} scoreboard.`);
 			absorbFinalGames(fetchResult.games);
 			noteGameEnds(fetchResult.games);
@@ -1041,6 +1086,8 @@ export default defineBackground(() => {
 		} catch (err) {
 			logWarn(`Failed to fetch ${leagueId} games.`, err);
 		}
+
+		if (!prefs.enabledLeagues.includes(leagueId)) return;
 
 		// Tracked per league across the steady-state polls, not just across a fan-out: a refusal and a
 		// network failure both mean this league's games are unknown rather than absent.
@@ -1208,7 +1255,7 @@ export default defineBackground(() => {
 		// already in hand from the refresh above, and only the scores need recomputing against the
 		// new lines, so going through tick() would refetch every enabled league to no purpose.
 		await refreshWinProbabilities();
-		await afterFetch(null, false);
+		await afterFetch(null, false, [], false);
 	});
 
 	browser.runtime.onMessage.addListener((msg: ExtensionMessage) => {
@@ -1266,7 +1313,12 @@ export default defineBackground(() => {
 					[...prevLeagues].some(l => !newLeagues.has(l as LeagueId));
 				if (leaguesChanged && !demoMode) {
 					await refreshSlate();
-					games = [...games.filter(g => g.status === 'in'), ...upcomingGames, ...liveRetainedFinals()];
+					// A league switched off answers no more polls, so its live games would otherwise stay
+					// on frozen, scored and switchable until the next full refresh.
+					games = [...games.filter(g => g.status === 'in' && newLeagues.has(g.league)), ...upcomingGames, ...liveRetainedFinals()];
+					slateShedLeagues = slateShedLeagues.filter(leagueId => newLeagues.has(leagueId));
+					const keptIds = new Set(games.map(g => g.id));
+					currentScores = currentScores.filter(score => keptIds.has(score.gameId));
 					broadcastScoresUpdated();
 					startLeaguePolling();
 					// A league switched off keeps its cached lines until the next sweep otherwise.
@@ -1276,7 +1328,9 @@ export default defineBackground(() => {
 		}
 		if (msg.type === 'UPDATE_REGISTRY') {
 			return stateReady.then(async () => {
-				tabRegistry = msg.tabRegistry;
+				// The popup read the registry once when it opened, so it can send back tabs the worker has since let go.
+				const openTabIds = await getOpenTabIds();
+				tabRegistry = msg.tabRegistry.filter(reg => openTabIds.has(reg.tabId));
 				clearPendingSwitch();
 				await browser.storage.session.set({ tabRegistry });
 				await syncManagedTabMuteState(prefs.enabled);
@@ -1291,7 +1345,7 @@ export default defineBackground(() => {
 					gameBoosts[msg.gameId] = boost;
 				}
 				await browser.storage.session.set({ gameBoosts });
-				await afterFetch(null, false);
+				await afterFetch(null, false, [], false);
 			});
 		}
 		if (msg.type === 'SET_DEMO_MODE') {
@@ -1320,6 +1374,7 @@ export default defineBackground(() => {
 		}
 		if (msg.type === 'SET_STANDBY_STREAM_TAB') {
 			return stateReady.then(async () => {
+				clearPendingSwitch();
 				standbyStreamTabId = msg.tabId;
 				onStandbyStream = false;
 				await browser.storage.session.set({ standbyStreamTabId });
