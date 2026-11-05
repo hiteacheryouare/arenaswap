@@ -363,6 +363,13 @@ const parseCompetitorRecord = (competitor: EspnCompetitor): string | undefined =
 	return (overall?.summary ?? overall?.displayValue ?? '').trim() || undefined;
 };
 
+const homeRecordTypes = new Set(['home', 'homerecord']);
+
+const parseCompetitorHomeRecord = (competitor: EspnCompetitor): string | undefined => {
+	const home = competitor.records?.find(entry => entry.type !== undefined && homeRecordTypes.has(entry.type));
+	return (home?.summary ?? home?.displayValue ?? '').trim() || undefined;
+};
+
 // Baseball's `probableStartingPitcher` and hockey's `probableStartingGoalie` are the only two
 // values ESPN sends. Matching the shared prefix rather than either name means a third sport can
 // start shipping a starter without needing a change here.
@@ -454,6 +461,7 @@ const parseCuratedRank = (competitor: EspnCompetitor): number | undefined => {
 // every status; the other two are pre-game only.
 const parseTeamContext = (competitor: EspnCompetitor, state: Game['status']) => ({
 	record: parseCompetitorRecord(competitor),
+	homeRecord: parseCompetitorHomeRecord(competitor),
 	rank: parseCuratedRank(competitor),
 	conferenceId: competitor.team.conferenceId || undefined,
 	probableStarter: state === 'pre' ? parseProbableStarter(competitor) : undefined,

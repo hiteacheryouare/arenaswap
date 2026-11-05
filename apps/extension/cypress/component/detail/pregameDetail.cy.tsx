@@ -58,7 +58,7 @@ const mountPre = (game: Game, options: MountOptions = {}) => {
 			gameBoosts={{ [game.id]: 10 }}
 			bettingPrefs={{ bettingEnabled: true }}
 			weatherPrefs={{ temperatureUnit: 'F' }}
-			decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false }}
+			decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false, holidayChristmasEnabled: false, holidayBuntingEnabled: false, holidayFireworksEnabled: false }}
 			favoriteTeamIds={new Set(options.favorites ?? [])}
 			openTabs={openTabs}
 			registry={[{ tabId: 2, gameId: game.id }]}

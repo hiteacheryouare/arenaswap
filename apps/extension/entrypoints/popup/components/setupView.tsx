@@ -103,6 +103,9 @@ interface setupViewProps {
 	onToggleHolidaySnow: () => void;
 	onToggleHolidayLights: () => void;
 	onToggleHolidayLeaves: () => void;
+	onToggleHolidayChristmas: () => void;
+	onToggleHolidayBunting: () => void;
+	onToggleHolidayFireworks: () => void;
 	onPostseasonBoostChange: (val: number) => void;
 	onToggleSignal: (signal: SignalName) => void;
 	onToggleModeSignal: (mode: BuiltInModeId, signal: string) => void;
@@ -146,6 +149,7 @@ const setupView = ({
 	onMultiviewGamesChange, onMultiviewMaxBoxesChange, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onToggleOpenReveal,
 	onPostseasonBoostChange,
 	onToggleHolidayDecorations, onToggleHolidaySnow, onToggleHolidayLights, onToggleHolidayLeaves,
+	onToggleHolidayChristmas, onToggleHolidayBunting, onToggleHolidayFireworks,
 	onToggleSignal, onToggleModeSignal, onScoringModeChange, onLeagueModeChange, onFantasyBlendChange, onFantasyRuleChange,
 	onFantasyRulesReset, fantasyRoster, onFantasyRosterChange, profiles, profilesBusy, profileActions,
 }: setupViewProps) => {
@@ -344,6 +348,9 @@ const setupView = ({
 							{ value: 'real', label: i18n.t('setup.demoSeasonReal') },
 							{ value: 'thanksgiving', label: i18n.t('setup.demoSeasonThanksgiving') },
 							{ value: 'december', label: i18n.t('setup.demoSeasonDecember') },
+							{ value: 'christmas', label: i18n.t('setup.demoSeasonChristmas') },
+							{ value: 'boxingDay', label: i18n.t('setup.demoSeasonBoxingDay') },
+							{ value: 'julyFourth', label: i18n.t('setup.demoSeasonJulyFourth') },
 						]}
 					/>
 				</div>
@@ -528,6 +535,21 @@ const setupView = ({
 					<div className='d-flex justify-content-between align-items-center mt-3'>
 						<label className='fg-secondary setting-toggle-label' htmlFor='holidayLeavesToggle'>{i18n.t('setup.holidayLeaves')}</label>
 						<ToggleSwitch id='holidayLeavesToggle' checked={prefs.holidayLeavesEnabled} onChange={onToggleHolidayLeaves} disabled={!prefsLoaded} />
+					</div>
+
+					<div className='d-flex justify-content-between align-items-center mt-3'>
+						<label className='fg-secondary setting-toggle-label' htmlFor='holidayChristmasToggle'>{i18n.t('setup.holidayChristmas')}</label>
+						<ToggleSwitch id='holidayChristmasToggle' checked={prefs.holidayChristmasEnabled} onChange={onToggleHolidayChristmas} disabled={!prefsLoaded} />
+					</div>
+
+					<div className='d-flex justify-content-between align-items-center mt-3'>
+						<label className='fg-secondary setting-toggle-label' htmlFor='holidayBuntingToggle'>{i18n.t('setup.holidayBunting')}</label>
+						<ToggleSwitch id='holidayBuntingToggle' checked={prefs.holidayBuntingEnabled} onChange={onToggleHolidayBunting} disabled={!prefsLoaded} />
+					</div>
+
+					<div className='d-flex justify-content-between align-items-center mt-3'>
+						<label className='fg-secondary setting-toggle-label' htmlFor='holidayFireworksToggle'>{i18n.t('setup.holidayFireworks')}</label>
+						<ToggleSwitch id='holidayFireworksToggle' checked={prefs.holidayFireworksEnabled} onChange={onToggleHolidayFireworks} disabled={!prefsLoaded} />
 					</div>
 				</div>
 			)}

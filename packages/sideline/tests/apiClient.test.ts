@@ -2060,6 +2060,19 @@ describe('apiClient', () => {
 			}));
 			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
 			expect(result.games.find(g => g.id === 'mlb-rec')?.homeTeam.record).toBe('76-58');
+			expect(result.games.find(g => g.id === 'mlb-rec')?.homeTeam.homeRecord).toBe('38-27');
+		});
+
+		test('reads college football\'s home split, which it names homerecord', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'ncaaf-home', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { records: [
+					{ name: 'overall', type: 'total', summary: '9-2' },
+					{ name: 'Home', type: 'homerecord', summary: '5-0' },
+				] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['ncaaf'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'ncaaf-home')?.homeTeam.homeRecord).toBe('5-0');
 		});
 
 		test('reads the NHL overall record from type ytd, which is not total', async () => {

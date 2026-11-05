@@ -147,7 +147,7 @@ export class MockGameSimulator {
 				id: 'mock-4',
 				league: 'mlb',
 				sportType: 'baseball',
-				homeTeam: { id: '22', name: 'Philadelphia Phillies', abbreviation: 'PHI', score: 3, logo: `${espnCdn}/mlb/500/phi.png`, color: '#E81828' },
+				homeTeam: { id: '22', name: 'Philadelphia Phillies', abbreviation: 'PHI', score: 3, logo: `${espnCdn}/mlb/500/phi.png`, color: '#E81828', homeRecord: '1-0' },
 				awayTeam: { id: '21', name: 'New York Mets', abbreviation: 'NYM', score: 2, logo: `${espnCdn}/mlb/500/nym.png`, color: '#002D72' },
 				venueName: 'Citizens Bank Park',
 				venueLocation: 'Philadelphia, Pennsylvania',

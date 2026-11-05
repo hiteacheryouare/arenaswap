@@ -33,7 +33,7 @@ const detail = (game: Game) => (
 		gameBoosts={{}}
 		bettingPrefs={{ bettingEnabled: false }}
 		weatherPrefs={{ temperatureUnit: 'F' }}
-		decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false }}
+		decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false, holidayChristmasEnabled: false, holidayBuntingEnabled: false, holidayFireworksEnabled: false }}
 		favoriteTeamIds={new Set<string>()}
 		openTabs={[] as never}
 		registry={[]}

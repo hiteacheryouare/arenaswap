@@ -398,6 +398,9 @@ const App = () => {
 							holidaySnowEnabled: prefs.holidaySnowEnabled,
 							holidayLightsEnabled: prefs.holidayLightsEnabled,
 							holidayLeavesEnabled: prefs.holidayLeavesEnabled,
+							holidayChristmasEnabled: prefs.holidayChristmasEnabled,
+							holidayBuntingEnabled: prefs.holidayBuntingEnabled,
+							holidayFireworksEnabled: prefs.holidayFireworksEnabled,
 						}}
 						decorationDate={resolveDecorationDate(new Date(), 'real')}
 						disabledSignals={prefs.disabledSignals}

@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Stockings, bunting and fireworks join the holiday decorations — 2026-11-05
+
+Football on Christmas Eve, NBA and NFL games on Christmas Day and soccer on Boxing Day hang a stocking per team under the hero, filled by the score with coal for the loser at the final, and the December lights get garland and ornaments. MLB hangs bunting for the home opener series and the postseason, and every run on July 4 (plus MLS goals, and Blue Jays runs on Canada Day) sets off a firework in the scorer's colours. The opener series is read off the home team's home record, now parsed as `Team.homeRecord`, because the scoreboard's season calendar starts at spring training.
+
 ## Crest placeholders are plain Bootstrap avatars — 2026-11-04
 
 A crest's own `.avatar` box is now its placeholder, with the initials as its text and the logo laid over it, replacing the separate `.crest-fallback` disc and the twenty-odd font sizes call sites set on it. Initials are 30% of the box and icons 80%, measured with container units because Bootstrap's `--avatar-size` calc breaks on crests sized in `%` or `em`. The disc's shape is `--as-avatar-border-radius`, the logo's is `--crest-logo-radius` (square by default), and `--crest-wash` lightens a disc that sits on its own team colour.

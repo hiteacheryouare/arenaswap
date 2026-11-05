@@ -128,7 +128,7 @@ const mountDetail = (game: Game, over: {
 			gameBoosts={{}}
 			bettingPrefs={{ bettingEnabled: false }}
 			weatherPrefs={{ temperatureUnit: 'F' }}
-			decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false }}
+			decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false, holidayChristmasEnabled: false, holidayBuntingEnabled: false, holidayFireworksEnabled: false }}
 			onSetGameBoost={() => {}}
 			onBack={() => {}}
 		/>,
@@ -166,6 +166,9 @@ const listPrefs: UserPreferences = {
 	holidaySnowEnabled: false,
 	holidayLightsEnabled: false,
 	holidayLeavesEnabled: false,
+	holidayChristmasEnabled: false,
+	holidayBuntingEnabled: false,
+	holidayFireworksEnabled: false,
 	postseasonBoostPoints: 0,
 	upcomingGamesDays: 14,
 	disabledSignals: [],

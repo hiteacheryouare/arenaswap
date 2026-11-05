@@ -114,6 +114,8 @@ export interface Team {
 	// The overall record, e.g. "76-58". Carried in every status because the detail hero shows it
 	// for live and finished games too.
 	record?: string;
+	// Games at home only, e.g. "1-0". Like `record`, it already counts this game once it is final.
+	homeRecord?: string;
 	// Pre-game only, and only where ESPN sends them. Leaders in particular are pre-game only for
 	// correctness rather than economy: once a game starts, the same categories hold that game's box
 	// line ("1-4, HR, 4 RBI") instead of a season total.
@@ -334,11 +336,14 @@ export interface UserPreferences {
 	// there, the way it was before the graphic existed.
 	openRevealEnabled: boolean;
 	theme: ThemePreference;
-	// Seasonal decoration on the game detail screen. The parent gates all three.
+	// Seasonal decoration on the game detail screen. The parent gates the rest.
 	holidayDecorationsEnabled: boolean;
 	holidaySnowEnabled: boolean;
 	holidayLightsEnabled: boolean;
 	holidayLeavesEnabled: boolean;
+	holidayChristmasEnabled: boolean;
+	holidayBuntingEnabled: boolean;
+	holidayFireworksEnabled: boolean;
 	postseasonBoostPoints: number;
 	// 1–14.
 	upcomingGamesDays: number;

@@ -888,6 +888,154 @@
 		pointer-events: none;
 	}
 
+	.holiday-garland-body {
+		fill: none;
+		stroke: #1f5a3a;
+		stroke-width: 4.4;
+		stroke-linecap: round;
+	}
+
+	.holiday-garland-needles {
+		fill: none;
+		stroke: #3f8f5c;
+		stroke-width: 3.2;
+		stroke-dasharray: 0.8 1.4;
+	}
+
+	.holiday-ornament {
+		fill: currentcolor;
+	}
+
+	.holiday-ornament-shine {
+		fill: #ffffff;
+		opacity: 0.7;
+	}
+
+	/* Stockings and bunting both hang off the hero's bottom edge, so they take over the gap the hero
+	   would otherwise leave under itself. The live and pre-game heroes leave different gaps. */
+	.holiday-hang-from > .gd-poster {
+		margin-bottom: 0;
+	}
+
+	.holiday-stockings {
+		display: grid;
+		grid-template-columns: 80px minmax(0, 1fr) 80px;
+		justify-items: center;
+		margin-bottom: 0.45rem;
+		padding: 0 0.4rem;
+		pointer-events: none;
+
+		> :last-child {
+			grid-column: 3;
+		}
+	}
+
+	.holiday-stocking {
+		display: block;
+		overflow: visible;
+	}
+
+	.holiday-stocking-loop {
+		stroke: var(--as-border-color);
+		stroke-width: 1;
+	}
+
+	.holiday-stocking-body {
+		fill: currentcolor;
+		stroke: rgb(0 0 0 / 0.25);
+		stroke-width: 0.6;
+	}
+
+	.holiday-stocking-cuff {
+		fill: #f4f6f8;
+		stroke: var(--as-border-color);
+		stroke-width: 0.6;
+	}
+
+	.holiday-candy-cane,
+	.holiday-candy-cane-stripe {
+		fill: none;
+		stroke-width: 1.8;
+		stroke-linecap: round;
+	}
+
+	.holiday-candy-cane {
+		stroke: #ffffff;
+	}
+
+	.holiday-candy-cane-stripe {
+		stroke: #d62839;
+		stroke-linecap: butt;
+		stroke-dasharray: 1.2 1.2;
+	}
+
+	.holiday-gift {
+		fill: #f1c40f;
+	}
+
+	.holiday-gift-ribbon {
+		fill: none;
+		stroke: #d62839;
+		stroke-width: 1;
+	}
+
+	.holiday-treat-ornament {
+		fill: #3e9bd1;
+	}
+
+	.holiday-coal {
+		fill: #45454d;
+		stroke: #9a9aa4;
+		stroke-width: 0.6;
+	}
+
+	.holiday-coal-glint {
+		fill: none;
+		stroke: #c4c4cc;
+		stroke-width: 0.7;
+		stroke-linecap: round;
+	}
+
+	.holiday-bunting {
+		display: block;
+		width: calc(100% - 1rem);
+		margin: 0 0.5rem 0.45rem;
+		pointer-events: none;
+	}
+
+	.holiday-bunting-red {
+		fill: #c8102e;
+	}
+
+	.holiday-bunting-white {
+		fill: #f4f6f8;
+	}
+
+	.holiday-bunting-blue {
+		fill: #0a3161;
+	}
+
+	.holiday-bunting-pleat {
+		stroke: rgb(0 0 0 / 0.18);
+		stroke-width: 0.6;
+	}
+
+	.holiday-bunting-star {
+		fill: #ffffff;
+	}
+
+	.holiday-fireworks-stage {
+		position: relative;
+	}
+
+	.holiday-fireworks {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+	}
+
 	@include m.reduced-motion {
 		// The celebration rule is `.is-celebrating .holiday-bulb`, two classes, so a single-class
 		// opt-out loses to it and the 2Hz scoring strobe kept running for a reader who asked for

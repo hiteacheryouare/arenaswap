@@ -16,9 +16,12 @@ import { hasBoxScoreContent } from './boxScoreColumns';
 import GameDetailChart from './gameDetailChart';
 import GameBoostInput from './gameBoostInput';
 import GameInfoPanel from './gameInfoPanel';
+import HolidayBunting from './holidayBunting';
 import HolidayDrift from './holidayDrift';
 import HolidayFall from './holidayFall';
+import HolidayFireworks, { type fireworkVolley } from './holidayFireworks';
 import HolidayLights from './holidayLights';
+import HolidayStockings from './holidayStockings';
 import LatestPlayPanel from './latestPlayPanel';
 import MatchupPanel from './matchupPanel';
 import { hasMatchupContent } from '@arenaswap/sideline';
@@ -48,7 +51,7 @@ import useBasketballSituation from './useBasketballSituation';
 import useSummaryData from './useSummaryData';
 import { chartHistory, coversWholeGame } from './wrapCoverage';
 import { resolveDecorations, type holidayDecorationPrefs } from '../../../utils/holidayDecorations';
-import { favoriteScoreFlashColors, scorelineOf, type gameScoreline } from '../../../utils/favoriteScoreFlash';
+import { favoriteScoreFlashColors, scoringBursts, scorelineOf, type gameScoreline } from '../../../utils/favoriteScoreFlash';
 import { capitalizeReason, speakReason } from '../../../utils/powerScoreReason';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import type { ResolvedTheme } from '@arenaswap/core/types';
@@ -150,18 +153,26 @@ const gameDetailView = ({
 	const decorations = resolveDecorations(game, decorationDate ?? new Date(), decorationPrefs);
 
 	const [scoreFlash, setScoreFlash] = useState<string[] | null>(null);
+	const [fireworkVolley, setFireworkVolley] = useState<fireworkVolley | null>(null);
 	const previousScoreline = useRef<gameScoreline | null>(null);
 	const flashTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+	const fireworksArmed = decorations.fireworks;
+	const heroClassName = [
+		decorations.fireworks && 'holiday-fireworks-stage',
+		(decorations.christmas || decorations.bunting) && 'holiday-hang-from',
+	].filter(Boolean).join(' ') || undefined;
 
 	useEffect(() => {
 		const colors = favoriteScoreFlashColors(previousScoreline.current, game, favoriteTeamIds);
+		const bursts = fireworksArmed ? scoringBursts(previousScoreline.current, game) : [];
 		// Seeded on the first pass so opening the screen mid-game does not read as a goal.
 		previousScoreline.current = scorelineOf(game);
+		if (bursts.length > 0) setFireworkVolley(volley => ({ id: (volley?.id ?? 0) + 1, bursts }));
 		if (!colors) return;
 		setScoreFlash(colors);
 		clearTimeout(flashTimer.current);
 		flashTimer.current = setTimeout(() => setScoreFlash(null), favoriteFlashMs);
-	}, [game, favoriteTeamIds]);
+	}, [game, favoriteTeamIds, fireworksArmed]);
 
 	useEffect(() => () => clearTimeout(flashTimer.current), []);
 	const currentBoost = gameBoosts[game.id] ?? 0;
@@ -385,9 +396,9 @@ const gameDetailView = ({
 		<div className='popup-container game-detail-shell' ref={shellRef}>
 			{decorations.falling && <HolidayFall kind={decorations.falling} theme={theme} />}
 			<DetailStickyBar game={game} status={status} compact={heroScrolledAway} monoLogos={monoLogos} dismiss={dismiss} onBack={onBack} theme={theme} />
-			{decorations.lights && <HolidayLights flashColors={scoreFlash} />}
+			{(decorations.lights || decorations.christmas) && <HolidayLights flashColors={scoreFlash} festive={decorations.christmas} />}
 
-			<div ref={heroRef}>
+			<div ref={heroRef} className={heroClassName}>
 				{isPreGame ? (
 					<DetailPosterHero
 						game={game}
@@ -416,7 +427,10 @@ const gameDetailView = ({
 						possession={possession}
 					/>
 				)}
+				{decorations.fireworks && <HolidayFireworks volley={fireworkVolley} />}
 			</div>
+			{decorations.christmas && <HolidayStockings game={game} awayColor={awayAccent} homeColor={homeAccent} />}
+			{decorations.bunting && <HolidayBunting />}
 
 			{tabbed && <DetailTabs tabs={tabs} tabId={tabId} paneId={paneId} />}
 			{/* No `fade`. These three are one screen's worth of the same game seen three ways, not

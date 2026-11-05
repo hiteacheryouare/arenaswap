@@ -377,6 +377,9 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	holidaySnowEnabled: true,
 	holidayLightsEnabled: true,
 	holidayLeavesEnabled: true,
+	holidayChristmasEnabled: true,
+	holidayBuntingEnabled: true,
+	holidayFireworksEnabled: true,
 	postseasonBoostPoints: defaultPostseasonBoostPoints,
 	upcomingGamesDays: defaultUpcomingGamesDays,
 	disabledSignals: [],
@@ -497,6 +500,9 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		holidaySnowEnabled: typeof candidate.holidaySnowEnabled === 'boolean' ? candidate.holidaySnowEnabled : defaults.holidaySnowEnabled,
 		holidayLightsEnabled: typeof candidate.holidayLightsEnabled === 'boolean' ? candidate.holidayLightsEnabled : defaults.holidayLightsEnabled,
 		holidayLeavesEnabled: typeof candidate.holidayLeavesEnabled === 'boolean' ? candidate.holidayLeavesEnabled : defaults.holidayLeavesEnabled,
+		holidayChristmasEnabled: typeof candidate.holidayChristmasEnabled === 'boolean' ? candidate.holidayChristmasEnabled : defaults.holidayChristmasEnabled,
+		holidayBuntingEnabled: typeof candidate.holidayBuntingEnabled === 'boolean' ? candidate.holidayBuntingEnabled : defaults.holidayBuntingEnabled,
+		holidayFireworksEnabled: typeof candidate.holidayFireworksEnabled === 'boolean' ? candidate.holidayFireworksEnabled : defaults.holidayFireworksEnabled,
 		postseasonBoostPoints: normalizeBoostPreference(candidate.postseasonBoostPoints, defaults.postseasonBoostPoints),
 		upcomingGamesDays: typeof candidate.upcomingGamesDays === 'number' && Number.isFinite(candidate.upcomingGamesDays)
 			? Math.max(upcomingGamesDaysMin, Math.min(upcomingGamesDaysMax, Math.round(candidate.upcomingGamesDays)))

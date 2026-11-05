@@ -31,6 +31,9 @@ const allOn = {
 	holidaySnowEnabled: true,
 	holidayLightsEnabled: true,
 	holidayLeavesEnabled: true,
+	holidayChristmasEnabled: true,
+	holidayBuntingEnabled: true,
+	holidayFireworksEnabled: true,
 };
 
 const game = (over: Partial<Game> = {}): Game => ({
@@ -256,6 +259,9 @@ const setupProps = {
 	onToggleHolidaySnow: () => {},
 	onToggleHolidayLights: () => {},
 	onToggleHolidayLeaves: () => {},
+	onToggleHolidayChristmas: () => {},
+	onToggleHolidayBunting: () => {},
+	onToggleHolidayFireworks: () => {},
 	onPostseasonBoostChange: () => {},
 	onToggleSignal: () => {},
 	onToggleModeSignal: () => {},
@@ -270,6 +276,136 @@ const setupProps = {
 	profilesBusy: false,
 	profileActions: { onSwitch: () => {}, onCreate: () => {}, onRename: () => {}, onDelete: () => {} },
 };
+
+const christmasDay = new Date('2026-12-25T20:00:00.000Z');
+const julyFourth = new Date('2026-07-04T23:00:00.000Z');
+
+const withScores = (subject: Game, home: number, away: number): Game => ({
+	...subject,
+	homeTeam: { ...subject.homeTeam, score: home },
+	awayTeam: { ...subject.awayTeam, score: away },
+});
+
+const baseball = (over: Partial<Game> = {}): Game => game({
+	league: 'mlb',
+	sportType: 'baseball',
+	period: 7,
+	clockSeconds: 0,
+	topOfInning: false,
+	homeTeam: { id: '10', name: 'New York Yankees', abbreviation: 'NYY', score: 3, color: '132448', homeRecord: '1-0' },
+	awayTeam: { id: '19', name: 'Los Angeles Dodgers', abbreviation: 'LAD', score: 2, color: '005A9C' },
+	...over,
+});
+
+const expectFlushUnderHero = (selector: string) => {
+	cy.get('.gd-poster').then(([hero]) => {
+		cy.get(selector).should(([hanging]: JQuery<HTMLElement>) => {
+			expect(hanging.getBoundingClientRect().top).to.be.closeTo(hero!.getBoundingClientRect().bottom, 0.5);
+		});
+	});
+};
+
+describe('Christmas on the detail screen', () => {
+	it('hangs stockings and dresses the lights on Christmas Day', () => {
+		mountDetail(game(), christmasDay);
+		cy.get('.holiday-stocking').should('have.length', 2);
+		cy.get('.holiday-garland').should('exist');
+		cy.get('.holiday-ornament').should('have.length', 4);
+		expectFlushUnderHero('.holiday-stockings');
+	});
+
+	it('hangs them a day early for football', () => {
+		mountDetail(game(), new Date('2026-12-24T20:00:00.000Z'));
+		cy.get('.holiday-stocking').should('have.length', 2);
+	});
+
+	it('keeps the plain December lights the day before for everyone else', () => {
+		mountDetail(game({ league: 'nba', sportType: 'basketball' }), new Date('2026-12-24T20:00:00.000Z'));
+		cy.get('.holiday-lights').should('exist');
+		cy.get('.holiday-garland').should('not.exist');
+		cy.get('.holiday-stocking').should('not.exist');
+	});
+
+	it('hangs each stocking under its own crest', () => {
+		mountDetail(game(), christmasDay);
+		cy.get('.game-detail-teams-row .avatar').should('have.length', 2).then(crests => {
+			const crestCentres = [...crests].map(crest => {
+				const rect = crest.getBoundingClientRect();
+				return rect.left + rect.width / 2;
+			});
+			cy.get('.holiday-stocking').should(stockings => {
+				[...stockings].forEach((stocking, index) => {
+					const rect = stocking.getBoundingClientRect();
+					expect(rect.left + rect.width / 2).to.be.closeTo(crestCentres[index]!, 1);
+				});
+			});
+		});
+	});
+
+	it('fills the leader\'s stocking fuller and gives the loser coal at the final', () => {
+		mountDetail(withScores(game(), 24, 12), christmasDay);
+		cy.get('.holiday-stocking').last().find('.holiday-treat').should('have.length', 3);
+		cy.get('.holiday-stocking').first().find('.holiday-treat').should('have.length', 2);
+		mountDetail(withScores(game({ status: 'post' }), 24, 12), christmasDay);
+		cy.get('.holiday-stocking').first().find('.holiday-coal').should('exist');
+		cy.get('.holiday-stocking').last().find('.holiday-coal').should('not.exist');
+	});
+
+	it('moves to soccer on Boxing Day', () => {
+		const match = game({ league: 'epl', sportType: 'soccer', period: 2, clockSeconds: 4000 });
+		mountDetail(match, new Date('2026-12-26T15:00:00.000Z'));
+		cy.get('.holiday-stocking').should('have.length', 2);
+	});
+});
+
+describe('bunting on the detail screen', () => {
+	it('hangs flush under the hero for a home opener series', () => {
+		mountDetail(baseball(), august);
+		cy.get('.holiday-bunting').should('exist');
+		expectFlushUnderHero('.holiday-bunting');
+	});
+
+	it('hangs on a postseason game later in the year', () => {
+		mountDetail(baseball({ isPostseason: true, homeTeam: { id: '10', name: 'New York Yankees', abbreviation: 'NYY', score: 3, homeRecord: '52-29' } }), august);
+		cy.get('.holiday-bunting').should('exist');
+	});
+
+	it('comes down once the opening series is over', () => {
+		mountDetail(baseball({ homeTeam: { id: '10', name: 'New York Yankees', abbreviation: 'NYY', score: 3, homeRecord: '2-1' } }), august);
+		cy.get('.holiday-bunting').should('not.exist');
+	});
+
+	it('keeps the same gap above the next card as an undecorated hero', () => {
+		const plain = baseball({ homeTeam: { id: '10', name: 'New York Yankees', abbreviation: 'NYY', score: 3, homeRecord: '30-10' } });
+		mountDetail(plain, august);
+		cy.get('.gd-poster').then(([hero]) => {
+			const next = hero!.parentElement!.nextElementSibling!;
+			const plainGap = next.getBoundingClientRect().top - hero!.getBoundingClientRect().bottom;
+			mountDetail(baseball(), august);
+			cy.get('.holiday-bunting').should(([bunting]: JQuery<HTMLElement>) => {
+				const after = bunting.nextElementSibling!;
+				expect(after.getBoundingClientRect().top - bunting.getBoundingClientRect().bottom).to.be.closeTo(plainGap, 0.5);
+			});
+		});
+	});
+});
+
+describe('fireworks on the detail screen', () => {
+	it('sets up over the hero for an MLB game on the Fourth of July', () => {
+		mountDetail(baseball(), julyFourth);
+		cy.get('.holiday-fireworks').should(([canvas]: JQuery<HTMLElement>) => {
+			const hero = document.querySelector('.gd-poster')!.getBoundingClientRect();
+			const rect = canvas.getBoundingClientRect();
+			expect(rect.top).to.be.closeTo(hero.top, 0.5);
+			expect(rect.height).to.be.closeTo(hero.height, 0.5);
+		});
+	});
+
+	it('stays packed away the next day', () => {
+		mountDetail(baseball(), new Date('2026-07-05T23:00:00.000Z'));
+		cy.get('.holiday-fireworks').should('not.exist');
+	});
+});
 
 describe('holiday decoration settings', () => {
 	beforeEach(() => {
@@ -307,7 +443,14 @@ describe('holiday decoration settings', () => {
 				el.textContent = locale.setup.holidayDecorations;
 				expect(el.scrollWidth, `parent label fits in ${name}`).to.be.at.most(el.clientWidth + 1);
 			});
-			([['holidaySnowToggle', locale.setup.holidaySnow], ['holidayLightsToggle', locale.setup.holidayLights], ['holidayLeavesToggle', locale.setup.holidayLeaves]] as const).forEach(([id, text]) => {
+			([
+				['holidaySnowToggle', locale.setup.holidaySnow],
+				['holidayLightsToggle', locale.setup.holidayLights],
+				['holidayLeavesToggle', locale.setup.holidayLeaves],
+				['holidayChristmasToggle', locale.setup.holidayChristmas],
+				['holidayBuntingToggle', locale.setup.holidayBunting],
+				['holidayFireworksToggle', locale.setup.holidayFireworks],
+			] as const).forEach(([id, text]) => {
 				cy.get(`label[for='${id}']`).should(([el]: JQuery<HTMLElement>) => {
 					el.textContent = text;
 					expect(el.getBoundingClientRect().height, `${id} stays one line in ${name}`).to.be.at.most(22);
@@ -328,11 +471,11 @@ describe('reaching the decorations from demo mode', () => {
 		cy.get('#demoSeasonSelect').should('not.exist');
 	});
 
-	it('offers the three seasons once demo mode is on', () => {
+	it('offers every season once demo mode is on', () => {
 		cy.mount(<SetupView {...setupProps} demoMode />);
 		cy.get('#settingsGroup-switching').click();
 		cy.get('#demoSeasonSelect').should('contain.text', 'The real date');
-		cy.get('#demoSeasonSelect').parent().find('.menu-item').should('have.length', 3);
+		cy.get('#demoSeasonSelect').parent().find('.menu-item').should('have.length', 6);
 	});
 
 	it('reports the season the user picked', () => {
