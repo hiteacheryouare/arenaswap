@@ -545,6 +545,9 @@ export default () => {
 						onToggleHolidaySnow={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidaySnowEnabled: !currentPrefs.holidaySnowEnabled }))}
 						onToggleHolidayLights={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidayLightsEnabled: !currentPrefs.holidayLightsEnabled }))}
 						onToggleHolidayLeaves={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidayLeavesEnabled: !currentPrefs.holidayLeavesEnabled }))}
+						onToggleHolidayChristmas={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidayChristmasEnabled: !currentPrefs.holidayChristmasEnabled }))}
+						onToggleHolidayBunting={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidayBuntingEnabled: !currentPrefs.holidayBuntingEnabled }))}
+						onToggleHolidayFireworks={() => persistPrefs(currentPrefs => ({ ...currentPrefs, holidayFireworksEnabled: !currentPrefs.holidayFireworksEnabled }))}
 						onPostseasonBoostChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, postseasonBoostPoints: val }))}
 						onToggleSignal={onToggleSignal}
 					/>
@@ -614,6 +617,9 @@ export default () => {
 							holidaySnowEnabled: prefs.holidaySnowEnabled,
 							holidayLightsEnabled: prefs.holidayLightsEnabled,
 							holidayLeavesEnabled: prefs.holidayLeavesEnabled,
+							holidayChristmasEnabled: prefs.holidayChristmasEnabled,
+							holidayBuntingEnabled: prefs.holidayBuntingEnabled,
+							holidayFireworksEnabled: prefs.holidayFireworksEnabled,
 						}}
 						decorationDate={resolveDecorationDate(new Date(), demoMode ? demoSeason : 'real')}
 						disabledSignals={prefs.disabledSignals}

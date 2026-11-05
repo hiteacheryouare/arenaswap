@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The holiday decorations backport to 2.3 — 2026-11-05
+
+`dev`'s stockings and garland (Christmas Eve football, Christmas Day NBA and NFL, Boxing Day soccer), MLB bunting and Fourth of July fireworks, plus its redrawn leaf pile, are hand-ported onto `mega` with a switch each, since 3.0 won't ship before the holidays. Mega has no light mode, no `OnColorCrest` and no home-left leagues, so the snow and leaves stay dark-only, the stocking crest picks ESPN's `500-dark` logo itself, and away always hangs left. The parser now reads `Team.homeRecord` and `Game.isPreseason`, which bunting needs to find a home opener series.
+
 ## 2.1.1 folds back into the 2.2 line — 2026-09-22
 
 Merging `dev` into `mega` brings over the store listings that swapped the SUPPORTED LEAGUES list for prose in all 12 `desc_long.md` files, along with the 2.1.1 release notes. `mega`'s own backport of the day-at-a-time scoreboard fix was dropped in favour of `dev`'s version, whose token bucket is the reason its day pool can stay three wide.

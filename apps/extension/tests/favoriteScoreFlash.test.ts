@@ -1,5 +1,5 @@
 import type { Game } from '@arenaswap/core/types';
-import { favoriteScoreFlashColors, scorelineOf } from '../utils/favoriteScoreFlash';
+import { favoriteScoreFlashColors, maxBurstsPerPoll, scoringBursts, scorelineOf } from '../utils/favoriteScoreFlash';
 
 const game = (over: Partial<Game> = {}): Game => ({
 	id: 'g',
@@ -65,5 +65,34 @@ describe('favoriteScoreFlashColors', () => {
 		const before = scorelineOf(game());
 		const after = game({ homeTeam: { ...game().homeTeam, score: 21 } });
 		expect(favoriteScoreFlashColors(before, after, new Set(['nba:21']))).toBe(null);
+	});
+});
+
+describe('scoringBursts', () => {
+	const baseball = (home: number, away: number) => game({
+		league: 'mlb',
+		sportType: 'baseball',
+		homeTeam: { id: '22', name: 'Philadelphia Phillies', abbreviation: 'PHI', score: home, color: 'E81828' },
+		awayTeam: { id: '21', name: 'New York Mets', abbreviation: 'NYM', score: away, color: '#002D72', alternateColor: '#FF5910' },
+	});
+
+	test('waits for a previous score, like the flash', () => {
+		expect(scoringBursts(null, baseball(1, 0))).toEqual([]);
+	});
+
+	test('fires for either team, follower or not', () => {
+		expect(scoringBursts(scorelineOf(baseball(0, 0)), baseball(0, 1))).toEqual([{ colors: ['#002D72', '#FF5910'], count: 1 }]);
+	});
+
+	test('fires once per run, so a three-run homer is three', () => {
+		expect(scoringBursts(scorelineOf(baseball(2, 0)), baseball(5, 0))).toEqual([{ colors: ['#E81828'], count: 3 }]);
+	});
+
+	test('caps a poll that catches up on a whole inning', () => {
+		expect(scoringBursts(scorelineOf(baseball(0, 0)), baseball(9, 0))[0]?.count).toBe(maxBurstsPerPoll);
+	});
+
+	test('ignores a score that went down, which is a correction rather than a run', () => {
+		expect(scoringBursts(scorelineOf(baseball(3, 0)), baseball(2, 0))).toEqual([]);
 	});
 });

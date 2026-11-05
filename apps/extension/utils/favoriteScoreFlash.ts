@@ -19,7 +19,7 @@ const withHash = (value: string): string => (value.trim().startsWith('#') ? valu
 
 // Both colours where a team has two, so the string alternates rather than reading as one flat wash.
 // ESPN sends these without a leading hash about as often as with one.
-const teamColors = (color?: string, alternateColor?: string): string[] => {
+export const teamColors = (color?: string, alternateColor?: string): string[] => {
 	const colors = [color, alternateColor].filter(isHex).map(withHash);
 	return colors.length > 0 ? colors : ['#ffffff'];
 };
@@ -43,4 +43,21 @@ export const favoriteScoreFlashColors = (
 	if (!favoriteTeamIds.has(createFavoriteTeamKey(game.league, scorer.id))) return null;
 
 	return teamColors(scorer.color, scorer.alternateColor);
+};
+
+export interface scoringBurst {
+	colors: string[];
+	count: number;
+}
+
+// One burst per point, so a three-run homer is three. Capped, because a feed that catches up on a
+// whole inning at once should not empty the sky.
+export const maxBurstsPerPoll = 4;
+
+export const scoringBursts = (previous: gameScoreline | null, game: Game): scoringBurst[] => {
+	if (!previous) return [];
+	const next = scorelineOf(game);
+	return ([[game.homeTeam, next.home - previous.home], [game.awayTeam, next.away - previous.away]] as const)
+		.filter(([, gained]) => gained > 0)
+		.map(([team, gained]) => ({ colors: teamColors(team.color, team.alternateColor), count: Math.min(gained, maxBurstsPerPoll) }));
 };

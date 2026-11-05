@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { fallingKind } from '../../../utils/holidayDecorations';
+import { drawLeaf, leafPalette, leafShadow, leafShapeCount, leafSunlight, mixColor } from './leafArt';
 
 interface holidayDriftProps {
 	kind: fallingKind;
@@ -9,8 +10,6 @@ interface holidayDriftProps {
 
 const maxDriftPx = 96;
 const driftWidth = 320;
-
-const leafColors = ['#c2571a', '#d98324', '#a33b12', '#e0a539', '#6d3009', '#8f4b16', '#b8860b', '#94340f'];
 
 // Deterministic, so the pile does not reshuffle itself every time the poll re-renders the screen.
 const pseudoRandom = (seed: number): number => {
@@ -65,77 +64,77 @@ const drawSnowDrift = (ctx: CanvasRenderingContext2D, width: number, height: num
 	ctx.restore();
 };
 
-// A leaf, from its stem. Two arcs and a midrib: without the rib a shape this size is an almond,
-// and a heap of almonds is the mush this replaces.
-const drawLeaf = (ctx: CanvasRenderingContext2D, size: number, color: string) => {
-	ctx.fillStyle = color;
-	ctx.beginPath();
-	ctx.moveTo(0, -size);
-	ctx.quadraticCurveTo(size * 0.72, -size * 0.15, 0, size);
-	ctx.quadraticCurveTo(-size * 0.72, -size * 0.15, 0, -size);
-	ctx.closePath();
-	ctx.fill();
-
-	ctx.strokeStyle = 'rgba(48, 20, 4, 0.55)';
-	ctx.lineWidth = 0.7;
-	ctx.beginPath();
-	ctx.moveTo(0, -size * 0.88);
-	ctx.lineTo(0, size * 0.88);
-	ctx.stroke();
-
-	// Two ribs off the midrib, which is what stops a fallen leaf reading as a petal.
-	ctx.lineWidth = 0.5;
-	ctx.beginPath();
-	ctx.moveTo(0, -size * 0.1);
-	ctx.lineTo(size * 0.38, size * 0.3);
-	ctx.moveTo(0, -size * 0.1);
-	ctx.lineTo(-size * 0.38, size * 0.3);
-	ctx.stroke();
+// A raked heap: one big pile a little right of centre, a smaller spill on the left, and a low bank
+// running out to both edges. Returns how high the top of the pile is, as a share of driftHeight.
+const leafHeapProfile = (across: number): number => {
+	const heap = Math.exp(-(((across - 0.52) / 0.3) ** 2));
+	const spill = 0.42 * Math.exp(-(((across - 0.1) / 0.18) ** 2));
+	const ripple = 0.025 * Math.sin(across * 41) + 0.02 * Math.sin(across * 83 + 1.3);
+	return 0.26 + 0.62 * (heap + spill * (1 - heap)) + ripple;
 };
 
-// The pile is made of leaves and nothing else. There is no mound underneath: the shape comes from
-// where the leaves are, and the gaps between them are the popup's own background rather than a
-// brown wash standing in for depth.
+// A solid brown mound first, so whatever shows between the leaves reads as shadow inside the pile
+// rather than the page behind it. Leaves deeper in are darker, the crown along the top is sunlit.
 const drawLeafDrift = (ctx: CanvasRenderingContext2D, width: number, height: number, driftHeight: number) => {
-	const leafCount = Math.max(40, Math.round(driftHeight * 9));
-	const placed: { x: number; y: number; up: number; size: number; angle: number; color: string }[] = [];
+	const surfaceAt = (x: number) => height - driftHeight * leafHeapProfile(x / width);
 
-	for (let i = 0; i < leafCount; i += 1) {
+	const traceMound = () => {
+		ctx.beginPath();
+		ctx.moveTo(-2, height + 2);
+		for (let x = -2; x <= width + 2; x += 4) ctx.lineTo(x, surfaceAt(x) + 3);
+		ctx.lineTo(width + 2, height + 2);
+		ctx.closePath();
+	};
+	const inside = ctx.createLinearGradient(0, height - driftHeight, 0, height);
+	inside.addColorStop(0, '#83401a');
+	inside.addColorStop(1, '#2c1306');
+	ctx.fillStyle = inside;
+	traceMound();
+	ctx.fill();
+
+	const leaves: { x: number; y: number; depthIn: number; seed: number }[] = [];
+	const bodyCount = Math.round((width * driftHeight * 0.62) / 13);
+	for (let i = 0; i < bodyCount; i += 1) {
 		const seed = i * 37 + 11;
-		const x = pseudoRandom(seed * 1.7) * (width + 26) - 13;
-		// Mounded: deepest down the middle, thinning towards both edges the way a swept heap does.
-		const profile = 0.58 + 0.42 * Math.cos((x / width - 0.5) * Math.PI);
-		// Squared, so the leaves pack solid along the floor and thin out towards the top edge. A
-		// uniform spread reads as leaves scattered on the ground rather than piled on it.
-		const up = pseudoRandom(seed * 5.3) ** 2 * driftHeight * profile;
-		placed.push({
-			x,
-			y: height - up,
-			up,
-			size: 4.2 + pseudoRandom(seed * 9.1) * 3.4,
+		const x = pseudoRandom(seed * 1.7) * (width + 16) - 8;
+		const surface = surfaceAt(x);
+		const depthIn = pseudoRandom(seed * 5.3) ** 0.8;
+		leaves.push({ x, y: surface + depthIn * (height - surface + 4), depthIn, seed });
+	}
+	const crownCount = Math.round(width / 3.2);
+	for (let i = 0; i < crownCount; i += 1) {
+		const seed = i * 53 + 7;
+		const x = (i / crownCount) * (width + 12) - 6 + pseudoRandom(seed) * 3;
+		leaves.push({ x, y: surfaceAt(x) + pseudoRandom(seed * 2.9) * 5 - 1, depthIn: 0, seed });
+	}
+
+	for (const leaf of leaves) {
+		const seed = leaf.seed;
+		const hue = leafPalette[Math.floor(pseudoRandom(seed * 3.3) * leafPalette.length)]!;
+		const lift = (pseudoRandom(seed * 6.1) - 0.5) * 0.3;
+		const shade = Math.min(0.65, Math.max(0, leaf.depthIn ** 1.8 * 0.58 - lift));
+		const lit = leaf.depthIn < 0.15 ? mixColor(hue, leafSunlight, 0.14) : hue;
+		drawLeaf(ctx, {
+			x: leaf.x,
+			y: leaf.y,
+			size: 4.4 + pseudoRandom(seed * 9.1) * 3.8,
+			tilt: 0.5 + pseudoRandom(seed * 2.2) * 0.5,
 			angle: pseudoRandom(seed * 4.4) * Math.PI * 2,
-			color: leafColors[i % leafColors.length]!,
+			shape: Math.floor(pseudoRandom(seed * 8.8) * leafShapeCount),
+			curl: pseudoRandom(seed * 7.7) - 0.5,
+			color: mixColor(lit, leafShadow, shade),
 		});
 	}
 
-	// Highest first, so the ones nearer the front of the heap are drawn over the ones behind them.
-	placed.sort((a, b) => a.y - b.y);
-
-	for (const leaf of placed) {
-		ctx.save();
-		ctx.translate(leaf.x, leaf.y);
-		ctx.rotate(leaf.angle);
-		drawLeaf(ctx, leaf.size, leaf.color);
-		ctx.restore();
-	}
-
-	// The deepest part of the heap is in its own shadow. Drawn over the leaves rather than under
-	// them, so it darkens the pile instead of showing through its gaps as a brown field.
-	const shade = ctx.createLinearGradient(0, height - driftHeight * 0.55, 0, height);
-	shade.addColorStop(0, 'rgba(24, 11, 3, 0)');
-	shade.addColorStop(1, 'rgba(24, 11, 3, 0.45)');
-	ctx.fillStyle = shade;
-	ctx.fillRect(0, height - driftHeight * 0.55, width, driftHeight * 0.55);
+	ctx.save();
+	traceMound();
+	ctx.clip();
+	const floor = ctx.createLinearGradient(0, height - 14, 0, height);
+	floor.addColorStop(0, 'rgba(20, 8, 2, 0)');
+	floor.addColorStop(1, 'rgba(20, 8, 2, 0.5)');
+	ctx.fillStyle = floor;
+	ctx.fillRect(0, height - 14, width, 14);
+	ctx.restore();
 };
 
 const holidayDrift = ({ kind, depth }: holidayDriftProps) => {

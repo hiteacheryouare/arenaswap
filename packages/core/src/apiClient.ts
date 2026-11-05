@@ -450,10 +450,18 @@ const parseCuratedRank = (competitor: EspnCompetitor): number | undefined => {
 	return rank >= 1 && rank < unrankedCuratedRank ? rank : undefined;
 };
 
+const homeRecordTypes = new Set(['home', 'homerecord']);
+
+const parseCompetitorHomeRecord = (competitor: EspnCompetitor): string | undefined => {
+	const home = competitor.records?.find(entry => entry.type !== undefined && homeRecordTypes.has(entry.type));
+	return (home?.summary ?? home?.displayValue ?? '').trim() || undefined;
+};
+
 // Spread into both team literals below, the way resolveTeamColors already is. Records and rank ride
 // every status; the other two are pre-game only.
 const parseTeamContext = (competitor: EspnCompetitor, state: Game['status']) => ({
 	record: parseCompetitorRecord(competitor),
+	homeRecord: parseCompetitorHomeRecord(competitor),
 	rank: parseCuratedRank(competitor),
 	probableStarter: state === 'pre' ? parseProbableStarter(competitor) : undefined,
 	leaders: state === 'pre' ? parseTeamLeaders(competitor) : undefined,
@@ -587,6 +595,10 @@ const postseasonHeadlinePattern = /quarterfinal|semifinal|medal game/i;
 const collegeBaseballPostseasonTypes = new Set([3, 4, 5, 6]);
 const collegeBaseballLeagues = new Set<LeagueId>(['cbase', 'csoft']);
 
+// The slug rather than `type === 1`: soccer's `season.type` is a per-competition id (the NWSL's
+// regular season is 14024), so a number could collide where the slug cannot.
+const resolvePreseason = (event: EspnEvent): boolean => event.season?.slug?.trim().toLowerCase() === 'preseason';
+
 const resolvePostseason = (event: EspnEvent, comp: EspnCompetition, league: LeagueId): boolean => {
 	if (event.season?.type === 3) return true;
 
@@ -719,6 +731,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		lastPlayDrive: isGridironSituation ? situation.lastPlay?.drive?.description?.trim() || undefined : undefined,
 		weather: parseWeather(event, comp.venue?.indoor),
 		isPostseason: postseason,
+		isPreseason: resolvePreseason(event),
 		// Only graded when the game is actually postseason: the headline is display copy, and a
 		// regular-season oddity like an NFL London game carries a typed note too.
 		postseasonRound: grade?.round,

@@ -57,6 +57,9 @@ interface setupViewProps {
 	onToggleHolidaySnow: () => void;
 	onToggleHolidayLights: () => void;
 	onToggleHolidayLeaves: () => void;
+	onToggleHolidayChristmas: () => void;
+	onToggleHolidayBunting: () => void;
+	onToggleHolidayFireworks: () => void;
 	onPostseasonBoostChange: (val: number) => void;
 	onToggleSignal: (signal: SignalName) => void;
 }
@@ -78,6 +81,7 @@ const setupView = ({
 	onSetStandbyTab, onStandbyOnboardingDone, onToggleBetting, onToggleTemperatureUnit, onUnlockRomer, onToggleOpenReveal,
 	onPostseasonBoostChange,
 	onToggleHolidayDecorations, onToggleHolidaySnow, onToggleHolidayLights, onToggleHolidayLeaves,
+	onToggleHolidayChristmas, onToggleHolidayBunting, onToggleHolidayFireworks,
 	onToggleSignal,
 }: setupViewProps) => {
 	const [page, setPage] = useState<settingsGroupId | null>(null);
@@ -304,6 +308,27 @@ const setupView = ({
 							<input className='form-check-input' type='checkbox' id='holidayLeavesToggle' checked={prefs.holidayLeavesEnabled} onChange={onToggleHolidayLeaves} disabled={!prefsLoaded} />
 						</div>
 					</div>
+
+					<div className='d-flex justify-content-between align-items-center mt-2'>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='holidayChristmasToggle'>{i18n.t('setup.holidayChristmas')}</label>
+						<div className='form-check form-switch mb-0'>
+							<input className='form-check-input' type='checkbox' id='holidayChristmasToggle' checked={prefs.holidayChristmasEnabled} onChange={onToggleHolidayChristmas} disabled={!prefsLoaded} />
+						</div>
+					</div>
+
+					<div className='d-flex justify-content-between align-items-center mt-2'>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='holidayBuntingToggle'>{i18n.t('setup.holidayBunting')}</label>
+						<div className='form-check form-switch mb-0'>
+							<input className='form-check-input' type='checkbox' id='holidayBuntingToggle' checked={prefs.holidayBuntingEnabled} onChange={onToggleHolidayBunting} disabled={!prefsLoaded} />
+						</div>
+					</div>
+
+					<div className='d-flex justify-content-between align-items-center mt-2'>
+						<label className='text-body-secondary setting-toggle-label' htmlFor='holidayFireworksToggle'>{i18n.t('setup.holidayFireworks')}</label>
+						<div className='form-check form-switch mb-0'>
+							<input className='form-check-input' type='checkbox' id='holidayFireworksToggle' checked={prefs.holidayFireworksEnabled} onChange={onToggleHolidayFireworks} disabled={!prefsLoaded} />
+						</div>
+					</div>
 				</div>
 			)}
 		</>
@@ -393,6 +418,9 @@ const setupView = ({
 						<option value='real'>{i18n.t('setup.demoSeasonReal')}</option>
 						<option value='thanksgiving'>{i18n.t('setup.demoSeasonThanksgiving')}</option>
 						<option value='december'>{i18n.t('setup.demoSeasonDecember')}</option>
+						<option value='christmas'>{i18n.t('setup.demoSeasonChristmas')}</option>
+						<option value='boxingDay'>{i18n.t('setup.demoSeasonBoxingDay')}</option>
+						<option value='julyFourth'>{i18n.t('setup.demoSeasonJulyFourth')}</option>
 					</select>
 					<div className='setting-explainer mt-1'>{i18n.t('setup.demoSeasonExplainer')}</div>
 				</div>

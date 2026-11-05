@@ -2036,6 +2036,19 @@ describe('apiClient', () => {
 			}));
 			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
 			expect(result.games.find(g => g.id === 'mlb-rec')?.homeTeam.record).toBe('76-58');
+			expect(result.games.find(g => g.id === 'mlb-rec')?.homeTeam.homeRecord).toBe('38-27');
+		});
+
+		test('reads college football\'s home split, which it names homerecord', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'ncaaf-home', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { records: [
+					{ name: 'overall', type: 'total', summary: '9-2' },
+					{ name: 'Home', type: 'homerecord', summary: '5-0' },
+				] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['ncaaf'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'ncaaf-home')?.homeTeam.homeRecord).toBe('5-0');
 		});
 
 		test('reads the NHL overall record from type ytd, which is not total', async () => {
@@ -2391,6 +2404,8 @@ describe('apiClient', () => {
 		});
 
 		test('leaves leaders off a finished game, where the categories hold that game box line', async () => {
+			// Inside final retention of the fixture's default kickoff, which a real clock outgrows.
+			jest.useFakeTimers().setSystemTime(new Date('2026-10-05T03:00:00.000Z'));
 			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
 				id: 'post-ldr', state: 'post', period: 9, clock: '0:00', homeScore: '5', awayScore: '2',
 				homeExtra: { leaders: [leaderCategory('homeRuns', 'HR', 'J. Soto', '1-4, HR, 4 RBI, 2 R, BB')] },
@@ -2401,6 +2416,7 @@ describe('apiClient', () => {
 			const game = result.games.find(g => g.id === 'post-ldr');
 			expect(game).toBeDefined();
 			expect(game?.homeTeam.leaders).toBeUndefined();
+			jest.useRealTimers();
 		});
 
 		test('leaves leaders undefined when the key is absent, as in college football', async () => {
@@ -3176,8 +3192,11 @@ describe('rank, timeouts and the last play', () => {
 		// Unlike the two live-only fields below, a ranked matchup is ranked before and after it is
 		// played, so this one is not gated on the game being in progress.
 		test('survives on a finished game', async () => {
+			// Inside final retention of the fixture's default kickoff, which a real clock outgrows.
+			jest.useFakeTimers().setSystemTime(new Date('2026-10-05T03:00:00.000Z'));
 			const game = await parseOne('ncaab', { state: 'post', homeExtra: { curatedRank: { current: 7 } } });
 			expect(game?.homeTeam.rank).toBe(7);
+			jest.useRealTimers();
 		});
 	});
 

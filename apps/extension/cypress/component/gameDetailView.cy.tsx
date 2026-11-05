@@ -96,7 +96,7 @@ const mountDetail = (game: Game, overrides: MountOverrides = {}) => {
 			gameBoosts={{}}
 			bettingPrefs={{ bettingEnabled: overrides.bettingEnabled ?? false }}
 			weatherPrefs={{ temperatureUnit: 'F' }}
-			decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false }}
+			decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false, holidayChristmasEnabled: false, holidayBuntingEnabled: false, holidayFireworksEnabled: false }}
 			onSetGameBoost={() => {}}
 			onBack={() => {}}
 		/>,

@@ -1,14 +1,19 @@
 import type { Game } from '@arenaswap/core/types';
 import {
 	accumulationDepth,
+	hasBunting,
+	hasFireworks,
+	isChristmasGame,
 	isDecember,
 	isDemoSeason,
 	isSnowing,
+	isHomeOpenerSeries,
 	isThanksgivingWeek,
 	inningProgress,
 	periodProgress,
 	resolveDecorationDate,
 	resolveDecorations,
+	stockingFills,
 	thanksgivingDate,
 } from '../utils/holidayDecorations';
 
@@ -17,6 +22,9 @@ const allOn = {
 	holidaySnowEnabled: true,
 	holidayLightsEnabled: true,
 	holidayLeavesEnabled: true,
+	holidayChristmasEnabled: true,
+	holidayBuntingEnabled: true,
+	holidayFireworksEnabled: true,
 };
 
 const football = (over: Partial<Game> = {}): Game => ({
@@ -38,6 +46,8 @@ describe('isSnowing', () => {
 		expect(isSnowing(football({ weather: { temperatureF: 24, conditionLabel: 'Snow Showers/Wind' } }))).toBe(true);
 		expect(isSnowing(football({ weather: { temperatureF: 28, conditionLabel: 'Flurries' } }))).toBe(true);
 		expect(isSnowing(football({ weather: { temperatureF: 30, conditionLabel: 'Sleet' } }))).toBe(true);
+		expect(isSnowing(football({ weather: { temperatureF: 27, conditionLabel: 'Mostly cloudy w/ snow' } }))).toBe(true);
+		expect(isSnowing(football({ weather: { temperatureF: 29, conditionLabel: 'Partly sunny w/ flurries' } }))).toBe(true);
 	});
 
 	test('does not match rain, cold or a missing reading', () => {
@@ -168,7 +178,7 @@ describe('resolveDecorations', () => {
 
 	test('the parent switch turns off all three', () => {
 		expect(resolveDecorations(snowy, december, { ...allOn, holidayDecorationsEnabled: false }))
-			.toEqual({ lights: false, falling: null, depth: 0 });
+			.toEqual({ lights: false, christmas: false, bunting: false, fireworks: false, falling: null, depth: 0 });
 	});
 
 	test('lights hang all December regardless of the weather or the sport', () => {
@@ -229,7 +239,7 @@ describe('demo season', () => {
 	test('the borrowed December date decorates a snowy football game with both', () => {
 		const snowy = football({ period: 4, clockSeconds: 0, weather: { temperatureF: 26, conditionLabel: 'Snow' } });
 		const borrowed = resolveDecorationDate(september, 'december');
-		expect(resolveDecorations(snowy, borrowed, allOn)).toEqual({ lights: true, falling: 'snow', depth: 1 });
+		expect(resolveDecorations(snowy, borrowed, allOn)).toEqual({ lights: true, christmas: false, bunting: false, fireworks: false, falling: 'snow', depth: 1 });
 	});
 
 	test('the borrowed Thanksgiving date turns that same game over to leaves', () => {
@@ -289,7 +299,7 @@ const parseThroughFetch = async (event: unknown): Promise<Game> => {
 	return games[0]!;
 };
 
-// Nothing else joins the two halves of the dome rule: the suppression lives in core's parser and
+// Nothing else joins the two halves of the dome rule: the suppression lives in the scoreboard parser and
 // the decoration that acts on it lives here, so a unit test either side of the seam can pass while
 // a snowy dome still buries the screen. This runs a real scoreboard payload through the real fetch.
 describe('a dome game and the snow decoration, end to end', () => {
@@ -337,5 +347,150 @@ describe('a dome game and the snow decoration, end to end', () => {
 		expect(game.weather).toEqual({ temperatureF: 19, conditionLabel: 'Snow' });
 		expect(isSnowing(game)).toBe(true);
 		expect(resolveDecorations(game, december, allOn).falling).toBe('snow');
+	});
+});
+
+const mlbGame = (over: Partial<Game> = {}, homeRecord?: string): Game => football({
+	league: 'mlb',
+	sportType: 'baseball',
+	period: 3,
+	clockSeconds: 0,
+	homeTeam: { id: 'h', name: 'Philadelphia Phillies', abbreviation: 'PHI', score: 0, homeRecord },
+	awayTeam: { id: 'a', name: 'Atlanta Braves', abbreviation: 'ATL', score: 0 },
+	...over,
+});
+
+describe('Christmas', () => {
+	const christmas = new Date(2026, 11, 25, 15);
+	const boxingDay = new Date(2026, 11, 26, 10);
+	const basketball = (over: Partial<Game> = {}) => football({ league: 'nba', sportType: 'basketball', ...over });
+	const soccer = football({ league: 'epl', sportType: 'soccer' });
+
+	test('belongs to the NBA and the NFL on the 25th', () => {
+		expect(isChristmasGame(basketball(), christmas)).toBe(true);
+		expect(isChristmasGame(football(), christmas)).toBe(true);
+		expect(isChristmasGame(football({ league: 'nhl', sportType: 'hockey' }), christmas)).toBe(false);
+		expect(isChristmasGame(basketball(), boxingDay)).toBe(false);
+	});
+
+	test('starts a day early for football, college bowls included', () => {
+		const christmasEve = new Date(2026, 11, 24, 15);
+		expect(isChristmasGame(football(), christmasEve)).toBe(true);
+		expect(isChristmasGame(football({ league: 'ncaaf' }), christmasEve)).toBe(true);
+		expect(isChristmasGame(basketball(), christmasEve)).toBe(false);
+	});
+
+	test('moves to soccer on Boxing Day', () => {
+		expect(isChristmasGame(soccer, boxingDay)).toBe(true);
+		expect(isChristmasGame(soccer, christmas)).toBe(false);
+	});
+
+	test('keeps a late tip-off decorated after midnight', () => {
+		const afterMidnight = new Date(2026, 11, 26, 0, 40);
+		const lateGame = basketball({ startTime: new Date(2026, 11, 25, 22, 30).toISOString() });
+		expect(isChristmasGame(lateGame, afterMidnight)).toBe(true);
+		expect(isChristmasGame({ ...lateGame, status: 'post' }, afterMidnight)).toBe(false);
+	});
+
+	test('has its own switch, apart from the December lights', () => {
+		const lightsOff = resolveDecorations(basketball(), christmas, { ...allOn, holidayLightsEnabled: false });
+		expect(lightsOff.christmas).toBe(true);
+		expect(lightsOff.lights).toBe(false);
+		expect(resolveDecorations(basketball(), christmas, { ...allOn, holidayChristmasEnabled: false }).christmas).toBe(false);
+	});
+});
+
+describe('stockings', () => {
+	const withScore = (home: number, away: number, over: Partial<Game> = {}) => {
+		const game = football(over);
+		return { ...game, homeTeam: { ...game.homeTeam, score: home }, awayTeam: { ...game.awayTeam, score: away } };
+	};
+
+	test('are both empty before anyone scores', () => {
+		expect(stockingFills(withScore(0, 0))).toEqual({ home: { treats: 0, coal: false }, away: { treats: 0, coal: false } });
+	});
+
+	test('fill the leader to the top and the other in proportion', () => {
+		expect(stockingFills(withScore(24, 12))).toEqual({ home: { treats: 3, coal: false }, away: { treats: 2, coal: false } });
+		expect(stockingFills(withScore(3, 21)).home.treats).toBe(1);
+	});
+
+	test('give the loser coal at the final', () => {
+		expect(stockingFills(withScore(110, 104, { status: 'post' })).away).toEqual({ treats: 0, coal: true });
+		expect(stockingFills(withScore(110, 104, { status: 'in' })).away.coal).toBe(false);
+	});
+
+	test('give nobody coal for a draw', () => {
+		const draw = stockingFills(withScore(1, 1, { league: 'epl', sportType: 'soccer', status: 'post' }));
+		expect(draw.home.coal || draw.away.coal).toBe(false);
+	});
+
+	test('still give coal to the side that lost the shootout', () => {
+		const game = withScore(1, 1, { league: 'epl', sportType: 'soccer', status: 'post' });
+		const shootout = { ...game, homeTeam: { ...game.homeTeam, shootoutScore: 4 }, awayTeam: { ...game.awayTeam, shootoutScore: 3 } };
+		expect(stockingFills(shootout).away.coal).toBe(true);
+		expect(stockingFills(shootout).home.coal).toBe(false);
+	});
+});
+
+describe('bunting', () => {
+	test('hangs for the home opener series, while the home record shows under three games', () => {
+		expect(isHomeOpenerSeries(mlbGame({ status: 'pre' }, '0-0'))).toBe(true);
+		expect(isHomeOpenerSeries(mlbGame({}, '2-0'))).toBe(true);
+		expect(isHomeOpenerSeries(mlbGame({}, '2-1'))).toBe(false);
+	});
+
+	test('counts a final as already in its own record', () => {
+		expect(isHomeOpenerSeries(mlbGame({ status: 'post' }, '2-1'))).toBe(true);
+		expect(isHomeOpenerSeries(mlbGame({ status: 'post' }, '3-1'))).toBe(false);
+	});
+
+	test('skips spring training and any game without a home record', () => {
+		expect(isHomeOpenerSeries(mlbGame({ isPreseason: true }, '0-0'))).toBe(false);
+		expect(isHomeOpenerSeries(mlbGame())).toBe(false);
+		expect(hasBunting(mlbGame({ isPreseason: true, isPostseason: true }))).toBe(false);
+	});
+
+	test('hangs on every postseason game', () => {
+		expect(hasBunting(mlbGame({ isPostseason: true }, '45-36'))).toBe(true);
+		expect(hasBunting(mlbGame({}, '45-36'))).toBe(false);
+	});
+
+	test('is a baseball thing', () => {
+		expect(hasBunting(football({ isPostseason: true }))).toBe(false);
+	});
+
+	test('has its own switch', () => {
+		const opener = mlbGame({}, '0-0');
+		expect(resolveDecorations(opener, new Date(2026, 3, 2), allOn).bunting).toBe(true);
+		expect(resolveDecorations(opener, new Date(2026, 3, 2), { ...allOn, holidayBuntingEnabled: false }).bunting).toBe(false);
+	});
+});
+
+describe('fireworks', () => {
+	const julyFourth = new Date(2026, 6, 4, 19);
+	const canadaDay = new Date(2026, 6, 1, 19);
+	const blueJays = mlbGame({ homeTeam: { id: 'h', name: 'Toronto Blue Jays', abbreviation: 'TOR', score: 0 } });
+
+	test('are armed for MLB and MLS on the Fourth of July', () => {
+		expect(hasFireworks(mlbGame(), julyFourth)).toBe(true);
+		expect(hasFireworks(football({ league: 'mls', sportType: 'soccer' }), julyFourth)).toBe(true);
+		expect(hasFireworks(football(), julyFourth)).toBe(false);
+		expect(hasFireworks(mlbGame(), new Date(2026, 6, 5, 19))).toBe(false);
+	});
+
+	test('are armed on Canada Day for Blue Jays games only', () => {
+		expect(hasFireworks(blueJays, canadaDay)).toBe(true);
+		expect(hasFireworks(mlbGame(), canadaDay)).toBe(false);
+	});
+
+	test('can be borrowed in demo mode', () => {
+		expect(hasFireworks(mlbGame(), resolveDecorationDate(new Date(2026, 0, 9), 'julyFourth'))).toBe(true);
+		expect(isChristmasGame(football(), resolveDecorationDate(new Date(2026, 0, 9), 'christmas'))).toBe(true);
+		expect(isChristmasGame(football({ league: 'epl', sportType: 'soccer' }), resolveDecorationDate(new Date(2026, 0, 9), 'boxingDay'))).toBe(true);
+	});
+
+	test('have their own switch', () => {
+		expect(resolveDecorations(mlbGame(), julyFourth, { ...allOn, holidayFireworksEnabled: false }).fireworks).toBe(false);
 	});
 });
