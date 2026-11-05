@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Games that never started leave Up Next — 2026-11-05
+
+A scheduled game is dropped once its sport's whole broadcast window has passed without it starting (`hasMissedItsWindow`), because our sources can leave a game that never happened on scheduled for days; it put a Tuesday game at the top of Up Next on Thursday. The rule sits in `keepGame` and on the background's held Up Next and Guide lists, and a game that does start late comes back on its first live poll.
+
 ## ArenaSwap 2.3.0 — 2026-11-05
 
 Every workspace moves to 2.3.0, with release notes in `releases/2.3.0.md` titled Home for the Holidays. `mega`'s English-only settings article gains its first Holiday decorations row and the Pretend it is season picker, since dev's localized settings docs don't exist on this branch.

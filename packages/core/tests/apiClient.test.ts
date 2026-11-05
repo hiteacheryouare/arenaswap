@@ -16,6 +16,9 @@ const createResponse = (data: unknown, init: MockResponseInit = {}): Response =>
 	json: async () => data,
 } as Response);
 
+// Far enough ahead that a scheduled fixture is never old enough to count as called off.
+const fixtureStart = '2099-10-05T00:00:00.000Z';
+
 const makeEvent = (params: {
 	id: string;
 	state: string;
@@ -41,7 +44,7 @@ const makeEvent = (params: {
 	awayExtra?: Record<string, unknown>;
 }): Record<string, unknown> => ({
 	id: params.id,
-	date: params.date ?? '2026-10-05T00:00:00.000Z',
+	date: params.date ?? fixtureStart,
 	...(params.weather !== undefined && { weather: params.weather }),
 	...(params.season !== undefined && { season: params.season }),
 	competitions: [
@@ -160,6 +163,18 @@ const withHeadshot = (cat: ReturnType<typeof leaderCategory>, url: string) => ({
 });
 
 describe('apiClient', () => {
+	/* The fixtures here are dated across the 2026 season, and a scheduled game is called off once its
+	   broadcast window has passed. Pinning only the date, to before every one of them, keeps them
+	   scheduled whatever day the suite runs; timers stay real. */
+	beforeEach(() => {
+		jest.useFakeTimers({
+			now: new Date('2026-05-01T12:00:00.000Z'),
+			advanceTimers: true,
+			doNotFake: ['hrtime', 'nextTick', 'performance', 'queueMicrotask', 'requestAnimationFrame', 'cancelAnimationFrame', 'requestIdleCallback', 'cancelIdleCallback', 'setImmediate', 'clearImmediate', 'setInterval', 'clearInterval', 'setTimeout', 'clearTimeout'],
+		});
+	});
+	afterEach(() => jest.useRealTimers());
+
 	test('returns empty results and avoids fetch when enabled leagues list is empty', async () => {
 		const fetchMock = jest.fn();
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -360,7 +375,7 @@ describe('apiClient', () => {
 
 		const upcoming = result.games.find(game => game.id === 'pre-1');
 		expect(upcoming?.status).toBe('pre');
-		expect(upcoming?.startTime).toBe('2026-10-05T00:00:00.000Z');
+		expect(upcoming?.startTime).toBe(fixtureStart);
 
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls[0]).toContain('/basketball/nba/scoreboard');
@@ -1080,7 +1095,7 @@ describe('apiClient', () => {
 		expect(game.intermission).toBe(true);
 		expect(game.homeTeam.score).toBe(2);
 		expect(game.awayTeam.score).toBe(1);
-		expect(game.startTime).toBe('2026-10-05T00:00:00.000Z');
+		expect(game.startTime).toBe(fixtureStart);
 	});
 
 	test('NHL: pre-game from range has correct hockey sportType and startTime', async () => {
@@ -1264,7 +1279,7 @@ describe('apiClient', () => {
 		expect(game.league).toBe('mls');
 		expect(game.status).toBe('in');
 		expect(game.clockSeconds).toBe(67 * 60);
-		expect(game.startTime).toBe('2026-10-05T00:00:00.000Z');
+		expect(game.startTime).toBe(fixtureStart);
 	});
 
 	test('EPL: in-season live game from today returned when range endpoint is empty', async () => {
@@ -1290,7 +1305,7 @@ describe('apiClient', () => {
 		expect(game.league).toBe('epl');
 		expect(game.status).toBe('in');
 		expect(game.clockSeconds).toBe(33 * 60);
-		expect(game.startTime).toBe('2026-10-05T00:00:00.000Z');
+		expect(game.startTime).toBe(fixtureStart);
 	});
 
 	test('soccer: HALFTIME status name sets intermission=true', async () => {
@@ -1423,7 +1438,7 @@ describe('apiClient', () => {
 		// A live game keeps its start time too. Nothing renders it — every reader is behind a
 		// pre-game check — but the retention window for finished games has nothing else to
 		// measure from, ESPN publishing no completion timestamp of any kind.
-		expect(live.startTime).toBe('2026-10-05T00:00:00.000Z');
+		expect(live.startTime).toBe(fixtureStart);
 	});
 
 	describe('venue location parsing', () => {
@@ -2503,6 +2518,21 @@ describe('finished games', () => {
 
 			const withFinals = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });
 			expect(withFinals.games.map(g => g.id).toSorted()).toEqual(['final-1', 'live', 'sched']);
+		});
+
+		test('drops a scheduled game whose whole window went by without it starting', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [
+					makeEvent({ id: 'never-started', state: 'pre', period: 0, clock: '0:00', homeScore: '0', awayScore: '0', date: new Date(Date.now() - 42 * 60 * 60 * 1000).toISOString() }),
+					makeEvent({ id: 'running-late', state: 'pre', period: 0, clock: '0:00', homeScore: '0', awayScore: '0', date: new Date(Date.now() - 30 * 60 * 1000).toISOString() }),
+					makeEvent({ id: 'tonight', state: 'pre', period: 0, clock: '0:00', homeScore: '0', awayScore: '0', date: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString() }),
+				],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: true, includeFinal: true });
+			expect(result.games.map(g => g.id).toSorted()).toEqual(['running-late', 'tonight']);
 		});
 
 		test('the range path applies the same gate as the dateless one', async () => {

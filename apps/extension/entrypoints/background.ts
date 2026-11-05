@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, computePowerScore, isWithinFinalRetention, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, postseasonBoostShare } from '@arenaswap/core';
+import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, computePowerScore, hasMissedItsWindow, isWithinFinalRetention, computeScoringOpportunityBoost, isPlayFrozen, normalizePowerScoreResult, scoreMaxTotal, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, fetchNextScheduledStart, scoreboardRefreshMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, postseasonBoostShare } from '@arenaswap/core';
 import { computeStandbyStreamDecision } from '../utils/standbyStreamLogic';
 import { gameEndRetentionMs, gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
 import type { gameEndRecords } from '../utils/gameEndTimes';
@@ -759,7 +759,7 @@ export default defineBackground(() => {
 			const heldFor = (list: Game[]): Game[] => list.filter(g => !answered.has(g.league));
 
 			upcomingGames = prefs.showUpcomingGames
-				? [...heldFor(upcomingGames), ...result.games.filter(g => g.status === 'pre')]
+				? [...heldFor(upcomingGames).filter(g => !hasMissedItsWindow(g)), ...result.games.filter(g => g.status === 'pre')]
 				: [];
 			retainedFinalGames = prefs.keepFinalGames
 				? [
@@ -778,7 +778,7 @@ export default defineBackground(() => {
 	const mergeGuideSlate = (fresh: Game[]) => {
 		if (guideSlateAt === 0) return;
 		const freshIds = new Set(fresh.map(g => g.id));
-		guideSlate = [...guideSlate.filter(g => !freshIds.has(g.id)), ...fresh];
+		guideSlate = [...guideSlate.filter(g => !freshIds.has(g.id) && !hasMissedItsWindow(g)), ...fresh];
 	};
 
 	// Re-checked on every merge rather than only on refetch, so a game ages out of the list on its
@@ -1042,7 +1042,7 @@ export default defineBackground(() => {
 			finishedGames = fetched.filter(g => g.status === 'post');
 			games = displayableGames(fetched);
 			const freshGameIds = new Set(fetched.map(g => g.id));
-			const stillUpcoming = upcomingGames.filter(g => !freshGameIds.has(g.id));
+			const stillUpcoming = upcomingGames.filter(g => !freshGameIds.has(g.id) && !hasMissedItsWindow(g));
 			const stillFinal = liveRetainedFinals().filter(g => !freshGameIds.has(g.id));
 			games = [...games, ...stillUpcoming, ...stillFinal];
 		}
@@ -1071,7 +1071,7 @@ export default defineBackground(() => {
 			// with the other leagues' games, so one league's poll re-checks the whole set's
 			// retention instead of each league only ageing out when its own turn comes round.
 			const otherGames = games.filter(g => g.league !== leagueId && g.status !== 'post');
-			const leagueUpcoming = upcomingGames.filter(g => g.league === leagueId && !freshGameIds.has(g.id));
+			const leagueUpcoming = upcomingGames.filter(g => g.league === leagueId && !freshGameIds.has(g.id) && !hasMissedItsWindow(g));
 			const retainedFinals = liveRetainedFinals().filter(g => !freshGameIds.has(g.id));
 			games = [...otherGames, ...displayableGames(fetchResult.games), ...leagueUpcoming, ...retainedFinals];
 			leagueLogos = { ...leagueLogos, ...fetchResult.leagueLogos };
