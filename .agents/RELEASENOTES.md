@@ -1,8 +1,9 @@
 # RELEASENOTES.md
 
 > How ArenaSwap release notes are written. Read this before touching
-> `apps/docs/src/content/releases/`. It wins over anything older, including the
-> examples in `VOICE.md` and the length or tone of past release notes.
+> `apps/docs/src/content/releases/`. It wins over the examples in `VOICE.md`.
+> Every release note already in that folder is approved, and they are your
+> models (see Our Models, below).
 
 Release notes sit around 2 on the `VOICE.md` spectrum. They are the one place
 the whole product gets to be funny, and they are written for fans, not for
@@ -32,6 +33,9 @@ If a fix can't be said in plain fan words ("Standby Stream stopped yanking you
 off games you picked yourself"), it doesn't get its own line. It goes in the
 catch-all at the bottom of the fix list.
 
+Some of our older release notes have technical details in them anyway. Ignore
+those parts. They are not permission to write more.
+
 ---
 
 # The Shape
@@ -42,7 +46,11 @@ catch-all at the bottom of the fix list.
 2. **The opener.** Two or three short paragraphs about what's going on in sports
    *this week*, every line a joke. Then one line that turns the scene toward the
    release ("So we climbed into the attic, brought the decorations down early,
-   and found a few boxes up there we don't remember buying.").
+   and found a few boxes up there we don't remember buying.", "Here's the
+   scouting report.", "Here's tonight's listing.").
+   Pick one theme from the title and let it run through the headings and the
+   fix list (2.2 "Now Showing" has "Here's tonight's listing" and "In other
+   programming:").
 3. **The headline features.** A short heading each, in sentence case, with a
    little personality ("Stockings, hung with care"). Two to four sentences: what
    you'll see, and a joke. Call back to the opener where it fits ("Ask Milwaukee
@@ -50,7 +58,8 @@ catch-all at the bottom of the fix list.
 4. **Where to find it.** One sentence naming the setting, finished with a joke
    ("in case your household runs a strict no-tinsel policy"). Numbered steps only
    when a headline feature really needs them.
-5. **The fix list.** A themed heading ("Stocking stuffers"), one bullet per fix,
+5. **The fix list.** A themed heading ("Stocking stuffers", "No huddle",
+   "In other programming:", "And now, the lightning round ⚡"), one bullet per fix,
    one joke per bullet, no trailing periods. End with a catch-all
    ("Plus a few more bugs we swept up with the leaves").
 6. **The sign-off.** "Rate us five stars if …" and one emoji. Make it about the
@@ -79,9 +88,41 @@ catch-all at the bottom of the fix list.
 
 ---
 
-# Our Model: 2.3
+# Our Models
 
-This is the bar. It went through four rewrites to get here.
+Every English release note in `apps/docs/src/content/releases/` is approved.
+(The locale folders hold translations of the same notes.) Read all of them
+before you write a word. Take their openers, headings, jokes, callbacks and
+sign-offs as the standard.
+
+When you read them, ignore these parts:
+
+- **Technical details.** Examples: 2.0's polling seconds, sleep cycles, "546
+  keys", synced and local storage, Tailwind and test counts; 2.1.1's
+  explanation of why Up Next broke; 2.2's "flat +5" and "default boost went up
+  to 8". The rule in The Two Mistakes still holds.
+- **Em dashes.** 2.1 is full of them. We don't use them anymore.
+
+What each one shows best:
+
+- **2.0, "Introducing ArenaSwap 2".** An opener set in a real week ("somewhere
+  a soccer match is heading to penalties for absolutely no reason"). Headings
+  with jokes in them ("It checks fast when something interesting is happening.
+  Then it takes a nap."). One-line kickers after a section ("Your backup plan
+  now has a backup plan."). Owning a goof plainly ("We'd rather admit that than
+  quietly let you discover it yourself.").
+- **2.1, "Electric Boogal-one".** A football theme carried from "Here's the
+  scouting report" to "No huddle". A teasing close to the fix list ("We're not
+  telling you where. Good luck.").
+- **2.1.1, "We got ghosted".** A hotfix can be four short paragraphs: the
+  week, what broke in fan words, and the sign-off. "WE ARE SO BACK" energy is
+  allowed in an opener.
+- **2.2, "Now Showing".** One image (the TV Guide, and a dad circling the
+  Sunday doubleheader in red pen) that the whole note runs on, down to the
+  sign-off about a VCR clock blinking 12:00.
+- **2.3, "Home for the Holidays".** The newest one, and the strictest about
+  technical details. It lives on `mega` until the next merge reaches `dev`, so
+  here it is in full. It went through four rewrites to get here.
 
 ```markdown
 ---
@@ -224,9 +265,10 @@ The moves:
 
 # Before You Hand It Over
 
-1. Did you web search this week in sports, and does every topical line match a source?
-2. Does every line have a joke in it, with the fact inside the joke?
-3. Is there a single technical detail left? Read each bullet as a fan who has never opened Settings.
-4. Does it open on the week, turn toward the release, and close on "Rate us five stars if …"?
-5. No em dashes, one Philly nod at most, US spelling, no provider name?
-6. Did you flag the lines that go stale if the release slips?
+1. Did you read every release note in the folder, and the 2.3 model above?
+2. Did you web search this week in sports, and does every topical line match a source?
+3. Does every line have a joke in it, with the fact inside the joke?
+4. Is there a single technical detail left? Read each bullet as a fan who has never opened Settings.
+5. Does it open on the week, turn toward the release, and close on "Rate us five stars if …"?
+6. No em dashes, one Philly nod at most, US spelling, no provider name?
+7. Did you flag the lines that go stale if the release slips?

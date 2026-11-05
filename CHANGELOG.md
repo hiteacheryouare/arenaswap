@@ -7,7 +7,7 @@
 
 ## Release notes get their own guide — 2026-11-05
 
-`.agents/RELEASENOTES.md` sets how release notes are written: an opener built from this week's sports news, a joke in every line, no technical details, a themed fix list and a five-star sign-off. It carries the 2.3 notes as the model and four Transit samples, and `AGENTS.md`, `VOICE.md` and the content-writer agent point to it.
+`.agents/RELEASENOTES.md` sets how release notes are written: an opener built from this week's sports news, a joke in every line, no technical details, a themed fix list and a five-star sign-off. Every release note already in `apps/docs/src/content/releases/` is named as an approved model, with the 2.3 notes quoted in full and four Transit samples, and agents are told to ignore the technical details and em dashes in the older ones. `AGENTS.md`, `VOICE.md` and the content-writer agent point to it.
 
 ## Stockings, bunting and fireworks join the holiday decorations — 2026-11-05
 
