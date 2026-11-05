@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## ArenaSwap 2.3.0 — 2026-11-05
+
+Every workspace moves to 2.3.0, with release notes in `releases/2.3.0.md`. `mega`'s English-only settings article gains its first Holiday decorations row and the Pretend it is season picker, since dev's localized settings docs don't exist on this branch.
+
 ## Switching fixes from dev ride along in 2.3 — 2026-11-05
 
 A switch now brings a game in another window forward and puts the window back in full screen when the player was, a league switched off drops its live games at once (late answers included), Standby Stream waits out the cooldown and no longer starts one, a boost edit no longer counts as a frozen-clock poll, score history older than three days is pruned, the worker drops registry entries for tabs that already closed, and only today's successful scoreboard replies set a league's poll speed, clamped to 6 to 25 seconds. `backgroundQaFixes` and `backgroundStandby.qa` come from dev without the mute-sync and mono-mark cases, which weren't ported.
