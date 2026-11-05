@@ -16,3 +16,4 @@
 - [Recordings + ESPN extras facts](reference_recordings_and_espn_extras.md) — reading torn .jsonl.gz recordings; stoppage clock cap, standings fields per league
 - [Guide sweep](project_guide_sweep.md) — 2026-11-04: 7 reds in bar/axis geometry, all fixed the same night; realistic-bar fixture and click traps
 - [gameList sweep](project_gamelist_sweep.md) — 2026-11-04: 2 reds (suggest tab title fixed; ludicrous de sign waits on Ryan); Math.random stub + mainView stub traps
+- [UI sweep: detail](project_ui_sweep_detail.md) — detail specs, mountDetailView trap, mock ids, charts stubbed, the one red (fixed 2026-11-04)

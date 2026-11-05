@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The game detail bar names a long delay in full on hover — 2026-11-04
+
+The compact bar at the top of a scrolled game detail cut a long delay notice short with nothing on hover, and now carries the full status as its title. The detail hero, panels and edge cases now run through the safety net in every locale.
+
 ## Suggested tabs name themselves in full on hover — 2026-11-04
 
 The tab suggestion list cut long tab titles short with nothing on hover, and now carries the full title. The game list, its notices and the cards inside it now run through the safety net in every locale.

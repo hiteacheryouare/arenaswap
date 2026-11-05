@@ -49,6 +49,7 @@ const BarSlot = ({ game, status, compact }: barSlotProps) => {
 		<span
 			className={`gd-bar-status${compact ? ' is-visible' : ''}${countdown ? ' is-ticking' : ''}`}
 			aria-hidden={!compact}
+			title={countdown ? undefined : [status.text, status.clock].filter(Boolean).join(' • ')}
 		>
 			{countdown || <GameStatusText status={status} />}
 		</span>
