@@ -20,11 +20,9 @@ interface holidayLightsProps {
 	// Set while a team the user follows has just scored. The string takes that team's colours and
 	// picks up the pace, which is the confetti's job done by the only decoration on this screen.
 	flashColors?: string[] | null;
-	// Christmas itself: the wire is wound through pine and every other bulb is a glass ornament.
-	festive?: boolean;
 }
 
-const holidayLights = ({ flashColors = null, festive = false }: holidayLightsProps) => {
+const holidayLights = ({ flashColors = null }: holidayLightsProps) => {
 	const colors = flashColors && flashColors.length > 0 ? flashColors : bulbColors;
 
 	return (
@@ -34,25 +32,10 @@ const holidayLights = ({ flashColors = null, festive = false }: holidayLightsPro
 			preserveAspectRatio='none'
 			aria-hidden='true'
 		>
-			{festive && (
-				<g className='holiday-garland'>
-					<path d={wirePath} className='holiday-garland-body' />
-					<path d={wirePath} className='holiday-garland-needles' />
-				</g>
-			)}
 			<path d={wirePath} className='holiday-lights-wire' />
 			{Array.from({ length: bulbCount }, (_, i) => {
 				const centerX = i * swagSpan + swagSpan / 2;
 				const capY = pinY + swagDip;
-				if (festive && i % 2 === 1) {
-					return (
-						<g key={i} className='holiday-ornament' style={{ color: colors[i % colors.length] }}>
-							<rect x={centerX - 1.2} y={capY} width={2.4} height={1.8} className='holiday-bulb-cap' />
-							<circle cx={centerX} cy={capY + 4.6} r={3.3} className='holiday-ornament-glass' />
-							<circle cx={centerX - 1.1} cy={capY + 3.5} r={0.8} className='holiday-ornament-shine' />
-						</g>
-					);
-				}
 				return (
 					<g
 						key={i}

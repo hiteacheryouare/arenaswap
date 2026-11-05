@@ -306,12 +306,43 @@ const expectFlushUnderHero = (selector: string) => {
 };
 
 describe('Christmas on the detail screen', () => {
-	it('hangs stockings and dresses the lights on Christmas Day', () => {
+	it('hangs a garland along the hero and the stockings from it on Christmas Day', () => {
 		mountDetail(game(), christmasDay);
 		cy.get('.holiday-stocking').should('have.length', 2);
-		cy.get('.holiday-garland').should('exist');
-		cy.get('.holiday-ornament').should('have.length', 4);
-		expectFlushUnderHero('.holiday-stockings');
+		cy.get('.holiday-mantel .holiday-garland .holiday-bauble').should('have.length', 7);
+		cy.get('.holiday-lights .holiday-garland').should('not.exist');
+		cy.get('.gd-poster').then(([hero]) => {
+			const edge = hero!.getBoundingClientRect().bottom;
+			cy.get('.holiday-garland').should(([garland]: JQuery<HTMLElement>) => {
+				const rect = garland.getBoundingClientRect();
+				expect(rect.top + rect.height / 2, 'garland spine on the hero edge').to.be.closeTo(edge, 0.5);
+			});
+			cy.get('.holiday-garland').then(([garland]) => {
+				const garlandBottom = garland!.getBoundingClientRect().bottom;
+				cy.get('.holiday-treat').should(treats => {
+					expect(treats.length).to.be.greaterThan(0);
+					[...treats].forEach(treat => expect(treat.getBoundingClientRect().top, 'treats show below the needles').to.be.at.least(garlandBottom));
+				});
+				cy.get('.holiday-stocking-loop').should(loops => {
+					[...loops].forEach(loop => expect(loop.getBoundingClientRect().top, 'loops reach up into the garland').to.be.below(garlandBottom));
+				});
+			});
+		});
+	});
+
+	it('puts each team\'s crest on its stocking and its colour on its end of the garland', () => {
+		mountDetail(game(), christmasDay);
+		cy.get('.holiday-stocking').each(stocking => {
+			cy.wrap(stocking).find('.holiday-stocking-crest').should('exist');
+		});
+		cy.get('.holiday-stocking').then(stockings => {
+			const colors = [...stockings].map(stocking => getComputedStyle(stocking).color);
+			cy.get('.holiday-bauble-glass').should(baubles => {
+				const fills = [...baubles].map(bauble => getComputedStyle(bauble).fill);
+				expect(fills[0]).to.equal(colors[0]);
+				expect(fills[fills.length - 1]).to.equal(colors[1]);
+			});
+		});
 	});
 
 	it('hangs them a day early for football', () => {

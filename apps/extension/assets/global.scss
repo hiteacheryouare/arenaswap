@@ -888,24 +888,6 @@
 		pointer-events: none;
 	}
 
-	.holiday-garland-body {
-		fill: none;
-		stroke: #1f5a3a;
-		stroke-width: 4.4;
-		stroke-linecap: round;
-	}
-
-	.holiday-garland-needles {
-		fill: none;
-		stroke: #3f8f5c;
-		stroke-width: 3.2;
-		stroke-dasharray: 0.8 1.4;
-	}
-
-	.holiday-ornament {
-		fill: currentcolor;
-	}
-
 	.holiday-ornament-shine {
 		fill: #ffffff;
 		opacity: 0.7;
@@ -917,13 +899,66 @@
 		margin-bottom: 0;
 	}
 
+	/* The garland's spine lies on the hero's bottom edge, half over it and half below. The stockings
+	   hang just under the needles, so what's in them shows, and their loops reach back up into them. */
+	.holiday-mantel {
+		--garland-half: 11px;
+		position: relative;
+		margin-bottom: 0.45rem;
+		pointer-events: none;
+	}
+
+	.holiday-garland {
+		position: relative;
+		z-index: 2;
+		display: block;
+		width: 100%;
+		margin-top: calc(var(--garland-half) * -1);
+		overflow: visible;
+	}
+
+	.holiday-garland-body {
+		fill: #173f27;
+	}
+
+	.holiday-garland-needle {
+		fill: none;
+		stroke-width: 1.3;
+		stroke-linecap: round;
+	}
+
+	.holiday-bauble-glass {
+		stroke: rgb(0 0 0 / 0.25);
+		stroke-width: 0.5;
+	}
+
+	.holiday-bauble-cap {
+		fill: #c9a24a;
+	}
+
+	.holiday-pinecone {
+		fill: #6e4a2a;
+	}
+
+	.holiday-pinecone-scales {
+		fill: none;
+		stroke: #d9ab45;
+		stroke-width: 0.5;
+	}
+
+	.holiday-sprig {
+		fill: #e7c45f;
+		stroke: #e7c45f;
+		stroke-width: 0.6;
+		stroke-linecap: round;
+	}
+
 	.holiday-stockings {
 		display: grid;
 		grid-template-columns: 80px minmax(0, 1fr) 80px;
 		justify-items: center;
-		margin-bottom: 0.45rem;
+		margin-top: -2px;
 		padding: 0 0.4rem;
-		pointer-events: none;
 
 		> :last-child {
 			grid-column: 3;
@@ -931,8 +966,29 @@
 	}
 
 	.holiday-stocking {
-		display: block;
-		overflow: visible;
+		position: relative;
+		width: 34px;
+		height: 49.6px;
+
+		svg {
+			display: block;
+			width: 100%;
+			height: 100%;
+			overflow: visible;
+		}
+	}
+
+	/* On the leg, which is a third of the way in from the heel side of the 24-unit drawing. */
+	.holiday-stocking-crest {
+		--as-avatar-size: 14px;
+		position: absolute;
+		top: 60%;
+		left: 37.5%;
+		transform: translate(-50%, -50%);
+	}
+
+	.holiday-stocking.is-mirrored .holiday-stocking-crest {
+		left: 62.5%;
 	}
 
 	.holiday-stocking-loop {
@@ -997,10 +1053,16 @@
 	}
 
 	.holiday-bunting {
-		display: block;
-		width: calc(100% - 1rem);
-		margin: 0 0.5rem 0.45rem;
+		display: flex;
+		gap: 0.25rem;
+		margin: 0 0.25rem 0.45rem;
 		pointer-events: none;
+	}
+
+	.holiday-bunting-fan {
+		display: block;
+		flex: 1 1 0;
+		min-width: 0;
 	}
 
 	.holiday-bunting-red {
@@ -1008,16 +1070,16 @@
 	}
 
 	.holiday-bunting-white {
-		fill: #f4f6f8;
+		fill: #f6f4ef;
 	}
 
 	.holiday-bunting-blue {
-		fill: #0a3161;
+		fill: #1f2a5c;
 	}
 
 	.holiday-bunting-pleat {
-		stroke: rgb(0 0 0 / 0.18);
-		stroke-width: 0.6;
+		stroke: rgb(0 0 0 / 0.13);
+		stroke-width: 0.4;
 	}
 
 	.holiday-bunting-star {

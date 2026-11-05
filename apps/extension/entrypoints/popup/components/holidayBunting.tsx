@@ -1,45 +1,69 @@
-const fanWidth = 32;
-const fanRadius = 15;
+const radius = 48;
+const center = 50;
+const fanCount = 3;
+const pleatStep = 9;
+
+// Outside in, the way a pleated fan is sewn: red hem, white, a blue band of stars, white, and a
+// red rosette at the top.
 const bands = [
-	{ radius: fanRadius, className: 'holiday-bunting-red' },
-	{ radius: 12.5, className: 'holiday-bunting-white' },
-	{ radius: 10, className: 'holiday-bunting-red' },
-	{ radius: 7.5, className: 'holiday-bunting-blue' },
+	{ outer: 39, className: 'holiday-bunting-white' },
+	{ outer: 29, className: 'holiday-bunting-blue' },
+	{ outer: 17, className: 'holiday-bunting-white' },
+	{ outer: 11, className: 'holiday-bunting-red' },
 ];
-const pleatAngles = [30, 60, 90, 120, 150];
 
-const halfDisc = (center: number, radius: number): string => (
-	`M ${center - radius} 0 A ${radius} ${radius} 0 0 0 ${center + radius} 0 Z`
-);
-
-const pleat = (center: number, degrees: number): string => {
+const polar = (distance: number, degrees: number): [number, number] => {
 	const radians = (degrees * Math.PI) / 180;
-	return `M ${center} 0 L ${center + Math.cos(radians) * fanRadius} ${Math.sin(radians) * fanRadius}`;
+	return [center + Math.cos(radians) * distance, Math.sin(radians) * distance];
 };
 
-const Fan = ({ center }: { center: number }) => (
-	<>
-		{bands.map(band => <path key={band.radius} d={halfDisc(center, band.radius)} className={band.className} />)}
-		{pleatAngles.map(angle => <path key={angle} d={pleat(center, angle)} className='holiday-bunting-pleat' />)}
-		<circle cx={center - 3} cy={2.2} r={0.8} className='holiday-bunting-star' />
-		<circle cx={center} cy={4.4} r={0.8} className='holiday-bunting-star' />
-		<circle cx={center + 3} cy={2.2} r={0.8} className='holiday-bunting-star' />
-	</>
+const halfDisc = (distance: number): string => (
+	`M ${center - distance} 0 A ${distance} ${distance} 0 0 0 ${center + distance} 0 Z`
 );
 
-// A pattern rather than a viewBox, so a wider Guide window gets more fans instead of wider ones.
-// The tile starts at the middle with a fan split across each of its edges, so whatever the width,
-// one fan hangs dead centre and the two ends are cut by the same amount.
-const holidayBunting = () => (
-	<svg className='holiday-bunting' height={fanRadius + 1} aria-hidden='true'>
-		<defs>
-			<pattern id='holidayBuntingFan' x='50%' width={fanWidth} height={fanRadius + 1} patternUnits='userSpaceOnUse'>
-				<Fan center={0} />
-				<Fan center={fanWidth} />
-			</pattern>
-		</defs>
-		<rect width='100%' height={fanRadius + 1} fill='url(#holidayBuntingFan)' />
+// The hem is gathered at every pleat, so its edge scallops instead of running smooth.
+const hemPath = (() => {
+	const steps = 180 / pleatStep;
+	let d = `M ${center + radius} 0`;
+	for (let i = 1; i <= steps; i += 1) {
+		const [x, y] = polar(radius, i * pleatStep);
+		const [cx, cy] = polar(radius + 2.2, (i - 0.5) * pleatStep);
+		d += ` Q ${cx.toFixed(2)} ${cy.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)}`;
+	}
+	return `${d} Z`;
+})();
+
+const pleats = Array.from({ length: 180 / pleatStep - 1 }, (_, i) => {
+	const [x, y] = polar(radius, (i + 1) * pleatStep);
+	return `M ${center} 0 L ${x.toFixed(2)} ${y.toFixed(2)}`;
+}).join(' ');
+
+const starPath = (cx: number, cy: number, size: number): string => (
+	Array.from({ length: 10 }, (_, i) => {
+		const distance = i % 2 === 0 ? size : size * 0.42;
+		const radians = ((i * 36 - 90) * Math.PI) / 180;
+		return `${i === 0 ? 'M' : 'L'} ${(cx + Math.cos(radians) * distance).toFixed(2)} ${(cy + Math.sin(radians) * distance).toFixed(2)}`;
+	}).join(' ') + ' Z'
+);
+
+const stars = Array.from({ length: 7 }, (_, i) => {
+	const [x, y] = polar(23, 18 + i * 24);
+	return starPath(x, y, 3.3);
+}).join(' ');
+
+const Fan = () => (
+	<svg className='holiday-bunting-fan' viewBox={`0 0 100 ${radius + 3}`} aria-hidden='true'>
+		<path d={hemPath} className='holiday-bunting-red' />
+		{bands.map(band => <path key={band.outer} d={halfDisc(band.outer)} className={band.className} />)}
+		<path d={stars} className='holiday-bunting-star' />
+		<path d={pleats} className='holiday-bunting-pleat' />
 	</svg>
+);
+
+const holidayBunting = () => (
+	<div className='holiday-bunting' aria-hidden='true'>
+		{Array.from({ length: fanCount }, (_, i) => <Fan key={i} />)}
+	</div>
 );
 
 export default holidayBunting;

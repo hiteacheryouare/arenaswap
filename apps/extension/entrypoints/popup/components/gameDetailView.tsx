@@ -396,7 +396,7 @@ const gameDetailView = ({
 		<div className='popup-container game-detail-shell' ref={shellRef}>
 			{decorations.falling && <HolidayFall kind={decorations.falling} theme={theme} />}
 			<DetailStickyBar game={game} status={status} compact={heroScrolledAway} monoLogos={monoLogos} dismiss={dismiss} onBack={onBack} theme={theme} />
-			{(decorations.lights || decorations.christmas) && <HolidayLights flashColors={scoreFlash} festive={decorations.christmas} />}
+			{decorations.lights && <HolidayLights flashColors={scoreFlash} />}
 
 			<div ref={heroRef} className={heroClassName}>
 				{isPreGame ? (
