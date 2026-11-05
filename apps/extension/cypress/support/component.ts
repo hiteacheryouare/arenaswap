@@ -1,4 +1,5 @@
 import './commands';
+import './safetyNet/containmentCommand';
 import '@cypress/code-coverage/support';
 import { mount } from 'cypress/react';
 import { resetPrefetchIntent } from '../../entrypoints/popup/components/prefetchIntent';

@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## A shared safety net for cut-off and overflowing UI — 2026-11-04
+
+`cy.assertContained()` fails when anything runs past the content edge of the box that clips it, when text is cut short without its full value as a title, or when the surface scrolls sideways; `cypress/support/safetyNet/` pairs it with the longest real names, venues and scores from the recordings, every shipped locale, and Guide time edges. It caught the picker-arrow bug at the commit before its fix, and found two more, now fixed: popup menus keep the popup's 12px side margin, and long profile names show in full on hover.
+
 ## The extension typechecks in 5 seconds, not 90 — 2026-11-04
 
 Calling `i18n.t` with a `plainMessageKey` variable made TypeScript intersect two 1,400-key unions on every call, and ten such calls spent 83 of the 88 seconds `tsc` took. Those calls now go through `translate` from `settingsCatalog.ts`, which is checked once; use it whenever the key isn't a literal.

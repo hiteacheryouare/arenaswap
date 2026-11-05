@@ -5,7 +5,12 @@ import enJson from '../../locales/en.json';
 // Type-only, so it erases at bundle time; wxt prepare has already written it by the time tsc runs.
 export type { GeneratedI18nStructure } from '../../.wxt/i18n/structure';
 
-const messages = enJson as Record<string, unknown>;
+let messages = enJson as Record<string, unknown>;
+
+// Lets a spec render under any shipped locale (cypress/support/safetyNet/locales.tsx).
+export const setStubLocale = (localeJson: object = enJson) => {
+	messages = localeJson as Record<string, unknown>;
+};
 
 const lookup = (key: string): unknown =>
 	key.split('.').reduce<unknown>((node, part) => (

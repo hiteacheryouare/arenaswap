@@ -33,7 +33,7 @@ const profileRow = ({ profile, active, disabled, onSwitch, onRename, onExport, o
 				onClick={active ? undefined : onSwitch}
 			>
 				<i className={`bi ${active ? 'bi-check2' : 'bi-person'} profile-row-icon`} aria-hidden='true' />
-				<span className='profile-row-name'>{profile.name}</span>
+				<span className='profile-row-name' title={profile.name}>{profile.name}</span>
 				{active && <span className='visually-hidden'>{i18n.t('profiles.inUse')}</span>}
 			</button>
 			<div className='position-relative'>

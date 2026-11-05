@@ -63,32 +63,32 @@
 		},
 		"test:component:detail": {
 			"dependsOn": ["^build"],
-			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/detail/**", "entrypoints/popup/**", "utils/**", "locales/**"]
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/support/safetyNet/**", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/detail/**", "entrypoints/popup/**", "utils/**", "locales/**"]
 		},
 		"test:component:gameList": {
 			"dependsOn": ["^build"],
-			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/gameList/**", "entrypoints/popup/**", "utils/**", "locales/**"]
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/support/safetyNet/**", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/gameList/**", "entrypoints/popup/**", "utils/**", "locales/**"]
 		},
 		"test:component:guide": {
 			"dependsOn": ["^build"],
-			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/guide/**", "entrypoints/guide/**", "entrypoints/popup/**", "utils/**", "locales/**"]
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/support/safetyNet/**", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/guide/**", "entrypoints/guide/**", "entrypoints/popup/**", "utils/**", "locales/**"]
 		},
 		"test:component:multiview": {
 			"dependsOn": ["^build"],
-			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/multiview/**", "entrypoints/multiview/**", "entrypoints/popup/components/prefetchIntent.ts", "locales/en.json"]
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/support/safetyNet/**", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/multiview/**", "entrypoints/multiview/**", "entrypoints/popup/components/prefetchIntent.ts", "locales/en.json"]
 		},
 		"test:component:onboarding": {
 			"dependsOn": ["^build"],
-			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/onboarding/**", "entrypoints/popup/**", "utils/**", "locales/**"]
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/support/safetyNet/**", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/onboarding/**", "entrypoints/popup/**", "utils/**", "locales/**"]
 		},
 		"test:component:settings": {
 			"dependsOn": ["^build"],
-			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/settings/**", "entrypoints/popup/**", "entrypoints/settingsBackup/**", "utils/**", "locales/**"]
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/support/safetyNet/**", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/settings/**", "entrypoints/popup/**", "entrypoints/settingsBackup/**", "utils/**", "locales/**"]
 		},
 		// Shared @arenaswap/ui components only: no extension source, so popup edits never rerun it.
 		"test:component:ui": {
 			"dependsOn": ["^build"],
-			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/ui/**", "entrypoints/popup/components/prefetchIntent.ts", "locales/**"]
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/support/safetyNet/**", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/ui/**", "entrypoints/popup/components/prefetchIntent.ts", "locales/**"]
 		},
 		"test:e2e": {
 			"dependsOn": ["test:e2e:popup", "test:e2e:settings", "test:e2e:tabs"]
