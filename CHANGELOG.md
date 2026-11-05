@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Suggested tabs name themselves in full on hover — 2026-11-04
+
+The tab suggestion list cut long tab titles short with nothing on hover, and now carries the full title. The game list, its notices and the cards inside it now run through the safety net in every locale.
+
 ## The Guide stops drawing finished games into the future — 2026-11-04
 
 A final whose end nobody saw now ends no later than the present, so it can't stretch the axis or the best-time band, and a game held at period 0 (a weather delay) is drawn as a whole game still to play. The end recorder only trusts a final noticed within 10 minutes of last seeing the game live, so a night with the browser closed no longer gives a game an 11-hour bar, and a suspended match that resumes gets its real final.

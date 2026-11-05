@@ -104,7 +104,7 @@ const suggestView = ({ suggestions, games, openTabs, formatTabLabel, onApply, on
 											</span>
 											<span className='d-flex align-items-center gap-1 suggest-tab-label'>
 												<TabFavicon url={tab.favIconUrl} />
-												<span className='text-truncate min-w-0'>{formatTabLabel(tab)}</span>
+												<span className='text-truncate min-w-0' title={formatTabLabel(tab)}>{formatTabLabel(tab)}</span>
 											</span>
 										</span>
 									</label>
