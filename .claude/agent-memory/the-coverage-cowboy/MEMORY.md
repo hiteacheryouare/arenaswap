@@ -14,3 +14,4 @@
 - [core package.json inlined into the site](project_core_package_json_inlined.md) — why grepping the docs bundle for "zod" gives a false positive
 - [PowerScore 3 open questions](project_powerscore3_open_questions.md) — its red tests were all green by 2026-10-12; the unbuilt design questions may still stand
 - [Recordings + ESPN extras facts](reference_recordings_and_espn_extras.md) — reading torn .jsonl.gz recordings; stoppage clock cap, standings fields per league
+- [Guide sweep](project_guide_sweep.md) — 2026-11-04: 7 reds in bar/axis geometry, all fixed the same night; realistic-bar fixture and click traps

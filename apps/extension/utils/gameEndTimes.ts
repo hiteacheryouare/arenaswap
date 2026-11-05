@@ -31,19 +31,33 @@ export const readGameEndRecords = (stored: unknown): gameEndRecords => {
 	return records;
 };
 
-// Only a game seen live before it was seen final gets stamped. One that was already final the first
-// time it turned up ended at some point nobody saw, and stamping it with the moment it was found
-// would stretch a noon kickoff into the evening.
-//
+// `seenLiveAt` is the last time the game was seen live, refreshed this often rather than on every poll
+// so a live game costs one storage write every few minutes.
+const liveRefreshMs = 5 * 60_000;
+
+// A final is only stamped when it turns up this soon after the game was last seen live. Anything later
+// ended at some point nobody saw, and stamping it with the moment it was found would stretch a noon
+// kickoff into the evening, or, after a night with the browser closed, into the next morning.
+const trustedEndGapMs = 10 * 60_000;
+
 // Null when nothing changed, which is what keeps this from writing to storage on every poll.
 export const recordGameEnds = (records: gameEndRecords, fetched: Game[], now: number): gameEndRecords | null => {
 	let next: gameEndRecords | null = null;
 	for (const game of fetched) {
 		const existing = records[game.id];
-		if (game.status === 'in' && existing?.seenLiveAt === undefined) {
+		if (game.status === 'in') {
+			// A suspended game arrives as final and later comes back live, so its stamped end was never the end.
+			const resumed = existing?.endedAt !== undefined;
+			const stale = existing?.seenLiveAt === undefined || now - existing.seenLiveAt >= liveRefreshMs;
+			if (!resumed && !stale) continue;
 			next ??= { ...records };
-			next[game.id] = { ...existing, seenLiveAt: now };
-		} else if (game.status === 'post' && existing?.seenLiveAt !== undefined && existing.endedAt === undefined) {
+			next[game.id] = { seenLiveAt: now };
+		} else if (
+			game.status === 'post'
+			&& existing?.seenLiveAt !== undefined
+			&& existing.endedAt === undefined
+			&& now - existing.seenLiveAt <= trustedEndGapMs
+		) {
 			next ??= { ...records };
 			next[game.id] = { ...existing, endedAt: now };
 		}

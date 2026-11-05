@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The Guide stops drawing finished games into the future — 2026-11-04
+
+A final whose end nobody saw now ends no later than the present, so it can't stretch the axis or the best-time band, and a game held at period 0 (a weather delay) is drawn as a whole game still to play. The end recorder only trusts a final noticed within 10 minutes of last seeing the game live, so a night with the browser closed no longer gives a game an 11-hour bar, and a suspended match that resumes gets its real final.
+
 ## A shared safety net for cut-off and overflowing UI — 2026-11-04
 
 `cy.assertContained()` fails when anything runs past the content edge of the box that clips it, when text is cut short without its full value as a title, or when the surface scrolls sideways; `cypress/support/safetyNet/` pairs it with the longest real names, venues and scores from the recordings, every shipped locale, and Guide time edges. It caught the picker-arrow bug at the commit before its fix, and found two more, now fixed: popup menus keep the popup's 12px side margin, and long profile names show in full on hover.

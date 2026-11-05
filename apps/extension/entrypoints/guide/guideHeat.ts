@@ -85,9 +85,14 @@ export const buildBar = (game: Game, isFavorite: boolean, now: number, endedAt?:
 		return { game, startMs, endMs: endedAt, isFavorite, endIsActual: true };
 	}
 	if (game.status === 'in') {
-		const projectedEnd = now + runMs * (1 - computeGameProgress(game));
+		// Period 0 is a game held before its first play, such as a weather delay. The shared progress
+		// reading still credits it with a share of the game there.
+		const progress = (game.period ?? 0) < 1 ? 0 : computeGameProgress(game);
+		const projectedEnd = now + runMs * (1 - progress);
 		return { game, startMs, endMs: Math.max(projectedEnd, now + liveBarFloorMs), isFavorite };
 	}
+	// A final nobody saw end has still ended, so its estimate never runs past the present.
+	if (game.status === 'post') return { game, startMs, endMs: Math.max(startMs, Math.min(startMs + runMs, now)), isFavorite };
 	return { game, startMs, endMs: startMs + runMs, isFavorite };
 };
 
@@ -100,6 +105,7 @@ export const buildBar = (game: Game, isFavorite: boolean, now: number, endedAt?:
 export const occupancy = (bar: guideBar, t: number): number => {
 	if (t < bar.startMs) return 0;
 	if (bar.endIsActual) return t < bar.endMs ? 1 : 0;
+	if (bar.game.status === 'post' && t >= bar.endMs) return 0;
 	if (bar.game.status === 'in') {
 		if (t <= bar.endMs) return 1;
 		const { bar: typical, p99 } = resolveRunMinutes(bar.game);

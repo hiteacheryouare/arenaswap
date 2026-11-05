@@ -2471,7 +2471,7 @@ describe('when a guide game actually ended', () => {
 	test('remembers seeing a game live across a worker restart', async () => {
 		await loadBackground({
 			prefs: nbaOnly,
-			storedLocal: { [gameEndTimesKey]: { g: { seenLiveAt: Date.now() - 60 * 60_000 } } },
+			storedLocal: { [gameEndTimesKey]: { g: { seenLiveAt: Date.now() - 2 * 60_000 } } },
 			fetchReturnValue: { games: [game('g', 'post')], leagueLogos: {}, shedLeagues: [] },
 		});
 
