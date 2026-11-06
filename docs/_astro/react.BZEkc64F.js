@@ -1,5 +1,5 @@
-/*! ArenaSwap v2.2.0 Copyright (c) 2026 Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */
-import{t as e}from"./rolldown-runtime.YR4A7oN4.js";
+/*! ArenaSwap v2.3.0 Copyright (c) 2026 Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */
+import{t as e}from"./rolldown-runtime.BTYeh3Ul.js";
 /**
 * @license React
 * react.production.js
