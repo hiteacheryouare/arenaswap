@@ -1,7 +1,7 @@
 /**
  * @jest-environment <rootDir>/tests/timeZoneEnvironment.ts
  */
-import { estimatedWrapMs, finalRetentionMs, isWithinFinalRetention, sportWrapAllowanceMs } from '../src/constants';
+import { estimatedWrapMs, finalRetentionMs, hasMissedItsWindow, isWithinFinalRetention, sportWrapAllowanceMs } from '../src/constants';
 import type { Game, SportType } from '../src/types';
 
 declare const setTimeZone: (zone: string) => void;
@@ -86,5 +86,40 @@ describe('the 24 hour retention window', () => {
 		setTimeZone('America/Los_Angeles');
 		expect(isWithinFinalRetention(game, closes)).toBe(true);
 		expect(isWithinFinalRetention(game, closes + 1)).toBe(false);
+	});
+});
+
+const scheduled = (startTime: string | undefined): Pick<Game, 'status' | 'sportType' | 'startTime'> => ({
+	status: 'pre',
+	sportType: 'basketball',
+	startTime,
+});
+
+describe('a scheduled game that never started', () => {
+	// The game from the bug report: a 7 PM Eastern Tuesday tip-off still read as scheduled on Thursday.
+	const start = '2026-11-04T00:00:00.000Z';
+
+	test('two days later it has missed its window', () => {
+		expect(hasMissedItsWindow(scheduled(start), at('2026-11-05T18:00:00.000Z'))).toBe(true);
+	});
+
+	test('a game running late on its start is still on', () => {
+		expect(hasMissedItsWindow(scheduled(start), at('2026-11-04T01:30:00.000Z'))).toBe(false);
+	});
+
+	test('the window is the sport\'s whole broadcast allowance', () => {
+		const wrap = at(start) + sportWrapAllowanceMs.basketball;
+		expect(hasMissedItsWindow(scheduled(start), wrap)).toBe(false);
+		expect(hasMissedItsWindow(scheduled(start), wrap + 1)).toBe(true);
+	});
+
+	test('a game with no start time is never called off', () => {
+		expect(hasMissedItsWindow(scheduled(undefined), at('2026-11-05T18:00:00.000Z'))).toBe(false);
+	});
+
+	test('only scheduled games are ever called off', () => {
+		const now = at('2026-11-05T18:00:00.000Z');
+		expect(hasMissedItsWindow({ ...scheduled(start), status: 'in' }, now)).toBe(false);
+		expect(hasMissedItsWindow({ ...scheduled(start), status: 'post' }, now)).toBe(false);
 	});
 });

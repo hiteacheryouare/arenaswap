@@ -5,6 +5,26 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Games that never started leave Up Next — 2026-11-05
+
+A scheduled game is dropped once its sport's whole broadcast window has passed without it starting (`hasMissedItsWindow`), because our sources can leave a game that never happened on scheduled for days; it put a Tuesday game at the top of Up Next on Thursday. The rule sits in `keepGame` and on the background's held Up Next and Guide lists, and a game that does start late comes back on its first live poll.
+
+## ArenaSwap 2.3.0 — 2026-11-05
+
+Every workspace moves to 2.3.0, with release notes in `releases/2.3.0.md` titled Home for the Holidays. `mega`'s English-only settings article gains its first Holiday decorations row and the Pretend it is season picker, since dev's localized settings docs don't exist on this branch.
+
+## Switching fixes from dev ride along in 2.3 — 2026-11-05
+
+A switch now brings a game in another window forward and puts the window back in full screen when the player was, a league switched off drops its live games at once (late answers included), Standby Stream waits out the cooldown and no longer starts one, a boost edit no longer counts as a frozen-clock poll, score history older than three days is pruned, the worker drops registry entries for tabs that already closed, and only today's successful scoreboard replies set a league's poll speed, clamped to 6 to 25 seconds. `backgroundQaFixes` and `backgroundStandby.qa` come from dev without the mute-sync and mono-mark cases, which weren't ported.
+
+## Small fixes from dev ride along in 2.3 — 2026-11-05
+
+Women's college basketball asked the scoreboard for group 49, which now answers empty, so it shows no games; it asks for 50 like the men's, and `/teams` asks for 1,000 with no `groups` so college favourite pickers stop missing schools. Switch notifications reuse one id instead of piling up, a sub-second clock reads 1 rather than 0, and the popup keeps the Box and Standings tabs through tip-off and the final, drops a postponed game's countdown, and stops the quiet-night line from going missing behind a leftover tab registration or showing under the error banner.
+
+## The holiday decorations backport to 2.3 — 2026-11-05
+
+`dev`'s stockings and garland (Christmas Eve football, Christmas Day NBA and NFL, Boxing Day soccer), MLB bunting and Fourth of July fireworks, plus its redrawn leaf pile, are hand-ported onto `mega` with a switch each, since 3.0 won't ship before the holidays. Mega has no light mode, no `OnColorCrest` and no home-left leagues, so the snow and leaves stay dark-only, the stocking crest picks ESPN's `500-dark` logo itself, and away always hangs left. The parser now reads `Team.homeRecord` and `Game.isPreseason`, which bunting needs to find a home opener series.
+
 ## 2.1.1 folds back into the 2.2 line — 2026-09-22
 
 Merging `dev` into `mega` brings over the store listings that swapped the SUPPORTED LEAGUES list for prose in all 12 `desc_long.md` files, along with the 2.1.1 release notes. `mega`'s own backport of the day-at-a-time scoreboard fix was dropped in favour of `dev`'s version, whose token bucket is the reason its day pool can stay three wide.

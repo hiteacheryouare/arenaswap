@@ -96,7 +96,7 @@ const mountDetail = (game: Game, overrides: MountOverrides = {}) => {
 			gameBoosts={{}}
 			bettingPrefs={{ bettingEnabled: overrides.bettingEnabled ?? false }}
 			weatherPrefs={{ temperatureUnit: 'F' }}
-			decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false }}
+			decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false, holidayChristmasEnabled: false, holidayBuntingEnabled: false, holidayFireworksEnabled: false }}
 			onSetGameBoost={() => {}}
 			onBack={() => {}}
 		/>,
@@ -218,6 +218,13 @@ describe('gameDetailView countdown', () => {
 		cy.get('.gd-countdown-seg').should('have.length', 3);
 		cy.get('.gd-countdown-clock').should('contain.text', 'd');
 		cy.get('.gd-countdown-clock').should('not.contain.text', 's');
+	});
+
+	it('leaves the countdown off a game that has been postponed', () => {
+		mountDetail({ ...makeScheduledSlate(5 * hourMs), delayed: true, delayDescription: 'Postponed' });
+		cy.get('.gd-poster-status').should('have.text', 'Postponed');
+		cy.get('.gd-countdown-clock').should('not.exist');
+		cy.get('.gd-countdown-when').should('not.exist');
 	});
 
 	it('switches to hours, minutes and seconds inside the final day', () => {

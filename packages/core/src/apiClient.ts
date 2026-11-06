@@ -1,4 +1,4 @@
-import { isWithinFinalRetention, leagueConfigMap, pollLookaheadDays, pollMinEagerMs, resolveLeagueLogoUrl, upcomingGamesDaysMax } from './constants';
+import { hasMissedItsWindow, isWithinFinalRetention, leagueConfigMap, pollLookaheadDays, pollMaxEagerMs, pollMinEagerMs, resolveLeagueLogoUrl, upcomingGamesDaysMax } from './constants';
 import { parseClockToSeconds } from './gameClock';
 import { gradePostseason } from './postseasonRound';
 import {
@@ -104,19 +104,26 @@ const takeRequestSlot = async (): Promise<void> => {
    Polling faster than this buys a cache hit and no information, so it is the floor the eager
    interval scales down to rather than a number we chose. Unasked leagues fall back to the
    assumption in constants. */
-const observedScoreboardMaxAgeMs = new Map<LeagueId, number>();
+const scoreboardRefreshFloorMs = 6_000;
+const scoreboardMaxAgeSamples = 5;
+const observedScoreboardMaxAgesMs = new Map<LeagueId, number[]>();
 
+// The edge counts max-age down as a cached copy ages, so any one reply understates the period.
+// The largest of the recent ones is the freshest copy, which is the true period.
 const recordScoreboardMaxAge = (leagueId: LeagueId, cacheControl: string | null): void => {
 	const match = /max-age\s*=\s*(\d+)/i.exec(cacheControl ?? '');
 	if (!match) return;
 	const seconds = Number(match[1]);
 	if (!Number.isFinite(seconds) || seconds <= 0) return;
-	observedScoreboardMaxAgeMs.set(leagueId, seconds * 1000);
+	const recent = [...(observedScoreboardMaxAgesMs.get(leagueId) ?? []), seconds * 1000];
+	observedScoreboardMaxAgesMs.set(leagueId, recent.slice(-scoreboardMaxAgeSamples));
 };
 
-export const scoreboardRefreshMs = (leagueId: LeagueId): number => (
-	observedScoreboardMaxAgeMs.get(leagueId) ?? pollMinEagerMs
-);
+export const scoreboardRefreshMs = (leagueId: LeagueId): number => {
+	const recent = observedScoreboardMaxAgesMs.get(leagueId);
+	if (!recent) return pollMinEagerMs;
+	return Math.min(Math.max(Math.max(...recent), scoreboardRefreshFloorMs), pollMaxEagerMs);
+};
 
 // ESPN ships a malformed row often enough that a dropped count is a steady state, not an event, so
 // warning on every poll would bury the console at the 6s floor. Only a change in the count is news.
@@ -450,10 +457,18 @@ const parseCuratedRank = (competitor: EspnCompetitor): number | undefined => {
 	return rank >= 1 && rank < unrankedCuratedRank ? rank : undefined;
 };
 
+const homeRecordTypes = new Set(['home', 'homerecord']);
+
+const parseCompetitorHomeRecord = (competitor: EspnCompetitor): string | undefined => {
+	const home = competitor.records?.find(entry => entry.type !== undefined && homeRecordTypes.has(entry.type));
+	return (home?.summary ?? home?.displayValue ?? '').trim() || undefined;
+};
+
 // Spread into both team literals below, the way resolveTeamColors already is. Records and rank ride
 // every status; the other two are pre-game only.
 const parseTeamContext = (competitor: EspnCompetitor, state: Game['status']) => ({
 	record: parseCompetitorRecord(competitor),
+	homeRecord: parseCompetitorHomeRecord(competitor),
 	rank: parseCuratedRank(competitor),
 	probableStarter: state === 'pre' ? parseProbableStarter(competitor) : undefined,
 	leaders: state === 'pre' ? parseTeamLeaders(competitor) : undefined,
@@ -587,6 +602,10 @@ const postseasonHeadlinePattern = /quarterfinal|semifinal|medal game/i;
 const collegeBaseballPostseasonTypes = new Set([3, 4, 5, 6]);
 const collegeBaseballLeagues = new Set<LeagueId>(['cbase', 'csoft']);
 
+// The slug rather than `type === 1`: soccer's `season.type` is a per-competition id (the NWSL's
+// regular season is 14024), so a number could collide where the slug cannot.
+const resolvePreseason = (event: EspnEvent): boolean => event.season?.slug?.trim().toLowerCase() === 'preseason';
+
 const resolvePostseason = (event: EspnEvent, comp: EspnCompetition, league: LeagueId): boolean => {
 	if (event.season?.type === 3) return true;
 
@@ -719,6 +738,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		lastPlayDrive: isGridironSituation ? situation.lastPlay?.drive?.description?.trim() || undefined : undefined,
 		weather: parseWeather(event, comp.venue?.indoor),
 		isPostseason: postseason,
+		isPreseason: resolvePreseason(event),
 		// Only graded when the game is actually postseason: the headline is display copy, and a
 		// regular-season oddity like an NFL London game carries a typed note too.
 		postseasonRound: grade?.round,
@@ -742,15 +762,15 @@ interface LeagueGamesResult {
 	logoUrl: string;
 }
 
-const fetchScoreboard = async (url: string, leagueId: LeagueId, warnKey: string = leagueId): Promise<EspnScoreboardResponse> => {
+const fetchScoreboard = async (url: string, leagueId: LeagueId, warnKey: string = leagueId, recordMaxAge = false): Promise<EspnScoreboardResponse> => {
 	await takeRequestSlot();
 	const res = await fetch(url, {
 		headers: {
 			'Accept': 'application/json',
 		},
 	});
-	recordScoreboardMaxAge(leagueId, res.headers.get('cache-control'));
 	if (!res.ok) throw new LeagueFetchError(leagueId, res.status);
+	if (recordMaxAge) recordScoreboardMaxAge(leagueId, res.headers.get('cache-control'));
 	const parsed = parseScoreboard(await res.json());
 	warnOnDroppedCountChange(
 		`scoreboard:${warnKey}`,
@@ -772,8 +792,8 @@ const scoreboardEventLimit = 500;
 
 const scoreboardParams = (config: LeagueConfig): URLSearchParams => {
 	const params = new URLSearchParams();
-	if (config.id === 'ncaab') params.set('groups', '50');
-	if (config.id === 'ncaaw') params.set('groups', '49');
+	// Division I is group 50 in both basketball leagues. Women's 49 answers with an empty board.
+	if (config.id === 'ncaab' || config.id === 'ncaaw') params.set('groups', '50');
 	params.set('limit', String(scoreboardEventLimit));
 	return params;
 };
@@ -875,7 +895,7 @@ const fetchDayFromEspn = async (
 	const url = `${espnBase}/${config.espnPath}/scoreboard?${params.toString()}`;
 
 	try {
-		const response = await fetchScoreboard(url, config.id, cacheKey);
+		const response = await fetchScoreboard(url, config.id, cacheKey, dayKey === todayKey);
 		const games = (response.events ?? [])
 			.map(event => parseEvent(event, config.id))
 			.filter((game): game is Game => game !== null);
@@ -891,7 +911,10 @@ const fetchDayFromEspn = async (
 	} catch (err) {
 		if (!cached || dayKey === todayKey) throw err;
 		logWarn(`ESPN would not answer for ${config.id} on ${dayKey}; keeping the last answer for that day.`);
-		return cached;
+		// Restamped, so a refused day backs off for its TTL instead of being asked again every poll.
+		const retried = { ...cached, fetchedAt: Date.now() };
+		dayCache.set(cacheKey, retried);
+		return retried;
 	}
 };
 
@@ -929,6 +952,7 @@ const fetchLeagueGames = async (config: LeagueConfig, options: LeagueFetchOption
 	// only while it is inside the retention window, so an ageing one falls off on its own rather
 	// than needing a sweep.
 	const keepGame = (game: Game): boolean => {
+		if (game.status === 'pre') return !hasMissedItsWindow(game);
 		if (game.status !== 'post') return true;
 		return includeFinal && isWithinFinalRetention(game);
 	};
@@ -1209,10 +1233,9 @@ export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnT
 	if (leagueConfigs.length === 0) return [];
 
 	const results = await settledInPool(leagueConfigs, async (config): Promise<EspnTeamEntry[]> => {
-		const params = new URLSearchParams({ limit: '200' });
-		if (config.id === 'ncaab') params.set('groups', '50');
-		if (config.id === 'ncaaw') params.set('groups', '49');
-		const url = `${espnBase}/${config.espnPath}/teams?${params.toString()}`;
+		// College football alone has 762 teams. `/teams` ignores `groups`, so the limit is the only
+		// thing that decides whether a school makes the list.
+		const url = `${espnBase}/${config.espnPath}/teams?limit=1000`;
 		await takeRequestSlot();
 		const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
 		if (!res.ok) throw new Error(`Failed to fetch teams for ${config.id}: HTTP ${res.status}`);

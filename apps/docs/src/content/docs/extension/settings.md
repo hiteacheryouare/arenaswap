@@ -49,6 +49,7 @@ At least one signal has to stay on. If a signal is off, ArenaSwap re-normalizes 
 | Switch notifications | On | On/off | Shows a browser notification with the score, venue, and reason whenever ArenaSwap switches a tab, including switches to and from Standby Stream. |
 | Show betting & odds | Off | On/off | Shows betting lines and the sportsbook's logo on game cards and the detail screen. |
 | Temperature unit | °F | °F or °C | The unit used for weather on the game detail screen. |
+| Holiday decorations | On | On/off | Decorates a game's detail screen: snow when it's snowing at the game, leaves on football during Thanksgiving week, lights all December, stockings on Christmas games, bunting for MLB home openers and the postseason, and fireworks for Fourth of July scores. Snow, Lights, Leaves, Christmas, Bunting and Fireworks each have their own switch underneath. |
 
 ## Standby Stream
 
@@ -63,6 +64,7 @@ At least one signal has to stay on. If a signal is off, ArenaSwap re-normalizes 
 | Setting | Default | Range | What it does |
 | --- | --- | --- | --- |
 | Demo mode | Off | On/off | Replaces live scoreboards with 15 scripted games across 12 leagues, regardless of which leagues are enabled. |
+| Pretend it is | The real date | The real date, Thanksgiving week, December, Christmas Day, Boxing Day, or Fourth of July | Only shown while Demo mode is on. Picks the date the holiday decorations go by, so you can see them out of season. |
 
 ## Related
 

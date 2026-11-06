@@ -59,6 +59,10 @@ let storageLocalGet: jest.Mock;
 let storageLocalSet: jest.Mock;
 let tabsQuery: jest.Mock;
 let tabsUpdate: jest.Mock;
+let windowsUpdate: jest.Mock;
+let windowsGet: jest.Mock;
+let windowsGetLastFocused: jest.Mock;
+let notificationsCreate: jest.Mock;
 let tabsRemove: jest.Mock;
 let storageSessionSet: jest.Mock;
 let onMessageHandler!: (msg: unknown) => unknown;
@@ -110,6 +114,7 @@ interface LoadOptions {
 	storedLocal?: Record<string, unknown>;
 	openTabIds?: number[];
 	activeTabId?: number;
+	windowIds?: Record<number, number>;
 }
 
 const loadBackground = async (options: LoadOptions = {}) => {
@@ -129,6 +134,10 @@ const loadBackground = async (options: LoadOptions = {}) => {
 	storageLocalSet = jest.fn().mockResolvedValue(undefined);
 	tabsQuery = jest.fn().mockResolvedValue([]);
 	tabsUpdate = jest.fn().mockResolvedValue(undefined);
+	windowsUpdate = jest.fn().mockResolvedValue(undefined);
+	windowsGet = jest.fn().mockResolvedValue({ id: 1, state: 'normal' });
+	windowsGetLastFocused = jest.fn().mockResolvedValue({ id: 1, state: 'normal' });
+	notificationsCreate = jest.fn().mockResolvedValue(undefined);
 	tabsRemove = jest.fn().mockResolvedValue(undefined);
 	storageSessionSet = jest.fn().mockResolvedValue(undefined);
 	onActivatedHandler = undefined;
@@ -171,7 +180,8 @@ const loadBackground = async (options: LoadOptions = {}) => {
 				addListener: (h: (tabId: number) => unknown) => { onRemovedHandler = h; },
 			},
 		},
-		notifications: { create: jest.fn().mockResolvedValue(undefined) },
+		notifications: { create: notificationsCreate },
+		windows: { update: windowsUpdate, get: windowsGet, getLastFocused: windowsGetLastFocused },
 	};
 
 	fetchMock = (require('@arenaswap/core') as { fetchGamesWithLeagueLogos: jest.Mock }).fetchGamesWithLeagueLogos;
@@ -531,6 +541,99 @@ describe('win probability polling', () => {
 	});
 });
 
+// Browsers take a player out of full screen when its tab stops being the active one, and a tab
+// activated in a window behind this one stays out of sight.
+describe('a switch fills the screen the way the last game did', () => {
+	const liveGame: Game = {
+		id: 'g1',
+		league: 'nba' as LeagueId,
+		sportType: 'basketball',
+		status: 'in',
+		homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 5 },
+		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 4 },
+		period: 4,
+		clockSeconds: 60,
+	};
+
+	const switchToGameIn = async (gameWindowId: number) => {
+		await loadBackground({
+			prefs: {
+				enabled: true,
+				enabledLeagues: ['nba' as LeagueId],
+				cooldownSeconds: 0,
+				sensitivity: 7,
+				switchDelaySeconds: 0,
+				notificationsEnabled: false,
+			},
+			tabRegistry: [{ gameId: 'g1', tabId: 2 }],
+			fetchReturnValue: { games: [liveGame], leagueLogos: {}, shedLeagues: [] },
+			openTabIds: [1, 2],
+			activeTabId: 1,
+			windowIds: { 1: 1, 2: gameWindowId },
+		});
+	};
+
+	const poll = async () => {
+		jest.advanceTimersByTime(pollIntervalMs + 2000);
+		await drain(12);
+	};
+
+	test('puts the window back in full screen when the player was full screen', async () => {
+		await switchToGameIn(1);
+		windowsGetLastFocused.mockResolvedValue({ id: 1, state: 'fullscreen' });
+		windowsGet.mockResolvedValue({ id: 1, state: 'normal' });
+
+		await poll();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+		expect(windowsUpdate).toHaveBeenCalledWith(1, { state: 'fullscreen' });
+		expect(windowsUpdate).not.toHaveBeenCalledWith(1, { focused: true });
+	});
+
+	test('leaves a window that stayed full screen alone', async () => {
+		await switchToGameIn(1);
+		windowsGetLastFocused.mockResolvedValue({ id: 1, state: 'fullscreen' });
+		windowsGet.mockResolvedValue({ id: 1, state: 'fullscreen' });
+
+		await poll();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+		expect(windowsUpdate).not.toHaveBeenCalled();
+	});
+
+	test('brings a game in another window to the front', async () => {
+		await switchToGameIn(2);
+		windowsGet.mockResolvedValue({ id: 2, state: 'normal' });
+
+		await poll();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+		expect(windowsUpdate).toHaveBeenCalledWith(2, { focused: true });
+		expect(windowsUpdate).not.toHaveBeenCalledWith(2, { state: 'fullscreen' });
+	});
+
+	test('takes a game in another window full screen when the last one was', async () => {
+		await switchToGameIn(2);
+		windowsGetLastFocused.mockResolvedValue({ id: 1, state: 'fullscreen' });
+		windowsGet.mockResolvedValue({ id: 2, state: 'normal' });
+
+		await poll();
+
+		expect(windowsUpdate).toHaveBeenCalledWith(2, { focused: true });
+		expect(windowsUpdate).toHaveBeenCalledWith(2, { state: 'fullscreen' });
+	});
+
+	test('still counts the switch when the window cannot be brought forward', async () => {
+		await switchToGameIn(2);
+		windowsUpdate.mockRejectedValue(new Error('No window with id: 2.'));
+
+		await poll();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+		expect(storageLocalSet).toHaveBeenCalledWith({ reviewPromptState: expect.objectContaining({ successfulSwitchCount: 1 }) });
+	});
+});
+
 // Regression: lastSwitchTime survived a disable, so disabling just after a switch and re-enabling
 // left the cooldown blocking the first switch of an otherwise fresh start.
 describe('lastSwitchTime reset on disable', () => {
@@ -845,6 +948,26 @@ describe('closed tab handling', () => {
 		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
 	});
 
+	test('keeps a stale registry from an open popup from bringing back a closed tab', async () => {
+		await loadBackground({
+			prefs: switchingPrefs,
+			tabRegistry: [{ gameId: 'close', tabId: 3 }],
+			fetchReturnValue: { games: [thriller, closeGame], leagueLogos: {}, shedLeagues: [] },
+			openTabIds: [1, 3],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+
+		await sendMessage({ type: 'UPDATE_REGISTRY', tabRegistry: registry });
+
+		expect((await getDebugState()).tabRegistry).toEqual([{ gameId: 'close', tabId: 3 }]);
+
+		await runFirstPoll();
+
+		expect(tabsUpdate).toHaveBeenCalledWith(3, { active: true });
+		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
+	});
+
 	test('forgets the standby stream tab when it closes', async () => {
 		await loadBackground({
 			prefs: { ...switchingPrefs, standbyStreamEnabled: true },
@@ -1015,6 +1138,23 @@ describe('manual tab activation', () => {
 
 		await runFirstPoll();
 		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+	});
+
+	// A fixed id makes each switch notification replace the last rather than pile up.
+	test('posts every switch notification under the same id', async () => {
+		await loadBackground({
+			prefs: { ...switchingPrefs, cooldownSeconds: 0, notificationsEnabled: true },
+			tabRegistry: [{ gameId: 'thriller', tabId: 2 }],
+			fetchReturnValue: { games: [thriller], leagueLogos: {}, shedLeagues: [] },
+			openTabIds: [1, 2],
+			activeTabId: 1,
+			initialSystemTime: 1_000_000,
+		});
+
+		await activateTab(2);
+		await runFirstPoll();
+		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
+		expect(notificationsCreate).toHaveBeenCalledWith('arenaswap-switch', expect.objectContaining({ type: 'basic' }));
 	});
 
 	test('switches when the cooldown is off and the evaluation lands in the same millisecond', async () => {
@@ -1706,7 +1846,8 @@ describe('when a guide game actually ended', () => {
 		...game('mlb-final', 'post'),
 		league: 'mlb' as LeagueId,
 		sportType: 'baseball',
-		startTime: '2026-09-21T17:10:00Z',
+		// Relative, or the final ages out of end-time retention as the calendar moves on.
+		startTime: new Date(Date.now() - 6 * 60 * 60_000).toISOString(),
 	};
 
 	test('stamps a game with the poll that first saw it final', async () => {
@@ -1750,7 +1891,7 @@ describe('when a guide game actually ended', () => {
 		expect(durationFetch()).toHaveBeenCalledTimes(1);
 		expect(durationFetch().mock.calls[0]![0].id).toBe('mlb-final');
 		expect(runtimeSendMessage()).toHaveBeenCalledWith({ type: 'GUIDE_SLATE_UPDATED' });
-		expect((await guideSlate()).endTimes['mlb-final']).toBe(new Date('2026-09-21T17:10:00Z').getTime() + 196 * 60_000);
+		expect((await guideSlate()).endTimes['mlb-final']).toBe(new Date(mlbFinal.startTime!).getTime() + 196 * 60_000);
 	});
 
 	test('asks only once for a final whose summary has no duration', async () => {

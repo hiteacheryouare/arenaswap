@@ -25,6 +25,9 @@ const defaultPrefs: UserPreferences = {
 	holidaySnowEnabled: true,
 	holidayLightsEnabled: true,
 	holidayLeavesEnabled: true,
+	holidayChristmasEnabled: true,
+	holidayBuntingEnabled: true,
+	holidayFireworksEnabled: true,
 	postseasonBoostPoints: 0,
 	upcomingGamesDays: 14,
 	disabledSignals: [],
@@ -265,6 +268,12 @@ describe('mainView empty states', () => {
 		cy.mount(<MainView {...defaultProps} />);
 		cy.get('[data-testid="empty-no-games"]').should('exist');
 		cy.get('[data-testid="empty-no-leagues"]').should('not.exist');
+	});
+
+	it('leaves the quiet-night message to the error banner when the slate failed to load', () => {
+		cy.mount(<MainView {...defaultProps} hasError={true} />);
+		cy.get('.popup-error-banner').should('exist');
+		cy.get('[data-testid="empty-no-games"]').should('not.exist');
 	});
 
 	it('shows neither once a game arrives', () => {

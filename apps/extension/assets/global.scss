@@ -771,6 +771,218 @@ button, input, select, optgroup, textarea {
 	pointer-events: none;
 }
 
+.holiday-ornament-shine {
+	fill: #ffffff;
+	opacity: 0.7;
+}
+
+/* Stockings and bunting both hang off the hero's bottom edge, so they take over the gap the hero
+   would otherwise leave under itself. The live and pre-game heroes leave different gaps. */
+.holiday-hang-from > .gd-poster {
+	margin-bottom: 0;
+}
+
+/* The garland's spine lies on the hero's bottom edge, half over it and half below. The stockings
+   hang just under the needles, so what's in them shows, and their loops reach back up into them. */
+.holiday-mantel {
+	--garland-half: 11px;
+	position: relative;
+	margin-bottom: 0.45rem;
+	pointer-events: none;
+}
+
+.holiday-garland {
+	position: relative;
+	z-index: 2;
+	display: block;
+	width: 100%;
+	margin-top: calc(var(--garland-half) * -1);
+	overflow: visible;
+}
+
+.holiday-garland-body {
+	fill: #173f27;
+}
+
+.holiday-garland-needle {
+	fill: none;
+	stroke-width: 1.3;
+	stroke-linecap: round;
+}
+
+.holiday-bauble-glass {
+	stroke: rgb(0 0 0 / 0.25);
+	stroke-width: 0.5;
+}
+
+.holiday-bauble-cap {
+	fill: #c9a24a;
+}
+
+.holiday-pinecone {
+	fill: #6e4a2a;
+}
+
+.holiday-pinecone-scales {
+	fill: none;
+	stroke: #d9ab45;
+	stroke-width: 0.5;
+}
+
+.holiday-sprig {
+	fill: #e7c45f;
+	stroke: #e7c45f;
+	stroke-width: 0.6;
+	stroke-linecap: round;
+}
+
+.holiday-stockings {
+	display: grid;
+	grid-template-columns: 80px minmax(0, 1fr) 80px;
+	justify-items: center;
+	margin-top: -2px;
+	padding: 0 0.4rem;
+
+	> :last-child {
+		grid-column: 3;
+	}
+}
+
+.holiday-stocking {
+	position: relative;
+	width: 34px;
+	height: 49.6px;
+
+	svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+	}
+}
+
+/* On the leg, which is a third of the way in from the heel side of the 24-unit drawing. */
+.holiday-stocking-crest {
+	position: absolute;
+	top: 60%;
+	left: 37.5%;
+	width: 14px;
+	height: 14px;
+	object-fit: contain;
+	transform: translate(-50%, -50%);
+}
+
+.holiday-stocking.is-mirrored .holiday-stocking-crest {
+	left: 62.5%;
+}
+
+.holiday-stocking-loop {
+	stroke: var(--as-border-color);
+	stroke-width: 1;
+}
+
+.holiday-stocking-body {
+	fill: currentcolor;
+	stroke: rgb(0 0 0 / 0.25);
+	stroke-width: 0.6;
+}
+
+.holiday-stocking-cuff {
+	fill: #f4f6f8;
+	stroke: var(--as-border-color);
+	stroke-width: 0.6;
+}
+
+.holiday-candy-cane,
+.holiday-candy-cane-stripe {
+	fill: none;
+	stroke-width: 1.8;
+	stroke-linecap: round;
+}
+
+.holiday-candy-cane {
+	stroke: #ffffff;
+}
+
+.holiday-candy-cane-stripe {
+	stroke: #d62839;
+	stroke-linecap: butt;
+	stroke-dasharray: 1.2 1.2;
+}
+
+.holiday-gift {
+	fill: #f1c40f;
+}
+
+.holiday-gift-ribbon {
+	fill: none;
+	stroke: #d62839;
+	stroke-width: 1;
+}
+
+.holiday-treat-ornament {
+	fill: #3e9bd1;
+}
+
+.holiday-coal {
+	fill: #45454d;
+	stroke: #9a9aa4;
+	stroke-width: 0.6;
+}
+
+.holiday-coal-glint {
+	fill: none;
+	stroke: #c4c4cc;
+	stroke-width: 0.7;
+	stroke-linecap: round;
+}
+
+.holiday-bunting {
+	display: flex;
+	gap: 0.25rem;
+	margin: 0 0.25rem 0.45rem;
+	pointer-events: none;
+}
+
+.holiday-bunting-fan {
+	display: block;
+	flex: 1 1 0;
+	min-width: 0;
+}
+
+.holiday-bunting-red {
+	fill: #c8102e;
+}
+
+.holiday-bunting-white {
+	fill: #f6f4ef;
+}
+
+.holiday-bunting-blue {
+	fill: #1f2a5c;
+}
+
+.holiday-bunting-pleat {
+	stroke: rgb(0 0 0 / 0.13);
+	stroke-width: 0.4;
+}
+
+.holiday-bunting-star {
+	fill: #ffffff;
+}
+
+.holiday-fireworks-stage {
+	position: relative;
+}
+
+.holiday-fireworks {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
 @include m.reduced-motion {
 	// The celebration rule is `.is-celebrating .holiday-bulb`, two classes, so a single-class
 	// opt-out loses to it and the 2Hz scoring strobe kept running for a reader who asked for

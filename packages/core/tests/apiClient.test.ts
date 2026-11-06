@@ -16,6 +16,9 @@ const createResponse = (data: unknown, init: MockResponseInit = {}): Response =>
 	json: async () => data,
 } as Response);
 
+// Far enough ahead that a scheduled fixture is never old enough to count as called off.
+const fixtureStart = '2099-10-05T00:00:00.000Z';
+
 const makeEvent = (params: {
 	id: string;
 	state: string;
@@ -41,7 +44,7 @@ const makeEvent = (params: {
 	awayExtra?: Record<string, unknown>;
 }): Record<string, unknown> => ({
 	id: params.id,
-	date: params.date ?? '2026-10-05T00:00:00.000Z',
+	date: params.date ?? fixtureStart,
 	...(params.weather !== undefined && { weather: params.weather }),
 	...(params.season !== undefined && { season: params.season }),
 	competitions: [
@@ -160,6 +163,18 @@ const withHeadshot = (cat: ReturnType<typeof leaderCategory>, url: string) => ({
 });
 
 describe('apiClient', () => {
+	/* The fixtures here are dated across the 2026 season, and a scheduled game is called off once its
+	   broadcast window has passed. Pinning only the date, to before every one of them, keeps them
+	   scheduled whatever day the suite runs; timers stay real. */
+	beforeEach(() => {
+		jest.useFakeTimers({
+			now: new Date('2026-05-01T12:00:00.000Z'),
+			advanceTimers: true,
+			doNotFake: ['hrtime', 'nextTick', 'performance', 'queueMicrotask', 'requestAnimationFrame', 'cancelAnimationFrame', 'requestIdleCallback', 'cancelIdleCallback', 'setImmediate', 'clearImmediate', 'setInterval', 'clearInterval', 'setTimeout', 'clearTimeout'],
+		});
+	});
+	afterEach(() => jest.useRealTimers());
+
 	test('returns empty results and avoids fetch when enabled leagues list is empty', async () => {
 		const fetchMock = jest.fn();
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -170,7 +185,7 @@ describe('apiClient', () => {
 		expect(fetchMock).not.toHaveBeenCalled();
 	});
 
-	test('fetches and parses teams for requested leagues, including NCAA groups params', async () => {
+	test('fetches and parses teams for requested leagues, a thousand at a time with no groups', async () => {
 		const fetchMock = jest.fn().mockImplementation(async (input: RequestInfo | URL) => {
 			const url = toUrl(input);
 			if (url.includes('/basketball/nba/teams')) {
@@ -240,10 +255,10 @@ describe('apiClient', () => {
 			'/apis/site/v2/sports/basketball/nba/teams',
 			'/apis/site/v2/sports/basketball/mens-college-basketball/teams',
 		]);
-		expect(requestedUrls[0]?.searchParams.get('limit')).toBe('200');
+		expect(requestedUrls[0]?.searchParams.get('limit')).toBe('1000');
 		expect(requestedUrls[0]?.searchParams.get('groups')).toBeNull();
-		expect(requestedUrls[1]?.searchParams.get('limit')).toBe('200');
-		expect(requestedUrls[1]?.searchParams.get('groups')).toBe('50');
+		expect(requestedUrls[1]?.searchParams.get('limit')).toBe('1000');
+		expect(requestedUrls[1]?.searchParams.get('groups')).toBeNull();
 	});
 
 	test('keeps successful team results when one league request fails', async () => {
@@ -360,7 +375,7 @@ describe('apiClient', () => {
 
 		const upcoming = result.games.find(game => game.id === 'pre-1');
 		expect(upcoming?.status).toBe('pre');
-		expect(upcoming?.startTime).toBe('2026-10-05T00:00:00.000Z');
+		expect(upcoming?.startTime).toBe(fixtureStart);
 
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls[0]).toContain('/basketball/nba/scoreboard');
@@ -433,9 +448,9 @@ describe('apiClient', () => {
 		expect(floatGame?.clockSeconds).toBe(45);
 		// Seconds, not decimal minutes. Checked against ESPN on 2026-09-21: the basketball leagues
 		// drop the colon under a minute and count down 40.8 -> 0.1, so 0.75 is three quarters of a
-		// second and floors to nothing left, not to 45 seconds.
-		expect(dec75Game?.clockSeconds).toBe(0);
-		expect(dec5Game?.clockSeconds).toBe(0);
+		// second, not 45 seconds. It reads as 1, because a fraction of a second is still a possession.
+		expect(dec75Game?.clockSeconds).toBe(1);
+		expect(dec5Game?.clockSeconds).toBe(1);
 	});
 
 	test('parses soccer prime-notation clock values (e.g. "85\'", "90\'+8\'")', async () => {
@@ -608,7 +623,7 @@ describe('apiClient', () => {
 		expect(calledUrls.every(url => url.includes('groups=50'))).toBe(true);
 	});
 
-	test('adds NCAA womens basketball groups=49 query parameter', async () => {
+	test('adds NCAA womens basketball groups=50 query parameter, since 49 answers empty', async () => {
 		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [makeEvent({
 			id: 'ncaaw-live',
 			state: 'live',
@@ -626,7 +641,7 @@ describe('apiClient', () => {
 
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls.length).toBeGreaterThan(1);
-		expect(calledUrls.every(url => url.includes('groups=49'))).toBe(true);
+		expect(calledUrls.every(url => url.includes('groups=50'))).toBe(true);
 		expect(calledUrls[0]).toContain('/basketball/womens-college-basketball/scoreboard');
 	});
 
@@ -1080,7 +1095,7 @@ describe('apiClient', () => {
 		expect(game.intermission).toBe(true);
 		expect(game.homeTeam.score).toBe(2);
 		expect(game.awayTeam.score).toBe(1);
-		expect(game.startTime).toBe('2026-10-05T00:00:00.000Z');
+		expect(game.startTime).toBe(fixtureStart);
 	});
 
 	test('NHL: pre-game from range has correct hockey sportType and startTime', async () => {
@@ -1264,7 +1279,7 @@ describe('apiClient', () => {
 		expect(game.league).toBe('mls');
 		expect(game.status).toBe('in');
 		expect(game.clockSeconds).toBe(67 * 60);
-		expect(game.startTime).toBe('2026-10-05T00:00:00.000Z');
+		expect(game.startTime).toBe(fixtureStart);
 	});
 
 	test('EPL: in-season live game from today returned when range endpoint is empty', async () => {
@@ -1290,7 +1305,7 @@ describe('apiClient', () => {
 		expect(game.league).toBe('epl');
 		expect(game.status).toBe('in');
 		expect(game.clockSeconds).toBe(33 * 60);
-		expect(game.startTime).toBe('2026-10-05T00:00:00.000Z');
+		expect(game.startTime).toBe(fixtureStart);
 	});
 
 	test('soccer: HALFTIME status name sets intermission=true', async () => {
@@ -1423,7 +1438,7 @@ describe('apiClient', () => {
 		// A live game keeps its start time too. Nothing renders it — every reader is behind a
 		// pre-game check — but the retention window for finished games has nothing else to
 		// measure from, ESPN publishing no completion timestamp of any kind.
-		expect(live.startTime).toBe('2026-10-05T00:00:00.000Z');
+		expect(live.startTime).toBe(fixtureStart);
 	});
 
 	describe('venue location parsing', () => {
@@ -2036,6 +2051,19 @@ describe('apiClient', () => {
 			}));
 			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
 			expect(result.games.find(g => g.id === 'mlb-rec')?.homeTeam.record).toBe('76-58');
+			expect(result.games.find(g => g.id === 'mlb-rec')?.homeTeam.homeRecord).toBe('38-27');
+		});
+
+		test('reads college football\'s home split, which it names homerecord', async () => {
+			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+				id: 'ncaaf-home', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
+				homeExtra: { records: [
+					{ name: 'overall', type: 'total', summary: '9-2' },
+					{ name: 'Home', type: 'homerecord', summary: '5-0' },
+				] },
+			}));
+			const result = await fetchGamesWithLeagueLogos(['ncaaf'], { includeUpcoming: false });
+			expect(result.games.find(g => g.id === 'ncaaf-home')?.homeTeam.homeRecord).toBe('5-0');
 		});
 
 		test('reads the NHL overall record from type ytd, which is not total', async () => {
@@ -2391,6 +2419,8 @@ describe('apiClient', () => {
 		});
 
 		test('leaves leaders off a finished game, where the categories hold that game box line', async () => {
+			// Inside final retention of the fixture's default kickoff, which a real clock outgrows.
+			jest.useFakeTimers().setSystemTime(new Date('2026-10-05T03:00:00.000Z'));
 			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
 				id: 'post-ldr', state: 'post', period: 9, clock: '0:00', homeScore: '5', awayScore: '2',
 				homeExtra: { leaders: [leaderCategory('homeRuns', 'HR', 'J. Soto', '1-4, HR, 4 RBI, 2 R, BB')] },
@@ -2401,6 +2431,7 @@ describe('apiClient', () => {
 			const game = result.games.find(g => g.id === 'post-ldr');
 			expect(game).toBeDefined();
 			expect(game?.homeTeam.leaders).toBeUndefined();
+			jest.useRealTimers();
 		});
 
 		test('leaves leaders undefined when the key is absent, as in college football', async () => {
@@ -2487,6 +2518,21 @@ describe('finished games', () => {
 
 			const withFinals = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });
 			expect(withFinals.games.map(g => g.id).toSorted()).toEqual(['final-1', 'live', 'sched']);
+		});
+
+		test('drops a scheduled game whose whole window went by without it starting', async () => {
+			const fetchMock = jest.fn().mockResolvedValue(createResponse({
+				events: [
+					makeEvent({ id: 'never-started', state: 'pre', period: 0, clock: '0:00', homeScore: '0', awayScore: '0', date: new Date(Date.now() - 42 * 60 * 60 * 1000).toISOString() }),
+					makeEvent({ id: 'running-late', state: 'pre', period: 0, clock: '0:00', homeScore: '0', awayScore: '0', date: new Date(Date.now() - 30 * 60 * 1000).toISOString() }),
+					makeEvent({ id: 'tonight', state: 'pre', period: 0, clock: '0:00', homeScore: '0', awayScore: '0', date: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString() }),
+				],
+			}));
+			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+			const { fetchGamesWithLeagueLogos } = loadApiClient();
+
+			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: true, includeFinal: true });
+			expect(result.games.map(g => g.id).toSorted()).toEqual(['running-late', 'tonight']);
 		});
 
 		test('the range path applies the same gate as the dateless one', async () => {
@@ -2672,7 +2718,7 @@ describe('the polling lookahead', () => {
 
 		const second = mockEvents([]);
 		await second.fetchNextScheduledStart('ncaaw', { now });
-		expect(new URL(toUrl(second.fetchMock.mock.calls[0]![0] as RequestInfo)).searchParams.get('groups')).toBe('49');
+		expect(new URL(toUrl(second.fetchMock.mock.calls[0]![0] as RequestInfo)).searchParams.get('groups')).toBe('50');
 	});
 
 	// Null is what puts a league to sleep for half an hour, so a failed request must not produce it.
@@ -2773,7 +2819,7 @@ describe('how often ESPN says it will answer with something new', () => {
 		expect(scoreboardRefreshMs('nba')).toBe(pollMinEagerMs);
 	});
 
-	it('takes the max-age the league actually sent', async () => {
+	it('takes the max-age the league actually sent, capped at the slowest eager interval', async () => {
 		const fetchMock = jest.fn().mockResolvedValue(
 			createResponse({ events: [] }, { cacheControl: 'max-age=30' }),
 		);
@@ -2782,7 +2828,66 @@ describe('how often ESPN says it will answer with something new', () => {
 		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
 		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
 
-		expect(scoreboardRefreshMs('nba')).toBe(30_000);
+		expect(scoreboardRefreshMs('nba')).toBe(25_000);
+	});
+
+	it('takes a max-age inside the clamp as sent', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }, { cacheControl: 'max-age=15' }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+
+		expect(scoreboardRefreshMs('nba')).toBe(15_000);
+	});
+
+	it('never lets a nearly expired cached copy drop the floor under 6 seconds', async () => {
+		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }, { cacheControl: 'max-age=1' }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+
+		expect(scoreboardRefreshMs('nba')).toBe(6_000);
+	});
+
+	it('reads the largest of the recent replies, since the edge counts max-age down', async () => {
+		const replies = ['max-age=12', 'max-age=8', 'max-age=4'];
+		const fetchMock = jest.fn().mockImplementation(async (url: string) => (
+			createResponse({ events: [] }, { cacheControl: dateOf(url) === buildCurrentDayKeys().at(-1) ? replies.shift() : undefined })
+		));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
+		for (let i = 0; i < 3; i++) await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+
+		expect(scoreboardRefreshMs('nba')).toBe(12_000);
+	});
+
+	it('ignores the header on a refused reply', async () => {
+		const fetchMock = jest.fn()
+			.mockResolvedValueOnce(createResponse({ events: [] }, { cacheControl: 'max-age=12' }))
+			.mockResolvedValue(createResponse({}, { ok: false, status: 429, cacheControl: 'max-age=60' }));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
+
+		expect(scoreboardRefreshMs('nba')).toBe(12_000);
+	});
+
+	it('ignores the header on a day that is not today', async () => {
+		const fetchMock = jest.fn().mockImplementation(async (url: string) => createResponse(
+			{ events: [] },
+			{ cacheControl: dateOf(url) === buildCurrentDayKeys().at(-1) ? 'max-age=8' : 'max-age=20' },
+		));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+
+		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
+		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: true, includeFinal: true });
+
+		expect(scoreboardRefreshMs('nba')).toBe(8_000);
 	});
 
 	it('keeps the leagues apart rather than letting one answer set the pace for all of them', async () => {
@@ -2795,7 +2900,7 @@ describe('how often ESPN says it will answer with something new', () => {
 		const { fetchGamesWithLeagueLogos, scoreboardRefreshMs } = loadApiClient();
 		await fetchGamesWithLeagueLogos(['nba', 'nhl'], { includeUpcoming: false });
 
-		expect(scoreboardRefreshMs('nhl')).toBe(4_000);
+		expect(scoreboardRefreshMs('nhl')).toBe(6_000);
 		expect(scoreboardRefreshMs('nba')).toBe(20_000);
 	});
 
@@ -2810,6 +2915,39 @@ describe('how often ESPN says it will answer with something new', () => {
 
 			expect(scoreboardRefreshMs('nba')).toBe(pollMinEagerMs);
 		}
+	});
+});
+
+/* A refused past day used to keep its expired entry, so every poll inside the window asked again. */
+describe('a refused past day', () => {
+	afterEach(() => jest.useRealTimers());
+
+	it('waits out its TTL after a refusal instead of asking again every poll', async () => {
+		jest.useFakeTimers().setSystemTime(new Date('2026-09-15T18:00:00.000Z'));
+		const yesterday = buildCurrentDayKeys()[0]!;
+		let refuse = false;
+		const fetchMock = jest.fn().mockImplementation(async (url: string) => (
+			refuse && dateOf(url) === yesterday
+				? createResponse({}, { ok: false, status: 403 })
+				: createResponse({ events: [] })
+		));
+		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
+		const asksFor = (day: string) => fetchMock.mock.calls.filter(([url]) => dateOf(url) === day).length;
+
+		const { fetchGamesWithLeagueLogos } = loadApiClient();
+		const options = { includeUpcoming: true, includeFinal: true };
+		await fetchGamesWithLeagueLogos(['mlb'], options);
+		const before = asksFor(yesterday);
+		expect(before).toBe(1);
+
+		refuse = true;
+		jest.setSystemTime(new Date('2026-09-15T18:31:00.000Z'));
+		await fetchGamesWithLeagueLogos(['mlb'], options);
+		expect(asksFor(yesterday)).toBe(2);
+
+		jest.setSystemTime(new Date('2026-09-15T18:40:00.000Z'));
+		await fetchGamesWithLeagueLogos(['mlb'], options);
+		expect(asksFor(yesterday)).toBe(2);
 	});
 });
 
@@ -3176,8 +3314,11 @@ describe('rank, timeouts and the last play', () => {
 		// Unlike the two live-only fields below, a ranked matchup is ranked before and after it is
 		// played, so this one is not gated on the game being in progress.
 		test('survives on a finished game', async () => {
+			// Inside final retention of the fixture's default kickoff, which a real clock outgrows.
+			jest.useFakeTimers().setSystemTime(new Date('2026-10-05T03:00:00.000Z'));
 			const game = await parseOne('ncaab', { state: 'post', homeExtra: { curatedRank: { current: 7 } } });
 			expect(game?.homeTeam.rank).toBe(7);
+			jest.useRealTimers();
 		});
 	});
 
