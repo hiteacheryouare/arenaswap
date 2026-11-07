@@ -639,7 +639,14 @@
 		"ticketsFrom": "Biglietti da {price}",
 		"chartLeadTitle": "Vantaggio nel tempo",
 		"leadTied": "Parità",
-		"leadBy": "{team} di {margin}"
+		"leadBy": "{team} di {margin}",
+		"scorersLabel": "Gol di {team}",
+		"scorersMore": {
+			"1": "+1 altro",
+			"n": "+$1 altri"
+		},
+		"goalMinutePenalty": "{minute} (rig.)",
+		"goalMinuteOwnGoal": "{minute} (aut.)"
 	},
 	"standings": {
 		"wins": "V",

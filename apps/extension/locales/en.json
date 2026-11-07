@@ -639,7 +639,14 @@
 		"ticketsFrom": "Tickets from {price}",
 		"chartLeadTitle": "Lead Over Time",
 		"leadTied": "Tied",
-		"leadBy": "{team} by {margin}"
+		"leadBy": "{team} by {margin}",
+		"scorersLabel": "{team} goals",
+		"scorersMore": {
+			"1": "+1 more",
+			"n": "+$1 more"
+		},
+		"goalMinutePenalty": "{minute} (P)",
+		"goalMinuteOwnGoal": "{minute} (OG)"
 	},
 	"standings": {
 		"wins": "W",

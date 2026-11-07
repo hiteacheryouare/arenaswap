@@ -639,7 +639,14 @@
 		"ticketsFrom": "门票 {price} 起",
 		"chartLeadTitle": "领先分差走势",
 		"leadTied": "平局",
-		"leadBy": "{team}领先 {margin}"
+		"leadBy": "{team}领先 {margin}",
+		"scorersLabel": "{team}进球",
+		"scorersMore": {
+			"1": "还有1人",
+			"n": "还有$1人"
+		},
+		"goalMinutePenalty": "{minute} (点球)",
+		"goalMinuteOwnGoal": "{minute} (乌龙)"
 	},
 	"standings": {
 		"wins": "胜",

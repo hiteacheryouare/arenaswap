@@ -1,6 +1,6 @@
 import type { BasketballTeamSituation } from '@arenaswap/sideline';
 import { sportTypeConfigMap } from '@arenaswap/core/constants';
-import type { Game, LeagueId, RedCardEvent } from '@arenaswap/core/types';
+import type { Game, GoalEvent, LeagueId, RedCardEvent } from '@arenaswap/core/types';
 import { formatBreak, formatGameClock, formatPeriod } from './gameCardShared';
 
 // Injected rather than imported so the resolver stays pure and Jest-testable.
@@ -39,11 +39,28 @@ export const bonusKind = (side: BasketballTeamSituation, league: LeagueId): 'bon
 
 // The minute as a match clock prints it: 26:20 played is the 27th minute, and stoppage time rides
 // on the end of the half it was added to.
-export const formatMatchMinute = (card: RedCardEvent, t: Translate): string => {
-	const minute = Math.max(1, Math.ceil(card.minute));
-	return card.addedMinutes
-		? t('detail.matchMinuteAdded', { minute, added: card.addedMinutes })
+export const formatMatchMinute = (event: Pick<RedCardEvent, 'minute' | 'addedMinutes'>, t: Translate): string => {
+	const minute = Math.max(1, Math.ceil(event.minute));
+	return event.addedMinutes
+		? t('detail.matchMinuteAdded', { minute, added: event.addedMinutes })
 		: t('detail.matchMinute', { minute });
+};
+
+// One line per scorer, their goals in order: "Barry 56', 61'". An own goal is listed under the team
+// it counted for, so it keeps its own line apart from anything the same player scored at the right end.
+export const describeScorers = (goals: readonly GoalEvent[], t: Translate): string[] => {
+	const lines = new Map<string, { player?: string; minutes: string[] }>();
+	for (const goal of goals) {
+		const key = `${goal.player ?? ''}|${goal.ownGoal ? 'og' : ''}`;
+		const minute = formatMatchMinute(goal, t);
+		const marked = goal.ownGoal
+			? t('detail.goalMinuteOwnGoal', { minute })
+			: goal.penalty ? t('detail.goalMinutePenalty', { minute }) : minute;
+		const line = lines.get(key) ?? { player: goal.player, minutes: [] };
+		line.minutes.push(marked);
+		lines.set(key, line);
+	}
+	return [...lines.values()].map(({ player, minutes }) => [player, minutes.join(', ')].filter(Boolean).join(' '));
 };
 
 // Built here rather than taken from our sources' sentence, which only ever arrives in English.

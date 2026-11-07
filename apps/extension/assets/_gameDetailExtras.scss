@@ -1,5 +1,37 @@
 @layer custom {
 
+	// Goal scorers, under each team in the soccer hero. The hero's grid gives each team 80px, too
+	// narrow for "Dewsbury-Hall 81'", so the two lists split the full width and hug their own edge.
+	.gd-scorers {
+		display:               grid;
+		grid-template-columns: 1fr 1fr;
+		column-gap:            0.75rem;
+		margin-top:            0.3rem;
+		padding-inline:        0.3rem;
+		font-size:             0.56rem;
+		line-height:           1.45;
+	}
+
+	.gd-scorers-side {
+		min-width: 0;
+
+		&.is-left {
+			text-align:  start;
+			color:       var(--matchup-ink-left);
+			text-shadow: var(--matchup-shadow-left);
+		}
+
+		&.is-right {
+			text-align:  end;
+			color:       var(--matchup-ink-right);
+			text-shadow: var(--matchup-shadow-right);
+		}
+
+		li { overflow-wrap: anywhere; }
+	}
+
+	.gd-scorers-more { opacity: 0.75; }
+
 	.game-info-networks .network-logo {
 		height:         0.85rem;
 		max-width:      4.5rem;

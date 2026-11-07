@@ -639,7 +639,14 @@
 		"ticketsFrom": "Boletos desde {price}",
 		"chartLeadTitle": "Ventaja a lo largo del tiempo",
 		"leadTied": "Empatado",
-		"leadBy": "{team} por {margin}"
+		"leadBy": "{team} por {margin}",
+		"scorersLabel": "Goles de {team}",
+		"scorersMore": {
+			"1": "+1 más",
+			"n": "+$1 más"
+		},
+		"goalMinutePenalty": "{minute} (p)",
+		"goalMinuteOwnGoal": "{minute} (p.p.)"
 	},
 	"standings": {
 		"wins": "G",

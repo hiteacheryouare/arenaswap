@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import type { Game } from '@arenaswap/core/types';
-import { bonusKind, describeRedCard, formatMatchMinute, resolveStatus } from '../entrypoints/popup/components/gameSituation';
+import { bonusKind, describeRedCard, describeScorers, formatMatchMinute, resolveStatus } from '../entrypoints/popup/components/gameSituation';
 
 const t = i18n.t;
 
@@ -121,5 +121,28 @@ describe('red card lines', () => {
 	test('leaves out whatever our sources did not send', () => {
 		expect(describeRedCard({ teamId: '183', minute: 64.5 }, soccer, t)).toBe('65\' Atlanta United FC');
 		expect(describeRedCard({ teamId: '999', minute: 64.5, player: 'Somebody' }, soccer, t)).toBe('65\' Somebody');
+	});
+});
+// The first case is Everton 3-1 Coventry City, from the 2026-11-06 scoreboard.
+describe('describeScorers', () => {
+	test('puts each scorer on one line with every minute they scored in', () => {
+		expect(describeScorers([
+			{ teamId: '368', minute: 55.6, player: 'Barry' },
+			{ teamId: '368', minute: 60.4, player: 'Barry' },
+			{ teamId: '368', minute: 80.2, player: 'Dewsbury-Hall' },
+		], t)).toEqual(['Barry 56\', 61\'', 'Dewsbury-Hall 81\'']);
+	});
+
+	test('marks penalties and own goals, and keeps two players who share a surname apart', () => {
+		expect(describeScorers([
+			{ teamId: '331', minute: 3.2, player: 'Silva', ownGoal: true },
+			{ teamId: '331', minute: 23.1, player: 'Kane', penalty: true },
+			{ teamId: '331', minute: 66.5, player: 'Kane' },
+			{ teamId: '331', minute: 90, addedMinutes: 3, player: 'Silva' },
+		], t)).toEqual(['Silva 4\' (OG)', 'Kane 24\' (P), 67\'', 'Silva 90+3\'']);
+	});
+
+	test('still lists a goal our sources did not name a scorer for', () => {
+		expect(describeScorers([{ teamId: '1', minute: 12 }], t)).toEqual(['12\'']);
 	});
 });

@@ -1,0 +1,268 @@
+{
+	"recordedAt": "2026-11-06T23:53:37.199Z",
+	"league": "epl",
+	"source": "og_eng.1_20261025.json (links, headlines, odds, leaders and uids removed)",
+	"event": {
+		"id": "401878766",
+		"date": "2026-10-25T14:00Z",
+		"name": "Brentford at Hull City",
+		"shortName": "BRE @ HUL",
+		"season": {
+			"year": 2026,
+			"type": 14308,
+			"slug": "2026-27-english-premier-league"
+		},
+		"competitions": [
+			{
+				"id": "401878766",
+				"date": "2026-10-25T14:00Z",
+				"startDate": "2026-10-25T14:00Z",
+				"attendance": 24259,
+				"timeValid": true,
+				"recent": false,
+				"status": {
+					"clock": 5400,
+					"displayClock": "90'+4'",
+					"period": 2,
+					"type": {
+						"id": "28",
+						"name": "STATUS_FULL_TIME",
+						"state": "post",
+						"completed": true,
+						"description": "Full Time",
+						"detail": "FT",
+						"shortDetail": "FT"
+					}
+				},
+				"venue": {
+					"id": "3670",
+					"fullName": "The MKM Stadium",
+					"address": {
+						"city": "Hull",
+						"country": "England"
+					}
+				},
+				"format": {
+					"regulation": {
+						"periods": 2
+					}
+				},
+				"altGameNote": "English Premier League",
+				"notes": [],
+				"geoBroadcasts": [
+					{
+						"type": {
+							"id": "4",
+							"shortName": "STREAMING"
+						},
+						"market": {
+							"id": "1",
+							"type": "National"
+						},
+						"media": {
+							"shortName": "Peacock"
+						},
+						"lang": "en",
+						"region": "us"
+					}
+				],
+				"broadcasts": [
+					{
+						"market": "national",
+						"names": [
+							"Peacock"
+						]
+					}
+				],
+				"broadcast": "",
+				"competitors": [
+					{
+						"id": "306",
+						"type": "team",
+						"order": 0,
+						"homeAway": "home",
+						"winner": false,
+						"form": "DDLDL",
+						"score": "1",
+						"records": [
+							{
+								"name": "All Splits",
+								"type": "total",
+								"summary": "2-4-2",
+								"abbreviation": "Total"
+							}
+						],
+						"team": {
+							"id": "306",
+							"abbreviation": "HUL",
+							"displayName": "Hull City",
+							"shortDisplayName": "Hull",
+							"name": "Hull City",
+							"location": "Hull City",
+							"color": "f28800",
+							"alternateColor": "ffffff",
+							"isActive": true,
+							"logo": "https://a.espncdn.com/i/teamlogos/soccer/500/306.png",
+							"venue": {
+								"id": "3670"
+							}
+						}
+					},
+					{
+						"id": "337",
+						"type": "team",
+						"order": 1,
+						"homeAway": "away",
+						"winner": false,
+						"form": "DLDLD",
+						"score": "1",
+						"records": [
+							{
+								"name": "All Splits",
+								"type": "total",
+								"summary": "2-5-1",
+								"abbreviation": "Total"
+							}
+						],
+						"team": {
+							"id": "337",
+							"abbreviation": "BRE",
+							"displayName": "Brentford",
+							"shortDisplayName": "Brentford",
+							"name": "Brentford",
+							"location": "Brentford",
+							"color": "f42727",
+							"alternateColor": "0f1c3f",
+							"isActive": true,
+							"logo": "https://a.espncdn.com/i/teamlogos/soccer/500/337.png",
+							"venue": {
+								"id": "9658"
+							}
+						}
+					}
+				],
+				"details": [
+					{
+						"type": {
+							"id": "94",
+							"text": "Yellow Card"
+						},
+						"clock": {
+							"value": 1335,
+							"displayValue": "23'"
+						},
+						"team": {
+							"id": "337"
+						},
+						"scoreValue": 0,
+						"scoringPlay": false,
+						"redCard": false,
+						"yellowCard": true,
+						"penaltyKick": false,
+						"ownGoal": false,
+						"shootout": false,
+						"athletesInvolved": [
+							{
+								"id": "283940",
+								"displayName": "Aaron Hickey",
+								"shortName": "A. Hickey",
+								"fullName": "Aaron Hickey",
+								"jersey": "2",
+								"team": {
+									"id": "337"
+								},
+								"position": "LM"
+							}
+						]
+					},
+					{
+						"type": {
+							"id": "98",
+							"text": "Penalty - Scored"
+						},
+						"clock": {
+							"value": 1430,
+							"displayValue": "24'"
+						},
+						"team": {
+							"id": "306"
+						},
+						"scoreValue": 1,
+						"scoringPlay": true,
+						"redCard": false,
+						"yellowCard": false,
+						"penaltyKick": true,
+						"ownGoal": false,
+						"shootout": false,
+						"athletesInvolved": [
+							{
+								"id": "193010",
+								"displayName": "Oliver McBurnie",
+								"shortName": "O. McBurnie",
+								"fullName": "Oliver McBurnie",
+								"jersey": "9",
+								"team": {
+									"id": "306"
+								},
+								"position": "F"
+							}
+						]
+					},
+					{
+						"type": {
+							"id": "173",
+							"text": "Goal - Volley"
+						},
+						"clock": {
+							"value": 3724,
+							"displayValue": "63'"
+						},
+						"team": {
+							"id": "337"
+						},
+						"scoreValue": 1,
+						"scoringPlay": true,
+						"redCard": false,
+						"yellowCard": false,
+						"penaltyKick": false,
+						"ownGoal": false,
+						"shootout": false,
+						"athletesInvolved": [
+							{
+								"id": "315530",
+								"displayName": "Dango Ouattara",
+								"shortName": "D. Ouattara",
+								"fullName": "Dango Ouattara",
+								"jersey": "11",
+								"team": {
+									"id": "337"
+								},
+								"position": "AM-R"
+							}
+						]
+					}
+				],
+				"wasSuspended": false,
+				"playByPlayAvailable": true,
+				"playByPlayAthletes": true
+			}
+		],
+		"status": {
+			"clock": 5400,
+			"displayClock": "90'+4'",
+			"period": 2,
+			"type": {
+				"id": "28",
+				"name": "STATUS_FULL_TIME",
+				"state": "post",
+				"completed": true,
+				"description": "Full Time",
+				"detail": "FT",
+				"shortDetail": "FT"
+			}
+		},
+		"venue": {
+			"displayName": "The MKM Stadium"
+		}
+	}
+}

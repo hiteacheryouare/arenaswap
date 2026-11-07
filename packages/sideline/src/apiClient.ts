@@ -5,7 +5,7 @@ import { readCollegeBracket } from './collegeBracket';
 import { parseClockTenths, parseClockToSeconds, parseStoppageMinutes } from './gameClock';
 import { toLeagueSchedule } from './leagueCalendar';
 import { collegeBaseballLeagues, gradePostseason, readEventHeadline } from './postseasonRound';
-import { parseBroadcastLogos, parseConference } from './scoreboardExtras';
+import { detailClock, parseBroadcastLogos, parseConference, parseGoalEvents } from './scoreboardExtras';
 import {
 	EspnSummarySchema,
 	parseScoreboard,
@@ -667,15 +667,11 @@ const parseSeries = (comp: EspnCompetition, homeId: string, awayId: string): Ser
 const parseRedCards = (comp: EspnCompetition): RedCardEvent[] | undefined => {
 	const cards = (comp.details ?? [])
 		.filter(detail => detail.redCard === true && detail.team?.id !== undefined && typeof detail.clock?.value === 'number')
-		.map((detail): RedCardEvent => {
-			const added = Number(/\+(\d+)/.exec(detail.clock!.displayValue ?? '')?.[1]);
-			return {
-				teamId: detail.team!.id!,
-				minute: detail.clock!.value! / 60,
-				...(added > 0 ? { addedMinutes: added } : {}),
-				...(detail.athletesInvolved?.[0]?.displayName ? { player: detail.athletesInvolved[0].displayName } : {}),
-			};
-		});
+		.map((detail): RedCardEvent => ({
+			teamId: detail.team!.id!,
+			...detailClock(detail)!,
+			...(detail.athletesInvolved?.[0]?.displayName ? { player: detail.athletesInvolved[0].displayName } : {}),
+		}));
 	return cards.length > 0 ? cards : undefined;
 };
 
@@ -811,6 +807,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		delayDescription,
 		series: parseSeries(comp, home.id, away.id),
 		redCardEvents: leagueConfig.sportType === 'soccer' ? parseRedCards(comp) : undefined,
+		goalEvents: leagueConfig.sportType === 'soccer' ? parseGoalEvents(comp) : undefined,
 		broadcastLogos: parseBroadcastLogos(comp),
 		neutralSite: comp.neutralSite || undefined,
 		conference: parseConference(comp, league),

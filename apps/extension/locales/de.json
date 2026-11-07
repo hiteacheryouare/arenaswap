@@ -639,7 +639,14 @@
 		"ticketsFrom": "Tickets ab {price}",
 		"chartLeadTitle": "Führung über die Zeit",
 		"leadTied": "Unentschieden",
-		"leadBy": "{team} mit {margin} vorn"
+		"leadBy": "{team} mit {margin} vorn",
+		"scorersLabel": "Tore {team}",
+		"scorersMore": {
+			"1": "+1 weiterer",
+			"n": "+$1 weitere"
+		},
+		"goalMinutePenalty": "{minute} (FE)",
+		"goalMinuteOwnGoal": "{minute} (ET)"
 	},
 	"standings": {
 		"wins": "S",

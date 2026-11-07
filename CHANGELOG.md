@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Soccer scorers under the score — 2026-11-06
+
+The soccer detail header lists each side's scorers and minutes under that side, from the scoreboard's `details` the poll already fetches. An own goal is listed under the team it counted for and marked (OG), a penalty is marked (P), shootout kicks are left out, and more than four lines fold into "+N more".
+
 ## Conference crest on college conference games — 2026-11-06
 
 College cards show the conference's crest and short name beside the league mark when the scoreboard flags a conference game (`Game.conference`), and step aside when a round name like "Big 12 Championship" already says it. The scoreboard links no crest, so `conferenceSlugFromName` slugs the short name, with five aliases for the conferences filed under a longer one.

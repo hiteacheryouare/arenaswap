@@ -12,6 +12,33 @@ const gameFrom = (name: string): Game => {
 	return game;
 };
 
+describe('goal scorers', () => {
+	it('reads every goal with its team, minute and surname', () => {
+		const goals = (gameFrom('eplScorers').goalEvents ?? []).map(goal => ({ ...goal, minute: Math.ceil(goal.minute) }));
+		expect(goals).toEqual([
+			{ teamId: '388', minute: 52, player: 'Gboho' },
+			{ teamId: '368', minute: 56, player: 'Barry' },
+			{ teamId: '368', minute: 61, player: 'Barry' },
+			{ teamId: '368', minute: 81, player: 'Dewsbury-Hall' },
+		]);
+	});
+
+	it('credits an own goal to the team it counted for, not the scorer\'s side', () => {
+		const [ownGoal] = gameFrom('eplOwnGoal').goalEvents ?? [];
+		expect(ownGoal).toMatchObject({ teamId: '331', player: 'Canvot', ownGoal: true });
+	});
+
+	it('marks a goal from the spot', () => {
+		const [penalty, openPlay] = gameFrom('eplPenalty').goalEvents ?? [];
+		expect(penalty).toMatchObject({ teamId: '306', player: 'McBurnie', penalty: true });
+		expect(openPlay?.penalty).toBeUndefined();
+	});
+
+	it('only reads goals in soccer', () => {
+		expect(gameFrom('nflMadrid').goalEvents).toBeUndefined();
+	});
+});
+
 describe('neutral sites', () => {
 	it('flags a game played at neither team\'s stadium', () => {
 		const game = gameFrom('nflMadrid');

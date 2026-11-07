@@ -11,6 +11,7 @@ import FlipScore from './flipScore';
 import FootballFieldStrip from './footballFieldStrip';
 import { bonusKind, type GameStatus } from './gameSituation';
 import GameStatusText from './gameStatusText';
+import GoalScorers from './goalScorers';
 import InningHalfIcon from './inningHalfIcon';
 import PossessionArrow from './possessionArrow';
 import SeriesDots from './seriesDots';
@@ -99,6 +100,8 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 					</div>
 				)}
 			</div>
+
+			<GoalScorers game={game} />
 
 			{isInningSport && game.bso && (
 				<div className='gd-bso-row'><BsoIndicator {...game.bso} /></div>

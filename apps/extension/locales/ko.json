@@ -639,7 +639,14 @@
 		"ticketsFrom": "티켓 {price}부터",
 		"chartLeadTitle": "시간별 리드 추이",
 		"leadTied": "동점",
-		"leadBy": "{team} {margin}점 차 리드"
+		"leadBy": "{team} {margin}점 차 리드",
+		"scorersLabel": "{team} 득점",
+		"scorersMore": {
+			"1": "+1명 더",
+			"n": "+$1명 더"
+		},
+		"goalMinutePenalty": "{minute} (PK)",
+		"goalMinuteOwnGoal": "{minute} (자책)"
 	},
 	"standings": {
 		"wins": "승",

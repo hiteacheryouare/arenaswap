@@ -639,7 +639,14 @@
 		"ticketsFrom": "門票 {price} 起",
 		"chartLeadTitle": "領先分差走勢",
 		"leadTied": "平手",
-		"leadBy": "{team}領先 {margin}"
+		"leadBy": "{team}領先 {margin}",
+		"scorersLabel": "{team}進球",
+		"scorersMore": {
+			"1": "還有1人",
+			"n": "還有$1人"
+		},
+		"goalMinutePenalty": "{minute} (點球)",
+		"goalMinuteOwnGoal": "{minute} (烏龍)"
 	},
 	"standings": {
 		"wins": "勝",

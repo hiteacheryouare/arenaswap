@@ -151,6 +151,16 @@ export interface RedCardEvent {
 	player?: string;
 }
 
+export interface GoalEvent {
+	// The team the goal counts for. On an own goal that is not the scorer's team.
+	teamId: string;
+	minute: number;
+	addedMinutes?: number;
+	player?: string;
+	ownGoal?: boolean;
+	penalty?: boolean;
+}
+
 export interface BroadcastLogo {
 	logo?: string;
 	// Drawn for a dark ground; most networks have none.
@@ -296,6 +306,7 @@ export interface Game {
 	// Soccer, in the order they were shown. Not `redCards`: the engine's Game uses that name for its
 	// own side-keyed shape, and a core Game has to stay assignable to it.
 	redCardEvents?: RedCardEvent[];
+	goalEvents?: GoalEvent[];
 	// Keyed by the name in `broadcasts`.
 	broadcastLogos?: Record<string, BroadcastLogo>;
 	neutralSite?: boolean;

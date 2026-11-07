@@ -639,7 +639,14 @@
 		"ticketsFrom": "Tickets mula {price}",
 		"chartLeadTitle": "Pag-usad ng Lead",
 		"leadTied": "Tabla",
-		"leadBy": "Lamang ang {team} ng {margin}"
+		"leadBy": "Lamang ang {team} ng {margin}",
+		"scorersLabel": "Goals ng {team}",
+		"scorersMore": {
+			"1": "+1 pa",
+			"n": "+$1 pa"
+		},
+		"goalMinutePenalty": "{minute} (P)",
+		"goalMinuteOwnGoal": "{minute} (OG)"
 	},
 	"standings": {
 		"wins": "W",

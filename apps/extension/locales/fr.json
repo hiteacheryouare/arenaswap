@@ -639,7 +639,14 @@
 		"ticketsFrom": "Billets dès {price}",
 		"chartLeadTitle": "Avance dans le temps",
 		"leadTied": "Égalité",
-		"leadBy": "{team} de {margin}"
+		"leadBy": "{team} de {margin}",
+		"scorersLabel": "{team} : buteurs",
+		"scorersMore": {
+			"1": "+1 de plus",
+			"n": "+$1 de plus"
+		},
+		"goalMinutePenalty": "{minute} (pen.)",
+		"goalMinuteOwnGoal": "{minute} (csc)"
 	},
 	"standings": {
 		"wins": "V",

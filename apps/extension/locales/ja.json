@@ -639,7 +639,14 @@
 		"ticketsFrom": "チケットは{price}から",
 		"chartLeadTitle": "リードの推移",
 		"leadTied": "同点",
-		"leadBy": "{team}が{margin}点リード"
+		"leadBy": "{team}が{margin}点リード",
+		"scorersLabel": "{team}の得点",
+		"scorersMore": {
+			"1": "他1人",
+			"n": "他$1人"
+		},
+		"goalMinutePenalty": "{minute} (PK)",
+		"goalMinuteOwnGoal": "{minute} (OG)"
 	},
 	"standings": {
 		"wins": "勝",

@@ -118,12 +118,16 @@ const EspnSeriesSchema = z.object({
 	competitors: z.optional(z.array(z.object({ id: espnNumericText, wins: z.optional(z.number()) }))),
 });
 
-// Soccer's key events: goals, cards, penalties. Only red cards are read so far.
+// Soccer's key events: goals, cards, penalties.
 const EspnCompetitionDetailSchema = z.object({
 	redCard: z.optional(z.boolean()),
+	scoringPlay: z.optional(z.boolean()),
+	ownGoal: z.optional(z.boolean()),
+	penaltyKick: z.optional(z.boolean()),
+	shootout: z.optional(z.boolean()),
 	clock: z.optional(z.object({ value: z.optional(z.number()), displayValue: z.optional(z.string()) })),
 	team: z.optional(z.object({ id: z.optional(espnNumericText) })),
-	athletesInvolved: z.optional(z.array(z.object({ displayName: z.optional(z.string()) }))),
+	athletesInvolved: z.optional(z.array(z.object({ displayName: z.optional(z.string()), shortName: z.optional(z.string()) }))),
 });
 
 const EspnCompetitionStatusSchema = z.object({
