@@ -1,4 +1,5 @@
-import type { BroadcastLogo } from '@arenaswap/core';
+import { conferenceSlugFromName, isCollegeLeagueId } from '@arenaswap/core';
+import type { BroadcastLogo, GameConference, LeagueId } from '@arenaswap/core';
 import type { EspnCompetition } from './espnSchemas';
 
 export const parseBroadcastLogos = (comp: EspnCompetition): Record<string, BroadcastLogo> | undefined => {
@@ -11,4 +12,13 @@ export const parseBroadcastLogos = (comp: EspnCompetition): Record<string, Broad
 		logos[name] = { ...(logo ? { logo } : {}), ...(darkLogo ? { darkLogo } : {}) };
 	}
 	return Object.keys(logos).length > 0 ? logos : undefined;
+};
+
+export const parseConference = (comp: EspnCompetition, league: LeagueId): GameConference | undefined => {
+	if (!isCollegeLeagueId(league) || comp.conferenceCompetition !== true) return undefined;
+	const id = comp.groups?.id;
+	const shortName = comp.groups?.shortName?.trim();
+	if (!id || !shortName) return undefined;
+	const crestSlug = conferenceSlugFromName(shortName);
+	return { id, shortName, ...(crestSlug ? { crestSlug } : {}) };
 };

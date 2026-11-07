@@ -25,6 +25,20 @@ describe('neutral sites', () => {
 	});
 });
 
+describe('conference games', () => {
+	it('names the conference and finds its crest', () => {
+		expect(gameFrom('ncaafBig12').conference).toEqual({ id: '4', shortName: 'Big 12', crestSlug: 'big_12' });
+	});
+
+	it('leaves non-conference games alone', () => {
+		expect(gameFrom('ncaabNetworkLogos').conference).toBeUndefined();
+	});
+
+	it('never names a conference outside college', () => {
+		expect(gameFrom('nflMadrid').conference).toBeUndefined();
+	});
+});
+
 describe('network logos', () => {
 	it('keeps both artworks, keyed by the name the broadcast list uses', () => {
 		const game = gameFrom('ncaabNetworkLogos');

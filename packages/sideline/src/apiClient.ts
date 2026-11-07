@@ -5,7 +5,7 @@ import { readCollegeBracket } from './collegeBracket';
 import { parseClockTenths, parseClockToSeconds, parseStoppageMinutes } from './gameClock';
 import { toLeagueSchedule } from './leagueCalendar';
 import { collegeBaseballLeagues, gradePostseason, readEventHeadline } from './postseasonRound';
-import { parseBroadcastLogos } from './scoreboardExtras';
+import { parseBroadcastLogos, parseConference } from './scoreboardExtras';
 import {
 	EspnSummarySchema,
 	parseScoreboard,
@@ -813,6 +813,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		redCardEvents: leagueConfig.sportType === 'soccer' ? parseRedCards(comp) : undefined,
 		broadcastLogos: parseBroadcastLogos(comp),
 		neutralSite: comp.neutralSite || undefined,
+		conference: parseConference(comp, league),
 	};
 };
 

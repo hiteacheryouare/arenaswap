@@ -10,7 +10,7 @@ import BsoIndicator from './bsoIndicator';
 import FlipScore from './flipScore';
 import InningHalfIcon from './inningHalfIcon';
 import type { GameCardDisplayProps } from './gameCardTypes';
-import { buildCardShellProps, buildGameCardSurface, CardDetailsButton, CardStatusRow, formatBreak, formatGameClock, formatPeriod, GameMeta, SeasonLabel, powerScoreColor, TeamColumn } from './gameCardShared';
+import { buildCardShellProps, buildGameCardSurface, CardDetailsButton, CardStatusRow, ConferenceMark, formatBreak, formatGameClock, formatPeriod, GameMeta, SeasonLabel, powerScoreColor, TeamColumn } from './gameCardShared';
 import { useT } from './i18nContext';
 import useCountTo from './useCountTo';
 import { StaleLeagueNote } from './staleLeagueNote';
@@ -65,6 +65,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 			{interactive && <CardDetailsButton game={game} onOpenGameDetail={onOpenGameDetail} />}
 			<CardStatusRow
 				league={leagueSlot}
+				conference={<ConferenceMark game={game} />}
 				status={isDelayed ? (
 					<span className='d-flex align-items-center gap-1 fw-bold text-uppercase delay-status-label'>
 						<i className='bi bi-pause-fill' />

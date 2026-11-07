@@ -197,6 +197,18 @@
 		--as-avatar-size: 14px;
 	}
 
+	// Beside the league mark, but in the conference's own capitalisation: "Big Ten", not "BIG TEN".
+	.game-card-conference {
+		gap: 0.25rem;
+		font-size: 0.65rem;
+		font-weight: 600;
+		color: #6b7280;
+	}
+
+	.game-card-conference-crest {
+		--as-avatar-size: 15px;
+	}
+
 	.game-postseason-label {
 		font-size: 0.62rem;
 		font-weight: 600;
@@ -644,6 +656,7 @@
 		}
 
 		.game-card-league,
+		.game-card-conference,
 		.live-status-label,
 		.delay-status-label,
 		.game-postseason-label,

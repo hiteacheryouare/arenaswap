@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Conference crest on college conference games — 2026-11-06
+
+College cards show the conference's crest and short name beside the league mark when the scoreboard flags a conference game (`Game.conference`), and step aside when a round name like "Big 12 Championship" already says it. The scoreboard links no crest, so `conferenceSlugFromName` slugs the short name, with five aliases for the conferences filed under a longer one.
+
 ## Neutral-site games name the city — 2026-11-06
 
 A card's venue line adds the city when a game is at neither team's stadium (`Game.neutralSite`), so the Falcons' home game in Madrid reads "Santiago Bernabéu · Madrid, Spain". Every other card still names the building only.

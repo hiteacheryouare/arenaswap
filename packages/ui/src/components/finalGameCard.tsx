@@ -1,7 +1,7 @@
 import { createFavoriteTeamKey, isHomeFirst } from '@arenaswap/core/constants';
 import FlipScore from './flipScore';
 import type { GameCardDisplayProps } from './gameCardTypes';
-import { buildCardShellProps, CardDetailsButton, CardStatusRow, GameMeta, SeasonLabel, TeamColumn } from './gameCardShared';
+import { buildCardShellProps, CardDetailsButton, CardStatusRow, ConferenceMark, GameMeta, SeasonLabel, TeamColumn } from './gameCardShared';
 import { useT } from './i18nContext';
 
 // A finished game offers nothing to act on, so this card is the live one with every affordance
@@ -50,7 +50,7 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 			{...shellProps}
 		>
 			{interactive && <CardDetailsButton game={game} onOpenGameDetail={onOpenGameDetail} />}
-			<CardStatusRow league={leagueSlot} status={<span className='d-flex align-items-center gap-1 fw-bold text-uppercase final-status-label'>{statusLabel}</span>}>
+			<CardStatusRow league={leagueSlot} conference={<ConferenceMark game={game} />} status={<span className='d-flex align-items-center gap-1 fw-bold text-uppercase final-status-label'>{statusLabel}</span>}>
 				<SeasonLabel game={game} />
 			</CardStatusRow>
 

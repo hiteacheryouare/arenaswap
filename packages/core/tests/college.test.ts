@@ -1,6 +1,7 @@
 import {
 	collegeFetchGroups,
 	conferenceCrestSlug,
+	conferenceSlugFromName,
 	defaultCollegeFilter,
 	filterCollegeGames,
 	isConferenceCovered,
@@ -220,6 +221,16 @@ describe('conference crests', () => {
 		expect(conferenceCrestSlug('cbase', 'Big 10')).toBe('big_ten');
 		expect(conferenceCrestSlug('ncaamh', 'IND')).toBeUndefined();
 		expect(resolveConferenceCrest(undefined, 'dark')).toEqual({ drawnForDark: false });
+	});
+
+	// Checked against the crest files for every conference playing on 2026-11-07.
+	test('a scoreboard conference name finds its crest file', () => {
+		expect(conferenceSlugFromName('Big 12')).toBe('big_12');
+		expect(conferenceSlugFromName('Pac-12')).toBe('pac_12');
+		expect(conferenceSlugFromName('Big Ten')).toBe('big_ten');
+		expect(conferenceSlugFromName('CUSA')).toBe('conference_usa');
+		expect(conferenceSlugFromName('MVFC')).toBe('missouri_valley');
+		expect(conferenceSlugFromName('  ')).toBeUndefined();
 	});
 });
 

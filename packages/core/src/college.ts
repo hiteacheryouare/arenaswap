@@ -257,6 +257,23 @@ export const conferenceCrestSlug = (leagueId: CollegeLeagueId, shortName: string
 	return fromHref ?? conferenceCrestAliases[leagueId]?.[shortName];
 };
 
+// The scoreboard names a game's conference but links no crest. Its short name slugs straight to a
+// crest file for most of them; these few are filed under a longer name.
+const scoreboardConferenceSlugs: Record<string, string> = {
+	CUSA: 'conference_usa',
+	'C-USA': 'conference_usa',
+	MAC: 'mid_american',
+	MVFC: 'missouri_valley',
+	NEC: 'northeast',
+	Patriot: 'patriot_league',
+};
+
+export const conferenceSlugFromName = (shortName: string): string | undefined => {
+	const slug = scoreboardConferenceSlugs[shortName]
+		?? shortName.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+	return slug || undefined;
+};
+
 export interface ConferenceCrest {
 	src?: string;
 	// Tried when `src` will not load.

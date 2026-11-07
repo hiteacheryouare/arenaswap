@@ -157,6 +157,12 @@ export interface BroadcastLogo {
 	darkLogo?: string;
 }
 
+export interface GameConference {
+	id: string;
+	shortName: string;
+	crestSlug?: string;
+}
+
 export interface GameCondition {
 	// °F, as reported by ESPN.
 	temperatureF: number;
@@ -293,6 +299,7 @@ export interface Game {
 	// Keyed by the name in `broadcasts`.
 	broadcastLogos?: Record<string, BroadcastLogo>;
 	neutralSite?: boolean;
+	conference?: GameConference;
 }
 
 // What becomes of a registered tab once its game is over. 'keep' is what ArenaSwap has always

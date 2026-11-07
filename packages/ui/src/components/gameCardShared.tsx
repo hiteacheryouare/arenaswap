@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 import type { CSSProperties, MouseEvent } from 'react';
-import { isHomeFirst } from '@arenaswap/core/constants';
+import { isHomeFirst, resolveConferenceCrest } from '@arenaswap/core/constants';
+import Crest from './crest';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import type { BettingDisplayPrefs } from './gameCardTypes';
 import { matchupSurface, resolveTeamColorPair } from '@arenaswap/chromatic';
@@ -220,15 +221,31 @@ export const SeasonLabel = ({ game }: { game: Game }) => {
 	return label ? <span className='game-postseason-label'>{label}</span> : null;
 };
 
+// A conference game's conference, beside the league. A title game's round name already says it.
+export const ConferenceMark = ({ game }: { game: Game }) => {
+	const conference = game.conference;
+	if (!conference || game.postseasonLabel) return null;
+	const onColor = leagueMarkOnColor(game);
+	const crest = resolveConferenceCrest(conference.crestSlug, onColor ? 'dark' : 'light');
+	const crestSrc = crest.src && (!onColor || crest.drawnForDark) ? crest.src : undefined;
+	return (
+		<span className='d-inline-flex align-items-center text-nowrap game-card-conference'>
+			{crestSrc && <Crest logo={crestSrc} abbreviation='' className='game-card-conference-crest' fallback='none' loading='lazy' />}
+			{conference.shortName}
+		</span>
+	);
+};
+
 // The row every card puts its status on. The postseason label shares it, which costs no vertical
 // space on a card that has none to spare — and when the label is too wide to share, the row wraps
 // and it takes a full line to itself rather than being truncated. Two of the 389 real ESPN round
 // names need that; nothing needs cutting.
-export const CardStatusRow = ({ children, status, league }: { children?: ReactNode; status?: ReactNode; league?: ReactNode }) => (
+export const CardStatusRow = ({ children, status, league, conference }: { children?: ReactNode; status?: ReactNode; league?: ReactNode; conference?: ReactNode }) => (
 	<div className='d-flex align-items-center flex-wrap game-card-status-row mb-1'>
-		{league ? (
+		{league || conference ? (
 			<span className='d-flex align-items-center gap-3'>
 				{league}
+				{conference}
 				{status}
 			</span>
 		) : status}
