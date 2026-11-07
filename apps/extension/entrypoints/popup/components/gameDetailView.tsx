@@ -209,7 +209,7 @@ const gameDetailView = ({
 	const leadTrackerOption = useMemo(() => (
 		scoredModeId === 'blowouts' ? buildLeadTrackerOption(orderedScoreHistory, game, chartPalette, [awayLineColor, homeLineColor], locale, describeLead) : undefined
 	), [scoredModeId, orderedScoreHistory, game, chartPalette, awayLineColor, homeLineColor, locale]);
-	const { winProbability, seriesInfo, records, monoLogos, boxScore, standings, gameDurationMins, matchup, tickets } = useSummaryData(game);
+	const { winProbability, seriesInfo, records, monoLogos, boxScore, standings, gameDurationMins, matchup, tickets, venue } = useSummaryData(game);
 	const basketballSituation = useBasketballSituation(game);
 	const possession = useBasketballPossession(game);
 	const winProbabilityOption = useMemo(() => (
@@ -283,7 +283,7 @@ const gameDetailView = ({
 				    it actually was. The boost input goes for the same reason: it can only ever
 				    change a score that will never be computed again. */}
 				<FantasyPlayersPanel game={game} roster={fantasyRoster} boxScore={boxScore} />
-				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} gameDurationMins={gameDurationMins} />
+				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} gameDurationMins={gameDurationMins} venue={venue} />
 			</>
 		) : isPreGame ? (
 			<>
@@ -300,7 +300,7 @@ const gameDetailView = ({
 				/>
 				<PregameStats game={game} />
 				<FantasyPlayersPanel game={game} roster={fantasyRoster} boxScore={boxScore} />
-				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} tickets={tickets} />
+				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} tickets={tickets} venue={venue} />
 			</>
 		) : (
 			<>
@@ -337,7 +337,7 @@ const gameDetailView = ({
 
 				<GameBoostInput gameId={game.id} currentBoost={currentBoost} onSetGameBoost={onSetGameBoost} />
 
-				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} />
+				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} venue={venue} />
 			</>
 		)}
 

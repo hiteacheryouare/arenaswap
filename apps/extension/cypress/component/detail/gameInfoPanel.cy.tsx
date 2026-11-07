@@ -18,7 +18,7 @@ import zhCN from '../../../locales/zh_CN.json';
 import zhTW from '../../../locales/zh_TW.json';
 
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
-const labelKeys = ['infoWatch', 'infoVenue', 'infoWeather', 'infoLine', 'infoAttendance', 'infoEnded'] as const;
+const labelKeys = ['infoWatch', 'infoVenue', 'infoWeather', 'infoLine', 'infoAttendance', 'infoEnded', 'infoSurface'] as const;
 
 const liveGame: Game = {
 	id: 'mock-7',
@@ -391,6 +391,57 @@ describe('gameInfoPanel ticket price', () => {
 			</LocaleContext.Provider>,
 		);
 		cy.get('.game-info-link').should('have.text', en.detail.ticketsFrom.replace('{price}', (1234).toLocaleString('de', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })));
+	});
+});
+
+const photo = (fill: string) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360"><rect width="640" height="360" fill="${fill}"/></svg>`)}`;
+
+// Jaguars at Ravens, 2026-11-05: football sends a photo from inside the stadium and one from outside.
+describe('gameInfoPanel venue photo', () => {
+	const inside = photo('#1d5a35');
+	const outside = photo('#5a6472');
+	const baltimore: Game = { ...liveGame, venueName: 'M&T Bank Stadium', venueLocation: 'Baltimore, MD', weather: { temperatureF: 51, conditionLabel: 'Rain' } };
+
+	const mountWith = (venue: Parameters<typeof GameInfoPanel>[0]['venue']) => cy.mount(
+		<div style={{ width: '296px' }}>
+			<GameInfoPanel game={baltimore} bettingPrefs={{ bettingEnabled: false }} weatherPrefs={{ temperatureUnit: 'F' }} venue={venue} />
+		</div>,
+	);
+
+	it('heads the panel with the inside shot and moves the venue onto it', () => {
+		mountWith({ photos: { main: outside, interior: inside }, surface: 'grass' });
+		cy.get('.gd-venue-photo img').should('have.attr', 'src', inside);
+		cy.get('.gd-venue-caption').should('contain.text', 'M&T Bank Stadium').and('contain.text', 'Baltimore, MD');
+		cy.get('.game-info-label').should('not.contain.text', 'Venue');
+		// The weather rode in the venue row, so it takes a row of its own.
+		cy.contains('.game-info-row', 'Weather').should('contain.text', 'Rain');
+		cy.contains('.game-info-row', 'Surface').should('contain.text', 'Grass');
+	});
+
+	it('switches to the outside shot and back', () => {
+		mountWith({ photos: { main: outside, interior: inside } });
+		cy.contains('.gd-venue-toggle label', 'Outside').click();
+		cy.get('.gd-venue-photo img').should('have.attr', 'src', outside);
+		cy.contains('.gd-venue-toggle label', 'Inside').click();
+		cy.get('.gd-venue-photo img').should('have.attr', 'src', inside);
+	});
+
+	it('offers no switch when there is only one photo', () => {
+		mountWith({ photos: { main: outside } });
+		cy.get('.gd-venue-photo img').should('have.attr', 'src', outside);
+		cy.get('.gd-venue-toggle').should('not.exist');
+	});
+
+	it('brings the venue row back when the photo will not load', () => {
+		mountWith({ photos: { interior: 'data:image/png;base64,AAAA' } });
+		cy.get('.gd-venue-photo').should('not.exist');
+		cy.contains('.game-info-row', 'Venue').should('contain.text', 'M&T Bank Stadium');
+	});
+
+	it('keeps today\'s venue row when there is no photo', () => {
+		mountWith(null);
+		cy.get('.gd-venue-photo').should('not.exist');
+		cy.contains('.game-info-row', 'Venue').should('contain.text', 'Baltimore, MD');
 	});
 });
 

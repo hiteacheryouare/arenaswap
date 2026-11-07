@@ -646,7 +646,13 @@
 			"n": "+$1 weitere"
 		},
 		"goalMinutePenalty": "{minute} (FE)",
-		"goalMinuteOwnGoal": "{minute} (ET)"
+		"goalMinuteOwnGoal": "{minute} (ET)",
+		"venuePhotoLabel": "Stadionfoto",
+		"venuePhotoInside": "Innen",
+		"venuePhotoOutside": "Außen",
+		"infoSurface": "Belag",
+		"surfaceGrass": "Naturrasen",
+		"surfaceTurf": "Kunstrasen"
 	},
 	"standings": {
 		"wins": "S",

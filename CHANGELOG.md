@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Stadium photo heads Game Info — 2026-11-06
+
+Game Info opens with the venue's photo from the summary, with the venue name and city on it in place of the Venue row, and football gets a Bootstrap toggle between the inside and outside shots plus a Surface row. Photos come through the image proxy at 640px, and one that fails to load brings the Venue row back.
+
 ## Soccer scorers under the score — 2026-11-06
 
 The soccer detail header lists each side's scorers and minutes under that side, from the scoreboard's `details` the poll already fetches. An own goal is listed under the team it counted for and marked (OG), a penalty is marked (P), shootout kicks are left out, and more than four lines fold into "+N more".

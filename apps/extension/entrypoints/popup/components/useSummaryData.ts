@@ -14,9 +14,10 @@ import {
 	parseMatchup,
 	parseStandings,
 	parseTickets,
+	parseVenueDetails,
 	usesFullLeagueStandings,
 } from '@arenaswap/sideline';
-import type { BoxScore, Matchup, StandingsGroup, TicketLink } from '@arenaswap/sideline';
+import type { BoxScore, Matchup, StandingsGroup, TicketLink, VenueDetails } from '@arenaswap/sideline';
 import type { Game, LeagueId, TeamMonoMarks } from '@arenaswap/core/types';
 import { hasBoxScoreContent } from './boxScoreColumns';
 import { mockStandingsPayloads } from '@arenaswap/sideline/mockStandings';
@@ -69,6 +70,7 @@ interface summaryDataResult {
 	// the season's, and recent form and the injury report are context for a game not yet begun.
 	matchup: Matchup;
 	tickets: TicketLink | null;
+	venue: VenueDetails | null;
 }
 
 interface RecordEntry {
@@ -253,6 +255,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 	const [gameDurationMins, setGameDurationMins] = useState<number | null>(null);
 	const [matchup, setMatchup] = useState<Matchup>(emptyMatchup);
 	const [tickets, setTickets] = useState<TicketLink | null>(null);
+	const [venue, setVenue] = useState<VenueDetails | null>(null);
 	// The scoreboard's records win when it has them; the summary is the fallback for the leagues
 	// and dates where it does not.
 	const resolvedRecords: TeamRecords = {
@@ -294,6 +297,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 			setGameDurationMins(null);
 			setMatchup(emptyMatchup);
 			setTickets(null);
+			setVenue(null);
 		}
 
 		if (gameId.startsWith('mock-')) {
@@ -356,6 +360,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 			setRecords(parseTeamRecords(data, teamIdsRef.current.home, teamIdsRef.current.away));
 			setMonoLogos(parseMonoLogos(data, teamIdsRef.current.home, teamIdsRef.current.away));
 			setGameDurationMins(parseGameDurationMins(data));
+			setVenue(parseVenueDetails(data, gameRef.current.sportType));
 			// Only where the whole-league fetch below is not running. Both would otherwise
 			// write this state, and whichever landed second would win.
 			if (!usesFullLeagueStandings(league)) {
@@ -423,7 +428,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		};
 	}, [gameId, league, status]);
 
-	return { winProbability, seriesInfo, records: resolvedRecords, monoLogos, boxScore, standings, gameDurationMins, matchup, tickets };
+	return { winProbability, seriesInfo, records: resolvedRecords, monoLogos, boxScore, standings, gameDurationMins, matchup, tickets, venue };
 };
 
 export default useSummaryData;

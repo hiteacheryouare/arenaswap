@@ -646,7 +646,13 @@
 			"n": "+$1 de plus"
 		},
 		"goalMinutePenalty": "{minute} (pen.)",
-		"goalMinuteOwnGoal": "{minute} (csc)"
+		"goalMinuteOwnGoal": "{minute} (csc)",
+		"venuePhotoLabel": "Photo du stade",
+		"venuePhotoInside": "Intérieur",
+		"venuePhotoOutside": "Extérieur",
+		"infoSurface": "Surface",
+		"surfaceGrass": "Gazon",
+		"surfaceTurf": "Synthétique"
 	},
 	"standings": {
 		"wins": "V",

@@ -38,4 +38,75 @@
 		vertical-align: -0.18rem;
 	}
 
+	// The stadium photo heads the Game Info panel and carries the venue's name and city.
+	.gd-venue-photo {
+		position:      relative;
+		aspect-ratio:  2 / 1;
+		margin-bottom: 0.3rem;
+		border-radius: var(--as-radius-4);
+		overflow:      hidden;
+		background:    var(--as-bg-2);
+
+		> img {
+			display:    block;
+			width:      100%;
+			height:     100%;
+			object-fit: cover;
+		}
+
+		&::after {
+			content:        '';
+			position:       absolute;
+			inset:          0;
+			background:     linear-gradient(180deg, rgba(3, 7, 12, 0) 40%, rgba(3, 7, 12, 0.85) 100%);
+			pointer-events: none;
+		}
+	}
+
+	.gd-venue-caption {
+		position:       absolute;
+		inset-inline:   0.55rem;
+		bottom:         0.4rem;
+		z-index:        1;
+		display:        flex;
+		flex-direction: column;
+		color:          #ffffff;
+		line-height:    1.2;
+		text-shadow:    0 1px 2px rgba(3, 7, 12, 0.6);
+	}
+
+	.gd-venue-caption-name {
+		font-size:   0.72rem;
+		font-weight: 700;
+	}
+
+	.gd-venue-caption-location {
+		font-size: 0.56rem;
+		opacity:   0.85;
+	}
+
+	// Bootstrap's toggle group, re-skinned for a photo: a dark glass the white text reads on.
+	.gd-venue-toggle {
+		position: absolute;
+		top:      0.4rem;
+		right:    0.4rem;
+		z-index:  1;
+
+		.btn {
+			--as-btn-min-height:        0;
+			--as-btn-padding-x:         0.45rem;
+			--as-btn-padding-y:         0.12rem;
+			--as-btn-font-size:         0.55rem;
+			--as-btn-font-weight:       600;
+			--as-btn-color:             rgba(255, 255, 255, 0.78);
+			--as-btn-bg:                rgba(3, 7, 12, 0.55);
+			--as-btn-hover-color:       #ffffff;
+			--as-btn-hover-bg:          rgba(3, 7, 12, 0.72);
+			--as-btn-active-color:      #ffffff;
+			--as-btn-active-bg:         rgba(255, 255, 255, 0.24);
+			--as-btn-active-border-color: transparent;
+			backdrop-filter:            blur(6px);
+		}
+	}
+
 }

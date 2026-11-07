@@ -646,7 +646,13 @@
 			"n": "還有$1人"
 		},
 		"goalMinutePenalty": "{minute} (點球)",
-		"goalMinuteOwnGoal": "{minute} (烏龍)"
+		"goalMinuteOwnGoal": "{minute} (烏龍)",
+		"venuePhotoLabel": "球場照片",
+		"venuePhotoInside": "場內",
+		"venuePhotoOutside": "場外",
+		"infoSurface": "場地",
+		"surfaceGrass": "天然草",
+		"surfaceTurf": "人工草皮"
 	},
 	"standings": {
 		"wins": "勝",

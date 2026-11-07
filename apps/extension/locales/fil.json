@@ -646,7 +646,13 @@
 			"n": "+$1 pa"
 		},
 		"goalMinutePenalty": "{minute} (P)",
-		"goalMinuteOwnGoal": "{minute} (OG)"
+		"goalMinuteOwnGoal": "{minute} (OG)",
+		"venuePhotoLabel": "Larawan ng stadium",
+		"venuePhotoInside": "Loob",
+		"venuePhotoOutside": "Labas",
+		"infoSurface": "Surface",
+		"surfaceGrass": "Grass",
+		"surfaceTurf": "Turf"
 	},
 	"standings": {
 		"wins": "W",

@@ -646,7 +646,13 @@
 			"n": "+$1 mais"
 		},
 		"goalMinutePenalty": "{minute} (p)",
-		"goalMinuteOwnGoal": "{minute} (a.g.)"
+		"goalMinuteOwnGoal": "{minute} (a.g.)",
+		"venuePhotoLabel": "Foto do estádio",
+		"venuePhotoInside": "Dentro",
+		"venuePhotoOutside": "Fora",
+		"infoSurface": "Piso",
+		"surfaceGrass": "Relva",
+		"surfaceTurf": "Sintético"
 	},
 	"standings": {
 		"wins": "V",

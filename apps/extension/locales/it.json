@@ -646,7 +646,13 @@
 			"n": "+$1 altri"
 		},
 		"goalMinutePenalty": "{minute} (rig.)",
-		"goalMinuteOwnGoal": "{minute} (aut.)"
+		"goalMinuteOwnGoal": "{minute} (aut.)",
+		"venuePhotoLabel": "Foto dello stadio",
+		"venuePhotoInside": "Dentro",
+		"venuePhotoOutside": "Fuori",
+		"infoSurface": "Terreno",
+		"surfaceGrass": "Erba",
+		"surfaceTurf": "Sintetico"
 	},
 	"standings": {
 		"wins": "V",

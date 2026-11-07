@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { i18n } from '#i18n';
 import type { Game } from '@arenaswap/core/types';
 import HoverTooltip from '@arenaswap/ui/src/components/hoverTooltip';
@@ -5,8 +6,9 @@ import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import NetworkList from '@arenaswap/ui/src/components/networkList';
 import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
 import { OddsProvider, oddsSummary } from './gameCardShared';
+import VenuePhoto from './venuePhoto';
 import { conditionIcon, formatTemperature } from './weatherUtils';
-import type { TicketLink } from '@arenaswap/sideline';
+import type { TicketLink, VenueDetails } from '@arenaswap/sideline';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 
 interface gameInfoPanelProps {
@@ -18,6 +20,7 @@ interface gameInfoPanelProps {
 	gameDurationMins?: number | null;
 	// Pre-game only, and only where a seller has listed this exact game.
 	tickets?: TicketLink | null;
+	venue?: VenueDetails | null;
 }
 
 // ESPN publishes no completion timestamp anywhere, so this is the only honest finish time in the
@@ -38,13 +41,16 @@ const InfoRow = ({ icon, label, stacked, children }: { icon: string; label: stri
 	</div>
 );
 
-const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins, tickets }: gameInfoPanelProps) => {
+const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins, tickets, venue }: gameInfoPanelProps) => {
 	const locale = useDisplayLocale();
 	const theme = useDocumentTheme();
+	const [photoFailedFor, setPhotoFailedFor] = useState<string>();
 	const networks = game.broadcasts?.length;
 	const venueName = game.venueName;
 	const venueLocation = game.venueLocation;
-	const hasVenue = Boolean(venueName || venueLocation);
+	const showPhoto = Boolean(venue?.photos.interior || venue?.photos.main) && photoFailedFor !== game.id;
+	const hasVenue = Boolean(venueName || venueLocation) && !showPhoto;
+	const surface = venue?.surface;
 	const weather = game.weather;
 	const bettingOn = bettingPrefs.bettingEnabled;
 	const odds = bettingOn ? oddsSummary(game) : null;
@@ -54,7 +60,7 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins, tic
 	// the score, because how many people came is a fact about the building.
 	const attendance = game.attendance;
 	const endedAt = finishedAt(game.startTime, gameDurationMins, locale);
-	if (!networks && !hasVenue && !weather && !odds && !hasOddsProvider && attendance === undefined && !endedAt && !tickets) return null;
+	if (!networks && !hasVenue && !showPhoto && !surface && !weather && !odds && !hasOddsProvider && attendance === undefined && !endedAt && !tickets) return null;
 
 	// Conditions belong to the venue, so they ride in its row rather than claiming a line of their
 	// own. A dome game has no weather, and a neutral site may arrive with no venue we know.
@@ -67,6 +73,17 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins, tic
 	return (
 		<section className='game-info-panel'>
 			<div className='game-info-heading'>{i18n.t('detail.gameInfoHeading')}</div>
+
+			{showPhoto && venue && (
+				<VenuePhoto
+					key={game.id}
+					gameId={game.id}
+					photos={venue.photos}
+					venueName={venueName}
+					venueLocation={venueLocation}
+					onFailed={() => setPhotoFailedFor(game.id)}
+				/>
+			)}
 
 			{networks ? (
 				<InfoRow icon='bi-broadcast' label={i18n.t('detail.infoWatch')}>
@@ -92,6 +109,12 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins, tic
 			{!hasVenue && conditions && (
 				<InfoRow icon={conditions.icon} label={i18n.t('detail.infoWeather')}>
 					<span>{conditions.text}</span>
+				</InfoRow>
+			)}
+
+			{surface && (
+				<InfoRow icon='bi-layers' label={i18n.t('detail.infoSurface')}>
+					<span className='game-info-value-strong'>{i18n.t(surface === 'grass' ? 'detail.surfaceGrass' : 'detail.surfaceTurf')}</span>
 				</InfoRow>
 			)}
 

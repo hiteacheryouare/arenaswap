@@ -646,7 +646,13 @@
 			"n": "他$1人"
 		},
 		"goalMinutePenalty": "{minute} (PK)",
-		"goalMinuteOwnGoal": "{minute} (OG)"
+		"goalMinuteOwnGoal": "{minute} (OG)",
+		"venuePhotoLabel": "スタジアムの写真",
+		"venuePhotoInside": "内観",
+		"venuePhotoOutside": "外観",
+		"infoSurface": "グラウンド",
+		"surfaceGrass": "天然芝",
+		"surfaceTurf": "人工芝"
 	},
 	"standings": {
 		"wins": "勝",

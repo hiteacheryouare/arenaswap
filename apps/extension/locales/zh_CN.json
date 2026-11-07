@@ -646,7 +646,13 @@
 			"n": "还有$1人"
 		},
 		"goalMinutePenalty": "{minute} (点球)",
-		"goalMinuteOwnGoal": "{minute} (乌龙)"
+		"goalMinuteOwnGoal": "{minute} (乌龙)",
+		"venuePhotoLabel": "球场照片",
+		"venuePhotoInside": "场内",
+		"venuePhotoOutside": "场外",
+		"infoSurface": "场地",
+		"surfaceGrass": "天然草",
+		"surfaceTurf": "人造草"
 	},
 	"standings": {
 		"wins": "胜",
