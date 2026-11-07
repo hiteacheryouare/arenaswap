@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Pre-game win probability in Matchup — 2026-11-06
+
+The Matchup tab opens with a Win Probability bar from the summary's `predictor`, which our sources send for NFL, college football, NBA and MLB games. The two projections are rounded separately at the source (77.7 and 22.2), so `parseWinChance` turns them into whole percentages that always add up to 100.
+
 ## Lineups tab for soccer — 2026-11-06
 
 Soccer games get a Lineups tab once the teams name their XIs, drawing both on a pitch in real proportions and in the kit each wore that day (`rosters[].uniform`). Rows come from the formation string and the Opta position names our sources use, so there is no per-formation table; the hero's left team sits at the top, attacking down.

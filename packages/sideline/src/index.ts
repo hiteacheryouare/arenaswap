@@ -16,7 +16,7 @@ export { emptyBoxScore, parseBoxScore, parseLineScore, parseTeamComparison } fro
 export type { BoxScore, BoxScoreAthlete, BoxScoreCategory, BoxScoreTeam, LineScore, LineScoreRow, TeamComparisonRow } from './boxScoreParse';
 export { emptyStandings, parseLeagueStandings, parseStandings, usesFullLeagueStandings } from './standingsParse';
 export type { StandingsColumn, StandingsGroup, StandingsLabelKey, StandingsRow } from './standingsParse';
-export { emptyMatchup, hasMatchupContent, parseInjuries, parseMatchup, parseRecentForm, parseSeasonStats, parseTickets } from './matchupParse';
+export { emptyMatchup, hasMatchupContent, parseInjuries, parseMatchup, parseRecentForm, parseSeasonStats, parseTickets, parseWinChance } from './matchupParse';
 export { emptyLineups, hasLineups, parseLineups } from './lineupParse';
 export type { LineupPlayer, Lineups, TeamLineup } from './lineupParse';
 export { parseVenueDetails } from './venueParse';

@@ -48,6 +48,8 @@ export interface Matchup {
 	form: Paired<FormResult[]>;
 	stats: StatComparison[];
 	injuries: Paired<InjuryEntry[]>;
+	// Whole percentages that add up to 100.
+	winChance: Paired<number> | null;
 }
 
 export interface TicketLink {
@@ -59,12 +61,14 @@ export const emptyMatchup: Matchup = {
 	form: { away: [], home: [] },
 	stats: [],
 	injuries: { away: [], home: [] },
+	winChance: null,
 };
 
 export const hasMatchupContent = (matchup: Matchup): boolean => (
 	matchup.form.away.length > 0 || matchup.form.home.length > 0
 	|| matchup.stats.length > 0
 	|| matchup.injuries.away.length > 0 || matchup.injuries.home.length > 0
+	|| matchup.winChance !== null
 );
 
 interface TeamIds {
@@ -302,10 +306,28 @@ export const parseSeasonStats = (data: unknown, sportType: SportType | undefined
 	return rows;
 };
 
+interface PredictorSide {
+	id?: string;
+	gameProjection?: string;
+}
+
+// The two projections are rounded separately at the source, so they can add up to 99.9.
+export const parseWinChance = (data: unknown, ids: TeamIds): Paired<number> | null => {
+	const predictor = (data as { predictor?: { homeTeam?: PredictorSide; awayTeam?: PredictorSide } })?.predictor;
+	const sides = [predictor?.homeTeam, predictor?.awayTeam];
+	const chanceOf = (id: string) => Number(sides.find(side => side?.id === id)?.gameProjection);
+	const away = chanceOf(ids.away);
+	const home = chanceOf(ids.home);
+	if (!Number.isFinite(away) || !Number.isFinite(home) || away < 0 || home < 0 || away + home <= 0) return null;
+	const awayShare = Math.round((away / (away + home)) * 100);
+	return { away: awayShare, home: 100 - awayShare };
+};
+
 export const parseMatchup = (data: unknown, sportType: SportType | undefined, ids: TeamIds): Matchup => ({
 	form: parseRecentForm(data, ids),
 	stats: parseSeasonStats(data, sportType, ids),
 	injuries: parseInjuries(data, ids),
+	winChance: parseWinChance(data, ids),
 });
 
 // The seller's link carries our sources' referral tag. It comes off so the link is a plain one:

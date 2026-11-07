@@ -1,4 +1,4 @@
-import { emptyMatchup, hasMatchupContent, parseInjuries, parseRecentForm, parseSeasonStats, parseTickets } from '../src/matchupParse';
+import { emptyMatchup, hasMatchupContent, parseInjuries, parseRecentForm, parseSeasonStats, parseTickets, parseWinChance } from '../src/matchupParse';
 
 // Every payload below is trimmed off a live pre-game `/summary` response from 2026-10-02:
 // Colts at Commanders (NFL), White Sox at Guardians (MLB), Rangers at Red Wings (NHL) and Leeds at
@@ -291,5 +291,27 @@ describe('hasMatchupContent', () => {
 	it('is false only when every block came back empty', () => {
 		expect(hasMatchupContent(emptyMatchup)).toBe(false);
 		expect(hasMatchupContent({ ...emptyMatchup, injuries: { away: [], home: parseInjuries(nflSummary, nflIds).home } })).toBe(true);
+	});
+});
+// Bengals at Falcons in Madrid, 2026-11-08: our sources' projections add up to 99.9.
+describe('parseWinChance', () => {
+	const madrid = { predictor: { header: 'Matchup Predictor', homeTeam: { id: '1', gameProjection: '22.2' }, awayTeam: { id: '4', gameProjection: '77.7' } } };
+	const ids = { home: '1', away: '4' };
+
+	it('turns the two projections into whole percentages that add up to 100', () => {
+		expect(parseWinChance(madrid, ids)).toEqual({ away: 78, home: 22 });
+	});
+
+	it('matches sides by team id rather than by which key they arrive under', () => {
+		expect(parseWinChance(madrid, { home: '4', away: '1' })).toEqual({ away: 22, home: 78 });
+	});
+
+	it('has nothing for a league that sends no predictor, or one that names other teams', () => {
+		expect(parseWinChance({}, ids)).toBeNull();
+		expect(parseWinChance(madrid, { home: '9', away: '4' })).toBeNull();
+	});
+
+	it('counts as Matchup content on its own', () => {
+		expect(hasMatchupContent({ ...emptyMatchup, winChance: { away: 60, home: 40 } })).toBe(true);
 	});
 });

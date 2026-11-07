@@ -3,6 +3,7 @@ import { resolveTeamColorPair } from '@arenaswap/chromatic';
 import InjuryReport from './injuryReport';
 import RecentForm from './recentForm';
 import SeasonStatsCompare from './seasonStatsCompare';
+import WinChance from './winChance';
 import type { Matchup } from '@arenaswap/sideline';
 
 interface matchupPanelProps {
@@ -17,6 +18,7 @@ const matchupPanel = ({ game, matchup }: matchupPanelProps) => {
 
 	return (
 		<div className='gd-setup gd-matchup'>
+			<WinChance game={game} chance={matchup.winChance} awayColor={awayColor} homeColor={homeColor} />
 			<RecentForm game={game} form={matchup.form} awayColor={awayColor} homeColor={homeColor} />
 			<SeasonStatsCompare game={game} stats={matchup.stats} awayColor={awayColor} homeColor={homeColor} />
 			<InjuryReport game={game} injuries={matchup.injuries} awayColor={awayColor} homeColor={homeColor} />

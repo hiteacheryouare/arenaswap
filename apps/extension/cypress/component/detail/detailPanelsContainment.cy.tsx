@@ -99,6 +99,7 @@ const crowdedMatchup: Matchup = {
 		away: [injury(1, 'out'), injury(2, 'doubtful'), injury(3, 'questionable'), injury(4, 'dayToDay'), injury(5, 'out')],
 		home: [injury(6, 'out')],
 	},
+	winChance: { away: 99, home: 1 },
 };
 
 describe('matchup panel containment', () => {
