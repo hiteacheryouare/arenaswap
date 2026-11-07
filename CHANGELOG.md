@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Neutral-site games name the city — 2026-11-06
+
+A card's venue line adds the city when a game is at neither team's stadium (`Game.neutralSite`), so the Falcons' home game in Madrid reads "Santiago Bernabéu · Madrid, Spain". Every other card still names the building only.
+
 ## Network logos on live cards and in Game Info — 2026-11-06
 
 The Watch line on live cards and in Game Info shows a network's logo in place of its name, from `geoBroadcasts[].media`, and falls back to the name when there is no logo or it fails to load. Team-coloured cards only take the white `darkLogo`, because a red wordmark disappears into a red team; only about ten national networks send artwork at all.

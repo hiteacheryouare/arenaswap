@@ -1,5 +1,5 @@
 // Cards name the venue and stop there — the city, state and country are a detail-screen line, and
-// gameInfoPanel.cy.tsx is where that pairing is covered.
+// gameInfoPanel.cy.tsx is where that pairing is covered. A neutral site is the one exception.
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
 import PreGameCard from '@arenaswap/ui/src/components/preGameCard';
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
@@ -94,6 +94,24 @@ describe('card venue line', () => {
 			const el = $venue[0];
 			expect(el.scrollWidth, 'venue line does not overflow its column').to.be.at.most(el.clientWidth);
 			expect(el.getBoundingClientRect().height, 'venue occupies a single line').to.be.lessThan(16);
+		});
+	});
+});
+
+// Bengals at Falcons, played in Madrid on 2026-11-08.
+describe('neutral-site venue line', () => {
+	const madrid: Game = { ...liveGame, venueName: 'Santiago Bernabéu', venueLocation: 'Madrid, Spain', neutralSite: true };
+
+	it('adds the city when the game is at neither team\'s stadium', () => {
+		mountPreGame(madrid);
+		cy.get('.game-meta-venue').should('have.text', 'Santiago Bernabéu · Madrid, Spain');
+	});
+
+	it('keeps a long venue and its city inside the card', () => {
+		mountLive({ ...madrid, venueName: 'Tottenham Hotspur Stadium', venueLocation: 'London, England' });
+		cy.get('.game-meta-venue').should($venue => {
+			const el = $venue[0];
+			expect(el.scrollWidth, 'venue line does not overflow its column').to.be.at.most(el.clientWidth);
 		});
 	});
 });

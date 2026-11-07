@@ -255,7 +255,10 @@ export const GameMeta = ({
 	const networks = hideBroadcasts ? undefined : game.broadcasts?.length;
 	// The card names the building only. `venueLocation` is a detail-screen line — see GameInfoPanel
 	// — because the answer a card exists to give is "should I switch to this", not "where is it".
+	// A neutral site is the exception: a Falcons home game at the Bernabéu reads as a mistake without
+	// the city.
 	const venueName = hideVenue ? undefined : game.venueName;
+	const venueCity = venueName && game.neutralSite ? game.venueLocation : undefined;
 	const bettingOn = bettingPrefs?.bettingEnabled ?? false;
 	const odds = bettingOn ? oddsSummary(game) : null;
 	const hasOddsProvider = bettingOn && Boolean(game.odds?.provider?.name);
@@ -264,7 +267,12 @@ export const GameMeta = ({
 
 	return (
 		<div className='d-flex flex-column align-items-center game-meta'>
-			{venueName && <div className='text-center game-meta-venue'>{venueName}</div>}
+			{venueName && (
+				<div className='text-center game-meta-venue'>
+					{venueName}
+					{venueCity && <span className='game-meta-venue-city'> · {venueCity}</span>}
+				</div>
+			)}
 			{networks && (
 				<div className='text-center game-meta-networks'>
 					<span>{t('gameCard.watchLabel')}</span> <NetworkList game={game} surface={dark ? 'team' : 'light'} />

@@ -293,6 +293,7 @@ const EspnCompetitionSchema = z.object({
 	notes: z.optional(z.array(EspnCompetitionNoteSchema)),
 	series: z.catch(z.optional(EspnSeriesSchema), undefined),
 	details: z.catch(z.optional(z.array(z.catch(EspnCompetitionDetailSchema, {}))), undefined),
+	neutralSite: z.optional(z.boolean()),
 });
 
 const EspnSeasonSchema = z.object({

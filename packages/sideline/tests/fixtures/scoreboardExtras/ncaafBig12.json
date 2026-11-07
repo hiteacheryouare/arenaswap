@@ -1,0 +1,240 @@
+{
+	"recordedAt": "2026-11-06T23:53:37.200Z",
+	"league": "ncaaf",
+	"source": "sb_football_college-football.json (links, headlines, odds, leaders and uids removed)",
+	"event": {
+		"id": "401856849",
+		"date": "2026-11-07T17:00Z",
+		"name": "BYU Cougars at Utah Utes",
+		"shortName": "BYU @ UTAH",
+		"season": {
+			"year": 2026,
+			"type": 2,
+			"slug": "regular-season"
+		},
+		"week": {
+			"number": 10
+		},
+		"competitions": [
+			{
+				"id": "401856849",
+				"date": "2026-11-07T17:00Z",
+				"attendance": 0,
+				"type": {
+					"id": "1",
+					"abbreviation": "STD"
+				},
+				"timeValid": true,
+				"dateValid": true,
+				"neutralSite": false,
+				"conferenceCompetition": true,
+				"playByPlayAvailable": false,
+				"recent": false,
+				"venue": {
+					"id": "587",
+					"fullName": "Rice-Eccles Stadium",
+					"address": {
+						"city": "Salt Lake City",
+						"state": "UT",
+						"country": "USA"
+					},
+					"indoor": false
+				},
+				"competitors": [
+					{
+						"id": "254",
+						"type": "team",
+						"order": 0,
+						"homeAway": "home",
+						"team": {
+							"id": "254",
+							"location": "Utah",
+							"name": "Utes",
+							"abbreviation": "UTAH",
+							"displayName": "Utah Utes",
+							"shortDisplayName": "Utah",
+							"color": "be0000",
+							"alternateColor": "ffffff",
+							"isActive": true,
+							"venue": {
+								"id": "587"
+							},
+							"logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/254.png",
+							"logoDark": "https://a.espncdn.com/i/teamlogos/ncaa/500-dark/254.png",
+							"conferenceId": "4"
+						},
+						"score": "0",
+						"curatedRank": {
+							"current": 3
+						},
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "overall",
+								"type": "total",
+								"summary": "8-0"
+							},
+							{
+								"name": "Home",
+								"abbreviation": "Home",
+								"type": "homerecord",
+								"summary": "5-0"
+							},
+							{
+								"name": "Away",
+								"abbreviation": "Away",
+								"type": "awayrecord",
+								"summary": "3-0"
+							},
+							{
+								"name": "vs. Conf.",
+								"abbreviation": "CONF",
+								"type": "vsconf",
+								"summary": "5-0"
+							}
+						]
+					},
+					{
+						"id": "252",
+						"type": "team",
+						"order": 1,
+						"homeAway": "away",
+						"team": {
+							"id": "252",
+							"location": "BYU",
+							"name": "Cougars",
+							"abbreviation": "BYU",
+							"displayName": "BYU Cougars",
+							"shortDisplayName": "BYU",
+							"color": "0047ba",
+							"alternateColor": "002e5d",
+							"isActive": true,
+							"venue": {
+								"id": "3801"
+							},
+							"logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/252.png",
+							"logoDark": "https://a.espncdn.com/i/teamlogos/ncaa/500-dark/252.png",
+							"conferenceId": "4"
+						},
+						"score": "0",
+						"curatedRank": {
+							"current": 9
+						},
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "overall",
+								"type": "total",
+								"summary": "7-1"
+							},
+							{
+								"name": "Home",
+								"abbreviation": "Home",
+								"type": "homerecord",
+								"summary": "5-0"
+							},
+							{
+								"name": "Away",
+								"abbreviation": "Away",
+								"type": "awayrecord",
+								"summary": "2-1"
+							},
+							{
+								"name": "vs. Conf.",
+								"abbreviation": "CONF",
+								"type": "vsconf",
+								"summary": "4-1"
+							}
+						]
+					}
+				],
+				"notes": [],
+				"status": {
+					"clock": 0,
+					"displayClock": "0:00",
+					"period": 0,
+					"type": {
+						"id": "1",
+						"name": "STATUS_SCHEDULED",
+						"state": "pre",
+						"completed": false,
+						"description": "Scheduled",
+						"detail": "Sat, November 7th at 12:00 PM EST",
+						"shortDetail": "11/7 - 12:00 PM EST"
+					}
+				},
+				"broadcasts": [
+					{
+						"market": "national",
+						"names": [
+							"ABC"
+						]
+					}
+				],
+				"groups": {
+					"id": "4",
+					"name": "Big 12 Conference",
+					"shortName": "Big 12",
+					"isConference": true
+				},
+				"format": {
+					"regulation": {
+						"periods": 4
+					}
+				},
+				"startDate": "2026-11-07T17:00Z",
+				"broadcast": "ABC",
+				"geoBroadcasts": [
+					{
+						"type": {
+							"id": "1",
+							"shortName": "TV"
+						},
+						"market": {
+							"id": "1",
+							"type": "National"
+						},
+						"media": {
+							"shortName": "ABC",
+							"logo": "https://a.espncdn.com/guid/2acff74d-269f-36ac-96eb-9c66f8ba52ff/logos/default.png",
+							"darkLogo": "https://a.espncdn.com/guid/2acff74d-269f-36ac-96eb-9c66f8ba52ff/logos/default-dark.png"
+						},
+						"lang": "en",
+						"region": "us"
+					}
+				]
+			}
+		],
+		"weather": {
+			"displayValue": "Mostly sunny",
+			"temperature": 45,
+			"highTemperature": 45,
+			"conditionId": "2",
+			"link": {
+				"language": "en-US",
+				"rel": [
+					"84112"
+				],
+				"href": "http://www.accuweather.com/en/us/rice-eccles-stadium-ut/84111/hourly-weather-forecast/53656_poi?day=2&hbhhour=10&lang=en-us",
+				"text": "Weather",
+				"shortText": "Weather",
+				"isExternal": true,
+				"isPremium": false
+			}
+		},
+		"status": {
+			"clock": 0,
+			"displayClock": "0:00",
+			"period": 0,
+			"type": {
+				"id": "1",
+				"name": "STATUS_SCHEDULED",
+				"state": "pre",
+				"completed": false,
+				"description": "Scheduled",
+				"detail": "Sat, November 7th at 12:00 PM EST",
+				"shortDetail": "11/7 - 12:00 PM EST"
+			}
+		}
+	}
+}

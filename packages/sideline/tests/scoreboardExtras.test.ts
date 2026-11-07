@@ -12,6 +12,19 @@ const gameFrom = (name: string): Game => {
 	return game;
 };
 
+describe('neutral sites', () => {
+	it('flags a game played at neither team\'s stadium', () => {
+		const game = gameFrom('nflMadrid');
+		expect(game.neutralSite).toBe(true);
+		expect(game.venueName).toBe('Santiago Bernabéu');
+		expect(game.venueLocation).toBe('Madrid, Spain');
+	});
+
+	it('leaves a home game unflagged', () => {
+		expect(gameFrom('ncaafBig12').neutralSite).toBeUndefined();
+	});
+});
+
 describe('network logos', () => {
 	it('keeps both artworks, keyed by the name the broadcast list uses', () => {
 		const game = gameFrom('ncaabNetworkLogos');

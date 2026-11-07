@@ -292,6 +292,7 @@ export interface Game {
 	redCardEvents?: RedCardEvent[];
 	// Keyed by the name in `broadcasts`.
 	broadcastLogos?: Record<string, BroadcastLogo>;
+	neutralSite?: boolean;
 }
 
 // What becomes of a registered tab once its game is over. 'keep' is what ArenaSwap has always

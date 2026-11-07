@@ -1,0 +1,206 @@
+{
+	"recordedAt": "2026-11-06T23:53:37.200Z",
+	"league": "nfl",
+	"source": "sb_football_nfl.json (links, headlines, odds, leaders and uids removed)",
+	"event": {
+		"id": "401873038",
+		"date": "2026-11-08T14:30Z",
+		"name": "Cincinnati Bengals at Atlanta Falcons",
+		"shortName": "CIN VS ATL",
+		"season": {
+			"year": 2026,
+			"type": 2,
+			"slug": "regular-season"
+		},
+		"week": {
+			"number": 9
+		},
+		"competitions": [
+			{
+				"id": "401873038",
+				"date": "2026-11-08T14:30Z",
+				"attendance": 0,
+				"type": {
+					"id": "1",
+					"abbreviation": "STD"
+				},
+				"timeValid": true,
+				"neutralSite": true,
+				"conferenceCompetition": false,
+				"playByPlayAvailable": false,
+				"recent": false,
+				"venue": {
+					"id": "1353",
+					"fullName": "Santiago Bernabéu",
+					"address": {
+						"city": "Madrid",
+						"country": "Spain"
+					},
+					"indoor": true
+				},
+				"competitors": [
+					{
+						"id": "1",
+						"type": "team",
+						"order": 0,
+						"homeAway": "home",
+						"team": {
+							"id": "1",
+							"location": "Atlanta",
+							"name": "Falcons",
+							"abbreviation": "ATL",
+							"displayName": "Atlanta Falcons",
+							"shortDisplayName": "Falcons",
+							"color": "a71930",
+							"alternateColor": "000000",
+							"isActive": true,
+							"venue": {
+								"id": "5348"
+							},
+							"logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/atl.png",
+							"logoDark": "https://a.espncdn.com/i/teamlogos/nfl/500-dark/scoreboard/atl.png"
+						},
+						"score": "0",
+						"curatedRank": {
+							"current": 99
+						},
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "Any",
+								"type": "total",
+								"summary": "3-5"
+							},
+							{
+								"name": "Home",
+								"type": "home",
+								"summary": "1-3"
+							},
+							{
+								"name": "Road",
+								"type": "road",
+								"summary": "2-2"
+							}
+						]
+					},
+					{
+						"id": "4",
+						"type": "team",
+						"order": 1,
+						"homeAway": "away",
+						"team": {
+							"id": "4",
+							"location": "Cincinnati",
+							"name": "Bengals",
+							"abbreviation": "CIN",
+							"displayName": "Cincinnati Bengals",
+							"shortDisplayName": "Bengals",
+							"color": "fb4f14",
+							"alternateColor": "000000",
+							"isActive": true,
+							"venue": {
+								"id": "3874"
+							},
+							"logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/cin.png",
+							"logoDark": "https://a.espncdn.com/i/teamlogos/nfl/500-dark/scoreboard/cin.png"
+						},
+						"score": "0",
+						"curatedRank": {
+							"current": 99
+						},
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "Any",
+								"type": "total",
+								"summary": "5-2"
+							},
+							{
+								"name": "Home",
+								"type": "home",
+								"summary": "2-1"
+							},
+							{
+								"name": "Road",
+								"type": "road",
+								"summary": "3-1"
+							}
+						]
+					}
+				],
+				"notes": [
+					{
+						"type": "event",
+						"headline": "NFL Madrid Game"
+					}
+				],
+				"status": {
+					"clock": 0,
+					"displayClock": "0:00",
+					"period": 0,
+					"type": {
+						"id": "1",
+						"name": "STATUS_SCHEDULED",
+						"state": "pre",
+						"completed": false,
+						"description": "Scheduled",
+						"detail": "Sun, November 8th at 9:30 AM EST",
+						"shortDetail": "11/8 - 9:30 AM EST"
+					},
+					"isTBDFlex": false
+				},
+				"broadcasts": [
+					{
+						"market": "national",
+						"names": [
+							"NFL Net"
+						]
+					}
+				],
+				"format": {
+					"regulation": {
+						"periods": 4
+					},
+					"overtime": {
+						"periods": 1
+					}
+				},
+				"startDate": "2026-11-08T14:30Z",
+				"broadcast": "NFL Net",
+				"geoBroadcasts": [
+					{
+						"type": {
+							"id": "1",
+							"shortName": "TV"
+						},
+						"market": {
+							"id": "1",
+							"type": "National"
+						},
+						"media": {
+							"shortName": "NFL Net",
+							"logo": "https://a.espncdn.com/guid/8281947e-bd6c-3a8a-9b1d-6fc957d1709a/logos/default.png",
+							"darkLogo": "https://a.espncdn.com/guid/8281947e-bd6c-3a8a-9b1d-6fc957d1709a/logos/default-dark.png"
+						},
+						"lang": "en",
+						"region": "us"
+					}
+				]
+			}
+		],
+		"status": {
+			"clock": 0,
+			"displayClock": "0:00",
+			"period": 0,
+			"type": {
+				"id": "1",
+				"name": "STATUS_SCHEDULED",
+				"state": "pre",
+				"completed": false,
+				"description": "Scheduled",
+				"detail": "Sun, November 8th at 9:30 AM EST",
+				"shortDetail": "11/8 - 9:30 AM EST"
+			}
+		}
+	}
+}

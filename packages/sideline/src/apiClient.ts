@@ -812,6 +812,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		series: parseSeries(comp, home.id, away.id),
 		redCardEvents: leagueConfig.sportType === 'soccer' ? parseRedCards(comp) : undefined,
 		broadcastLogos: parseBroadcastLogos(comp),
+		neutralSite: comp.neutralSite || undefined,
 	};
 };
 
