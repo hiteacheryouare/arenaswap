@@ -1,0 +1,1662 @@
+{
+	"SAS": {
+		"team": {
+			"id": "3997"
+		},
+		"formation": "4-3-3",
+		"uniform": {
+			"type": "home",
+			"color": "339933",
+			"alternateColor": "000000"
+		},
+		"roster": [
+			{
+				"starter": true,
+				"jersey": "80",
+				"formationPlace": "1",
+				"position": {
+					"abbreviation": "G"
+				},
+				"athlete": {
+					"id": "261399",
+					"lastName": "Turati",
+					"shortName": "S. Turati",
+					"displayName": "Stefano Turati"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "5",
+				"formationPlace": "6",
+				"position": {
+					"abbreviation": "CD-L"
+				},
+				"athlete": {
+					"id": "287677",
+					"lastName": "Candé",
+					"shortName": "F. Candé",
+					"displayName": "Fali Candé"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "21",
+				"formationPlace": "5",
+				"position": {
+					"abbreviation": "CD-R"
+				},
+				"athlete": {
+					"id": "272873",
+					"lastName": "Idzes",
+					"shortName": "J. Idzes",
+					"displayName": "Jay Idzes"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "3",
+				"formationPlace": "3",
+				"position": {
+					"abbreviation": "LB"
+				},
+				"athlete": {
+					"id": "290418",
+					"lastName": "Doig",
+					"shortName": "J. Doig",
+					"displayName": "Josh Doig"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "6",
+				"formationPlace": "2",
+				"position": {
+					"abbreviation": "RB"
+				},
+				"athlete": {
+					"id": "288483",
+					"lastName": "Walukiewicz",
+					"shortName": "S. Walukiewicz",
+					"displayName": "Sebastian Walukiewicz"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "18",
+				"formationPlace": "4",
+				"position": {
+					"abbreviation": "CM"
+				},
+				"athlete": {
+					"id": "135743",
+					"lastName": "Matic",
+					"shortName": "N. Matic",
+					"displayName": "Nemanja Matic"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "55",
+				"formationPlace": "8",
+				"position": {
+					"abbreviation": "LM"
+				},
+				"athlete": {
+					"id": "347018",
+					"lastName": "Sulemana",
+					"shortName": "Sulemana",
+					"displayName": "Sulemana"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "17",
+				"formationPlace": "7",
+				"position": {
+					"abbreviation": "RM"
+				},
+				"athlete": {
+					"id": "344917",
+					"lastName": "Adzic",
+					"shortName": "V. Adzic",
+					"displayName": "Vasilije Adzic"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "94",
+				"formationPlace": "9",
+				"position": {
+					"abbreviation": "F"
+				},
+				"athlete": {
+					"id": "286929",
+					"lastName": "Esposito",
+					"shortName": "S. Esposito",
+					"displayName": "Sebastiano Esposito"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "45",
+				"formationPlace": "11",
+				"position": {
+					"abbreviation": "LF"
+				},
+				"athlete": {
+					"id": "272719",
+					"lastName": "Laurienté",
+					"shortName": "A. Laurienté",
+					"displayName": "Armand Laurienté"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "10",
+				"formationPlace": "10",
+				"position": {
+					"abbreviation": "RF"
+				},
+				"athlete": {
+					"id": "173817",
+					"lastName": "Berardi",
+					"shortName": "D. Berardi",
+					"displayName": "Domenico Berardi"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "12",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "234305",
+					"lastName": "Satalino",
+					"shortName": "G. Satalino",
+					"displayName": "Giacomo Satalino"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "33",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "304217",
+					"lastName": "Obrador",
+					"shortName": "R. Obrador",
+					"displayName": "Rafael Obrador"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "26",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "291729",
+					"lastName": "Odenthal",
+					"shortName": "C. Odenthal",
+					"displayName": "Cas Odenthal"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "49",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "259838",
+					"lastName": "Muric",
+					"shortName": "A. Muric",
+					"displayName": "Arijanet Muric"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "46",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "412248",
+					"lastName": "Cinquegrano",
+					"shortName": "S. Cinquegrano",
+					"displayName": "Simone Cinquegrano"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "35",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "347408",
+					"lastName": "Lipani",
+					"shortName": "L. Lipani",
+					"displayName": "Luca Lipani"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "20",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "292199",
+					"lastName": "van der Brempt",
+					"shortName": "I. van der Brempt",
+					"displayName": "Ignace van der Brempt"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "14",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "3129533",
+					"lastName": "Kulla",
+					"shortName": "G. Kulla",
+					"displayName": "Gabriel Kulla"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "50",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "384170",
+					"lastName": "Bakola",
+					"shortName": "D. Bakola",
+					"displayName": "Darryl Bakola"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "8",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "288788",
+					"lastName": "Ghion",
+					"shortName": "A. Ghion",
+					"displayName": "Andrea Ghion"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "9",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "283375",
+					"lastName": "Bowie",
+					"shortName": "K. Bowie",
+					"displayName": "Kieron Bowie"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "15",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "194766",
+					"lastName": "Caleta-Car",
+					"shortName": "D. Caleta-Car",
+					"displayName": "Duje Caleta-Car"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "77",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "233088",
+					"lastName": "Pierini",
+					"shortName": "N. Pierini",
+					"displayName": "Nicholas Pierini"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "70",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "333925",
+					"lastName": "Pieragnolo",
+					"shortName": "E. Pieragnolo",
+					"displayName": "Edoardo Pieragnolo"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "25",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "331231",
+					"lastName": "Domínguez",
+					"shortName": "B. Domínguez",
+					"displayName": "Benjamín Domínguez"
+				}
+			}
+		]
+	},
+	"PAR": {
+		"team": {
+			"id": "115"
+		},
+		"formation": "3-5-2",
+		"uniform": {
+			"type": "away",
+			"color": "efca1c",
+			"alternateColor": "3333cc"
+		},
+		"roster": [
+			{
+				"starter": true,
+				"jersey": "30",
+				"formationPlace": "1",
+				"position": {
+					"abbreviation": "G"
+				},
+				"athlete": {
+					"id": "366510",
+					"lastName": "Daffara",
+					"shortName": "G. Daffara",
+					"displayName": "Giovanni Daffara"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "37",
+				"formationPlace": "5",
+				"position": {
+					"abbreviation": "CD"
+				},
+				"athlete": {
+					"id": "366526",
+					"lastName": "Troilo",
+					"shortName": "M. Troilo",
+					"displayName": "Mariano Troilo"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "72",
+				"formationPlace": "4",
+				"position": {
+					"abbreviation": "CD-L"
+				},
+				"athlete": {
+					"id": "417783",
+					"lastName": "Drobnic",
+					"shortName": "D. Drobnic",
+					"displayName": "Dominik Drobnic"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "15",
+				"formationPlace": "6",
+				"position": {
+					"abbreviation": "CD-R"
+				},
+				"athlete": {
+					"id": "272694",
+					"lastName": "Del Prato",
+					"shortName": "E. Del Prato",
+					"displayName": "Enrico Del Prato"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "16",
+				"formationPlace": "8",
+				"position": {
+					"abbreviation": "CM-L"
+				},
+				"athlete": {
+					"id": "316609",
+					"lastName": "Keita",
+					"shortName": "M. Keita",
+					"displayName": "Mandela Keita"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "80",
+				"formationPlace": "7",
+				"position": {
+					"abbreviation": "CM-R"
+				},
+				"athlete": {
+					"id": "323118",
+					"lastName": "Fabbian",
+					"shortName": "G. Fabbian",
+					"displayName": "Giovanni Fabbian"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "4",
+				"formationPlace": "11",
+				"position": {
+					"abbreviation": "AM"
+				},
+				"athlete": {
+					"id": "218857",
+					"lastName": "Sierro",
+					"shortName": "V. Sierro",
+					"displayName": "Vincent Sierro"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "14",
+				"formationPlace": "3",
+				"position": {
+					"abbreviation": "LM"
+				},
+				"athlete": {
+					"id": "261274",
+					"lastName": "Valeri",
+					"shortName": "E. Valeri",
+					"displayName": "Emanuele Valeri"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "27",
+				"formationPlace": "2",
+				"position": {
+					"abbreviation": "RM"
+				},
+				"athlete": {
+					"id": "396009",
+					"lastName": "Britschgi",
+					"shortName": "S. Britschgi",
+					"displayName": "Sascha Britschgi"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "76",
+				"formationPlace": "9",
+				"position": {
+					"abbreviation": "CF-L"
+				},
+				"athlete": {
+					"id": "413818",
+					"lastName": "Lontani",
+					"shortName": "S. Lontani",
+					"displayName": "Simone Lontani"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "19",
+				"formationPlace": "10",
+				"position": {
+					"abbreviation": "CF-R"
+				},
+				"athlete": {
+					"id": "287430",
+					"lastName": "Toure",
+					"shortName": "E. Toure",
+					"displayName": "El Bilal Toure"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "32",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "339198",
+					"lastName": "Ordoñez",
+					"shortName": "C. Ordoñez",
+					"displayName": "Christian Ordoñez"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "40",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "290792",
+					"lastName": "Corvi",
+					"shortName": "E. Corvi",
+					"displayName": "Edoardo Corvi"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "34",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "196860",
+					"lastName": "Carlos",
+					"shortName": "D. Carlos",
+					"displayName": "Diego Carlos"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "20",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "310860",
+					"lastName": "Frigan",
+					"shortName": "M. Frigan",
+					"displayName": "Matija Frigan"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "11",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "253569",
+					"lastName": "Almqvist",
+					"shortName": "P. Almqvist",
+					"displayName": "Pontus Almqvist"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "22",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "252927",
+					"lastName": "Ghidotti",
+					"shortName": "S. Ghidotti",
+					"displayName": "Simone Ghidotti"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "47",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "371539",
+					"lastName": "Konate",
+					"shortName": "A. Konate",
+					"displayName": "Abdou-Salam Konate"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "8",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "356358",
+					"lastName": "Cremaschi",
+					"shortName": "B. Cremaschi",
+					"displayName": "Benjamin Cremaschi"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "41",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "286764",
+					"lastName": "Nicolussi Caviglia",
+					"shortName": "H. Nicolussi Caviglia",
+					"displayName": "Hans Nicolussi Caviglia"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "7",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "194718",
+					"lastName": "Diallo",
+					"shortName": "O. Diallo",
+					"displayName": "Ousmane Diallo"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "29",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "308939",
+					"lastName": "Carboni",
+					"shortName": "F. Carboni",
+					"displayName": "Franco Carboni"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "9",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "301980",
+					"lastName": "Romero",
+					"shortName": "J. Romero",
+					"displayName": "José Romero"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "3",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "288540",
+					"lastName": "Ndiaye",
+					"shortName": "A. Ndiaye",
+					"displayName": "Abdoulaye Ndiaye"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "23",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "361749",
+					"lastName": "Elphege",
+					"shortName": "N. Elphege",
+					"displayName": "Nesta Elphege"
+				}
+			}
+		]
+	},
+	"SEV": {
+		"team": {
+			"id": "243"
+		},
+		"formation": "4-4-2",
+		"uniform": {
+			"type": "home",
+			"color": "ffffff"
+		},
+		"roster": [
+			{
+				"starter": true,
+				"jersey": "1",
+				"formationPlace": "1",
+				"position": {
+					"abbreviation": "G"
+				},
+				"athlete": {
+					"id": "159135",
+					"lastName": "Vlachodimos",
+					"shortName": "O. Vlachodimos",
+					"displayName": "Odisseas Vlachodimos"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "4",
+				"formationPlace": "6",
+				"position": {
+					"abbreviation": "CD-L"
+				},
+				"athlete": {
+					"id": "334163",
+					"lastName": "Salas",
+					"shortName": "E. Salas",
+					"displayName": "Enrique Salas"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "5",
+				"formationPlace": "5",
+				"position": {
+					"abbreviation": "CD-R"
+				},
+				"athlete": {
+					"id": "332246",
+					"lastName": "Castrín",
+					"shortName": "A. Castrín",
+					"displayName": "Andrés Castrín"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "17",
+				"formationPlace": "3",
+				"position": {
+					"abbreviation": "LB"
+				},
+				"athlete": {
+					"id": "222037",
+					"lastName": "Suazo",
+					"shortName": "G. Suazo",
+					"displayName": "Gabriel Suazo"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "2",
+				"formationPlace": "2",
+				"position": {
+					"abbreviation": "RB"
+				},
+				"athlete": {
+					"id": "279738",
+					"lastName": "Iglesias",
+					"shortName": "J. Iglesias",
+					"displayName": "Juan Iglesias"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "24",
+				"formationPlace": "8",
+				"position": {
+					"abbreviation": "CM-L"
+				},
+				"athlete": {
+					"id": "277307",
+					"lastName": "Fofana",
+					"shortName": "Y. Fofana",
+					"displayName": "Youssouf Fofana"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "6",
+				"formationPlace": "4",
+				"position": {
+					"abbreviation": "CM-R"
+				},
+				"athlete": {
+					"id": "282289",
+					"lastName": "Agoumé",
+					"shortName": "L. Agoumé",
+					"displayName": "Lucien Agoumé"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "20",
+				"formationPlace": "11",
+				"position": {
+					"abbreviation": "LM"
+				},
+				"athlete": {
+					"id": "288900",
+					"lastName": "Correia",
+					"shortName": "F. Correia",
+					"displayName": "Felix Correia"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "21",
+				"formationPlace": "7",
+				"position": {
+					"abbreviation": "RM"
+				},
+				"athlete": {
+					"id": "254270",
+					"lastName": "Ejuke",
+					"shortName": "C. Ejuke",
+					"displayName": "Chidera Ejuke"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "16",
+				"formationPlace": "9",
+				"position": {
+					"abbreviation": "CF-L"
+				},
+				"athlete": {
+					"id": "365821",
+					"lastName": "Romero",
+					"shortName": "I. Romero",
+					"displayName": "Isaac Romero"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "19",
+				"formationPlace": "10",
+				"position": {
+					"abbreviation": "CF-R"
+				},
+				"athlete": {
+					"id": "323033",
+					"lastName": "Stassin",
+					"shortName": "L. Stassin",
+					"displayName": "Lucas Stassin"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "15",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "215386",
+					"lastName": "Cardoso",
+					"shortName": "F. Cardoso",
+					"displayName": "Fábio Cardoso"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "10",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "347359",
+					"lastName": "Fernández",
+					"shortName": "Peque",
+					"displayName": "Peque"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "12",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "304213",
+					"lastName": "Sangante",
+					"shortName": "A. Sangante",
+					"displayName": "Arouna Sangante"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "13",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "362874",
+					"lastName": "González",
+					"shortName": "F. González",
+					"displayName": "Fran González"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "18",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "254320",
+					"lastName": "Guridi",
+					"shortName": "J. Guridi",
+					"displayName": "Jon Guridi"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "22",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "250508",
+					"lastName": "Carmona",
+					"shortName": "P. Carmona",
+					"displayName": "Pepe Carmona"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "9",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "322993",
+					"lastName": "Ure",
+					"shortName": "R. Ure",
+					"displayName": "Robbie Ure"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "7",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "271635",
+					"lastName": "González",
+					"shortName": "A. González",
+					"displayName": "Alfonso González"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "11",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "259513",
+					"lastName": "Vargas",
+					"shortName": "R. Vargas",
+					"displayName": "Rubén Vargas"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "8",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "258923",
+					"lastName": "Kochorashvili",
+					"shortName": "G. Kochorashvili",
+					"displayName": "Giorgi Kochorashvili"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "3",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "387493",
+					"lastName": "Díaz",
+					"shortName": "J. Díaz",
+					"displayName": "Julio Díaz"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "14",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "356228",
+					"lastName": "Bueno",
+					"shortName": "M. Bueno",
+					"displayName": "Manu Bueno"
+				}
+			}
+		]
+	},
+	"HSV": {
+		"team": {
+			"id": "127"
+		},
+		"formation": "3-4-2-1",
+		"uniform": {
+			"type": "home",
+			"color": "f8f8ff",
+			"alternateColor": "701a23"
+		},
+		"roster": [
+			{
+				"starter": true,
+				"jersey": "1",
+				"formationPlace": "1",
+				"position": {
+					"abbreviation": "G"
+				},
+				"athlete": {
+					"id": "180162",
+					"lastName": "Fernandes",
+					"shortName": "D. Fernandes",
+					"displayName": "Daniel Heuer Fernandes"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "23",
+				"formationPlace": "5",
+				"position": {
+					"abbreviation": "CD"
+				},
+				"athlete": {
+					"id": "251061",
+					"lastName": "Torunarigha",
+					"shortName": "J. Torunarigha",
+					"displayName": "Jordan Torunarigha"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "17",
+				"formationPlace": "4",
+				"position": {
+					"abbreviation": "CD-L"
+				},
+				"athlete": {
+					"id": "309840",
+					"lastName": "Omari",
+					"shortName": "W. Omari",
+					"displayName": "Warmed Omari"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "43",
+				"formationPlace": "6",
+				"position": {
+					"abbreviation": "CD-R"
+				},
+				"athlete": {
+					"id": "415376",
+					"lastName": "Nandja",
+					"shortName": "S. Nandja",
+					"displayName": "Shafiq Nandja"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "28",
+				"formationPlace": "8",
+				"position": {
+					"abbreviation": "CM-L"
+				},
+				"athlete": {
+					"id": "243626",
+					"lastName": "Muheim",
+					"shortName": "M. Muheim",
+					"displayName": "Miro Muheim"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "6",
+				"formationPlace": "7",
+				"position": {
+					"abbreviation": "CM-R"
+				},
+				"athlete": {
+					"id": "268239",
+					"lastName": "Lokonga",
+					"shortName": "A. Lokonga",
+					"displayName": "Albert Sambi Lokonga"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "37",
+				"formationPlace": "3",
+				"position": {
+					"abbreviation": "LM"
+				},
+				"athlete": {
+					"id": "410645",
+					"lastName": "Lemke",
+					"shortName": "L. Lemke",
+					"displayName": "Louis Lemke"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "3",
+				"formationPlace": "2",
+				"position": {
+					"abbreviation": "RM"
+				},
+				"athlete": {
+					"id": "313361",
+					"lastName": "Møller Wolfe",
+					"shortName": "D. Møller Wolfe",
+					"displayName": "David Møller Wolfe"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "9",
+				"formationPlace": "9",
+				"position": {
+					"abbreviation": "F"
+				},
+				"athlete": {
+					"id": "289769",
+					"lastName": "Moffi",
+					"shortName": "T. Moffi",
+					"displayName": "Terem Moffi"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "11",
+				"formationPlace": "11",
+				"position": {
+					"abbreviation": "CF-L"
+				},
+				"athlete": {
+					"id": "297750",
+					"lastName": "Grønbaek",
+					"shortName": "A. Grønbaek",
+					"displayName": "Albert Grønbaek"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "5",
+				"formationPlace": "10",
+				"position": {
+					"abbreviation": "CF-R"
+				},
+				"athlete": {
+					"id": "332878",
+					"lastName": "Adeline",
+					"shortName": "M. Adeline",
+					"displayName": "Martin Adeline"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "38",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "384471",
+					"lastName": "Røssing-Lelesiit",
+					"shortName": "A. Røssing-Lelesiit",
+					"displayName": "Alexander Røssing-Lelesiit"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "10",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "290412",
+					"lastName": "Pherai",
+					"shortName": "I. Pherai",
+					"displayName": "Immanuel Pherai"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "27",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "232662",
+					"lastName": "Daka",
+					"shortName": "P. Daka",
+					"displayName": "Patson Daka"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "12",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "304258",
+					"lastName": "Tangvik",
+					"shortName": "S. Tangvik",
+					"displayName": "Sander Tangvik"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "48",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "3115345",
+					"lastName": "Bissi Mouelle",
+					"shortName": "J. Bissi Mouelle",
+					"displayName": "Jason-Dean Bissi Mouelle"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "22",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "377704",
+					"lastName": "Amoako",
+					"shortName": "K. Amoako",
+					"displayName": "Kofi Amoako"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "18",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "238542",
+					"lastName": "Jatta",
+					"shortName": "B. Jatta",
+					"displayName": "Bakery Jatta"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "19",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "376056",
+					"lastName": "Stange",
+					"shortName": "O. Stange",
+					"displayName": "Otto Stange"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "7",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "325024",
+					"lastName": "El Ouahdi",
+					"shortName": "Z. El Ouahdi",
+					"displayName": "Zakaria El Ouahdi"
+				}
+			}
+		]
+	},
+	"EVE": {
+		"team": {
+			"id": "368"
+		},
+		"formation": "4-2-3-1",
+		"uniform": {
+			"type": "home",
+			"color": "0000cc",
+			"alternateColor": "ffffff"
+		},
+		"roster": [
+			{
+				"starter": true,
+				"jersey": "1",
+				"formationPlace": "1",
+				"position": {
+					"abbreviation": "G"
+				},
+				"athlete": {
+					"id": "159443",
+					"lastName": "Pickford",
+					"shortName": "J. Pickford",
+					"displayName": "Jordan Pickford"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "4",
+				"formationPlace": "6",
+				"position": {
+					"abbreviation": "CD-L"
+				},
+				"athlete": {
+					"id": "286965",
+					"lastName": "Branthwaite",
+					"shortName": "J. Branthwaite",
+					"displayName": "Jarrad Branthwaite"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "6",
+				"formationPlace": "5",
+				"position": {
+					"abbreviation": "CD-R"
+				},
+				"athlete": {
+					"id": "155226",
+					"lastName": "Tarkowski",
+					"shortName": "J. Tarkowski",
+					"displayName": "James Tarkowski"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "16",
+				"formationPlace": "3",
+				"position": {
+					"abbreviation": "LB"
+				},
+				"athlete": {
+					"id": "262594",
+					"lastName": "Mykolenko",
+					"shortName": "V. Mykolenko",
+					"displayName": "Vitaliy Mykolenko"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "34",
+				"formationPlace": "2",
+				"position": {
+					"abbreviation": "RB"
+				},
+				"athlete": {
+					"id": "311963",
+					"lastName": "Röhl",
+					"shortName": "M. Röhl",
+					"displayName": "Merlin Röhl"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "8",
+				"formationPlace": "10",
+				"position": {
+					"abbreviation": "AM"
+				},
+				"athlete": {
+					"id": "252389",
+					"lastName": "Dewsbury-Hall",
+					"shortName": "K. Dewsbury-Hall",
+					"displayName": "Kiernan Dewsbury-Hall"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "37",
+				"formationPlace": "4",
+				"position": {
+					"abbreviation": "LM"
+				},
+				"athlete": {
+					"id": "276220",
+					"lastName": "Garner",
+					"shortName": "J. Garner",
+					"displayName": "James Garner"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "45",
+				"formationPlace": "8",
+				"position": {
+					"abbreviation": "RM"
+				},
+				"athlete": {
+					"id": "378458",
+					"lastName": "Armstrong",
+					"shortName": "H. Armstrong",
+					"displayName": "Harrison Armstrong"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "11",
+				"formationPlace": "9",
+				"position": {
+					"abbreviation": "F"
+				},
+				"athlete": {
+					"id": "301166",
+					"lastName": "Barry",
+					"shortName": "T. Barry",
+					"displayName": "Thierno Barry"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "19",
+				"formationPlace": "11",
+				"position": {
+					"abbreviation": "AM-L"
+				},
+				"athlete": {
+					"id": "368864",
+					"lastName": "George",
+					"shortName": "T. George",
+					"displayName": "Tyrique George"
+				}
+			},
+			{
+				"starter": true,
+				"jersey": "20",
+				"formationPlace": "7",
+				"position": {
+					"abbreviation": "AM-R"
+				},
+				"athlete": {
+					"id": "340640",
+					"lastName": "Dibling",
+					"shortName": "T. Dibling",
+					"displayName": "Tyler Dibling"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "15",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "283586",
+					"lastName": "O'Brien",
+					"shortName": "J. O'Brien",
+					"displayName": "Jake O'Brien"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "58",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "367559",
+					"lastName": "Graham",
+					"shortName": "B. Graham",
+					"displayName": "Braiden Graham"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "5",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "4946",
+					"lastName": "Keane",
+					"shortName": "M. Keane",
+					"displayName": "Michael Keane"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "24",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "302162",
+					"lastName": "Alcaraz",
+					"shortName": "C. Alcaraz",
+					"displayName": "Charly Alcaraz"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "12",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "7441",
+					"lastName": "Travers",
+					"shortName": "M. Travers",
+					"displayName": "Mark Travers"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "22",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "291307",
+					"lastName": "Johnson",
+					"shortName": "B. Johnson",
+					"displayName": "Brennan Johnson"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "23",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "178077",
+					"lastName": "Nørgaard",
+					"shortName": "C. Nørgaard",
+					"displayName": "Christian Nørgaard"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "2",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "214402",
+					"lastName": "Maitland-Niles",
+					"shortName": "A. Maitland-Niles",
+					"displayName": "Ainsley Maitland-Niles"
+				}
+			},
+			{
+				"starter": false,
+				"jersey": "30",
+				"formationPlace": "0",
+				"position": {
+					"abbreviation": "SUB"
+				},
+				"athlete": {
+					"id": "282978",
+					"lastName": "Hackney",
+					"shortName": "H. Hackney",
+					"displayName": "Hayden Hackney"
+				}
+			}
+		]
+	}
+}

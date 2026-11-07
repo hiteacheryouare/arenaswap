@@ -640,6 +640,8 @@
 		"chartLeadTitle": "領先分差走勢",
 		"leadTied": "平手",
 		"leadBy": "{team}領先 {margin}",
+		"tabLineups": "陣容",
+		"lineupLabel": "{team}先發陣容",
 		"scorersLabel": "{team}進球",
 		"scorersMore": {
 			"1": "還有1人",

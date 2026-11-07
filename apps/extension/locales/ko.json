@@ -640,6 +640,8 @@
 		"chartLeadTitle": "시간별 리드 추이",
 		"leadTied": "동점",
 		"leadBy": "{team} {margin}점 차 리드",
+		"tabLineups": "라인업",
+		"lineupLabel": "{team} 선발 라인업",
 		"scorersLabel": "{team} 득점",
 		"scorersMore": {
 			"1": "+1명 더",

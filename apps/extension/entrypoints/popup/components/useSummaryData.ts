@@ -3,6 +3,7 @@ import { leagueConfigMap } from '@arenaswap/core/constants';
 import { logWarn, pollWinProbabilityMs } from '@arenaswap/core';
 import {
 	emptyBoxScore,
+	emptyLineups,
 	emptyMatchup,
 	emptyStandings,
 	fetchSharedLeagueStandings,
@@ -11,13 +12,14 @@ import {
 	parseBoxScore,
 	parseGameDurationMins,
 	parseLeagueStandings,
+	parseLineups,
 	parseMatchup,
 	parseStandings,
 	parseTickets,
 	parseVenueDetails,
 	usesFullLeagueStandings,
 } from '@arenaswap/sideline';
-import type { BoxScore, Matchup, StandingsGroup, TicketLink, VenueDetails } from '@arenaswap/sideline';
+import type { BoxScore, Lineups, Matchup, StandingsGroup, TicketLink, VenueDetails } from '@arenaswap/sideline';
 import type { Game, LeagueId, TeamMonoMarks } from '@arenaswap/core/types';
 import { hasBoxScoreContent } from './boxScoreColumns';
 import { mockStandingsPayloads } from '@arenaswap/sideline/mockStandings';
@@ -71,6 +73,8 @@ interface summaryDataResult {
 	matchup: Matchup;
 	tickets: TicketLink | null;
 	venue: VenueDetails | null;
+	// Soccer only. Empty until about an hour before kickoff, when the teams name their XIs.
+	lineups: Lineups;
 }
 
 interface RecordEntry {
@@ -256,6 +260,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 	const [matchup, setMatchup] = useState<Matchup>(emptyMatchup);
 	const [tickets, setTickets] = useState<TicketLink | null>(null);
 	const [venue, setVenue] = useState<VenueDetails | null>(null);
+	const [lineups, setLineups] = useState<Lineups>(emptyLineups);
 	// The scoreboard's records win when it has them; the summary is the fallback for the leagues
 	// and dates where it does not.
 	const resolvedRecords: TeamRecords = {
@@ -298,6 +303,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 			setMatchup(emptyMatchup);
 			setTickets(null);
 			setVenue(null);
+			setLineups(emptyLineups);
 		}
 
 		if (gameId.startsWith('mock-')) {
@@ -361,6 +367,11 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 			setMonoLogos(parseMonoLogos(data, teamIdsRef.current.home, teamIdsRef.current.away));
 			setGameDurationMins(parseGameDurationMins(data));
 			setVenue(parseVenueDetails(data, gameRef.current.sportType));
+			if (gameRef.current.sportType === 'soccer') {
+				const nextLineups = parseLineups(data, teamIdsRef.current);
+				// Same as the box score: a thin answer mid-game must not take the tab away from its reader.
+				setLineups(previous => (nextLineups.away || nextLineups.home ? nextLineups : previous));
+			}
 			// Only where the whole-league fetch below is not running. Both would otherwise
 			// write this state, and whichever landed second would win.
 			if (!usesFullLeagueStandings(league)) {
@@ -428,7 +439,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		};
 	}, [gameId, league, status]);
 
-	return { winProbability, seriesInfo, records: resolvedRecords, monoLogos, boxScore, standings, gameDurationMins, matchup, tickets, venue };
+	return { winProbability, seriesInfo, records: resolvedRecords, monoLogos, boxScore, standings, gameDurationMins, matchup, tickets, venue, lineups };
 };
 
 export default useSummaryData;

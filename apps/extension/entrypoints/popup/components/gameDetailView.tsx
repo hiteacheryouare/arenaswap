@@ -23,8 +23,9 @@ import HolidayFireworks, { type fireworkVolley } from './holidayFireworks';
 import HolidayLights from './holidayLights';
 import HolidayStockings from './holidayStockings';
 import LatestPlayPanel from './latestPlayPanel';
+import LineupsPanel from './lineupsPanel';
 import MatchupPanel from './matchupPanel';
-import { hasMatchupContent } from '@arenaswap/sideline';
+import { hasLineups, hasMatchupContent } from '@arenaswap/sideline';
 import PowerScoreBreakdown from './powerScoreBreakdown';
 import PregameSetup from './pregameSetup';
 import PregameStats from './pregameStats';
@@ -209,7 +210,7 @@ const gameDetailView = ({
 	const leadTrackerOption = useMemo(() => (
 		scoredModeId === 'blowouts' ? buildLeadTrackerOption(orderedScoreHistory, game, chartPalette, [awayLineColor, homeLineColor], locale, describeLead) : undefined
 	), [scoredModeId, orderedScoreHistory, game, chartPalette, awayLineColor, homeLineColor, locale]);
-	const { winProbability, seriesInfo, records, monoLogos, boxScore, standings, gameDurationMins, matchup, tickets, venue } = useSummaryData(game);
+	const { winProbability, seriesInfo, records, monoLogos, boxScore, standings, gameDurationMins, matchup, tickets, venue, lineups } = useSummaryData(game);
 	const basketballSituation = useBasketballSituation(game);
 	const possession = useBasketballPossession(game);
 	const winProbabilityOption = useMemo(() => (
@@ -373,6 +374,9 @@ const gameDetailView = ({
 		...(isPreGame && hasMatchupContent(matchup)
 			? [{ id: 'matchup' as const, label: i18n.t('detail.tabMatchup') }]
 			: []),
+		...(hasLineups(lineups)
+			? [{ id: 'lineups' as const, label: i18n.t('detail.tabLineups') }]
+			: []),
 		...(!isPreGame && hasBoxScoreContent(game.sportType, boxScore)
 			? [{ id: 'box' as const, label: i18n.t('box.heading') }]
 			: []),
@@ -387,6 +391,7 @@ const gameDetailView = ({
 
 	const paneFor = (id: DetailTabId) => (
 		id === 'standings' ? <StandingsTable game={game} standings={standings} />
+			: id === 'lineups' ? <LineupsPanel game={game} lineups={lineups} awayColor={awayAccent} homeColor={homeAccent} />
 			: id === 'box' ? <BoxScore game={game} boxScore={boxScore} />
 				: id === 'matchup' ? <MatchupPanel game={game} matchup={matchup} />
 					: overviewPanel

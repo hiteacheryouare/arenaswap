@@ -640,6 +640,8 @@
 		"chartLeadTitle": "Avance dans le temps",
 		"leadTied": "Égalité",
 		"leadBy": "{team} de {margin}",
+		"tabLineups": "Compos",
+		"lineupLabel": "{team} : composition de départ",
 		"scorersLabel": "{team} : buteurs",
 		"scorersMore": {
 			"1": "+1 de plus",

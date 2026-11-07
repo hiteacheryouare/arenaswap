@@ -640,6 +640,8 @@
 		"chartLeadTitle": "Führung über die Zeit",
 		"leadTied": "Unentschieden",
 		"leadBy": "{team} mit {margin} vorn",
+		"tabLineups": "Aufstellung",
+		"lineupLabel": "Startelf {team}",
 		"scorersLabel": "Tore {team}",
 		"scorersMore": {
 			"1": "+1 weiterer",

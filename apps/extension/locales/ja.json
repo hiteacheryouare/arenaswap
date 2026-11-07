@@ -640,6 +640,8 @@
 		"chartLeadTitle": "リードの推移",
 		"leadTied": "同点",
 		"leadBy": "{team}が{margin}点リード",
+		"tabLineups": "スタメン",
+		"lineupLabel": "{team}のスタメン",
 		"scorersLabel": "{team}の得点",
 		"scorersMore": {
 			"1": "他1人",

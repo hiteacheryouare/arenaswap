@@ -640,6 +640,8 @@
 		"chartLeadTitle": "Ventaja a lo largo del tiempo",
 		"leadTied": "Empatado",
 		"leadBy": "{team} por {margin}",
+		"tabLineups": "Alineaciones",
+		"lineupLabel": "Alineación titular de {team}",
 		"scorersLabel": "Goles de {team}",
 		"scorersMore": {
 			"1": "+1 más",

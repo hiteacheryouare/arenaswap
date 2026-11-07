@@ -640,6 +640,8 @@
 		"chartLeadTitle": "Vantagem ao longo do tempo",
 		"leadTied": "Empate",
 		"leadBy": "{team} por {margin}",
+		"tabLineups": "Onzes",
+		"lineupLabel": "Onze inicial: {team}",
 		"scorersLabel": "Golos: {team}",
 		"scorersMore": {
 			"1": "+1 mais",

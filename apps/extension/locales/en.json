@@ -640,6 +640,8 @@
 		"chartLeadTitle": "Lead Over Time",
 		"leadTied": "Tied",
 		"leadBy": "{team} by {margin}",
+		"tabLineups": "Lineups",
+		"lineupLabel": "{team} starting lineup",
 		"scorersLabel": "{team} goals",
 		"scorersMore": {
 			"1": "+1 more",

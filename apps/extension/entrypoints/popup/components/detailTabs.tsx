@@ -3,7 +3,7 @@ import { useEffect, useLayoutEffect, useRef } from 'react';
 import NavOverflow from 'bootstrap/js/dist/nav-overflow.js';
 import Tab from 'bootstrap/js/dist/tab.js';
 
-export type DetailTabId = 'overview' | 'matchup' | 'box' | 'standings';
+export type DetailTabId = 'overview' | 'matchup' | 'lineups' | 'box' | 'standings';
 
 export interface DetailTab {
 	id: DetailTabId;

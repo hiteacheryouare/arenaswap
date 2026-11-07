@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Lineups tab for soccer — 2026-11-06
+
+Soccer games get a Lineups tab once the teams name their XIs, drawing both on a pitch in real proportions and in the kit each wore that day (`rosters[].uniform`). Rows come from the formation string and the Opta position names our sources use, so there is no per-formation table; the hero's left team sits at the top, attacking down.
+
 ## Stadium photo heads Game Info — 2026-11-06
 
 Game Info opens with the venue's photo from the summary, with the venue name and city on it in place of the Venue row, and football gets a Bootstrap toggle between the inside and outside shots plus a Surface row. Photos come through the image proxy at 640px, and one that fails to load brings the Venue row back.

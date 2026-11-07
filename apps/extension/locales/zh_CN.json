@@ -640,6 +640,8 @@
 		"chartLeadTitle": "领先分差走势",
 		"leadTied": "平局",
 		"leadBy": "{team}领先 {margin}",
+		"tabLineups": "阵容",
+		"lineupLabel": "{team}首发阵容",
 		"scorersLabel": "{team}进球",
 		"scorersMore": {
 			"1": "还有1人",

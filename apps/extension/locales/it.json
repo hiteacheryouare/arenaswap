@@ -640,6 +640,8 @@
 		"chartLeadTitle": "Vantaggio nel tempo",
 		"leadTied": "Parità",
 		"leadBy": "{team} di {margin}",
+		"tabLineups": "Formazioni",
+		"lineupLabel": "Formazione titolare {team}",
 		"scorersLabel": "Gol di {team}",
 		"scorersMore": {
 			"1": "+1 altro",
