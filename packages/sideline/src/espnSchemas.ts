@@ -249,6 +249,8 @@ const EspnCompetitionBroadcastSchema = z.object({
 const EspnCompetitionGeoBroadcastSchema = z.object({
 	media: z.optional(z.object({
 		shortName: z.optional(z.string()),
+		logo: z.optional(z.string()),
+		darkLogo: z.optional(z.string()),
 	})),
 });
 

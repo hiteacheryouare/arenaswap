@@ -1,0 +1,237 @@
+{
+	"recordedAt": "2026-11-06T23:53:37.200Z",
+	"league": "ncaab",
+	"source": "sb_basketball_mens-college-basketball.json (links, headlines, odds, leaders and uids removed)",
+	"event": {
+		"id": "401920423",
+		"date": "2026-11-06T22:00Z",
+		"name": "Northeastern Huskies at Virginia Cavaliers",
+		"shortName": "NE @ UVA",
+		"season": {
+			"year": 2027,
+			"type": 2,
+			"slug": "regular-season"
+		},
+		"competitions": [
+			{
+				"id": "401920423",
+				"date": "2026-11-06T22:00Z",
+				"attendance": 0,
+				"type": {
+					"id": "1",
+					"abbreviation": "STD"
+				},
+				"timeValid": true,
+				"neutralSite": false,
+				"conferenceCompetition": false,
+				"playByPlayAvailable": true,
+				"recent": true,
+				"venue": {
+					"id": "1927",
+					"fullName": "John Paul Jones Arena",
+					"address": {
+						"city": "Charlottesville",
+						"state": "VA"
+					},
+					"indoor": true
+				},
+				"competitors": [
+					{
+						"id": "258",
+						"type": "team",
+						"order": 0,
+						"homeAway": "home",
+						"team": {
+							"id": "258",
+							"location": "Virginia",
+							"name": "Cavaliers",
+							"abbreviation": "UVA",
+							"displayName": "Virginia Cavaliers",
+							"shortDisplayName": "Virginia",
+							"color": "232d4b",
+							"alternateColor": "f84c1e",
+							"isActive": true,
+							"venue": {
+								"id": "1927"
+							},
+							"logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/258.png",
+							"logoDark": "https://a.espncdn.com/i/teamlogos/ncaa/500-dark/258.png",
+							"conferenceId": "2"
+						},
+						"score": "38",
+						"linescores": [
+							{
+								"value": 38,
+								"displayValue": "38",
+								"period": 1
+							}
+						],
+						"curatedRank": {
+							"current": 9
+						},
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "Season",
+								"type": "total",
+								"summary": "1-0"
+							},
+							{
+								"name": "Home",
+								"abbreviation": "Home",
+								"type": "home",
+								"summary": "1-0"
+							},
+							{
+								"name": "Road",
+								"abbreviation": "AWAY",
+								"type": "road",
+								"summary": "0-0"
+							},
+							{
+								"name": "vs. Conf.",
+								"abbreviation": "VS CONF",
+								"type": "vsconf",
+								"summary": "0-0"
+							}
+						]
+					},
+					{
+						"id": "111",
+						"type": "team",
+						"order": 1,
+						"homeAway": "away",
+						"team": {
+							"id": "111",
+							"location": "Northeastern",
+							"name": "Huskies",
+							"abbreviation": "NE",
+							"displayName": "Northeastern Huskies",
+							"shortDisplayName": "Northeastern",
+							"color": "CC0001",
+							"alternateColor": "c2c3c0",
+							"isActive": true,
+							"venue": {
+								"id": "6018"
+							},
+							"logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/111.png",
+							"logoDark": "https://a.espncdn.com/i/teamlogos/ncaa/500-dark/111.png",
+							"conferenceId": "10"
+						},
+						"score": "31",
+						"linescores": [
+							{
+								"value": 31,
+								"displayValue": "31",
+								"period": 1
+							}
+						],
+						"curatedRank": {
+							"current": 99
+						},
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "Season",
+								"type": "total",
+								"summary": "0-1"
+							},
+							{
+								"name": "Home",
+								"abbreviation": "Home",
+								"type": "home",
+								"summary": "0-0"
+							},
+							{
+								"name": "Road",
+								"abbreviation": "AWAY",
+								"type": "road",
+								"summary": "0-1"
+							},
+							{
+								"name": "vs. Conf.",
+								"abbreviation": "VS CONF",
+								"type": "vsconf",
+								"summary": "0-0"
+							}
+						]
+					}
+				],
+				"notes": [],
+				"situation": {
+					"lastPlay": {
+						"id": "401920423120806546",
+						"type": {
+							"id": "412",
+							"text": "End Period"
+						},
+						"text": "End of 1st half",
+						"scoreValue": 0
+					}
+				},
+				"status": {
+					"clock": 0,
+					"displayClock": "0:00",
+					"period": 1,
+					"type": {
+						"id": "23",
+						"name": "STATUS_HALFTIME",
+						"state": "in",
+						"completed": false,
+						"description": "Halftime",
+						"detail": "Halftime",
+						"shortDetail": "Halftime"
+					}
+				},
+				"broadcasts": [
+					{
+						"market": "national",
+						"names": [
+							"ACC Network"
+						]
+					}
+				],
+				"format": {
+					"regulation": {
+						"periods": 2
+					}
+				},
+				"startDate": "2026-11-06T22:00Z",
+				"broadcast": "ACC Network",
+				"geoBroadcasts": [
+					{
+						"type": {
+							"id": "1",
+							"shortName": "TV"
+						},
+						"market": {
+							"id": "1",
+							"type": "National"
+						},
+						"media": {
+							"shortName": "ACC Network",
+							"logo": "https://a.espncdn.com/guid/8936b3f6-e2cb-3924-807b-00f236018174/logos/default.png",
+							"darkLogo": "https://a.espncdn.com/guid/8936b3f6-e2cb-3924-807b-00f236018174/logos/default-dark.png"
+						},
+						"lang": "en",
+						"region": "us"
+					}
+				]
+			}
+		],
+		"status": {
+			"clock": 0,
+			"displayClock": "0:00",
+			"period": 1,
+			"type": {
+				"id": "23",
+				"name": "STATUS_HALFTIME",
+				"state": "in",
+				"completed": false,
+				"description": "Halftime",
+				"detail": "Halftime",
+				"shortDetail": "Halftime"
+			}
+		}
+	}
+}

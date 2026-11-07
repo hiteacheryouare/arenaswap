@@ -509,6 +509,17 @@
 		span {
 			font-weight: 700;
 		}
+
+		.network-logo {
+			height: 0.7rem;
+			max-width: 4rem;
+			vertical-align: -0.12rem;
+		}
+	}
+
+	.network-logo {
+		width: auto;
+		object-fit: contain;
 	}
 
 	.game-meta-odds {

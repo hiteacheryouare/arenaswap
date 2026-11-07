@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Network logos on live cards and in Game Info — 2026-11-06
+
+The Watch line on live cards and in Game Info shows a network's logo in place of its name, from `geoBroadcasts[].media`, and falls back to the name when there is no logo or it fails to load. Team-coloured cards only take the white `darkLogo`, because a red wordmark disappears into a red team; only about ten national networks send artwork at all.
+
 ## Games that never started leave Up Next — 2026-11-05
 
 A scheduled game is dropped once its sport's whole broadcast window has passed without it starting (`hasMissedItsWindow`), because our sources can leave a game that never happened on scheduled for days; it put a Tuesday game at the top of Up Next on Thursday. The rule sits in `keepGame` and on the background's held Up Next and Guide lists, and a game that does start late comes back on its first live poll.

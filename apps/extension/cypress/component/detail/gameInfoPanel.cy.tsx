@@ -393,3 +393,38 @@ describe('gameInfoPanel ticket price', () => {
 		cy.get('.game-info-link').should('have.text', en.detail.ticketsFrom.replace('{price}', (1234).toLocaleString('de', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })));
 	});
 });
+
+const networkLogo = (fill: string) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="80"><rect width="300" height="80" fill="${fill}"/></svg>`)}`;
+
+// An ACC Network and an ESPNU broadcast, as the 2026-11-06 college scoreboard sent them.
+const networkGame: Game = {
+	...liveGame,
+	broadcasts: ['ACC Network', 'ESPNU', 'Local TV'],
+	broadcastLogos: {
+		'ACC Network': { logo: networkLogo('#013ca6'), darkLogo: networkLogo('#ffffff') },
+		ESPNU: { logo: networkLogo('#d00000') },
+	},
+};
+
+describe('network logos in Game Info', () => {
+	const mountNetworks = (theme: 'dark' | 'light') => {
+		cy.document().then(doc => doc.documentElement.setAttribute('data-bs-theme', theme));
+		cy.mount(<GameInfoPanel game={networkGame} bettingPrefs={{ bettingEnabled: false }} weatherPrefs={{ temperatureUnit: 'F' }} />);
+	};
+
+	afterEach(() => {
+		cy.document().then(doc => doc.documentElement.removeAttribute('data-bs-theme'));
+	});
+
+	it('uses the dark-ground artwork in dark mode, and the colour artwork where that is all there is', () => {
+		mountNetworks('dark');
+		cy.get('.game-info-networks img').should('have.length', 2);
+		cy.get('.game-info-networks img[alt="ACC Network"]').should('have.attr', 'src', networkLogo('#ffffff'));
+		cy.get('.game-info-networks img[alt="ESPNU"]').should('have.attr', 'src', networkLogo('#d00000'));
+	});
+
+	it('uses the colour artwork in light mode', () => {
+		mountNetworks('light');
+		cy.get('.game-info-networks img[alt="ACC Network"]').should('have.attr', 'src', networkLogo('#013ca6'));
+	});
+});

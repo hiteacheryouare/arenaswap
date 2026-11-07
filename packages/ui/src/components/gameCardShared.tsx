@@ -7,6 +7,7 @@ import type { BettingDisplayPrefs } from './gameCardTypes';
 import { matchupSurface, resolveTeamColorPair } from '@arenaswap/chromatic';
 import OnColorCrest from './onColorCrest';
 import HoverTooltip from './hoverTooltip';
+import NetworkList from './networkList';
 import { useT } from './i18nContext';
 import type { Translator } from './i18nContext';
 import { formatBreak, formatClock, formatGameClock, formatPeriod, isHalftime } from './gameFormat';
@@ -251,7 +252,7 @@ export const GameMeta = ({
 	interactive?: boolean;
 }) => {
 	const t = useT();
-	const networks = hideBroadcasts ? undefined : game.broadcasts?.join(' • ');
+	const networks = hideBroadcasts ? undefined : game.broadcasts?.length;
 	// The card names the building only. `venueLocation` is a detail-screen line — see GameInfoPanel
 	// — because the answer a card exists to give is "should I switch to this", not "where is it".
 	const venueName = hideVenue ? undefined : game.venueName;
@@ -266,7 +267,7 @@ export const GameMeta = ({
 			{venueName && <div className='text-center game-meta-venue'>{venueName}</div>}
 			{networks && (
 				<div className='text-center game-meta-networks'>
-					<span>{t('gameCard.watchLabel')}</span> {networks}
+					<span>{t('gameCard.watchLabel')}</span> <NetworkList game={game} surface={dark ? 'team' : 'light'} />
 				</div>
 			)}
 			{(odds || hasOddsProvider) && (

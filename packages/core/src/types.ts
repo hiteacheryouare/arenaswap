@@ -151,6 +151,12 @@ export interface RedCardEvent {
 	player?: string;
 }
 
+export interface BroadcastLogo {
+	logo?: string;
+	// Drawn for a dark ground; most networks have none.
+	darkLogo?: string;
+}
+
 export interface GameCondition {
 	// °F, as reported by ESPN.
 	temperatureF: number;
@@ -284,6 +290,8 @@ export interface Game {
 	// Soccer, in the order they were shown. Not `redCards`: the engine's Game uses that name for its
 	// own side-keyed shape, and a core Game has to stay assignable to it.
 	redCardEvents?: RedCardEvent[];
+	// Keyed by the name in `broadcasts`.
+	broadcastLogos?: Record<string, BroadcastLogo>;
 }
 
 // What becomes of a registered tab once its game is over. 'keep' is what ArenaSwap has always

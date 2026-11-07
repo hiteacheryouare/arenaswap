@@ -2,6 +2,7 @@ import { i18n } from '#i18n';
 import type { Game } from '@arenaswap/core/types';
 import HoverTooltip from '@arenaswap/ui/src/components/hoverTooltip';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
+import NetworkList from '@arenaswap/ui/src/components/networkList';
 import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
 import { OddsProvider, oddsSummary } from './gameCardShared';
 import { conditionIcon, formatTemperature } from './weatherUtils';
@@ -40,7 +41,7 @@ const InfoRow = ({ icon, label, stacked, children }: { icon: string; label: stri
 const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins, tickets }: gameInfoPanelProps) => {
 	const locale = useDisplayLocale();
 	const theme = useDocumentTheme();
-	const networks = game.broadcasts?.join(' • ');
+	const networks = game.broadcasts?.length;
 	const venueName = game.venueName;
 	const venueLocation = game.venueLocation;
 	const hasVenue = Boolean(venueName || venueLocation);
@@ -67,11 +68,13 @@ const GameInfoPanel = ({ game, bettingPrefs, weatherPrefs, gameDurationMins, tic
 		<section className='game-info-panel'>
 			<div className='game-info-heading'>{i18n.t('detail.gameInfoHeading')}</div>
 
-			{networks && (
+			{networks ? (
 				<InfoRow icon='bi-broadcast' label={i18n.t('detail.infoWatch')}>
-					<span className='game-info-value-strong'>{networks}</span>
+					<span className='game-info-value-strong game-info-networks'>
+						<NetworkList game={game} surface={theme === 'dark' ? 'dark' : 'light'} />
+					</span>
 				</InfoRow>
-			)}
+			) : null}
 
 			{hasVenue && (
 				<InfoRow icon='bi-geo-alt' label={i18n.t('detail.infoVenue')}>
