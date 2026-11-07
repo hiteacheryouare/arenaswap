@@ -35,11 +35,16 @@ describe('planMultiview', () => {
 		expect(plan).toMatchObject({ open: false, warm: false });
 	});
 
-	test('keeps a box on screen through its commercial break, however far the break drops it', () => {
-		const onBreak = [{ gameId: 'a', total: 80 }, { gameId: 'b', total: 40, onBreak: true }, { gameId: 'c', total: 30 }];
+	test('keeps a box on screen through the points its commercial break takes off', () => {
+		const onBreak = [{ gameId: 'a', total: 80 }, { gameId: 'b', total: 40, breakPenalty: 15 }, { gameId: 'c', total: 30 }];
 		expect(planMultiview({ ...base, scores: onBreak, boxedGameIds: ['a', 'b'] })).toMatchObject({ open: true, gameIds: ['a', 'b'] });
 		expect(planMultiview({ ...base, scores: onBreak, boxedGameIds: ['a', 'b'], shown: false })).toMatchObject({ open: false });
 		expect(planMultiview({ ...base, scores: onBreak, boxedGameIds: [] })).toMatchObject({ open: false });
+	});
+
+	test('drops a box on a commercial break once the game has sunk below the line on its own', () => {
+		const sunk = [{ gameId: 'a', total: 80 }, { gameId: 'b', total: 8, breakPenalty: 15 }, { gameId: 'c', total: 30 }];
+		expect(planMultiview({ ...base, scores: sunk, boxedGameIds: ['a', 'b'] }).open).toBe(false);
 	});
 
 	test('warms up every registered game when Multiview shows all of them', () => {

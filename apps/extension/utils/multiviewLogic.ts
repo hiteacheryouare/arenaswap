@@ -10,7 +10,7 @@ export interface multiviewCandidate {
 export interface multiviewPlanInput {
 	// Registered game tabs that are still open, in registry order.
 	candidates: readonly multiviewCandidate[];
-	scores: readonly { gameId: string; total: number; onBreak?: boolean }[];
+	scores: readonly { gameId: string; total: number; breakPenalty?: number }[];
 	// Games boxed right now, in the order they joined. Empty while Multiview is closed.
 	boxedGameIds: readonly string[];
 	// Whether those boxes are on screen. Only a box the user has seen keeps its place below the threshold.
@@ -52,7 +52,7 @@ export const multiviewWarmupPoints = 10;
 
 export const planMultiview = ({ candidates, scores, boxedGameIds, shown, threshold, games, maxBoxes, sensitivity }: multiviewPlanInput): multiviewPlan => {
 	const totalByGameId = new Map(scores.map(score => [score.gameId, score.total]));
-	const onBreak = new Set(scores.filter(score => score.onBreak).map(score => score.gameId));
+	const breakPenaltyByGameId = new Map(scores.map(score => [score.gameId, score.breakPenalty ?? 0]));
 	const tabIdByGameId = new Map<string, number>();
 	const urlByGameId = new Map<string, string>();
 	// A game registered on two tabs takes the first one, the same tab switching would pick.
@@ -65,9 +65,10 @@ export const planMultiview = ({ candidates, scores, boxedGameIds, shown, thresho
 	const boxed = new Set(boxedGameIds);
 	const margin = shown ? marginFor(sensitivity) : 0;
 	const totalOf = (gameId: string): number => totalByGameId.get(gameId) ?? 0;
-	// A commercial takes more off a game than the margin allows, so a box on screen sits it out.
-	const keepsBox = (gameId: string): boolean => shown && boxed.has(gameId) && onBreak.has(gameId);
-	const isHot = (gameId: string): boolean => keepsBox(gameId) || totalOf(gameId) >= (boxed.has(gameId) ? threshold - margin : threshold);
+	// A commercial takes more off a game than the margin allows, so a box on screen gets those points
+	// back. Only those: a game that sank on its own still loses its box during the break.
+	const keepingTotal = (gameId: string): number => totalOf(gameId) + (shown ? breakPenaltyByGameId.get(gameId) ?? 0 : 0);
+	const isHot = (gameId: string): boolean => (boxed.has(gameId) ? keepingTotal(gameId) >= threshold - margin : totalOf(gameId) >= threshold);
 
 	const eligible = [...tabIdByGameId.keys()];
 	const hot = eligible.filter(isHot);

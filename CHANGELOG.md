@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Commercials only excuse their own points in Multiview — 2026-11-06
+
+A boxed game on a commercial break used to keep its Multiview box however low it fell, so a game down near 10 stayed up until the break ended. `planMultiview` now adds the score's `breakPenalty` back before the keep check, which forgives the break but nothing else.
+
 ## Pre-game win probability in Matchup — 2026-11-06
 
 The Matchup tab opens with a Win Probability bar from the summary's `predictor`, which our sources send for NFL, college football, NBA and MLB games. The two projections are rounded separately at the source (77.7 and 22.2), so `parseWinChance` turns them into whole percentages that always add up to 100.

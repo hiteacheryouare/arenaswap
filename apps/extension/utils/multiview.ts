@@ -47,7 +47,7 @@ interface multiviewSession {
 
 export interface multiviewPass {
 	candidates: multiviewCandidate[];
-	scores: { gameId: string; total: number; onBreak?: boolean }[];
+	scores: { gameId: string; total: number; breakPenalty?: number }[];
 	games: Game[];
 	prefs: Pick<UserPreferences, 'multiviewThreshold' | 'multiviewGames' | 'multiviewMaxBoxes' | 'sensitivity' | 'cooldownSeconds' | 'switchDelaySeconds'>;
 	activeTabId: number | undefined;
