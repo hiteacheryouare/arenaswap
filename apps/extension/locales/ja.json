@@ -821,7 +821,19 @@
 		"preseason": "プレシーズン",
 		"springTraining": "オープン戦",
 		"topOfInning": "イニングの表",
-		"bottomOfInning": "イニングの裏"
+		"bottomOfInning": "イニングの裏",
+		"postponed": "延期",
+		"postponedRain": "雨",
+		"postponedWeather": "天候",
+		"postponedAirQuality": "大気質",
+		"postponedTravel": "移動",
+		"makeupDate": "振替 {date}",
+		"suspended": "サスペンデッド",
+		"forfeit": "没収試合",
+		"forfeitWinner": "{team}が没収試合で勝利",
+		"doubleheaderGame": "第{game}試合/全2試合",
+		"doubleheaderMakeup": "第{game}試合/全2試合 · 振替",
+		"resumedFrom": "{date}からの再開"
 	},
 	"field": {
 		"possession": "{team}がボールを保持",

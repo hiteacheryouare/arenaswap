@@ -38,6 +38,8 @@ const EspnTeamSchema = z.object({
 	name: z.optional(z.string()),
 	// What a soccer club is called in passing: "Portland", "Gotham", "Angel City".
 	shortDisplayName: z.optional(z.string()),
+	// "St. Thomas", "Kansas City": how a forfeit note names a team.
+	location: z.optional(z.string()),
 	abbreviation: z.optional(z.string()),
 	logo: z.optional(z.string()),
 	color: z.optional(z.string()),

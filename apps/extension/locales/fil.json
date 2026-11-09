@@ -821,7 +821,19 @@
 		"preseason": "Preseason",
 		"springTraining": "Spring Training",
 		"topOfInning": "Itaas ng inning",
-		"bottomOfInning": "Ibaba ng inning"
+		"bottomOfInning": "Ibaba ng inning",
+		"postponed": "Na-postpone",
+		"postponedRain": "Ulan",
+		"postponedWeather": "Panahon",
+		"postponedAirQuality": "Air quality",
+		"postponedTravel": "Biyahe",
+		"makeupDate": "Makeup {date}",
+		"suspended": "Suspended",
+		"forfeit": "Forfeit",
+		"forfeitWinner": "Panalo ang {team} sa forfeit",
+		"doubleheaderGame": "Game {game} ng 2",
+		"doubleheaderMakeup": "Game {game} ng 2 · Makeup",
+		"resumedFrom": "Itinuloy mula {date}"
 	},
 	"field": {
 		"possession": "Nasa {team} ang bola",

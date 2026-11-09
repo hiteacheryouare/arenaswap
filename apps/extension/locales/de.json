@@ -821,7 +821,19 @@
 		"preseason": "Preseason",
 		"springTraining": "Spring Training",
 		"topOfInning": "Obere Hälfte des Innings",
-		"bottomOfInning": "Untere Hälfte des Innings"
+		"bottomOfInning": "Untere Hälfte des Innings",
+		"postponed": "Verschoben",
+		"postponedRain": "Regen",
+		"postponedWeather": "Wetter",
+		"postponedAirQuality": "Luftqualität",
+		"postponedTravel": "Anreise",
+		"makeupDate": "Nachholspiel {date}",
+		"suspended": "Unterbrochen",
+		"forfeit": "Kampflos",
+		"forfeitWinner": "{team} gewinnt kampflos",
+		"doubleheaderGame": "Spiel {game} von 2",
+		"doubleheaderMakeup": "Spiel {game} von 2 · Nachholspiel",
+		"resumedFrom": "Fortgesetzt vom {date}"
 	},
 	"field": {
 		"possession": "{team} hat den Ball",

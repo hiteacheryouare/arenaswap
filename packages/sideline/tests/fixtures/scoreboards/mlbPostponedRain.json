@@ -1,0 +1,342 @@
+{
+	"recordedAt": "2026-11-08T22:00:00.000Z",
+	"league": "mlb",
+	"source": "scoreboard?dates=20250405, fetched 2026-11-08; links, headlines and uids removed",
+	"event": {
+		"id": "401695026",
+		"date": "2025-04-05T20:10Z",
+		"name": "St. Louis Cardinals at Boston Red Sox",
+		"shortName": "STL @ BOS",
+		"season": {
+			"year": 2025,
+			"type": 2,
+			"slug": "regular-season"
+		},
+		"competitions": [
+			{
+				"id": "401695026",
+				"date": "2025-04-05T20:10Z",
+				"attendance": 0,
+				"type": {
+					"id": "1",
+					"abbreviation": "STD"
+				},
+				"timeValid": true,
+				"neutralSite": false,
+				"conferenceCompetition": false,
+				"playByPlayAvailable": false,
+				"recent": false,
+				"wasSuspended": false,
+				"venue": {
+					"id": "2",
+					"fullName": "Fenway Park",
+					"address": {
+						"city": "Boston",
+						"state": "Massachusetts"
+					},
+					"indoor": false
+				},
+				"competitors": [
+					{
+						"id": "2",
+						"type": "team",
+						"order": 0,
+						"homeAway": "home",
+						"team": {
+							"id": "2",
+							"location": "Boston",
+							"name": "Red Sox",
+							"abbreviation": "BOS",
+							"displayName": "Boston Red Sox",
+							"shortDisplayName": "Red Sox",
+							"color": "0d2b56",
+							"alternateColor": "bd3039",
+							"isActive": true,
+							"logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/bos.png",
+							"logoDark": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/bos.png"
+						},
+						"score": "0",
+						"probables": [
+							{
+								"name": "probableStartingPitcher",
+								"displayName": "Probable Starting Pitcher",
+								"shortDisplayName": "Starter",
+								"abbreviation": "SP",
+								"playerId": 4414243,
+								"athlete": {
+									"id": "4414243",
+									"fullName": "Richard Fitts",
+									"displayName": "Richard Fitts",
+									"shortName": "R. Fitts",
+									"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/4414243.png",
+									"jersey": "35",
+									"position": "SP",
+									"team": {
+										"id": "2"
+									}
+								},
+								"statistics": [
+									{
+										"name": "saves",
+										"abbreviation": "SV",
+										"displayValue": "0",
+										"rankDisplayValue": "Tied-219th"
+									},
+									{
+										"name": "losses",
+										"abbreviation": "L",
+										"displayValue": "4",
+										"rankDisplayValue": "Tied-199th"
+									},
+									{
+										"name": "wins",
+										"abbreviation": "W",
+										"displayValue": "2",
+										"rankDisplayValue": "Tied-354th"
+									},
+									{
+										"name": "ERA",
+										"abbreviation": "ERA",
+										"displayValue": "5.00"
+									},
+									{
+										"name": "errors",
+										"abbreviation": "E",
+										"displayValue": "0",
+										"rankDisplayValue": "Tied-668th"
+									}
+								],
+								"record": "(2-4, 5.00)"
+							}
+						],
+						"statistics": [],
+						"hits": 0,
+						"errors": 0,
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "Total",
+								"type": "total",
+								"summary": "89-73"
+							},
+							{
+								"name": "Home",
+								"abbreviation": "Home",
+								"type": "home",
+								"summary": "48-33"
+							},
+							{
+								"name": "Road",
+								"abbreviation": "AWAY",
+								"type": "road",
+								"summary": "41-40"
+							}
+						]
+					},
+					{
+						"id": "24",
+						"type": "team",
+						"order": 1,
+						"homeAway": "away",
+						"team": {
+							"id": "24",
+							"location": "St. Louis",
+							"name": "Cardinals",
+							"abbreviation": "STL",
+							"displayName": "St. Louis Cardinals",
+							"shortDisplayName": "Cardinals",
+							"color": "be0a14",
+							"alternateColor": "001541",
+							"isActive": true,
+							"logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/stl.png",
+							"logoDark": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/stl.png"
+						},
+						"score": "0",
+						"probables": [
+							{
+								"name": "probableStartingPitcher",
+								"displayName": "Probable Starting Pitcher",
+								"shortDisplayName": "Starter",
+								"abbreviation": "SP",
+								"playerId": 4109034,
+								"athlete": {
+									"id": "4109034",
+									"fullName": "Andre Pallante",
+									"displayName": "Andre Pallante",
+									"shortName": "A. Pallante",
+									"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/4109034.png",
+									"jersey": "53",
+									"position": "SP",
+									"team": {
+										"id": "24"
+									}
+								},
+								"statistics": [
+									{
+										"name": "saves",
+										"abbreviation": "SV",
+										"displayValue": "0",
+										"rankDisplayValue": "Tied-219th"
+									},
+									{
+										"name": "losses",
+										"abbreviation": "L",
+										"displayValue": "15",
+										"rankDisplayValue": "Tied-4th"
+									},
+									{
+										"name": "wins",
+										"abbreviation": "W",
+										"displayValue": "6",
+										"rankDisplayValue": "Tied-119th"
+									},
+									{
+										"name": "ERA",
+										"abbreviation": "ERA",
+										"displayValue": "5.31",
+										"rankDisplayValue": "49th"
+									},
+									{
+										"name": "errors",
+										"abbreviation": "E",
+										"displayValue": "4",
+										"rankDisplayValue": "Tied-174th"
+									}
+								],
+								"record": "(6-15, 5.31)"
+							}
+						],
+						"statistics": [],
+						"hits": 0,
+						"errors": 0,
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "Total",
+								"type": "total",
+								"summary": "78-84"
+							},
+							{
+								"name": "Home",
+								"abbreviation": "Home",
+								"type": "home",
+								"summary": "44-37"
+							},
+							{
+								"name": "Road",
+								"abbreviation": "AWAY",
+								"type": "road",
+								"summary": "34-47"
+							}
+						]
+					}
+				],
+				"notes": [
+					{
+						"type": "event",
+						"headline": "Rain - Makeup date April 6"
+					}
+				],
+				"status": {
+					"clock": 0,
+					"displayClock": "0:00",
+					"period": 1,
+					"type": {
+						"id": "6",
+						"name": "STATUS_POSTPONED",
+						"state": "post",
+						"completed": false,
+						"description": "Postponed",
+						"detail": "Postponed",
+						"shortDetail": "Postponed"
+					}
+				},
+				"broadcasts": [
+					{
+						"market": "home",
+						"names": [
+							"NESN",
+							"FanDuel SN MW"
+						]
+					},
+					{
+						"market": "away",
+						"names": [
+							"MLB.TV",
+							"FanDuel SN MW Extra"
+						]
+					}
+				],
+				"format": {
+					"regulation": {
+						"periods": 9
+					}
+				},
+				"startDate": "2025-04-05T20:10Z",
+				"broadcast": "",
+				"geoBroadcasts": [
+					{
+						"type": {
+							"id": "1",
+							"shortName": "TV"
+						},
+						"market": {
+							"id": "2",
+							"type": "Home"
+						},
+						"media": {
+							"shortName": "NESN"
+						},
+						"lang": "en",
+						"region": "us"
+					},
+					{
+						"type": {
+							"id": "1",
+							"shortName": "TV"
+						},
+						"market": {
+							"id": "2",
+							"type": "Home"
+						},
+						"media": {
+							"shortName": "FanDuel SN MW"
+						},
+						"lang": "en",
+						"region": "us"
+					},
+					{
+						"type": {
+							"id": "4",
+							"shortName": "Streaming"
+						},
+						"market": {
+							"id": "3",
+							"type": "Away"
+						},
+						"media": {
+							"shortName": "FanDuel SN MW Extra"
+						},
+						"lang": "en",
+						"region": "us"
+					}
+				],
+				"highlights": []
+			}
+		],
+		"status": {
+			"clock": 0,
+			"displayClock": "0:00",
+			"period": 1,
+			"type": {
+				"id": "6",
+				"name": "STATUS_POSTPONED",
+				"state": "post",
+				"completed": false,
+				"description": "Postponed",
+				"detail": "Postponed",
+				"shortDetail": "Postponed"
+			}
+		}
+	}
+}

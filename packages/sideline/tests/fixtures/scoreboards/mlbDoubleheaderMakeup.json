@@ -1,0 +1,1000 @@
+{
+	"recordedAt": "2026-11-08T22:00:00.000Z",
+	"league": "mlb",
+	"source": "scoreboard?dates=20250406, fetched 2026-11-08; links, headlines and uids removed",
+	"event": {
+		"id": "401766602",
+		"date": "2025-04-06T17:35Z",
+		"name": "St. Louis Cardinals at Boston Red Sox",
+		"shortName": "STL @ BOS",
+		"season": {
+			"year": 2025,
+			"type": 2,
+			"slug": "regular-season"
+		},
+		"competitions": [
+			{
+				"id": "401766602",
+				"date": "2025-04-06T17:35Z",
+				"attendance": 31495,
+				"type": {
+					"id": "1",
+					"abbreviation": "STD"
+				},
+				"timeValid": true,
+				"neutralSite": false,
+				"conferenceCompetition": false,
+				"playByPlayAvailable": true,
+				"recent": false,
+				"wasSuspended": false,
+				"venue": {
+					"id": "2",
+					"fullName": "Fenway Park",
+					"address": {
+						"city": "Boston",
+						"state": "Massachusetts"
+					},
+					"indoor": false
+				},
+				"competitors": [
+					{
+						"id": "2",
+						"type": "team",
+						"order": 0,
+						"homeAway": "home",
+						"winner": true,
+						"team": {
+							"id": "2",
+							"location": "Boston",
+							"name": "Red Sox",
+							"abbreviation": "BOS",
+							"displayName": "Boston Red Sox",
+							"shortDisplayName": "Red Sox",
+							"color": "0d2b56",
+							"alternateColor": "bd3039",
+							"isActive": true,
+							"logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/bos.png",
+							"logoDark": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/bos.png"
+						},
+						"score": "5",
+						"linescores": [
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 1
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 2
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 3
+							},
+							{
+								"value": 1,
+								"displayValue": "1",
+								"period": 4
+							},
+							{
+								"value": 1,
+								"displayValue": "1",
+								"period": 5
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 6
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 7
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 8
+							},
+							{
+								"value": 2,
+								"displayValue": "2",
+								"period": 9
+							},
+							{
+								"value": 1,
+								"displayValue": "1",
+								"period": 10
+							}
+						],
+						"statistics": [
+							{
+								"name": "hits",
+								"abbreviation": "H",
+								"displayValue": "8"
+							},
+							{
+								"name": "runs",
+								"abbreviation": "R",
+								"displayValue": "5"
+							},
+							{
+								"name": "avg",
+								"abbreviation": "AVG",
+								"displayValue": ".235"
+							},
+							{
+								"name": "saves",
+								"abbreviation": "SV",
+								"displayValue": "0"
+							},
+							{
+								"name": "losses",
+								"abbreviation": "L",
+								"displayValue": "0"
+							},
+							{
+								"name": "wins",
+								"abbreviation": "W",
+								"displayValue": "1"
+							},
+							{
+								"name": "ERA",
+								"abbreviation": "ERA",
+								"displayValue": "3.60"
+							},
+							{
+								"name": "errors",
+								"abbreviation": "E",
+								"displayValue": "0"
+							}
+						],
+						"leaders": [
+							{
+								"name": "avg",
+								"displayName": "Batting Average",
+								"shortDisplayName": "BA",
+								"abbreviation": "AVG",
+								"leaders": [
+									{
+										"displayValue": "1-3, BB, K",
+										"value": 0.3333333432674408,
+										"athlete": {
+											"id": "40086",
+											"fullName": "Connor Wong",
+											"displayName": "Connor Wong",
+											"shortName": "C. Wong",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/40086.png",
+											"jersey": "12",
+											"position": {
+												"abbreviation": "C"
+											},
+											"team": {
+												"id": "2"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "2"
+										}
+									}
+								]
+							},
+							{
+								"name": "homeRuns",
+								"displayName": "Home Runs",
+								"shortDisplayName": "HR",
+								"abbreviation": "HR",
+								"leaders": [
+									{
+										"displayValue": "1-4, HR, 2 RBI, R, BB, K",
+										"value": 1,
+										"athlete": {
+											"id": "33859",
+											"fullName": "Rafael Devers",
+											"displayName": "Rafael Devers",
+											"shortName": "R. Devers",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/33859.png",
+											"jersey": "16",
+											"position": {
+												"abbreviation": "1B"
+											},
+											"team": {
+												"id": "26"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "2"
+										}
+									}
+								]
+							},
+							{
+								"name": "RBIs",
+								"displayName": "Runs Batted In",
+								"shortDisplayName": "RBI",
+								"abbreviation": "RBI",
+								"leaders": [
+									{
+										"displayValue": "1-4, HR, 2 RBI, R, BB, K",
+										"value": 2,
+										"athlete": {
+											"id": "33859",
+											"fullName": "Rafael Devers",
+											"displayName": "Rafael Devers",
+											"shortName": "R. Devers",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/33859.png",
+											"jersey": "16",
+											"position": {
+												"abbreviation": "1B"
+											},
+											"team": {
+												"id": "26"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "2"
+										}
+									}
+								]
+							},
+							{
+								"name": "MLBRating",
+								"displayName": "MLB Rating",
+								"shortDisplayName": "RAT",
+								"abbreviation": "RAT",
+								"leaders": [
+									{
+										"displayValue": "1-4, HR, 2 RBI, R, BB, K",
+										"value": 66.25,
+										"athlete": {
+											"id": "33859",
+											"fullName": "Rafael Devers",
+											"displayName": "Rafael Devers",
+											"shortName": "R. Devers",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/33859.png",
+											"jersey": "16",
+											"position": {
+												"abbreviation": "1B"
+											},
+											"team": {
+												"id": "26"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "2"
+										}
+									}
+								]
+							},
+							{
+								"name": "MLBRating",
+								"displayName": "MLB Rating",
+								"shortDisplayName": "MLB",
+								"abbreviation": "MLB",
+								"leaders": [
+									{
+										"displayValue": "1-4, HR, 2 RBI, R, BB, K",
+										"value": 66.25,
+										"athlete": {
+											"id": "33859",
+											"fullName": "Rafael Devers",
+											"displayName": "Rafael Devers",
+											"shortName": "R. Devers",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/33859.png",
+											"jersey": "16",
+											"position": {
+												"abbreviation": "1B"
+											},
+											"team": {
+												"id": "26"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "2"
+										}
+									}
+								]
+							}
+						],
+						"probables": [
+							{
+								"name": "probableStartingPitcher",
+								"displayName": "Probable Starting Pitcher",
+								"shortDisplayName": "Starter",
+								"abbreviation": "SP",
+								"playerId": 33856,
+								"athlete": {
+									"id": "33856",
+									"fullName": "Sean Newcomb",
+									"displayName": "Sean Newcomb",
+									"shortName": "S. Newcomb",
+									"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/33856.png",
+									"jersey": "15",
+									"position": "RP",
+									"team": {
+										"id": "11"
+									}
+								},
+								"statistics": [
+									{
+										"name": "saves",
+										"abbreviation": "SV",
+										"displayValue": "2",
+										"rankDisplayValue": "Tied-90th"
+									},
+									{
+										"name": "losses",
+										"abbreviation": "L",
+										"displayValue": "5",
+										"rankDisplayValue": "Tied-152nd"
+									},
+									{
+										"name": "wins",
+										"abbreviation": "W",
+										"displayValue": "2",
+										"rankDisplayValue": "Tied-354th"
+									},
+									{
+										"name": "ERA",
+										"abbreviation": "ERA",
+										"displayValue": "2.73"
+									},
+									{
+										"name": "errors",
+										"abbreviation": "E",
+										"displayValue": "0",
+										"rankDisplayValue": "Tied-668th"
+									}
+								],
+								"record": "(2-5, 2.73)"
+							}
+						],
+						"hits": 8,
+						"errors": 0,
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "Game",
+								"type": "total",
+								"summary": "5-4"
+							},
+							{
+								"name": "Home",
+								"type": "home",
+								"summary": "2-0"
+							},
+							{
+								"name": "Road",
+								"type": "road",
+								"summary": "3-4"
+							}
+						]
+					},
+					{
+						"id": "24",
+						"type": "team",
+						"order": 1,
+						"homeAway": "away",
+						"winner": false,
+						"team": {
+							"id": "24",
+							"location": "St. Louis",
+							"name": "Cardinals",
+							"abbreviation": "STL",
+							"displayName": "St. Louis Cardinals",
+							"shortDisplayName": "Cardinals",
+							"color": "be0a14",
+							"alternateColor": "001541",
+							"isActive": true,
+							"logo": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/stl.png",
+							"logoDark": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/stl.png"
+						},
+						"score": "4",
+						"linescores": [
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 1
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 2
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 3
+							},
+							{
+								"value": 1,
+								"displayValue": "1",
+								"period": 4
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 5
+							},
+							{
+								"value": 1,
+								"displayValue": "1",
+								"period": 6
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 7
+							},
+							{
+								"value": 2,
+								"displayValue": "2",
+								"period": 8
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 9
+							},
+							{
+								"value": 0,
+								"displayValue": "0",
+								"period": 10
+							}
+						],
+						"statistics": [
+							{
+								"name": "hits",
+								"abbreviation": "H",
+								"displayValue": "11"
+							},
+							{
+								"name": "runs",
+								"abbreviation": "R",
+								"displayValue": "4"
+							},
+							{
+								"name": "avg",
+								"abbreviation": "AVG",
+								"displayValue": ".282"
+							},
+							{
+								"name": "saves",
+								"abbreviation": "SV",
+								"displayValue": "0"
+							},
+							{
+								"name": "losses",
+								"abbreviation": "L",
+								"displayValue": "1"
+							},
+							{
+								"name": "wins",
+								"abbreviation": "W",
+								"displayValue": "0"
+							},
+							{
+								"name": "ERA",
+								"abbreviation": "ERA",
+								"displayValue": "3.86"
+							},
+							{
+								"name": "errors",
+								"abbreviation": "E",
+								"displayValue": "0"
+							}
+						],
+						"leaders": [
+							{
+								"name": "avg",
+								"displayName": "Batting Average",
+								"shortDisplayName": "BA",
+								"abbreviation": "AVG",
+								"leaders": [
+									{
+										"displayValue": "2-3, RBI, R, BB, K",
+										"value": 0.6666666865348816,
+										"athlete": {
+											"id": "4683365",
+											"fullName": "Masyn Winn",
+											"displayName": "Masyn Winn",
+											"shortName": "M. Winn",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/4683365.png",
+											"jersey": "0",
+											"position": {
+												"abbreviation": "SS"
+											},
+											"team": {
+												"id": "24"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "24"
+										}
+									}
+								]
+							},
+							{
+								"name": "homeRuns",
+								"displayName": "Home Runs",
+								"shortDisplayName": "HR",
+								"abbreviation": "HR",
+								"leaders": [
+									{
+										"displayValue": "1-5",
+										"value": 0,
+										"athlete": {
+											"id": "31261",
+											"fullName": "Nolan Arenado",
+											"displayName": "Nolan Arenado",
+											"shortName": "N. Arenado",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/31261.png",
+											"jersey": "28",
+											"position": {
+												"abbreviation": "3B"
+											},
+											"team": {
+												"id": "24"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "24"
+										}
+									}
+								]
+							},
+							{
+								"name": "RBIs",
+								"displayName": "Runs Batted In",
+								"shortDisplayName": "RBI",
+								"abbreviation": "RBI",
+								"leaders": [
+									{
+										"displayValue": "2-4, 2 2B, 3 RBI, K",
+										"value": 3,
+										"athlete": {
+											"id": "42608",
+											"fullName": "Pedro Pages",
+											"displayName": "Pedro Pages",
+											"shortName": "P. Pages",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/42608.png",
+											"jersey": "43",
+											"position": {
+												"abbreviation": "C"
+											},
+											"team": {
+												"id": "24"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "24"
+										}
+									}
+								]
+							},
+							{
+								"name": "MLBRating",
+								"displayName": "MLB Rating",
+								"shortDisplayName": "RAT",
+								"abbreviation": "RAT",
+								"leaders": [
+									{
+										"displayValue": "2-4, 2 2B, 3 RBI, K",
+										"value": 67.25,
+										"athlete": {
+											"id": "42608",
+											"fullName": "Pedro Pages",
+											"displayName": "Pedro Pages",
+											"shortName": "P. Pages",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/42608.png",
+											"jersey": "43",
+											"position": {
+												"abbreviation": "C"
+											},
+											"team": {
+												"id": "24"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "24"
+										}
+									}
+								]
+							},
+							{
+								"name": "MLBRating",
+								"displayName": "MLB Rating",
+								"shortDisplayName": "MLB",
+								"abbreviation": "MLB",
+								"leaders": [
+									{
+										"displayValue": "2-4, 2 2B, 3 RBI, K",
+										"value": 67.25,
+										"athlete": {
+											"id": "42608",
+											"fullName": "Pedro Pages",
+											"displayName": "Pedro Pages",
+											"shortName": "P. Pages",
+											"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/42608.png",
+											"jersey": "43",
+											"position": {
+												"abbreviation": "C"
+											},
+											"team": {
+												"id": "24"
+											},
+											"active": true
+										},
+										"team": {
+											"id": "24"
+										}
+									}
+								]
+							}
+						],
+						"probables": [
+							{
+								"name": "probableStartingPitcher",
+								"displayName": "Probable Starting Pitcher",
+								"shortDisplayName": "Starter",
+								"abbreviation": "SP",
+								"playerId": 4109034,
+								"athlete": {
+									"id": "4109034",
+									"fullName": "Andre Pallante",
+									"displayName": "Andre Pallante",
+									"shortName": "A. Pallante",
+									"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/4109034.png",
+									"jersey": "53",
+									"position": "SP",
+									"team": {
+										"id": "24"
+									}
+								},
+								"statistics": [
+									{
+										"name": "saves",
+										"abbreviation": "SV",
+										"displayValue": "0",
+										"rankDisplayValue": "Tied-219th"
+									},
+									{
+										"name": "losses",
+										"abbreviation": "L",
+										"displayValue": "15",
+										"rankDisplayValue": "Tied-4th"
+									},
+									{
+										"name": "wins",
+										"abbreviation": "W",
+										"displayValue": "6",
+										"rankDisplayValue": "Tied-119th"
+									},
+									{
+										"name": "ERA",
+										"abbreviation": "ERA",
+										"displayValue": "5.31",
+										"rankDisplayValue": "49th"
+									},
+									{
+										"name": "errors",
+										"abbreviation": "E",
+										"displayValue": "4",
+										"rankDisplayValue": "Tied-174th"
+									}
+								],
+								"record": "(6-15, 5.31)"
+							}
+						],
+						"hits": 11,
+						"errors": 0,
+						"records": [
+							{
+								"name": "overall",
+								"abbreviation": "Game",
+								"type": "total",
+								"summary": "4-4"
+							},
+							{
+								"name": "Home",
+								"type": "home",
+								"summary": "4-2"
+							},
+							{
+								"name": "Road",
+								"type": "road",
+								"summary": "0-2"
+							}
+						]
+					}
+				],
+				"notes": [
+					{
+						"type": "event",
+						"headline": "Doubleheader - Game 1 – Makeup from April 5"
+					}
+				],
+				"status": {
+					"clock": 0,
+					"displayClock": "0:00",
+					"period": 10,
+					"type": {
+						"id": "3",
+						"name": "STATUS_FINAL",
+						"state": "post",
+						"completed": true,
+						"description": "Final",
+						"detail": "Final/10",
+						"shortDetail": "Final/10",
+						"altDetail": "F/10"
+					},
+					"featuredAthletes": [
+						{
+							"name": "winningPitcher",
+							"displayName": "Winning Pitcher",
+							"shortDisplayName": "Win",
+							"abbreviation": "WP",
+							"playerId": 30442,
+							"athlete": {
+								"id": "30442",
+								"fullName": "Aroldis Chapman",
+								"displayName": "Aroldis Chapman",
+								"shortName": "A. Chapman",
+								"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/30442.png",
+								"jersey": "44",
+								"position": "RP",
+								"team": {
+									"id": "2"
+								}
+							},
+							"team": {
+								"id": "2"
+							},
+							"statistics": [
+								{
+									"name": "hits",
+									"abbreviation": "H",
+									"displayValue": "0"
+								},
+								{
+									"name": "runs",
+									"abbreviation": "R",
+									"displayValue": "0"
+								},
+								{
+									"name": "avg",
+									"abbreviation": "AVG",
+									"displayValue": ".000"
+								},
+								{
+									"name": "saves",
+									"abbreviation": "SV",
+									"displayValue": "2"
+								},
+								{
+									"name": "losses",
+									"abbreviation": "L",
+									"displayValue": "0"
+								},
+								{
+									"name": "wins",
+									"abbreviation": "W",
+									"displayValue": "2"
+								},
+								{
+									"name": "ERA",
+									"abbreviation": "ERA",
+									"displayValue": "0.00"
+								},
+								{
+									"name": "errors",
+									"abbreviation": "E",
+									"displayValue": "0"
+								}
+							]
+						},
+						{
+							"name": "losingPitcher",
+							"displayName": "Losing Pitcher",
+							"shortDisplayName": "Loss",
+							"abbreviation": "LP",
+							"playerId": 5002952,
+							"athlete": {
+								"id": "5002952",
+								"fullName": "Ryan Fernandez",
+								"displayName": "Ryan Fernandez",
+								"shortName": "R. Fernandez",
+								"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/5002952.png",
+								"jersey": "64",
+								"position": "RP",
+								"team": {
+									"id": "24"
+								}
+							},
+							"team": {
+								"id": "24"
+							},
+							"statistics": [
+								{
+									"name": "hits",
+									"abbreviation": "H",
+									"displayValue": "0"
+								},
+								{
+									"name": "runs",
+									"abbreviation": "R",
+									"displayValue": "0"
+								},
+								{
+									"name": "avg",
+									"abbreviation": "AVG",
+									"displayValue": ".000"
+								},
+								{
+									"name": "saves",
+									"abbreviation": "SV",
+									"displayValue": "0"
+								},
+								{
+									"name": "losses",
+									"abbreviation": "L",
+									"displayValue": "1"
+								},
+								{
+									"name": "wins",
+									"abbreviation": "W",
+									"displayValue": "0"
+								},
+								{
+									"name": "ERA",
+									"abbreviation": "ERA",
+									"displayValue": "13.50"
+								},
+								{
+									"name": "errors",
+									"abbreviation": "E",
+									"displayValue": "0"
+								}
+							]
+						}
+					]
+				},
+				"broadcasts": [
+					{
+						"market": "home",
+						"names": [
+							"NESN"
+						]
+					},
+					{
+						"market": "away",
+						"names": [
+							"FanDuel SN MW",
+							"MLB.TV"
+						]
+					}
+				],
+				"leaders": [
+					{
+						"name": "MLBRating",
+						"displayName": "MLB Rating",
+						"shortDisplayName": "RAT",
+						"abbreviation": "RAT",
+						"leaders": [
+							{
+								"displayValue": "2-4, 2 2B, 3 RBI, K",
+								"value": 67.25,
+								"athlete": {
+									"id": "42608",
+									"fullName": "Pedro Pages",
+									"displayName": "Pedro Pages",
+									"shortName": "P. Pages",
+									"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/42608.png",
+									"jersey": "43",
+									"position": {
+										"abbreviation": "C"
+									},
+									"team": {
+										"id": "24"
+									},
+									"active": true
+								},
+								"team": {
+									"id": "24"
+								}
+							},
+							{
+								"displayValue": "1-4, HR, 2 RBI, R, BB, K",
+								"value": 66.25,
+								"athlete": {
+									"id": "33859",
+									"fullName": "Rafael Devers",
+									"displayName": "Rafael Devers",
+									"shortName": "R. Devers",
+									"headshot": "https://a.espncdn.com/i/headshots/mlb/players/full/33859.png",
+									"jersey": "16",
+									"position": {
+										"abbreviation": "1B"
+									},
+									"team": {
+										"id": "26"
+									},
+									"active": true
+								},
+								"team": {
+									"id": "2"
+								}
+							}
+						]
+					}
+				],
+				"format": {
+					"regulation": {
+						"periods": 9
+					}
+				},
+				"startDate": "2025-04-06T17:35Z",
+				"broadcast": "",
+				"geoBroadcasts": [
+					{
+						"type": {
+							"id": "1",
+							"shortName": "TV"
+						},
+						"market": {
+							"id": "2",
+							"type": "Home"
+						},
+						"media": {
+							"shortName": "NESN"
+						},
+						"lang": "en",
+						"region": "us"
+					},
+					{
+						"type": {
+							"id": "1",
+							"shortName": "TV"
+						},
+						"market": {
+							"id": "3",
+							"type": "Away"
+						},
+						"media": {
+							"shortName": "FanDuel SN MW"
+						},
+						"lang": "en",
+						"region": "us"
+					}
+				],
+				"highlights": []
+			}
+		],
+		"status": {
+			"clock": 0,
+			"displayClock": "0:00",
+			"period": 10,
+			"type": {
+				"id": "3",
+				"name": "STATUS_FINAL",
+				"state": "post",
+				"completed": true,
+				"description": "Final",
+				"detail": "Final/10",
+				"shortDetail": "Final/10",
+				"altDetail": "F/10"
+			}
+		}
+	}
+}

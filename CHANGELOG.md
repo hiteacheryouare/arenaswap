@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Postponed, suspended and forfeit games stop posing as finals — 2026-11-08
+
+Our sources send postponed and canceled games as `post` with `completed: false`, so rainouts were listed as 0–0 finals; `packages/sideline/src/disruption.ts` now marks postponed, suspended and forfeit games, drops canceled ones, and reads the reason, makeup day and doubleheader game out of the event note. A forfeit's winner comes from that note too, because the feed's `winner` flag follows the score and can name the team that forfeited.
+
 ## Commercials only excuse their own points in Multiview — 2026-11-06
 
 A boxed game on a commercial break used to keep its Multiview box however low it fell, so a game down near 10 stayed up until the break ended. `planMultiview` now adds the score's `breakPenalty` back before the keep check, which forgives the break but nothing else.

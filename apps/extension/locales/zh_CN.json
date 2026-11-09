@@ -821,7 +821,19 @@
 		"preseason": "季前赛",
 		"springTraining": "春训赛",
 		"topOfInning": "上半局",
-		"bottomOfInning": "下半局"
+		"bottomOfInning": "下半局",
+		"postponed": "延期",
+		"postponedRain": "下雨",
+		"postponedWeather": "天气",
+		"postponedAirQuality": "空气质量",
+		"postponedTravel": "出行",
+		"makeupDate": "补赛 {date}",
+		"suspended": "保留比赛",
+		"forfeit": "弃权",
+		"forfeitWinner": "对手弃权，{team}获胜",
+		"doubleheaderGame": "第{game}场，共2场",
+		"doubleheaderMakeup": "第{game}场，共2场 · 补赛",
+		"resumedFrom": "延续{date}的比赛"
 	},
 	"field": {
 		"possession": "{team}持球进攻",

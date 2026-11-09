@@ -27,6 +27,13 @@ describe('detail hero edge containment', () => {
 		cy.get(popupSurface).assertContained({ bleeds: detailBleeds });
 	});
 
+	inEveryLocale('keeps a postponed game\'s reason and makeup day inside the poster and the bar', locale => {
+		const postponed: Game = { ...worstCaseGames[0].game, id: 'mock-3', status: 'post', disruption: 'postponed', postponedReason: 'airQuality', makeupDate: '2026-09-30' };
+		mountDetailView(detailView(postponed), locale);
+		cy.get('.gd-poster-status').should('be.visible');
+		cy.get(popupSurface).assertContained({ bleeds: detailBleeds });
+	});
+
 	it('keeps a long delay description inside the hero', () => {
 		const delayed: Game = { ...worstCaseGames[4].game, id: 'mock-3', delayed: true, delayDescription: 'Delayed: Lightning in the Area' };
 		mountDetailView(detailView(delayed));

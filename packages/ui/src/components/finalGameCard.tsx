@@ -1,14 +1,16 @@
 import { createFavoriteTeamKey, isHomeFirst } from '@arenaswap/core/constants';
 import FlipScore from './flipScore';
 import type { GameCardDisplayProps } from './gameCardTypes';
-import { buildCardShellProps, CardDetailsButton, CardStatusRow, ConferenceMark, GameMeta, SeasonLabel, TeamColumn } from './gameCardShared';
-import { useT } from './i18nContext';
+import { buildCardShellProps, CardDetailsButton, CardStatusRow, ConferenceMark, formatCalendarDay, formatPeriod, GameMeta, SeasonLabel, TeamColumn } from './gameCardShared';
+import { formatDisruption } from './gameFormat';
+import { useDisplayLocale, useT } from './i18nContext';
 
 // A finished game offers nothing to act on, so this card is the live one with every affordance
 // taken away: no tab dropdown, no PowerScore bar, no clock, no broadcast line. What is left is the
 // result, and the result is what the card is styled around.
 const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, leagueSlot, interactive = true }: GameCardDisplayProps) => {
 	const t = useT();
+	const locale = useDisplayLocale();
 	if (!game) return null;
 
 	const awayFavorited = favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.awayTeam.id));
@@ -29,7 +31,9 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 	// unrelated inks rather than as one scoreline, and the winner's emphasis has to fight the
 	// hue instead of being the only thing the eye picks up. The result is carried by weight and a
 	// receded grey, which is what every scoreboard prints.
-	const lost = (score: number, other: number) => !shootout && score < other;
+	// A suspension has no result yet, and a forfeit's result can go against the scoreline.
+	const decidedByScore = !shootout && game.disruption !== 'suspended' && game.disruption !== 'forfeit';
+	const lost = (score: number, other: number) => (game.disruption === 'forfeit' || (decidedByScore && score < other));
 	const scoreClass = (score: number, other: number) => (
 		`lh-1 game-score-value ${lost(score, other) ? 'is-loser fw-semibold' : 'fw-bold'}`
 	);
@@ -37,9 +41,13 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 	// ESPN's own label, so a triple overtime reads Final/3OT and a shootout reads Final/SO — both
 	// broadcast conventions, and the second one is not derivable from the period at all. The suffix
 	// is a token rather than a word, so it needs no translating and the word before it already is.
-	const statusLabel = game.finalPeriodSuffix
+	const finalLabel = game.finalPeriodSuffix
 		? `${t('gameCard.final')}/${game.finalPeriodSuffix}`
 		: t('gameCard.final');
+	const statusLabel = formatDisruption(game, t) ?? finalLabel;
+	const forfeitWinner = game.forfeitWinnerId === undefined
+		? undefined
+		: [game.awayTeam, game.homeTeam].find(team => team.id === game.forfeitWinnerId);
 
 	const awayColumn = <TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' interactive={interactive} />;
 	const homeColumn = <TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' interactive={interactive} />;
@@ -57,12 +65,25 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
 				{homeFirst ? homeColumn : awayColumn}
 				<div className='d-flex flex-column align-items-center game-card-center'>
-					<div className='d-flex align-items-center game-score-row'>
-						<FlipScore value={leftScore} className={scoreClass(leftScore, rightScore)} />
-						<span className='game-score-sep' aria-hidden='true' />
-						<FlipScore value={rightScore} className={scoreClass(rightScore, leftScore)} />
-					</div>
+					{game.disruption === 'postponed' ? (
+						<>
+							<span className='pre-game-vs'>{t('gameCard.vs')}</span>
+							{game.makeupDate && (
+								<span className='text-center text-nowrap game-period'>{t('gameCard.makeupDate', { date: formatCalendarDay(game.makeupDate, locale) })}</span>
+							)}
+						</>
+					) : (
+						<div className='d-flex align-items-center game-score-row'>
+							<FlipScore value={leftScore} className={scoreClass(leftScore, rightScore)} />
+							<span className='game-score-sep' aria-hidden='true' />
+							<FlipScore value={rightScore} className={scoreClass(rightScore, leftScore)} />
+						</div>
+					)}
 					{shootout && <span className='game-shootout-score'>{shootout}</span>}
+					{game.disruption === 'suspended' && <span className='game-period'>{formatPeriod(game, t)}</span>}
+					{forfeitWinner && (
+						<span className='text-center game-shootout-score'>{t('gameCard.forfeitWinner', { team: forfeitWinner.abbreviation })}</span>
+					)}
 				</div>
 				{homeFirst ? awayColumn : homeColumn}
 			</div>

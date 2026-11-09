@@ -3,7 +3,7 @@
 // tree into a marketing-page island. `gameCardShared` re-exports them, so its own callers are
 // unchanged.
 import { leagueConfigMap } from '@arenaswap/core/constants';
-import type { LeagueId, SportType } from '@arenaswap/core/types';
+import type { Game, LeagueId, SportType } from '@arenaswap/core/types';
 import { defaultTranslate } from './defaultStrings';
 import type { Translator } from './defaultStrings';
 
@@ -51,6 +51,25 @@ export const formatPeriod = (game: PeriodSource, t: Translator = defaultTranslat
 	if (config.periodFormat === 'periods') return t('gameCard.period', { count: period });
 	if (config.periodFormat === 'innings') return t('gameCard.periodInning', { count: period });
 	return t('gameCard.periodQuarter', { count: period });
+};
+
+const postponedReasonLabel = (reason: NonNullable<Game['postponedReason']>, t: Translator): string => ({
+	rain: t('gameCard.postponedRain'),
+	weather: t('gameCard.postponedWeather'),
+	airQuality: t('gameCard.postponedAirQuality'),
+	travel: t('gameCard.postponedTravel'),
+})[reason];
+
+// What a game that is over for today without an ordinary result says in place of Final.
+export const formatDisruption = (game: Pick<Game, 'disruption' | 'postponedReason'>, t: Translator = defaultTranslate): string | undefined => {
+	if (game.disruption === 'postponed') {
+		return game.postponedReason
+			? `${t('gameCard.postponed')} · ${postponedReasonLabel(game.postponedReason, t)}`
+			: t('gameCard.postponed');
+	}
+	if (game.disruption === 'suspended') return t('gameCard.suspended');
+	if (game.disruption === 'forfeit') return t('gameCard.forfeit');
+	return undefined;
 };
 
 export const isHalftime = (game: PeriodSource): boolean => {

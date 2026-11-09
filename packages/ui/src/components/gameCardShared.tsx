@@ -9,7 +9,7 @@ import { matchupSurface, resolveTeamColorPair } from '@arenaswap/chromatic';
 import OnColorCrest from './onColorCrest';
 import HoverTooltip from './hoverTooltip';
 import NetworkList from './networkList';
-import { useT } from './i18nContext';
+import { useDisplayLocale, useT } from './i18nContext';
 import type { Translator } from './i18nContext';
 import { formatBreak, formatClock, formatGameClock, formatPeriod, isHalftime } from './gameFormat';
 import TimeoutDots from './timeoutDots';
@@ -22,9 +22,24 @@ export const formatStartTime = (iso: string, locale?: string): string => (
 	new Date(iso).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })
 );
 
-export const formatStartDateTime = (iso: string, locale?: string): string => {
-	const day = new Date(iso).toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' });
-	return `${day} • ${formatStartTime(iso, locale)}`;
+const dayFormat: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric' };
+
+export const formatStartDay = (iso: string, locale?: string): string => new Date(iso).toLocaleDateString(locale, dayFormat);
+
+export const formatStartDateTime = (iso: string, locale?: string): string => `${formatStartDay(iso, locale)} • ${formatStartTime(iso, locale)}`;
+
+// A YYYY-MM-DD day, built as local midnight so no time zone can move it to the day before.
+export const formatCalendarDay = (day: string, locale?: string): string => {
+	const [year, month, date] = day.split('-').map(Number);
+	return new Date(year!, month! - 1, date).toLocaleDateString(locale, dayFormat);
+};
+
+// No game runs twelve hours, so a live one that started that long ago is a suspended game picking back up.
+const resumedAfterMs = 12 * 60 * 60 * 1000;
+export const isResumedGame = (game: Pick<Game, 'status' | 'startTime'>, now: number = Date.now()): boolean => {
+	if (game.status !== 'in' || !game.startTime) return false;
+	const startMs = new Date(game.startTime).getTime();
+	return Number.isFinite(startMs) && now - startMs > resumedAfterMs;
 };
 
 // Gradient from muted slate rgb(139,148,158) at 0 to orange rgb(247,92,3) at max.
@@ -214,10 +229,18 @@ export const OddsProvider = ({ game, dark }: { game: Game; dark?: boolean }) => 
 // because the label and the boost answer different questions.
 //
 // A preseason game takes the same spot with our own word instead, since ESPN names no round for it.
+const doubleheaderLabel = (game: Game, t: Translator): string | undefined => {
+	if (!game.doubleheaderGame) return undefined;
+	return t(game.isMakeup ? 'gameCard.doubleheaderMakeup' : 'gameCard.doubleheaderGame', { game: game.doubleheaderGame });
+};
+
 export const SeasonLabel = ({ game }: { game: Game }) => {
 	const t = useT();
+	const locale = useDisplayLocale();
 	const label = game.postseasonLabel
-		?? (game.isPreseason ? t(game.league === 'mlb' ? 'gameCard.springTraining' : 'gameCard.preseason') : undefined);
+		?? (game.isPreseason ? t(game.league === 'mlb' ? 'gameCard.springTraining' : 'gameCard.preseason') : undefined)
+		?? (isResumedGame(game) ? t('gameCard.resumedFrom', { date: formatStartDay(game.startTime!, locale) }) : undefined)
+		?? doubleheaderLabel(game, t);
 	return label ? <span className='game-postseason-label'>{label}</span> : null;
 };
 

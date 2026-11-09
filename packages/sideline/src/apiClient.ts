@@ -5,6 +5,7 @@ import { readCollegeBracket } from './collegeBracket';
 import { parseClockTenths, parseClockToSeconds, parseStoppageMinutes } from './gameClock';
 import { toLeagueSchedule } from './leagueCalendar';
 import { collegeBaseballLeagues, gradePostseason, readEventHeadline } from './postseasonRound';
+import { isCanceledStatus, readDelayKind, readDisruption, readDoubleheader, readForfeitWinner, readMakeupDate, readPostponedReason } from './disruption';
 import { detailClock, parseBroadcastLogos, parseConference, parseGoalEvents } from './scoreboardExtras';
 import {
 	EspnSummarySchema,
@@ -682,6 +683,8 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 	const away = comp.competitors.find(c => c.homeAway === 'away');
 	if (!home || !away) return null;
 	const status = comp.status;
+	// Nothing to watch, nothing to report, and no later date to show it under.
+	if (isCanceledStatus(status.type?.name)) return null;
 	const isDelayed = /delay|suspend/i.test(status.type?.name ?? '');
 	const delayDescription = isDelayed ? (status.type?.description?.trim() || undefined) : undefined;
 	const leagueConfig = leagueConfigMap[league];
@@ -693,6 +696,8 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 	if (!parsedState) return null;
 	const isSuspendedMidGame = parsedState === 'post' && status.type?.completed === false && isDelayed && !isInningSport;
 	const state = isSuspendedMidGame ? 'in' : parsedState;
+	const disruption = readDisruption(status.type?.name, state);
+	const headline = readEventHeadline(comp.notes);
 	const situation = comp.situation;
 	const isGridironSituation = leagueConfig.sportType === 'football' && state === 'in' && situation !== undefined;
 	// The sport-agnostic half of the same gate. ESPN only sends a situation on a live game, but
@@ -805,6 +810,14 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		...(postseason ? readCollegeBracket(league, readEventHeadline(comp.notes)) : {}),
 		delayed: isDelayed || undefined,
 		delayDescription,
+		delayKind: isDelayed ? readDelayKind(status.type?.name, status.type?.description) : undefined,
+		disruption,
+		...(disruption === 'postponed' ? {
+			postponedReason: readPostponedReason(headline),
+			makeupDate: readMakeupDate(headline, event.date),
+		} : {}),
+		forfeitWinnerId: disruption === 'forfeit' ? readForfeitWinner(headline, comp.competitors) : undefined,
+		...(disruption === 'postponed' ? {} : readDoubleheader(headline)),
 		series: parseSeries(comp, home.id, away.id),
 		redCardEvents: leagueConfig.sportType === 'soccer' ? parseRedCards(comp) : undefined,
 		goalEvents: leagueConfig.sportType === 'soccer' ? parseGoalEvents(comp) : undefined,

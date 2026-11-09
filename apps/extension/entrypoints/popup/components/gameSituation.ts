@@ -2,6 +2,7 @@ import type { BasketballTeamSituation } from '@arenaswap/sideline';
 import { sportTypeConfigMap } from '@arenaswap/core/constants';
 import type { Game, GoalEvent, LeagueId, RedCardEvent } from '@arenaswap/core/types';
 import { formatBreak, formatGameClock, formatPeriod } from './gameCardShared';
+import { formatDisruption } from '@arenaswap/ui/src/components/gameFormat';
 
 // Injected rather than imported so the resolver stays pure and Jest-testable.
 type Translate = (key: string, subsOrCount?: unknown, subs?: unknown) => string;
@@ -17,6 +18,8 @@ export interface GameStatus {
 // say what is actually happening instead — except for the inning sports, where the half-inning
 // change ESPN can report as an intermission is exactly what the inning line already says.
 export const resolveStatus = (game: Game, isInningSport: boolean, t: Translate): GameStatus => {
+	const disruption = formatDisruption(game, t);
+	if (disruption) return { text: disruption };
 	if (game.delayed === true) return { text: game.delayDescription ?? t('gameCard.delayFallback') };
 	// The same token the list card and the Guide print, so a shootout reads "Final/SO" on all three.
 	if (game.status === 'post') {

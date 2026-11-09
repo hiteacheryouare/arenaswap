@@ -43,7 +43,7 @@ import {
 	lightChartPalette,
 } from './gameDetailChartOptions';
 import { resolveChartLineColors, resolveTeamColorPair } from '@arenaswap/chromatic';
-import { matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared';
+import { formatCalendarDay, matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared';
 import { isModeSignalId, signalColorOf, signalPresentation } from '@arenaswap/ui/src/components/scoringModeMeta';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import useSwitchCrest from '@arenaswap/ui/src/components/useSwitchCrest';
@@ -229,6 +229,8 @@ const gameDetailView = ({
 	const isDelayed = game.delayed === true;
 	const isPreGame = game.status === 'pre';
 	const isFinal = game.status === 'post';
+	// A postponed game never started, so it keeps the poster rather than a 0-0 scoreline.
+	const showsPoster = isPreGame || game.disruption === 'postponed';
 	// A wrap draws a chart only when its line covers the whole game. The win-probability line is
 	// exempt because it is not ours: ESPN builds it from the full play-by-play, so it either
 	// arrives complete or does not arrive.
@@ -267,7 +269,7 @@ const gameDetailView = ({
 		);
 		observer.observe(target);
 		return () => observer.disconnect();
-	}, [isPreGame]);
+	}, [showsPoster]);
 
 	// Everything that is not the box score or the table: the PowerScore and what explains
 	// it, what is happening in the game, and where it is being played. Lifted out of the
@@ -404,12 +406,14 @@ const gameDetailView = ({
 			{decorations.lights && <HolidayLights flashColors={scoreFlash} />}
 
 			<div ref={heroRef} className={heroClassName}>
-				{isPreGame ? (
+				{showsPoster ? (
 					<DetailPosterHero
 						game={game}
 						seriesInfo={seriesInfo}
 						records={records}
-						statusText={status.text}
+						statusText={game.makeupDate
+							? `${status.text} · ${i18n.t('gameCard.makeupDate', { date: formatCalendarDay(game.makeupDate, locale) })}`
+							: status.text}
 						heroStyle={heroStyle}
 						awayColor={awayAccent}
 						homeColor={homeAccent}

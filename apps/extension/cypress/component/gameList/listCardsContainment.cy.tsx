@@ -27,11 +27,19 @@ const asUpcoming = (game: Game, index: number): Game => ({
 
 const asFinal = (game: Game): Game => ({ ...game, id: `${game.id}-post`, status: 'post', finalPeriodSuffix: 'OT' });
 const asDelayed = (game: Game): Game => ({ ...game, id: `${game.id}-delayed`, delayed: true });
+const asPostponed = (game: Game): Game => ({ ...game, id: `${game.id}-postponed`, status: 'post', disruption: 'postponed', postponedReason: 'airQuality', makeupDate: '2026-09-30' });
+const asSuspended = (game: Game): Game => ({ ...game, id: `${game.id}-suspended`, status: 'post', delayed: true, disruption: 'suspended' });
+const asForfeit = (game: Game): Game => ({ ...game, id: `${game.id}-forfeit`, status: 'post', disruption: 'forfeit', forfeitWinnerId: game.homeTeam.id });
+const asMakeup = (game: Game): Game => ({ ...game, id: `${game.id}-makeup`, status: 'post', doubleheaderGame: 2, isMakeup: true });
+const asResumed = (game: Game): Game => ({ ...game, id: `${game.id}-resumed`, startTime: new Date(Date.now() - 50 * hour).toISOString() });
 
 // The list sorts league-first when it groups, so one league is never split across two headers.
 const byLeague = (games: Game[]): Game[] => games.toSorted((a, b) => a.league.localeCompare(b.league));
 
-const everyState = (): Game[] => byLeague(worstCaseGames.flatMap(({ game }, index) => [game, asDelayed(game), asUpcoming(game, index), asFinal(game)]));
+const everyState = (): Game[] => byLeague(worstCaseGames.flatMap(({ game }, index) => [
+	game, asDelayed(game), asUpcoming(game, index), asFinal(game),
+	asPostponed(game), asSuspended(game), asForfeit(game), asMakeup(game), asResumed(game),
+]));
 
 const openTabsFor = (games: Game[]): Browser.tabs.Tab[] => games.map((game, index) => ({
 	id: index + 1,

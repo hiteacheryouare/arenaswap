@@ -93,9 +93,10 @@ const GuideBar = ({ bar, fromMs, selected, onOpen, mono, theme }: guideBarProps)
 	const left = msToPx(bar.startMs, fromMs);
 	const width = Math.max(msToPx(bar.endMs, fromMs) - left, 24);
 	const { awayTeam: away, homeTeam: home } = game;
-	const scored = game.status !== 'pre';
+	const scored = game.status !== 'pre' && game.disruption !== 'postponed';
 	// A shootout leaves the scoreline level, so neither side is dimmed; the suffix says how it ended.
-	const decided = game.status === 'post' && away.score !== home.score;
+	// A suspended game has no result yet, and a forfeit's can go against the score.
+	const decided = game.status === 'post' && !game.disruption && away.score !== home.score;
 	const network = game.status === 'pre' ? game.broadcasts?.[0] : undefined;
 	const homeFirst = isHomeFirst(game);
 	const awayTeam = <BarTeam team={away} mono={mono?.[away.id]} score={scored ? away.score : undefined} lost={decided && away.score < home.score} theme={theme} />;

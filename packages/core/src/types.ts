@@ -294,6 +294,15 @@ export interface Game {
 	isPreseason?: boolean;
 	delayed?: boolean;
 	delayDescription?: string;
+	delayKind?: 'rain' | 'weather' | 'other';
+	// A game read as `post` that has no ordinary result. A canceled game never becomes a Game.
+	disruption?: 'postponed' | 'suspended' | 'forfeit';
+	postponedReason?: 'rain' | 'weather' | 'airQuality' | 'travel';
+	// YYYY-MM-DD, a calendar day rather than an instant: our sources name the day and not the time.
+	makeupDate?: string;
+	forfeitWinnerId?: string;
+	doubleheaderGame?: 1 | 2;
+	isMakeup?: boolean;
 	// The college division scoreboards that returned this game (`groups=` values). An FBS vs FCS
 	// game comes back from both.
 	collegeGroups?: string[];

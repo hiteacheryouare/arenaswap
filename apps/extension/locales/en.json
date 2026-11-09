@@ -821,7 +821,19 @@
 		"preseason": "Preseason",
 		"springTraining": "Spring Training",
 		"topOfInning": "Top of inning",
-		"bottomOfInning": "Bottom of inning"
+		"bottomOfInning": "Bottom of inning",
+		"postponed": "Postponed",
+		"postponedRain": "Rain",
+		"postponedWeather": "Weather",
+		"postponedAirQuality": "Air quality",
+		"postponedTravel": "Travel",
+		"makeupDate": "Makeup {date}",
+		"suspended": "Suspended",
+		"forfeit": "Forfeit",
+		"forfeitWinner": "{team} wins by forfeit",
+		"doubleheaderGame": "Game {game} of 2",
+		"doubleheaderMakeup": "Game {game} of 2 · Makeup",
+		"resumedFrom": "Resumed from {date}"
 	},
 	"field": {
 		"possession": "{team} has the ball",

@@ -821,7 +821,19 @@
 		"preseason": "프리시즌",
 		"springTraining": "시범경기",
 		"topOfInning": "초",
-		"bottomOfInning": "말"
+		"bottomOfInning": "말",
+		"postponed": "연기",
+		"postponedRain": "비",
+		"postponedWeather": "날씨",
+		"postponedAirQuality": "대기질",
+		"postponedTravel": "이동",
+		"makeupDate": "재편성 {date}",
+		"suspended": "서스펜디드",
+		"forfeit": "몰수게임",
+		"forfeitWinner": "{team} 몰수승",
+		"doubleheaderGame": "더블헤더 {game}차전",
+		"doubleheaderMakeup": "더블헤더 {game}차전 · 재편성",
+		"resumedFrom": "{date}부터 재개"
 	},
 	"field": {
 		"possession": "{team} 공격권",

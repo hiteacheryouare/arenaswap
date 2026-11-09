@@ -1,0 +1,153 @@
+{
+	"recordedAt": "2026-11-08T22:00:00.000Z",
+	"league": "mls",
+	"source": "scoreboard?dates=20251108, fetched 2026-11-08; links, headlines and uids removed",
+	"event": {
+		"id": "760069",
+		"date": "2025-11-08T20:00Z",
+		"name": "Chicago Fire FC at Philadelphia Union",
+		"shortName": "CHI @ PHI",
+		"season": {
+			"year": 2025,
+			"type": 13131,
+			"slug": "eastern-conference-playoffs---round-one"
+		},
+		"competitions": [
+			{
+				"id": "760069",
+				"date": "2025-11-08T20:00Z",
+				"startDate": "2025-11-08T20:00Z",
+				"attendance": 0,
+				"timeValid": false,
+				"recent": false,
+				"status": {
+					"clock": 0,
+					"displayClock": "0'",
+					"type": {
+						"id": "5",
+						"name": "STATUS_CANCELED",
+						"state": "post",
+						"completed": false,
+						"description": "Canceled",
+						"detail": "Canceled",
+						"shortDetail": "Canceled"
+					}
+				},
+				"venue": {
+					"id": "4061",
+					"fullName": "Subaru Park",
+					"address": {
+						"city": "Chester, Pennsylvania",
+						"country": "USA"
+					}
+				},
+				"format": {
+					"regulation": {
+						"periods": 2
+					}
+				},
+				"series": {
+					"competitors": [
+						{
+							"id": "10739",
+							"winner": false
+						},
+						{
+							"id": "182",
+							"winner": false
+						}
+					],
+					"completed": true,
+					"title": "Playoff Series",
+					"totalCompetitions": 3
+				},
+				"altGameNote": "MLS",
+				"notes": [
+					{
+						"text": "PHI win series 2-0",
+						"headline": "PHI win series 2-0",
+						"type": "event"
+					}
+				],
+				"geoBroadcasts": [],
+				"broadcasts": [],
+				"broadcast": "",
+				"competitors": [
+					{
+						"id": "10739",
+						"type": "team",
+						"order": 0,
+						"homeAway": "home",
+						"winner": false,
+						"form": "WLDLD",
+						"score": "0",
+						"team": {
+							"id": "10739",
+							"abbreviation": "PHI",
+							"displayName": "Philadelphia Union",
+							"shortDisplayName": "Philadelphia",
+							"name": "Philadelphia Union",
+							"location": "Philadelphia Union",
+							"color": "051f31",
+							"alternateColor": "e0d0a6",
+							"isActive": true,
+							"logo": "https://a.espncdn.com/i/teamlogos/soccer/500/10739.png",
+							"venue": {
+								"id": "4061"
+							}
+						},
+						"statistics": []
+					},
+					{
+						"id": "182",
+						"type": "team",
+						"order": 1,
+						"homeAway": "away",
+						"winner": false,
+						"form": "LWDWL",
+						"score": "0",
+						"team": {
+							"id": "182",
+							"abbreviation": "CHI",
+							"displayName": "Chicago Fire FC",
+							"shortDisplayName": "Chicago",
+							"name": "Chicago Fire FC",
+							"location": "Chicago Fire FC",
+							"color": "7ccdef",
+							"alternateColor": "ff0000",
+							"isActive": true,
+							"logo": "https://a.espncdn.com/i/teamlogos/soccer/500/182.png",
+							"venue": {
+								"id": "2266"
+							}
+						},
+						"statistics": []
+					}
+				],
+				"details": [],
+				"odds": [
+					null
+				],
+				"wasSuspended": false,
+				"playByPlayAvailable": true,
+				"playByPlayAthletes": true
+			}
+		],
+		"status": {
+			"clock": 0,
+			"displayClock": "0'",
+			"type": {
+				"id": "5",
+				"name": "STATUS_CANCELED",
+				"state": "post",
+				"completed": false,
+				"description": "Canceled",
+				"detail": "Canceled",
+				"shortDetail": "Canceled"
+			}
+		},
+		"venue": {
+			"displayName": "Subaru Park"
+		}
+	}
+}
