@@ -7,8 +7,12 @@ import { buildGameCardSurface } from '@arenaswap/ui/src/components/gameCardShare
 import OnColorCrest from '@arenaswap/ui/src/components/onColorCrest';
 import RevealName from './revealName';
 import RevealNamingScene from './revealNamingScene';
+import RevealHeadToHead from './revealHeadToHead';
+import RevealTypeSlam from './revealTypeSlam';
+import RevealScoreRoll, { measureRolls, type revealRoll } from './revealScoreRoll';
 import {
 	revealAbbrScale,
+	revealCutTotalMs,
 	revealDelayMs,
 	revealHoldScale,
 	revealLean,
@@ -18,7 +22,7 @@ import {
 	revealSpineStartMs,
 	revealStageBleedPx,
 	revealSweepRun,
-	revealTotalMs,
+	type revealCut,
 	type revealMode,
 } from '../cardReveal';
 
@@ -27,6 +31,7 @@ interface gameCardRevealProps {
 	mode: revealMode;
 	index: number;
 	skipping: boolean;
+	cut?: revealCut;
 	children: ReactNode;
 }
 
@@ -63,6 +68,8 @@ interface revealLanding {
 	// The card's own height, which the opening pair are sized off rather than the stage's: they are
 	// drawn to overhang the card, so it is the thing the overhang is a fraction of.
 	cardHeight: number;
+	cardWidth: number;
+	rolls: revealRoll[];
 }
 
 const crestCentre = (rect: DOMRect, box: DOMRect) => ({
@@ -159,7 +166,8 @@ const inDrawnOrder = (game: Game): Game => (
 	isHomeFirst(game) ? { ...game, awayTeam: game.homeTeam, homeTeam: game.awayTeam } : game
 );
 
-const gameCardReveal = ({ game: listedGame, mode, index, skipping, children }: gameCardRevealProps) => {
+const gameCardReveal = ({ game: listedGame, mode, index, skipping, cut: pickedCut = 'poster', children }: gameCardRevealProps) => {
+	const cut = mode === 'quick' ? pickedCut : 'poster';
 	const game = useMemo(() => inDrawnOrder(listedGame), [listedGame]);
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const [staged] = useState(() => mode !== 'none');
@@ -202,8 +210,10 @@ const gameCardReveal = ({ game: listedGame, mode, index, skipping, children }: g
 			hold: revealHoldScale(box.width, box.height, crestSize),
 			sweepRun: revealSweepRun(box.width, lean),
 			cardHeight: box.height,
+			cardWidth: box.width,
+			rolls: cut === 'boxScore' ? measureRolls(wrapper) : [],
 		});
-	}, []);
+	}, [cut]);
 
 	// In a layout effect rather than an effect: this runs after the card is in the DOM but before the
 	// browser paints, so the offsets are already on the element in the animation's first frame.
@@ -228,9 +238,9 @@ const gameCardReveal = ({ game: listedGame, mode, index, skipping, children }: g
 	// starts, and until its stage is gone it is a layer sitting over a card you can already click.
 	useLayoutEffect(() => {
 		if (mode === 'none') return;
-		const timer = setTimeout(() => setDone(true), delay + revealTotalMs(mode));
+		const timer = setTimeout(() => setDone(true), delay + revealCutTotalMs(mode, cut));
 		return () => clearTimeout(timer);
-	}, [mode, delay]);
+	}, [mode, cut, delay]);
 
 	// A card that never had a stage over it is handed straight through, which is what a list with no
 	// graphic to play should be. A card that did keeps its wrapper for good, and keeps every layer's
@@ -245,6 +255,7 @@ const gameCardReveal = ({ game: listedGame, mode, index, skipping, children }: g
 	// would have carried.
 	if (!staged) return <>{children}</>;
 	const playing = mode !== 'none' && !done;
+	const poster = playing && cut === 'poster';
 
 	// The pair the card underneath is painted in, down to the fallback, so the colour that retreats
 	// off each side is the colour that side has been all along.
@@ -263,6 +274,7 @@ const gameCardReveal = ({ game: listedGame, mode, index, skipping, children }: g
 		<div
 			ref={wrapperRef}
 			className={`game-card-reveal${game.status === 'post' ? ' is-final' : ''}${playing && skipping ? ' is-skipping' : ''}`}
+			data-reveal-cut={playing ? cut : undefined}
 			style={!playing ? undefined : {
 				'--reveal-away': awayColor,
 				'--reveal-home': homeColor,
@@ -284,15 +296,25 @@ const gameCardReveal = ({ game: listedGame, mode, index, skipping, children }: g
 				'--reveal-away-dy': `${landing?.awayDy ?? 0}px`,
 				'--reveal-home-dx': `${landing?.homeDx ?? 0}px`,
 				'--reveal-home-dy': `${landing?.homeDy ?? 0}px`,
+				'--reveal-width': `${landing?.cardWidth ?? 0}px`,
+				'--reveal-reach': `${Math.hypot(landing?.cardWidth ?? 0, landing?.cardHeight ?? 0)}px`,
 			} as CSSProperties}
 		>
+			{playing && cut !== 'poster' && <>
+				{cut === 'headToHead' && <span className='game-card-reveal-base' aria-hidden='true' />}
+				<div className='game-card-reveal-stage' aria-hidden='true'>
+					{cut === 'headToHead' && <RevealHeadToHead game={game} awayColor={awayColor} homeColor={homeColor} />}
+					{cut === 'typeSlam' && landing && <RevealTypeSlam game={game} awayColor={awayColor} homeColor={homeColor} width={landing.cardWidth} height={landing.cardHeight} />}
+					{cut === 'boxScore' && <RevealScoreRoll rolls={landing?.rolls ?? []} />}
+				</div>
+			</>}
 			{/* Outside the stage rather than in it: it goes under the crests the stage carries. Square,
 			    like everything else in here — the wrapper holds the one rounded clip. */}
-			{playing && <span className='game-card-reveal-base' aria-hidden='true' />}
-			{playing && mode === 'full' && (
+			{poster && <span className='game-card-reveal-base' aria-hidden='true' />}
+			{poster && mode === 'full' && (
 				<RevealOpening game={game} awayColor={awayColor} homeColor={homeColor} crestlessLate={crestlessLate} onCrestFailed={onCrestFailed} />
 			)}
-			{playing && <div className='game-card-reveal-stage' aria-hidden='true'>
+			{poster && <div className='game-card-reveal-stage' aria-hidden='true'>
 				<span className='game-card-reveal-half is-away' />
 				<span className='game-card-reveal-half is-home' />
 				<RevealSide team={game.awayTeam} surface={awayColor} side='away' crestlessLate={crestlessLate('away')} onCrestFailed={onCrestFailed('away')} />
@@ -303,7 +325,7 @@ const gameCardReveal = ({ game: listedGame, mode, index, skipping, children }: g
 			    the thick bar turns the ground over and the thin ones run behind it on the same line — and
 			    a third costs nothing in kind, since all of them translate and none of them touch layout.
 			    A thirty-game Saturday opens with 48 of these instead of 32, all on the compositor. */}
-			{playing && <div className='game-card-reveal-sweeps' aria-hidden='true'>
+			{poster && <div className='game-card-reveal-sweeps' aria-hidden='true'>
 				<span className='game-card-reveal-sweep is-away' />
 				<span className='game-card-reveal-sweep is-away is-chaser' />
 				<span className='game-card-reveal-sweep is-away is-chaser is-trailer' />

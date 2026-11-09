@@ -1,0 +1,356 @@
+@use 'sass:math';
+
+// The short opening cuts that share the shuffle with the poster. Every duration here is absolute
+// rather than `* var(--reveal-rate)`: these only ever play at one speed, and their totals are
+// `revealCutMs` in `cardReveal.ts`.
+$duel: 1850;
+$slam-cut:   540;
+$slam-split: 1080;
+$slam-drain: 1560;
+$slam-land:  2250;
+$slam:       2400;
+
+@function at($ms, $total) {
+	@return math.percentage(math.div($ms, $total));
+}
+
+$ease-in:     cubic-bezier(0.55, 0, 1, 0.45);
+$ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+$ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+$ease-drain:  cubic-bezier(0.7, 0, 0.2, 1);
+$ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
+
+@layer custom {
+	.game-card-reveal-duel,
+	.game-card-reveal-slam,
+	.game-card-reveal-rolls {
+		position: absolute;
+		inset:    0;
+	}
+
+	.game-card-reveal-cut-crest {
+		position: absolute;
+		top:      50%;
+		width:    var(--reveal-crest);
+		height:   var(--reveal-crest);
+		margin:   calc(var(--reveal-crest) / -2) 0 0 calc(var(--reveal-crest) / -2);
+	}
+
+	.game-card-reveal-cut-crest.is-away,
+	.game-card-reveal-duel-slab.is-away,
+	.game-card-reveal-slam-half.is-away,
+	.game-card-reveal-slam-card.is-away {
+		--reveal-side:    -1;
+		--reveal-dx:      var(--reveal-away-dx);
+		--reveal-dy:      var(--reveal-away-dy);
+		--reveal-surface: var(--reveal-away);
+		--reveal-ink:     var(--reveal-ink-away, #ffffff);
+	}
+
+	.game-card-reveal-cut-crest.is-home,
+	.game-card-reveal-duel-slab.is-home,
+	.game-card-reveal-slam-half.is-home,
+	.game-card-reveal-slam-card.is-home {
+		--reveal-side:    1;
+		--reveal-dx:      var(--reveal-home-dx);
+		--reveal-dy:      var(--reveal-home-dy);
+		--reveal-surface: var(--reveal-home);
+		--reveal-ink:     var(--reveal-ink-home, #ffffff);
+	}
+
+	.game-card-reveal-cut-crest.is-away { left: 25%; }
+	.game-card-reveal-cut-crest.is-home { left: 75%; }
+
+	// ── Head to Head ────────────────────────────────────────────────────────────
+
+	.game-card-reveal[data-reveal-cut='headToHead']:not(.is-skipping) {
+		.game-card-reveal-base {
+			animation: revealCutOut 340ms steps(1, end) var(--reveal-delay) both;
+		}
+
+		.game-card .team-crest {
+			animation: cardRevealHandoff 1820ms steps(1, end) var(--reveal-delay) both;
+		}
+	}
+
+	.game-card-reveal-duel {
+		animation: revealDuelShake #{$duel}ms linear var(--reveal-delay) both;
+	}
+
+	// A pixel past the middle, so the two slabs overlap rather than leave a hairline where they meet.
+	.game-card-reveal-duel-slab {
+		position:   absolute;
+		top:        0;
+		bottom:     0;
+		width:      calc(50% + 1px);
+		background: var(--reveal-surface);
+		animation:  revealDuelSlab #{$duel}ms linear var(--reveal-delay) both;
+	}
+
+	.game-card-reveal-duel-slab.is-away { left: 0; }
+	.game-card-reveal-duel-slab.is-home { right: 0; }
+
+	.game-card-reveal-duel .game-card-reveal-cut-crest {
+		animation: revealDuelCrest #{$duel}ms linear var(--reveal-delay) both;
+	}
+
+	// ── Type Slam ───────────────────────────────────────────────────────────────
+
+	.game-card-reveal[data-reveal-cut='typeSlam']:not(.is-skipping) .game-card .team-crest {
+		animation: cardRevealHandoff #{$slam-land}ms steps(1, end) var(--reveal-delay) both;
+	}
+
+	.game-card-reveal-slam-card,
+	.game-card-reveal-slam-half {
+		position:   absolute;
+		top:        0;
+		bottom:     0;
+		background: var(--reveal-surface);
+	}
+
+	.game-card-reveal-slam-card {
+		left:  0;
+		right: 0;
+	}
+
+	.game-card-reveal-slam-card.is-away {
+		animation: revealCutOut #{$slam-cut}ms steps(1, end) var(--reveal-delay) both;
+	}
+
+	.game-card-reveal-slam-card.is-home {
+		animation: revealSlamSecond #{$slam-split}ms steps(1, end) var(--reveal-delay) both;
+	}
+
+	.game-card-reveal-slam-half.is-away {
+		left:  0;
+		width: calc(50% + 0.5px);
+	}
+
+	.game-card-reveal-slam-half.is-home {
+		left:  50%;
+		right: 0;
+	}
+
+	// The drain closes on the crest's centre: 50% of a half is the card's 25% or 75% slot.
+	.game-card-reveal-slam-half {
+		--reveal-slam-focus: calc(50% + var(--reveal-dx)) calc(50% + var(--reveal-dy));
+		animation:
+			revealCutIn #{$slam-split}ms steps(1, end) var(--reveal-delay) both,
+			revealSlamDrain #{$slam}ms linear var(--reveal-delay) both;
+	}
+
+	.game-card-reveal-slam-type {
+		position:        absolute;
+		inset:           0;
+		display:         flex;
+		align-items:     center;
+		justify-content: center;
+		color:           var(--reveal-ink);
+		font-family:     'DM Sans', sans-serif;
+		font-size:       var(--reveal-slam-size);
+		font-weight:     700;
+		letter-spacing:  -0.02em;
+		line-height:     1;
+		white-space:     nowrap;
+	}
+
+	.game-card-reveal-slam-card .game-card-reveal-slam-type {
+		animation: revealSlamPunch #{$slam-cut}ms $ease-out var(--reveal-delay) both;
+	}
+
+	.game-card-reveal-slam-card.is-home .game-card-reveal-slam-type {
+		animation-delay: calc(var(--reveal-delay) + #{$slam-cut}ms);
+	}
+
+	.game-card-reveal-slam-half .game-card-reveal-slam-type {
+		transform-origin: var(--reveal-slam-focus);
+		animation:        revealSlamShrink #{$slam - $slam-split}ms linear calc(var(--reveal-delay) + #{$slam-split}ms) both;
+	}
+
+	.game-card-reveal-slam .game-card-reveal-cut-crest {
+		animation: revealSlamCrest #{$slam}ms linear var(--reveal-delay) both;
+	}
+
+	// ── Box Score Roll ──────────────────────────────────────────────────────────
+
+	.game-card-reveal[data-reveal-cut='boxScore']:not(.is-skipping) {
+		animation: revealCardRise 380ms $ease-out var(--reveal-delay) both;
+
+		:is(.game-score-value, .game-card-ps-score) {
+			visibility: hidden;
+		}
+
+		.game-card .team-crest {
+			animation: revealCrestPop 440ms $ease-out calc(var(--reveal-delay) + 110ms) both;
+		}
+
+		.team-column:last-child .team-crest {
+			animation-delay: calc(var(--reveal-delay) + 160ms);
+		}
+
+		.progress-bar {
+			transform-origin: left center;
+			animation:        revealBarGrow 900ms $ease-out calc(var(--reveal-delay) + 340ms) both;
+		}
+
+		.game-card-center,
+		.game-card-ps-bar-row,
+		.game-card-footer {
+			animation: none;
+		}
+
+		.game-card-status-row,
+		.game-clock,
+		.game-period,
+		.team-abbreviation,
+		[data-team-star='true'],
+		.game-meta {
+			animation: revealFadeIn 300ms ease calc(var(--reveal-delay) + 520ms) both;
+		}
+	}
+
+	.game-card-reveal-roll {
+		position:    absolute;
+		display:     flex;
+		height:      var(--reveal-roll-line);
+		line-height: var(--reveal-roll-line);
+		white-space: pre;
+	}
+
+	// Reboot sets DM Sans on every element, so the digits would drop the score's Geist without this.
+	.game-card-reveal-roll * {
+		font-family: inherit;
+	}
+
+	.game-card-reveal-roll-column {
+		position: relative;
+		overflow: hidden;
+		height:   var(--reveal-roll-line);
+	}
+
+	.game-card-reveal-roll-size {
+		visibility: hidden;
+	}
+
+	.game-card-reveal-roll-strip {
+		position:   absolute;
+		top:        0;
+		left:       0;
+		right:      0;
+		text-align: center;
+		animation:  revealRoll 980ms $ease-roll calc(var(--reveal-delay) + var(--reveal-roll-at)) both;
+
+		> span {
+			display: block;
+			height:  var(--reveal-roll-line);
+		}
+	}
+
+	// Mid-roll digits over the real ones read as a glitch, so these leave at once rather than fading.
+	.game-card-reveal.is-skipping .game-card-reveal-rolls {
+		visibility: hidden;
+	}
+
+	// The H2H and Type Slam covers sit over the card, so nothing underneath needs to arrive.
+	.game-card-reveal:is([data-reveal-cut='headToHead'], [data-reveal-cut='typeSlam']):not(.is-skipping) {
+		.game-card-status-row,
+		.game-card-center,
+		.team-abbreviation,
+		[data-team-star='true'],
+		.game-meta,
+		.game-card-ps-bar-row,
+		.game-card-footer {
+			animation: none;
+		}
+	}
+
+	// ── Keyframes ───────────────────────────────────────────────────────────────
+
+	@keyframes revealCutOut {
+		from { opacity: 1; }
+		to   { opacity: 0; }
+	}
+
+	@keyframes revealCutIn {
+		from { opacity: 0; }
+		to   { opacity: 1; }
+	}
+
+	@keyframes revealDuelSlab {
+		0%               { transform: translateX(calc(var(--reveal-side) * 101%)); animation-timing-function: $ease-in; }
+		#{at(340, $duel)}  { transform: translateX(0); }
+		#{at(1300, $duel)} { transform: translateX(0); animation-timing-function: $ease-in-out; }
+		#{at(1780, $duel)}, 100% { transform: translateX(calc(var(--reveal-side) * 101%)); }
+	}
+
+	@keyframes revealDuelShake {
+		0%, #{at(340, $duel)}    { transform: translateX(0); }
+		#{at(390, $duel)}        { transform: translateX(5px); }
+		#{at(450, $duel)}        { transform: translateX(-4px); }
+		#{at(510, $duel)}        { transform: translateX(2px); }
+		#{at(580, $duel)}, 100%  { transform: translateX(0); }
+	}
+
+	// Rides in on its slab, punches on the hit, holds, then flies to the card's own crest at scale 1.
+	@keyframes revealDuelCrest {
+		0%                 { transform: translate(calc(var(--reveal-side) * var(--reveal-width) * 0.505), 0) scale(var(--reveal-hold)); animation-timing-function: $ease-in; }
+		#{at(340, $duel)}  { transform: translate(0, 0) scale(var(--reveal-hold)); animation-timing-function: $ease-out; }
+		#{at(430, $duel)}  { transform: translate(0, 0) scale(calc(var(--reveal-hold) * 1.09)); }
+		#{at(600, $duel)}  { transform: translate(0, 0) scale(var(--reveal-hold)); }
+		#{at(1300, $duel)} { transform: translate(0, 0) scale(calc(var(--reveal-hold) * 1.03)); animation-timing-function: $ease-in-out; }
+		#{at(1820, $duel)}, 100% { transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(1); }
+	}
+
+	@keyframes revealSlamSecond {
+		0%   { opacity: 0; }
+		50%  { opacity: 1; }
+		100% { opacity: 0; }
+	}
+
+	@keyframes revealSlamPunch {
+		from { transform: scale(1.16); }
+		to   { transform: scale(1); }
+	}
+
+	@keyframes revealSlamDrain {
+		0%, #{at($slam-drain, $slam)} { clip-path: circle(var(--reveal-reach) at var(--reveal-slam-focus)); animation-timing-function: $ease-drain; }
+		#{at($slam-land, $slam)}, 100% { clip-path: circle(0 at var(--reveal-slam-focus)); }
+	}
+
+	@keyframes revealSlamShrink {
+		0%                           { opacity: 1; transform: scale(1.08); animation-timing-function: $ease-out; }
+		#{at($slam-drain - $slam-split, $slam - $slam-split)} { opacity: 1; transform: scale(1); animation-timing-function: $ease-drain; }
+		#{at($slam-land - 150 - $slam-split, $slam - $slam-split)}, 100% { opacity: 0; transform: scale(0.12); }
+	}
+
+	@keyframes revealSlamCrest {
+		0%, #{at($slam-land - 460, $slam)} { opacity: 0; transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(0.5); animation-timing-function: $ease-out; }
+		#{at($slam-land, $slam)}, 100% { opacity: 1; transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(1); }
+	}
+
+	@keyframes revealCardRise {
+		from { opacity: 0; transform: translateY(10px); }
+		to   { opacity: 1; transform: translateY(0); }
+	}
+
+	@keyframes revealCrestPop {
+		0%   { opacity: 0; transform: scale(0.4); }
+		60%  { opacity: 1; transform: scale(1.1); }
+		100% { opacity: 1; transform: scale(1); }
+	}
+
+	@keyframes revealBarGrow {
+		from { transform: scaleX(0); }
+		to   { transform: scaleX(1); }
+	}
+
+	@keyframes revealFadeIn {
+		from { opacity: 0; }
+		to   { opacity: 1; }
+	}
+
+	@keyframes revealRoll {
+		from { transform: translateY(0); }
+		to   { transform: translateY(calc(var(--reveal-roll-steps) * var(--reveal-roll-line) * -1)); }
+	}
+}

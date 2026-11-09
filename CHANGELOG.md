@@ -9,6 +9,10 @@
 
 The label for a suspended game picking back up now needs an inning sport as well as a start more than 12 hours old, because only baseball finishes a suspended game on a later day; anywhere else an old live game is a feed left stuck on live.
 
+## Three new opening animations — 2026-11-08
+
+After the first open of the day, which still plays the long poster, every open draws one cut at random for all its cards from Head to Head, Type Slam, Box Score Roll and the quick poster, never the one the last open played (`arenaswap.lastOpenRevealCut`). The new cuts live in `assets/_openingCuts.scss` with absolute timings that `revealCutMs` mirrors, and Box Score Roll rolls copies of the scores over the hidden real ones, matched to each one's box, alignment and font (the reboot's `* { font-family }` means a child span never inherits Geist) so the handoff doesn't jump.
+
 ## Switch notifications say when your game stopped — 2026-11-08
 
 When ArenaSwap leaves a live game because play stopped, the notification leads with it ("Rain delay in Boston.") before the usual line, reusing the `afterBreak` template. The game left is read from the active tab before the switch lands, so `executeSwitch` now awaits one tab query when notifications are on.

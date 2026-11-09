@@ -35,7 +35,7 @@ import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import useRestoredScroll from '../useRestoredScroll';
 import { prefetchOnIntent } from './prefetchIntent';
 import { matchesGameQuery } from '../../../utils/gameSearch';
-import { revealModeForIndex, type cardRevealPlan, type revealMode } from '../cardReveal';
+import { revealModeForIndex, type cardRevealPlan, type revealCut, type revealMode } from '../cardReveal';
 
 const emptyScoreMap = new Map<string, PowerScoreResult>();
 const emptyRevealOrder = new Map<string, number>();
@@ -105,6 +105,7 @@ interface mainViewProps {
 	upcomingQuery?: string | null;
 	onUpcomingQueryChange?: (query: string | null) => void;
 	revealMode?: revealMode;
+	revealCut?: revealCut;
 	revealSkipping?: boolean;
 }
 
@@ -144,6 +145,7 @@ const gameSection = ({
 				mode={reveal.order.has(game.id) ? revealModeForIndex(reveal.mode, reveal.order.get(game.id)!) : 'none'}
 				index={reveal.order.get(game.id) ?? 0}
 				skipping={reveal.skipping}
+				cut={reveal.cut}
 			>
 				<GameCard
 					game={game}
@@ -228,6 +230,7 @@ const mainView = ({
 	upcomingQuery = null,
 	onUpcomingQueryChange = () => {},
 	revealMode = 'none',
+	revealCut = 'poster',
 	revealSkipping = false,
 }: mainViewProps) => {
 	const heldGame = heldSwitch ? games.find(game => game.id === heldSwitch.gameId) : undefined;
@@ -306,8 +309,8 @@ const mainView = ({
 	// mid-frame.
 	const revealPlanRef = useRef<Map<string, number> | null>(null);
 	const reveal = useMemo<cardRevealPlan>(() => {
-		if (revealMode === 'none') return { mode: 'none', order: emptyRevealOrder, skipping: false };
-		if (revealPlanRef.current) return { mode: revealMode, order: revealPlanRef.current, skipping: revealSkipping };
+		if (revealMode === 'none') return { mode: 'none', order: emptyRevealOrder, skipping: false, cut: revealCut };
+		if (revealPlanRef.current) return { mode: revealMode, order: revealPlanRef.current, skipping: revealSkipping, cut: revealCut };
 		const order = new Map<string, number>();
 		const take = (list: Game[]) => list.forEach(game => order.set(game.id, order.size));
 		take(assignedLiveGames);
@@ -315,8 +318,8 @@ const mainView = ({
 		if (prefs.showUpcomingGames && selectedDay) take(selectedDay.games);
 		take(finalGames);
 		if (order.size > 0) revealPlanRef.current = order;
-		return { mode: revealMode, order, skipping: revealSkipping };
-	}, [revealMode, revealSkipping, assignedLiveGames, unassignedLiveGames, prefs.showUpcomingGames, selectedDay, finalGames]);
+		return { mode: revealMode, order, skipping: revealSkipping, cut: revealCut };
+	}, [revealMode, revealCut, revealSkipping, assignedLiveGames, unassignedLiveGames, prefs.showUpcomingGames, selectedDay, finalGames]);
 
 	// The top card's two colours glow down behind the header.
 	const topLiveGame = assignedLiveGames[0] ?? unassignedLiveGames[0];

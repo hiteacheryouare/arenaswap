@@ -2,7 +2,10 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import {
 	openRevealEnabledKey,
+	pickRevealCut,
 	pickRevealMode,
+	revealCutMs,
+	revealCuts,
 	readOpenRevealEnabled,
 	revealAbbrBaseLength,
 	revealAbbrScale,
@@ -652,5 +655,30 @@ describe('the one angle the whole graphic is built on', () => {
 		const lean = revealLean(tall, 296);
 		expect(revealSkewDeg(lean, tall)).toBeLessThan(revealSweepAngleDeg);
 		expect(Math.tan((revealSkewDeg(lean, tall) * Math.PI) / 180) * (tall / 2)).toBeCloseTo(lean, 6);
+	});
+});
+
+describe('which cut a later open draws', () => {
+	it('plays the poster on the first open of the day', () => {
+		expect(pickRevealCut('full', 'typeSlam', () => 0.99)).toBe('poster');
+	});
+
+	it('never draws the cut the last open played', () => {
+		revealCuts.forEach(last => {
+			[0, 0.34, 0.67, 0.999999].forEach(roll => {
+				expect(pickRevealCut('quick', last, () => roll)).not.toBe(last);
+			});
+		});
+	});
+
+	it('can draw every cut, the poster included', () => {
+		const drawn = new Set([0, 0.34, 0.67, 0.99].map(roll => pickRevealCut('quick', null, () => roll)));
+		expect([...drawn].toSorted()).toEqual(revealCuts.toSorted());
+	});
+
+	it('holds the opening state for the cut that is actually playing', () => {
+		expect(revealSettleMs('quick', 'headToHead')).toBe(revealDelayMs(revealStaggerCapIndex, 'quick') + revealCutMs.headToHead);
+		expect(revealSettleMs('quick', 'poster')).toBe(revealSettleMs('quick'));
+		expect(revealSettleMs('none', 'boxScore')).toBe(0);
 	});
 });

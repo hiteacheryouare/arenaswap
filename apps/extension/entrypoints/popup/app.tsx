@@ -17,7 +17,7 @@ import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 import { StaleLeaguesProvider } from '@arenaswap/ui/src/components/staleLeagueNote';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
 import { popupConfettiStage } from './popupConfettiStage';
-import { resolveOpenRevealMode, revealSettleMs, revealSkipOutMs, writeOpenRevealEnabled } from './cardReveal';
+import { resolveOpenRevealCut, resolveOpenRevealMode, revealSettleMs, revealSkipOutMs, writeOpenRevealEnabled } from './cardReveal';
 import { isLeagueLogoCacheFresh, leagueLogoCacheKey, seededLeagueLogos } from './leagueLogoCache';
 import useToast from './useToast';
 import useSlideDirection from './useSlideDirection';
@@ -124,6 +124,7 @@ export default () => {
 	// full every time you came back from a setting or a game detail. Cleared once the last card has
 	// landed, which is what makes the return trip quiet.
 	const [revealMode, setRevealMode] = useState(resolveOpenRevealMode);
+	const [revealCut] = useState(() => resolveOpenRevealCut(revealMode));
 	// Seeded rather than empty: every league already has a pinned or fallback URL, so the pickers are
 	// correct on the first frame and the refresh below is an upgrade rather than the only source.
 	const [allLeagueLogoCache, setAllLeagueLogoCache] = useState<LeagueLogoMap>(seededLeagueLogos);
@@ -165,9 +166,9 @@ export default () => {
 			return;
 		}
 		revealStartedRef.current = true;
-		const timer = setTimeout(() => setRevealMode('none'), revealSettleMs(revealMode));
+		const timer = setTimeout(() => setRevealMode('none'), revealSettleMs(revealMode, revealCut));
 		return () => clearTimeout(timer);
-	}, [revealMode, listOnScreen]);
+	}, [revealMode, revealCut, listOnScreen]);
 
 	// Five seconds a card is long enough to need a way out, and the way out is anything at all: the
 	// first touch or keystroke ends it. Capture phase, and the handler neither prevents nor stops the
@@ -826,6 +827,7 @@ export default () => {
 						upcomingQuery={upcomingQuery}
 						onUpcomingQueryChange={setUpcomingQuery}
 						revealMode={revealMode}
+						revealCut={revealCut}
 						revealSkipping={revealSkipping}
 					/>
 				)}

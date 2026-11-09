@@ -8,6 +8,7 @@ export interface cardRevealPlan {
 	// Somebody has asked to be out of it. Carried on the plan rather than read per card, because the
 	// whole list leaves together — a graphic that let go of one card at a time would be eight endings.
 	skipping: boolean;
+	cut: revealCut;
 }
 
 // The poster — the two colours wiping in, the trade under the bars, the colour retreating. Every
@@ -92,8 +93,8 @@ export const revealModeForIndex = (mode: revealMode, index: number): revealMode 
 
 // When the last card to start has finished, and so when the popup stops being in its opening state
 // at all. Going to settings and back after this point must not replay anything.
-export const revealSettleMs = (mode: revealMode) => (
-	mode === 'none' ? 0 : revealDelayMs(revealStaggerCapIndex, mode) + revealTotalMs(mode)
+export const revealSettleMs = (mode: revealMode, cut: revealCut = 'poster') => (
+	mode === 'none' ? 0 : revealDelayMs(revealStaggerCapIndex, mode) + revealCutTotalMs(mode, cut)
 );
 
 // How long the graphic gets to leave when somebody asks it to. Going straight to 'none' takes the
@@ -379,4 +380,42 @@ export const resolveOpenRevealMode = (now = new Date()): revealMode => {
 	// animation off, should still get the full version on the day they turn that preference back off.
 	if (resolved !== 'none') globalThis.localStorage?.setItem(lastRevealDayKey, today);
 	return resolved;
+};
+
+// Every open after the first of the day draws one of these, the same one on every card. The poster
+// stays in the draw at its quick speed.
+export type revealCut = 'poster' | 'headToHead' | 'typeSlam' | 'boxScore';
+
+export const revealCuts: revealCut[] = ['poster', 'headToHead', 'typeSlam', 'boxScore'];
+
+export const revealCutMs: Record<Exclude<revealCut, 'poster'>, number> = {
+	headToHead: 1850,
+	typeSlam: 2400,
+	boxScore: 1600,
+};
+
+// DM Sans bold caps run about 0.68em a letter, so this fills the box without measuring the type.
+export const revealSlamTypePx = (abbreviation: string, width: number, height: number) => (
+	Math.min(height, width / (0.68 * Math.max(2, abbreviation.length)))
+);
+
+export const lastRevealCutKey = 'arenaswap.lastOpenRevealCut';
+
+export const pickRevealCut = (mode: revealMode, lastCut: string | null, random = Math.random): revealCut => {
+	if (mode !== 'quick') return 'poster';
+	const choices = revealCuts.filter(cut => cut !== lastCut);
+	return choices[Math.min(choices.length - 1, Math.floor(random() * choices.length))]!;
+};
+
+export const revealCutTotalMs = (mode: revealMode, cut: revealCut) => (
+	mode === 'none' || cut === 'poster' ? revealTotalMs(mode) : revealCutMs[cut]
+);
+
+let resolvedCut: revealCut | null = null;
+
+export const resolveOpenRevealCut = (mode: revealMode): revealCut => {
+	if (resolvedCut !== null) return resolvedCut;
+	resolvedCut = pickRevealCut(mode, globalThis.localStorage?.getItem(lastRevealCutKey) ?? null);
+	if (mode !== 'none') globalThis.localStorage?.setItem(lastRevealCutKey, resolvedCut);
+	return resolvedCut;
 };

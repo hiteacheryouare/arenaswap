@@ -5,6 +5,7 @@
 @use '@arenaswap/ui/src/fonts';
 @use '@arenaswap/ui/src/motion' as m;
 @use 'sass:math';
+@use 'openingCuts';
 // Element resets sit in Bootstrap's reboot layer, under its components: a class rule has to keep
 // beating `button { color: inherit }`, as it did when nothing was layered.
 @layer reboot {
