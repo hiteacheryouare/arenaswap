@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## "Resumed from" only on baseball — 2026-11-08
+
+The label for a suspended game picking back up now needs an inning sport as well as a start more than 12 hours old, because only baseball finishes a suspended game on a later day; anywhere else an old live game is a feed left stuck on live.
+
 ## Switch notifications say when your game stopped — 2026-11-08
 
 When ArenaSwap leaves a live game because play stopped, the notification leads with it ("Rain delay in Boston.") before the usual line, reusing the `afterBreak` template. The game left is read from the active tab before the switch lands, so `executeSwitch` now awaits one tab query when notifications are on.

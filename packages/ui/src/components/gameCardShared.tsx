@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 import type { CSSProperties, MouseEvent } from 'react';
-import { isHomeFirst, resolveConferenceCrest } from '@arenaswap/core/constants';
+import { isHomeFirst, leagueConfigMap, resolveConferenceCrest } from '@arenaswap/core/constants';
 import Crest from './crest';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import type { BettingDisplayPrefs } from './gameCardTypes';
@@ -35,9 +35,10 @@ export const formatCalendarDay = (day: string, locale?: string): string => {
 };
 
 // No game runs twelve hours, so a live one that started that long ago is a suspended game picking back up.
+// Only baseball finishes a suspended game on a later day; anywhere else it is a feed left stuck on live.
 const resumedAfterMs = 12 * 60 * 60 * 1000;
-export const isResumedGame = (game: Pick<Game, 'status' | 'startTime'>, now: number = Date.now()): boolean => {
-	if (game.status !== 'in' || !game.startTime) return false;
+export const isResumedGame = (game: Pick<Game, 'status' | 'startTime' | 'league'>, now: number = Date.now()): boolean => {
+	if (game.status !== 'in' || !game.startTime || leagueConfigMap[game.league]?.periodFormat !== 'innings') return false;
 	const startMs = new Date(game.startTime).getTime();
 	return Number.isFinite(startMs) && now - startMs > resumedAfterMs;
 };
