@@ -5,6 +5,7 @@ import type { LeagueId } from '@arenaswap/core/types';
 import { cooldownSteps, formatCooldownSeconds } from './cooldownSlider';
 import FlowStepper from './flowStepper';
 import FormRange from './formRange';
+import LudicrousSpeedLabel from './ludicrousSpeedLabel';
 import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepSettingsProps {
@@ -44,8 +45,8 @@ const walkthroughStepSettings = ({ onNext, onBack, leagues = fallbackLeagues }: 
 							<i className='bi bi-sliders me-1 fg-primary' />
 							{i18n.t('stepSettings.sensitivityLabel')}
 						</span>
-						<span className={`fw-semibold setting-value-label${sensitivity === 7 ? ' ludicrous-speed' : ''}`}>
-							{sensitivityLabels[sensitivity]}
+						<span className='fw-semibold setting-value-label'>
+							{sensitivity === 7 ? <LudicrousSpeedLabel text={sensitivityLabels[7]!} landing /> : sensitivityLabels[sensitivity]}
 						</span>
 					</div>
 					<FormRange

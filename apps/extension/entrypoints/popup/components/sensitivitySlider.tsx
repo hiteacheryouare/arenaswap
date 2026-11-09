@@ -4,6 +4,7 @@ import { i18n } from '#i18n';
 import FormRange from './formRange';
 import SettingTooltipIcon from './settingTooltipIcon';
 import LudicrousSpeedOverlay from './ludicrousSpeedOverlay';
+import LudicrousSpeedLabel from './ludicrousSpeedLabel';
 
 interface sensitivitySliderProps {
 	value: number;
@@ -25,6 +26,7 @@ const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
 	// Stable, because the overlay's close timer restarts whenever this changes and Settings
 	// re-renders on every broadcast.
 	const closeLudicrous = useCallback(() => setShowLudicrous(false), []);
+	const [dragged, setDragged] = useState(false);
 
 	return (
 	<div>
@@ -36,12 +38,12 @@ const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
 			</div>
 			{value === 7 ? (
 				<button
-					className='fw-semibold setting-value-label ludicrous-speed ludicrous-speed-clickable text-end'
+					className='fw-semibold setting-value-label ludicrous-speed-clickable text-end'
 					onClick={() => setShowLudicrous(true)}
 					title={i18n.t('sensitivity.hyperdriveTitle')}
 					style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'inherit' }}
 				>
-					{i18n.t('sensitivity.valueLabel', { label: labels[value]!, gap: sensitivityThresholds[value]! })}
+					<LudicrousSpeedLabel text={i18n.t('sensitivity.valueLabel', { label: labels[value]!, gap: sensitivityThresholds[value]! })} landing={dragged} />
 				</button>
 			) : (
 				<span className='fw-semibold setting-value-label text-end'>
@@ -58,6 +60,7 @@ const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
 			list='sensitivity-ticks'
 			onChange={e => {
 				const next = Number(e.target.value);
+				setDragged(true);
 				if (next !== value) onChange(next);
 			}}
 		>

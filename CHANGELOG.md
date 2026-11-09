@@ -21,6 +21,14 @@ A scheduled game our sources mark delayed is polled at the live beat past `lateS
 
 Our sources send postponed and canceled games as `post` with `completed: false`, so rainouts were listed as 0–0 finals; `packages/sideline/src/disruption.ts` now marks postponed, suspended and forfeit games, drops canceled ones, and reads the reason, makeup day and doubleheader game out of the event note. A forfeit's winner comes from that note too, because the feed's `winner` flag follows the score and can name the team that forfeited.
 
+## Ludicrous Speed's afterburner loops cleanly — 2026-11-08
+
+The burn sweep travelled 264% of a gradient that repeats every 220%, so it jumped back on every pass; it now runs on a 200% gradient and travels exactly 200%. A label that just landed burns without replaying the 0.6-opacity fade-in, which had read as a blink at the handoff.
+
+## Ludicrous Speed lands, then burns — 2026-11-07
+
+The Ludicrous Speed label no longer strobes through eight colors: dragging onto it slams the letters down white-hot with one shudder, then a red-to-gold afterburner sweep runs through the text, and opening Settings already there skips the landing. `LudicrousSpeedLabel` is shared by Settings and the setup walkthrough, and each flame color is its own `light-dark()` custom property because the build only polyfills those reliably outside a gradient.
+
 ## Reveal crests stay visible on their own colour — 2026-11-07
 
 The open reveal drew each crest bare on its team's colour, so a crest in that same colour (Texas's burnt-orange longhorn) vanished in the opening scene. `OnColorCrest` takes `silhouetteWhenLost`, which runs the shared `crestReadsOn` check and draws a failing crest as a white or black silhouette. The poster's copy turns back into the colour artwork on its walk down, so it still lands as the card's own crest.

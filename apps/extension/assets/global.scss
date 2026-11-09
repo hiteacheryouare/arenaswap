@@ -46,21 +46,78 @@
 @layer custom {
 
 	/* ─── Ludicrous Speed ─────────────────────────────────────────────────────── */
-	@keyframes ludicrousSpeed {
-		0%   { color: #ff4500; text-shadow: 0 0 6px #ff4500; }
-		12%  { color: #ff8c00; text-shadow: 0 0 10px #ff8c00 }
-		25%  { color: #ffd700; text-shadow: 0 0 14px #ffd700 }
-		37%  { color: #ffffff; text-shadow: 0 0 18px #fff, 0 0 28px #ff8c00; }
-		50%  { color: #00e5ff; text-shadow: 0 0 14px #00e5ff; }
-		62%  { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
-		75%  { color: #ffd700; text-shadow: 0 0 14px #ffd700; }
-		87%  { color: #ff8c00; text-shadow: 0 0 10px #ff8c00; }
-		100% { color: #ff4500; text-shadow: 0 0 6px #ff4500; }
+	// Each colour is its own light-dark() pair because the build polyfills light-dark() into
+	// variables, which it does reliably for a custom property and not inside a gradient.
+	.ludicrous-speed {
+		--ludicrous-red:    light-dark(#b81d00, #ff2a1a);
+		--ludicrous-orange: light-dark(#e04e00, #ff6a00);
+		--ludicrous-gold:   light-dark(#f08a00, #ffb000);
+		--ludicrous-core:   light-dark(#ffb000, #fff3c4);
+		--ludicrous-ember:  light-dark(#d94e00, #ff6a1a);
+		--ludicrous-flare:  light-dark(#f08a00, #ffffff);
+		--ludicrous-glow:   light-dark(transparent, rgba(255, 106, 0, 0.5));
+
+		display: inline-block;
+		transform-origin: right center;
+		color: transparent;
+		background-image: linear-gradient(90deg,
+			var(--ludicrous-red) 0%, var(--ludicrous-orange) 18%, var(--ludicrous-gold) 34%, var(--ludicrous-core) 46%,
+			var(--ludicrous-gold) 58%, var(--ludicrous-orange) 74%, var(--ludicrous-red) 100%);
+		background-size: 200% 100%;
+		-webkit-background-clip: text;
+		background-clip: text;
+		filter: drop-shadow(0 0 4px var(--ludicrous-glow));
+		animation: ludicrousIgnite 0.35s ease-out, ludicrousBurn 1.3s linear infinite;
 	}
 
-	.ludicrous-speed {
-		animation: ludicrousSpeed 0.5s linear infinite;
+	// The landing animates letter by letter, and a gradient clipped to text would restart inside each
+	// letter, so it lands in a flat colour and the burn takes over once it has cooled to ember.
+	.ludicrous-speed.landing {
+		color: var(--ludicrous-ember);
+		background-image: none;
+		filter: none;
+		animation: ludicrousFlare 1.2s ease-out both, ludicrousShudder 0.45s linear 0.72s both;
+	}
+
+	.ludicrous-speed.landed {
+		animation: ludicrousBurn 1.3s linear infinite;
+	}
+
+	.ludicrous-speed-letter {
 		display: inline-block;
+		white-space: pre;
+		animation: ludicrousSlam 0.32s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+		animation-delay: calc(var(--letter) * 28ms);
+	}
+
+	// The gradient repeats every 200%, so a pass has to travel exactly 200% to meet itself.
+	@keyframes ludicrousBurn {
+		from { background-position: 100% 0; }
+		to   { background-position: -100% 0; }
+	}
+
+	@keyframes ludicrousIgnite {
+		from { opacity: 0.6; }
+	}
+
+	@keyframes ludicrousSlam {
+		0%   { transform: translateY(-6px) scale(2.2); opacity: 0; }
+		70%  { transform: translateY(0.5px) scale(0.92); opacity: 1; }
+		100% { transform: none; }
+	}
+
+	@keyframes ludicrousFlare {
+		0%, 55% { color: var(--ludicrous-flare); text-shadow: 0 0 10px var(--ludicrous-flare), 0 0 20px #ff8c00, 0 0 34px #ff4500; }
+		100%    { color: var(--ludicrous-ember); text-shadow: 0 0 6px var(--ludicrous-glow); }
+	}
+
+	@keyframes ludicrousShudder {
+		0%   { transform: translate(-2px, 1px) scale(1.12); filter: drop-shadow(-3px 0 #00e5ff) drop-shadow(3px 0 #ff2a6d); }
+		20%  { transform: translate(2px, -1px); filter: drop-shadow(3px 0 #00e5ff) drop-shadow(-3px 0 #ff2a6d); }
+		40%  { transform: translate(-1.5px, -1px); filter: drop-shadow(-2px 0 #00e5ff) drop-shadow(2px 0 #ff2a6d); }
+		60%  { transform: translate(1px, 1px); filter: drop-shadow(1.5px 0 #00e5ff) drop-shadow(-1.5px 0 #ff2a6d); }
+		80%  { transform: translate(-0.5px, 0); filter: drop-shadow(-1px 0 #00e5ff) drop-shadow(1px 0 #ff2a6d); }
+		100% { transform: none; filter: none; }
 	}
 
 	.ludicrous-speed-clickable {
@@ -452,12 +509,10 @@
 	// second, which is a photosensitivity risk, and the shakes and blinks are movement for its own
 	// sake. Each holds its lit frame instead.
 	@include m.reduced-motion {
-		.ludicrous-speed {
-			animation: none;
-			color: #ff8c00;
-			text-shadow: 0 0 10px #ff8c00;
-		}
-
+		.ludicrous-speed,
+		.ludicrous-speed.landing,
+		.ludicrous-speed.landed,
+		.ludicrous-speed-letter,
 		.ls-text.announce,
 		.ls-overlay:has(> .ls-text.announce) > .ls-canvas,
 		.ls-text.go,

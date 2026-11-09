@@ -8,7 +8,10 @@ const emulateReducedMotion = (on: boolean) => Cypress.automation('remote:debugge
 // Elements carrying the real classes, so this reads the shipped stylesheet rather than the components'
 // timing, which these loops don't depend on.
 const loops = [
-	['the Ludicrous Speed label', 'fw-semibold setting-value-label ludicrous-speed'],
+	['the burning Ludicrous Speed label', 'ludicrous-speed'],
+	['the Ludicrous Speed label landing', 'ludicrous-speed landing'],
+	['the Ludicrous Speed label burning after it lands', 'ludicrous-speed landed'],
+	['a Ludicrous Speed letter slamming down', 'ludicrous-speed-letter'],
 	['the flashing STOP', 'ls-text stop'],
 	['the pressed emergency brake', 'ls-emergency-brake pressed'],
 	['the shaking GO', 'ls-text go'],
