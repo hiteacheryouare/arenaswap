@@ -26,7 +26,7 @@ const tabs = [
 
 const tied = { wnba: { home: 79, away: 79 }, nhl: {}, epl: {} };
 
-const boot = () => {
+const boot = (events = slate(tied), gameBoosts: Record<string, number> = {}) => {
 	for (const hostname of ['stream.test', 'other.test']) {
 		cy.intercept({ hostname }, { headers: { 'content-type': 'text/html' }, body: '<body style="margin:0;background:#1b2a41"></body>' });
 	}
@@ -34,9 +34,9 @@ const boot = () => {
 		tabs,
 		local: { onboardingCompleted: true, multiviewOnboardingDone: true },
 		sync: storedPrefs({ enabledLeagues: ['wnba', 'nhl', 'epl'], multiviewEnabled: true }),
-		session: { tabRegistry: [{ tabId: wnbaTab, gameId: gameIds.wnba }, { tabId: nhlTab, gameId: gameIds.nhl }, { tabId: eplTab, gameId: gameIds.epl }] },
+		session: { tabRegistry: [{ tabId: wnbaTab, gameId: gameIds.wnba }, { tabId: nhlTab, gameId: gameIds.nhl }, { tabId: eplTab, gameId: gameIds.epl }], gameBoosts },
 		permissionsGranted: true,
-		events: slate(tied),
+		events,
 	});
 };
 
@@ -92,6 +92,32 @@ describe('Multiview', () => {
 			const best = live.state!.scores.filter(score => Object.values(gameIds).includes(score.gameId)).toSorted((a, b) => b.total - a.total)[0]!.gameId;
 			cy.get('.multiview-box-audible').should('have.length', 1).and('have.attr', 'data-game-id', best);
 			plays(gameIds.epl, 13, streams.epl).should('deep.equal', { muted: best !== gameIds.epl });
+		});
+	});
+
+	it('shows the one game still exciting alone once the other falls away, then hands off to its tab', () => {
+		const blowout = slate({ wnba: tied.wnba, nhl: { home: 6, away: 1 } });
+		boot(blowout, { [gameIds.nhl]: 60 });
+		play(30_000);
+		world().should(live => expect(live.activeTabId()).to.equal(multiviewTabId(live)));
+		world().then(live => openPage('/multiview.html', multiviewTabId(live)));
+		cy.get('iframe[src^="https://stream.test/"]').should('have.length', 1).then($first => {
+			plays($first.attr('name')!, 11, $first.attr('src')!);
+		});
+		cy.get('iframe[src^="https://stream.test/"]').should('have.length', 2).each(($frame, index) => {
+			plays($frame.attr('name')!, 21 + index, $frame.attr('src')!);
+		});
+		play(60_000);
+		cy.get('.multiview-box:not(.multiview-box-hidden)').should('have.length', 2);
+
+		world().then(live => live.send({ type: 'SET_GAME_BOOST', gameId: gameIds.nhl, boost: 0 }));
+		play(20_000);
+		cy.get('.multiview-box:not(.multiview-box-hidden)').should('have.length', 1).and('have.attr', 'data-game-id', gameIds.wnba);
+
+		play(120_000);
+		world().should(live => {
+			expect(live.tab(multiviewTabId(live)!), 'Multiview tab').to.equal(undefined);
+			expect(live.activeTabId(), 'tab in front').to.equal(wnbaTab);
 		});
 	});
 
