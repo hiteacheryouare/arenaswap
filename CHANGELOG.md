@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Release prep is a skill now — 2026-11-09
+
+Agents prepping a release, backport, hotfix or security patch now follow the `arenaswap-release` skill, which walks the version bump, notes, translations, store kit and hand-off in order and defers to RELEASENOTES.md on how the notes sound. The `tech-choices` skill moved to Ryan's global skills, so this repo no longer carries its own copy.
+
 ## "Resumed from" only on baseball — 2026-11-08
 
 The label for a suspended game picking back up now needs an inning sport as well as a start more than 12 hours old, because only baseball finishes a suspended game on a later day; anywhere else an old live game is a feed left stuck on live.
