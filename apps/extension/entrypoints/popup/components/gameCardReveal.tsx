@@ -104,6 +104,7 @@ const RevealSide = ({ team, surface, side, crestlessLate, onCrestFailed }: revea
 							className='game-card-reveal-crest-logo'
 							fallback={crestless ? 'abbreviation' : 'blank'}
 							loading='eager'
+							silhouetteWhenLost
 							onFailed={onCrestFailed}
 						/>
 					</span>
@@ -144,7 +145,7 @@ const RevealOpening = ({ game, awayColor, homeColor, crestlessLate, onCrestFaile
 			<span key={side} className={`game-card-reveal-opening-field is-${side} is-bare`} style={lateStyle(crestlessLate(side))}>
 				{crestlessLate(side) !== undefined
 					? <RevealName key={team.name} team={team} className='game-card-reveal-opening-field-name' />
-					: <OnColorCrest team={team} surface={surface} className='game-card-reveal-opening-logo' fallback='blank' loading='eager' onFailed={onCrestFailed(side)} />}
+					: <OnColorCrest team={team} surface={surface} className='game-card-reveal-opening-logo' fallback='blank' loading='eager' silhouetteWhenLost onFailed={onCrestFailed(side)} />}
 			</span>
 		))}
 		<RevealNamingScene game={game} />

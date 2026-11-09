@@ -1613,6 +1613,22 @@
 		--as-avatar-size: 100%;
 	}
 
+	/* A crest drawn in its own team's colour, on that colour, is a hole in the shape of a crest.
+	   `contrast(0)` flattens every pixel to mid grey and `brightness(2)` takes that to white, keeping
+	   the alpha, so the result is the crest's exact outline. The poster's copy keeps the silhouette for
+	   as long as it stands on the bare colour and turns back into the artwork on the walk down, so what
+	   lands is the card's own crest rather than a white one that swaps at the handoff. */
+	.game-card-reveal .crest.is-silhouette-white { --reveal-silhouette: contrast(0) brightness(2); }
+	.game-card-reveal .crest.is-silhouette-black { --reveal-silhouette: brightness(0); }
+
+	.game-card-reveal-opening-logo > .avatar-img {
+		filter: var(--reveal-silhouette, none);
+	}
+
+	.game-card-reveal-crest-logo[class*='is-silhouette-'] > .avatar-img {
+		animation: cardRevealCrestSilhouette calc(3400ms * var(--reveal-rate)) linear var(--reveal-spine) both;
+	}
+
 	/* The poster's stand-in for a crest we do not have: the club's name, set across the plate a crest
 	   would have had, over the placeholder disc the card draws for it. The name gives way to the disc
 	   before the descent, so it is the card's disc that lands on the card's.
@@ -2051,6 +2067,12 @@
 		78%     { transform: translate(0, 0) scale(calc(var(--reveal-hold) * 0.95)); animation-timing-function: cubic-bezier(0.32, 1.28, 0.6, 1); }
 		93%     { opacity: 1; transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(1); }
 		100%    { opacity: 0; transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(1); }
+	}
+
+	/* Over the same 78% to 93% the crest walks down in, while the colour under it pulls back. */
+	@keyframes cardRevealCrestSilhouette {
+		0%, 78%   { filter: var(--reveal-silhouette); }
+		93%, 100% { filter: none; }
 	}
 
 	/* In the breath before the descent, which starts at 78%, so it is the disc alone that travels down
