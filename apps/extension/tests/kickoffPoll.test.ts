@@ -27,6 +27,11 @@ describe('kickoffDelayMs', () => {
 		expect(kickoffDelayMs([game('pre', now - lateStartGraceMs - 1)], now)).toBeNull();
 	});
 
+	test('keeps waiting on a start our sources have marked delayed, however late it runs', () => {
+		const rainedOn = { ...game('pre', now - 90 * 60_000), delayed: true };
+		expect(kickoffDelayMs([rainedOn], now)).toBe(pollMaxEagerMs);
+	});
+
 	test('has nothing to say about live, finished or unscheduled games', () => {
 		expect(kickoffDelayMs([game('in', now + 10_000), game('post', now + 10_000), game('pre')], now)).toBeNull();
 	});
