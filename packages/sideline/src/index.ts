@@ -14,7 +14,7 @@ export type { PostseasonGrade, PostseasonRound } from './postseasonRound';
 export { toLeagueSchedule } from './leagueCalendar';
 export { emptyBoxScore, parseBoxScore, parseLineScore, parseTeamComparison } from './boxScoreParse';
 export type { BoxScore, BoxScoreAthlete, BoxScoreCategory, BoxScoreTeam, LineScore, LineScoreRow, TeamComparisonRow } from './boxScoreParse';
-export { emptyStandings, parseLeagueStandings, parseStandings, usesFullLeagueStandings } from './standingsParse';
+export { emptyStandings, parseLeagueStandings, parseStandings, standingsForMatchup, usesFullLeagueStandings } from './standingsParse';
 export type { StandingsColumn, StandingsGroup, StandingsLabelKey, StandingsRow } from './standingsParse';
 export { emptyMatchup, hasMatchupContent, parseInjuries, parseMatchup, parseRecentForm, parseSeasonStats, parseTickets, parseWinChance } from './matchupParse';
 export { emptyLineups, hasLineups, parseLineups } from './lineupParse';

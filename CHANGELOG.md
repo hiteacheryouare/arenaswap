@@ -21,6 +21,10 @@ A scheduled game our sources mark delayed is polled at the live beat past `lateS
 
 Our sources send postponed and canceled games as `post` with `completed: false`, so rainouts were listed as 0–0 finals; `packages/sideline/src/disruption.ts` now marks postponed, suspended and forfeit games, drops canceled ones, and reads the reason, makeup day and doubleheader game out of the event note. A forfeit's winner comes from that note too, because the feed's `winner` flag follows the score and can name the team that forfeited.
 
+## College standings show only the matchup's conferences — 2026-11-07
+
+College hockey, baseball and softball read the whole-league standings tree, so their Standings tab listed every conference in the country. `standingsForMatchup` now keeps only the groups holding one of the two teams for college leagues, and leaves professional tables whole.
+
 ## Commercials only excuse their own points in Multiview — 2026-11-06
 
 A boxed game on a commercial break used to keep its Multiview box however low it fell, so a game down near 10 stayed up until the break ended. `planMultiview` now adds the score's `breakPenalty` back before the keep check, which forgives the break but nothing else.

@@ -17,6 +17,7 @@ import {
 	parseStandings,
 	parseTickets,
 	parseVenueDetails,
+	standingsForMatchup,
 	usesFullLeagueStandings,
 } from '@arenaswap/sideline';
 import type { BoxScore, Lineups, Matchup, StandingsGroup, TicketLink, VenueDetails } from '@arenaswap/sideline';
@@ -316,7 +317,7 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 			// screen does rather than a simplified stand-in.
 			const canned = mockStandingsPayloads[gameId];
 			setStandings(usesFullLeagueStandings(league)
-				? parseLeagueStandings(canned, gameRef.current.sportType)
+				? standingsForMatchup(parseLeagueStandings(canned, gameRef.current.sportType), league, teamIdsRef.current.home, teamIdsRef.current.away)
 				: parseStandings(canned, gameRef.current.sportType, teamIdsRef.current.home, teamIdsRef.current.away));
 			if (status === 'pre') {
 				let cancelled = false;
@@ -426,7 +427,12 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		if (usesFullLeagueStandings(league)) {
 			fetchSharedLeagueStandings(config.espnPath)
 				.then(data => {
-					if (!cancelled) setStandings(parseLeagueStandings(data, gameRef.current.sportType));
+					if (!cancelled) setStandings(standingsForMatchup(
+						parseLeagueStandings(data, gameRef.current.sportType),
+						league,
+						teamIdsRef.current.home,
+						teamIdsRef.current.away,
+					));
 				})
 				.catch(err => {
 					if (!cancelled) logWarn(`Failed to load standings for ${league}.`, err);

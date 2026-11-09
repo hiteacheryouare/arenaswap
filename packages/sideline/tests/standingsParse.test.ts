@@ -1,4 +1,4 @@
-import { parseLeagueStandings, parseStandings, usesFullLeagueStandings } from '../src/standingsParse';
+import { parseLeagueStandings, parseStandings, standingsForMatchup, usesFullLeagueStandings } from '../src/standingsParse';
 
 // Every payload below is transcribed off a live ESPN response: the league tables from
 // `/apis/v2/sports/{path}/standings?level=3` (NFL, Premier League) and the division blocks from
@@ -268,6 +268,39 @@ describe('parseLeagueStandings', () => {
 	test('reads nothing from an unrecognized payload or an unknown sport', () => {
 		expect(parseLeagueStandings(undefined, 'football')).toEqual([]);
 		expect(parseLeagueStandings(nflLeague, undefined)).toEqual([]);
+	});
+});
+
+const conferences = (groups: ReturnType<typeof parseLeagueStandings>) => groups.map(group => group.header);
+
+describe('standingsForMatchup', () => {
+	// The college hockey tree as our sources sent it on 2026-11-07: one flat level of conferences.
+	const collegeTeam = (id: string, location: string) => ({
+		team: { id, location, logos: [] },
+		stats: [stat('wins', '5'), stat('losses', '2'), stat('points', '15')],
+	});
+	const collegeHockey = {
+		name: 'NCAA Mens Hockey',
+		children: [
+			{ name: 'Atlantic Hockey America', standings: { entries: [collegeTeam('349', 'Army'), collegeTeam('2', 'Air Force')] } },
+			{ name: 'Big Ten Conference', standings: { entries: [collegeTeam('130', 'Michigan'), collegeTeam('194', 'Ohio State')] } },
+			{ name: 'Hockey East', standings: { entries: [collegeTeam('103', 'Boston College'), collegeTeam('111', 'Maine')] } },
+		],
+	};
+
+	test('keeps only the conference a college matchup plays in', () => {
+		const groups = parseLeagueStandings(collegeHockey, 'hockey');
+		expect(conferences(standingsForMatchup(groups, 'ncaamh', '103', '111'))).toEqual(['Hockey East']);
+	});
+
+	test('keeps both conferences for a non-conference college game, in tree order', () => {
+		const groups = parseLeagueStandings(collegeHockey, 'hockey');
+		expect(conferences(standingsForMatchup(groups, 'ncaamh', '103', '130'))).toEqual(['Big Ten Conference', 'Hockey East']);
+	});
+
+	test('leaves a professional league whole', () => {
+		const groups = parseLeagueStandings(nflLeague, 'football');
+		expect(standingsForMatchup(groups, 'nfl', '21', '6')).toEqual(groups);
 	});
 });
 

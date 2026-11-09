@@ -1,4 +1,4 @@
-import type { SportType } from '@arenaswap/core';
+import { isCollegeLeagueId, type SportType } from '@arenaswap/core';
 
 // Two sources, one shape out.
 //
@@ -331,6 +331,19 @@ export const parseLeagueStandings = (
 	collectNodes(root, sportType, null, groups);
 	return groups;
 };
+
+// A college tree lists every conference in the country. The reader came for the one or two the
+// matchup plays in.
+export const standingsForMatchup = (
+	groups: StandingsGroup[],
+	league: string,
+	homeTeamId: string,
+	awayTeamId: string,
+): StandingsGroup[] => (
+	isCollegeLeagueId(league)
+		? groups.filter(group => group.rows.some(row => row.teamId === homeTeamId || row.teamId === awayTeamId))
+		: groups
+);
 
 // ── The matchup's own division, off the summary ──────────────────────────────
 
