@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Switch notifications say when your game stopped — 2026-11-08
+
+When ArenaSwap leaves a live game because play stopped, the notification leads with it ("Rain delay in Boston.") before the usual line, reusing the `afterBreak` template. The game left is read from the active tab before the switch lands, so `executeSwitch` now awaits one tab query when notifications are on.
+
 ## Delayed starts stay on the fast poll — 2026-11-08
 
 A scheduled game our sources mark delayed is polled at the live beat past `lateStartGraceMs`, so a long rain delay before first pitch no longer drops to quiet polling and spots the start late.

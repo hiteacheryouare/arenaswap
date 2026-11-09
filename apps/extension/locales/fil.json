@@ -1332,6 +1332,16 @@
 			"football": "Lilipat pagkatapos ng play na ito.",
 			"basketball": "Lilipat sa susunod na dead ball.",
 			"hockey": "Lilipat sa susunod na whistle."
+		},
+		"leftDelay": {
+			"rain": "Rain delay sa {city}.",
+			"weather": "Weather delay sa {city}.",
+			"other": "Huminto ang laro sa {city}."
+		},
+		"leftDelayNoCity": {
+			"rain": "Rain delay.",
+			"weather": "Weather delay.",
+			"other": "Huminto ang laro."
 		}
 	},
 	"tabAssign": {

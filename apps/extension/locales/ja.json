@@ -1332,6 +1332,16 @@
 			"football": "このプレーのあとで切り替えます。",
 			"basketball": "次のボールデッドで切り替えます。",
 			"hockey": "次の笛で切り替えます。"
+		},
+		"leftDelay": {
+			"rain": "{city}で雨天中断。",
+			"weather": "{city}で天候による中断。",
+			"other": "{city}で試合が止まっています。"
+		},
+		"leftDelayNoCity": {
+			"rain": "雨天中断。",
+			"weather": "天候による中断。",
+			"other": "試合が止まっています。"
 		}
 	},
 	"tabAssign": {

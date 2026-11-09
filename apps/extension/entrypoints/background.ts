@@ -4,6 +4,7 @@ import { createWinProbabilityTracker, summaryStillNeeded, hasMissedItsWindow, is
 import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, fetchNextScheduledStart, scoreboardRefreshMs, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces } from '@arenaswap/sideline';
 import type { CommercialBreakEntry, HeldSwitch, PlayBreakSport } from '@arenaswap/core';
 import { computeStandbyStreamDecision, usableStandbyTabId } from '../utils/standbyStreamLogic';
+import { describeDelayLeft, findDelayedGameLeft } from '../utils/delayNotice';
 import kickoffDelayMs from '../utils/kickoffPoll';
 import createKeepAwake from '../utils/keepAwake';
 import { gameEndRetentionMs, gameEndTimes, gameEndTimesKey, gamesNeedingDuration, pruneGameEndRecords, readGameEndRecords, recordGameEnds } from '../utils/gameEndTimes';
@@ -721,6 +722,11 @@ export default defineBackground(() => {
 
 	// True once the tab is showing and the mute state has been settled against it.
 	const executeSwitch = async (tabId: number, gameId?: string, reason?: string, waitedFor?: PlayBreakSport): Promise<boolean> => {
+		// Read before landing, while the tab being left is still the active one.
+		const leavingTabId = gameId && prefs.notificationsEnabled ? await getActiveTabId() : undefined;
+		const delayedLeft = gameId && leavingTabId !== undefined
+			? findDelayedGameLeft(games, tabRegistry.find(reg => reg.tabId === leavingTabId)?.gameId, gameId)
+			: undefined;
 		if (!await landOnTab(tabId)) return false;
 		// Parking on standby is not a switch the cooldown should count: it would hold the user there
 		// while a game that just woke up plays out.
@@ -746,9 +752,10 @@ export default defineBackground(() => {
 				const switched = venue
 					? (said ? i18n.t('notification.switchedMessageWithReason', { reason: said, venue }) : i18n.t('notification.switchedMessage', { venue }))
 					: (said ? i18n.t('notification.switchedMessageWithReasonNoVenue', { reason: said }) : i18n.t('notification.switchedMessageNoVenue'));
-				const message = waitedFor
-					? i18n.t('notification.afterBreak', { waited: i18n.t(`notification.waitedFor.${waitedFor}`), message: switched })
-					: switched;
+				const lead = delayedLeft
+					? describeDelayLeft(delayedLeft, i18n.t)
+					: waitedFor ? i18n.t(`notification.waitedFor.${waitedFor}`) : undefined;
+				const message = lead ? i18n.t('notification.afterBreak', { waited: lead, message: switched }) : switched;
 
 				await browser.notifications.create(switchNotificationId, {
 					type: 'basic',

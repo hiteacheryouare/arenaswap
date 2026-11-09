@@ -1332,6 +1332,16 @@
 			"football": "On change après cette action.",
 			"basketball": "On change au prochain ballon mort.",
 			"hockey": "On change au prochain coup de sifflet."
+		},
+		"leftDelay": {
+			"rain": "Interruption pour pluie à {city}.",
+			"weather": "Interruption météo à {city}.",
+			"other": "Match arrêté à {city}."
+		},
+		"leftDelayNoCity": {
+			"rain": "Interruption pour pluie.",
+			"weather": "Interruption météo.",
+			"other": "Match arrêté."
 		}
 	},
 	"tabAssign": {

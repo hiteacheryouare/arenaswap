@@ -1332,6 +1332,16 @@
 			"football": "这次进攻结束后切换。",
 			"basketball": "下一个死球时切换。",
 			"hockey": "下一次哨响时切换。"
+		},
+		"leftDelay": {
+			"rain": "{city}因雨中断。",
+			"weather": "{city}因天气中断。",
+			"other": "{city}比赛中断。"
+		},
+		"leftDelayNoCity": {
+			"rain": "因雨中断。",
+			"weather": "因天气中断。",
+			"other": "比赛中断。"
 		}
 	},
 	"tabAssign": {

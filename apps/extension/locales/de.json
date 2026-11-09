@@ -1332,6 +1332,16 @@
 			"football": "Wechsel nach diesem Spielzug.",
 			"basketball": "Wechsel bei der nächsten Spielunterbrechung.",
 			"hockey": "Wechsel beim nächsten Pfiff."
+		},
+		"leftDelay": {
+			"rain": "Regenunterbrechung in {city}.",
+			"weather": "Wetterunterbrechung in {city}.",
+			"other": "Spiel unterbrochen in {city}."
+		},
+		"leftDelayNoCity": {
+			"rain": "Regenunterbrechung.",
+			"weather": "Wetterunterbrechung.",
+			"other": "Spiel unterbrochen."
 		}
 	},
 	"tabAssign": {

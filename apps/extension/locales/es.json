@@ -1332,6 +1332,16 @@
 			"football": "Cambiamos tras esta jugada.",
 			"basketball": "Cambiamos en el próximo balón muerto.",
 			"hockey": "Cambiamos en el próximo silbatazo."
+		},
+		"leftDelay": {
+			"rain": "Retraso por lluvia en {city}.",
+			"weather": "Retraso por clima en {city}.",
+			"other": "Juego detenido en {city}."
+		},
+		"leftDelayNoCity": {
+			"rain": "Retraso por lluvia.",
+			"weather": "Retraso por clima.",
+			"other": "Juego detenido."
 		}
 	},
 	"tabAssign": {

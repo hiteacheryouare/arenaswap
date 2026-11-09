@@ -1332,6 +1332,16 @@
 			"football": "Switching after this play.",
 			"basketball": "Switching at the next dead ball.",
 			"hockey": "Switching at the next whistle."
+		},
+		"leftDelay": {
+			"rain": "Rain delay in {city}.",
+			"weather": "Weather delay in {city}.",
+			"other": "Play stopped in {city}."
+		},
+		"leftDelayNoCity": {
+			"rain": "Rain delay.",
+			"weather": "Weather delay.",
+			"other": "Play stopped."
 		}
 	},
 	"tabAssign": {

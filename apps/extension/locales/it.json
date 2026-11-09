@@ -1332,6 +1332,16 @@
 			"football": "Cambiamo dopo questa azione.",
 			"basketball": "Cambiamo alla prossima palla morta.",
 			"hockey": "Cambiamo al prossimo fischio."
+		},
+		"leftDelay": {
+			"rain": "Interruzione per pioggia a {city}.",
+			"weather": "Interruzione per maltempo a {city}.",
+			"other": "Gioco fermo a {city}."
+		},
+		"leftDelayNoCity": {
+			"rain": "Interruzione per pioggia.",
+			"weather": "Interruzione per maltempo.",
+			"other": "Gioco fermo."
 		}
 	},
 	"tabAssign": {

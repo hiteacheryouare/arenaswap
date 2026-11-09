@@ -1332,6 +1332,16 @@
 			"football": "Mudamos depois desta jogada.",
 			"basketball": "Mudamos na próxima bola morta.",
 			"hockey": "Mudamos no próximo apito."
+		},
+		"leftDelay": {
+			"rain": "Atraso por chuva em {city}.",
+			"weather": "Atraso por mau tempo em {city}.",
+			"other": "Jogo interrompido em {city}."
+		},
+		"leftDelayNoCity": {
+			"rain": "Atraso por chuva.",
+			"weather": "Atraso por mau tempo.",
+			"other": "Jogo interrompido."
 		}
 	},
 	"tabAssign": {

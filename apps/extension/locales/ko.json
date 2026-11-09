@@ -1332,6 +1332,16 @@
 			"football": "이 플레이가 끝나면 전환해요.",
 			"basketball": "다음 데드볼에 전환해요.",
 			"hockey": "다음 휘슬에 전환해요."
+		},
+		"leftDelay": {
+			"rain": "{city} 우천 중단.",
+			"weather": "{city} 기상 악화로 중단.",
+			"other": "{city} 경기 중단."
+		},
+		"leftDelayNoCity": {
+			"rain": "우천 중단.",
+			"weather": "기상 악화로 중단.",
+			"other": "경기 중단."
 		}
 	},
 	"tabAssign": {
