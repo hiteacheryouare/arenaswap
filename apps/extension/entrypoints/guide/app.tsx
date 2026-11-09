@@ -12,6 +12,7 @@ import NoGamesMessage from '../popup/components/noGamesMessage';
 import UpcomingDayPager from '../popup/components/upcomingDayPager';
 import { fetchState, getRandomLoadingMessage, groupByDate, normalizeBackgroundState, resolveSelectedDayIndex } from '../popup/popupHelpers';
 import useFavoriteScoreConfetti from '../popup/useFavoriteScoreConfetti';
+import { guideConfettiStage } from './guideConfettiStage';
 import { loadStoredUserPreferences, persistStoredUserPreferences } from '../../utils/prefsStorage';
 import { fullLogoSrc, useTheme } from '../../utils/theme';
 import { bandLabel } from './guideFormat';
@@ -210,7 +211,7 @@ const App = () => {
 
 	// Off the popup's games rather than the slate's: those are the ones the background re-scores on
 	// every poll, so a favourite's score lands here on the same broadcast that fires the popup's.
-	const confettiCanvasRef = useFavoriteScoreConfetti({ games: live?.games ?? noGames, favoriteTeamIds });
+	const confettiCanvasRef = useFavoriteScoreConfetti({ games: live?.games ?? noGames, favoriteTeamIds, stage: guideConfettiStage });
 
 	// A live game is taken from the popup's state when it is there, which is the newer of the two:
 	// the slate is only rebuilt when the guide asks for it again.

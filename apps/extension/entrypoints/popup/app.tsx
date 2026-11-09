@@ -16,6 +16,7 @@ import { i18n } from '#i18n';
 import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 import { StaleLeaguesProvider } from '@arenaswap/ui/src/components/staleLeagueNote';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
+import { popupConfettiStage } from './popupConfettiStage';
 import { resolveOpenRevealMode, revealSettleMs, revealSkipOutMs, writeOpenRevealEnabled } from './cardReveal';
 import { isLeagueLogoCacheFresh, leagueLogoCacheKey, seededLeagueLogos } from './leagueLogoCache';
 import useToast from './useToast';
@@ -266,7 +267,7 @@ export default () => {
 	const onStandbyStream = data?.onStandbyStream ?? false;
 	const heldSwitch = data?.heldSwitch ?? null;
 	const favoriteTeamIds = useMemo(() => new Set(prefs.favoriteTeamIds), [prefs.favoriteTeamIds]);
-	const confettiCanvasRef = useFavoriteScoreConfetti({ games, favoriteTeamIds, onMainView: view === 'main' });
+	const confettiCanvasRef = useFavoriteScoreConfetti({ games, favoriteTeamIds, stage: popupConfettiStage, onMainView: view === 'main' });
 
 	useEffect(() => {
 		const init = async () => {

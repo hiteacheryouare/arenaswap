@@ -12,6 +12,7 @@ import GameStatusText from '../popup/components/gameStatusText';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import { formatGuideTime } from './guideFormat';
 import type { guideBand, guideBar } from './guideHeat';
+import type { teamSide } from '../popup/scoreConfettiHelpers';
 import useEdgeClipping from './useEdgeClipping';
 import type { ResolvedTheme } from '@arenaswap/core/types';
 import { axisBounds, barHeight, fillAxis, groupByLeague, gutterPx, hourMarks, msToPx, rowHeight } from './guideLayout';
@@ -37,8 +38,8 @@ const bandBox = (band: guideBand, fromMs: number): CSSProperties => {
 // because the legibility check does its arithmetic on a hex, not on a variable.
 const guideBarSurface: Record<ResolvedTheme, string> = { dark: '#21262d', light: '#e7ebf0' };
 
-const BarTeam = ({ team, mono, score, lost, theme }: { team: Team; mono?: TeamMonoMarks; score?: number; lost?: boolean; theme: ResolvedTheme }) => (
-	<span className={`guide-bar-side${lost ? ' is-loser' : ''}`}>
+const BarTeam = ({ team, side, mono, score, lost, theme }: { team: Team; side: teamSide; mono?: TeamMonoMarks; score?: number; lost?: boolean; theme: ResolvedTheme }) => (
+	<span className={`guide-bar-side is-${side}${lost ? ' is-loser' : ''}`}>
 		<TeamCrest
 			logo={team.logo}
 			monoMarks={mono}
@@ -99,8 +100,8 @@ const GuideBar = ({ bar, fromMs, selected, onOpen, mono, theme }: guideBarProps)
 	const decided = game.status === 'post' && !game.disruption && away.score !== home.score;
 	const network = game.status === 'pre' ? game.broadcasts?.[0] : undefined;
 	const homeFirst = isHomeFirst(game);
-	const awayTeam = <BarTeam team={away} mono={mono?.[away.id]} score={scored ? away.score : undefined} lost={decided && away.score < home.score} theme={theme} />;
-	const homeTeam = <BarTeam team={home} mono={mono?.[home.id]} score={scored ? home.score : undefined} lost={decided && home.score < away.score} theme={theme} />;
+	const awayTeam = <BarTeam team={away} side='away' mono={mono?.[away.id]} score={scored ? away.score : undefined} lost={decided && away.score < home.score} theme={theme} />;
+	const homeTeam = <BarTeam team={home} side='home' mono={mono?.[home.id]} score={scored ? home.score : undefined} lost={decided && home.score < away.score} theme={theme} />;
 	return (
 		<button
 			type='button'

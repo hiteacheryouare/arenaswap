@@ -1,6 +1,6 @@
 import { createFavoriteTeamKey, leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
-import { hexLuminance, isHex, rgbToHex } from '@arenaswap/chromatic';
+import { hexLuminance, rgbToHex } from '@arenaswap/chromatic';
 
 interface liveGameSnapshot {
 	league: LeagueId;
@@ -9,18 +9,18 @@ interface liveGameSnapshot {
 	awayTeamId: string;
 	homeScore: number;
 	awayScore: number;
-	homeColor?: string;
-	awayColor?: string;
+	homeColors: string[];
+	awayColors: string[];
 }
 
+export type teamSide = 'home' | 'away';
+
 export interface confettiBurstSpec {
+	gameId: string;
+	side: teamSide;
 	particleCount: number;
 	spread: number;
 	colors: string[];
-	origin: {
-		x: number;
-		y: number;
-	};
 }
 
 const defaultTeamColor = '#DEE2E6';
@@ -60,16 +60,21 @@ export const createTeamColorShadePalette = (teamColor: string | undefined): stri
 	return [...new Set(shades)];
 };
 
-// Confetti falls over the dark popup, where a black or near-black club's own colour is not there at
-// all. Those clubs celebrate in their alternate — the Penguins in gold, the Steelers in yellow.
+export const createTeamConfettiPalette = (teamColors: string[]): string[] => (
+	teamColors.length === 0
+		? createTeamColorShadePalette(undefined)
+		: [...new Set(teamColors.flatMap(createTeamColorShadePalette))]
+);
+
+// Confetti falls over the dark popup, where a black or near-black club colour is not there at all.
+// A club with another colour to show leaves its black out: the Penguins and the Steelers go all gold.
 const nearBlackLuminance = 0.04;
 
-const confettiColor = (team: Team): string | undefined => (
-	isHex(team.color) && hexLuminance(team.color) < nearBlackLuminance && isHex(team.alternateColor)
-		&& hexLuminance(team.alternateColor) > hexLuminance(team.color)
-		? team.alternateColor
-		: team.color
-);
+const confettiColors = (team: Team): string[] => {
+	const colors = [...new Set([team.color, team.alternateColor].map(normalizeHexColor).filter(color => color !== null))];
+	const visible = colors.filter(color => hexLuminance(color) >= nearBlackLuminance);
+	return visible.length > 0 ? visible : colors;
+};
 
 export const buildLiveGameSnapshots = (games: Game[]): Map<string, liveGameSnapshot> => {
 	const snapshots = new Map<string, liveGameSnapshot>();
@@ -82,8 +87,8 @@ export const buildLiveGameSnapshots = (games: Game[]): Map<string, liveGameSnaps
 			awayTeamId: game.awayTeam.id,
 			homeScore: game.homeTeam.score,
 			awayScore: game.awayTeam.score,
-			homeColor: confettiColor(game.homeTeam),
-			awayColor: confettiColor(game.awayTeam),
+			homeColors: confettiColors(game.homeTeam),
+			awayColors: confettiColors(game.awayTeam),
 		});
 	}
 	return snapshots;
@@ -108,10 +113,11 @@ export const findFavoriteTeamScoreConfettiBursts = (
 			const didOvertake = previous.homeScore < previous.awayScore && next.homeScore > next.awayScore;
 			const baseParticleCount = didOvertake ? overtakeParticleCount : normalParticleCount;
 			bursts.push({
+				gameId,
+				side: 'home',
 				particleCount: isOvertime ? baseParticleCount * overtimeParticleMultiplier : baseParticleCount,
 				spread: didOvertake ? overtakeSpread : normalSpread,
-				colors: createTeamColorShadePalette(next.homeColor),
-				origin: { x: 0.75, y: 0.34 },
+				colors: createTeamConfettiPalette(next.homeColors),
 			});
 		}
 
@@ -120,10 +126,11 @@ export const findFavoriteTeamScoreConfettiBursts = (
 			const didOvertake = previous.awayScore < previous.homeScore && next.awayScore > next.homeScore;
 			const baseParticleCount = didOvertake ? overtakeParticleCount : normalParticleCount;
 			bursts.push({
+				gameId,
+				side: 'away',
 				particleCount: isOvertime ? baseParticleCount * overtimeParticleMultiplier : baseParticleCount,
 				spread: didOvertake ? overtakeSpread : normalSpread,
-				colors: createTeamColorShadePalette(next.awayColor),
-				origin: { x: 0.25, y: 0.34 },
+				colors: createTeamConfettiPalette(next.awayColors),
 			});
 		}
 	}

@@ -2,14 +2,17 @@ import { useCallback, useEffect, useRef } from 'react';
 import type { Game } from '@arenaswap/core/types';
 import type { confettiInstance, confettiOptions } from 'canvas-confetti';
 import { buildLiveGameSnapshots, findFavoriteTeamScoreConfettiBursts } from './scoreConfettiHelpers';
+import { launchFromTeam } from './confettiLaunch';
+import type { confettiStage } from './confettiLaunch';
 
 interface useFavoriteScoreConfettiProps {
 	games: Game[];
 	favoriteTeamIds: Set<string>;
+	stage: confettiStage;
 	onMainView?: boolean;
 }
 
-const useFavoriteScoreConfetti = ({ games, favoriteTeamIds, onMainView = true }: useFavoriteScoreConfettiProps) => {
+const useFavoriteScoreConfetti = ({ games, favoriteTeamIds, stage, onMainView = true }: useFavoriteScoreConfettiProps) => {
 	const confettiCanvasRef = useRef<HTMLCanvasElement | null>(null);
 	const confettiInstanceRef = useRef<confettiInstance | null>(null);
 	const confettiLoadPromiseRef = useRef<Promise<confettiInstance> | null>(null);
@@ -56,20 +59,27 @@ const useFavoriteScoreConfetti = ({ games, favoriteTeamIds, onMainView = true }:
 			favoriteTeamIds,
 		);
 		previousLiveSnapshotsRef.current = nextLiveSnapshots;
-		if (!onMainView || bursts.length === 0) return;
+		const canvas = confettiCanvasRef.current;
+		if (!onMainView || bursts.length === 0 || !canvas) return;
 
+		const visible = stage.visibleArea();
+		if (!visible) return;
+		const canvasBox = canvas.getBoundingClientRect();
 		for (const burst of bursts) {
+			// No card on screen to tie the burst to, so no burst.
+			const team = stage.locateTeam(burst.gameId, burst.side);
+			if (!team) continue;
 			launchBurst({
+				...launchFromTeam(team, visible, canvasBox),
 				particleCount: burst.particleCount,
 				spread: burst.spread,
 				colors: burst.colors,
-				origin: burst.origin,
 				startVelocity: 40,
 				scalar: 1,
 				disableForReducedMotion: true,
 			});
 		}
-	}, [games, favoriteTeamIds, onMainView, launchBurst]);
+	}, [games, favoriteTeamIds, stage, onMainView, launchBurst]);
 
 	useEffect(() => {
 		if (!onMainView) confettiInstanceRef.current?.reset();

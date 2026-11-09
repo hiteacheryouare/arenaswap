@@ -1,6 +1,7 @@
 import {
 	buildLiveGameSnapshots,
 	createTeamColorShadePalette,
+	createTeamConfettiPalette,
 	findFavoriteTeamScoreConfettiBursts,
 } from '../entrypoints/popup/scoreConfettiHelpers';
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
@@ -117,22 +118,42 @@ describe('buildLiveGameSnapshots', () => {
 			awayTeamId: 'away-1',
 			homeScore: 10,
 			awayScore: 8,
-			homeColor: '#112233',
-			awayColor: '#aabbcc',
+			homeColors: ['#112233'],
+			awayColors: ['#AABBCC'],
 		});
 	});
 
-	test('celebrates a near-black club in its alternate, which is visible on the dark popup', () => {
+	test('celebrates in both of a club\'s colors', () => {
+		const snapshot = buildLiveGameSnapshots([
+			makeLiveGame({
+				id: 'g1',
+				homeTeam: { id: 'home-1', name: '76ers', abbreviation: 'PHI', score: 1, color: '#006bb6', alternateColor: '#ED174C' },
+			}),
+		]).get('g1');
+		expect(snapshot?.homeColors).toEqual(['#006BB6', '#ED174C']);
+	});
+
+	test('leaves out a near-black club color, which disappears on the dark popup', () => {
 		const snapshot = buildLiveGameSnapshots([
 			makeLiveGame({
 				id: 'g1',
 				homeTeam: { id: 'home-1', name: 'Penguins', abbreviation: 'PIT', score: 1, color: '#000000', alternateColor: '#FDB71A' },
 			}),
 		]).get('g1');
-		expect(snapshot?.homeColor).toBe('#FDB71A');
+		expect(snapshot?.homeColors).toEqual(['#FDB71A']);
 	});
 
-	test('keeps undefined when a team has no color set', () => {
+	test('keeps a near-black color when the club has nothing brighter to celebrate in', () => {
+		const snapshot = buildLiveGameSnapshots([
+			makeLiveGame({
+				id: 'g1',
+				homeTeam: { id: 'home-1', name: 'Home', abbreviation: 'HOM', score: 1, color: '#000000', alternateColor: '#000' },
+			}),
+		]).get('g1');
+		expect(snapshot?.homeColors).toEqual(['#000000']);
+	});
+
+	test('keeps no colors when a team has none set', () => {
 		const snapshot = buildLiveGameSnapshots([
 			makeLiveGame({
 				id: 'g1',
@@ -140,8 +161,8 @@ describe('buildLiveGameSnapshots', () => {
 				awayTeam: { id: 'away-1', name: 'Away', abbreviation: 'AWY', score: 2 },
 			}),
 		]).get('g1');
-		expect(snapshot?.homeColor).toBeUndefined();
-		expect(snapshot?.awayColor).toBeUndefined();
+		expect(snapshot?.homeColors).toEqual([]);
+		expect(snapshot?.awayColors).toEqual([]);
 	});
 
 	test('includes every live game in a mixed batch', () => {
@@ -171,9 +192,10 @@ describe('findFavoriteTeamScoreConfettiBursts', () => {
 
 		expect(bursts).toHaveLength(1);
 		expect(bursts[0]).toMatchObject({
+			gameId: 'g1',
+			side: 'home',
 			particleCount: 90,
 			spread: 72,
-			origin: { x: 0.75, y: 0.34 },
 		});
 		expect(bursts[0]!.colors.length).toBeGreaterThan(0);
 	});
@@ -214,7 +236,7 @@ describe('findFavoriteTeamScoreConfettiBursts', () => {
 		expect(burst.particleCount).toBe(180);
 	});
 
-	test('emits an away-side burst at the left-origin when the favorited away team scores', () => {
+	test('names the game and the away side when the favorited away team scores', () => {
 		const previous = buildLiveGameSnapshots([makeLiveGame({ id: 'g1' })]);
 		const next = buildLiveGameSnapshots([
 			makeLiveGame({
@@ -225,7 +247,7 @@ describe('findFavoriteTeamScoreConfettiBursts', () => {
 
 		const bursts = findFavoriteTeamScoreConfettiBursts(previous, next, new Set([favoriteAwayKey]));
 		expect(bursts).toHaveLength(1);
-		expect(bursts[0]!.origin).toEqual({ x: 0.25, y: 0.34 });
+		expect(bursts[0]).toMatchObject({ gameId: 'g1', side: 'away' });
 	});
 
 	test('emits no burst when no favorited team is in the matchup', () => {
@@ -367,5 +389,28 @@ describe('findFavoriteTeamScoreConfettiBursts', () => {
 		]);
 		const burst = findFavoriteTeamScoreConfettiBursts(previous, next, new Set([favoriteAwayKey]))[0]!;
 		expect(burst.colors).toEqual(createTeamColorShadePalette('#FF0000'));
+	});
+
+	test('mixes shades of both of the scoring team\'s colors into one burst', () => {
+		const previous = buildLiveGameSnapshots([makeLiveGame({ id: 'g1' })]);
+		const next = buildLiveGameSnapshots([
+			makeLiveGame({
+				id: 'g1',
+				awayTeam: { id: 'away-1', name: 'Away', abbreviation: 'AWY', score: 14, color: '#FF0000', alternateColor: '#0000FF' },
+			}),
+		]);
+		const burst = findFavoriteTeamScoreConfettiBursts(previous, next, new Set([favoriteAwayKey]))[0]!;
+		expect(burst.colors).toEqual([...createTeamColorShadePalette('#FF0000'), ...createTeamColorShadePalette('#0000FF')]);
+	});
+});
+
+describe('createTeamConfettiPalette', () => {
+	test('falls back to the default gray for a team with no colors', () => {
+		expect(createTeamConfettiPalette([])).toEqual(createTeamColorShadePalette(undefined));
+	});
+
+	test('does not repeat a shade two colors share', () => {
+		const palette = createTeamConfettiPalette(['#FFFFFF', '#F0F0F0']);
+		expect(new Set(palette).size).toBe(palette.length);
 	});
 });

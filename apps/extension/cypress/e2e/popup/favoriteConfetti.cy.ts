@@ -33,6 +33,52 @@ const expectNoConfetti = () => {
 };
 
 const favoriteScores = (home: number) => cy.pushScores(withScores(home, 106));
+
+interface paintedCenter { x: number; y: number }
+
+// The middle of the confetti on the first frame it paints. The frames are the popup's: the spec's
+// own frame is hidden and never gets one.
+const watchFirstPaint = () => {
+	let firstPaint: Promise<paintedCenter>;
+	canvas().then($canvas => {
+		const element = $canvas[0]!;
+		const view = element.ownerDocument.defaultView!;
+		const requestAnimationFrame = view.requestAnimationFrame.bind(view);
+		firstPaint = new Promise<paintedCenter>(resolve => {
+			const look = () => {
+				const { width, height } = element;
+				const data = width && height ? element.getContext('2d')!.getImageData(0, 0, width, height).data : [];
+				let sumX = 0, sumY = 0, painted = 0;
+				for (let index = 3; index < data.length; index += 4) {
+					if (data[index] === 0) continue;
+					const pixel = (index - 3) / 4;
+					sumX += pixel % width;
+					sumY += Math.floor(pixel / width);
+					painted++;
+				}
+				if (painted === 0) return requestAnimationFrame(look);
+				const scale = element.getBoundingClientRect().width / width;
+				resolve({ x: (sumX / painted) * scale, y: (sumY / painted) * scale });
+			};
+			requestAnimationFrame(look);
+		});
+	});
+	return () => cy.then(() => firstPaint);
+};
+
+const phiCrest = () => cy.contains('.game-card', 'PHI').find('.team-column.is-home .team-crest');
+
+// The first frame it paints, the confetti has already flown one frame's worth from where it was
+// launched, so it is expected a little way off in the direction it was fired.
+const oneFrameOfFlight = 60;
+
+const scrollListTo = (scrollTop: number) => cy.get('.popup-container').then($scroller => {
+	const spacer = document.createElement('div');
+	spacer.style.flex = '0 0 1200px';
+	$scroller[0]!.append(spacer);
+	$scroller[0]!.scrollTop = scrollTop;
+});
+
 const openSettings = () => cy.get('button.popup-settings-button[aria-label="Settings"]').click();
 
 describe('confetti when a favorite team scores', () => {
@@ -63,6 +109,47 @@ describe('confetti when a favorite team scores', () => {
 
 		favoriteScores(111);
 		expectConfetti();
+	});
+
+	it('goes off from the scoring team\'s crest, wherever the list is scrolled to', () => {
+		scrollListTo(60);
+		phiCrest().should($crest => {
+			const crest = $crest[0]!.getBoundingClientRect();
+			const headerBottom = Cypress.$('.popup-header')[0]!.getBoundingClientRect().bottom;
+			expect(crest.top + crest.height / 2, 'crest middle is below the header').to.be.greaterThan(headerBottom + oneFrameOfFlight);
+		});
+
+		const firstPaint = watchFirstPaint();
+		favoriteScores(110);
+
+		firstPaint().then(center => {
+			phiCrest().then($crest => {
+				const crest = $crest[0]!.getBoundingClientRect();
+				const crestMiddle = crest.top + crest.height / 2;
+				expect(center.x, 'x').to.be.closeTo(crest.left + crest.width / 2, 24);
+				expect(center.y, 'y').to.be.within(crestMiddle - oneFrameOfFlight, crestMiddle);
+			});
+		});
+	});
+
+	it('goes off from the top edge of the list when the team is scrolled up out of view', () => {
+		scrollListTo(1000);
+		phiCrest().should($crest => {
+			const headerBottom = Cypress.$('.popup-header')[0]!.getBoundingClientRect().bottom;
+			expect($crest[0]!.getBoundingClientRect().bottom, 'crest is above the header').to.be.lessThan(headerBottom);
+		});
+
+		const firstPaint = watchFirstPaint();
+		favoriteScores(110);
+
+		firstPaint().then(center => {
+			phiCrest().then($crest => {
+				const crest = $crest[0]!.getBoundingClientRect();
+				const headerBottom = Cypress.$('.popup-header')[0]!.getBoundingClientRect().bottom;
+				expect(center.x, 'x').to.be.closeTo(crest.left + crest.width / 2, 24);
+				expect(center.y, 'y').to.be.within(headerBottom, headerBottom + oneFrameOfFlight);
+			});
+		});
 	});
 
 	it('stays quiet for a basket scored while settings were open, even on the way back', () => {

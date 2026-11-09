@@ -21,6 +21,10 @@ A scheduled game our sources mark delayed is polled at the live beat past `lateS
 
 Our sources send postponed and canceled games as `post` with `completed: false`, so rainouts were listed as 0–0 finals; `packages/sideline/src/disruption.ts` now marks postponed, suspended and forfeit games, drops canceled ones, and reads the reason, makeup day and doubleheader game out of the event note. A forfeit's winner comes from that note too, because the feed's `winner` flag follows the score and can name the team that forfeited.
 
+## Confetti goes off from the scoring team's crest, in both its colors — 2026-11-07
+
+Favorite-team confetti used to launch from fixed spots in the popup, so it often looked like it came from whichever card sat there (and soccer's home side got the away side's spot). Bursts now mix shades of the team's main and alternate colors, leaving out a near-black one when there's another to show. `useFavoriteScoreConfetti` takes a `confettiStage` that finds the crest on screen, and a team scrolled out of view gets its burst fired inward from the edge it is hiding past, in the popup and the TV guide alike.
+
 ## College standings show only the matchup's conferences — 2026-11-07
 
 College hockey, baseball and softball read the whole-league standings tree, so their Standings tab listed every conference in the country. `standingsForMatchup` now keeps only the groups holding one of the two teams for college leagues, and leaves professional tables whole.
