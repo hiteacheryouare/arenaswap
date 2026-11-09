@@ -25,6 +25,10 @@ Our sources send postponed and canceled games as `post` with `completed: false`,
 
 The burn sweep travelled 264% of a gradient that repeats every 220%, so it jumped back on every pass; it now runs on a 200% gradient and travels exactly 200%. A label that just landed burns without replaying the 0.6-opacity fade-in, which had read as a blink at the handoff.
 
+## Walkthrough containment spec stops racing the bloom — 2026-11-07
+
+`onboardingContainment.cy.tsx` force-clicks Next through the walkthrough, because a PowerScore signal's bloom overlay covers the button 150 ms into each sub-step, the same 150 ms the spec waited, so whichever locale ran cold (usually `de`, first alphabetically) lost the race. Button and overlay call the same `handleNext`, so the walk is unchanged.
+
 ## College hockey standings sort by record — 2026-11-07
 
 College hockey tables now rank by win percentage with a tie as half a win (then more wins, then fewer losses) and show W L T PCT, because the feed sends `points` as 0.0 for every college team all season and its own `winPercent` leaves ties out. A hockey table carrying `tiegames` or `ties` is treated as college, which also gives women's college hockey its missing T column.

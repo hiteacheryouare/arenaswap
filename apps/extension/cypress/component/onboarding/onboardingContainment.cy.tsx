@@ -59,7 +59,8 @@ describe('onboarding containment', () => {
 			if (remaining === 0) return;
 			cy.get('body').then(() => {
 				if (onComplete.called) return;
-				cy.get(primaryButton).last().click();
+				// A PowerScore signal's bloom covers Next mid-sweep, and both call the same handler.
+				cy.get(primaryButton).last().click({ force: true });
 				cy.wait(150);
 				walk(remaining - 1);
 			});
