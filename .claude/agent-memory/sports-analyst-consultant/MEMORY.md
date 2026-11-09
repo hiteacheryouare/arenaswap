@@ -21,3 +21,5 @@
 - [Matchup order conventions](reference_matchup_order_conventions.md) — home-left vs away-left by league, with sources; NPB and KBO use opposite orders
 - [content_aware_switching_breaks.md](content_aware_switching_breaks.md) — Natural-break defs, poll-diff proxies, measured residual waits, hold caps per sport, override rules
 - [multiview_threshold_calibration.md](multiview_threshold_calibration.md) — Multiview Exciting-at 55, 120 s solo; no public RedZone multi-box figure exists (2026-11-05)
+- [standings_college_hockey.md](standings_college_hockey.md) — College hockey Standings: compute (W+T/2)/GP, no derived points, overall label; men tiegames vs women ties
+- [disrupted_games_rules.md](disrupted_games_rules.md) — Delay/suspension/abandonment/forfeit rules per sport family, resume-from-point vs replay, verified examples
