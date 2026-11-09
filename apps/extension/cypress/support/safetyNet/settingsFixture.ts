@@ -53,6 +53,8 @@ export const settingsProps = {
 	onToggleContentAwareSwitching: noop,
 	onFavoriteTeamBonusChange: noop,
 	onToggleFavoriteTeam: noop,
+	rivalTeamIds: new Set<string>(),
+	onToggleRivalTeam: noop,
 	onToggleLeague: noop,
 	onToggleSport: noop,
 	onReorderLeague: noop,

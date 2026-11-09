@@ -6,6 +6,7 @@ import { postseasonBoostShare, postseasonDetails } from './postseason';
 import { narrate } from './narrate';
 import { getGameProgress, isPlayFrozen, scoreMargin } from './progress';
 import { renderReasonsEnglish } from './reasons';
+import { rankAgainstRivals } from './rivals';
 import { computeWinProbVarianceScore } from './winProbability';
 import type {
 	BlendResult,
@@ -171,8 +172,8 @@ const frozenScore = (game: Game<string>, mode: PowerScoreMode, options: ScoreOpt
 /*
 	Scores one game. The order is fixed: signals → disabled-signal rescale → break penalty → win
 	probability (clamped 0–100) → the mode's own boosts (capped at 100) → blend with Classic →
-	favorite and postseason boosts (capped at 100) → the manual game boost, the only thing allowed
-	past 100.
+	favorite and postseason boosts (capped at 100) → rivals, in a mode that ranks them → the manual
+	game boost, the only thing allowed past 100.
 */
 export const scoreGame = (game: Game<string>, context: ScoringContext = {}, options: ScoreOptions = {}): PowerScore => {
 	const requested = getMode(options.mode);
@@ -194,7 +195,9 @@ export const scoreGame = (game: Game<string>, context: ScoringContext = {}, opti
 	const favoriteBoost = nonNegative((options.favoriteTeamCount ?? 0) * (options.favoriteBoostPoints ?? 0));
 	const postseasonBoost = paysPostseason ? nonNegative((options.postseasonBoostPoints ?? 0) * postseasonBoostShare(game.postseasonRound)) : 0;
 	const gameBoost = nonNegative(options.gameBoost);
-	const automaticTotal = Math.min(scoreMaxTotal, combinedTotal + favoriteBoost + postseasonBoost);
+	const boostedTotal = Math.min(scoreMaxTotal, combinedTotal + favoriteBoost + postseasonBoost);
+	const ranked = mode.rivals && options.rivalSides ? rankAgainstRivals(input, boostedTotal, options.rivalSides, mode.rivals) : undefined;
+	const automaticTotal = ranked?.total ?? boostedTotal;
 
 	const boosts: ScoredBoost[] = [
 		...(options.favoriteTeamCount !== undefined ? [{ id: 'favoriteBoost', points: favoriteBoost, meta: { teams: nonNegative(options.favoriteTeamCount) } }] : []),
@@ -218,6 +221,7 @@ export const scoreGame = (game: Game<string>, context: ScoringContext = {}, opti
 		baseTotal: run.baseTotal,
 		...(classicRun ? { classicTotal: classicRun.automaticTotal } : {}),
 		...(blended ? { blend: blended.result } : {}),
+		...(ranked ? { rivalry: ranked.rivalry } : {}),
 		boosts,
 		reasons: run.reasons,
 		reason: renderReasonsEnglish(run.reasons),

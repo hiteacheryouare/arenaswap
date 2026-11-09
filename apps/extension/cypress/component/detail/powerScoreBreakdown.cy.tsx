@@ -659,3 +659,57 @@ describe('PowerScoreBreakdown folding sections', () => {
 		section('Signals').should('not.have.attr', 'open');
 	});
 });
+
+const rivalryBreakdown = (rivalry?: ScoreBreakdown['rivalry']): ScoreBreakdown => ({
+	modeId: 'blowouts',
+	signals: [
+		{ id: 'blowoutMargin', points: 24, ceiling: 50, disabled: false },
+		{ id: 'sustained', points: 10, ceiling: 30, disabled: false },
+		{ id: 'timing', points: 0, ceiling: 25, disabled: false },
+		{ id: 'pileOn', points: 0, ceiling: 15, disabled: false },
+	],
+	boosts: [],
+	reasons: [],
+	frozen: false,
+	scaledSubtotal: 34,
+	signalCeiling: 120,
+	...(rivalry ? { rivalry } : {}),
+});
+
+describe('PowerScoreBreakdown rivals', () => {
+	it('shows the jump a rival getting beaten takes, and says when they blew a lead', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} totalLabel='93 / 100' breakdown={rivalryBreakdown({ kind: 'beatdown', side: 'away', before: 34, after: 93, blownLead: true })} />);
+		cy.contains('.powerscore-breakdown-row', 'Rival getting beaten').find('.powerscore-breakdown-value').should('have.text', '34 → 93');
+		cy.contains('.powerscore-breakdown-row', 'Rival getting beaten').next('.powerscore-breakdown-note').should('have.text', en.powerScore.rivalBlownLead);
+		cy.contains('.powerscore-breakdown-row', 'Rival getting beaten').find('.bi-emoji-angry-fill').should('exist');
+	});
+
+	it('names a game the rival is winning, and one with no rival in it', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} breakdown={rivalryBreakdown({ kind: 'winning', side: 'home', before: 40, after: 9 })} />);
+		cy.contains('.powerscore-breakdown-row', 'Rival winning').should('contain', '40 → 9');
+		cy.get('.powerscore-breakdown-note').should('not.exist');
+
+		cy.mount(<PowerScoreBreakdown {...defaultProps} breakdown={rivalryBreakdown({ kind: 'ordinary', before: 80, after: 68 })} />);
+		cy.contains('.powerscore-breakdown-row', 'Rivals come first').should('contain', '80 → 68');
+	});
+
+	it('leaves the row out without rivals', () => {
+		cy.mount(<PowerScoreBreakdown {...defaultProps} breakdown={rivalryBreakdown()} />);
+		cy.get('.bi-emoji-angry-fill').should('not.exist');
+	});
+
+	it('keeps the rival label on one line in every language', () => {
+		cy.viewport(320, 700);
+		cy.mount(<div style={{ width: '276px' }}><PowerScoreBreakdown {...defaultProps} breakdown={rivalryBreakdown({ kind: 'beatdown', side: 'away', before: 100, after: 100 })} /></div>);
+		cy.contains('.powerscore-breakdown-row', 'Rival getting beaten').then(([row]: JQuery<HTMLElement>) => {
+			const label = row.firstElementChild!.childNodes[1]!;
+			const oneLine = row.getBoundingClientRect().height;
+			for (const [code, bundle] of Object.entries(locales)) {
+				for (const key of ['rivalBeatdown', 'rivalWinning', 'rivalOrdinary'] as const) {
+					label.textContent = (bundle as typeof en).powerScore[key];
+					expect(row.getBoundingClientRect().height, `${code} ${key}`).to.be.at.most(oneLine + 1);
+				}
+			}
+		});
+	});
+});

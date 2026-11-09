@@ -18,4 +18,5 @@ export const blowoutsMode: PowerScoreMode = {
 	usesWinProbability: false,
 	classicBlend: { kind: 'floor', factor: 0.3 },
 	paysPostseason: false,
+	rivals: { ordinaryCeiling: 85 },
 };

@@ -70,6 +70,7 @@ export const settingsEntries: readonly settingsEntry[] = [
 	{ group: 'scoring', labelKey: 'postseasonBoost.label', keywordsKey: 'setup.keywordsPostseasonBoost', controlId: 'postseasonBoostInput' },
 	{ group: 'scoring', labelKey: 'favoriteTeamBonus.label', keywordsKey: 'setup.keywordsFavoriteBonus', controlId: 'favoriteTeamBonusInput' },
 	{ group: 'favorites', labelKey: 'setup.followedTeams', keywordsKey: 'setup.keywordsFavoriteTeams' },
+	{ group: 'favorites', labelKey: 'setup.rivalTeams', keywordsKey: 'setup.keywordsRivals' },
 	{ group: 'leagues', labelKey: 'setup.groupLeagues', keywordsKey: 'setup.keywordsLeagues' },
 	{ group: 'leagues', labelKey: 'collegeFilter.searchLabel', keywordsKey: 'collegeFilter.keywords', controlId: 'college-league-ncaab' },
 	{ group: 'display', labelKey: 'setup.showUpcoming', keywordsKey: 'setup.keywordsUpcoming', controlId: 'upcomingToggle' },

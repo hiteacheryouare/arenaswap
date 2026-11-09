@@ -223,6 +223,8 @@ const setupProps = {
 	onToggleContentAwareSwitching: () => {},
 	onFavoriteTeamBonusChange: () => {},
 	onToggleFavoriteTeam: () => {},
+	rivalTeamIds: new Set<string>(),
+	onToggleRivalTeam: () => {},
 	onToggleLeague: () => {},
 	onToggleSport: () => {},
 	onReorderLeague: () => {},

@@ -1,5 +1,5 @@
 ---
-sourceHash: '9668aab491fb'
+sourceHash: 'aa2be8f9b8ca'
 title: Como definir times favoritos no ArenaSwap
 description: Marque seus times com estrela e os jogos deles ganham um impulso rumo à sua tela e um lugar no topo da lista. Todos os outros jogos ficam onde estavam.
 section: extension
@@ -12,6 +12,8 @@ faq:
     a: O jogo recebe o bônus duas vezes, uma por time.
   - q: Por que o jogo do meu time não trocou minha aba?
     a: Um jogo parado, como no intervalo, na pausa entre períodos ou numa interrupção, vale zero até a bola voltar a rolar, então uma estrela não consegue garantir a troca. Ele continua no topo da lista.
+  - q: Rivais fazem algo fora de Atropelos?
+    a: Não. Em Clássico e Fantasy, os jogos de um rival são pontuados como qualquer outro.
 ---
 
 import Demo from '../../../../components/docs/Demo.astro';
@@ -35,6 +37,14 @@ Os jogos dos seus times ganham pontos extras na disputa para ser o jogo para o q
 Os jogos dos seus times também ficam no topo da lista, acima de jogos mais emocionantes que não são de ninguém que você segue. Com **Agrupar jogos por liga** ativado, eles ficam no topo da própria liga.
 
 Para mudar o tamanho do impulso, ajuste **Impulso de time favorito** em Pontuação, nas Configurações. O valor inicial é 10 pontos.
+
+## Escolha seus rivais
+
+Tem time que você assiste para ver ganhar. Outros, para ver perder. Em Configurações, em **Times favoritos**, abra a aba **Rivais** e toque em qualquer time que você não suporta.
+
+Rivais contam no [modo de pontuação](/arenaswap/docs/extension/scoring-modes/) Atropelos. Lá, um jogo em que um rival está perdendo por mais de dois scores vai acima de todos os outros. O ArenaSwap troca para ele como troca para qualquer jogo, assim que passar da sua margem de **Sensibilidade de troca**. Um jogo que um rival está ganhando afunda mais quanto maior for a vantagem dele.
+
+Um time pode ser favorito ou rival, não os dois. Escolher na outra lista move o time para lá.
 
 ## Relacionados
 

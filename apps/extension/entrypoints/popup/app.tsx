@@ -267,6 +267,7 @@ export default () => {
 	const onStandbyStream = data?.onStandbyStream ?? false;
 	const heldSwitch = data?.heldSwitch ?? null;
 	const favoriteTeamIds = useMemo(() => new Set(prefs.favoriteTeamIds), [prefs.favoriteTeamIds]);
+	const rivalTeamIds = useMemo(() => new Set(prefs.rivalTeamIds), [prefs.rivalTeamIds]);
 	const confettiCanvasRef = useFavoriteScoreConfetti({ games, favoriteTeamIds, stage: popupConfettiStage, onMainView: view === 'main' });
 
 	useEffect(() => {
@@ -582,7 +583,17 @@ export default () => {
 			const current = new Set(currentPrefs.favoriteTeamIds);
 			if (current.has(favoriteTeamKey)) current.delete(favoriteTeamKey);
 			else current.add(favoriteTeamKey);
-			return { ...currentPrefs, favoriteTeamIds: [...current] };
+			return { ...currentPrefs, favoriteTeamIds: [...current], rivalTeamIds: currentPrefs.rivalTeamIds.filter(key => key !== favoriteTeamKey) };
+		});
+	};
+
+	const toggleRivalTeam = (leagueId: LeagueId, teamId: string) => {
+		const rivalTeamKey = createFavoriteTeamKey(leagueId, teamId);
+		persistPrefs(currentPrefs => {
+			const current = new Set(currentPrefs.rivalTeamIds);
+			if (current.has(rivalTeamKey)) current.delete(rivalTeamKey);
+			else current.add(rivalTeamKey);
+			return { ...currentPrefs, rivalTeamIds: [...current], favoriteTeamIds: currentPrefs.favoriteTeamIds.filter(key => key !== rivalTeamKey) };
 		});
 	};
 
@@ -712,6 +723,8 @@ export default () => {
 						onToggleContentAwareSwitching={() => persistPrefs(currentPrefs => ({ ...currentPrefs, contentAwareSwitching: !currentPrefs.contentAwareSwitching }))}
 						onFavoriteTeamBonusChange={val => persistPrefs(currentPrefs => ({ ...currentPrefs, favoriteTeamBonusPoints: val }))}
 						onToggleFavoriteTeam={toggleFavoriteTeam}
+						rivalTeamIds={rivalTeamIds}
+						onToggleRivalTeam={toggleRivalTeam}
 						onToggleLeague={onToggleLeague}
 						onToggleSport={onToggleSport}
 						onReorderLeague={onReorderLeague}

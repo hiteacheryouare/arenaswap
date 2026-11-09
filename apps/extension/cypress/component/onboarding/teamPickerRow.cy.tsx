@@ -11,7 +11,7 @@ const team = (over: Partial<EspnTeamEntry> = {}): EspnTeamEntry => ({
 
 describe('teamPickerRow', () => {
 	it('tints the disc with a colour read out of the crest itself', () => {
-		cy.mount(<TeamPickerRow team={team({ logo: greenCrest })} isFavorite={false} onToggle={() => {}} />);
+		cy.mount(<TeamPickerRow team={team({ logo: greenCrest })} isSelected={false} onToggle={() => {}} />);
 
 		cy.get('.team-pick-crest').should(([el]: JQuery<HTMLElement>) => {
 			expect(getComputedStyle(el).backgroundImage).to.contain('0, 131, 72');
@@ -19,7 +19,7 @@ describe('teamPickerRow', () => {
 	});
 
 	it('leaves the disc plain white when there is no crest to read', () => {
-		cy.mount(<TeamPickerRow team={team({ logo: undefined })} isFavorite={false} onToggle={() => {}} />);
+		cy.mount(<TeamPickerRow team={team({ logo: undefined })} isSelected={false} onToggle={() => {}} />);
 
 		cy.get('.team-pick-crest').should(([el]: JQuery<HTMLElement>) => {
 			expect(getComputedStyle(el).backgroundImage).to.equal('none');
@@ -30,7 +30,7 @@ describe('teamPickerRow', () => {
 	// The disc under a crest that never loaded is white, so grey-on-white initials would be the one
 	// unreadable state the disc was added to remove.
 	it('sets the placeholder initials dark, against that white disc', () => {
-		cy.mount(<TeamPickerRow team={team({ logo: undefined })} isFavorite={false} onToggle={() => {}} />);
+		cy.mount(<TeamPickerRow team={team({ logo: undefined })} isSelected={false} onToggle={() => {}} />);
 
 		cy.get('.crest-initials')
 			.should('have.text', 'BOS')
@@ -41,21 +41,21 @@ describe('teamPickerRow', () => {
 	// The star used to be the only target, about 16px at the end of a 300px row.
 	it('toggles from anywhere on the row, the team name included', () => {
 		const onToggle = cy.spy().as('toggle');
-		cy.mount(<TeamPickerRow team={team()} isFavorite={false} onToggle={onToggle} />);
+		cy.mount(<TeamPickerRow team={team()} isSelected={false} onToggle={onToggle} />);
 		cy.contains('Boston Celtics').click();
 		cy.get('@toggle').should('have.been.calledOnce');
 		cy.get('button[aria-label="Add Boston Celtics to favorites"]').should('have.length', 1);
 	});
 
 	it('takes the gold once starred', () => {
-		cy.mount(<TeamPickerRow team={team()} isFavorite onToggle={() => {}} />);
+		cy.mount(<TeamPickerRow team={team()} isSelected onToggle={() => {}} />);
 		cy.get('.team-pick-star').should('have.class', 'bi-star-fill').and(([star]: JQuery<HTMLElement>) => {
 			expect(getComputedStyle(star).color).to.equal('rgb(241, 196, 15)');
 		});
 	});
 
 	it('asks the browser for a crest it is allowed to read back', () => {
-		cy.mount(<TeamPickerRow team={team({ logo: greenCrest })} isFavorite={false} onToggle={() => {}} />);
+		cy.mount(<TeamPickerRow team={team({ logo: greenCrest })} isSelected={false} onToggle={() => {}} />);
 
 		cy.get('.team-pick-crest img').should('have.attr', 'crossorigin', 'anonymous');
 	});

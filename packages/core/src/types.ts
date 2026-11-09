@@ -14,6 +14,7 @@ import type {
 	ScoredBoost,
 	ScoredSignal,
 	BlendResult,
+	RivalryResult,
 } from 'powerscore';
 import type { PlayBreakSport } from './playBreaks';
 import type { PollMode } from './pollModeTracker';
@@ -340,6 +341,8 @@ export interface UserPreferences {
 	// Stored as `${league}:${teamId}`, e.g. `nba:20`.
 	favoriteTeamIds: string[];
 	favoriteTeamBonusPoints: number;
+	// Same keys as favoriteTeamIds, and never a team that is also a favorite. Only Blowouts reads it.
+	rivalTeamIds: string[];
 	showUpcomingGames: boolean;
 	// Off, the main screen is one list per section across every league; on, each section splits
 	// into league runs in `enabledLeagues` order.
@@ -499,6 +502,7 @@ export interface ScoreBreakdown {
 	// Classic's total when the mode blends with it or uses it as a floor.
 	classicTotal?: number;
 	blend?: BlendResult;
+	rivalry?: RivalryResult;
 }
 
 // What the background hands the popup: the flat 2.x fields every screen already reads, plus the

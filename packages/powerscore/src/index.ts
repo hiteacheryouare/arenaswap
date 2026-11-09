@@ -14,6 +14,7 @@ export { classicSignals, closenessSignal, lateGameSignal, momentumSignal, leadCh
 export { scoringOpportunityBoost } from './boosts/scoringOpportunity';
 export { baseMask, runnersOn } from './boosts/shared';
 export { postseasonBoostShare } from './postseason';
+export { rankAgainstRivals } from './rivals';
 export { ordinal, renderReasonEnglish, renderReasonsEnglish } from './reasons';
 export { resolveLeagueConfig, resolveSportConfig } from './config';
 export { getGameProgress, scoreMargin } from './progress';

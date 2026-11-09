@@ -55,8 +55,8 @@ const onboardingTeamPicker = ({
 				onQueryChange={setQuery}
 				isLoading={isLoading}
 				hasError={hasError}
-				selectedFavorites={selectedFavorites}
-				onToggleFavorite={team => onToggleFavorite(createFavoriteTeamKey(team.leagueId, team.id))}
+				selected={selectedFavorites}
+				onToggle={team => onToggleFavorite(createFavoriteTeamKey(team.leagueId, team.id))}
 				onRetry={onRetry}
 			/>
 

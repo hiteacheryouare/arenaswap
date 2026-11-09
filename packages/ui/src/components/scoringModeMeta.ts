@@ -56,6 +56,7 @@ export const factorTones = {
 	indigo: { color: '#6366f1', ink: '#4338ca' },
 	purple: { color: '#a855f7', ink: '#7e22ce' },
 	pink: { color: '#ec4899', ink: '#be185d' },
+	wine: { color: '#9f1239', ink: '#881337' },
 } as const satisfies Record<string, FactorTone>;
 
 export interface BoostPresentation extends FactorTone {
@@ -118,6 +119,7 @@ export const boostSports: Partial<Record<BoostId, readonly SportType[]>> = {
 export const penaltyPresentation = {
 	commercialBreak: { icon: 'tv-fill', ...factorTones.pink },
 	volatility: { icon: 'activity', ...factorTones.purple },
+	rivals: { icon: 'emoji-angry-fill', ...factorTones.wine },
 } as const;
 
 export const modePresentation = {

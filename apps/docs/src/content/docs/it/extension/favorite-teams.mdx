@@ -1,5 +1,5 @@
 ---
-sourceHash: '9668aab491fb'
+sourceHash: 'aa2be8f9b8ca'
 title: Come impostare le squadre preferite in ArenaSwap
 description: Metti la stella alle tue squadre e le loro partite ricevono una spinta verso il tuo schermo e un posto in cima alla lista. Tutte le altre restano dove sono.
 section: extension
@@ -12,6 +12,8 @@ faq:
     a: La partita riceve il bonus due volte, una per squadra.
   - q: Perché la partita della mia squadra non mi ha cambiato scheda?
     a: Una partita in pausa, come l'intervallo, una pausa tra i tempi o un'interruzione, vale zero finché il gioco non riparte, quindi la stella non può farle vincere un cambio. Resta comunque in cima alla lista.
+  - q: I rivali fanno qualcosa fuori da Senso unico?
+    a: No. In Classica e Fantasy, le partite di un rivale vengono valutate come tutte le altre.
 ---
 
 import Demo from '../../../../components/docs/Demo.astro';
@@ -35,6 +37,14 @@ Le partite delle tue squadre ricevono punti extra per essere quella su cui Arena
 Le partite delle tue squadre stanno anche in cima alla lista, sopra quelle più emozionanti ma di squadre che non segui. Con **Raggruppa le partite per lega** attivo, stanno invece in cima alla loro lega.
 
 Per cambiare l'entità della spinta, regola **Boost squadra preferita** sotto Punteggio nelle Impostazioni. Parte da 10 punti.
+
+## Scegli i tuoi rivali
+
+Ci sono squadre che guardi per vederle vincere. Altre, per vederle perdere. Nelle Impostazioni, sotto **Squadre preferite**, apri la scheda **Rivali** e tocca ogni squadra che non sopporti.
+
+I rivali contano nella [modalità di punteggio](/arenaswap/docs/extension/scoring-modes/) Senso unico. Lì, una partita in cui un rivale è sotto di più di due score passa davanti a tutte le altre. ArenaSwap ci passa come per qualsiasi partita, appena supera il tuo scarto di **Sensibilità di cambio**. Una partita che un rivale sta vincendo scende tanto più in basso quanto più è largo il suo vantaggio.
+
+Una squadra può essere preferita o rivale, non entrambe. Sceglierla nell'altra lista la sposta lì.
 
 ## Argomenti correlati
 

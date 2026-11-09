@@ -175,6 +175,12 @@ const PowerScoreBreakdown = ({
 			</Fragment>
 		);
 	};
+	const rivalry = breakdown?.rivalry;
+	const rivalryLabel = rivalry && {
+		beatdown: i18n.t('powerScore.rivalBeatdown'),
+		winning: i18n.t('powerScore.rivalWinning'),
+		ordinary: i18n.t('powerScore.rivalOrdinary'),
+	}[rivalry.kind];
 	const heading = mode && modeId !== 'classic'
 		? i18n.t('powerScore.headingMode', { mode: i18n.t(mode.nameKey) })
 		: i18n.t('powerScore.heading');
@@ -316,6 +322,19 @@ const PowerScoreBreakdown = ({
 						{blend.kind === 'boost' ? `+${Math.round(blend.ownTotal * blend.weight)}` : `${blend.ownTotal} × ${blendPercent}%`}
 					</span>
 				</div>
+			)}
+			{rivalry && rivalryLabel && (
+				<>
+					<div className='powerscore-breakdown-row'>
+						<span className='d-flex align-items-center gap-1'>
+							<FactorIcon icon={penaltyPresentation.rivals.icon} color={penaltyPresentation.rivals.color} />
+							{rivalryLabel}
+							<SettingTooltipIcon text={i18n.t('powerScore.tooltipRivals')} label={rivalryLabel} />
+						</span>
+						<span className='powerscore-breakdown-value'>{`${rivalry.before} → ${rivalry.after}`}</span>
+					</div>
+					{rivalry.blownLead && <div className='powerscore-breakdown-note'>{i18n.t('powerScore.rivalBlownLead')}</div>}
+				</>
 			)}
 			<div className='powerscore-breakdown-row powerscore-breakdown-row-total'><span>{i18n.t('powerScore.finalPowerScore')}</span><span>{totalLabel}</span></div>
 			{reason && <div className='powerscore-breakdown-reason'>{reason}</div>}

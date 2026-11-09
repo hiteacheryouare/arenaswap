@@ -1,5 +1,5 @@
 ---
-sourceHash: '9668aab491fb'
+sourceHash: 'aa2be8f9b8ca'
 title: Définir tes équipes favorites dans ArenaSwap
 description: 'Mets tes équipes en favori : leurs matchs gagnent un coup de pouce pour passer à l''écran et une place en haut de la liste. Les autres matchs ne bougent pas.'
 section: extension
@@ -12,6 +12,8 @@ faq:
     a: Le match reçoit le bonus deux fois, une fois pour chaque équipe.
   - q: Pourquoi le match de mon équipe n'a-t-il pas changé mon onglet ?
     a: Un match en pause, comme à la mi-temps, pendant un entracte ou lors d'une interruption, vaut zéro jusqu'à la reprise du jeu, donc une étoile ne peut pas lui faire gagner un changement. Il reste en haut de la liste.
+  - q: Les rivaux servent-ils à autre chose qu'en Raclées ?
+    a: Non. En Classique et Fantasy, les matchs d'un rival sont notés comme n'importe quel autre.
 ---
 
 import Demo from '../../../../components/docs/Demo.astro';
@@ -35,6 +37,14 @@ Les matchs de tes équipes gagnent des points supplémentaires pour devenir celu
 Tes matchs sont aussi placés en haut de la liste, au-dessus de matchs plus excitants mais qui n'impliquent personne que tu suis. Avec **Grouper les matchs par ligue** activé, ils se placent plutôt en haut de leur ligue.
 
 Pour changer la taille du coup de pouce, règle **Bonus d'équipe favorite** sous Notation dans les Paramètres. Il démarre à 10 points.
+
+## Choisir tes rivaux
+
+Certaines équipes, tu les regardes pour les voir gagner. D'autres, pour les voir perdre. Dans les Paramètres, sous **Équipes favorites**, ouvre l'onglet **Rivaux** et touche n'importe quelle équipe que tu ne supportes pas.
+
+Les rivaux comptent dans le [mode de score](/arenaswap/docs/extension/scoring-modes/) Raclées. Là, un match où un rival est mené de plus de deux scores passe au-dessus de tous les autres. ArenaSwap y bascule comme pour n'importe quel match, dès qu'il dépasse ton écart de **Sensibilité de changement**. Un match qu'un rival est en train de gagner descend d'autant plus que son avance est grande.
+
+Une équipe peut être favorite ou rivale, pas les deux. La choisir dans l'autre liste la déplace.
 
 ## À lire aussi
 

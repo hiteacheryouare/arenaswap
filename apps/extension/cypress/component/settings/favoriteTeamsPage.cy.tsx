@@ -58,27 +58,42 @@ const stubTeamsFetch = (fails = false) => {
 interface harnessProps {
 	enabledLeagues?: LeagueId[];
 	initialFavorites?: string[];
+	initialRivals?: string[];
 	onToggle?: (leagueId: LeagueId, teamId: string) => void;
+	onToggleRival?: (leagueId: LeagueId, teamId: string) => void;
 }
 
-// Favorites live in app.tsx, so this stands in for that owner.
-const Harness = ({ enabledLeagues = ['nba'], initialFavorites = [], onToggle }: harnessProps) => {
+const flipped = (set: ReadonlySet<string>, key: string): Set<string> => {
+	const next = new Set(set);
+	if (next.has(key)) next.delete(key);
+	else next.add(key);
+	return next;
+};
+
+const without = (set: ReadonlySet<string>, key: string): Set<string> => new Set([...set].filter(each => each !== key));
+
+// Both lists live in app.tsx, so this stands in for that owner, including keeping a team on one list.
+const Harness = ({ enabledLeagues = ['nba'], initialFavorites = [], initialRivals = [], onToggle, onToggleRival }: harnessProps) => {
 	const [favorites, setFavorites] = useState(() => new Set(initialFavorites));
+	const [rivals, setRivals] = useState(() => new Set(initialRivals));
 
 	return (
 		<div className='popup-container'>
 			<FavoriteTeamsPage
 				enabledLeagues={enabledLeagues}
 				favoriteTeamIds={favorites}
+				rivalTeamIds={rivals}
 				onToggleFavoriteTeam={(leagueId, teamId) => {
 					onToggle?.(leagueId, teamId);
-					setFavorites(previous => {
-						const next = new Set(previous);
-						const key = createFavoriteTeamKey(leagueId, teamId);
-						if (next.has(key)) next.delete(key);
-						else next.add(key);
-						return next;
-					});
+					const key = createFavoriteTeamKey(leagueId, teamId);
+					setFavorites(previous => flipped(previous, key));
+					setRivals(previous => without(previous, key));
+				}}
+				onToggleRivalTeam={(leagueId, teamId) => {
+					onToggleRival?.(leagueId, teamId);
+					const key = createFavoriteTeamKey(leagueId, teamId);
+					setRivals(previous => flipped(previous, key));
+					setFavorites(previous => without(previous, key));
 				}}
 			/>
 		</div>
@@ -190,6 +205,75 @@ describe('favoriteTeamsPage', () => {
 			// push the star off the right edge.
 			cy.get('.overflow-auto').should(([el]: JQuery<HTMLElement>) => {
 				expect(el.scrollWidth, `list does not scroll sideways in ${name}`).to.be.at.most(el.clientWidth + 1);
+			});
+		});
+	});
+
+	it('opens on Favorites, with Rivals one tab over', () => {
+		mountPage();
+
+		cy.get('[role=tab][aria-selected=true]').should('have.text', 'Favorites');
+		cy.contains('[role=tab]', 'Rivals').should('have.attr', 'aria-selected', 'false');
+		cy.contains('In Blowouts').should('not.exist');
+	});
+
+	it('picks a rival with the angry face, and pins it under Your Rivals', () => {
+		mountPage({ onToggleRival: cy.spy().as('onToggleRival') });
+
+		cy.contains('[role=tab]', 'Rivals').click();
+		cy.contains('In Blowouts, ArenaSwap goes straight to a rival getting blown out.').should('exist');
+		cy.get('[aria-label="Add Chicago Bulls to rivals"] .team-pick-rival').should('have.class', 'bi-emoji-angry');
+		cy.get('[aria-label="Add Chicago Bulls to rivals"]').click();
+
+		cy.get('@onToggleRival').should('have.been.calledOnceWith', 'nba', '4');
+		cy.contains('.popup-section-label', 'Your Rivals').next().should('contain', 'Chicago Bulls');
+		cy.get('[aria-label="Remove Chicago Bulls from rivals"] .team-pick-rival').first()
+			.should('have.class', 'bi-emoji-angry-fill')
+			.and('have.attr', 'data-selected', 'true');
+	});
+
+	it('shows a favorite faded on the Rivals tab, and moves it over when picked there', () => {
+		mountPage({ initialFavorites: ['nba:20'] });
+
+		cy.contains('[role=tab]', 'Rivals').click();
+		cy.get('[aria-label="Add Philadelphia 76ers to rivals"] .bi')
+			.should('have.class', 'bi-star-fill')
+			.and('have.attr', 'data-other-list', 'true');
+		cy.get('[aria-label="Add Philadelphia 76ers to rivals"]').click();
+		cy.contains('.popup-section-label', 'Your Rivals').next().should('contain', 'Philadelphia 76ers');
+
+		cy.contains('[role=tab]', 'Favorites').click();
+		cy.contains('.popup-section-label', 'Your Favorites').should('not.exist');
+		cy.get('[aria-label="Add Philadelphia 76ers to favorites"] .bi').should('have.class', 'bi-emoji-angry-fill');
+	});
+
+	it('moves between the tabs with the arrow keys', () => {
+		mountPage();
+
+		cy.contains('[role=tab]', 'Favorites').focus().type('{rightArrow}');
+		cy.focused().should('have.text', 'Rivals').and('have.attr', 'aria-selected', 'true');
+		cy.focused().type('{leftArrow}');
+		cy.focused().should('have.text', 'Favorites');
+	});
+
+	it('fits every locale\'s tab labels and Rivals explainer in a 320px popup', () => {
+		cy.viewport(320, 560);
+		mountPage();
+		cy.contains('[role=tab]', 'Rivals').click();
+
+		Object.entries(locales).forEach(([name, locale]) => {
+			cy.get('[role=tab]').then(tabs => {
+				tabs[0]!.textContent = locale.teamPicker.favoritesTab;
+				tabs[1]!.textContent = locale.teamPicker.rivalsTab;
+			});
+			cy.get('[role=tab]').each(([tab]: JQuery<HTMLElement>) => {
+				expect(tab.getBoundingClientRect().height, `tab stays one line in ${name}`).to.be.at.most(30);
+			});
+			cy.get('[role=tabpanel] > .setting-explainer').then(([el]: JQuery<HTMLElement>) => {
+				el.textContent = locale.teamPicker.rivalsExplainer;
+			});
+			cy.get('[role=tabpanel]').should(([el]: JQuery<HTMLElement>) => {
+				expect(el.scrollWidth, `explainer does not push the page sideways in ${name}`).to.be.at.most(el.clientWidth + 1);
 			});
 		});
 	});

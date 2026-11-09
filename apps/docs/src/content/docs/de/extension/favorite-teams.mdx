@@ -1,5 +1,5 @@
 ---
-sourceHash: '9668aab491fb'
+sourceHash: 'aa2be8f9b8ca'
 title: So legst du in ArenaSwap Lieblingsteams fest
 description: Markiere deine Teams mit einem Stern, und ihre Spiele bekommen Rückenwind Richtung Bildschirm und einen Platz ganz oben in der Liste. Alle anderen Spiele bleiben, wo sie waren.
 section: extension
@@ -12,6 +12,8 @@ faq:
     a: Das Spiel bekommt den Bonus doppelt, einmal pro Team.
   - q: Warum hat das Spiel meines Teams meinen Tab nicht gewechselt?
     a: Ein unterbrochenes Spiel, etwa in der Halbzeit, in einer Drittelpause oder bei einer Verzögerung, bekommt null Punkte, bis wieder gespielt wird. Ein Stern kann ihm dann keinen Wechsel verschaffen. Es bleibt oben in der Liste.
+  - q: Bewirken Rivalen etwas außerhalb von Kantersiege?
+    a: Nein. In Klassisch und Fantasy werden die Spiele eines Rivalen wie jedes andere Spiel bewertet.
 ---
 
 import Demo from '../../../../components/docs/Demo.astro';
@@ -35,6 +37,14 @@ Die Spiele deiner Teams bekommen Extrapunkte dafür, dass ArenaSwap zu ihnen wec
 Außerdem stehen die Spiele deiner Teams oben in der Liste, über Spielen, die spannender sind, aber niemandem gehören, dem du folgst. Ist **Spiele nach Liga gruppieren** an, stehen sie stattdessen oben in ihrer Liga.
 
 Wie groß der Schub ausfällt, stellst du in den Einstellungen unter Bewertung mit **Lieblingsteam-Boost** ein. Er startet bei 10 Punkten.
+
+## Rivalen festlegen
+
+Manche Teams schaust du, um sie gewinnen zu sehen. Bei anderen willst du sie verlieren sehen. Öffne in den Einstellungen unter **Lieblingsteams** den Tab **Rivalen** und tippe auf jedes Team, das du nicht ausstehen kannst.
+
+Rivalen zählen im [Bewertungsmodus](/arenaswap/docs/extension/scoring-modes/) Kantersiege. Dort steht ein Spiel, in dem ein Rivale mit mehr als zwei Scores zurückliegt, über allen anderen Spielen. ArenaSwap wechselt dorthin wie zu jedem anderen Spiel, sobald es deinen Abstand bei **Wechselempfindlichkeit** überschreitet. Ein Spiel, das ein Rivale gewinnt, sinkt tiefer, je größer sein Vorsprung ist.
+
+Ein Team kann Favorit oder Rivale sein, nicht beides. Wählst du es in der anderen Liste, wandert es dorthin.
 
 ## Verwandt
 

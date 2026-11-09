@@ -3,7 +3,7 @@ import { i18n } from '#i18n';
 import type { EspnTeamEntry } from '@arenaswap/sideline';
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
 import type { LeagueId } from '@arenaswap/core/types';
-import TeamPickerRow from './teamPickerRow';
+import TeamPickerRow, { type teamList } from './teamPickerRow';
 import { matchesTeamQuery } from '../../../utils/favoriteTeams';
 import { leagueLabels, leagueOrder } from '../popupHelpers';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
@@ -15,8 +15,11 @@ interface teamPickerListProps {
 	onQueryChange: (query: string) => void;
 	isLoading: boolean;
 	hasError: boolean;
-	selectedFavorites: ReadonlySet<string>;
-	onToggleFavorite: (team: EspnTeamEntry) => void;
+	list?: teamList;
+	selected: ReadonlySet<string>;
+	// Teams on the other list, marked so picking one here reads as moving it.
+	otherListSelected?: ReadonlySet<string>;
+	onToggle: (team: EspnTeamEntry) => void;
 	onRetry: () => void;
 	// Sits above the league groups. Callers drop it while a search is running rather than filtering
 	// it, so it never competes with the results.
@@ -26,7 +29,7 @@ interface teamPickerListProps {
 // A fragment rather than a wrapper, so the search box and the scrolling list stay siblings of
 // whatever chrome the caller puts around them — onboarding pins its footer against that column.
 const teamPickerList = ({
-	teams, query, onQueryChange, isLoading, hasError, selectedFavorites, onToggleFavorite, onRetry, pinned,
+	teams, query, onQueryChange, isLoading, hasError, list = 'favorites', selected, otherListSelected, onToggle, onRetry, pinned,
 }: teamPickerListProps) => {
 	const locale = useDisplayLocale();
 	// Kept across renders: with the college leagues on this is well over a thousand teams, and the
@@ -87,14 +90,19 @@ const teamPickerList = ({
 								<div className='fw-bold popup-section-label mt-3'>
 									{leagueLabels[leagueId] ?? leagueId.toUpperCase()}
 								</div>
-								{leagueTeams.map(team => (
-									<TeamPickerRow
-										key={team.id}
-										team={team}
-										isFavorite={selectedFavorites.has(createFavoriteTeamKey(team.leagueId, team.id))}
-										onToggle={() => onToggleFavorite(team)}
-									/>
-								))}
+								{leagueTeams.map(team => {
+									const key = createFavoriteTeamKey(team.leagueId, team.id);
+									return (
+										<TeamPickerRow
+											key={team.id}
+											team={team}
+											list={list}
+											isSelected={selected.has(key)}
+											isOnOtherList={otherListSelected?.has(key)}
+											onToggle={() => onToggle(team)}
+										/>
+									);
+								})}
 							</div>
 						))}
 						{groups.length === 0 && query && (

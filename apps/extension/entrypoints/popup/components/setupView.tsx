@@ -51,6 +51,7 @@ interface setupViewProps {
 	leagueLogos: LeagueLogoMap;
 	leagueSchedules: LeagueScheduleMap;
 	favoriteTeamIds: ReadonlySet<string>;
+	rivalTeamIds: ReadonlySet<string>;
 	standbyStreamTabId: number | null;
 	standbyTabElsewhere?: Browser.tabs.Tab | null;
 	standbyOnboardingDone: boolean;
@@ -64,6 +65,7 @@ interface setupViewProps {
 	onToggleContentAwareSwitching: () => void;
 	onFavoriteTeamBonusChange: (val: number) => void;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
+	onToggleRivalTeam: (leagueId: LeagueId, teamId: string) => void;
 	onToggleLeague: (leagueId: LeagueId) => void;
 	onToggleSport: (sport: SportType, selectAll: boolean) => void;
 	onReorderLeague: (fromIndex: number, toIndex: number) => void;
@@ -139,9 +141,9 @@ const pageFallback = (
 );
 
 const setupView = ({
-	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, leagueSchedules, favoriteTeamIds, standbyStreamTabId, standbyTabElsewhere = null, standbyOnboardingDone,
+	prefs, prefsLoaded, demoMode, demoSeason, leagueLogos, leagueSchedules, favoriteTeamIds, rivalTeamIds, standbyStreamTabId, standbyTabElsewhere = null, standbyOnboardingDone,
 	openTabs, registry = [], formatTabLabel, onClose, onSensitivityChange, onCooldownChange, onSwitchDelayChange, onToggleContentAwareSwitching,
-	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder, onCollegeFilterChange,
+	onFavoriteTeamBonusChange, onToggleFavoriteTeam, onToggleRivalTeam, onToggleLeague, onToggleSport, onReorderLeague, onResetLeagueOrder, onCollegeFilterChange,
 	onToggleGroupByLeague, onToggleShowUpcoming, onToggleKeepFinalGames, onFinishedTabActionChange, onThemeChange, onUpcomingGamesDaysChange,
 	onToggleProTips, onToggleNotifications, bossShortcut, onBossDecoyChange, onToggleDemo, onDemoSeasonChange, onToggleStandbyStream, onStandbyThresholdChange,
 	onSetStandbyTab, onStandbyOnboardingDone, multiviewAvailable, multiviewOn, multiviewOnboardingDone, onMultiviewOnboardingDone,
@@ -399,7 +401,9 @@ const setupView = ({
 		<FavoriteTeamsPage
 			enabledLeagues={prefs.enabledLeagues}
 			favoriteTeamIds={favoriteTeamIds}
+			rivalTeamIds={rivalTeamIds}
 			onToggleFavoriteTeam={onToggleFavoriteTeam}
+			onToggleRivalTeam={onToggleRivalTeam}
 		/>
 	);
 

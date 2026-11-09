@@ -363,6 +363,7 @@ export const createDefaultUserPreferences = (): UserPreferences => ({
 	enabledLeagues: [],
 	favoriteTeamIds: [],
 	favoriteTeamBonusPoints: defaultFavoriteTeamBonusPoints,
+	rivalTeamIds: [],
 	showUpcomingGames: true,
 	groupByLeague: false,
 	keepFinalGames: false,
@@ -463,6 +464,8 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 	const parsedEnabledLeagues = Array.isArray(candidate.enabledLeagues)
 		? [...new Set(candidate.enabledLeagues.filter(isLeagueId))]
 		: [];
+	const favoriteTeamIds = normalizeFavoriteTeamIds(candidate.favoriteTeamIds);
+	const favoriteSet = new Set(favoriteTeamIds);
 	const parsedDisabledSignals = Array.isArray(candidate.disabledSignals)
 		? [...new Set((candidate.disabledSignals as unknown[]).filter((s): s is SignalName => allSignalNames.includes(s as SignalName)))]
 		: defaults.disabledSignals;
@@ -474,8 +477,9 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		contentAwareSwitching: typeof candidate.contentAwareSwitching === 'boolean' ? candidate.contentAwareSwitching : defaults.contentAwareSwitching,
 		enabled: typeof candidate.enabled === 'boolean' ? candidate.enabled : defaults.enabled,
 		enabledLeagues: Array.isArray(candidate.enabledLeagues) ? parsedEnabledLeagues : allLeagueIds,
-		favoriteTeamIds: normalizeFavoriteTeamIds(candidate.favoriteTeamIds),
+		favoriteTeamIds,
 		favoriteTeamBonusPoints: normalizeBoostPreference(candidate.favoriteTeamBonusPoints, defaults.favoriteTeamBonusPoints),
+		rivalTeamIds: normalizeFavoriteTeamIds(candidate.rivalTeamIds).filter(key => !favoriteSet.has(key)),
 		showUpcomingGames: typeof candidate.showUpcomingGames === 'boolean' ? candidate.showUpcomingGames : defaults.showUpcomingGames,
 		// Saved prefs that predate the setting belong to someone who has only ever seen league
 		// sections, so they keep them. Only a fresh install starts on the mixed list.

@@ -153,6 +153,10 @@ export const getFavoriteTeamCount = (game: Game, favoriteTeamIds: ReadonlySet<st
 	+ (favoriteTeamIds.has(createFavoriteTeamKey(game.league, game.awayTeam.id)) ? 1 : 0)
 );
 
+export const rivalSidesOf = (game: Game, rivalTeamIds: readonly string[]): Side[] => (
+	(['home', 'away'] as const).filter(side => rivalTeamIds.includes(createFavoriteTeamKey(game.league, (side === 'home' ? game.homeTeam : game.awayTeam).id)))
+);
+
 export interface LiveScoringInput {
 	game: Game;
 	// The whole retained history; windowed here, so the scorer sees exactly the last few minutes.
@@ -174,7 +178,7 @@ export const scoringContextFor = ({ game, history, onBreak, winProbability, now,
 });
 
 export type ScoringPrefs = Pick<UserPreferences, 'favoriteTeamIds' | 'favoriteTeamBonusPoints' | 'postseasonBoostPoints' | 'disabledSignals'>
-	& Partial<Pick<UserPreferences, 'scoringMode' | 'leagueModes' | 'modeDisabledSignals' | 'fantasyBlend'>>;
+	& Partial<Pick<UserPreferences, 'scoringMode' | 'leagueModes' | 'modeDisabledSignals' | 'fantasyBlend' | 'rivalTeamIds'>>;
 
 export const scoreOptionsFor = (game: Game, prefs: ScoringPrefs, gameBoost: number, favoriteTeamIds = new Set(prefs.favoriteTeamIds)): ScoreOptions => {
 	const mode = resolveModeForGame({ scoringMode: prefs.scoringMode ?? 'classic', leagueModes: prefs.leagueModes ?? {} }, game);
@@ -187,6 +191,7 @@ export const scoreOptionsFor = (game: Game, prefs: ScoringPrefs, gameBoost: numb
 		favoriteBoostPoints: prefs.favoriteTeamBonusPoints,
 		postseasonBoostPoints: prefs.postseasonBoostPoints,
 		gameBoost,
+		...(mode === 'blowouts' && prefs.rivalTeamIds?.length ? { rivalSides: rivalSidesOf(game, prefs.rivalTeamIds) } : {}),
 	};
 };
 
@@ -208,6 +213,7 @@ export const toLiveScore = (score: PowerScore): LiveScore => ({
 		signalCeiling: score.signalCeiling,
 		...(score.classicTotal !== undefined ? { classicTotal: score.classicTotal } : {}),
 		...(score.blend ? { blend: score.blend } : {}),
+		...(score.rivalry ? { rivalry: score.rivalry } : {}),
 	},
 });
 

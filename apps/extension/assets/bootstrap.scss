@@ -1081,13 +1081,27 @@
 		}
 	}
 
-	// Hovering an unstarred row previews the gold it would take.
-	.team-pick-star {
+	// Hovering an unpicked row previews the colour it would take.
+	.team-pick-star,
+	.team-pick-rival {
 		color:      var(--as-fg-3);
 		transition: color m.$motion-snap m.$motion-ease;
+	}
 
+	.team-pick-star {
 		.team-pick-row:hover &,
-		&[data-favorited='true'] { color: var(--as-warning-base); }
+		&[data-selected='true'] { color: var(--as-warning-base); }
+	}
+
+	.team-pick-rival {
+		.team-pick-row:hover &,
+		&[data-selected='true'] { color: var(--as-danger-base); }
+	}
+
+	// A team already on the other list shows that list's mark, faded, until it is picked here.
+	.team-pick-row .bi[data-other-list='true'] {
+		color:   var(--as-fg-3);
+		opacity: 0.55;
 	}
 
 	// The same white disc the pre-game poster puts its crests on, at list size, tinted with a colour

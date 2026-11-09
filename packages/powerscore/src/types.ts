@@ -360,6 +360,17 @@ export interface BlendResult {
 	floorApplied?: boolean;
 }
 
+export interface RivalryResult {
+	// beatdown: a rival is losing by more than two scores. winning: a rival leads. ordinary: neither.
+	kind: 'beatdown' | 'winning' | 'ordinary';
+	side?: Side;
+	// The rival held the lead earlier in the history window.
+	blownLead?: boolean;
+	// The total before and after rivals were taken into account, both without the manual game boost.
+	before: number;
+	after: number;
+}
+
 export interface PowerScoreMode {
 	id: string;
 	// In display order.
@@ -381,6 +392,13 @@ export interface PowerScoreMode {
 	// The mode has nothing to say about this game (e.g. Fantasy with no rostered player in it), so
 	// the game is scored as Classic.
 	appliesTo?: (game: Game<string>, context: ScoringContext) => boolean;
+	// The mode can rank games against rivals (ScoreOptions.rivalSides). Ordinary games are squeezed
+	// to 0–ordinaryCeiling, so a rival being beaten always outranks them.
+	rivals?: RivalBand;
+}
+
+export interface RivalBand {
+	ordinaryCeiling: number;
 }
 
 export type BuiltInModeId = 'classic' | 'blowouts' | 'fantasy';
@@ -400,6 +418,10 @@ export interface ScoreOptions {
 	postseasonBoostPoints?: number;
 	// A manual boost. The only thing allowed to push the total past 100.
 	gameBoost?: number;
+	// Sides of this game the viewer wants to see beaten. Set it, even to [], for every game of a
+	// slate, so games without a rival are squeezed into the same ordinary range. Ignored by a mode
+	// without `rivals`.
+	rivalSides?: readonly Side[];
 	// For leagues or sports the built-in tables don't know, or to tune them.
 	sport?: Partial<SportTypeConfig>;
 	league?: Partial<LeagueConfig>;
@@ -442,6 +464,8 @@ export interface PowerScore {
 	// Classic's own total when the mode blends with it or uses it as a floor.
 	classicTotal?: number;
 	blend?: BlendResult;
+	// Present when the game was ranked against rivals.
+	rivalry?: RivalryResult;
 	boosts: ScoredBoost[];
 	// Up to three sentences: what is happening right now, what just happened, the score and the
 	// time, and what is at stake.

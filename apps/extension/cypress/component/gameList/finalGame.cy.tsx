@@ -150,6 +150,7 @@ const listPrefs: UserPreferences = {
 	notificationsEnabled: false,
 	bossDecoyUrl: '',
 	favoriteTeamBonusPoints: 0,
+	rivalTeamIds: [],
 	favoriteTeamIds: [],
 	standbyStreamEnabled: false,
 	standbyStreamThreshold: 20,

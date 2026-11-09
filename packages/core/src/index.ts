@@ -6,7 +6,7 @@ export { MockGameSimulator } from './mockGames';
 export { resolveModeForGame, modesInUse, isScoringModeChoice } from './scoringMode';
 export { fantasyRosterLimit, fantasyRosterStorageKey, normalizeFantasyRoster, rosterInGame } from './fantasy';
 export type { FantasyRosterEntry, FantasyScoringOverrides } from './fantasy';
-export { chooseSwitchTarget, getFavoriteTeamCount, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextClockStall, recentSnapshots, retainSnapshots, scoreLiveGame, scoreOptionsFor, scoringContextFor, toLegacyPowerScoreResult, toLiveScore, toScoreSnapshot, toScoringGame } from './scoring';
+export { chooseSwitchTarget, getFavoriteTeamCount, getHistoryWindowMsForGame, maxSnapshotsPerGame, rivalSidesOf, nextClockStall, recentSnapshots, retainSnapshots, scoreLiveGame, scoreOptionsFor, scoringContextFor, toLegacyPowerScoreResult, toLiveScore, toScoreSnapshot, toScoringGame } from './scoring';
 export { hasCommercialBreaks, nextCommercialBreak } from './commercialBreaks';
 export type { CommercialBreakEntry, CommercialBreakInput, CommercialBreakKind } from './commercialBreaks';
 export { checkHeldSwitch, holdSwitch, isDecisiveMoment, isPlayStopped, markPlay, playBreakCapMs, playBreakSport, reachedPlayBreak } from './playBreaks';
