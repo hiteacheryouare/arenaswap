@@ -385,9 +385,16 @@
 		"heroSub": "PowerScore는 모든 라이브 경기를 얼마나 흥미진진한지 0에서 100까지로 평가하고, 경기가 흘러가는 대로 따라가요. npm으로 설치해서 내 프로젝트에서 경기를 채점해 보세요.",
 		"viewOnNpm": "npm에서 보기",
 		"sourceOnGithub": "GitHub 소스 코드",
-		"installHeading": "명령어 하나로 설치.",
-		"copy": "복사",
-		"copied": "복사됨",
+		"whatHeading": "PowerScore가 하는 일.",
+		"whatCopy": "라이브 경기를 읽고, 지금 얼마나 볼 만한지와 그 이유를 알려줘요.",
+		"whatReads": "읽는 것",
+		"whatScore": "스코어",
+		"whatScoreValue": "{away} {awayScore}, {home} {homeScore}",
+		"whatClock": "시계",
+		"whatClockValue": "4쿼터, {clock} 남음",
+		"whatTrail": "여기까지 온 과정",
+		"whatGivesBack": "돌려주는 것",
+		"whatClose": "ArenaSwap은 내 리그의 모든 라이브 경기를 이런 식으로 채점해요. 최대 {seconds}초마다 한 번씩 채점하고, 가장 높은 경기로 탭을 옮겨요.",
 		"signalsHeading": "숫자를 구성하는 요소.",
 		"signalsSub": "다섯 가지 신호가 쌓여 0부터 {max}까지의 점수가 돼요. 접전은 올라가고, 일방적인 경기는 낮게 머물러요.",
 		"signalMax": "최대 {max}",
@@ -413,35 +420,154 @@
 				"copy": "뒤처지던 팀이 따라잡으면 점수가 올라가요."
 			}
 		],
+		"modesHeading": "무엇이 흥미로운지 직접 고르세요.",
+		"modesCopy": "설정에서 모드를 바꿔요.",
+		"modesMatchup": "{away} @ {home}",
+		"modesFantasyNote": "내 판타지 선수 중에 {player} 선수가 있을 때.",
+		"boostsHeading": "빅 모먼트엔 보너스 점수.",
+		"boostGroups": [
+			{
+				"sport": "미식축구",
+				"boosts": [
+					{
+						"name": "투 미닛 드릴",
+						"copy": "하프 막판에 동점이거나 한 스코어 차 이내로 뒤진 채 공격을 이어갈 때."
+					},
+					{
+						"name": "레드존",
+						"copy": "접전 경기에서 20야드 안쪽까지 들어간 드라이브. 4th 다운이 가장 크게 쳐줘요."
+					}
+				]
+			},
+			{
+				"sport": "야구와 소프트볼",
+				"boosts": [
+					{
+						"name": "노히터",
+						"copy": "6회부터(소프트볼은 4회부터) 안타가 없는 팀이 있을 때."
+					},
+					{
+						"name": "역전 주자 출루",
+						"copy": "역전 또는 동점 주자가 출루해 있을 때. 후반 이닝에서 더 크게 쳐줘요."
+					},
+					{
+						"name": "주자 출루",
+						"copy": "주자가 나갈 때마다 점수가 더해지고, 만루일 때 가장 커요."
+					}
+				]
+			},
+			{
+				"sport": "아이스하키",
+				"boosts": [
+					{
+						"name": "파워플레이 또는 골리 빼기",
+						"copy": "두 골 차 이내의 경기이거나, 마지막 4분 동안 골리를 뺐을 때."
+					}
+				]
+			},
+			{
+				"sport": "축구",
+				"boosts": [
+					{
+						"name": "퇴장",
+						"copy": "동점이거나 한 골 차인 경기에서 퇴장이 나온 뒤 10분 동안."
+					}
+				]
+			},
+			{
+				"sport": "모든 종목",
+				"boosts": [
+					{
+						"name": "이변 주시",
+						"copy": "경기 전 열세였던 팀이 경기 중반을 넘어 앞서거나 비기거나 한 스코어 차 이내로 뒤질 때."
+					},
+					{
+						"name": "중요도",
+						"copy": "벼랑 끝에 선 시리즈, 랭킹 팀끼리의 맞대결, 시즌 막판 순위 경쟁."
+					}
+				]
+			}
+		],
+		"deductionsHeading": "감점",
+		"deductions": [
+			{
+				"name": "광고 시간",
+				"copy": "경기가 광고 시간일 때 최대 {max}점이 깎여요."
+			},
+			{
+				"name": "승리 확률",
+				"copy": "승부가 50대 50에 가까우면 최대 {max}점이 더해지고, 한 팀이 사실상 굳히면 최대 {max}점이 깎여요."
+			}
+		],
 		"liveHeading": "라이브 PowerScore.",
 		"liveLoading": "라이브 PowerScore 불러오는 중",
 		"liveError": "지금은 라이브 경기 데이터를 불러올 수 없어요.",
 		"liveNow": "라이브",
-		"machineHeading": "작동하는 모습을 보세요.",
-		"machineSub": "모든 라이브 경기에 PowerScore가 매겨지고, 탭은 가장 좋은 경기에 도착해요.",
-		"machineWatch": "관찰",
-		"machineWatchCopy": "팔로우 중인 모든 리그의 모든 라이브 경기를, 동시에.",
-		"machineScore": "채점",
-		"machineScoreCopy": "PowerScore가 각 경기가 얼마나 흥미진진한지 실시간으로 평가해요.",
-		"machineSwitch": "전환",
-		"machineSwitchCopy": "탭이 자동으로 가장 좋은 경기로 넘어가요.",
 		"liveEmptyTitle": "지금은 라이브 경기가 없어요.",
-		"liveScoreBadge": "PowerScore {score} / 100",
-		"machineAlt": "모든 라이브 경기를 지켜보고 채점하는 ArenaSwap",
-		"machineNowWatching": "지금 보는 중",
-		"machineNowOn": "{service}에서",
-		"machineCaptions": [
-			"팔로우 중인 리그의 모든 라이브 경기를 지켜봐요",
-			"그리고 각 경기가 얼마나 흥미진진한지 실시간으로 채점해요",
-			"경기를 열어보면 정확한 이유를 알 수 있어요",
-			"그리고 탭이 가장 좋은 경기에 도착해요"
+		"devHeading": "내 프로젝트에서 써 보세요.",
+		"devCopy": "PowerScore는 npm에서 무료예요. 스코어, 시계, 그리고 내 피드가 아는 나머지 정보를 넣으면 0에서 100 사이의 숫자와 그 이유를 돌려줘요.",
+		"installTitle": "설치하기.",
+		"packageManager": "패키지 매니저",
+		"copy": "복사",
+		"copied": "복사됨",
+		"quickTitle": "경기 채점하기.",
+		"feedTitle": "스코어와 시계부터 시작하세요.",
+		"feedCopy": "접전도와 막바지는 이것만으로 충분해요. 아래 필드를 추가할 때마다 더 많은 요소가 켜지고, 없는 필드는 빼도 돼요.",
+		"feedGive": "넣는 것",
+		"feedOn": "그러면 켜지는 것",
+		"feedRows": [
+			{
+				"give": "스코어, 시계, 피리어드",
+				"on": "접전도와 막바지"
+			},
+			{
+				"give": "스코어 스냅샷 몇 개, 오래된 순서대로",
+				"on": "모멘텀, 리드 변경, 추격"
+			},
+			{
+				"give": "폴링할 때마다의 승리 확률",
+				"on": "±5 승리 확률 변동"
+			},
+			{
+				"give": "다운, 거리, 필드 위치, 공격권",
+				"on": "투 미닛 드릴과 레드존"
+			},
+			{
+				"give": "주자, 아웃, 안타",
+				"on": "주자 출루, 역전 주자, 노히터"
+			},
+			{
+				"give": "파워플레이와 빈 골대",
+				"on": "하키의 득점 찬스"
+			},
+			{
+				"give": "퇴장",
+				"on": "퇴장 부스트"
+			},
+			{
+				"give": "경기 전 배당",
+				"on": "이변 주시"
+			},
+			{
+				"give": "내 판타지 로스터",
+				"on": "판타지 모드"
+			}
 		],
-		"machineSignals": [
-			"접전도",
-			"막바지 압박감",
-			"모멘텀",
-			"리드 변경",
-			"추격"
+		"ownFeedTitle": "내 피드를 가져오세요.",
+		"ownFeedCopy": "처음 보는 리그에는 해당 종목의 기본값이 적용돼요. 내 리그의 피리어드 구성이 다르면 호출에 함께 넘겨 주세요.",
+		"docsLinks": [
+			{
+				"title": "첫 경기 채점하기",
+				"copy": "설치하고 몇 줄로 경기 하나를 채점해 보세요."
+			},
+			{
+				"title": "라이브 데이터로 경기 채점하기",
+				"copy": "내 피드를 경기 형태로 맞추고 폴링 사이의 기록을 이어 가세요."
+			},
+			{
+				"title": "API 레퍼런스",
+				"copy": "패키지가 내보내는 모든 함수와 상수."
+			}
 		]
 	},
 	"docDemos": {

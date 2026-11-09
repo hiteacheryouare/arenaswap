@@ -25,6 +25,10 @@ Our sources send postponed and canceled games as `post` with `completed: false`,
 
 The burn sweep travelled 264% of a gradient that repeats every 220%, so it jumped back on every pass; it now runs on a 200% gradient and travels exactly 200%. A label that just landed burns without replaying the 0.6-opacity fade-in, which had read as a blink at the handoff.
 
+## The PowerScore page explains PowerScore first — 2026-11-07
+
+The website's PowerScore page now opens on one game read in and scored, then compares a close game with a blowout, the three modes and the boosts, and ends on a developer install path; the Machine scene and the live list's pill are gone. Every number and reason on it comes from `powerscore` at build time, and `cypress/e2e/powerscorePage.cy.ts` fails if an engine change flips which game wins a mode.
+
 ## Rivals for Blowouts — 2026-11-07
 
 Favorite Teams gains a Rivals tab, and in Blowouts a rival losing by more than two scores ranks above every other game, which Blowouts squeezes into 0–85 while rivals are set; a rival winning sinks with the size of its lead. Switching still waits for the Sensitivity gap. The mode opts in through `PowerScoreMode.rivals` and the caller passes `ScoreOptions.rivalSides`, so Classic and Fantasy ignore the list, and a team can only sit on one of the two lists.

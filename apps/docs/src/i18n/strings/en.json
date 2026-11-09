@@ -385,9 +385,16 @@
 		"heroSub": "PowerScore rates any live game from 0 to 100 for how exciting it is, and keeps up as the game moves. Install it from npm and score games in your own project.",
 		"viewOnNpm": "View on npm",
 		"sourceOnGithub": "Source on GitHub",
-		"installHeading": "Install in One Command.",
-		"copy": "Copy",
-		"copied": "Copied",
+		"whatHeading": "What PowerScore Does.",
+		"whatCopy": "It reads a live game and tells you how worth watching it is right now, and why.",
+		"whatReads": "It reads",
+		"whatScore": "The score",
+		"whatScoreValue": "{away} {awayScore}, {home} {homeScore}",
+		"whatClock": "The clock",
+		"whatClockValue": "4th quarter, {clock} left",
+		"whatTrail": "How it got there",
+		"whatGivesBack": "It gives back",
+		"whatClose": "ArenaSwap scores every live game in your leagues this way, as often as every {seconds} seconds, and puts your tab on the highest one.",
 		"signalsHeading": "What Goes Into the Number.",
 		"signalsSub": "Five signals stack into a score from 0 to {max}. A close game climbs, a blowout stays low.",
 		"signalMax": "{max} max",
@@ -413,35 +420,154 @@
 				"copy": "A trailing team clawing back raises the score."
 			}
 		],
+		"modesHeading": "Pick What Exciting Means.",
+		"modesCopy": "Switch modes in Settings.",
+		"modesMatchup": "{away} at {home}",
+		"modesFantasyNote": "With {player} on your roster.",
+		"boostsHeading": "Big Moments Get Extra Points.",
+		"boostGroups": [
+			{
+				"sport": "Football",
+				"boosts": [
+					{
+						"name": "Two-minute drill",
+						"copy": "Tied or down one score, driving late in the half."
+					},
+					{
+						"name": "Red zone",
+						"copy": "A drive inside the 20 in a close game. Fourth down counts the most."
+					}
+				]
+			},
+			{
+				"sport": "Baseball and softball",
+				"boosts": [
+					{
+						"name": "No-hitter",
+						"copy": "A team without a hit from the 6th inning on (the 4th in softball)."
+					},
+					{
+						"name": "Go-ahead run on base",
+						"copy": "The go-ahead or tying run is on base. It counts for more in the late innings."
+					},
+					{
+						"name": "Runners on base",
+						"copy": "Every runner adds points, and the bases loaded adds the most."
+					}
+				]
+			},
+			{
+				"sport": "Hockey",
+				"boosts": [
+					{
+						"name": "Power play or pulled goalie",
+						"copy": "In a game within two goals, or an empty net in the last 4 minutes."
+					}
+				]
+			},
+			{
+				"sport": "Soccer",
+				"boosts": [
+					{
+						"name": "Red card",
+						"copy": "In a tied or one-goal game, for the next ten minutes."
+					}
+				]
+			},
+			{
+				"sport": "Every sport",
+				"boosts": [
+					{
+						"name": "Upset watch",
+						"copy": "The underdog ahead, level or within one score past halfway."
+					},
+					{
+						"name": "Stakes",
+						"copy": "A series on the brink, two ranked teams, or a late-season race."
+					}
+				]
+			}
+		],
+		"deductionsHeading": "Points off",
+		"deductions": [
+			{
+				"name": "Commercial break",
+				"copy": "Up to {max} off while the game is in a commercial break."
+			},
+			{
+				"name": "Win probability",
+				"copy": "Up to {max} on when the odds stay near 50/50, up to {max} off when one team is a lock."
+			}
+		],
 		"liveHeading": "Live PowerScores.",
 		"liveLoading": "Loading live PowerScores",
 		"liveError": "Unable to load live game data right now.",
 		"liveNow": "Live",
-		"machineHeading": "Watch It Work.",
-		"machineSub": "Every live game gets a PowerScore, and your tab lands on the best one.",
-		"machineWatch": "Watch",
-		"machineWatchCopy": "Every live game in every league you follow, at once.",
-		"machineScore": "Score",
-		"machineScoreCopy": "PowerScore rates how exciting each game is, live.",
-		"machineSwitch": "Switch",
-		"machineSwitchCopy": "Your tab jumps to the best game automatically.",
 		"liveEmptyTitle": "No Live Games Right Now.",
-		"liveScoreBadge": "PowerScore {score} / 100",
-		"machineAlt": "ArenaSwap watching and scoring every live game",
-		"machineNowWatching": "Now watching",
-		"machineNowOn": "on {service}",
-		"machineCaptions": [
-			"It watches every live game across your leagues",
-			"And scores each one on how exciting it is, live",
-			"Open a game to see exactly why",
-			"Then your tab lands on the best one"
+		"devHeading": "Use It in Your Own Project.",
+		"devCopy": "PowerScore is free on npm. Give it the score, the clock and whatever else your feed knows, and it gives back a number from 0 to 100 with the reasons for it.",
+		"installTitle": "Install It.",
+		"packageManager": "Package manager",
+		"copy": "Copy",
+		"copied": "Copied",
+		"quickTitle": "Score a Game.",
+		"feedTitle": "Start With a Score and a Clock.",
+		"feedCopy": "That's enough for Closeness and Late-game. Each field below switches on more, and you can leave out any you don't have.",
+		"feedGive": "Give it",
+		"feedOn": "And this switches on",
+		"feedRows": [
+			{
+				"give": "The score, the clock and the period",
+				"on": "Closeness and Late-game"
+			},
+			{
+				"give": "A few score snapshots, oldest first",
+				"on": "Momentum, Lead changes and Comeback"
+			},
+			{
+				"give": "Win probability on each poll",
+				"on": "The ±5 win probability swing"
+			},
+			{
+				"give": "Down, distance, field position and possession",
+				"on": "Two-minute drill and red zone"
+			},
+			{
+				"give": "Runners, outs and hits",
+				"on": "Runners on base, go-ahead run and the no-hitter"
+			},
+			{
+				"give": "Power plays and empty nets",
+				"on": "Hockey's scoring chances"
+			},
+			{
+				"give": "Red cards",
+				"on": "The red card boost"
+			},
+			{
+				"give": "The pregame line",
+				"on": "Upset watch"
+			},
+			{
+				"give": "Your fantasy roster",
+				"on": "Fantasy mode"
+			}
 		],
-		"machineSignals": [
-			"Closeness",
-			"Late-game pressure",
-			"Momentum",
-			"Lead changes",
-			"Comeback"
+		"ownFeedTitle": "Bring Your Own Feed.",
+		"ownFeedCopy": "A league it's never heard of gets its sport's defaults. If your league's periods run differently, pass them in with the call.",
+		"docsLinks": [
+			{
+				"title": "Score your first game",
+				"copy": "Install and score one game in a few lines."
+			},
+			{
+				"title": "Score a game from live data",
+				"copy": "Map your feed onto a game and keep history across polls."
+			},
+			{
+				"title": "API reference",
+				"copy": "Every function and constant the package exports."
+			}
 		]
 	},
 	"docDemos": {

@@ -385,9 +385,16 @@
 		"heroSub": "PowerScore 会按精彩程度为任何直播比赛打出 0 到 100 的分数，并随着比赛进程实时更新。从 npm 安装，就能在您自己的项目里为比赛评分。",
 		"viewOnNpm": "在 npm 上查看",
 		"sourceOnGithub": "GitHub 上的源代码",
-		"installHeading": "一条命令即可安装。",
-		"copy": "复制",
-		"copied": "已复制",
+		"whatHeading": "PowerScore 做什么。",
+		"whatCopy": "它读取一场直播比赛，告诉您现在有多值得看，以及为什么。",
+		"whatReads": "它读取",
+		"whatScore": "比分",
+		"whatScoreValue": "{away} {awayScore}，{home} {homeScore}",
+		"whatClock": "比赛时间",
+		"whatClockValue": "第四节，还剩 {clock}",
+		"whatTrail": "比赛如何走到这一步",
+		"whatGivesBack": "它给出",
+		"whatClose": "ArenaSwap 就是这样为您联赛里的每场直播比赛评分的，最快每 {seconds} 秒一次，并把您的标签页切到分数最高的那场。",
 		"signalsHeading": "这个数字由什么构成。",
 		"signalsSub": "五个信号叠加成 0 到 {max} 的分数。胶着的比赛分数攀升，一边倒的比赛分数偏低。",
 		"signalMax": "最高 {max}",
@@ -413,35 +420,154 @@
 				"copy": "落后一方奋起直追，会推高评分。"
 			}
 		],
+		"modesHeading": "由您定义什么叫精彩。",
+		"modesCopy": "在设置里切换模式。",
+		"modesMatchup": "{away} @ {home}",
+		"modesFantasyNote": "您的梦幻阵容里有 {player}。",
+		"boostsHeading": "高光时刻有额外加分。",
+		"boostGroups": [
+			{
+				"sport": "美式橄榄球",
+				"boosts": [
+					{
+						"name": "两分钟进攻",
+						"copy": "比分战平或仅落后一次得分，在半场末段推进。"
+					},
+					{
+						"name": "红区",
+						"copy": "胶着比赛中攻入 20 码线内的一次进攻。第四档分值最高。"
+					}
+				]
+			},
+			{
+				"sport": "棒球和垒球",
+				"boosts": [
+					{
+						"name": "无安打比赛",
+						"copy": "某队从第 6 局起（垒球为第 4 局）仍没有安打。"
+					},
+					{
+						"name": "反超跑者上垒",
+						"copy": "能反超或追平的跑者已经上垒。比赛后段分值更高。"
+					},
+					{
+						"name": "垒上有跑者",
+						"copy": "每有一名跑者上垒就加分，满垒时加得最多。"
+					}
+				]
+			},
+			{
+				"sport": "冰球",
+				"boosts": [
+					{
+						"name": "多打少或撤下门将",
+						"copy": "比赛双方相差不超过两球，或最后 4 分钟撤下门将、空门作战。"
+					}
+				]
+			},
+			{
+				"sport": "足球",
+				"boosts": [
+					{
+						"name": "红牌",
+						"copy": "在比分战平或仅差一球的比赛中，接下来的十分钟。"
+					}
+				]
+			},
+			{
+				"sport": "所有运动",
+				"boosts": [
+					{
+						"name": "爆冷关注",
+						"copy": "赛前不被看好的一方在比赛过半后领先、战平，或落后不超过一个得分回合。"
+					},
+					{
+						"name": "利害关系",
+						"copy": "系列赛生死一线、两支排名球队对决，或赛季末段的争夺。"
+					}
+				]
+			}
+		],
+		"deductionsHeading": "扣分项",
+		"deductions": [
+			{
+				"name": "广告时段",
+				"copy": "比赛处于广告时段时，最多扣 {max}。"
+			},
+			{
+				"name": "胜率",
+				"copy": "双方胜率接近 50/50 时最多加 {max}，一方稳操胜券时最多扣 {max}。"
+			}
+		],
 		"liveHeading": "实时 PowerScore。",
 		"liveLoading": "正在加载实时 PowerScore",
 		"liveError": "目前无法加载实时比赛数据。",
 		"liveNow": "直播中",
-		"machineHeading": "看看它是如何运作的。",
-		"machineSub": "每场直播比赛都有一个 PowerScore，您的标签页会落在最精彩的那场。",
-		"machineWatch": "监控",
-		"machineWatchCopy": "同时监控您关注的每个联赛的所有直播比赛。",
-		"machineScore": "评分",
-		"machineScoreCopy": "PowerScore 会实时评估每场比赛有多精彩。",
-		"machineSwitch": "切换",
-		"machineSwitchCopy": "您的标签页会自动跳转到最精彩的比赛。",
 		"liveEmptyTitle": "目前没有直播比赛。",
-		"liveScoreBadge": "PowerScore {score} / 100",
-		"machineAlt": "ArenaSwap 正在监控并为每场直播比赛评分",
-		"machineNowWatching": "正在观看",
-		"machineNowOn": "位于 {service}",
-		"machineCaptions": [
-			"它会监控您关注联赛的每一场直播比赛",
-			"并实时为每一场比赛的精彩程度评分",
-			"打开一场比赛，即可看到确切原因",
-			"随后您的标签页会落在最精彩的比赛上"
+		"devHeading": "用在您自己的项目里。",
+		"devCopy": "PowerScore 在 npm 上免费提供。给它比分、比赛时间，以及您的数据源知道的其他信息，它就会返回一个 0 到 100 的数字，并附上原因。",
+		"installTitle": "安装它。",
+		"packageManager": "包管理器",
+		"copy": "复制",
+		"copied": "已复制",
+		"quickTitle": "为一场比赛评分。",
+		"feedTitle": "从比分和比赛时间开始。",
+		"feedCopy": "有这些就足够算出胶着程度和比赛后段。下面每个字段都会多启用一部分评分，没有的字段可以省略。",
+		"feedGive": "传入",
+		"feedOn": "随之启用",
+		"feedRows": [
+			{
+				"give": "比分、比赛时间和节次",
+				"on": "胶着程度和比赛后段"
+			},
+			{
+				"give": "几份比分快照，从最早的开始",
+				"on": "势头、领先变化和逆转"
+			},
+			{
+				"give": "每次轮询的胜率",
+				"on": "±5 的胜率波动"
+			},
+			{
+				"give": "档数、码数、场上位置和球权",
+				"on": "两分钟进攻和红区"
+			},
+			{
+				"give": "跑者、出局数和安打",
+				"on": "垒上有跑者、反超跑者和无安打比赛"
+			},
+			{
+				"give": "多打少和空门",
+				"on": "冰球的得分机会"
+			},
+			{
+				"give": "红牌",
+				"on": "红牌加成"
+			},
+			{
+				"give": "赛前盘口",
+				"on": "爆冷关注"
+			},
+			{
+				"give": "您的梦幻阵容",
+				"on": "梦幻模式"
+			}
 		],
-		"machineSignals": [
-			"胶着程度",
-			"比赛后段压力",
-			"势头",
-			"领先变化",
-			"逆转"
+		"ownFeedTitle": "接入您自己的数据源。",
+		"ownFeedCopy": "它没见过的联赛会套用对应运动的默认值。如果您的联赛节次划分不一样，请在调用时一并传入。",
+		"docsLinks": [
+			{
+				"title": "为您的第一场比赛评分",
+				"copy": "安装后，几行代码就能为一场比赛评分。"
+			},
+			{
+				"title": "用实时数据为比赛评分",
+				"copy": "把您的数据源映射成比赛，并在多次轮询之间保留历史。"
+			},
+			{
+				"title": "API 参考",
+				"copy": "该包导出的每个函数和常量。"
+			}
 		]
 	},
 	"docDemos": {

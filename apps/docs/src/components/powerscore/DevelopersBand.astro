@@ -1,0 +1,108 @@
+---
+import { Code } from 'astro:components';
+import { scoreGame } from 'powerscore';
+import { currentLocale, useTranslations } from '../../i18n/ui';
+import { localePath } from '../../i18n/locales';
+import InstallCommands from './InstallCommands.astro';
+import { quickStartGame } from './demoGames';
+
+const locale = currentLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+
+const quickStartResult = scoreGame(quickStartGame);
+const { homeTeam, awayTeam } = quickStartGame;
+
+const quickStart = `import { scoreGame } from 'powerscore';
+
+const score = scoreGame({
+	id: '${quickStartGame.id}',
+	league: '${quickStartGame.league}',
+	sportType: '${quickStartGame.sportType}',
+	status: '${quickStartGame.status}',
+	homeTeam: { nickname: '${homeTeam.nickname}', score: ${homeTeam.score} },
+	awayTeam: { nickname: '${awayTeam.nickname}', score: ${awayTeam.score} },
+	period: ${quickStartGame.period},
+	clockSeconds: ${quickStartGame.clockSeconds},
+});
+
+score.total;  // ${quickStartResult.total}
+score.reason; // "${quickStartResult.reason}"`;
+
+const anyFeed = `import { scoreGame, type Game } from 'powerscore';
+
+const fromRink = (row: BeerLeagueRow): Game<string> => ({
+	id: row.rink,
+	league: 'tuesday-d-league',
+	sportType: 'hockey',
+	status: 'in',
+	homeTeam: { score: row.home },
+	awayTeam: { score: row.away },
+	period: row.frame,
+	clockSeconds: row.minutesLeft * 60,
+});
+
+const score = scoreGame(fromRink(row), {}, {
+	league: { regularPeriods: 3, periodDurationSecs: 15 * 60 },
+});`;
+
+const codeThemes = { light: 'github-light', dark: 'vitesse-black' } as const;
+
+const docsSlugs = ['getting-started', 'scoring-a-game', 'api-reference'];
+const docsLinks = t.list<{ title: string; copy: string }>('powerscore.docsLinks').map((link, index) => ({
+	...link,
+	href: localePath(locale, `docs/powerscore/${docsSlugs[index]}/`),
+}));
+const feedRows = t.list<{ give: string; on: string }>('powerscore.feedRows');
+---
+<section id='developers' class='band ps-dev'>
+	<div class='container'>
+		<div class='band-head'>
+			<h2 class='display-md'>{t('powerscore.devHeading')}</h2>
+			<p class='band-copy'>{t('powerscore.devCopy')}</p>
+		</div>
+
+		<div class='ps-dev-grid'>
+			<div>
+				<h3 class='ps-dev-title'>{t('powerscore.installTitle')}</h3>
+				<InstallCommands />
+			</div>
+			<div>
+				<h3 class='ps-dev-title'>{t('powerscore.quickTitle')}</h3>
+				<Code code={quickStart} lang='ts' themes={codeThemes} defaultColor={false} class='ps-code' />
+			</div>
+		</div>
+
+		<div class='ps-dev-grid ps-dev-grid-even'>
+			<div>
+				<h3 class='ps-dev-title'>{t('powerscore.feedTitle')}</h3>
+				<p class='ps-dev-copy'>{t('powerscore.feedCopy')}</p>
+				<table class='ps-feed'>
+					<thead><tr><th scope='col'>{t('powerscore.feedGive')}</th><th scope='col'>{t('powerscore.feedOn')}</th></tr></thead>
+					<tbody>
+						{feedRows.map(row => <tr><td>{row.give}</td><td>{row.on}</td></tr>)}
+					</tbody>
+				</table>
+			</div>
+			<div>
+				<h3 class='ps-dev-title'>{t('powerscore.ownFeedTitle')}</h3>
+				<p class='ps-dev-copy'>{t('powerscore.ownFeedCopy')}</p>
+				<Code code={anyFeed} lang='ts' themes={codeThemes} defaultColor={false} class='ps-code' />
+			</div>
+		</div>
+
+		<div class='ps-docs'>
+			<ul class='ps-docs-list'>
+				{docsLinks.map(link => (
+					<li>
+						<a href={link.href}><span>{link.title}</span><i class='bi bi-arrow-right' aria-hidden='true'></i></a>
+						<p>{link.copy}</p>
+					</li>
+				))}
+			</ul>
+			<div class='hero-actions'>
+				<a href='https://www.npmjs.com/package/powerscore' target='_blank' rel='noreferrer' class='btn btn-cta'><i class='bi bi-box-arrow-up-right me-3'></i>{t('powerscore.viewOnNpm')}</a>
+				<a href='https://github.com/hiteacheryouare/arenaswap/tree/dev/packages/powerscore' target='_blank' rel='noreferrer' class='btn btn-outline-secondary-custom'><i class='bi bi-github me-3'></i>{t('powerscore.sourceOnGithub')}</a>
+			</div>
+		</div>
+	</div>
+</section>

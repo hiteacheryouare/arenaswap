@@ -104,7 +104,7 @@ describe('the live PowerScore board', () => {
 
 		cy.get('#live-scores .ps-score-bar-fill').should('have.length.at.least', 1);
 
-		cy.get('#live-scores .feature-card').then($cards => {
+		cy.get('#live-scores .ps-live-row').then($cards => {
 			const scores = [...$cards].map(card => {
 				const width = (card.querySelector('.ps-score-bar-fill') as HTMLElement | null)?.style.width ?? '';
 				return Number.parseFloat(width);
@@ -127,7 +127,7 @@ describe('the live PowerScore board', () => {
 		cy.wait('@scoreboard');
 
 		cy.get('#live-scores .feature-card').should('have.length', 1);
-		cy.get('#live-scores .ps-score-bar-fill').should('not.exist');
+		cy.get('#live-scores .ps-live-row').should('not.exist');
 		cy.get('#live-scores .alert').should('not.exist');
 		cy.get('#live-scores .feature-card').invoke('text').should('not.be.empty');
 	});
@@ -183,9 +183,7 @@ describe('the package install commands', () => {
 	it('shows the command for the package manager you picked', () => {
 		cy.intercept('GET', espnScoreboard, { body: { events: [] } });
 		cy.visit('/powerscore/');
-		cy.contains('h2', /./).should('exist');
-		cy.get('.btn-cta').contains('npm').scrollIntoView();
-		cy.get('astro-island[component-url*="PowerScoreInstallCommands"]').should('not.have.attr', 'ssr');
+		cy.get('#developers').scrollIntoView();
 
 		cy.contains('code', 'npm install powerscore').should('be.visible');
 
@@ -207,8 +205,7 @@ describe('the package install commands', () => {
 			},
 		});
 
-		cy.get('.btn-cta').contains('npm').scrollIntoView();
-		cy.get('astro-island[component-url*="PowerScoreInstallCommands"]').should('not.have.attr', 'ssr');
+		cy.get('#developers').scrollIntoView();
 		cy.contains('button', 'yarn').click();
 		cy.contains('code', 'yarn add powerscore').should('be.visible');
 		cy.contains('code', 'yarn add powerscore').parent().find('button').click();

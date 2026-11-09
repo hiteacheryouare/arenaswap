@@ -1,0 +1,48 @@
+---
+import { pollMinEagerMs } from '@arenaswap/core/constants';
+import { currentLocale, useTranslations } from '../../i18n/ui';
+import { demoGame, nailBiter, reasonIn, recentScoring, scoreDemo, scoreline } from './demoGames';
+import { momentLabels } from './demoMoment';
+
+const locale = currentLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+
+const score = scoreDemo(nailBiter);
+const { away, home } = scoreline(nailBiter);
+const { clock } = momentLabels(demoGame(nailBiter), locale);
+const trail = recentScoring(nailBiter, 6);
+---
+<section class='band'>
+	<div class='container'>
+		<div class='band-head'>
+			<h2 class='display-md'>{t('powerscore.whatHeading')}</h2>
+			<p class='band-copy'>{t('powerscore.whatCopy')}</p>
+		</div>
+		<div class='ps-io'>
+			<div>
+				<h3>{t('powerscore.whatReads')}</h3>
+				<dl class='ps-io-inputs'>
+					<div>
+						<dt>{t('powerscore.whatScore')}</dt>
+						<dd>{t('powerscore.whatScoreValue', { away: nailBiter.away.nickname, awayScore: away, home: nailBiter.home.nickname, homeScore: home })}</dd>
+					</div>
+					<div>
+						<dt>{t('powerscore.whatClock')}</dt>
+						<dd>{t('powerscore.whatClockValue', { clock })}</dd>
+					</div>
+					<div>
+						<dt>{t('powerscore.whatTrail')}</dt>
+						<dd class='ps-io-trail'>{trail.map(entry => <span>{entry.away}–{entry.home}</span>)}</dd>
+					</div>
+				</dl>
+			</div>
+			<i class='bi bi-arrow-right ps-io-arrow' aria-hidden='true'></i>
+			<div>
+				<h3>{t('powerscore.whatGivesBack')}</h3>
+				<div class='ps-total'><span class='ps-number ps-number-xl'>{score.total}</span><span class='ps-out-of'>/100</span></div>
+				<p class='ps-io-reason'>{reasonIn(score, locale)}</p>
+			</div>
+		</div>
+		<p class='ps-io-close'>{t('powerscore.whatClose', { seconds: pollMinEagerMs / 1000 })}</p>
+	</div>
+</section>

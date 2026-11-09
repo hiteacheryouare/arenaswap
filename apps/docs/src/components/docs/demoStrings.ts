@@ -18,6 +18,8 @@ const flatten = (node: unknown, prefix = '', into: Record<string, string> = {}) 
 	return into;
 };
 
+export const extensionString = (locale: LocaleCode, key: string) => lookup(bundleFor(locale), key);
+
 export type DemoStringKey = string;
 
 export type DemoTranslator = (key: DemoStringKey, subs?: Record<string, string | number>) => string;

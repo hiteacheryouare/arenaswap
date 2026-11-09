@@ -1,0 +1,83 @@
+---
+import { currentLocale, useTranslations } from '../../i18n/ui';
+
+const t = useTranslations(currentLocale(Astro.currentLocale));
+
+// League abbreviations, so the rotation is the same twelve tokens everywhere. The word the
+// rotation lands on is translated; the abbreviations are not, because a league is called what it
+// is called.
+const supportedLeagues = ['NFL', 'MLB', 'NHL', 'NBA', 'NCAAF', 'NCAAB', 'NCAAW', 'MLS', 'EPL', 'FIFAWC', 'NCAAMH', 'WNBA'];
+
+// The token rotates through the league abbreviations and then lands on the word for a score, and
+// the tail after it changes when it does: in English " score." becomes "." because the word is
+// now in the slot. Four separate strings rather than one template with a hole in it, so a language
+// can put its own words on either side of the token and change both when the rotation settles.
+const taglinePrefix = t('powerscore.heroTaglinePrefix');
+const taglineSuffix = t('powerscore.heroTaglineSuffix');
+---
+<section class='band band-hero band-centred ps-hero'>
+	<div class='glow' aria-hidden='true'></div>
+	<div class='container'>
+		<h1 class='display-xl ps-hero-heading'>
+			<span class='visually-hidden'>{taglinePrefix}{t('powerscore.heroRestingToken')}{t('powerscore.heroRestingSuffix')}</span>
+			<span aria-hidden='true'>{taglinePrefix}<span class='ps-rotating-phrase'><span id='ps-rotating-token' class='ps-rotating-token'>{supportedLeagues[0]}</span><span id='ps-rotating-suffix'>{taglineSuffix}</span></span></span>
+		</h1>
+		<p class='band-lede'>{t('powerscore.heroSub')}</p>
+		<div class='hero-actions'>
+			<a href='https://www.npmjs.com/package/powerscore' target='_blank' rel='noreferrer' class='btn btn-cta'>
+				<i class='bi bi-box-arrow-up-right me-3'></i>{t('powerscore.viewOnNpm')}
+			</a>
+			<a href='https://github.com/hiteacheryouare/arenaswap/tree/dev/packages/powerscore' target='_blank' rel='noreferrer' class='btn btn-outline-secondary-custom'>
+				<i class='bi bi-github me-3'></i>{t('powerscore.sourceOnGithub')}
+			</a>
+		</div>
+	</div>
+</section>
+
+<script define:vars={{ supportedLeagues, restingToken: t('powerscore.heroRestingToken'), restingSuffix: t('powerscore.heroRestingSuffix') }}>
+	const psSupportedLeagues = supportedLeagues;
+	const rotatingTokenEl = document.getElementById('ps-rotating-token');
+	const rotatingSuffixEl = document.getElementById('ps-rotating-suffix');
+	const fadeDurationMs = 240;
+	const displayDurationMs = 1200;
+
+	if (rotatingTokenEl && rotatingSuffixEl && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		rotatingTokenEl.textContent = restingToken;
+		rotatingSuffixEl.textContent = restingSuffix;
+	} else if (rotatingTokenEl && rotatingSuffixEl && psSupportedLeagues.length > 0) {
+		let index = 0;
+		rotatingTokenEl.textContent = psSupportedLeagues[index];
+
+		const rotate = () => {
+			index += 1;
+
+			if (index >= psSupportedLeagues.length) {
+				rotatingTokenEl.classList.add('is-exiting');
+				window.setTimeout(() => {
+					rotatingTokenEl.textContent = restingToken;
+					rotatingTokenEl.classList.remove('is-exiting');
+					rotatingTokenEl.classList.add('is-entering');
+					rotatingSuffixEl.textContent = restingSuffix;
+					window.setTimeout(() => {
+						rotatingTokenEl.classList.remove('is-entering');
+					}, fadeDurationMs);
+				}, fadeDurationMs);
+				return;
+			}
+
+			rotatingTokenEl.classList.add('is-exiting');
+			window.setTimeout(() => {
+				rotatingTokenEl.textContent = psSupportedLeagues[index];
+				rotatingTokenEl.classList.remove('is-exiting');
+				rotatingTokenEl.classList.add('is-entering');
+				window.setTimeout(() => {
+					rotatingTokenEl.classList.remove('is-entering');
+				}, fadeDurationMs);
+			}, fadeDurationMs);
+
+			window.setTimeout(rotate, displayDurationMs + fadeDurationMs);
+		};
+
+		window.setTimeout(rotate, displayDurationMs + fadeDurationMs);
+	}
+</script>

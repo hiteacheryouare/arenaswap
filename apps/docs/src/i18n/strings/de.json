@@ -385,9 +385,16 @@
 		"heroSub": "PowerScore bewertet jedes Live-Spiel von 0 bis 100 danach, wie spannend es ist, und hält mit dem Spielgeschehen Schritt. Installiere es über npm und bewerte Spiele in deinem eigenen Projekt.",
 		"viewOnNpm": "Auf npm ansehen",
 		"sourceOnGithub": "Quellcode auf GitHub",
-		"installHeading": "Installation mit einem Befehl.",
-		"copy": "Kopieren",
-		"copied": "Kopiert",
+		"whatHeading": "Was PowerScore macht.",
+		"whatCopy": "Es liest ein Live-Spiel und sagt dir, wie sehenswert es gerade ist, und warum.",
+		"whatReads": "Es liest",
+		"whatScore": "Der Spielstand",
+		"whatScoreValue": "{away} {awayScore}, {home} {homeScore}",
+		"whatClock": "Die Uhr",
+		"whatClockValue": "4. Viertel, noch {clock}",
+		"whatTrail": "Wie es dazu kam",
+		"whatGivesBack": "Es gibt zurück",
+		"whatClose": "ArenaSwap bewertet auf diese Weise jedes Live-Spiel in deinen Ligen, so oft wie alle {seconds} Sekunden, und stellt deinen Tab auf das höchste.",
 		"signalsHeading": "Was in die Zahl einfließt.",
 		"signalsSub": "Fünf Signale ergeben einen Wert von 0 bis {max}. Ein enges Spiel steigt, ein Kantersieg bleibt niedrig.",
 		"signalMax": "max. {max}",
@@ -413,35 +420,154 @@
 				"copy": "Ein zurückliegendes Team, das sich zurückkämpft, erhöht den Wert."
 			}
 		],
+		"modesHeading": "Du entscheidest, was spannend heißt.",
+		"modesCopy": "Wechsle den Modus in den Einstellungen.",
+		"modesMatchup": "{away} bei {home}",
+		"modesFantasyNote": "Mit {player} in deinem Kader.",
+		"boostsHeading": "Große Momente bringen Extrapunkte.",
+		"boostGroups": [
+			{
+				"sport": "American Football",
+				"boosts": [
+					{
+						"name": "Two-Minute-Drill",
+						"copy": "Gleichstand oder ein Score Rückstand, Drive spät in der Hälfte."
+					},
+					{
+						"name": "Red Zone",
+						"copy": "Ein Drive innerhalb der 20 in einem engen Spiel. Beim vierten Down zählt er am meisten."
+					}
+				]
+			},
+			{
+				"sport": "Baseball und Softball",
+				"boosts": [
+					{
+						"name": "No-Hitter",
+						"copy": "Ein Team ohne Hit ab dem 6. Inning (im Softball ab dem 4.)."
+					},
+					{
+						"name": "Go-ahead-Run auf Base",
+						"copy": "Der Läufer zur Führung oder zum Ausgleich steht auf Base. In den späten Innings zählt das mehr."
+					},
+					{
+						"name": "Läufer auf Base",
+						"copy": "Jeder Läufer bringt Punkte, bei voll besetzten Bases gibt es die meisten."
+					}
+				]
+			},
+			{
+				"sport": "Eishockey",
+				"boosts": [
+					{
+						"name": "Powerplay oder Torwart vom Eis",
+						"copy": "In einem Spiel mit höchstens zwei Toren Unterschied oder bei leerem Tor in den letzten 4 Minuten."
+					}
+				]
+			},
+			{
+				"sport": "Fußball",
+				"boosts": [
+					{
+						"name": "Rote Karte",
+						"copy": "Bei Gleichstand oder einem Tor Unterschied, für die nächsten zehn Minuten."
+					}
+				]
+			},
+			{
+				"sport": "Alle Sportarten",
+				"boosts": [
+					{
+						"name": "Sensations-Alarm",
+						"copy": "Der Außenseiter führt, liegt gleichauf oder ist nach der Hälfte höchstens einen Score zurück."
+					},
+					{
+						"name": "Einsatz",
+						"copy": "Eine Serie auf der Kippe, zwei gerankte Teams oder ein Rennen am Saisonende."
+					}
+				]
+			}
+		],
+		"deductionsHeading": "Punktabzug",
+		"deductions": [
+			{
+				"name": "Werbepause",
+				"copy": "Bis zu {max} Abzug, solange das Spiel in einer Werbepause ist."
+			},
+			{
+				"name": "Siegwahrscheinlichkeit",
+				"copy": "Bis zu {max} Plus, wenn die Siegchancen nah bei 50/50 bleiben, bis zu {max} Abzug, wenn ein Team als sicherer Sieger gilt."
+			}
+		],
 		"liveHeading": "Live-PowerScores.",
 		"liveLoading": "Live-PowerScores werden geladen",
 		"liveError": "Live-Spieldaten können gerade nicht geladen werden.",
 		"liveNow": "Live",
-		"machineHeading": "Sieh es in Aktion.",
-		"machineSub": "Jedes Live-Spiel bekommt einen PowerScore, und dein Tab landet beim besten.",
-		"machineWatch": "Beobachten",
-		"machineWatchCopy": "Jedes Live-Spiel in jeder Liga, der du folgst, gleichzeitig.",
-		"machineScore": "Bewerten",
-		"machineScoreCopy": "PowerScore bewertet live, wie spannend jedes Spiel ist.",
-		"machineSwitch": "Wechseln",
-		"machineSwitchCopy": "Dein Tab springt automatisch zum besten Spiel.",
 		"liveEmptyTitle": "Gerade keine Live-Spiele.",
-		"liveScoreBadge": "PowerScore {score} / 100",
-		"machineAlt": "ArenaSwap beobachtet und bewertet jedes Live-Spiel",
-		"machineNowWatching": "Schaut gerade",
-		"machineNowOn": "auf {service}",
-		"machineCaptions": [
-			"Es beobachtet jedes Live-Spiel in deinen Ligen",
-			"Und bewertet live, wie spannend jedes einzelne ist",
-			"Öffne ein Spiel, um genau zu sehen, warum",
-			"Dann landet dein Tab beim besten"
+		"devHeading": "Nutze es in deinem eigenen Projekt.",
+		"devCopy": "PowerScore ist kostenlos auf npm. Gib ihm den Spielstand, die Uhr und alles, was dein Feed sonst noch weiß, und du bekommst eine Zahl von 0 bis 100 samt Begründung zurück.",
+		"installTitle": "Installieren.",
+		"packageManager": "Paketmanager",
+		"copy": "Kopieren",
+		"copied": "Kopiert",
+		"quickTitle": "Bewerte ein Spiel.",
+		"feedTitle": "Fang mit Spielstand und Uhr an.",
+		"feedCopy": "Das reicht für Enge und Schlussphase. Jedes Feld unten schaltet mehr frei, und Felder, die du nicht hast, kannst du weglassen.",
+		"feedGive": "Du gibst",
+		"feedOn": "Und das schaltet sich zu",
+		"feedRows": [
+			{
+				"give": "Spielstand, Uhr und Spielabschnitt",
+				"on": "Enge und Schlussphase"
+			},
+			{
+				"give": "Ein paar Spielstand-Momentaufnahmen, die älteste zuerst",
+				"on": "Momentum, Führungswechsel und Aufholjagd"
+			},
+			{
+				"give": "Siegwahrscheinlichkeit bei jeder Abfrage",
+				"on": "Den ±5-Ausschlag der Siegwahrscheinlichkeit"
+			},
+			{
+				"give": "Down, Distanz, Feldposition und Ballbesitz",
+				"on": "Two-Minute-Drill und Red Zone"
+			},
+			{
+				"give": "Läufer, Outs und Hits",
+				"on": "Läufer auf Base, Go-ahead-Run und den No-Hitter"
+			},
+			{
+				"give": "Powerplays und leere Tore",
+				"on": "Die Torchancen im Eishockey"
+			},
+			{
+				"give": "Rote Karten",
+				"on": "Den Boost für die Rote Karte"
+			},
+			{
+				"give": "Die Vorabquote",
+				"on": "Sensations-Alarm"
+			},
+			{
+				"give": "Deinen Fantasy-Kader",
+				"on": "Fantasy-Modus"
+			}
 		],
-		"machineSignals": [
-			"Enge",
-			"Druck in der Schlussphase",
-			"Momentum",
-			"Führungswechsel",
-			"Aufholjagd"
+		"ownFeedTitle": "Bring deinen eigenen Feed mit.",
+		"ownFeedCopy": "Eine Liga, die es nicht kennt, bekommt die Standardwerte ihrer Sportart. Laufen die Spielabschnitte deiner Liga anders, gib sie beim Aufruf mit an.",
+		"docsLinks": [
+			{
+				"title": "Bewerte dein erstes Spiel",
+				"copy": "Installiere es und bewerte ein Spiel in wenigen Zeilen."
+			},
+			{
+				"title": "Bewerte ein Spiel aus Live-Daten",
+				"copy": "Bilde deinen Feed auf ein Spiel ab und behalte den Verlauf über mehrere Abfragen."
+			},
+			{
+				"title": "API-Referenz",
+				"copy": "Jede Funktion und jede Konstante, die das Paket exportiert."
+			}
 		]
 	},
 	"docDemos": {

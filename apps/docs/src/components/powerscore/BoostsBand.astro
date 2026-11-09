@@ -1,0 +1,87 @@
+---
+import {
+	boostBucketCaps,
+	breakPenalty,
+	goAheadRunTunables,
+	redZoneDownMultipliers,
+	scoreWinProbVarianceMax,
+	scoringOpportunityBaseRunnerBoosts,
+	scoringOpportunityRedZoneBoost,
+	stakesTunables,
+	twoMinuteDrillTunables,
+	upsetTunables,
+} from 'powerscore';
+import { currentLocale, useTranslations } from '../../i18n/ui';
+
+const t = useTranslations(currentLocale(Astro.currentLocale));
+
+interface Group {
+	sport: string;
+	boosts: { name: string; copy: string }[];
+}
+
+// Each boost's own ceiling, read by position against `powerscore.boostGroups`. Hockey's power play
+// and pulled goalie can both pay at once, which runs past the moment cap they share.
+const moment = boostBucketCaps.moment;
+const redZoneMax = Math.round(scoringOpportunityRedZoneBoost * redZoneDownMultipliers.fourthDownGoalToGo);
+const runnersMax = scoringOpportunityBaseRunnerBoosts.at(-1)!;
+// A red card in a tied game pays 10, and a second one half again; the package keeps the 10 inside
+// the boost.
+const redCardMax = 15;
+const goAheadRunMax = goAheadRunTunables.goAhead * goAheadRunTunables.lastChanceFactor;
+const maximums = [
+	[twoMinuteDrillTunables.max, redZoneMax],
+	[boostBucketCaps.noHitter, goAheadRunMax, runnersMax],
+	[moment],
+	[redCardMax],
+	[upsetTunables.max, stakesTunables.max],
+];
+
+const groups = t.list<Group>('powerscore.boostGroups').map((group, groupIndex) => ({
+	...group,
+	boosts: group.boosts.map((boost, index) => ({ ...boost, max: `+${maximums[groupIndex][index]}` })),
+}));
+
+const deductionMaximums = [breakPenalty, scoreWinProbVarianceMax];
+const deductions = t.list<{ name: string; copy: string }>('powerscore.deductions').map((item, index) => ({
+	name: item.name,
+	copy: item.copy.split('{max}').join(String(deductionMaximums[index])),
+	max: index === 0 ? `−${breakPenalty}` : `±${scoreWinProbVarianceMax}`,
+}));
+
+---
+<section class='band'>
+	<div class='container'>
+		<div class='band-head'>
+			<h2 class='display-md'>{t('powerscore.boostsHeading')}</h2>
+		</div>
+		<div class='ps-boosts'>
+			{groups.map(group => (
+				<div class='ps-boost-group'>
+					<h3>{group.sport}</h3>
+					<ul>
+						{group.boosts.map(boost => (
+							<li>
+								<span class='ps-boost-name'>{boost.name}</span>
+								<span class='ps-boost-max'>{boost.max}</span>
+								<p>{boost.copy}</p>
+							</li>
+						))}
+					</ul>
+				</div>
+			))}
+			<div class='ps-boost-group'>
+				<h3>{t('powerscore.deductionsHeading')}</h3>
+				<ul>
+					{deductions.map(item => (
+						<li>
+							<span class='ps-boost-name'>{item.name}</span>
+							<span class='ps-boost-max'>{item.max}</span>
+							<p>{item.copy}</p>
+						</li>
+					))}
+				</ul>
+			</div>
+		</div>
+	</div>
+</section>

@@ -385,9 +385,16 @@
 		"heroSub": "Nire-rate ng PowerScore ang kahit anong live game mula 0 hanggang 100 kung gaano ito ka-exciting, at sumasabay ito habang umuusad ang laro. I-install mula sa npm at mag-score ng mga laro sa sarili mong project.",
 		"viewOnNpm": "Tingnan sa npm",
 		"sourceOnGithub": "Source sa GitHub",
-		"installHeading": "I-install gamit ang isang command.",
-		"copy": "Kopyahin",
-		"copied": "Nakopya",
+		"whatHeading": "Ano ang ginagawa ng PowerScore.",
+		"whatCopy": "Binabasa nito ang isang live game at sinasabi kung gaano ito ka-worth panoorin ngayon, at kung bakit.",
+		"whatReads": "Binabasa nito",
+		"whatScore": "Ang score",
+		"whatScoreValue": "{away} {awayScore}, {home} {homeScore}",
+		"whatClock": "Ang clock",
+		"whatClockValue": "4th quarter, {clock} na lang",
+		"whatTrail": "Paano ito nakarating doon",
+		"whatGivesBack": "Ibinibigay nito",
+		"whatClose": "Ganito ini-score ng ArenaSwap ang bawat live game sa mga liga mo, kasing-dalas ng kada {seconds} segundo, at inilalagay ang tab mo sa pinakamataas.",
 		"signalsHeading": "Ano ang bumubuo sa numero.",
 		"signalsSub": "Limang signal ang nagsasama-sama para maging score na 0 hanggang {max}. Aakyat ang dikitang laro, mananatiling mababa ang blowout.",
 		"signalMax": "{max} max",
@@ -413,35 +420,154 @@
 				"copy": "Ang isang team na nasa likod na bumabawi ay nagpapataas ng score."
 			}
 		],
+		"modesHeading": "Ikaw ang pumili kung ano ang exciting.",
+		"modesCopy": "Palitan ang mode sa Settings.",
+		"modesMatchup": "{away} sa {home}",
+		"modesFantasyNote": "Kasama si {player} sa roster mo.",
+		"boostsHeading": "May dagdag na puntos ang malalaking sandali.",
+		"boostGroups": [
+			{
+				"sport": "Football",
+				"boosts": [
+					{
+						"name": "Two-minute drill",
+						"copy": "Tabla o isang score ang habol, umaatake sa huling bahagi ng half."
+					},
+					{
+						"name": "Red zone",
+						"copy": "Drive sa loob ng 20 yarda sa dikit na laro. Pinakamalaki ang halaga ng ikaapat na down."
+					}
+				]
+			},
+			{
+				"sport": "Baseball at softball",
+				"boosts": [
+					{
+						"name": "No-hitter",
+						"copy": "Isang team na walang hit mula sa ika-6 na inning (ika-4 sa softball)."
+					},
+					{
+						"name": "Go-ahead run sa base",
+						"copy": "Nasa base ang runner na magbibigay ng lamang o tabla. Mas mataas ang halaga nito sa mga huling inning."
+					},
+					{
+						"name": "Mga runner sa base",
+						"copy": "Bawat runner ay nagdadagdag ng puntos, at pinakamarami kapag puno ang base."
+					}
+				]
+			},
+			{
+				"sport": "Hockey",
+				"boosts": [
+					{
+						"name": "Power play o inalis na goalie",
+						"copy": "Sa larong hindi hihigit sa dalawang goal ang agwat, o walang goalie sa huling 4 na minuto."
+					}
+				]
+			},
+			{
+				"sport": "Soccer",
+				"boosts": [
+					{
+						"name": "Red card",
+						"copy": "Sa larong tabla o isang goal lang ang agwat, sa susunod na sampung minuto."
+					}
+				]
+			},
+			{
+				"sport": "Lahat ng sport",
+				"boosts": [
+					{
+						"name": "Upset watch",
+						"copy": "Nangunguna ang underdog, tabla, o isang score lang ang layo pagkalampas ng kalagitnaan."
+					},
+					{
+						"name": "Stakes",
+						"copy": "Seryeng nasa bingit, dalawang ranked na team, o karera sa huling bahagi ng season."
+					}
+				]
+			}
+		],
+		"deductionsHeading": "Bawas na puntos",
+		"deductions": [
+			{
+				"name": "Commercial break",
+				"copy": "Hanggang {max} ang bawas habang nasa commercial break ang laro."
+			},
+			{
+				"name": "Win probability",
+				"copy": "Hanggang {max} dagdag kapag nananatiling halos 50/50 ang tsansa, hanggang {max} bawas kapag panalo na ang isang team."
+			}
+		],
 		"liveHeading": "Live na PowerScore.",
 		"liveLoading": "Nilo-load ang live na PowerScore",
 		"liveError": "Hindi ma-load ang live game data sa ngayon.",
 		"liveNow": "Live",
-		"machineHeading": "Panoorin itong gumana.",
-		"machineSub": "Bawat live game ay may PowerScore, at sa pinakamagaling lumalapag ang tab mo.",
-		"machineWatch": "Panoorin",
-		"machineWatchCopy": "Lahat ng live na laro sa bawat liga na sinusundan mo, sabay-sabay.",
-		"machineScore": "I-score",
-		"machineScoreCopy": "Sinusukat ng PowerScore, live, kung gaano ka-exciting ang bawat laro.",
-		"machineSwitch": "Lumipat",
-		"machineSwitchCopy": "Awtomatikong tumatalon ang tab mo papunta sa pinakamagandang laro.",
 		"liveEmptyTitle": "Walang live na laro sa ngayon.",
-		"liveScoreBadge": "PowerScore {score} / 100",
-		"machineAlt": "Ang ArenaSwap habang nanonood at nagbibigay ng score sa bawat live na laro",
-		"machineNowWatching": "Pinapanood ngayon",
-		"machineNowOn": "sa {service}",
-		"machineCaptions": [
-			"Binabantayan nito ang bawat live na laro sa mga liga mo",
-			"At binibigyan ng score ang bawat isa kung gaano ito ka-exciting, live",
-			"Buksan ang isang laro para makita mismo kung bakit",
-			"Tapos ang tab mo ay dadapo sa pinakamaganda"
+		"devHeading": "Gamitin ito sa sarili mong project.",
+		"devCopy": "Libre ang PowerScore sa npm. Ibigay mo ang score, ang clock at kahit anong alam pa ng feed mo, at magbibigay ito ng numero mula 0 hanggang 100 kasama ang mga dahilan.",
+		"installTitle": "I-install ito.",
+		"packageManager": "Package manager",
+		"copy": "Kopyahin",
+		"copied": "Nakopya",
+		"quickTitle": "Mag-score ng laro.",
+		"feedTitle": "Magsimula sa score at clock.",
+		"feedCopy": "Sapat na ito para sa Closeness at Late Game. Bawat field sa ibaba ay may binubuksang dagdag, at puwede mong iwan ang mga wala ka.",
+		"feedGive": "Ibigay mo",
+		"feedOn": "At ito ang bubukas",
+		"feedRows": [
+			{
+				"give": "Ang score, ang clock at ang period",
+				"on": "Closeness at Late Game"
+			},
+			{
+				"give": "Ilang score snapshot, pinakaluma muna",
+				"on": "Momentum, Lead Changes at Comeback"
+			},
+			{
+				"give": "Win probability sa bawat poll",
+				"on": "Ang ±5 na swing ng win probability"
+			},
+			{
+				"give": "Down, distance, posisyon sa field at possession",
+				"on": "Two-minute drill at red zone"
+			},
+			{
+				"give": "Mga runner, out at hit",
+				"on": "Mga runner sa base, go-ahead run at ang no-hitter"
+			},
+			{
+				"give": "Mga power play at empty net",
+				"on": "Mga scoring chance sa hockey"
+			},
+			{
+				"give": "Mga red card",
+				"on": "Ang red card boost"
+			},
+			{
+				"give": "Ang pregame line",
+				"on": "Upset watch"
+			},
+			{
+				"give": "Ang fantasy roster mo",
+				"on": "Fantasy mode"
+			}
 		],
-		"machineSignals": [
-			"Closeness",
-			"Late-Game Pressure",
-			"Momentum",
-			"Lead Changes",
-			"Comeback"
+		"ownFeedTitle": "Dalhin ang sarili mong feed.",
+		"ownFeedCopy": "Ang ligang hindi pa nito nakikilala ay gagamit ng default ng sport nito. Kung iba ang pagkakahati ng mga period sa liga mo, ipasa mo ito sa call.",
+		"docsLinks": [
+			{
+				"title": "I-score ang una mong laro",
+				"copy": "Mag-install at mag-score ng isang laro sa ilang linya."
+			},
+			{
+				"title": "Mag-score ng laro mula sa live data",
+				"copy": "I-map ang feed mo sa isang laro at itago ang history sa bawat poll."
+			},
+			{
+				"title": "API reference",
+				"copy": "Bawat function at constant na ine-export ng package."
+			}
 		]
 	},
 	"docDemos": {

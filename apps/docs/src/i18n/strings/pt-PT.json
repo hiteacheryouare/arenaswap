@@ -385,9 +385,16 @@
 		"heroSub": "O PowerScore avalia qualquer jogo em direto de 0 a 100 pelo quão emocionante é e acompanha o jogo à medida que avança. Instala-o a partir do npm e pontua jogos no teu próprio projeto.",
 		"viewOnNpm": "Ver no npm",
 		"sourceOnGithub": "Código-fonte no GitHub",
-		"installHeading": "Instala com um comando.",
-		"copy": "Copiar",
-		"copied": "Copiado",
+		"whatHeading": "O que o PowerScore faz.",
+		"whatCopy": "Lê um jogo em direto e diz-te quanto vale a pena vê-lo agora, e porquê.",
+		"whatReads": "O que lê",
+		"whatScore": "O marcador",
+		"whatScoreValue": "{away} {awayScore}, {home} {homeScore}",
+		"whatClock": "O cronómetro",
+		"whatClockValue": "4.º quarto, faltam {clock}",
+		"whatTrail": "Como o jogo chegou até aqui",
+		"whatGivesBack": "O que devolve",
+		"whatClose": "O ArenaSwap pontua assim todos os jogos em direto das tuas ligas, até a cada {seconds} segundos, e leva o teu separador para o mais alto.",
 		"signalsHeading": "O que compõe o número.",
 		"signalsSub": "Cinco sinais somam-se numa pontuação de 0 a {max}. Um jogo equilibrado sobe, uma goleada fica baixa.",
 		"signalMax": "{max} máx.",
@@ -413,35 +420,154 @@
 				"copy": "Uma equipa que está a perder e recupera terreno faz subir a pontuação."
 			}
 		],
+		"modesHeading": "Escolhe o que é emocionante.",
+		"modesCopy": "Muda de modo nas Definições.",
+		"modesMatchup": "{away} @ {home}",
+		"modesFantasyNote": "Com {player} na tua equipa de fantasy.",
+		"boostsHeading": "Grandes momentos valem pontos extra.",
+		"boostGroups": [
+			{
+				"sport": "Futebol americano",
+				"boosts": [
+					{
+						"name": "Ataque de dois minutos",
+						"copy": "Empatado ou a perder por um lance de pontuação, a avançar no fim da parte."
+					},
+					{
+						"name": "Red zone",
+						"copy": "Um ataque dentro das 20 jardas num jogo equilibrado. O quarto down vale mais."
+					}
+				]
+			},
+			{
+				"sport": "Basebol e softbol",
+				"boosts": [
+					{
+						"name": "No-hitter",
+						"copy": "Uma equipa sem nenhum hit a partir da 6.ª entrada (a 4.ª no softbol)."
+					},
+					{
+						"name": "Corrida da vantagem na base",
+						"copy": "O corredor da vantagem ou do empate está numa base. Vale mais nas últimas entradas."
+					},
+					{
+						"name": "Corredores nas bases",
+						"copy": "Cada corredor soma pontos, e as bases cheias somam mais."
+					}
+				]
+			},
+			{
+				"sport": "Hóquei",
+				"boosts": [
+					{
+						"name": "Superioridade numérica ou guarda-redes retirado",
+						"copy": "Num jogo com até dois golos de diferença, ou com a baliza vazia nos últimos 4 minutos."
+					}
+				]
+			},
+			{
+				"sport": "Futebol",
+				"boosts": [
+					{
+						"name": "Cartão vermelho",
+						"copy": "Num jogo empatado ou com um golo de diferença, durante os dez minutos seguintes."
+					}
+				]
+			},
+			{
+				"sport": "Todos os desportos",
+				"boosts": [
+					{
+						"name": "Atenção à surpresa",
+						"copy": "O menos cotado à frente, empatado ou a um lance de pontuação, já depois do meio do jogo."
+					},
+					{
+						"name": "Em jogo",
+						"copy": "Uma eliminatória à beira do fim, duas equipas do ranking ou uma corrida no fim da época."
+					}
+				]
+			}
+		],
+		"deductionsHeading": "Pontos a menos",
+		"deductions": [
+			{
+				"name": "Publicidade",
+				"copy": "Até {max} a menos enquanto o jogo está em pausa para publicidade."
+			},
+			{
+				"name": "Probabilidade de vitória",
+				"copy": "Até {max} a mais quando as probabilidades ficam perto dos 50/50, até {max} a menos quando uma equipa já tem o jogo ganho."
+			}
+		],
 		"liveHeading": "PowerScores em direto.",
 		"liveLoading": "A carregar PowerScores em direto",
 		"liveError": "Não é possível carregar dados de jogos em direto neste momento.",
 		"liveNow": "Em direto",
-		"machineHeading": "Vê como funciona.",
-		"machineSub": "Cada jogo em direto recebe um PowerScore e o teu separador aterra no melhor.",
-		"machineWatch": "Observar",
-		"machineWatchCopy": "Todos os jogos em direto de todas as ligas que segues, ao mesmo tempo.",
-		"machineScore": "Pontuar",
-		"machineScoreCopy": "O PowerScore avalia em direto quão emocionante é cada jogo.",
-		"machineSwitch": "Mudar",
-		"machineSwitchCopy": "O teu separador salta automaticamente para o melhor jogo.",
 		"liveEmptyTitle": "Sem jogos em direto neste momento.",
-		"liveScoreBadge": "PowerScore {score} / 100",
-		"machineAlt": "O ArenaSwap a observar e a pontuar cada jogo em direto",
-		"machineNowWatching": "A ver agora",
-		"machineNowOn": "em {service}",
-		"machineCaptions": [
-			"Observa todos os jogos em direto nas tuas ligas",
-			"E pontua cada um pelo quão emocionante é, em direto",
-			"Abre um jogo para ver exatamente porquê",
-			"Depois o teu separador pousa no melhor"
+		"devHeading": "Usa no teu próprio projeto.",
+		"devCopy": "O PowerScore é gratuito no npm. Dá-lhe o marcador, o cronómetro e tudo o que o teu feed souber, e ele devolve um número de 0 a 100 com os motivos.",
+		"installTitle": "Instala.",
+		"packageManager": "Gestor de pacotes",
+		"copy": "Copiar",
+		"copied": "Copiado",
+		"quickTitle": "Pontua um jogo.",
+		"feedTitle": "Começa com um marcador e um cronómetro.",
+		"feedCopy": "Isto já chega para Equilíbrio e Final de jogo. Cada campo abaixo liga mais coisas, e podes deixar de fora os que não tiveres.",
+		"feedGive": "O que lhe dás",
+		"feedOn": "E isto liga",
+		"feedRows": [
+			{
+				"give": "O marcador, o cronómetro e o período",
+				"on": "Equilíbrio e Final de jogo"
+			},
+			{
+				"give": "Alguns registos do marcador, do mais antigo ao mais recente",
+				"on": "Momentum, Trocas de liderança e Recuperação"
+			},
+			{
+				"give": "A probabilidade de vitória a cada consulta",
+				"on": "A oscilação de ±5 na probabilidade de vitória"
+			},
+			{
+				"give": "Down, jardas, posição em campo e posse de bola",
+				"on": "Ataque de dois minutos e red zone"
+			},
+			{
+				"give": "Corredores, outs e hits",
+				"on": "Corredores nas bases, corrida da vantagem e no-hitter"
+			},
+			{
+				"give": "Superioridades numéricas e balizas vazias",
+				"on": "As oportunidades de golo no hóquei"
+			},
+			{
+				"give": "Cartões vermelhos",
+				"on": "O impulso do cartão vermelho"
+			},
+			{
+				"give": "A linha pré-jogo",
+				"on": "Atenção à surpresa"
+			},
+			{
+				"give": "A tua equipa de fantasy",
+				"on": "O modo Fantasy"
+			}
 		],
-		"machineSignals": [
-			"Equilíbrio",
-			"Pressão de final de jogo",
-			"Momentum",
-			"Trocas de liderança",
-			"Recuperação"
+		"ownFeedTitle": "Traz o teu próprio feed.",
+		"ownFeedCopy": "Uma liga que nunca viu recebe os valores predefinidos do respetivo desporto. Se os períodos da tua liga funcionam de forma diferente, passa-os na chamada.",
+		"docsLinks": [
+			{
+				"title": "Pontua o teu primeiro jogo",
+				"copy": "Instala e pontua um jogo em poucas linhas."
+			},
+			{
+				"title": "Pontua um jogo com dados em direto",
+				"copy": "Mapeia o teu feed para um jogo e guarda o histórico entre consultas."
+			},
+			{
+				"title": "Referência da API",
+				"copy": "Todas as funções e constantes que o pacote exporta."
+			}
 		]
 	},
 	"docDemos": {

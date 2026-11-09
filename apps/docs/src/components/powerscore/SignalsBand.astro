@@ -1,0 +1,83 @@
+---
+import { scoreMaxTotal } from 'powerscore';
+import { signalColors } from '@arenaswap/ui/src/components/signalColors';
+import { currentLocale, useTranslations } from '../../i18n/ui';
+import { blowout, demoGame, nailBiter, reasonIn, scoreDemo, scoreline } from './demoGames';
+import { momentLabels } from './demoMoment';
+
+const locale = currentLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+
+const games = [nailBiter, blowout].map(script => {
+	const game = demoGame(script);
+	return { script, game, score: scoreDemo(script), labels: momentLabels(game, locale), scoreline: scoreline(script) };
+});
+
+const signalIds = ['closeness', 'lateGame', 'momentum', 'leadChanges', 'comeback'] as const;
+const copy = t.list<{ name: string; copy: string }>('powerscore.signals');
+const ceilingOf = (id: string) => games[0].score.signals.find(signal => signal.id === id)!.ceiling;
+const largestCeiling = Math.max(...signalIds.map(ceilingOf));
+const signals = signalIds.map((id, index) => ({
+	...copy[index],
+	ceiling: ceilingOf(id),
+	share: ceilingOf(id) / largestCeiling,
+	colour: signalColors[id],
+	points: games.map(({ score }) => Math.round(score.signals.find(signal => signal.id === id)!.points)),
+}));
+
+const matchupLabel = (script: typeof nailBiter) => `${script.away.abbreviation}–${script.home.abbreviation}`;
+---
+<section class='band'>
+	<div class='container'>
+		<div class='band-head'>
+			<h2 class='display-md'>{t('powerscore.signalsHeading')}</h2>
+			<p class='band-copy'>{t('powerscore.signalsSub', { max: scoreMaxTotal })}</p>
+		</div>
+
+		<div class='ps-pair'>
+			{games.map(({ script, score, labels, scoreline: { away, home } }) => (
+				<article class='ps-game'>
+					<p class='ps-meta'>{labels.league} <span aria-hidden='true'>/</span> {labels.period} {labels.clock}</p>
+					<div class='ps-game-teams'>
+						<div class:list={['ps-team', { 'is-leading': away > home }]}><span>{script.away.nickname}</span><span class='ps-team-score'>{away}</span></div>
+						<div class:list={['ps-team', { 'is-leading': home > away }]}><span>{script.home.nickname}</span><span class='ps-team-score'>{home}</span></div>
+					</div>
+					<div class='ps-total'><span class='ps-number ps-number-xl'>{score.total}</span><span class='ps-out-of'>/100</span></div>
+					<p class='ps-game-reason'>{reasonIn(score, locale)}</p>
+				</article>
+			))}
+		</div>
+
+		<ul class='ps-compare'>
+			{signals.map(signal => (
+				<li style={`--signal:${signal.colour};--share:${signal.share}`}>
+					<div>
+						<h3>{signal.name}<span>{t('powerscore.signalMax', { max: signal.ceiling })}</span></h3>
+						<p>{signal.copy}</p>
+					</div>
+					<div class='ps-compare-bars'>
+						{games.map(({ script }, index) => (
+							<div class='ps-compare-bar'>
+								<span class='ps-compare-label'>{matchupLabel(script)}</span>
+								<span class='ps-compare-track'><span style={`--fill:${(signal.points[index] / signal.ceiling) * 100}%`}></span></span>
+								<span class='ps-compare-points'>{signal.points[index]}</span>
+							</div>
+						))}
+					</div>
+				</li>
+			))}
+			<li class='ps-compare-total'>
+				<div><h3>PowerScore</h3></div>
+				<div class='ps-compare-bars'>
+					{games.map(({ script, score }) => (
+						<div class='ps-compare-bar'>
+							<span class='ps-compare-label'>{matchupLabel(script)}</span>
+							<span class='ps-meter' style={`--fill:${score.total}%`}></span>
+							<span class='ps-compare-points'>{score.total}</span>
+						</div>
+					))}
+				</div>
+			</li>
+		</ul>
+	</div>
+</section>

@@ -385,9 +385,16 @@
 		"heroSub": "PowerScore califica cualquier partido en vivo de 0 a 100 según qué tan emocionante es, y sigue el ritmo a medida que avanza. Instálalo desde npm y puntúa partidos en tu propio proyecto.",
 		"viewOnNpm": "Ver en npm",
 		"sourceOnGithub": "Código fuente en GitHub",
-		"installHeading": "Instálalo con un solo comando.",
-		"copy": "Copiar",
-		"copied": "Copiado",
+		"whatHeading": "Qué hace PowerScore.",
+		"whatCopy": "Lee un partido en vivo y te dice qué tanto vale la pena verlo ahora mismo, y por qué.",
+		"whatReads": "Lee",
+		"whatScore": "El marcador",
+		"whatScoreValue": "{away} {awayScore}, {home} {homeScore}",
+		"whatClock": "El reloj",
+		"whatClockValue": "4.º cuarto, faltan {clock}",
+		"whatTrail": "Cómo se llegó ahí",
+		"whatGivesBack": "Devuelve",
+		"whatClose": "ArenaSwap puntúa así cada partido en vivo de tus ligas, hasta cada {seconds} segundos, y pone tu pestaña en el que más puntúa.",
 		"signalsHeading": "Qué compone el número.",
 		"signalsSub": "Cinco señales se suman hasta una puntuación de 0 a {max}. Un partido cerrado sube, una paliza se queda baja.",
 		"signalMax": "{max} máx.",
@@ -413,35 +420,154 @@
 				"copy": "Un equipo que va abajo y se recupera eleva la puntuación."
 			}
 		],
+		"modesHeading": "Tú decides qué es emocionante.",
+		"modesCopy": "Cambia de modo en los ajustes.",
+		"modesMatchup": "{away} en {home}",
+		"modesFantasyNote": "Con {player} en tu equipo.",
+		"boostsHeading": "Los momentos grandes dan puntos extra.",
+		"boostGroups": [
+			{
+				"sport": "Fútbol americano",
+				"boosts": [
+					{
+						"name": "Ofensiva de dos minutos",
+						"copy": "Empate o abajo por una anotación, avanzando al final de la mitad."
+					},
+					{
+						"name": "Zona roja",
+						"copy": "Un avance dentro de las 20 yardas en un partido cerrado. El cuarto down es el que más vale."
+					}
+				]
+			},
+			{
+				"sport": "Béisbol y sóftbol",
+				"boosts": [
+					{
+						"name": "No-hitter",
+						"copy": "Un equipo sin hits a partir de la 6.ª entrada (la 4.ª en sóftbol)."
+					},
+					{
+						"name": "Carrera de ventaja en base",
+						"copy": "El corredor de la ventaja o del empate está en base. Vale más en las últimas entradas."
+					},
+					{
+						"name": "Corredores en base",
+						"copy": "Cada corredor suma puntos, y las bases llenas suman más."
+					}
+				]
+			},
+			{
+				"sport": "Hockey",
+				"boosts": [
+					{
+						"name": "Power play o portero retirado",
+						"copy": "En un partido a dos goles o menos de diferencia, o con la portería vacía en los últimos 4 minutos."
+					}
+				]
+			},
+			{
+				"sport": "Fútbol",
+				"boosts": [
+					{
+						"name": "Tarjeta roja",
+						"copy": "En un partido empatado o a un gol de diferencia, durante los siguientes diez minutos."
+					}
+				]
+			},
+			{
+				"sport": "Todos los deportes",
+				"boosts": [
+					{
+						"name": "Alerta de sorpresa",
+						"copy": "El no favorito va ganando, está empatado o pierde por una anotación pasada la mitad."
+					},
+					{
+						"name": "En juego",
+						"copy": "Una serie al borde, dos equipos del ranking o una carrera de fin de temporada."
+					}
+				]
+			}
+		],
+		"deductionsHeading": "Puntos de descuento",
+		"deductions": [
+			{
+				"name": "Corte comercial",
+				"copy": "Hasta {max} menos mientras el partido está en un corte comercial."
+			},
+			{
+				"name": "Probabilidad de victoria",
+				"copy": "Hasta {max} más cuando las probabilidades se mantienen cerca del 50/50, hasta {max} menos cuando un equipo ya la tiene asegurada."
+			}
+		],
 		"liveHeading": "PowerScores en vivo.",
 		"liveLoading": "Cargando PowerScores en vivo",
 		"liveError": "No se pueden cargar los datos de partidos en vivo en este momento.",
 		"liveNow": "En vivo",
-		"machineHeading": "Míralo funcionar.",
-		"machineSub": "Cada partido en vivo recibe un PowerScore, y tu pestaña aterriza en el mejor.",
-		"machineWatch": "Observar",
-		"machineWatchCopy": "Cada partido en vivo de cada liga que sigues, a la vez.",
-		"machineScore": "Puntuar",
-		"machineScoreCopy": "PowerScore califica en vivo qué tan emocionante es cada partido.",
-		"machineSwitch": "Cambiar",
-		"machineSwitchCopy": "Tu pestaña salta automáticamente al mejor partido.",
 		"liveEmptyTitle": "No hay partidos en vivo ahora mismo.",
-		"liveScoreBadge": "PowerScore {score} / 100",
-		"machineAlt": "ArenaSwap observando y puntuando cada partido en vivo",
-		"machineNowWatching": "Viendo ahora",
-		"machineNowOn": "en {service}",
-		"machineCaptions": [
-			"Observa cada partido en vivo de tus ligas",
-			"Y puntúa en vivo qué tan emocionante es cada uno",
-			"Abre un partido para ver exactamente por qué",
-			"Luego tu pestaña aterriza en el mejor"
+		"devHeading": "Úsalo en tu propio proyecto.",
+		"devCopy": "PowerScore es gratis en npm. Dale el marcador, el reloj y lo demás que sepa tu feed, y te devuelve un número de 0 a 100 con sus razones.",
+		"installTitle": "Instálalo.",
+		"packageManager": "Gestor de paquetes",
+		"copy": "Copiar",
+		"copied": "Copiado",
+		"quickTitle": "Puntúa un partido.",
+		"feedTitle": "Empieza con un marcador y un reloj.",
+		"feedCopy": "Con eso basta para Cercanía y Final del partido. Cada campo de abajo activa más, y puedes omitir los que no tengas.",
+		"feedGive": "Le das",
+		"feedOn": "Y esto se activa",
+		"feedRows": [
+			{
+				"give": "El marcador, el reloj y el periodo",
+				"on": "Cercanía y Final del partido"
+			},
+			{
+				"give": "Algunas capturas del marcador, de la más antigua a la más reciente",
+				"on": "Momentum, Cambios de líder y Remontada"
+			},
+			{
+				"give": "La probabilidad de victoria en cada consulta",
+				"on": "El vaivén de ±5 por probabilidad de victoria"
+			},
+			{
+				"give": "Down, distancia, posición en el campo y posesión",
+				"on": "Ofensiva de dos minutos y zona roja"
+			},
+			{
+				"give": "Corredores, outs y hits",
+				"on": "Corredores en base, carrera de ventaja y no-hitter"
+			},
+			{
+				"give": "Power plays y porterías vacías",
+				"on": "Las oportunidades de gol del hockey"
+			},
+			{
+				"give": "Tarjetas rojas",
+				"on": "El bono de tarjeta roja"
+			},
+			{
+				"give": "La línea previa al partido",
+				"on": "Alerta de sorpresa"
+			},
+			{
+				"give": "Tu plantilla de fantasy",
+				"on": "Modo Fantasy"
+			}
 		],
-		"machineSignals": [
-			"Cercanía",
-			"Presión de cierre",
-			"Momentum",
-			"Cambios de líder",
-			"Remontada"
+		"ownFeedTitle": "Trae tu propio feed.",
+		"ownFeedCopy": "Una liga que no conoce recibe los valores por defecto de su deporte. Si los periodos de tu liga funcionan distinto, pásalos en la llamada.",
+		"docsLinks": [
+			{
+				"title": "Puntúa tu primer partido",
+				"copy": "Instala y puntúa un partido en unas pocas líneas."
+			},
+			{
+				"title": "Puntúa un partido con datos en vivo",
+				"copy": "Asigna tu feed a un partido y conserva el historial entre consultas."
+			},
+			{
+				"title": "Referencia de la API",
+				"copy": "Cada función y constante que exporta el paquete."
+			}
 		]
 	},
 	"docDemos": {

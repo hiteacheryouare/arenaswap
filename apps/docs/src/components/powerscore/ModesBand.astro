@@ -1,0 +1,49 @@
+---
+import { currentLocale, useTranslations } from '../../i18n/ui';
+import { demoTranslator } from '../docs/demoStrings';
+import { blowout, fantasyPlayer, nailBiter, scoreDemo } from './demoGames';
+import type { DemoMode } from './demoGames';
+
+const locale = currentLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const extension = demoTranslator(locale);
+
+// The mode names and what each one ranks are the extension's own Settings strings.
+const modes: { id: DemoMode; label: string; explainer: string }[] = [
+	{ id: 'classic', label: 'powerScore.modeClassic', explainer: 'setup.modeExplainerClassic' },
+	{ id: 'blowouts', label: 'powerScore.modeBlowouts', explainer: 'setup.modeExplainerBlowouts' },
+	{ id: 'fantasy', label: 'powerScore.modeFantasy', explainer: 'setup.modeExplainerFantasy' },
+].map(mode => ({ id: mode.id as DemoMode, label: extension(mode.label), explainer: extension(mode.explainer) }));
+
+const scored = modes.map(mode => {
+	const games = [nailBiter, blowout].map(script => ({ script, total: scoreDemo(script, mode.id).total }));
+	const best = Math.max(...games.map(game => game.total));
+	return { ...mode, games: games.map(game => ({ ...game, best: game.total === best })) };
+});
+---
+<section class='band'>
+	<div class='container'>
+		<div class='band-head'>
+			<h2 class='display-md'>{t('powerscore.modesHeading')}</h2>
+			<p class='band-copy'>{t('powerscore.modesCopy')}</p>
+		</div>
+		<div class='ps-modes'>
+			{scored.map(mode => (
+				<article class='ps-mode'>
+					<h3>{mode.label}</h3>
+					<p>{mode.explainer}</p>
+					<ul>
+						{mode.games.map(game => (
+							<li class:list={{ 'is-best': game.best }}>
+								<span>{t('powerscore.modesMatchup', { away: game.script.away.nickname, home: game.script.home.nickname })}</span>
+								<span class='ps-number'>{game.total}</span>
+								<span class='ps-meter' style={`--fill:${game.total}%`} aria-hidden='true'></span>
+							</li>
+						))}
+					</ul>
+					{mode.id === 'fantasy' && <p class='ps-mode-note'>{t('powerscore.modesFantasyNote', { player: fantasyPlayer })}</p>}
+				</article>
+			))}
+		</div>
+	</div>
+</section>

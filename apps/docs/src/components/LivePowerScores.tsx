@@ -6,6 +6,7 @@ import type { Game, LeagueId, ScoreSnapshot } from 'powerscore';
 // island can read them without dragging zod or the card's React tree onto a marketing page.
 import { parseClockToSeconds } from '@arenaswap/sideline/gameClock';
 import { formatGameClock, formatPeriod } from '@arenaswap/ui/src/components/gameFormat';
+import { isHomeFirst } from '@arenaswap/core/constants';
 import { islandTranslator } from '../i18n/islandStrings';
 
 interface EspnCompetitor {
@@ -158,7 +159,6 @@ interface Strings {
 	loading: string;
 	error: string;
 	emptyTitle: string;
-	scoreBadge: string;
 	live: string;
 }
 
@@ -301,38 +301,32 @@ const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string
 		}
 
 		return (
-			<div className='d-flex flex-column gap-5'>
+			<ol className='ps-live'>
 				{cards.slice(0, 8).map(card => (
-					<div key={card.game.id} className='feature-card py-5 px-5'>
-						<div className='d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3'>
-							<span className='text-[0.75rem] tracking-[0.08em] text-[var(--color-muted)]'>
-								{leagueConfigMap[card.game.league].label.toUpperCase()}
+					<li key={card.game.id} className='ps-live-row'>
+						<div className='ps-live-teams'>
+							{(isHomeFirst(card.game) ? [card.game.homeTeam, card.game.awayTeam] : [card.game.awayTeam, card.game.homeTeam]).map((team, index) => (
+								<div key={index} className='ps-team'>
+									<span>{team.abbreviation}</span>
+									<span className='ps-team-score'>{team.score}</span>
+								</div>
+							))}
+						</div>
+						<div>
+							<p className='ps-meta'>
+								{leagueConfigMap[card.game.league].label} <span aria-hidden='true'>/</span> {formatPeriod(card.game, t)} {card.game.sportType === 'baseball' ? strings.live : formatGameClock(card.game)}
+							</p>
+							<p className='ps-live-reason'>{card.reason}</p>
+						</div>
+						<div className='ps-live-score'>
+							<span className='ps-number'>{card.score}</span>
+							<span className='ps-score-bar-track' aria-hidden='true'>
+								<span className='ps-score-bar-fill' style={{ width: `${card.score}%` }} />
 							</span>
-							<span className='badge rounded-pill bg-body fg-white px-5 py-3 text-[0.78rem]'>
-								{strings.scoreBadge.split('{score}').join(String(card.score))}
-							</span>
 						</div>
-						<div className='d-flex align-items-center justify-content-between gap-3'>
-							<div className='d-flex align-items-center gap-3'>
-								<span className='fw-semibold'>{card.game.awayTeam.abbreviation}</span>
-								<span className='text-[var(--color-muted)]'>{card.game.awayTeam.score}</span>
-							</div>
-							<div className='text-center text-[0.78rem] text-[var(--color-muted)]'>
-								<div>{formatPeriod(card.game, t)}</div>
-								<div>{card.game.sportType === 'baseball' ? strings.live : formatGameClock(card.game)}</div>
-							</div>
-							<div className='d-flex align-items-center gap-3'>
-								<span className='text-[var(--color-muted)]'>{card.game.homeTeam.score}</span>
-								<span className='fw-semibold'>{card.game.homeTeam.abbreviation}</span>
-							</div>
-						</div>
-						<div className='mt-1 text-[0.78rem] text-[var(--color-muted)]'>{card.reason}</div>
-						<div className='ps-score-bar-track'>
-							<div className='ps-score-bar-fill' style={{ width: `${card.score}%` }} />
-						</div>
-					</div>
+					</li>
 				))}
-			</div>
+			</ol>
 		);
 	};
 

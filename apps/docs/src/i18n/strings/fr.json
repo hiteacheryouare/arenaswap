@@ -385,9 +385,16 @@
 		"heroSub": "PowerScore note n'importe quel match en direct de 0 à 100 selon son intensité, et suit le rythme à mesure que le match avance. Installe-le depuis npm et note les matchs dans ton propre projet.",
 		"viewOnNpm": "Voir sur npm",
 		"sourceOnGithub": "Code source sur GitHub",
-		"installHeading": "Installation en une commande.",
-		"copy": "Copier",
-		"copied": "Copié",
+		"whatHeading": "Ce que fait PowerScore.",
+		"whatCopy": "Il lit un match en direct et te dit à quel point il vaut le coup d'être regardé en ce moment, et pourquoi.",
+		"whatReads": "Il lit",
+		"whatScore": "Le score",
+		"whatScoreValue": "{away} {awayScore}, {home} {homeScore}",
+		"whatClock": "Le chrono",
+		"whatClockValue": "4e quart-temps, il reste {clock}",
+		"whatTrail": "Comment on en est arrivé là",
+		"whatGivesBack": "Il rend",
+		"whatClose": "ArenaSwap note ainsi chaque match en direct de tes ligues, aussi souvent que toutes les {seconds} secondes, et met ton onglet sur le plus haut.",
 		"signalsHeading": "Ce qui compose le nombre.",
 		"signalsSub": "Cinq signaux s'additionnent pour donner un score de 0 à {max}. Un match serré grimpe, un match plié reste bas.",
 		"signalMax": "{max} max",
@@ -413,35 +420,154 @@
 				"copy": "Une équipe menée qui revient de loin fait grimper le score."
 			}
 		],
+		"modesHeading": "Choisis ce qui est passionnant.",
+		"modesCopy": "Change de mode dans les réglages.",
+		"modesMatchup": "{away} chez {home}",
+		"modesFantasyNote": "Avec {player} dans ton équipe.",
+		"boostsHeading": "Les grands moments rapportent des points en plus.",
+		"boostGroups": [
+			{
+				"sport": "Football américain",
+				"boosts": [
+					{
+						"name": "Two-minute drill",
+						"copy": "À égalité ou mené d'une possession, en marche en fin de mi-temps."
+					},
+					{
+						"name": "Zone rouge",
+						"copy": "Un drive dans les 20 yards lors d'un match serré. Le quatrième essai compte le plus."
+					}
+				]
+			},
+			{
+				"sport": "Baseball et softball",
+				"boosts": [
+					{
+						"name": "No-hitter",
+						"copy": "Une équipe sans coup sûr à partir de la 6e manche (la 4e au softball)."
+					},
+					{
+						"name": "Point de l'avance sur les bases",
+						"copy": "Le coureur du point de l'avance ou de l'égalité est sur les bases. Il compte plus dans les dernières manches."
+					},
+					{
+						"name": "Coureurs sur les bases",
+						"copy": "Chaque coureur ajoute des points, et les bases pleines en ajoutent le plus."
+					}
+				]
+			},
+			{
+				"sport": "Hockey",
+				"boosts": [
+					{
+						"name": "Avantage numérique ou gardien sorti",
+						"copy": "Dans un match à deux buts d'écart ou moins, ou filet désert dans les 4 dernières minutes."
+					}
+				]
+			},
+			{
+				"sport": "Football",
+				"boosts": [
+					{
+						"name": "Carton rouge",
+						"copy": "Dans un match à égalité ou à un but d'écart, pendant les dix minutes suivantes."
+					}
+				]
+			},
+			{
+				"sport": "Tous les sports",
+				"boosts": [
+					{
+						"name": "Alerte surprise",
+						"copy": "L'outsider mène, est à égalité ou n'est qu'à une possession après la mi-match."
+					},
+					{
+						"name": "Enjeu",
+						"copy": "Une série au bord du gouffre, deux équipes classées ou une course de fin de saison."
+					}
+				]
+			}
+		],
+		"deductionsHeading": "Points en moins",
+		"deductions": [
+			{
+				"name": "Pause pub",
+				"copy": "Jusqu'à {max} en moins pendant que le match est en pause pub."
+			},
+			{
+				"name": "Probabilité de victoire",
+				"copy": "Jusqu'à {max} en plus quand les chances restent proches de 50/50, jusqu'à {max} en moins quand une équipe a course gagnée."
+			}
+		],
 		"liveHeading": "PowerScores en direct.",
 		"liveLoading": "Chargement des PowerScores en direct",
 		"liveError": "Impossible de charger les données de match en direct pour le moment.",
 		"liveNow": "En direct",
-		"machineHeading": "Regarde-le en action.",
-		"machineSub": "Chaque match en direct reçoit un PowerScore, et ton onglet atterrit sur le meilleur.",
-		"machineWatch": "Regarder",
-		"machineWatchCopy": "Chaque match en direct de chaque ligue que tu suis, en même temps.",
-		"machineScore": "Noter",
-		"machineScoreCopy": "PowerScore évalue en direct à quel point chaque match est palpitant.",
-		"machineSwitch": "Basculer",
-		"machineSwitchCopy": "Ton onglet saute automatiquement vers le meilleur match.",
 		"liveEmptyTitle": "Aucun match en direct pour le moment.",
-		"liveScoreBadge": "PowerScore {score} / 100",
-		"machineAlt": "ArenaSwap en train de regarder et noter chaque match en direct",
-		"machineNowWatching": "En train de regarder",
-		"machineNowOn": "sur {service}",
-		"machineCaptions": [
-			"Il surveille chaque match en direct dans tes ligues",
-			"Et note chacun sur son niveau d'intensité, en direct",
-			"Ouvre un match pour voir exactement pourquoi",
-			"Puis ton onglet atterrit sur le meilleur"
+		"devHeading": "Utilise-le dans ton propre projet.",
+		"devCopy": "PowerScore est gratuit sur npm. Donne-lui le score, le chrono et tout ce que ton flux sait d'autre, et il te rend un nombre de 0 à 100 avec ses raisons.",
+		"installTitle": "Installe-le.",
+		"packageManager": "Gestionnaire de paquets",
+		"copy": "Copier",
+		"copied": "Copié",
+		"quickTitle": "Note un match.",
+		"feedTitle": "Commence par un score et un chrono.",
+		"feedCopy": "Ça suffit pour Étroitesse et Fin de match. Chaque champ ci-dessous en active davantage, et tu peux omettre ceux que tu n'as pas.",
+		"feedGive": "Tu donnes",
+		"feedOn": "Et ça active",
+		"feedRows": [
+			{
+				"give": "Le score, le chrono et la période",
+				"on": "Étroitesse et Fin de match"
+			},
+			{
+				"give": "Quelques instantanés du score, du plus ancien au plus récent",
+				"on": "Momentum, Changements de tête et Retour"
+			},
+			{
+				"give": "La probabilité de victoire à chaque requête",
+				"on": "Le swing de ±5 de la probabilité de victoire"
+			},
+			{
+				"give": "Down, distance, position sur le terrain et possession",
+				"on": "Two-minute drill et zone rouge"
+			},
+			{
+				"give": "Coureurs, retraits et coups sûrs",
+				"on": "Coureurs sur les bases, point de l'avance et no-hitter"
+			},
+			{
+				"give": "Avantages numériques et filets déserts",
+				"on": "Les occasions de but au hockey"
+			},
+			{
+				"give": "Cartons rouges",
+				"on": "Le boost du carton rouge"
+			},
+			{
+				"give": "La cote d'avant-match",
+				"on": "Alerte surprise"
+			},
+			{
+				"give": "Ton équipe fantasy",
+				"on": "Mode Fantasy"
+			}
 		],
-		"machineSignals": [
-			"Étroitesse",
-			"Pression de fin de match",
-			"Momentum",
-			"Changements de tête",
-			"Retour"
+		"ownFeedTitle": "Apporte ton propre flux.",
+		"ownFeedCopy": "Une ligue qu'il ne connaît pas reçoit les valeurs par défaut de son sport. Si les périodes de ta ligue fonctionnent autrement, passe-les dans l'appel.",
+		"docsLinks": [
+			{
+				"title": "Note ton premier match",
+				"copy": "Installe-le et note un match en quelques lignes."
+			},
+			{
+				"title": "Note un match à partir de données en direct",
+				"copy": "Branche ton flux sur un match et garde l'historique d'une requête à l'autre."
+			},
+			{
+				"title": "Référence de l'API",
+				"copy": "Chaque fonction et constante qu'exporte le paquet."
+			}
 		]
 	},
 	"docDemos": {

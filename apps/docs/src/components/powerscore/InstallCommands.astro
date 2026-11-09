@@ -1,0 +1,56 @@
+---
+import { currentLocale, useTranslations } from '../../i18n/ui';
+
+const t = useTranslations(currentLocale(Astro.currentLocale));
+
+// The package manager names are not translated: they are the commands you type.
+const commands = [
+	{ id: 'npm', command: 'npm install powerscore' },
+	{ id: 'pnpm', command: 'pnpm add powerscore' },
+	{ id: 'yarn', command: 'yarn add powerscore' },
+	{ id: 'bun', command: 'bun add powerscore' },
+];
+---
+<div class='ps-install' data-install data-copy-label={t('powerscore.copy')} data-copied-label={t('powerscore.copied')}>
+	<div class='ps-install-managers' role='tablist' aria-label={t('powerscore.packageManager')}>
+		{commands.map((item, index) => (
+			<button type='button' role='tab' aria-selected={index === 0 ? 'true' : 'false'} data-command={item.command}>{item.id}</button>
+		))}
+	</div>
+	<div class='ps-install-line'>
+		<code><span class='ps-prompt' aria-hidden='true'>$ </span><span data-install-command>{commands[0].command}</span></code>
+		<button type='button' class='ps-copy' data-copy><i class='bi bi-clipboard me-2' aria-hidden='true'></i><span>{t('powerscore.copy')}</span></button>
+	</div>
+</div>
+
+<script>
+	for (const root of document.querySelectorAll<HTMLElement>('[data-install]')) {
+		const command = root.querySelector<HTMLElement>('[data-install-command]')!;
+		const copy = root.querySelector<HTMLButtonElement>('[data-copy]')!;
+		const copyIcon = copy.querySelector('i')!;
+		const copyText = copy.querySelector('span')!;
+		let reset: number | undefined;
+
+		for (const tab of root.querySelectorAll<HTMLButtonElement>('[data-command]')) {
+			tab.addEventListener('click', () => {
+				for (const other of root.querySelectorAll('[data-command]')) other.setAttribute('aria-selected', String(other === tab));
+				command.textContent = tab.dataset.command!;
+			});
+		}
+
+		copy.addEventListener('click', async () => {
+			try {
+				await navigator.clipboard.writeText(command.textContent ?? '');
+			} catch {
+				return;
+			}
+			copyIcon.className = 'bi bi-check2 me-2';
+			copyText.textContent = root.dataset.copiedLabel!;
+			window.clearTimeout(reset);
+			reset = window.setTimeout(() => {
+				copyIcon.className = 'bi bi-clipboard me-2';
+				copyText.textContent = root.dataset.copyLabel!;
+			}, 1500);
+		});
+	}
+</script>

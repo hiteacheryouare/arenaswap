@@ -385,9 +385,16 @@
 		"heroSub": "O PowerScore avalia qualquer jogo ao vivo de 0 a 100 pelo quanto ele é emocionante e acompanha o jogo conforme ele avança. Instale pelo npm e pontue jogos no seu próprio projeto.",
 		"viewOnNpm": "Ver no npm",
 		"sourceOnGithub": "Código-fonte no GitHub",
-		"installHeading": "Instale com um comando.",
-		"copy": "Copiar",
-		"copied": "Copiado",
+		"whatHeading": "O que o PowerScore faz.",
+		"whatCopy": "Ele lê um jogo ao vivo e diz o quanto vale a pena assistir agora, e por quê.",
+		"whatReads": "O que ele lê",
+		"whatScore": "O placar",
+		"whatScoreValue": "{away} {awayScore}, {home} {homeScore}",
+		"whatClock": "O relógio",
+		"whatClockValue": "4º quarto, faltam {clock}",
+		"whatTrail": "Como o jogo chegou até aqui",
+		"whatGivesBack": "O que ele devolve",
+		"whatClose": "O ArenaSwap pontua assim todos os jogos ao vivo das suas ligas, até a cada {seconds} segundos, e leva a sua aba para o mais alto.",
 		"signalsHeading": "O que compõe o número.",
 		"signalsSub": "Cinco sinais se somam em uma pontuação de 0 a {max}. Um jogo disputado sobe, uma goleada fica baixa.",
 		"signalMax": "{max} máx.",
@@ -413,35 +420,154 @@
 				"copy": "Um time atrás no placar que se recupera aumenta a pontuação."
 			}
 		],
+		"modesHeading": "Escolha o que é emocionante.",
+		"modesCopy": "Troque de modo nas Configurações.",
+		"modesMatchup": "{away} @ {home}",
+		"modesFantasyNote": "Com {player} no seu elenco de fantasy.",
+		"boostsHeading": "Grandes momentos valem pontos extras.",
+		"boostGroups": [
+			{
+				"sport": "Futebol americano",
+				"boosts": [
+					{
+						"name": "Two-minute drill",
+						"copy": "Empatado ou perdendo por uma posse, avançando no fim do tempo."
+					},
+					{
+						"name": "Red zone",
+						"copy": "Uma campanha dentro das 20 jardas em jogo apertado. O quarto down vale mais."
+					}
+				]
+			},
+			{
+				"sport": "Beisebol e softbol",
+				"boosts": [
+					{
+						"name": "No-hitter",
+						"copy": "Um time sem hit a partir da 6ª entrada (a 4ª no softbol)."
+					},
+					{
+						"name": "Corrida da vantagem em base",
+						"copy": "O corredor da vantagem ou do empate está em uma base. Vale mais nas últimas entradas."
+					},
+					{
+						"name": "Corredores nas bases",
+						"copy": "Cada corredor soma pontos, e as bases cheias somam mais."
+					}
+				]
+			},
+			{
+				"sport": "Hóquei",
+				"boosts": [
+					{
+						"name": "Power play ou goleiro retirado",
+						"copy": "Em jogo com até dois gols de diferença, ou com a rede vazia nos últimos 4 minutos."
+					}
+				]
+			},
+			{
+				"sport": "Futebol",
+				"boosts": [
+					{
+						"name": "Cartão vermelho",
+						"copy": "Em jogo empatado ou com um gol de diferença, pelos dez minutos seguintes."
+					}
+				]
+			},
+			{
+				"sport": "Todos os esportes",
+				"boosts": [
+					{
+						"name": "Alerta de zebra",
+						"copy": "O azarão na frente, empatado ou a uma posse de diferença depois da metade."
+					},
+					{
+						"name": "Em jogo",
+						"copy": "Uma série à beira do fim, dois times ranqueados ou uma disputa de fim de temporada."
+					}
+				]
+			}
+		],
+		"deductionsHeading": "Pontos a menos",
+		"deductions": [
+			{
+				"name": "Intervalo comercial",
+				"copy": "Até {max} a menos enquanto o jogo está em intervalo comercial."
+			},
+			{
+				"name": "Probabilidade de vitória",
+				"copy": "Até {max} a mais quando as chances ficam perto de 50/50, até {max} a menos quando um time já está com o jogo no bolso."
+			}
+		],
 		"liveHeading": "PowerScores ao vivo.",
 		"liveLoading": "Carregando PowerScores ao vivo",
 		"liveError": "Não é possível carregar dados de jogos ao vivo agora.",
 		"liveNow": "Ao vivo",
-		"machineHeading": "Veja funcionando.",
-		"machineSub": "Cada jogo ao vivo recebe um PowerScore, e sua aba cai no melhor deles.",
-		"machineWatch": "Assistir",
-		"machineWatchCopy": "Cada jogo ao vivo de cada liga que você acompanha, ao mesmo tempo.",
-		"machineScore": "Pontuar",
-		"machineScoreCopy": "O PowerScore avalia ao vivo quão empolgante é cada jogo.",
-		"machineSwitch": "Trocar",
-		"machineSwitchCopy": "Sua aba pula automaticamente para o melhor jogo.",
 		"liveEmptyTitle": "Nenhum jogo ao vivo no momento.",
-		"liveScoreBadge": "PowerScore {score} / 100",
-		"machineAlt": "O ArenaSwap observando e pontuando cada jogo ao vivo",
-		"machineNowWatching": "Assistindo agora",
-		"machineNowOn": "em {service}",
-		"machineCaptions": [
-			"Ele observa cada jogo ao vivo nas suas ligas",
-			"E pontua cada um por quão empolgante é, ao vivo",
-			"Abra um jogo para ver exatamente por quê",
-			"Depois sua aba pousa no melhor"
+		"devHeading": "Use no seu próprio projeto.",
+		"devCopy": "O PowerScore é gratuito no npm. Passe o placar, o relógio e o que mais o seu feed souber, e ele devolve um número de 0 a 100 com os motivos.",
+		"installTitle": "Instale.",
+		"packageManager": "Gerenciador de pacotes",
+		"copy": "Copiar",
+		"copied": "Copiado",
+		"quickTitle": "Pontue um jogo.",
+		"feedTitle": "Comece com um placar e um relógio.",
+		"feedCopy": "Isso já basta para Aperto e Final de jogo. Cada campo abaixo liga mais coisas, e você pode deixar de fora os que não tiver.",
+		"feedGive": "O que você passa",
+		"feedOn": "E isso liga",
+		"feedRows": [
+			{
+				"give": "O placar, o relógio e o período",
+				"on": "Aperto e Final de jogo"
+			},
+			{
+				"give": "Alguns instantâneos do placar, do mais antigo ao mais recente",
+				"on": "Momentum, Trocas de liderança e Virada"
+			},
+			{
+				"give": "A probabilidade de vitória a cada consulta",
+				"on": "A variação de ±5 na probabilidade de vitória"
+			},
+			{
+				"give": "Down, jardas, posição em campo e posse de bola",
+				"on": "Two-minute drill e red zone"
+			},
+			{
+				"give": "Corredores, outs e hits",
+				"on": "Corredores nas bases, corrida da vantagem e no-hitter"
+			},
+			{
+				"give": "Power plays e redes vazias",
+				"on": "As chances de gol no hóquei"
+			},
+			{
+				"give": "Cartões vermelhos",
+				"on": "O impulso do cartão vermelho"
+			},
+			{
+				"give": "A linha pré-jogo",
+				"on": "Alerta de zebra"
+			},
+			{
+				"give": "Seu elenco de fantasy",
+				"on": "O modo Fantasy"
+			}
 		],
-		"machineSignals": [
-			"Aperto",
-			"Pressão de final de jogo",
-			"Momentum",
-			"Trocas de liderança",
-			"Virada"
+		"ownFeedTitle": "Traga o seu próprio feed.",
+		"ownFeedCopy": "Uma liga que ele nunca viu recebe os padrões do esporte dela. Se os períodos da sua liga funcionam diferente, passe-os na chamada.",
+		"docsLinks": [
+			{
+				"title": "Pontue seu primeiro jogo",
+				"copy": "Instale e pontue um jogo em poucas linhas."
+			},
+			{
+				"title": "Pontue um jogo com dados ao vivo",
+				"copy": "Mapeie o seu feed para um jogo e guarde o histórico entre as consultas."
+			},
+			{
+				"title": "Referência da API",
+				"copy": "Toda função e constante que o pacote exporta."
+			}
 		]
 	},
 	"docDemos": {

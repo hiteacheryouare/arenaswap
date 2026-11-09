@@ -385,9 +385,16 @@
 		"heroSub": "PowerScore 會依精彩程度為任何直播比賽打出 0 到 100 的分數，並隨著比賽進行即時更新。從 npm 安裝，就能在你自己的專案裡為比賽評分。",
 		"viewOnNpm": "在 npm 上查看",
 		"sourceOnGithub": "GitHub 上的原始碼",
-		"installHeading": "一個指令就能安裝。",
-		"copy": "複製",
-		"copied": "已複製",
+		"whatHeading": "PowerScore 做什麼。",
+		"whatCopy": "它讀取一場直播比賽，告訴你現在有多值得看，以及為什麼。",
+		"whatReads": "它讀取",
+		"whatScore": "比分",
+		"whatScoreValue": "{away} {awayScore}，{home} {homeScore}",
+		"whatClock": "比賽時間",
+		"whatClockValue": "第四節，還剩 {clock}",
+		"whatTrail": "比賽如何走到這一步",
+		"whatGivesBack": "它給出",
+		"whatClose": "ArenaSwap 就是這樣為你聯賽裡的每場直播比賽評分的，最快每 {seconds} 秒一次，並把你的分頁切到分數最高的那場。",
 		"signalsHeading": "這個數字是怎麼組成的。",
 		"signalsSub": "五個訊號疊加成 0 到 {max} 的分數。膠著的比賽分數攀升，一面倒的比賽分數偏低。",
 		"signalMax": "最高 {max}",
@@ -413,35 +420,154 @@
 				"copy": "落後的一方奮起直追，會拉高分數。"
 			}
 		],
+		"modesHeading": "由你定義什麼叫精彩。",
+		"modesCopy": "在設定裡切換模式。",
+		"modesMatchup": "{away} @ {home}",
+		"modesFantasyNote": "你的夢幻陣容裡有 {player}。",
+		"boostsHeading": "高光時刻有額外加分。",
+		"boostGroups": [
+			{
+				"sport": "美式足球",
+				"boosts": [
+					{
+						"name": "兩分鐘進攻",
+						"copy": "比分打平或僅落後一次得分，在半場末段推進。"
+					},
+					{
+						"name": "紅區",
+						"copy": "膠著比賽中攻入 20 碼線內的一次進攻。第四檔分值最高。"
+					}
+				]
+			},
+			{
+				"sport": "棒球和壘球",
+				"boosts": [
+					{
+						"name": "無安打比賽",
+						"copy": "某隊從第 6 局起（壘球為第 4 局）仍沒有安打。"
+					},
+					{
+						"name": "超前跑者上壘",
+						"copy": "能超前或追平的跑者已經上壘。比賽後段分值更高。"
+					},
+					{
+						"name": "壘上有跑者",
+						"copy": "每有一名跑者上壘就加分，滿壘時加得最多。"
+					}
+				]
+			},
+			{
+				"sport": "冰球",
+				"boosts": [
+					{
+						"name": "多打少或撤下守門員",
+						"copy": "比賽雙方相差不超過兩球，或最後 4 分鐘撤下守門員、空門作戰。"
+					}
+				]
+			},
+			{
+				"sport": "足球",
+				"boosts": [
+					{
+						"name": "紅牌",
+						"copy": "在比分打平或僅差一球的比賽中，接下來的十分鐘。"
+					}
+				]
+			},
+			{
+				"sport": "所有運動",
+				"boosts": [
+					{
+						"name": "爆冷關注",
+						"copy": "賽前不被看好的一方在比賽過半後領先、打平，或落後不超過一個得分回合。"
+					},
+					{
+						"name": "利害關係",
+						"copy": "系列賽生死一線、兩支排名球隊對決，或賽季尾聲的爭奪。"
+					}
+				]
+			}
+		],
+		"deductionsHeading": "扣分項",
+		"deductions": [
+			{
+				"name": "廣告時段",
+				"copy": "比賽處於廣告時段時，最多扣 {max}。"
+			},
+			{
+				"name": "勝率",
+				"copy": "雙方勝率接近 50/50 時最多加 {max}，一方穩操勝券時最多扣 {max}。"
+			}
+		],
 		"liveHeading": "即時 PowerScore。",
 		"liveLoading": "正在載入即時 PowerScore",
 		"liveError": "目前無法載入即時比賽資料。",
 		"liveNow": "直播中",
-		"machineHeading": "看看它怎麼運作。",
-		"machineSub": "每場直播比賽都有一個 PowerScore，你的分頁會落在最精彩的那場。",
-		"machineWatch": "監控",
-		"machineWatchCopy": "同時監控你關注的每個聯盟的所有直播比賽。",
-		"machineScore": "評分",
-		"machineScoreCopy": "PowerScore 會即時評估每場比賽有多精彩。",
-		"machineSwitch": "切換",
-		"machineSwitchCopy": "你的分頁會自動跳到最精彩的比賽。",
 		"liveEmptyTitle": "目前沒有直播比賽。",
-		"liveScoreBadge": "PowerScore {score} / 100",
-		"machineAlt": "ArenaSwap 正在監控並為每場直播比賽評分",
-		"machineNowWatching": "正在觀看",
-		"machineNowOn": "在 {service}",
-		"machineCaptions": [
-			"它會監控你關注聯盟的每一場直播比賽",
-			"並即時為每一場比賽的精彩程度評分",
-			"打開一場比賽，就能看到確切原因",
-			"接著你的分頁會停在最精彩的比賽上"
+		"devHeading": "用在你自己的專案裡。",
+		"devCopy": "PowerScore 在 npm 上免費提供。給它比分、比賽時間，以及你的資料來源知道的其他資訊，它就會回傳一個 0 到 100 的數字，並附上原因。",
+		"installTitle": "安裝它。",
+		"packageManager": "套件管理工具",
+		"copy": "複製",
+		"copied": "已複製",
+		"quickTitle": "為一場比賽評分。",
+		"feedTitle": "從比分和比賽時間開始。",
+		"feedCopy": "有這些就足夠算出膠著程度和比賽後段。下面每個欄位都會多啟用一部分評分，沒有的欄位可以省略。",
+		"feedGive": "傳入",
+		"feedOn": "隨之啟用",
+		"feedRows": [
+			{
+				"give": "比分、比賽時間和節次",
+				"on": "膠著程度和比賽後段"
+			},
+			{
+				"give": "幾份比分快照，從最早的開始",
+				"on": "氣勢、領先變化和逆轉"
+			},
+			{
+				"give": "每次輪詢的勝率",
+				"on": "±5 的勝率波動"
+			},
+			{
+				"give": "檔數、碼數、場上位置和球權",
+				"on": "兩分鐘進攻和紅區"
+			},
+			{
+				"give": "跑者、出局數和安打",
+				"on": "壘上有跑者、超前跑者和無安打比賽"
+			},
+			{
+				"give": "多打少和空門",
+				"on": "冰球的得分機會"
+			},
+			{
+				"give": "紅牌",
+				"on": "紅牌加成"
+			},
+			{
+				"give": "賽前盤口",
+				"on": "爆冷關注"
+			},
+			{
+				"give": "你的夢幻陣容",
+				"on": "夢幻模式"
+			}
 		],
-		"machineSignals": [
-			"膠著程度",
-			"比賽後段壓力",
-			"氣勢",
-			"領先變化",
-			"逆轉"
+		"ownFeedTitle": "接上你自己的資料來源。",
+		"ownFeedCopy": "它沒見過的聯賽會套用對應運動的預設值。如果你的聯賽節次劃分不一樣，請在呼叫時一併傳入。",
+		"docsLinks": [
+			{
+				"title": "為你的第一場比賽評分",
+				"copy": "安裝後，幾行程式碼就能為一場比賽評分。"
+			},
+			{
+				"title": "用即時資料為比賽評分",
+				"copy": "把你的資料來源對應成比賽，並在多次輪詢之間保留歷史。"
+			},
+			{
+				"title": "API 參考",
+				"copy": "該套件匯出的每個函式和常數。"
+			}
 		]
 	},
 	"docDemos": {

@@ -385,9 +385,16 @@
 		"heroSub": "PowerScore valuta da 0 a 100 quanto è emozionante qualsiasi partita dal vivo e tiene il passo mentre la partita avanza. Installalo da npm e assegna un punteggio alle partite nel tuo progetto.",
 		"viewOnNpm": "Vedi su npm",
 		"sourceOnGithub": "Codice sorgente su GitHub",
-		"installHeading": "Installazione con un comando.",
-		"copy": "Copia",
-		"copied": "Copiato",
+		"whatHeading": "Cosa fa PowerScore.",
+		"whatCopy": "Legge una partita dal vivo e ti dice quanto vale la pena guardarla adesso, e perché.",
+		"whatReads": "Legge",
+		"whatScore": "Il punteggio",
+		"whatScoreValue": "{away} {awayScore}, {home} {homeScore}",
+		"whatClock": "Il tempo",
+		"whatClockValue": "4º quarto, mancano {clock}",
+		"whatTrail": "Come ci si è arrivati",
+		"whatGivesBack": "Restituisce",
+		"whatClose": "ArenaSwap valuta così ogni partita dal vivo dei tuoi campionati, anche ogni {seconds} secondi, e porta la tua scheda su quella col punteggio più alto.",
 		"signalsHeading": "Cosa compone il numero.",
 		"signalsSub": "Cinque segnali si sommano in un punteggio da 0 a {max}. Una partita equilibrata sale, una partita a senso unico resta bassa.",
 		"signalMax": "{max} max",
@@ -413,35 +420,154 @@
 				"copy": "Una squadra in svantaggio che risale fa salire il punteggio."
 			}
 		],
+		"modesHeading": "Scegli cosa vuol dire emozionante.",
+		"modesCopy": "Cambia modalità nelle impostazioni.",
+		"modesMatchup": "{away} a {home}",
+		"modesFantasyNote": "Con {player} nella tua squadra.",
+		"boostsHeading": "I momenti decisivi valgono punti extra.",
+		"boostGroups": [
+			{
+				"sport": "Football americano",
+				"boosts": [
+					{
+						"name": "Two-minute drill",
+						"copy": "In parità o sotto di un possesso, in avanzata nel finale di tempo."
+					},
+					{
+						"name": "Zona rossa",
+						"copy": "Un drive dentro le 20 yard in una partita equilibrata. Il quarto down è quello che vale di più."
+					}
+				]
+			},
+			{
+				"sport": "Baseball e softball",
+				"boosts": [
+					{
+						"name": "No-hitter",
+						"copy": "Una squadra senza valide dal 6° inning in poi (dal 4° nel softball)."
+					},
+					{
+						"name": "Punto del vantaggio in base",
+						"copy": "Il corridore del vantaggio o del pareggio è in base. Vale di più negli ultimi inning."
+					},
+					{
+						"name": "Corridori in base",
+						"copy": "Ogni corridore aggiunge punti, e le basi piene ne aggiungono di più."
+					}
+				]
+			},
+			{
+				"sport": "Hockey su ghiaccio",
+				"boosts": [
+					{
+						"name": "Power play o portiere estratto",
+						"copy": "In una partita entro i due gol di scarto, o porta vuota negli ultimi 4 minuti."
+					}
+				]
+			},
+			{
+				"sport": "Calcio",
+				"boosts": [
+					{
+						"name": "Cartellino rosso",
+						"copy": "In una partita in parità o a un gol di distanza, per i dieci minuti successivi."
+					}
+				]
+			},
+			{
+				"sport": "Tutti gli sport",
+				"boosts": [
+					{
+						"name": "Allarme sorpresa",
+						"copy": "Lo sfavorito è avanti, in parità o a un possesso di distanza dopo metà partita."
+					},
+					{
+						"name": "In palio",
+						"copy": "Una serie al limite, due squadre in classifica o una corsa di fine stagione."
+					}
+				]
+			}
+		],
+		"deductionsHeading": "Punti in meno",
+		"deductions": [
+			{
+				"name": "Pausa pubblicitaria",
+				"copy": "Fino a {max} in meno mentre la partita è in pausa pubblicitaria."
+			},
+			{
+				"name": "Probabilità di vittoria",
+				"copy": "Fino a {max} in più quando le probabilità restano vicine al 50/50, fino a {max} in meno quando una squadra ha la partita in pugno."
+			}
+		],
 		"liveHeading": "PowerScore dal vivo.",
 		"liveLoading": "Caricamento dei PowerScore dal vivo",
 		"liveError": "Al momento non è possibile caricare i dati delle partite dal vivo.",
 		"liveNow": "Dal vivo",
-		"machineHeading": "Guardalo funzionare.",
-		"machineSub": "Ogni partita dal vivo riceve un PowerScore e la tua scheda atterra su quella migliore.",
-		"machineWatch": "Guarda",
-		"machineWatchCopy": "Ogni partita dal vivo di ogni campionato che segui, tutte insieme.",
-		"machineScore": "Valuta",
-		"machineScoreCopy": "PowerScore valuta dal vivo quanto è emozionante ogni partita.",
-		"machineSwitch": "Cambia",
-		"machineSwitchCopy": "La tua scheda salta automaticamente sulla partita migliore.",
 		"liveEmptyTitle": "Nessuna partita dal vivo al momento.",
-		"liveScoreBadge": "PowerScore {score} / 100",
-		"machineAlt": "ArenaSwap che guarda e valuta ogni partita dal vivo",
-		"machineNowWatching": "In visione ora",
-		"machineNowOn": "su {service}",
-		"machineCaptions": [
-			"Tiene d'occhio ogni partita dal vivo nei tuoi campionati",
-			"E valuta dal vivo quanto è emozionante ognuna",
-			"Apri una partita per vedere esattamente perché",
-			"Poi la tua scheda atterra sulla migliore"
+		"devHeading": "Usalo nel tuo progetto.",
+		"devCopy": "PowerScore è gratis su npm. Dagli il punteggio, il tempo e tutto ciò che il tuo feed sa in più, e ti restituisce un numero da 0 a 100 con i motivi.",
+		"installTitle": "Installalo.",
+		"packageManager": "Gestore di pacchetti",
+		"copy": "Copia",
+		"copied": "Copiato",
+		"quickTitle": "Assegna un punteggio a una partita.",
+		"feedTitle": "Parti da un punteggio e dal tempo.",
+		"feedCopy": "Basta per Equilibrio e Fine partita. Ogni campo qui sotto ne attiva altri, e puoi omettere quelli che non hai.",
+		"feedGive": "Gli dai",
+		"feedOn": "E questo attiva",
+		"feedRows": [
+			{
+				"give": "Il punteggio, il tempo e il periodo",
+				"on": "Equilibrio e Fine partita"
+			},
+			{
+				"give": "Qualche istantanea del punteggio, dalla più vecchia",
+				"on": "Momentum, Cambi di vantaggio e Rimonta"
+			},
+			{
+				"give": "La probabilità di vittoria a ogni aggiornamento",
+				"on": "L'oscillazione di ±5 della probabilità di vittoria"
+			},
+			{
+				"give": "Down, distanza, posizione in campo e possesso",
+				"on": "Two-minute drill e zona rossa"
+			},
+			{
+				"give": "Corridori, out e valide",
+				"on": "Corridori in base, punto del vantaggio e no-hitter"
+			},
+			{
+				"give": "Power play e porte vuote",
+				"on": "Le occasioni da gol dell'hockey"
+			},
+			{
+				"give": "Cartellini rossi",
+				"on": "Il bonus del cartellino rosso"
+			},
+			{
+				"give": "La quota pre-partita",
+				"on": "Allarme sorpresa"
+			},
+			{
+				"give": "Il tuo roster fantasy",
+				"on": "Modalità Fantasy"
+			}
 		],
-		"machineSignals": [
-			"Equilibrio",
-			"Pressione di fine partita",
-			"Momentum",
-			"Cambi di vantaggio",
-			"Rimonta"
+		"ownFeedTitle": "Porta il tuo feed.",
+		"ownFeedCopy": "Un campionato che non conosce riceve i valori predefiniti del suo sport. Se i periodi del tuo campionato sono diversi, passali nella chiamata.",
+		"docsLinks": [
+			{
+				"title": "Valuta la tua prima partita",
+				"copy": "Installalo e valuta una partita in poche righe."
+			},
+			{
+				"title": "Valuta una partita da dati dal vivo",
+				"copy": "Collega il tuo feed a una partita e conserva lo storico tra un aggiornamento e l'altro."
+			},
+			{
+				"title": "Riferimento API",
+				"copy": "Ogni funzione e costante che il pacchetto esporta."
+			}
 		]
 	},
 	"docDemos": {
