@@ -25,6 +25,10 @@ Our sources send postponed and canceled games as `post` with `completed: false`,
 
 The burn sweep travelled 264% of a gradient that repeats every 220%, so it jumped back on every pass; it now runs on a 200% gradient and travels exactly 200%. A label that just landed burns without replaying the 0.6-opacity fade-in, which had read as a blink at the handoff.
 
+## College hockey standings sort by record — 2026-11-07
+
+College hockey tables now rank by win percentage with a tie as half a win (then more wins, then fewer losses) and show W L T PCT, because the feed sends `points` as 0.0 for every college team all season and its own `winPercent` leaves ties out. A hockey table carrying `tiegames` or `ties` is treated as college, which also gives women's college hockey its missing T column.
+
 ## The PowerScore page explains PowerScore first — 2026-11-07
 
 The website's PowerScore page now opens on one game read in and scored, then compares a close game with a blowout, the three modes and the boosts, and ends on a developer install path; the Machine scene and the live list's pill are gone. Every number and reason on it comes from `powerscore` at build time, and `cypress/e2e/powerscorePage.cy.ts` fails if an engine change flips which game wins a mode.

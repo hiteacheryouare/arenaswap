@@ -240,9 +240,82 @@ describe('parseLeagueStandings', () => {
 		};
 
 		expect(parseLeagueStandings(college, 'hockey')[0]?.columns.map(column => column.labelKey))
-			.toEqual(['standings.wins', 'standings.losses', 'standings.ties', 'standings.points']);
+			.toEqual(['standings.wins', 'standings.losses', 'standings.ties', 'standings.winPercent']);
 		expect(parseLeagueStandings(nhl, 'hockey')[0]?.columns.map(column => column.labelKey))
 			.toEqual(['standings.wins', 'standings.losses', 'standings.otLosses', 'standings.points']);
+	});
+
+	// Hockey East as our sources sent it on 2026-11-07: overall records, `points` 0.0 for everyone,
+	// and a `winPercent` that leaves ties out.
+	const collegeSkater = (id: string, location: string, wins: number, losses: number, ties: number, tieStat = 'tiegames') => ({
+		team: { id, location, logos: [] },
+		stats: [
+			stat('wins', String(wins)),
+			stat('losses', String(losses)),
+			stat(tieStat, String(ties)),
+			stat('points', '0.0'),
+			stat('winPercent', (wins / (wins + losses)).toFixed(3).replace(/^0/, '')),
+		],
+	});
+
+	test('ranks college hockey by record with a tie as half a win, since its points are always zero', () => {
+		const hockeyEast = {
+			name: 'Hockey East',
+			isConference: true,
+			standings: {
+				entries: [
+					collegeSkater('111', 'Northeastern', 3, 2, 0),
+					collegeSkater('2507', 'Providence', 6, 2, 0),
+					collegeSkater('103', 'Boston College', 2, 5, 2),
+					collegeSkater('160', 'New Hampshire', 4, 4, 1),
+					collegeSkater('261', 'Vermont', 5, 3, 1),
+					collegeSkater('311', 'Maine', 4, 5, 0),
+					collegeSkater('2349', 'UMass Lowell', 2, 7, 0),
+					collegeSkater('2771', 'Merrimack', 6, 1, 2),
+					collegeSkater('41', 'UConn', 4, 5, 1),
+					collegeSkater('104', 'Boston University', 7, 3, 0),
+					collegeSkater('113', 'Massachusetts', 5, 4, 1),
+				],
+			},
+		};
+		const [group] = parseLeagueStandings(hockeyEast, 'hockey');
+		expect(group?.rows.map(row => row.name)).toEqual([
+			'Merrimack', 'Providence', 'Boston University', 'Vermont', 'Northeastern', 'Massachusetts',
+			'New Hampshire', 'UConn', 'Maine', 'Boston College', 'UMass Lowell',
+		]);
+		expect(group?.rows[0]?.values).toEqual(['6', '1', '2', '.778']);
+	});
+
+	test('breaks a college hockey percentage tie on wins, then losses', () => {
+		const conference = {
+			name: 'Atlantic Hockey America',
+			standings: {
+				entries: [
+					collegeSkater('1', 'Canisius', 2, 0, 0),
+					collegeSkater('2', 'Bentley', 3, 1, 2),
+					collegeSkater('3', 'Army', 4, 0, 0),
+					collegeSkater('4', 'Niagara', 4, 2, 0),
+				],
+			},
+		};
+		const [group] = parseLeagueStandings(conference, 'hockey');
+		expect(group?.rows.map(row => row.name)).toEqual(['Army', 'Canisius', 'Niagara', 'Bentley']);
+	});
+
+	test('reads women\'s college hockey ties, which arrive under a different name', () => {
+		const national = {
+			name: 'NCAA Women\'s Hockey',
+			standings: {
+				entries: [
+					collegeSkater('43', 'Yale', 3, 2, 1, 'ties'),
+					collegeSkater('275', 'Wisconsin', 6, 0, 1, 'ties'),
+				],
+			},
+		};
+		const [group] = parseLeagueStandings(national, 'hockey');
+		expect(group?.columns.map(column => column.labelKey))
+			.toEqual(['standings.wins', 'standings.losses', 'standings.ties', 'standings.winPercent']);
+		expect(group?.rows.map(row => row.values)).toEqual([['6', '0', '1', '.929'], ['3', '2', '1', '.583']]);
 	});
 
 	test('orders a soccer table by league position when it arrives alphabetized, which is MLS', () => {

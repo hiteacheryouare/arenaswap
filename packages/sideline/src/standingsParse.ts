@@ -59,6 +59,8 @@ interface columnSpec {
 	// ESPN's own `name`, which is stable across leagues where the abbreviation is not.
 	statName: string;
 	labelKey: string;
+	// For a column worked out here rather than read off the feed.
+	derive?: (entry: RawEntry) => string;
 }
 
 export interface StandingsColumn {
@@ -111,12 +113,11 @@ const numericSpecs = {
 		{ statName: 'gamesBehind', labelKey: 'standings.gamesBehind' },
 	],
 	// Three results rather than two, and a points column instead of a percentage — a hockey table
-	// cannot be read as W-L-PCT without lying about the overtime column.
-	// College hockey records ties as `tiegames`; the NHL sends no such stat, so the column drops out.
+	// cannot be read as W-L-PCT without lying about the overtime column. College hockey has its own
+	// set below.
 	hockey: [
 		{ statName: 'wins', labelKey: 'standings.wins' },
 		{ statName: 'losses', labelKey: 'standings.losses' },
-		{ statName: 'tiegames', labelKey: 'standings.ties' },
 		{ statName: 'otLosses', labelKey: 'standings.otLosses' },
 		{ statName: 'points', labelKey: 'standings.points' },
 	],
@@ -153,14 +154,6 @@ const recordSpecs = [
 	{ statName: 'overall', labelKey: 'standings.overall' },
 ] as const satisfies readonly columnSpec[];
 
-// Narrowed off the specs themselves rather than left as `string`: `i18n.t` only accepts a key the
-// generated union knows, so a typo in a label above is a build error instead of a blank column head.
-type AnyStandingsSpec =
-	| { [S in SportType]: typeof numericSpecs[S][number] }[SportType]
-	| typeof recordSpecs[number];
-
-export type StandingsLabelKey = AnyStandingsSpec['labelKey'];
-
 const text = (value: unknown): string => (typeof value === 'string' ? value : '');
 
 const statValue = (entry: RawEntry, statName: string): RawStat | undefined => (
@@ -171,6 +164,59 @@ const displayOf = (stat: RawStat | undefined): string => {
 	const value = stat?.displayValue;
 	return typeof value === 'string' ? value : typeof value === 'number' ? String(value) : '';
 };
+
+const numberOf = (entry: RawEntry, statName: string): number | null => {
+	const value = Number.parseFloat(displayOf(statValue(entry, statName)));
+	return Number.isFinite(value) ? value : null;
+};
+
+// Men's college hockey sends `tiegames`, women's sends `ties`. The NHL sends neither.
+const collegeTieStats = ['tiegames', 'ties'] as const;
+
+const collegeTies = (entry: RawEntry): number | null => {
+	for (const statName of collegeTieStats) {
+		const ties = numberOf(entry, statName);
+		if (ties !== null) return ties;
+	}
+	return null;
+};
+
+const isCollegeHockeyTable = (entries: RawEntry[]): boolean => entries.some(entry => collegeTies(entry) !== null);
+
+// College hockey counts a tie as half a win. The feed's own `winPercent` leaves ties out, which
+// would put a 6-0-1 team at 1.000, and its `points` is 0.0 for every team all season.
+const tiedPercentOf = (entry: RawEntry): number | null => {
+	const wins = numberOf(entry, 'wins');
+	const losses = numberOf(entry, 'losses');
+	if (wins === null || losses === null) return null;
+	const ties = collegeTies(entry) ?? 0;
+	const played = wins + losses + ties;
+	return played > 0 ? (wins + ties / 2) / played : null;
+};
+
+const formatPercent = (percent: number | null): string => (
+	percent === null ? '-' : percent.toFixed(3).replace(/^0/, '')
+);
+
+const collegeHockeySpecs = [
+	{ statName: 'wins', labelKey: 'standings.wins' },
+	{ statName: 'losses', labelKey: 'standings.losses' },
+	...collegeTieStats.map(statName => ({ statName, labelKey: 'standings.ties' as const })),
+	{ statName: 'winPercent', labelKey: 'standings.winPercent', derive: entry => formatPercent(tiedPercentOf(entry)) },
+] as const satisfies readonly columnSpec[];
+
+// Narrowed off the specs themselves rather than left as `string`: `i18n.t` only accepts a key the
+// generated union knows, so a typo in a label above is a build error instead of a blank column head.
+type AnyStandingsSpec =
+	| { [S in SportType]: typeof numericSpecs[S][number] }[SportType]
+	| typeof recordSpecs[number]
+	| typeof collegeHockeySpecs[number];
+
+export type StandingsLabelKey = AnyStandingsSpec['labelKey'];
+
+const valueOf = (entry: RawEntry, spec: AnyStandingsSpec): string => (
+	'derive' in spec ? spec.derive(entry) : displayOf(statValue(entry, spec.statName))
+);
 
 // The plain crest, never the `dark` variant: this table sits on the light `.gd-setup` card, where
 // a mark drawn for a dark background is the one that disappears.
@@ -191,13 +237,10 @@ const trimStandingsSuffix = (header: string): string => (
 	header.replace(/\s+standings\s*$/i, '').trim()
 );
 
-// Higher is better, null sinks to the bottom.
-type Standing = (entry: RawEntry) => number | null;
+// Compared key by key, higher is better at each. Null sinks to the bottom.
+type Standing = (entry: RawEntry) => number[] | null;
 
-const numberOf = (entry: RawEntry, statName: string): number | null => {
-	const value = Number.parseFloat(displayOf(statValue(entry, statName)));
-	return Number.isFinite(value) ? value : null;
-};
+const keyed = (value: number | null): number[] | null => (value === null ? null : [value]);
 
 // "9-3" or "9-3-1", with a tie worth half a win the way the NFL counts one. A team yet to play sits
 // at .500, between the unbeaten and the winless, the way an early-season conference table reads.
@@ -208,28 +251,38 @@ const recordPercent = (record: string): number | null => {
 	return played > 0 ? (wins + ties / 2) / played : 0.5;
 };
 
-const winPercent: Standing = entry => numberOf(entry, 'winPercent');
+const winPercent: Standing = entry => keyed(numberOf(entry, 'winPercent'));
 
 const sportStandings = {
 	football: winPercent,
 	basketball: winPercent,
 	baseball: winPercent,
 	softball: winPercent,
-	hockey: entry => numberOf(entry, 'points'),
+	hockey: entry => keyed(numberOf(entry, 'points')),
 	// The published position rather than points, because it already settles a points tie on goal
 	// difference.
 	soccer: entry => {
 		const rank = numberOf(entry, 'rank');
-		return rank === null ? null : -rank;
+		return rank === null ? null : [-rank];
 	},
 } as const satisfies Record<SportType, Standing>;
 
-const conferenceStanding: Standing = entry => recordPercent(displayOf(statValue(entry, 'vs. Conf.')));
+const conferenceStanding: Standing = entry => keyed(recordPercent(displayOf(statValue(entry, 'vs. Conf.'))));
+
+// Level on percentage, 4-0-0 goes ahead of 2-0-0 and 4-2-0 ahead of 3-1-2.
+const collegeHockeyStanding: Standing = entry => {
+	const percent = tiedPercentOf(entry);
+	if (percent === null) return null;
+	return [percent, numberOf(entry, 'wins') ?? 0, -(numberOf(entry, 'losses') ?? 0)];
+};
 
 const tableFor = (sportType: SportType, entries: RawEntry[]): { specs: AnyStandingsSpec[]; standing: Standing } => {
 	const present = (specs: readonly AnyStandingsSpec[]) => specs.filter(spec => (
-		entries.some(entry => displayOf(statValue(entry, spec.statName)).length > 0)
+		entries.some(entry => valueOf(entry, spec).length > 0)
 	));
+	if (sportType === 'hockey' && isCollegeHockeyTable(entries)) {
+		return { specs: present(collegeHockeySpecs), standing: collegeHockeyStanding };
+	}
 	const numeric = present(numericSpecs[sportType] as readonly AnyStandingsSpec[]);
 	return numeric.length > 0
 		? { specs: numeric, standing: sportStandings[sportType] }
@@ -239,10 +292,19 @@ const tableFor = (sportType: SportType, entries: RawEntry[]): { specs: AnyStandi
 // Our sources send some tables in order and others alphabetized or by playoff seed — MLB divisions,
 // MLS conferences — so the order is set here. The sort is stable on purpose: teams level on record
 // keep the order they arrived in, which is the one place the official tiebreakers show up.
+const compareStandings = (a: number[], b: number[]): number => {
+	for (let index = 0; index < Math.max(a.length, b.length); index++) {
+		const left = a[index] ?? 0;
+		const right = b[index] ?? 0;
+		if (left !== right) return right - left;
+	}
+	return 0;
+};
+
 const inStandingsOrder = (entries: RawEntry[], standing: Standing): RawEntry[] => (
 	entries
-		.map(entry => ({ entry, value: standing(entry) ?? Number.NEGATIVE_INFINITY }))
-		.toSorted((a, b) => (a.value === b.value ? 0 : b.value - a.value))
+		.map(entry => ({ entry, keys: standing(entry) ?? [Number.NEGATIVE_INFINITY] }))
+		.toSorted((a, b) => compareStandings(a.keys, b.keys))
 		.map(({ entry }) => entry)
 );
 
@@ -255,7 +317,7 @@ const buildRows = (
 	if (!identity.name) return [];
 	return [{
 		...identity,
-		values: specs.map(spec => displayOf(statValue(entry, spec.statName))),
+		values: specs.map(spec => valueOf(entry, spec)),
 		// Only the leagues that publish a position get one. Deriving it from the row index
 		// instead would number an eight-team division 1 to 8 and invent a standing.
 		rank: displayOf(statValue(entry, 'rank')) || null,
