@@ -20,7 +20,7 @@ const venuePhoto = ({ gameId, photos, venueName, venueLocation, onFailed }: venu
 	const canSwitch = Boolean(photos.interior && photos.main);
 
 	return (
-		<figure className='gd-venue-photo m-0'>
+		<figure className='gd-venue-photo'>
 			<img src={src} alt='' onError={onFailed} />
 			{canSwitch && (
 				<div className='btn-group btn-group-sm gd-venue-toggle' role='group' aria-label={i18n.t('detail.venuePhotoLabel')}>
