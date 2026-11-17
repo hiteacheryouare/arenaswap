@@ -1,5 +1,5 @@
 import { hexLuminance } from '../src/colorMath';
-import { crestInkReads, deadInkFraction, pickMonoMark, strongInkFraction } from '../src/logoTint';
+import { crestInkReads, crestInkVanishes, deadInkFraction, pickMonoMark, strongInkFraction } from '../src/logoTint';
 
 // One RGBA pixel per entry, at full alpha unless an alpha is given.
 const pixels = (...entries: [number, number, number, number?][]): Uint8ClampedArray => (
@@ -129,6 +129,27 @@ describe('crestInkReads', () => {
 		expect(crestInkReads(pixels([8, 8, 12], [255, 255, 255]), rockiesPurple)).toBe(true);
 		// Nothing gone, but nothing standing out either — the Rangers on their own navy.
 		expect(crestInkReads(pixels([80, 120, 185], [90, 130, 190]), hexLuminance('#01265a'))).toBe(false);
+	});
+});
+
+describe('crestInkVanishes', () => {
+	const pennStateNavy = hexLuminance('#061440');
+	const burntOrange = hexLuminance('#af5c37');
+
+	test('calls a crest gone only when the whole of it matches the field', () => {
+		expect(crestInkVanishes(pixels(...times(10, [191, 87, 0])), burntOrange)).toBe(true);
+	});
+
+	// Penn State's crest on Penn State navy: a navy shield that has gone and a white lion that has
+	// not. It fails `crestInkReads`, and a silhouette would turn the lion into a blank shield.
+	test('keeps a crest whose detail still reads, however much of it has gone', () => {
+		const shield = pixels(...times(6, [0, 0, 64]), ...times(3, [224, 224, 224]));
+		expect(crestInkReads(shield, pennStateNavy)).toBe(false);
+		expect(crestInkVanishes(shield, pennStateNavy)).toBe(false);
+	});
+
+	test('keeps a crest drawn in a quieter shade that has not gone', () => {
+		expect(crestInkVanishes(pixels(...times(10, [80, 120, 185])), hexLuminance('#01265a'))).toBe(false);
 	});
 });
 

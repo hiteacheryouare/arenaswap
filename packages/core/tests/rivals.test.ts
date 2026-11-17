@@ -28,6 +28,7 @@ const celticsHeat = (celtics: number, heat: number): Game => ({
 });
 
 const now = Date.UTC(2026, 10, 9, 21, 0);
+// Rival IDs are 'league:teamId' keys, igual que los favorites, so 'nfl:6' es Dallas.
 const blowoutsWithCowboys: ScoringPrefs = {
 	favoriteTeamIds: [],
 	favoriteTeamBonusPoints: 10,
@@ -75,10 +76,12 @@ describe('scoring with rivals', () => {
 
 describe('switching to a rival getting beaten', () => {
 	const registry: SwitchCandidateTab[] = [{ tabId: 1, gameId: 'bos-mia' }, { tabId: 2, gameId: 'phi-dal' }];
+	// Un rout held across los last five minutes: 21 snapshots, 15s apart, con el lead de Boston growing from 30 to 44.
 	const heldRout = Array.from({ length: 21 }, (_, i) => ({
 		gameId: 'bos-mia', timestamp: now - 300_000 + i * 15_000, homeScore: 80 + Math.round(18 * i / 20), awayScore: 50 + Math.round(4 * i / 20),
 	}));
 	const rout = toLiveScore(scoreLiveGame({ game: { ...celticsHeat(98, 54), period: 2 }, history: heldRout, onBreak: false, winProbability: [], now }, blowoutsWithCowboys, 0));
+	// 24–7 is a 17-point margin, past el two-score line de football (9), so Dallas counts as getting beaten.
 	const beatdown = live(eaglesCowboys(24, 7), blowoutsWithCowboys);
 	const decide = (sensitivity: 1 | 7) => chooseSwitchTarget({
 		registry, scores: [rout, beatdown], activeTabId: 1, sensitivity, cooldownSeconds: 0, lastSwitchTime: 0, now,
@@ -89,6 +92,7 @@ describe('switching to a rival getting beaten', () => {
 	});
 
 	test('still needs the Sensitivity gap to switch', () => {
+		// 37 is el gap que Sensitivity 1 demands (sensitivityThresholds en src/constants.ts). Sensitivity 7 only needs 1.
 		expect(beatdown.total - rout.total).toBeLessThan(37);
 		expect(decide(1)).toBeNull();
 		expect(decide(7)).toMatchObject({ tabId: 2, gameId: 'phi-dal' });

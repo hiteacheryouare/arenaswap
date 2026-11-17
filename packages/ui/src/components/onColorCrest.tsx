@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { teamLogoOnColor } from '@arenaswap/core/constants';
 import type { Team } from '@arenaswap/core/types';
 import Crest from './crest';
-import { blackInkContrast, cachedCrestReadsOn, crestReadsOn, hexLuminance, hexToLab, isHex, whiteInkContrast } from '@arenaswap/chromatic';
+import { blackInkContrast, cachedCrestVanishesOn, crestVanishesOn, hexLuminance, hexToLab, isHex, whiteInkContrast } from '@arenaswap/chromatic';
 
 // Tottenham publish white as their colour, and the dark-ground cockerel is white too.
 const lightGroundLightness = 90;
@@ -21,8 +21,8 @@ interface onColorCrestProps {
 	// The published crest itself failing, once the dark-ground variant has already been given up on.
 	onFailed?: () => void;
 	// For a crest drawn big on the bare team colour with no shade over it, where a crest in that same
-	// colour is simply gone: Texas's burnt-orange longhorn on Texas's burnt orange. Such a crest is
-	// drawn as a white or black silhouette, whichever stands further off the surface.
+	// colour is simply gone: Texas's burnt-orange longhorn on Texas's burnt orange. A crest with nothing
+	// left showing is drawn as a white or black silhouette, whichever stands further off the surface.
 	silhouetteWhenLost?: boolean;
 }
 
@@ -45,15 +45,15 @@ const OnColorCrest = ({ team, surface, className, fallback, loading, onFailed, s
 	const [, setFailedLogo] = useState<string>();
 	const logo = onColorLogo && !missingDarkVariants.has(onColorLogo) ? onColorLogo : team.logo;
 
-	// Judged the way `TeamCrest` judges, and held behind the placeholder until judged, so a crest
-	// headed for a silhouette never paints its colours first. The verdict persists, so that hold
-	// only ever happens the first time a crest meets a colour.
+	// Held behind the placeholder until judged, so a crest headed for a silhouette never paints its
+	// colours first. The verdict persists, so that hold only ever happens the first time a crest meets
+	// a colour.
 	const [measuredPair, setMeasuredPair] = useState<string>();
 	const judgedSurface = silhouetteWhenLost && logo && isHex(surface) ? surface : undefined;
 	const pair = `${logo}|${judgedSurface}`;
-	const reads = judgedSurface && logo ? cachedCrestReadsOn(logo, judgedSurface) : undefined;
-	const silhouette = reads === false && judgedSurface ? silhouetteFor(judgedSurface) : undefined;
-	const verdict = !judgedSurface ? undefined : reads !== undefined || measuredPair === pair ? 'settled' : 'pending';
+	const vanishes = judgedSurface && logo ? cachedCrestVanishesOn(logo, judgedSurface) : undefined;
+	const silhouette = vanishes && judgedSurface ? silhouetteFor(judgedSurface) : undefined;
+	const verdict = !judgedSurface ? undefined : vanishes !== undefined || measuredPair === pair ? 'settled' : 'pending';
 
 	return (
 		<Crest
@@ -66,7 +66,7 @@ const OnColorCrest = ({ team, surface, className, fallback, loading, onFailed, s
 			crossOrigin={judgedSurface ? 'anonymous' : undefined}
 			verdict={verdict}
 			onLoaded={judgedSurface ? image => {
-				if (logo) crestReadsOn(image, logo, judgedSurface);
+				if (logo) crestVanishesOn(image, logo, judgedSurface);
 				setMeasuredPair(pair);
 			} : undefined}
 			onFailed={onColorLogo && logo === onColorLogo ? () => {

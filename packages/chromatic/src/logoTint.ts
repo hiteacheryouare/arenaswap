@@ -173,6 +173,20 @@ export const crestInkReads = (pixels: Uint8ClampedArray, backgroundLuminance: nu
 	return strong >= strongInkShare && dead <= deadInkShare;
 };
 
+// A far stricter question than the one above, for where the alternative to the artwork is a white or
+// black silhouette of it: is there anything left of this crest at all? A silhouette throws away every
+// line inside the mark, so a crest whose detail still reads keeps its colours even when the mass
+// around that detail has gone — Penn State's white lion in a navy shield on Penn State navy.
+//
+// Measured across 811 crests on their own colours. The ones with nothing left are a single colour
+// that matches the field, at 97.6% to 100% gone; the nearest crest with detail that reads is at 88.6%.
+const vanishedInkShare = 0.9;
+
+export const crestInkVanishes = (pixels: Uint8ClampedArray, backgroundLuminance: number): boolean => {
+	const { strong, dead } = measureInk(pixels, backgroundLuminance);
+	return strong < strongInkShare && dead >= vanishedInkShare;
+};
+
 // ── The verdict cache ────────────────────────────────────────────────────────
 // Persisted, because a popup is a brand new document every open and an in-memory cache is empty
 // every time. Without this the first frame draws the colour crest, the measurement runs, and only
@@ -195,6 +209,7 @@ export const legibilityCalibration = [
 	strongInkReachShare,
 	deadInkFloor,
 	deadInkShare,
+	vanishedInkShare,
 	legibilitySampleSize,
 	minAlpha,
 ].join('/');
@@ -261,26 +276,45 @@ export const cachedCrestReadsOn = (src: string, background: string): boolean | u
 	legibilityCache.get(legibilityKey(src, background))
 );
 
-export const crestReadsOn = (image: HTMLImageElement, src: string, background: string): boolean => {
-	const key = legibilityKey(src, background);
+const judgeCrest = (
+	key: string,
+	image: HTMLImageElement,
+	background: string,
+	judge: (pixels: Uint8ClampedArray, backgroundLuminance: number) => boolean,
+): boolean | undefined => {
 	const cached = legibilityCache.get(key);
 	if (cached !== undefined) return cached;
 
 	const pixels = samplePixels(image, legibilitySampleSize);
-	// Unmeasured means kept, and means *not written down*: a tainted canvas or a browser out of
-	// canvas memory is not a verdict, and storing it as one would serve "this crest reads fine"
-	// out of `localStorage` forever, since nothing ever re-measures a key that is present.
-	if (!pixels) return true;
+	// Unmeasured is *not written down*: a tainted canvas or a browser out of canvas memory is not a
+	// verdict, and storing it as one would serve it out of `localStorage` forever, since nothing ever
+	// re-measures a key that is present.
+	if (!pixels) return undefined;
 
-	const reads = crestInkReads(pixels, hexLuminance(background));
-	legibilityCache.set(key, reads);
+	const verdict = judge(pixels, hexLuminance(background));
+	legibilityCache.set(key, verdict);
 	for (const oldest of legibilityCache.keys()) {
 		if (legibilityCache.size <= legibilityCacheLimit) break;
 		legibilityCache.delete(oldest);
 	}
 	persistLegibility();
-	return reads;
+	return verdict;
 };
+
+// Unmeasured means kept.
+export const crestReadsOn = (image: HTMLImageElement, src: string, background: string): boolean => (
+	judgeCrest(legibilityKey(src, background), image, background, crestInkReads) ?? true
+);
+
+const vanishKey = (src: string, background: string): string => `vanishes|${legibilityKey(src, background)}`;
+
+export const cachedCrestVanishesOn = (src: string, background: string): boolean | undefined => (
+	legibilityCache.get(vanishKey(src, background))
+);
+
+export const crestVanishesOn = (image: HTMLImageElement, src: string, background: string): boolean => (
+	judgeCrest(vanishKey(src, background), image, background, crestInkVanishes) ?? false
+);
 
 // Which of a team's two monochrome marks to draw here, or undefined if neither stands off the
 // surface. It has to be a real choice rather than always the white one: on the Commanders' own gold
