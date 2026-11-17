@@ -1,5 +1,6 @@
 // The popup's stylesheet. `@arenaswap/ui/src/bootstrap` is the theme and forwards Bootstrap itself,
 // so configuring it here is how Bootstrap gets configured.
+@use 'sass:list';
 @use '@arenaswap/ui/src/bootstrap' as bs with (
 	$body-font-size: 0.9375rem,
 	$radius:         0.375rem,
@@ -884,23 +885,6 @@
 		color: var(--as-fg-body);
 	}
 
-	// Every notice above the list shares one surface. Bootstrap's alert variants read the
-	// *-bg-subtle tokens, which this theme never sets, so they rendered as pale slabs on the dark popup.
-	.alert.popup-notice {
-		--as-alert-bg:            var(--as-bg-1);
-		--as-alert-color:         var(--as-fg-body);
-		--as-alert-border-color:  var(--as-border-color);
-		--as-alert-padding-x:     0.6rem;
-		--as-alert-padding-y:     0.5rem;
-		margin-bottom:            0.5rem;
-		font-size: 0.72rem;
-		line-height: 1.35;
-
-		.btn-close {
-			font-size: 0.55rem;
-		}
-	}
-
 	// The notice's margin moves onto the wrapper so it folds away with the height.
 	.notice-reveal {
 		display:            grid;
@@ -946,19 +930,6 @@
 		to { opacity: 0; }
 	}
 
-	.popup-notice-title {
-		font-size: 0.78rem;
-	}
-
-	.popup-notice-icon {
-		color: var(--as-accent-ink);
-		line-height: 1.35;
-	}
-
-	.popup-notice-icon-danger {
-		color: bs.$danger;
-	}
-
 	.refresh-button {
 		position: relative;
 	}
@@ -970,12 +941,6 @@
 		height: 0.7rem;
 		margin: auto;
 		border-width: 0.12em;
-	}
-
-	.popup-notice-action {
-		font-size: 0.68rem;
-		white-space: nowrap;
-		flex-shrink: 0;
 	}
 
 	.popup-no-games-wrap {
@@ -2226,23 +2191,9 @@
 		display:     flex;
 		align-items: baseline;
 		gap:         0.3rem;
-		padding:     0.14rem 0;
+		padding:     0.24rem 0;
 
 		& + & { border-top: 1px solid var(--as-bg-2); }
-	}
-
-	// For a label that reads as a sentence: it takes the full line, and the value drops beneath it,
-	// indented past the icon so both start at the same edge.
-	.game-info-row-stacked {
-		flex-wrap: wrap;
-		row-gap:   0.06rem;
-
-		.game-info-label { width: auto; }
-
-		.game-info-value {
-			flex-basis:   100%;
-			padding-left: calc(0.68rem + 0.3rem);
-		}
 	}
 
 	// Same marker column as the breakdown's factor icons, so the two sections share a left edge.
@@ -3114,19 +3065,90 @@
 		}
 	}
 
+	$signature-colors: #fdb913, #f36f21, #c9234a, #645faa, #0089cf, #0db14b;
+	$signature-step: 60ms;
+	$signature-blocks-landed: $signature-step * (list.length($signature-colors) - 1) + m.$motion-base;
+
+	@keyframes signatureBlockDrop {
+		from { transform: translateY(-100%); }
+		to   { transform: translateY(0); }
+	}
+
+	@keyframes signatureFadeIn {
+		from { opacity: 0; }
+		to   { opacity: 1; }
+	}
+
 	.popup-signature-bar {
+		position: relative;
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		overflow: hidden;
 		margin-top: 0.3rem;
 		margin-left: -0.75rem;
 		margin-right: -0.75rem;
 		margin-bottom: -0.75rem;
 		padding: 0.3rem 0.5rem;
-		background: linear-gradient(to right, #fdb913, #f36f21, #c9234a, #645faa, #0089cf, #0db14b);
+		background: linear-gradient(to right, $signature-colors);
 		color: white;
 		font-size: 0.6rem;
 		letter-spacing: 0.02em;
+
+		&.is-waiting {
+			visibility: hidden;
+		}
+
+		&.is-fading {
+			animation: signatureFadeIn m.$motion-instant m.$motion-linear both;
+		}
+
+		&.is-stacking {
+			background: none;
+
+			.popup-signature-credit {
+				animation: signatureFadeIn m.$motion-quick m.$motion-ease $signature-blocks-landed both;
+			}
+		}
+
+		.popup-signature-stack,
+		.popup-signature-blend {
+			position: absolute;
+			inset: 0;
+		}
+
+		.popup-signature-stack {
+			display: flex;
+
+			> span {
+				flex: 1;
+				animation: signatureBlockDrop m.$motion-base m.$motion-ease both;
+			}
+
+			@each $color in $signature-colors {
+				$index: list.index($signature-colors, $color);
+
+				> span:nth-child(#{$index}) {
+					background-color: $color;
+					animation-delay: $signature-step * ($index - 1);
+				}
+			}
+
+			@include m.reduced-motion {
+				> span { animation: none; }
+			}
+		}
+
+		.popup-signature-blend {
+			background: linear-gradient(to right, $signature-colors);
+			animation: signatureFadeIn m.$motion-deliberate m.$motion-ease-in-out ($signature-blocks-landed - $signature-step) both;
+		}
+
+		.popup-signature-credit {
+			position: relative;
+			display: inline-flex;
+			align-items: center;
+		}
 
 		// The debug panel hides behind this heart, and a pointer cursor would give the secret away.
 		// Nested to outrank Reboot's button:not(:disabled) pointer.

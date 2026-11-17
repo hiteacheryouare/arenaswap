@@ -58,8 +58,8 @@ const proTip = ({ context = 'general', chance = 0.05 }: proTipProps) => {
 	const [tip] = useState<string | null>(() => (Math.random() < chance ? pickTip(context) : null));
 	if (!tip) return null;
 	return (
-		<div className='alert popup-notice d-flex align-items-start gap-3' role='note'>
-			<i className='bi bi-lightbulb popup-notice-icon' aria-hidden='true' />
+		<div className='alert popup-notice theme-secondary gap-3' role='note'>
+			<i className='bi bi-lightbulb popup-notice-icon flex-shrink-0' aria-hidden='true' />
 			<div>
 				<span className='fw-bold'>{i18n.t('proTip.label')}</span> {tip}
 			</div>

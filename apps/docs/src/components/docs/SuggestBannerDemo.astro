@@ -7,12 +7,15 @@ const demoText = demoTranslator(currentLocale(Astro.currentLocale));
 const tabCount = 2;
 ---
 <div class='doc-demo-popup doc-demo-panel'>
-	<div class='alert popup-notice d-flex align-items-start gap-3'>
-		<i class='bi bi-magic popup-notice-icon'></i>
-		<div class='min-w-0'>
+	<div class='alert popup-notice theme-primary gap-3 mb-0'>
+		<i class='bi bi-magic popup-notice-icon flex-shrink-0'></i>
+		<div class='flex-grow-1 min-w-0'>
 			<div class='fw-bold popup-notice-title'>{demoText('suggest.bannerTitle')}</div>
 			<div>{demoText('suggest.bannerCopy.n', { $1: tabCount })}</div>
-			<button type='button' class='btn btn-sm btn-solid theme-primary mt-3 py-0 px-3 popup-notice-action'>{demoText('suggest.bannerAction')}</button>
+			<button type='button' class='alert-link popup-notice-action mt-2'>
+				{demoText('suggest.bannerAction')}
+				<i class='bi bi-arrow-right' aria-hidden='true'></i>
+			</button>
 		</div>
 		<button type='button' class='btn-close flex-shrink-0' aria-label={demoText('suggest.bannerDismiss')}></button>
 	</div>

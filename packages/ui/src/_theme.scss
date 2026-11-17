@@ -92,6 +92,7 @@ $theme-colors: (
 	'success':   theme-color(green, light-dark(#00854a, var(--green-500)), #0d1117),
 	'danger':    theme-color(red, light-dark(var(--red-600), var(--red-400)), #ffffff),
 	'warning':   theme-color(yellow, pair(warning-ink), #0d1117),
+	'info':      theme-color(blue, pair(secondary-ink), #0d1117),
 	'secondary': (
 		'base':        tone(dark, secondary-color),
 		'fg':          pair(secondary-color),

@@ -122,9 +122,11 @@ const score = (gameId: string, total: number) => ({ gameId, total } as never);
 const ResortingMainView = () => {
 	const scrollOffsetRef = useRef(0);
 	const [flipped, setFlipped] = useState(false);
+	const [revealing, setRevealing] = useState(true);
 	return (
 		<>
 			<button type='button' data-testid='fake-score-push' onClick={() => setFlipped(true)}>Push</button>
+			<button type='button' data-testid='fake-reveal-end' onClick={() => setRevealing(false)}>End</button>
 			<MainView
 				{...defaultProps}
 				games={[makeGame('slow'), makeGame('fast')]}
@@ -134,7 +136,7 @@ const ResortingMainView = () => {
 				scrollOffsetRef={scrollOffsetRef}
 				selectedDayKey={null}
 				onSelectDay={() => {}}
-				revealMode='full'
+				revealMode={revealing ? 'full' : 'none'}
 			/>
 		</>
 	);
@@ -638,24 +640,20 @@ describe('mainView up next day pager', () => {
 		cy.get('[data-testid="game-card-tomorrow-0"]').should('exist');
 	});
 
-	// Both live sections are re-sorted on PowerScore, and scores arrive by push every few seconds, so
-	// a resort inside the open animation's five-second window is ordinary. The plan the stagger is built from
-	// is fixed on the first list that has anything in it: a card that keeps its React identity but
-	// changes index would otherwise get a new `animation-delay`, which moves a running animation's
-	// current time rather than restarting it, and across the eight-card cap the mode itself flips and
-	// a card grows a poster from nothing or loses one mid-frame.
-	it('holds the reveal stagger still when a score push resorts the list under it', () => {
+	// Scores arrive by push every few seconds, so a resort inside the open animation's window is
+	// ordinary. Neither the cards nor their place in the stagger move until the graphic is over.
+	it('holds the cards in place while a score push lands under the reveal', () => {
 		cy.mount(<ResortingMainView />);
-		cy.get('[data-testid="game-card-slow"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
-		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '104ms');
+		cardOrder().should('deep.equal', ['game-card-slow', 'game-card-fast']);
 
 		cy.get('[data-testid="fake-score-push"]').click();
 
-		// The resort really happened — without this the assertions below pass for the wrong reason.
-		cy.get('.game-card-reveal [data-testid^="game-card-"]').first().should('have.attr', 'data-testid', 'game-card-fast');
-		// And neither card's place in the cascade moved with it.
-		cy.get('[data-testid="game-card-slow"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
 		cy.get('[data-testid="game-card-fast"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '104ms');
+		cardOrder().should('deep.equal', ['game-card-slow', 'game-card-fast']);
+		cy.get('[data-testid="game-card-slow"]').closest('.game-card-reveal').should('have.css', '--reveal-delay', '0ms');
+
+		cy.get('[data-testid="fake-reveal-end"]').click();
+		cardOrder().should('deep.equal', ['game-card-fast', 'game-card-slow']);
 	});
 });
 

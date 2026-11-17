@@ -7,11 +7,12 @@ const svg = (body: string) => `data:image/svg+xml;base64,${btoa(
 	`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>${body}</svg>`,
 )}`;
 
-// Texas: a burnt-orange mark on burnt orange, which is the crest that vanished. The other side is a
-// light mark on navy, which reads and has to be left in its colours.
+// Texas: a burnt-orange mark on burnt orange, with nothing left showing. Penn State: a navy shield on
+// Penn State navy carrying a white lion, which is mostly gone and still reads, so it keeps its colours.
 const burntOrange = '#BF5700';
 const lostMark = svg(`<path d='M4 20 L22 26 L32 50 L42 26 L60 20 L44 18 L32 30 L20 18 Z' fill='${burntOrange}'/>`);
-const readableMark = svg(`<circle cx='32' cy='32' r='25' fill='#F2F4F7'/><path d='M32 12 L32 52' stroke='#41B6E6' stroke-width='6'/>`);
+const pennStateNavy = '#061440';
+const shieldMark = svg(`<path d='M8 6 H56 V34 Q56 52 32 60 Q8 52 8 34 Z' fill='${pennStateNavy}'/><circle cx='32' cy='30' r='11' fill='#FFFFFF'/>`);
 
 const game = {
 	id: 'g1',
@@ -20,7 +21,7 @@ const game = {
 	sportType: 'football',
 	period: 2,
 	awayTeam: { id: 'a', name: 'Texas Longhorns', nickname: 'Longhorns', color: burntOrange, abbreviation: 'TEX', score: 14, logo: lostMark },
-	homeTeam: { id: 'h', name: 'Penn State Nittany Lions', nickname: 'Nittany Lions', color: '#041E42', abbreviation: 'PSU', score: 10, logo: readableMark },
+	homeTeam: { id: 'h', name: 'Penn State Nittany Lions', nickname: 'Nittany Lions', color: pennStateNavy, abbreviation: 'PSU', score: 10, logo: shieldMark },
 } as unknown as Game;
 
 const Harness = () => (
@@ -65,7 +66,7 @@ describe('the open reveal keeps a crest visible on its own team colour', () => {
 		filterOf('.game-card-reveal-opening-field.is-away .avatar-img').should('equal', 'contrast(0) brightness(2)');
 	});
 
-	it('leaves a crest that already reads in its own colours', () => {
+	it('leaves a crest whose detail still reads in its colours', () => {
 		scrubTo(revealOpenBeatMs / 2);
 		cy.get('.game-card-reveal-opening-field.is-home .game-card-reveal-opening-logo').should($crest => expect($crest[0]!.className).not.to.match(/is-silhouette-/));
 		filterOf('.game-card-reveal-opening-field.is-home .avatar-img').should('equal', 'none');

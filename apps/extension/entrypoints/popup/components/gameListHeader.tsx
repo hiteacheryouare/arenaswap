@@ -22,10 +22,10 @@ const gameListHeader = ({ isLoading, hasError, loadingMessage, onRefresh }: game
 
 	if (hasError) {
 		return (
-			<div className='alert popup-notice d-flex align-items-center gap-3 popup-error-banner' role='alert'>
-				<i className='bi bi-exclamation-triangle popup-notice-icon popup-notice-icon-danger' aria-hidden='true' />
+			<div className='alert popup-notice theme-danger align-items-center gap-3 popup-error-banner' role='alert'>
+				<i className='bi bi-exclamation-triangle popup-notice-icon flex-shrink-0' aria-hidden='true' />
 				<div className='flex-grow-1 min-w-0'>{i18n.t('gameListHeader.loadFailed')}</div>
-				<RefreshButton label={i18n.t('gameListHeader.retry')} className='btn btn-sm btn-solid theme-primary py-0 px-3 popup-notice-action' onRefresh={onRefresh} />
+				<RefreshButton label={i18n.t('gameListHeader.retry')} className='alert-link popup-notice-action flex-shrink-0' onRefresh={onRefresh} />
 			</div>
 		);
 	}

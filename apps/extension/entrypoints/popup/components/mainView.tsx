@@ -35,7 +35,7 @@ import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import useRestoredScroll from '../useRestoredScroll';
 import { prefetchOnIntent } from './prefetchIntent';
 import { matchesGameQuery } from '../../../utils/gameSearch';
-import { revealModeForIndex, type cardRevealPlan, type revealCut, type revealMode } from '../cardReveal';
+import { revealCutTotalMs, revealDelayMs, revealMaxCards, revealModeForIndex, type cardRevealPlan, type revealCut, type revealMode } from '../cardReveal';
 
 const emptyScoreMap = new Map<string, PowerScoreResult>();
 const emptyRevealOrder = new Map<string, number>();
@@ -243,9 +243,13 @@ const mainView = ({
 	const scoreMap = useMemo(() => new Map(scores.map(s => [s.gameId, s])), [scores]);
 	const leagueRank = useMemo(() => buildLeagueRank(prefs.enabledLeagues), [prefs.enabledLeagues]);
 	const grouped = prefs.groupByLeague;
+	// While the reveal plays, the live sections sort on the scores its plan was fixed from. A score
+	// push that swapped two cards mid-poster would glide them past each other through the graphic.
+	const revealScoresRef = useRef<Map<string, number> | null>(null);
+	const sortScores = revealMode !== 'none' && revealScoresRef.current ? revealScoresRef.current : scoreByGameId;
 	const sortGames = useMemo(
-		() => buildLiveComparator(leagueRank, favoriteTeamIds, scoreByGameId, grouped),
-		[leagueRank, favoriteTeamIds, scoreByGameId, grouped],
+		() => buildLiveComparator(leagueRank, favoriteTeamIds, sortScores, grouped),
+		[leagueRank, favoriteTeamIds, sortScores, grouped],
 	);
 	const sortUpcomingGames = useMemo(
 		() => buildUpcomingComparator(leagueRank, favoriteTeamIds, grouped),
@@ -317,9 +321,21 @@ const mainView = ({
 		take(unassignedLiveGames);
 		if (prefs.showUpcomingGames && selectedDay) take(selectedDay.games);
 		take(finalGames);
-		if (order.size > 0) revealPlanRef.current = order;
+		if (order.size > 0) {
+			revealPlanRef.current = order;
+			revealScoresRef.current = scoreByGameId;
+		}
 		return { mode: revealMode, order, skipping: revealSkipping, cut: revealCut };
-	}, [revealMode, revealCut, revealSkipping, assignedLiveGames, unassignedLiveGames, prefs.showUpcomingGames, selectedDay, finalGames]);
+	}, [revealMode, revealCut, revealSkipping, assignedLiveGames, unassignedLiveGames, prefs.showUpcomingGames, selectedDay, finalGames, scoreByGameId]);
+
+	// The signature bar is the reveal's last beat: it waits for the last animated card to land, or for
+	// the slate alone when nothing is animating. Fixed at mount, because by the time you come back from
+	// a setting the reveal is over and the bar is simply there.
+	const [footerEntrance] = useState(revealMode === 'none' ? 'fade' : 'stack');
+	const revealedCardCount = Math.min(reveal.order.size, revealMaxCards);
+	const footerHoldMs = reveal.mode === 'none' || reveal.skipping || revealedCardCount === 0
+		? 0
+		: revealDelayMs(revealedCardCount - 1, reveal.mode) + revealCutTotalMs(reveal.mode, reveal.cut);
 
 	// The top card's two colours glow down behind the header.
 	const topLiveGame = assignedLiveGames[0] ?? unassignedLiveGames[0];
@@ -373,16 +389,16 @@ const mainView = ({
 			</NoticeReveal>
 
 			<NoticeReveal show={onStandbyStream} animate={listShown}>
-				<div className='alert popup-notice d-flex align-items-center gap-3' role='status' data-testid='standby-banner'>
-					<i className='bi bi-broadcast popup-notice-icon' aria-hidden='true' />
+				<div className='alert popup-notice theme-info align-items-center gap-3' role='status' data-testid='standby-banner'>
+					<i className='bi bi-broadcast popup-notice-icon flex-shrink-0' aria-hidden='true' />
 					<span>{i18n.t('main.onStandbyStream')}</span>
 				</div>
 			</NoticeReveal>
 
 			<NoticeReveal show={Boolean(heldGame && heldSwitch)} animate={listShown}>
 				{heldGame && heldSwitch && (
-					<div className='alert popup-notice d-flex align-items-center gap-3' role='status' data-testid='held-switch-banner'>
-						<i className='bi bi-pause-circle popup-notice-icon' aria-hidden='true' />
+					<div className='alert popup-notice theme-info align-items-center gap-3' role='status' data-testid='held-switch-banner'>
+						<i className='bi bi-pause-circle popup-notice-icon flex-shrink-0' aria-hidden='true' />
 						<span>{i18n.t(`main.heldSwitch.${heldSwitch.sport}`, { game: matchupLabel(heldGame) })}</span>
 					</div>
 				)}
@@ -459,7 +475,7 @@ const mainView = ({
 				first: upNextFirst && !(prefs.showUpcomingGames && selectedDay),
 			})}
 
-			<PopupFooter />
+			<PopupFooter ready={listShown} holdMs={footerHoldMs} entrance={footerEntrance} />
 		</div>
 	);
 };

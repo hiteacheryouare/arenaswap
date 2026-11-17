@@ -314,12 +314,84 @@
 		max-width: min(18rem, calc(100vw - 1.5rem));
 	}
 
+	// Every notice above the game list. Its `theme-*` class says what it is for, in Bootstrap's
+	// meanings: primary asks you to act, info reports what ArenaSwap is doing, danger is an error and
+	// secondary is a tip. Bootstrap fills an alert with `bg-subtle`, which is heavy beside the game
+	// cards, so the fill is a light wash of the theme colour instead, and there is no border.
+	.alert.popup-notice {
+		--as-alert-padding-x:     0.7rem;
+		--as-alert-padding-y:     0.6rem;
+		--as-alert-border-radius: 0.5rem;
+		--as-alert-link-color:    var(--as-theme-fg);
+		margin-bottom:    0.5rem;
+		font-size:        0.72rem;
+		line-height:      1.4;
+		color:            var(--as-fg-1);
+		background-color: color-mix(in oklch, var(--as-theme-base) 11%, var(--as-bg-body));
+		border-color:     transparent;
+
+		strong {
+			color: var(--as-fg-body);
+		}
+
+		.btn-close {
+			font-size:  0.5rem;
+			margin-top: 0.2rem;
+		}
+	}
+
+	.popup-notice-icon {
+		color:       var(--as-theme-fg);
+		font-size:   0.85rem;
+		line-height: 1.2;
+	}
+
+	.popup-notice-title {
+		font-size:     0.8rem;
+		color:         var(--as-fg-body);
+		margin-bottom: 0.1rem;
+	}
+
+	.alert-link.popup-notice-action {
+		display:     inline-flex;
+		align-items: center;
+		gap:         0.3rem;
+		padding:     0;
+		border:      0;
+		background:  none;
+		font-size:   0.72rem;
+		font-weight: 700;
+		white-space: nowrap;
+
+		.bi {
+			font-size:  0.7rem;
+			transition: transform m.$motion-snap m.$motion-ease;
+		}
+
+		&:hover .bi,
+		&:focus-visible .bi {
+			transform: translateX(2px);
+		}
+
+		&:focus-visible {
+			outline:        2px solid var(--as-theme-focus-ring);
+			outline-offset: 2px;
+			border-radius:  var(--as-radius-3);
+		}
+	}
+
 	@include m.reduced-motion {
 		.popup-view-shell,
 		.game-card-clickable,
 		.game-card-lift,
-		.popup-settings-button .bi-gear-fill::before {
+		.popup-settings-button .bi-gear-fill::before,
+		.popup-notice-action .bi {
 			@include m.motion-still;
+		}
+
+		.popup-notice-action:hover .bi,
+		.popup-notice-action:focus-visible .bi {
+			transform: none;
 		}
 
 		.popup-settings-button:not(:disabled):hover .bi-gear-fill::before,

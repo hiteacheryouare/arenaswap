@@ -225,43 +225,6 @@
 		}
 	}
 
-	// ─── Notices ─────────────────────────────────────────────────────────────────
-	.doc-demo-popup .alert.popup-notice {
-		--as-alert-bg: var(--as-bg-1);
-		--as-alert-color: var(--as-fg-body);
-		--as-alert-border-color: var(--as-border-color);
-		--as-alert-padding-x: 0.6rem;
-		--as-alert-padding-y: 0.5rem;
-		margin-bottom: 0;
-		font-size: 0.72rem;
-		line-height: 1.35;
-
-		.btn-close {
-			--as-btn-close-size: 1em;
-			width: 1em;
-			height: 1em;
-			padding: 0.25em;
-			font-size: 0.55rem;
-		}
-	}
-
-	.doc-demo-popup {
-		.popup-notice-title {
-			font-size: 0.78rem;
-		}
-
-		.popup-notice-icon {
-			color: var(--as-accent-ink);
-			line-height: 1.35;
-		}
-
-		.popup-notice-action {
-			--as-btn-border-radius: 0.25rem;
-			font-size: 0.68rem;
-			white-space: nowrap;
-		}
-	}
-
 	// ─── PowerScore Breakdown and Game Boost ─────────────────────────────────────
 	// The popup's one light card, light in both themes.
 	.doc-demo-popup {

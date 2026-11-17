@@ -42,7 +42,10 @@ const Section = ({ title, icon, children }) => (
 	</section>
 );
 
-const popupFooter = () => {
+const signatureBlockCount = 6;
+
+const popupFooter = ({ ready = true, holdMs = 0, entrance = 'fade' }) => {
+	const [signaturePhase, setSignaturePhase] = useState(ready && holdMs === 0 ? 'shown' : 'waiting');
 	const [showDebug, setShowDebug] = useState(false);
 	const [debug, setDebug] = useState(null);
 	const heartClicks = useRef(0);
@@ -104,6 +107,20 @@ const popupFooter = () => {
 	}, [showDebug]);
 
 	useEffect(() => () => clearTimeout(heartTimer.current), []);
+
+	useEffect(() => {
+		if (!ready || signaturePhase !== 'waiting') return;
+		const timer = setTimeout(() => setSignaturePhase(entrance === 'stack' ? 'stacking' : 'fading'), holdMs);
+		return () => clearTimeout(timer);
+	}, [ready, holdMs, entrance, signaturePhase]);
+
+	// Stacking ends on the blend, the last of its layers to settle, and fading ends on the bar's own
+	// fade. The blocks' and the credit's ends bubble up here too and are ignored.
+	const finishEntrance = (event) => {
+		if (event.target === event.currentTarget || event.target.classList.contains('popup-signature-blend')) {
+			setSignaturePhase('shown');
+		}
+	};
 
 	const bg = debug?.bg;
 
@@ -219,17 +236,31 @@ const popupFooter = () => {
 					</div>
 				</div>
 			)}
-			<div className='popup-signature-bar'>
-				{i18n.t('footer.builtWith')}
-				<button
-					type='button'
-					onClick={handleHeartClick}
-					aria-label={i18n.t('footer.toggleDebug')}
-					className='popup-signature-heart'
-				>
-					&nbsp;❤️&nbsp;
-				</button>
-				{i18n.t('footer.credit')}
+			<div
+				className={`popup-signature-bar${signaturePhase === 'shown' ? '' : ` is-${signaturePhase}`}`}
+				onAnimationEnd={finishEntrance}
+				data-testid='popup-signature-bar'
+			>
+				{signaturePhase === 'stacking' && (
+					<>
+						<span className='popup-signature-stack' aria-hidden='true'>
+							{Array.from({ length: signatureBlockCount }, (_, index) => <span key={index} />)}
+						</span>
+						<span className='popup-signature-blend' aria-hidden='true' />
+					</>
+				)}
+				<span className='popup-signature-credit'>
+					{i18n.t('footer.builtWith')}
+					<button
+						type='button'
+						onClick={handleHeartClick}
+						aria-label={i18n.t('footer.toggleDebug')}
+						className='popup-signature-heart'
+					>
+						&nbsp;❤️&nbsp;
+					</button>
+					{i18n.t('footer.credit')}
+				</span>
 			</div>
 		</div>
 	);
