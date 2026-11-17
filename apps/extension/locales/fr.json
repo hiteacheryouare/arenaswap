@@ -5,7 +5,7 @@
 	"app": {
 		"welcomeToast": "Bienvenue sur ArenaSwap !",
 		"settingsSavedToast": "Paramètres enregistrés",
-		"gameDetailsUnavailable": "Ce match a échappé à nos sources.",
+		"gameDetailsUnavailable": "Nos espions ont perdu la trace de ce match.",
 		"backToGames": "Retour aux matchs"
 	},
 	"errorBoundary": {
@@ -45,7 +45,7 @@
 		},
 		"m4": {
 			"title": "Même les arbitres font la sieste.",
-			"sub": "Nos sources ont sorti les jumelles. Rien en direct dans tes ligues pour l'instant."
+			"sub": "Nos espions font la sieste aussi. Rien en direct dans tes ligues pour l'instant."
 		},
 		"m5": {
 			"title": "Le tableau de score ne bouge pas.",
@@ -109,7 +109,7 @@
 		"m46": "On sort les peintures pour le visage…",
 		"m47": "On coordonne les tenues de l'équipe…",
 		"m48": "On fait les calculs…",
-		"m49": "On débriefe nos sources…",
+		"m49": "On débriefe nos espions…",
 		"m50": "On tire le feu d'artifice…",
 		"m51": "On prépare le show laser…",
 		"m52": "On vérifie la météo pour le jour du match…",
@@ -180,14 +180,19 @@
 		"m117": "Recherche de la meilleure place sur le canapé…",
 		"m118": "Renvoi des jumelles sur le terrain…",
 		"m119": "Vérification que le score à l’écran coopère…",
-		"m120": "Mise de côté des avis brûlants pour plus tard…"
+		"m120": "Mise de côté des avis brûlants pour plus tard…",
+		"m121": "On vérifie la boîte aux lettres morte derrière le stand de nachos…",
+		"m122": "On attend que notre espion en costume de mascotte donne signe de vie…",
+		"m123": "On décode un message griffonné sur un doigt en mousse…",
+		"m124": "On glisse un faux badge de presse à notre espion…",
+		"m125": "On lit le tableau d'affichage à travers un trou dans un journal…"
 	},
 	"startsSoon": {
 		"any": {
 			"m1": "On attrape le pop-corn…",
-			"m2": "On attend un signal de nos sources…",
+			"m2": "Notre espion est en position…",
 			"m3": "On colle l'oreille à la porte du vestiaire…",
-			"m4": "On fait plisser les yeux à nos sources…",
+			"m4": "Nos espions règlent leurs montres…",
 			"m5": "On électrise la foule…",
 			"m6": "On lance la musique d'entrée…",
 			"m7": "On allume le tableau géant…",
@@ -636,9 +641,9 @@
 		"injuryQuestionable": "Incertain",
 		"injuryDayToDay": "Au jour le jour",
 		"injuriesNone": "Infirmerie vide",
-		"infoTickets": "Envie d'y être en vrai ?",
-		"ticketsCta": "Billets",
-		"ticketsFrom": "Billets dès {price}",
+		"infoTickets": "Billets",
+		"ticketsCta": "Acheter",
+		"ticketsFrom": "Dès {price}",
 		"chartLeadTitle": "Avance dans le temps",
 		"leadTied": "Égalité",
 		"leadBy": "{team} de {margin}",
@@ -875,7 +880,7 @@
 		"tooltipMomentum": "Si une équipe est sur une série. Plus elle a marqué que l'autre équipe ces derniers temps, plus la valeur monte. Elle baisse quand le score ne bouge plus.",
 		"tooltipLeadChanges": "Combien de fois la tête a changé récemment. Plus il y en a, plus la valeur monte. Elle baisse si l'avance tient.",
 		"tooltipComeback": "Si l'équipe menée rattrape son retard. Plus elle a réduit l'écart récemment, plus la valeur monte, et elle compte davantage en fin de match.",
-		"tooltipBreakPenalty": "S'applique tant que nos sources repèrent le match en pause pub, comme une pause entre manches, un changement de lanceur ou un temps mort TV.",
+		"tooltipBreakPenalty": "S'applique tant que nos espions repèrent le match en pause pub, comme une pause entre manches, un changement de lanceur ou un temps mort TV.",
 		"tooltipVolatility": "S'applique quand la probabilité de victoire en direct est restée proche de 50 % (bonus) ou loin de 50 % (pénalité).",
 		"rivalBeatdown": "Rival qui se fait corriger",
 		"rivalWinning": "Rival qui gagne",
@@ -1309,7 +1314,7 @@
 	},
 	"gameListHeader": {
 		"loading": "Chargement…",
-		"loadFailed": "Nos sources se sont tues. Aucun match chargé.",
+		"loadFailed": "Pas de nouvelles des espions. Aucun match chargé.",
 		"retry": "Réessayer"
 	},
 	"toast": {
@@ -1436,7 +1441,7 @@
 	},
 	"reviewPrompt": {
 		"title": "Tu apprécies ArenaSwap ?",
-		"copy": "Un petit avis aide plus de fans à trouver le meilleur match ❤️",
+		"copy": "Un petit avis aide plus de fans à trouver le meilleur match\u00a0❤️",
 		"leaveReview": "Laisser un avis",
 		"dismiss": "Ignorer la demande d'avis"
 	},
@@ -1688,7 +1693,7 @@
 		"dropTitle": "Dépose une sauvegarde ici",
 		"chooseFile": "Choisir un fichier",
 		"fromFile": "Du fichier",
-		"problemUnreadable": "Nos sources ont tenu ce fichier à contre-jour et n'ont pas déchiffré un seul mot. Essaie avec un nouvel export.",
+		"problemUnreadable": "Nos espions n'ont pas réussi à décoder ce fichier. Essaie avec un nouvel export.",
 		"problemNotOurs": "Un fichier tout à fait correct, mais pas des nôtres. Choisis-en un exporté depuis ArenaSwap.",
 		"problemTooNew": "Ce fichier vient d'une version plus récente d'ArenaSwap. Mets l'extension à jour, puis réessaie.",
 		"problemSaveFailed": "Ça ne s'est pas enregistré. Réessaie.",

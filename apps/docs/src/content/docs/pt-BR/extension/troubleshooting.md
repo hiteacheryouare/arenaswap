@@ -1,5 +1,5 @@
 ---
-sourceHash: '099498900e89'
+sourceHash: 'a4bf4796d123'
 title: Solução de problemas do ArenaSwap
 description: Soluções rápidas para uma lista de jogos vazia, trocas que nunca acontecem, abas faltando no menu e notificações que não chegam.
 section: extension
@@ -20,7 +20,7 @@ Se você vê **Escolha ligas para começar**, ainda não há ligas ativadas. Cli
 
 Se aparece uma mensagem como "Dia calmo no esporte.", suas ligas não têm nada ao vivo agora. Clique em **Atualizar** para conferir de novo. Ou ative o [Modo demonstração](/arenaswap/docs/extension/demo-mode/) para ter com o que brincar.
 
-Se um banner diz **Nossas fontes ficaram mudas. Sem jogos.**, clique em **Tentar novamente**. Se continuar acontecendo, confira a sua conexão com a internet.
+Se um banner diz **Sem notícia dos espiões. Jogos não carregados.**, clique em **Tentar novamente**. Se continuar acontecendo, confira a sua conexão com a internet.
 
 ## O ArenaSwap não está trocando de aba
 

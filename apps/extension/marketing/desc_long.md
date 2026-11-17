@@ -99,7 +99,7 @@ PRIVATE BY DEFAULT
 
 - No account. No login. No subscription.
 - No tracking, no analytics, no ads.
-- Live scores come from our sources, who keep their binoculars on every game.
+- Everything runs in your browser. Nothing about what you watch is sent anywhere.
 - 100% open source. Full code, including the PowerScore package, is on GitHub.
 
 

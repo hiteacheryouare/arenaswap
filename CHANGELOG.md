@@ -13,6 +13,30 @@ The surprises the comment purge flagged became names instead of prose: extracted
 
 About 10,700 comment lines came out of every package and app, following the Comment Sicko rules from pstack: what stays is license headers, quirks of the browser, the feed or a vendor we can't change, functional comments (`/// <reference>`, JSDoc `@type` in JS configs, lint suppressions), public API docs in `powerscore` and `@arenaswap/core`, and spec citations. Comments that explained a surprise in our own code were flagged for a rename or refactor instead of being kept.
 
+## The signature bar is the opening animation's last beat — 2026-11-17
+
+The gradient bar under the list stays hidden while the slate loads and while the cards reveal, then its six colours drop in one by one, blend into the gradient and bring the credit up as the last animated card lands (or at once when the reveal is skipped). With the opening animation off or reduced motion on, it fades in over 100ms once loading ends; `MainView` works out the hold from the reveal plan and passes it to `PopupFooter`.
+
+## Banners take Bootstrap's colours, without the slab — 2026-11-16
+
+Every notice above the game list is a borderless `.alert` whose `theme-*` class says what it's for (primary for asks, info for Standby and held switches, danger for the load error, secondary for tips), filled with an 11% wash of that colour instead of Bootstrap's heavier `bg-subtle`. The styles moved into `packages/ui/src/_popup.scss` so the site's demos share them, and `info` is now the app's blue rather than Bootstrap's cyan.
+
+## Our sources are spies now — 2026-11-16
+
+Copy at 4 or below on the VOICE.md spectrum (popup errors, empty states, loading lines and every release note, translations included) says "our spies" and plays the bit up, with five new spy loading lines (`LOADING_MESSAGE_COUNT` is 125). Switch reasons keep "our sources", "our scouts" stay their own crew, and privacy copy on the site and store listing drops the data source entirely; VOICE.md, RELEASENOTES.md and AGENTS.md carry the new rule.
+
+## Game Info rows breathe, and tickets join the list — 2026-11-16
+
+The stadium photo's `m-0` utility had been beating its SCSS `margin-bottom` since it shipped, so the Watch row sat flush under the picture; the utility is gone, the rows are a little taller, and network logos sit centered with room above and below. The tickets row is a plain "Tickets · From $43" row like the rest, so the stacked-row variant is gone too.
+
+## College basketball standings show records again — 2026-11-16
+
+The college basketball summary started sending `gamesBehind` beside its conference and overall records, and that one column was enough for the parser to pick the pro-style numeric table, so every conference rendered as a column of dashes. A numeric table now needs more than games behind before it beats the two record columns.
+
+## Cards hold their places through the opening animation — 2026-11-16
+
+While the opening animation plays, the live sections sort on the PowerScores its stagger was planned from, so a score push can no longer glide two cards past each other mid-poster. The live order catches up, with the usual glide, once the graphic ends.
+
 ## "Resumed from" only on baseball — 2026-11-08
 
 The label for a suspended game picking back up now needs an inning sport as well as a start more than 12 hours old, because only baseball finishes a suspended game on a later day; anywhere else an old live game is a feed left stuck on live.
@@ -59,7 +83,7 @@ The Ludicrous Speed label no longer strobes through eight colors: dragging onto 
 
 ## Reveal crests stay visible on their own colour — 2026-11-07
 
-The open reveal drew each crest bare on its team's colour, so a crest in that same colour (Texas's burnt-orange longhorn) vanished in the opening scene. `OnColorCrest` takes `silhouetteWhenLost`, which runs the shared `crestReadsOn` check and draws a failing crest as a white or black silhouette. The poster's copy turns back into the colour artwork on its walk down, so it still lands as the card's own crest.
+The open reveal drew each crest bare on its team's colour, so a crest in that same colour (Texas's burnt-orange longhorn) vanished in the opening scene. `OnColorCrest` takes `silhouetteWhenLost`, which draws a crest as a white or black silhouette only when `crestVanishesOn` finds nothing of it left (at least 90% gone, under 4% standing out), so Penn State's lion keeps its colours. The poster's copy turns back into the colour artwork on its walk down, so it still lands as the card's own crest.
 
 ## Confetti goes off from the scoring team's crest, in both its colors — 2026-11-07
 

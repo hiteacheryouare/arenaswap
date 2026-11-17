@@ -1,5 +1,5 @@
 ---
-sourceHash: '099498900e89'
+sourceHash: 'a4bf4796d123'
 title: Dépanner ArenaSwap
 description: Des solutions rapides pour une liste de matchs vide, des changements qui n'arrivent jamais, des onglets absents du menu et des notifications manquantes.
 section: extension
@@ -20,7 +20,7 @@ Si tu vois **Choisis des ligues pour commencer**, aucune ligue n'est encore acti
 
 Si tu vois un message comme « C'est le calme plat côté sport », tes ligues n'ont rien en direct pour le moment. Clique sur **Actualiser** pour vérifier à nouveau. Ou active le [mode démo](/arenaswap/docs/extension/demo-mode/) pour avoir de quoi jouer.
 
-Si une bannière indique **Nos sources se sont tues. Aucun match chargé.**, clique sur **Réessayer**. Si ça continue, vérifie ta connexion internet.
+Si une bannière indique **Pas de nouvelles des espions. Aucun match chargé.**, clique sur **Réessayer**. Si ça continue, vérifie ta connexion internet.
 
 ## ArenaSwap ne change pas d'onglet
 

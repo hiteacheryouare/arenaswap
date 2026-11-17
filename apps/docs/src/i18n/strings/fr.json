@@ -244,7 +244,7 @@
 			},
 			{
 				"q": "Ai-je besoin d'un compte ou d'un abonnement ?",
-				"a": "Non. ArenaSwap est gratuit, ne demande aucun compte, et ne collecte rien. Il tourne entièrement dans ton navigateur et lit les scores publics de nos sources, qui gardent leurs jumelles braquées sur chaque match. Rien de ce que tu regardes n'est envoyé où que ce soit."
+				"a": "Non. ArenaSwap est gratuit, ne demande aucun compte, et ne collecte rien. Il lit les scores publics et tourne entièrement dans ton navigateur. Rien de ce que tu regardes n'est envoyé où que ce soit."
 			},
 			{
 				"q": "Fonctionnera-t-il avec mon service de streaming ?",

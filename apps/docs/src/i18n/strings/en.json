@@ -244,7 +244,7 @@
 			},
 			{
 				"q": "Do I need an account or a subscription?",
-				"a": "No. ArenaSwap is free, has no account, and collects nothing. It runs entirely in your browser and reads public scores from our sources, who keep their binoculars on every game. Nothing about what you watch is sent anywhere."
+				"a": "No. ArenaSwap is free, has no account, and collects nothing. It reads public scores and runs entirely in your browser. Nothing about what you watch is sent anywhere."
 			},
 			{
 				"q": "Will it work with my streaming service?",

@@ -98,7 +98,7 @@ STANDARDMÄSSIG PRIVAT
 
 - Kein Konto. Kein Login. Kein Abo.
 - Kein Tracking, keine Analyse, keine Werbung.
-- Live-Ergebnisse kommen von unseren Quellen, die jedes Spiel mit dem Fernglas im Blick behalten.
+- Alles läuft in deinem Browser. Nichts darüber, was du schaust, wird irgendwohin gesendet.
 - 100 % Open Source. Der vollständige Code, einschließlich des PowerScore-Pakets, ist auf GitHub.
 
 

@@ -80,7 +80,7 @@ those parts. They are not permission to write more.
 
 - No em dashes, even though Transit uses them.
 - One Philly nod per piece, at most. A Philly player or team in the news counts.
-- Never name the data provider. "Our sources" (or their scouts with binoculars).
+- Never name the data provider. They're "our spies", and the bit gets played all the way up.
 - Jokes about a team's history are fine. Jokes at fans, players' personal lives,
   injuries or the reader are not. Never encourage betting.
 - No puns on ArenaSwap, PowerScore, Multiview or Standby Stream.

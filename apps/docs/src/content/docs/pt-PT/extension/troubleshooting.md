@@ -1,5 +1,5 @@
 ---
-sourceHash: '099498900e89'
+sourceHash: 'a4bf4796d123'
 title: Resolução de problemas do ArenaSwap
 description: Soluções rápidas para uma lista de jogos vazia, mudanças que nunca acontecem, separadores em falta no menu e notificações que não chegam.
 section: extension
@@ -20,7 +20,7 @@ Se vês **Escolhe ligas para começar**, ainda não há ligas ativas. Clica em *
 
 Se vês uma mensagem como "É um dia calmo no desporto.", as tuas ligas não têm nada em direto neste momento. Clica em **Atualizar** para voltar a ver. Ou ativa o [Modo de demonstração](/arenaswap/docs/extension/demo-mode/) para teres com que brincar.
 
-Se um aviso diz **As nossas fontes calaram-se. Sem jogos.**, clica em **Tentar novamente**. Se continuar a acontecer, verifica a tua ligação à internet.
+Se um aviso diz **Sem notícia dos espiões. Jogos não carregados.**, clica em **Tentar novamente**. Se continuar a acontecer, verifica a tua ligação à internet.
 
 ## O ArenaSwap não muda de separador
 

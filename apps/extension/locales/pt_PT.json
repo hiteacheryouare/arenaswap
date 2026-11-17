@@ -5,7 +5,7 @@
 	"app": {
 		"welcomeToast": "Bem-vindo ao ArenaSwap!",
 		"settingsSavedToast": "Definições guardadas",
-		"gameDetailsUnavailable": "Este jogo escapou às nossas fontes.",
+		"gameDetailsUnavailable": "Os nossos espiões perderam este jogo de vista.",
 		"backToGames": "Voltar aos jogos"
 	},
 	"errorBoundary": {
@@ -45,7 +45,7 @@
 		},
 		"m4": {
 			"title": "Até os árbitros foram descansar.",
-			"sub": "As nossas fontes já pegaram nos binóculos. Ainda nada em direto nas tuas ligas."
+			"sub": "Os nossos espiões também foram descansar. Ainda nada em direto nas tuas ligas."
 		},
 		"m5": {
 			"title": "O marcador está parado.",
@@ -109,7 +109,7 @@
 		"m46": "A preparar a tinta para a cara…",
 		"m47": "A coordenar os equipamentos da equipa…",
 		"m48": "A fazer as contas…",
-		"m49": "A ouvir o relatório das nossas fontes…",
+		"m49": "A ouvir o relatório dos nossos espiões…",
 		"m50": "A lançar os fogos de artifício…",
 		"m51": "A preparar o espectáculo de luzes…",
 		"m52": "A verificar o tempo para o dia do jogo…",
@@ -180,14 +180,19 @@
 		"m117": "Procurando o melhor lugar no sofá…",
 		"m118": "Mandando os binóculos de volta para o campo…",
 		"m119": "Confirmando que o marcador no ecrã se porta bem…",
-		"m120": "Guardando as opiniões quentes para mais tarde…"
+		"m120": "Guardando as opiniões quentes para mais tarde…",
+		"m121": "A verificar o esconderijo atrás da banca dos nachos…",
+		"m122": "A aguardar que o nosso espião vestido de mascote dê sinal de vida…",
+		"m123": "A decifrar um recado rabiscado num dedo de espuma…",
+		"m124": "A passar um cartão de imprensa falso ao nosso espião…",
+		"m125": "A ler o marcador através de um buraco num jornal…"
 	},
 	"startsSoon": {
 		"any": {
 			"m1": "A ir buscar a pipoca…",
-			"m2": "A aguardar um sinal das nossas fontes…",
+			"m2": "O nosso espião está em posição…",
 			"m3": "A encostar o ouvido à porta do balneário…",
-			"m4": "A pedir às fontes que apertem os olhos…",
+			"m4": "Os nossos espiões acertam os relógios…",
 			"m5": "A animar o público…",
 			"m6": "A pôr a música de entrada…",
 			"m7": "A ligar o marcador gigante…",
@@ -636,9 +641,9 @@
 		"injuryQuestionable": "Dúvida",
 		"injuryDayToDay": "Dia a dia",
 		"injuriesNone": "Enfermaria vazia",
-		"infoTickets": "Queres ver de perto?",
-		"ticketsCta": "Bilhetes",
-		"ticketsFrom": "Bilhetes desde {price}",
+		"infoTickets": "Bilhetes",
+		"ticketsCta": "Comprar",
+		"ticketsFrom": "Desde {price}",
 		"chartLeadTitle": "Vantagem ao longo do tempo",
 		"leadTied": "Empate",
 		"leadBy": "{team} por {margin}",
@@ -875,7 +880,7 @@
 		"tooltipMomentum": "Se uma equipa está a marcar seguido. Quanto mais marcou a mais do que a outra há pouco, mais alto sobe. Diminui quando a pontuação para.",
 		"tooltipLeadChanges": "Quantas vezes a liderança mudou há pouco. Mais mudanças, mais pontos. Diminui se a liderança se mantém.",
 		"tooltipComeback": "Se a equipa que está a perder está a encurtar a diferença. Quanto mais reduziu há pouco, mais alto sobe, e conta mais perto do fim do jogo.",
-		"tooltipBreakPenalty": "Aplica-se enquanto as nossas fontes avistam o jogo em pausa para publicidade, como uma pausa entre entradas, uma troca de lançador ou um desconto de tempo para a TV.",
+		"tooltipBreakPenalty": "Aplica-se enquanto os nossos espiões avistam o jogo em pausa para publicidade, como uma pausa entre entradas, uma troca de lançador ou um desconto de tempo para a TV.",
 		"tooltipVolatility": "Aplica-se quando a probabilidade de vitória em direto se manteve perto dos 50% (impulso) ou longe deles (penalização).",
 		"rivalBeatdown": "Rival a levar goleada",
 		"rivalWinning": "Rival a ganhar",
@@ -1309,7 +1314,7 @@
 	},
 	"gameListHeader": {
 		"loading": "A carregar…",
-		"loadFailed": "As nossas fontes calaram-se. Sem jogos.",
+		"loadFailed": "Sem notícia dos espiões. Jogos não carregados.",
 		"retry": "Tentar novamente"
 	},
 	"toast": {
@@ -1436,7 +1441,7 @@
 	},
 	"reviewPrompt": {
 		"title": "Estás a gostar do ArenaSwap?",
-		"copy": "Uma avaliação rápida ajuda mais adeptos a encontrar o melhor jogo ❤️",
+		"copy": "Uma avaliação rápida ajuda mais adeptos a encontrar o melhor jogo\u00a0❤️",
 		"leaveReview": "Deixar avaliação",
 		"dismiss": "Dispensar pedido de avaliação"
 	},
@@ -1688,7 +1693,7 @@
 		"dropTitle": "Larga um backup aqui",
 		"chooseFile": "Escolher um ficheiro",
 		"fromFile": "Do ficheiro",
-		"problemUnreadable": "As nossas fontes puseram esse ficheiro contra a luz e não decifraram uma única palavra. Tenta uma exportação nova.",
+		"problemUnreadable": "Os nossos espiões não conseguiram decifrar esse ficheiro. Tenta uma exportação nova.",
 		"problemNotOurs": "É um ficheiro perfeitamente bom, só não é dos nossos. Escolhe um que tenhas exportado do ArenaSwap.",
 		"problemTooNew": "Este ficheiro veio de uma versão mais recente do ArenaSwap. Atualiza a extensão e tenta outra vez.",
 		"problemSaveFailed": "Isso não ficou guardado. Tenta outra vez.",

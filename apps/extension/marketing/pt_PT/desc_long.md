@@ -98,7 +98,7 @@ PRIVADO POR DEFEITO
 
 - Sem conta. Sem sessão. Sem subscrição.
 - Sem rastreio, sem análise, sem anúncios.
-- Os marcadores em direto vêm das nossas fontes, que não tiram os binóculos de cima de nenhum jogo.
+- Tudo corre no teu navegador. Nada sobre o que vês é enviado para lado nenhum.
 - 100% código aberto. O código completo, incluindo o pacote PowerScore, está no GitHub.
 
 

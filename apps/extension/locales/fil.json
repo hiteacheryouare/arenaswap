@@ -5,7 +5,7 @@
 	"app": {
 		"welcomeToast": "Maligayang pagdating sa ArenaSwap!",
 		"settingsSavedToast": "Na-save ang mga setting",
-		"gameDetailsUnavailable": "Nakalusot ang larong ito sa mga source namin.",
+		"gameDetailsUnavailable": "Nawalan ng bakas ang mga espiya namin sa larong ito.",
 		"backToGames": "Bumalik sa mga laro"
 	},
 	"errorBoundary": {
@@ -45,7 +45,7 @@
 		},
 		"m4": {
 			"title": "Nagpapahinga na rin ang mga ref.",
-			"sub": "Nakalabas na ang binoculars ng mga source namin. Wala pang live sa mga liga mo."
+			"sub": "Nagpapahinga rin ang mga espiya namin. Wala pang live sa mga liga mo."
 		},
 		"m5": {
 			"title": "Tahimik ang scoreboard.",
@@ -109,7 +109,7 @@
 		"m46": "Inihahanda ang face paint…",
 		"m47": "Inaayos ang mga uniform ng team…",
 		"m48": "Kinukwenta ang mga numero…",
-		"m49": "Kinakausap ang mga source namin…",
+		"m49": "Dine-debrief ang mga espiya namin…",
 		"m50": "Pinapasabog ang fireworks…",
 		"m51": "Inihahanda ang light show…",
 		"m52": "Tinitingnan ang weather sa game day…",
@@ -180,14 +180,19 @@
 		"m117": "Hinahanap ang pinakamagandang puwesto sa sofa…",
 		"m118": "Pinapabalik sa trabaho ang mga binocular…",
 		"m119": "Tinitiyak na maayos ang scoreboard sa screen…",
-		"m120": "Iniipon ang maiinit na opinyon para mamaya…"
+		"m120": "Iniipon ang maiinit na opinyon para mamaya…",
+		"m121": "Chine-check ang dead drop sa likod ng nacho stand…",
+		"m122": "Hinihintay mag-check in ang espiya namin na naka-mascot suit…",
+		"m123": "Dine-decode ang mensaheng isinulat sa foam finger…",
+		"m124": "Palihim na inaabutan ng pekeng press pass ang espiya namin…",
+		"m125": "Binabasa ang scoreboard sa butas ng diyaryo…"
 	},
 	"startsSoon": {
 		"any": {
 			"m1": "Kumukuha ng popcorn…",
-			"m2": "Hinihintay ang signal ng source namin…",
+			"m2": "Nasa posisyon na ang espiya namin…",
 			"m3": "Idinidikit ang tenga sa pinto ng locker room…",
-			"m4": "Pinapatitig ang mga source namin…",
+			"m4": "Nagsi-sync ng relo ang espiya…",
 			"m5": "Hina-hype ang crowd…",
 			"m6": "Ina-cue ang walk-out music…",
 			"m7": "Ina-boot up ang jumbotron…",
@@ -636,9 +641,9 @@
 		"injuryQuestionable": "Questionable",
 		"injuryDayToDay": "Day-to-day",
 		"injuriesNone": "Fit lahat!",
-		"infoTickets": "Gusto mong manood nang personal?",
-		"ticketsCta": "Tickets",
-		"ticketsFrom": "Tickets mula {price}",
+		"infoTickets": "Tickets",
+		"ticketsCta": "Bumili",
+		"ticketsFrom": "Mula {price}",
 		"chartLeadTitle": "Pag-usad ng Lead",
 		"leadTied": "Tabla",
 		"leadBy": "Lamang ang {team} ng {margin}",
@@ -875,7 +880,7 @@
 		"tooltipMomentum": "Kung tuloy-tuloy na nag-i-score ang isang team. Mas marami ang na-outscore nila sa kalaban kamakailan, mas mataas ito. Bumababa kapag natigil ang scoring.",
 		"tooltipLeadChanges": "Gaano kadalas nagpalit ang lead kamakailan. Mas maraming palitan, mas mataas. Bumababa kapag hindi na nagpapalit.",
 		"tooltipComeback": "Kung nakakahabol ang team na nahuhuli. Habang mas marami ang nabawas nila sa agwat kamakailan, mas tumataas ito, at mas mabigat ito sa huling bahagi ng laro.",
-		"tooltipBreakPenalty": "Inilalapat habang namamataan ng aming mga source na nasa commercial break ang laro, gaya ng inning break, pitching change, o TV timeout.",
+		"tooltipBreakPenalty": "Inilalapat habang namamataan ng aming mga espiya na nasa commercial break ang laro, gaya ng inning break, pitching change, o TV timeout.",
 		"tooltipVolatility": "Inilalapat kapag nanatiling malapit sa 50% ang live win probability (boost) o malayo rito (penalty).",
 		"rivalBeatdown": "Binubugbog ang Rival",
 		"rivalWinning": "Panalo ang Rival",
@@ -1309,7 +1314,7 @@
 	},
 	"gameListHeader": {
 		"loading": "Nilo-load…",
-		"loadFailed": "Tumahimik ang mga source namin. Hindi na-load ang mga laro.",
+		"loadFailed": "Walang balita sa espiya namin. Hindi na-load ang mga laro.",
 		"retry": "Ulitin"
 	},
 	"toast": {
@@ -1436,7 +1441,7 @@
 	},
 	"reviewPrompt": {
 		"title": "Nasisiyahan ka ba sa ArenaSwap?",
-		"copy": "Ang isang mabilisang review ay tumutulong sa mas maraming fans na mahanap ang pinakamagandang laro ❤️",
+		"copy": "Ang isang mabilisang review ay tumutulong sa mas maraming fans na mahanap ang pinakamagandang laro\u00a0❤️",
 		"leaveReview": "Mag-iwan ng review",
 		"dismiss": "I-dismiss ang Request ng Review"
 	},
@@ -1688,7 +1693,7 @@
 		"dropTitle": "I-drop dito ang backup",
 		"chooseFile": "Pumili ng file",
 		"fromFile": "Mula sa file",
-		"problemUnreadable": "Itinapat ng mga source namin ang file na iyon sa ilaw at wala silang mabasang kahit isang salita. Subukan ang bagong export.",
+		"problemUnreadable": "Hindi na-decode ng mga espiya namin ang file na iyon. Subukan ang bagong export.",
 		"problemNotOurs": "Maayos naman ang file na iyan, hindi lang amin. Pumili ng na-export mo mula sa ArenaSwap.",
 		"problemTooNew": "Galing sa mas bagong ArenaSwap ang file na ito. I-update ang extension, tapos subukan ulit.",
 		"problemSaveFailed": "Hindi ito na-save. Subukan ulit.",

@@ -1,5 +1,5 @@
 ---
-sourceHash: '099498900e89'
+sourceHash: 'a4bf4796d123'
 title: ArenaSwap-Fehlerbehebung
 description: Schnelle Hilfe bei leerer Spieleliste, Wechseln, die nie passieren, Tabs, die im Dropdown fehlen, und ausbleibenden Benachrichtigungen.
 section: extension
@@ -20,7 +20,7 @@ Siehst du **Wähle Ligen zum Starten**, ist noch keine Liga an. Klick auf **Lige
 
 Siehst du eine Meldung wie „Ein ruhiger Sporttag.“, läuft in deinen Ligen gerade nichts Live. Klick auf **Aktualisieren**, um noch einmal nachzusehen. Oder schalte den [Demo-Modus](/arenaswap/docs/extension/demo-mode/) ein, dann hast du etwas zum Spielen.
 
-Sagt ein Banner **Funkstille bei unseren Quellen. Nichts geladen.**, klick auf **Erneut versuchen**. Passiert es immer wieder, prüf deine Internetverbindung.
+Sagt ein Banner **Kein Wort von unseren Spionen. Nichts geladen.**, klick auf **Erneut versuchen**. Passiert es immer wieder, prüf deine Internetverbindung.
 
 ## ArenaSwap wechselt die Tabs nicht
 

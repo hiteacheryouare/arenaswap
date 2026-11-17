@@ -1,5 +1,5 @@
 ---
-sourceHash: '099498900e89'
+sourceHash: 'a4bf4796d123'
 title: Risolvi i problemi di ArenaSwap
 description: Rimedi rapidi per una lista di partite vuota, cambi che non avvengono mai, schede mancanti dal menu e notifiche assenti.
 section: extension
@@ -20,7 +20,7 @@ Se vedi **Scegli le leghe per iniziare**, non c'è ancora nessuna lega attiva. C
 
 Se vedi un messaggio tipo "Giornata sportiva fiacca", le tue leghe non hanno niente in diretta adesso. Clicca **Aggiorna** per ricontrollare. Oppure attiva la [Modalità demo](/arenaswap/docs/extension/demo-mode/) per avere qualcosa con cui giocare.
 
-Se un banner dice **Le nostre fonti tacciono. Impossibile caricare le partite.**, clicca **Riprova**. Se continua a succedere, controlla la connessione a internet.
+Se un banner dice **Nessuna notizia dalle nostre spie. Partite non caricate.**, clicca **Riprova**. Se continua a succedere, controlla la connessione a internet.
 
 ## ArenaSwap non cambia scheda
 

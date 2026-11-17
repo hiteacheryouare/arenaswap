@@ -98,7 +98,7 @@ PRIVADO POR DEFECTO
 
 - Sin cuenta. Sin inicio de sesión. Sin suscripción.
 - Sin rastreo, sin análisis, sin anuncios.
-- Los marcadores en vivo vienen de nuestras fuentes, que tienen los binoculares puestos en cada partido.
+- Todo funciona en tu navegador. Nada de lo que ves se envía a ningún lado.
 - 100% de código abierto. El código completo, incluido el paquete PowerScore, está en GitHub.
 
 

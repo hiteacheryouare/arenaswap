@@ -116,7 +116,7 @@ These hold everywhere on the spectrum.
 - **Short sentences carry the point.** Change up the rhythm, then land on a short one.
 - **Active voice.** ArenaSwap does things, the reader does things. Nothing "has been enabled."
 - **One joke per line, at most.** One joke is a highlight. Five in a row is a blooper reel.
-- **Our sources are a network of covert spies with binoculars.** Never name the data provider in prose. Hint at the spies, don't spell out the bit.
+- **Our data comes from a network of covert spies.** Never name the data provider in prose. At 4 and below, call them "our spies" and commit to the bit: stakeouts, dead drops, check-ins, surveillance photos, fake press passes. The spy image has to make literal sense, and it has to fit the line beside it: a subtitle carries on its title's joke instead of starting a new one. Above 4 they're "our sources", with a hint at most. Two exceptions at any spot: switch reasons say "our sources", and privacy copy leaves the data source out. "Our scouts" are a separate crew and stay scouts.
 
 ---
 
@@ -146,6 +146,7 @@ Every part of the voice moves gradually as you slide right. Nothing switches on 
 | **Team ribbing** | Gentle, near 0 only | None | None |
 | **Philly nods** | One per piece ("Go Birds 🦅") | Gone by about 3 | None |
 | **Sports idioms** | Freely ("Run it back") | Where they're the natural word | None |
+| **Our data source** | "Our spies", played all the way up | "Our spies" through 4, "our sources" past it | "Our sources", or left out |
 | **Exclamation points** | Fine | Rare, announcements only | None |
 | **Emoji** | One per line at most | Only as a scanning aid in lists | None |
 | **Contractions** | Always | Always | Fade out from about 8 |
@@ -185,7 +186,7 @@ Fix this:
 
 Dry is fine here. Grand is not. No "a new paradigm", no "the least glamorous kind of audit", no headline that praises the work instead of naming what the section covers.
 
-**Around 10.** Public statements, outage or incident notices, security and data notices. No contractions, jokes, emoji, exclamation points, sports idioms or spies with binoculars. Short declarative sentences. "We" is still ArenaSwap, but plain and accountable, never chatty. In order:
+**Around 10.** Public statements, outage or incident notices, security and data notices. No contractions, jokes, emoji, exclamation points, sports idioms or spies. Short declarative sentences. "We" is still ArenaSwap, but plain and accountable, never chatty. In order:
 
 1. The first paragraph answers: what happened, who is affected, and whether the reader needs to do anything.
 2. What we did about it, and when.
@@ -215,7 +216,7 @@ When in doubt, slide toward formal. A dry line that works beats a joke that does
 
 # Humor
 
-**Fair game:** refs, commissioners, mascots, concessions, the jumbotron, superstitions, fourth-down debates, the GOAT argument, our sources and their binoculars, ArenaSwap's own fumbles, a Philly nod, and gentle team ribbing near 0.
+**Fair game:** refs, commissioners, mascots, concessions, the jumbotron, superstitions, fourth-down debates, the GOAT argument, our spies and their stakeouts, ArenaSwap's own fumbles, a Philly nod, and gentle team ribbing near 0.
 
 **Team ribbing:** poke at a team's well-known history (droughts, curses, a revolving door at quarterback), rivals and Philadelphia's own included, never at its fans as people, a player's personal life, an injury, or anything off the field. History goes stale, so check it's still true. If the joke only works when the reader's team is losing, cut it.
 

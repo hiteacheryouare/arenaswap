@@ -19,7 +19,7 @@ If you see **Choose Leagues to Get Started**, no leagues are on yet. Click **Pic
 
 If you see a message like "It's a slow sports day," your leagues have nothing live right now. Click **Refresh** to check again. Or turn on [Demo mode](/arenaswap/docs/extension/demo-mode/) for something to play with.
 
-If a banner says **Our sources went quiet. Couldn't load games.**, click **Retry**. If it keeps happening, check your internet connection.
+If a banner says **No word from our spies. Couldn't load games.**, click **Retry**. If it keeps happening, check your internet connection.
 
 ## ArenaSwap isn't switching tabs
 

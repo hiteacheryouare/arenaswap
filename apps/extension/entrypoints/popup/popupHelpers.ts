@@ -35,7 +35,7 @@ export const sportTypeLabels: Record<SportType, string> = {
 export { leagueLabels };
 
 // Must match the number of `loading.mN` keys in the locale files.
-const LOADING_MESSAGE_COUNT = 120;
+const LOADING_MESSAGE_COUNT = 125;
 
 export const getRandomLoadingMessage = (): string => {
 	const index = Math.floor(Math.random() * LOADING_MESSAGE_COUNT) + 1;

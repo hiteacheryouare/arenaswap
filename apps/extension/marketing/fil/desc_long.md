@@ -98,7 +98,7 @@ PRIVATE BY DEFAULT
 
 - Walang account. Walang login. Walang subscription.
 - Walang tracking, walang analytics, walang ads.
-- Galing sa aming mga source ang mga live score, na nakatutok ang binoculars nila sa bawat laro.
+- Sa browser mo tumatakbo ang lahat. Walang ipinapadala kahit saan tungkol sa pinapanood mo.
 - 100% open source. Nasa GitHub ang buong code, kasama ang PowerScore package.
 
 

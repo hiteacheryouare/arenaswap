@@ -5,7 +5,7 @@
 	"app": {
 		"welcomeToast": "Benvenuto su ArenaSwap!",
 		"settingsSavedToast": "Impostazioni salvate",
-		"gameDetailsUnavailable": "Questa partita è sfuggita alle nostre fonti.",
+		"gameDetailsUnavailable": "Le nostre spie hanno perso le tracce di questa partita.",
 		"backToGames": "Torna alle partite"
 	},
 	"errorBoundary": {
@@ -45,7 +45,7 @@
 		},
 		"m4": {
 			"title": "Anche gli arbitri si stanno riposando.",
-			"sub": "Le nostre fonti hanno tirato fuori i binocoli. Ancora niente in diretta nelle tue leghe."
+			"sub": "Anche le nostre spie sono in pausa. Ancora niente in diretta nelle tue leghe."
 		},
 		"m5": {
 			"title": "Il tabellone è immobile.",
@@ -109,7 +109,7 @@
 		"m46": "Preparando le pitture da tifoso…",
 		"m47": "Coordinando le divise della squadra…",
 		"m48": "Facendo due conti…",
-		"m49": "Interrogando le nostre fonti…",
+		"m49": "Le nostre spie ci fanno rapporto…",
 		"m50": "Lanciando i fuochi d'artificio…",
 		"m51": "Preparando lo spettacolo di luci…",
 		"m52": "Controllando il meteo per il giorno della partita…",
@@ -180,14 +180,19 @@
 		"m117": "Cercando il posto migliore sul divano…",
 		"m118": "Rimandando in campo il binocolo…",
 		"m119": "Controllando che il tabellone in sovrimpressione collabori…",
-		"m120": "Conservando le opinioni bollenti per dopo…"
+		"m120": "Conservando le opinioni bollenti per dopo…",
+		"m121": "Controllando il nascondiglio segreto dietro il chiosco dei nachos…",
+		"m122": "Aspettando che la nostra spia vestita da mascotte si faccia viva…",
+		"m123": "Decifrando un messaggio scarabocchiato su un dito di gommapiuma…",
+		"m124": "Passando alla nostra spia un finto pass stampa…",
+		"m125": "Leggendo il tabellone da un buco nel giornale…"
 	},
 	"startsSoon": {
 		"any": {
 			"m1": "Prendendo i popcorn…",
-			"m2": "Aspettando un segnale dalle nostre fonti…",
+			"m2": "La nostra spia in curva è in posizione…",
 			"m3": "Origliando allo spogliatoio…",
-			"m4": "Fonti, strizzate gli occhi…",
+			"m4": "Spie sincronizzano orologi…",
 			"m5": "Caricando il pubblico…",
 			"m6": "Preparando la musica d'ingresso…",
 			"m7": "Accendendo il maxischermo…",
@@ -636,9 +641,9 @@
 		"injuryQuestionable": "Incerto",
 		"injuryDayToDay": "Giorno per giorno",
 		"injuriesNone": "Infermeria vuota",
-		"infoTickets": "Vuoi esserci dal vivo?",
-		"ticketsCta": "Biglietti",
-		"ticketsFrom": "Biglietti da {price}",
+		"infoTickets": "Biglietti",
+		"ticketsCta": "Acquista",
+		"ticketsFrom": "Da {price}",
 		"chartLeadTitle": "Vantaggio nel tempo",
 		"leadTied": "Parità",
 		"leadBy": "{team} di {margin}",
@@ -875,7 +880,7 @@
 		"tooltipMomentum": "Se una squadra è in serie positiva. Più ha segnato dell'altra di recente, più il valore sale. Scende quando nessuno segna più.",
 		"tooltipLeadChanges": "Quanti sorpassi ci sono stati di recente. Più sorpassi, più il valore sale. Scende se il vantaggio regge.",
 		"tooltipComeback": "Se la squadra in svantaggio sta recuperando. Più ha ridotto lo svantaggio di recente, più il valore sale, e conta di più a fine partita.",
-		"tooltipBreakPenalty": "Si applica mentre le nostre fonti notano la partita in pausa pubblicitaria, come una pausa tra gli inning, un cambio di lanciatore o un timeout TV.",
+		"tooltipBreakPenalty": "Si applica mentre le nostre spie notano la partita in pausa pubblicitaria, come una pausa tra gli inning, un cambio di lanciatore o un timeout TV.",
 		"tooltipVolatility": "Si applica quando la probabilità di vittoria in diretta è rimasta vicina al 50% (boost) o lontana da esso (penalità).",
 		"rivalBeatdown": "Rivale che le prende",
 		"rivalWinning": "Rivale in vantaggio",
@@ -1309,7 +1314,7 @@
 	},
 	"gameListHeader": {
 		"loading": "Caricamento…",
-		"loadFailed": "Le nostre fonti tacciono. Impossibile caricare le partite.",
+		"loadFailed": "Nessuna notizia dalle nostre spie. Partite non caricate.",
 		"retry": "Riprova"
 	},
 	"toast": {
@@ -1436,7 +1441,7 @@
 	},
 	"reviewPrompt": {
 		"title": "Ti piace ArenaSwap?",
-		"copy": "Una recensione veloce aiuta più tifosi a trovare la partita migliore ❤️",
+		"copy": "Una recensione veloce aiuta più tifosi a trovare la partita migliore\u00a0❤️",
 		"leaveReview": "Lascia una recensione",
 		"dismiss": "Ignora richiesta di recensione"
 	},
@@ -1688,7 +1693,7 @@
 		"dropTitle": "Trascina qui un backup",
 		"chooseFile": "Scegli un file",
 		"fromFile": "Dal file",
-		"problemUnreadable": "Le nostre fonti hanno guardato quel file in controluce e non sono riuscite a decifrare nemmeno una parola. Prova con un'esportazione nuova.",
+		"problemUnreadable": "Le nostre spie non sono riuscite a decifrare quel file. Prova con un'esportazione nuova.",
 		"problemNotOurs": "È un file perfettamente valido, ma non è dei nostri. Scegline uno esportato da ArenaSwap.",
 		"problemTooNew": "Questo file arriva da una versione più recente di ArenaSwap. Aggiorna l'estensione e riprova.",
 		"problemSaveFailed": "Non è stato salvato. Riprova.",

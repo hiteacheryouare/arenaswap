@@ -244,7 +244,7 @@
 			},
 			{
 				"q": "Brauche ich ein Konto oder ein Abo?",
-				"a": "Nein. ArenaSwap ist kostenlos, kommt ohne Konto aus und sammelt nichts. Es läuft komplett in deinem Browser und liest öffentliche Spielstände von unseren Quellen, die jedes Spiel durchs Fernglas im Blick behalten. Nichts davon, was du schaust, wird irgendwohin gesendet."
+				"a": "Nein. ArenaSwap ist kostenlos, kommt ohne Konto aus und sammelt nichts. Es liest öffentliche Spielstände und läuft komplett in deinem Browser. Nichts davon, was du schaust, wird irgendwohin gesendet."
 			},
 			{
 				"q": "Funktioniert es mit meinem Streaming-Dienst?",

@@ -98,7 +98,7 @@ PRIVADO POR PADRÃO
 
 - Sem conta. Sem login. Sem assinatura.
 - Sem rastreamento, sem análise de dados, sem anúncios.
-- Os placares ao vivo vêm das nossas fontes, que não tiram o binóculo de cima de nenhum jogo.
+- Tudo roda no seu navegador. Nada sobre o que você assiste é enviado para lugar nenhum.
 - 100% código aberto. O código completo, incluindo o pacote PowerScore, está no GitHub.
 
 

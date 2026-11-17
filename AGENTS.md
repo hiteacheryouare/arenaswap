@@ -50,7 +50,7 @@ If this sounds familiar, it is. We are heavily inspired by the team at [Transit]
 - All code changes should be internationalized to every language we support at the moment.
 - When opening PRs, Issues, etc via the GitHub API or any access you have to github, ALWAYS add the "robotic" label so we know it was assisted by agents.
 - To verify, run my "everything command": `npm run lint typecheck test test:e2e build build:edge build:firefox zip zip:edge zip:firefox`
-- And dont mention ESPN in any prose, marketing, copy, text, etc. Say "our sources" (bonus points if you can very subtly allude that they are a network of covert spies with binoculars)
+- And dont mention ESPN in any prose, marketing, copy, text, etc. Anywhere copy sits at 4 or below on the `.agents/VOICE.md` spectrum, say "our spies" and lean all the way into the joke. Above 4, say "our sources". VOICE.md lists the exceptions
 
 
 ## UI Mistakes to Avoid:

@@ -98,7 +98,7 @@ PRIVÉ PAR DÉFAUT
 
 - Pas de compte. Pas de connexion. Pas d'abonnement.
 - Pas de pistage, pas d'analytique, pas de pub.
-- Les scores en direct viennent de nos sources, qui gardent leurs jumelles braquées sur chaque match.
+- Tout se passe dans ton navigateur. Rien de ce que tu regardes n'est envoyé où que ce soit.
 - 100 % open source. Le code complet, y compris le package PowerScore, est sur GitHub.
 
 

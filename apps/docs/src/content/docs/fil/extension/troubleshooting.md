@@ -1,5 +1,5 @@
 ---
-sourceHash: '099498900e89'
+sourceHash: 'a4bf4796d123'
 title: Ayusin ang problema sa ArenaSwap
 description: Mabilis na lunas para sa walang laman na listahan ng laro, mga paglipat na hindi nangyayari, mga tab na nawawala sa dropdown, at mga abisong hindi dumarating.
 section: extension
@@ -20,7 +20,7 @@ Kung nakikita mo ang **Pumili ng Liga Para Makapagsimula**, wala pang naka-on na
 
 Kung may mensaheng gaya ng "Tahimik na araw sa sports," walang live sa mga liga mo ngayon. I-click ang **I-refresh** para tingnan ulit. O i-on ang [Demo mode](/arenaswap/docs/extension/demo-mode/) para may mapaglaruan.
 
-Kung may banner na nagsasabing **Tumahimik ang mga source namin. Hindi na-load ang mga laro.**, i-click ang **Ulitin**. Kung paulit-ulit itong nangyayari, tingnan ang internet connection mo.
+Kung may banner na nagsasabing **Walang balita sa espiya namin. Hindi na-load ang mga laro.**, i-click ang **Ulitin**. Kung paulit-ulit itong nangyayari, tingnan ang internet connection mo.
 
 ## Hindi lumilipat ng tab ang ArenaSwap
 

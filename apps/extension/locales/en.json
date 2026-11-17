@@ -5,7 +5,7 @@
 	"app": {
 		"welcomeToast": "Welcome to ArenaSwap!",
 		"settingsSavedToast": "Settings saved",
-		"gameDetailsUnavailable": "This game slipped past our sources.",
+		"gameDetailsUnavailable": "Our spies lost track of this game.",
 		"backToGames": "Back to games"
 	},
 	"errorBoundary": {
@@ -45,7 +45,7 @@
 		},
 		"m4": {
 			"title": "Even the refs are taking a break.",
-			"sub": "Our sources have their binoculars out. Nothing live in your leagues yet."
+			"sub": "Our spies are on break too. Nothing live in your leagues yet."
 		},
 		"m5": {
 			"title": "The scoreboard is still.",
@@ -109,7 +109,7 @@
 		"m46": "Getting the face paint ready…",
 		"m47": "Coordinating team uniforms…",
 		"m48": "Running the numbers…",
-		"m49": "Debriefing our sources…",
+		"m49": "Debriefing our spies…",
 		"m50": "Launching the fireworks…",
 		"m51": "Getting the light show ready…",
 		"m52": "Checking the weather for game day…",
@@ -180,14 +180,19 @@
 		"m117": "Finding the good seat on the couch…",
 		"m118": "Sending the binoculars back out…",
 		"m119": "Making sure the scorebug is behaving…",
-		"m120": "Saving the hot takes for later…"
+		"m120": "Saving the hot takes for later…",
+		"m121": "Checking the dead drop behind the nacho stand…",
+		"m122": "Waiting for our spy in the mascot suit to check in…",
+		"m123": "Decoding a message scribbled on a foam finger…",
+		"m124": "Slipping our spy a fake press pass…",
+		"m125": "Reading the scoreboard through a hole in a newspaper…"
 	},
 	"startsSoon": {
 		"any": {
 			"m1": "Grabbing the popcorn…",
-			"m2": "Waiting for a signal from our sources…",
+			"m2": "Our spy in the cheap seats is in position…",
 			"m3": "Pressing an ear to the locker room door…",
-			"m4": "Asking our sources to squint…",
+			"m4": "Spies, synchronize watches…",
 			"m5": "Hyping up the crowd…",
 			"m6": "Cueing the walk-out music…",
 			"m7": "Booting up the jumbotron…",
@@ -636,9 +641,9 @@
 		"injuryQuestionable": "Questionable",
 		"injuryDayToDay": "Day-to-day",
 		"injuriesNone": "Clean bill of health",
-		"infoTickets": "Want to go in person?",
-		"ticketsCta": "Tickets",
-		"ticketsFrom": "Tickets from {price}",
+		"infoTickets": "Tickets",
+		"ticketsCta": "Buy",
+		"ticketsFrom": "From {price}",
 		"chartLeadTitle": "Lead Over Time",
 		"leadTied": "Tied",
 		"leadBy": "{team} by {margin}",
@@ -875,7 +880,7 @@
 		"tooltipMomentum": "Whether one team is on a run. The more they've outscored the other team lately, the higher it goes. It fades when the scoring stops.",
 		"tooltipLeadChanges": "How often the lead has changed hands lately. More changes, higher score. It fades if the lead holds.",
 		"tooltipComeback": "Whether the team that's behind is catching up. The more ground they've made up lately, the higher it goes, and it counts for more late in the game.",
-		"tooltipBreakPenalty": "Applies while our sources spot the game on a commercial break, like an inning break, a pitching change or a TV timeout.",
+		"tooltipBreakPenalty": "Applies while our spies spot the game on a commercial break, like an inning break, a pitching change or a TV timeout.",
 		"tooltipVolatility": "Applies when the live win probability has stayed near 50% (a boost) or far from it (a penalty).",
 		"rivalBeatdown": "Rival getting beaten",
 		"rivalWinning": "Rival winning",
@@ -1309,7 +1314,7 @@
 	},
 	"gameListHeader": {
 		"loading": "Loading…",
-		"loadFailed": "Our sources went quiet. Couldn't load games.",
+		"loadFailed": "No word from our spies. Couldn't load games.",
 		"retry": "Retry"
 	},
 	"toast": {
@@ -1436,7 +1441,7 @@
 	},
 	"reviewPrompt": {
 		"title": "Enjoying ArenaSwap?",
-		"copy": "A quick review helps more fans find the best game ❤️",
+		"copy": "A quick review helps more fans find the best game\u00a0❤️",
 		"leaveReview": "Leave a review",
 		"dismiss": "Dismiss review request"
 	},
@@ -1688,7 +1693,7 @@
 		"dropTitle": "Drop a backup here",
 		"chooseFile": "Choose a file",
 		"fromFile": "From the File",
-		"problemUnreadable": "Our sources held that file up to the light and couldn't make out a word. Try a fresh export.",
+		"problemUnreadable": "Our spies couldn't decode that file. Try a fresh export.",
 		"problemNotOurs": "That's a perfectly good file, just not one of ours. Pick one you exported from ArenaSwap.",
 		"problemTooNew": "This file came from a newer ArenaSwap. Update the extension, then try again.",
 		"problemSaveFailed": "That didn't save. Give it another go.",

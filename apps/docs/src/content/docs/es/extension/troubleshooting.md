@@ -1,5 +1,5 @@
 ---
-sourceHash: '099498900e89'
+sourceHash: 'a4bf4796d123'
 title: Solución de problemas de ArenaSwap
 description: Soluciones rápidas para una lista de partidos vacía, cambios que nunca ocurren, pestañas que faltan en el menú y notificaciones que no llegan.
 section: extension
@@ -20,7 +20,7 @@ Si ves **Elige ligas para empezar**, todavía no hay ligas activadas. Haz clic e
 
 Si ves un mensaje como "Es un día tranquilo en el deporte", tus ligas no tienen nada en vivo ahorita. Haz clic en **Actualizar** para revisar otra vez. O activa el [modo demostración](/arenaswap/docs/extension/demo-mode/) para tener con qué jugar.
 
-Si un aviso dice **Nuestras fuentes enmudecieron. No se cargaron los partidos.**, haz clic en **Reintentar**. Si sigue pasando, revisa tu conexión a internet.
+Si un aviso dice **Sin noticias de nuestros espías. No cargó ningún partido.**, haz clic en **Reintentar**. Si sigue pasando, revisa tu conexión a internet.
 
 ## ArenaSwap no cambia de pestaña
 

@@ -98,7 +98,7 @@ PRIVATO DI DEFAULT
 
 - Nessun account. Nessun login. Nessun abbonamento.
 - Nessun tracciamento, nessuna analisi, nessuna pubblicità.
-- I punteggi dal vivo arrivano dalle nostre fonti, che tengono il binocolo puntato su ogni partita.
+- Tutto gira nel tuo browser. Niente di ciò che guardi viene inviato da nessuna parte.
 - 100% open source. Il codice completo, incluso il pacchetto PowerScore, è su GitHub.
 
 
