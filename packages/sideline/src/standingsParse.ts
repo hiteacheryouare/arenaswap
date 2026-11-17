@@ -147,7 +147,7 @@ const numericSpecs = {
 } as const satisfies Record<SportType, readonly columnSpec[]>;
 
 // What a college division sends instead of a win column: two record strings and nothing countable.
-// Only reached when the numeric set above comes back empty, because the league endpoint sends
+// Only reached when the numeric set above comes back with nothing but games behind, because the league endpoint sends
 // `vs. Conf.` alongside real wins and losses — printing both would be the same record twice.
 const recordSpecs = [
 	{ statName: 'vs. Conf.', labelKey: 'standings.conference' },
@@ -284,7 +284,9 @@ const tableFor = (sportType: SportType, entries: RawEntry[]): { specs: AnyStandi
 		return { specs: present(collegeHockeySpecs), standing: collegeHockeyStanding };
 	}
 	const numeric = present(numericSpecs[sportType] as readonly AnyStandingsSpec[]);
-	return numeric.length > 0
+	// College basketball's summary sends `gamesBehind` beside its two records, and a games-behind
+	// column with no record next to it reads as a table of dashes.
+	return numeric.some(spec => spec.statName !== 'gamesBehind')
 		? { specs: numeric, standing: sportStandings[sportType] }
 		: { specs: present(recordSpecs), standing: conferenceStanding };
 };

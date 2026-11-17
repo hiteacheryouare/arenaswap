@@ -409,6 +409,26 @@ describe('parseStandings, the summary fallback', () => {
 		expect(group?.rows[0]?.values).toEqual(['2-0', '3-0']);
 	});
 
+	// As our sources sent it for The Citadel at Clemson on 2026-11-16, before conference play.
+	test('reads the records a college basketball conference sends beside its games behind', () => {
+		const hoops = {
+			standings: {
+				groups: [{
+					header: '2026-27 Southern Conference Standings',
+					standings: {
+						entries: [
+							{ team: 'Furman', id: '231', stats: [stat('overall', '4-1'), stat('gamesBehind', '-'), stat('vs. Conf.', '0-0')] },
+							{ team: 'The Citadel', id: '2643', stats: [stat('overall', '3-1'), stat('gamesBehind', '-'), stat('vs. Conf.', '0-0')] },
+						],
+					},
+				}],
+			},
+		};
+		const [group] = parseStandings(hoops, 'basketball', '228', '2643');
+		expect(group?.columns.map(column => column.labelKey)).toEqual(['standings.conference', 'standings.overall']);
+		expect(group?.rows[1]?.values).toEqual(['0-0', '3-1']);
+	});
+
 	test('orders a conference by its conference record, leaving teams level on it as they arrived', () => {
 		const conference = {
 			standings: {
