@@ -18,7 +18,7 @@ import zhCN from '../../../locales/zh_CN.json';
 import zhTW from '../../../locales/zh_TW.json';
 
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
-const labelKeys = ['infoWatch', 'infoVenue', 'infoWeather', 'infoLine', 'infoAttendance', 'infoEnded', 'infoSurface'] as const;
+const labelKeys = ['infoWatch', 'infoVenue', 'infoWeather', 'infoLine', 'infoAttendance', 'infoEnded', 'infoSurface', 'infoTickets'] as const;
 
 const liveGame: Game = {
 	id: 'mock-7',
@@ -477,5 +477,58 @@ describe('network logos in Game Info', () => {
 	it('uses the colour artwork in light mode', () => {
 		mountNetworks('light');
 		cy.get('.game-info-networks img[alt="ACC Network"]').should('have.attr', 'src', networkLogo('#013ca6'));
+	});
+});
+describe('Game Info spacing', () => {
+	const ravens: Game = { ...networkGame, venueName: 'M&T Bank Stadium', venueLocation: 'Baltimore, MD' };
+
+	beforeEach(() => {
+		cy.mount(
+			<div style={{ width: '296px' }}>
+				<GameInfoPanel
+					game={ravens}
+					bettingPrefs={{ bettingEnabled: false }}
+					weatherPrefs={{ temperatureUnit: 'F' }}
+					venue={{ photos: { interior: photo('#1d5a35') }, surface: 'grass' }}
+					tickets={{ url: 'https://example.com/tickets', minPrice: 43 }}
+				/>
+			</div>,
+		);
+		cy.get('.game-info-networks img').should($logos => {
+			for (const logo of $logos) expect((logo as HTMLImageElement).complete, 'logo loaded').to.equal(true);
+		});
+	});
+
+	it('leaves a clear gap between the stadium photo and the first row', () => {
+		cy.get('.gd-venue-photo').then(([photoBox]: JQuery<HTMLElement>) => {
+			cy.get('.game-info-networks img').first().should(([logo]: JQuery<HTMLElement>) => {
+				const gap = logo.getBoundingClientRect().top - photoBox.getBoundingClientRect().bottom;
+				expect(gap, 'photo to Watch row').to.be.at.least(10);
+			});
+		});
+	});
+
+	it('keeps network logos clear of the row rules', () => {
+		cy.contains('.game-info-row', en.detail.infoWatch).then(([row]: JQuery<HTMLElement>) => {
+			const bounds = row.getBoundingClientRect();
+			cy.get('.game-info-networks img').each(([logo]: JQuery<HTMLElement>) => {
+				const box = logo.getBoundingClientRect();
+				expect(box.top - bounds.top, 'clearance above').to.be.at.least(5);
+				expect(bounds.bottom - box.bottom, 'clearance below').to.be.at.least(5);
+			});
+		});
+	});
+
+	it('puts the ticket link beside its label like every other row', () => {
+		cy.contains('.game-info-row', en.detail.infoTickets).within(() => {
+			cy.get('.game-info-label').then(([label]: JQuery<HTMLElement>) => {
+				cy.get('.game-info-link').should(([link]: JQuery<HTMLElement>) => {
+					const labelBox = label.getBoundingClientRect();
+					const linkBox = link.getBoundingClientRect();
+					expect(linkBox.left, 'link sits right of the label').to.be.greaterThan(labelBox.right);
+					expect(linkBox.top, 'link shares the label line').to.be.lessThan(labelBox.bottom);
+				});
+			});
+		});
 	});
 });

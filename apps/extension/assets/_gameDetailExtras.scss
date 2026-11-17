@@ -35,14 +35,15 @@
 	.game-info-networks .network-logo {
 		height:         0.85rem;
 		max-width:      4.5rem;
-		vertical-align: -0.18rem;
+		margin-block:   0.14rem;
+		vertical-align: middle;
 	}
 
 	// The stadium photo heads the Game Info panel and carries the venue's name and city.
 	.gd-venue-photo {
 		position:      relative;
 		aspect-ratio:  2 / 1;
-		margin-bottom: 0.3rem;
+		margin-bottom: 0.4rem;
 		border-radius: var(--as-radius-4);
 		overflow:      hidden;
 		background:    var(--as-bg-2);
