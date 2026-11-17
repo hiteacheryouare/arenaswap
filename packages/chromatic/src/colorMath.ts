@@ -1,9 +1,3 @@
-// The colour arithmetic every surface in the product measures itself with. One copy, because a
-// second is how two files end up disagreeing about what a hex is worth: `colorUtils` and `logoTint`
-// each carried the sRGB transfer function, at the two different thresholds WCAG has published
-// (0.03928 and 0.04045). They agree on all 256 channel values, so this is a consolidation and not a
-// change — but only one of them can be here.
-
 export interface Rgb {
 	red: number;
 	green: number;
@@ -25,7 +19,6 @@ export const hexToRgb = (value: string): Rgb | null => {
 
 const channelByte = (value: number): number => Math.max(0, Math.min(255, Math.round(value)));
 
-// The 1 above the top channel keeps a dark red's leading zeros, and is sliced back off.
 export const rgbToHex = (red: number, green: number, blue: number): string => (
 	`#${((1 << 24) | (channelByte(red) << 16) | (channelByte(green) << 8) | channelByte(blue)).toString(16).slice(1)}`
 );
@@ -39,15 +32,11 @@ export const rgbLuminance = (red: number, green: number, blue: number): number =
 	(0.2126 * channelLuminance(red)) + (0.7152 * channelLuminance(green)) + (0.0722 * channelLuminance(blue))
 );
 
-// An unparseable colour reads as black rather than throwing: every caller here is deciding how to
-// paint something, and a thrown error paints nothing at all.
 export const hexLuminance = (hex: string): number => {
 	const rgb = hexToRgb(hex);
 	return rgb ? rgbLuminance(rgb.red, rgb.green, rgb.blue) : 0;
 };
 
-// Taken between two luminances rather than two colours, because the crest measurement holds the
-// background's luminance and asks this once per pixel.
 export const contrastBetween = (a: number, b: number): number => (
 	(Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
 );
@@ -62,7 +51,6 @@ export interface Lab {
 	b: number;
 }
 
-// D65 white, which is what sRGB is defined against.
 const labPivot = (value: number): number => (value > 216 / 24389 ? Math.cbrt(value) : ((24389 / 27) * value + 16) / 116);
 
 export const hexToLab = (hex: string): Lab | null => {
@@ -86,8 +74,7 @@ const toDegrees = (radians: number): number => {
 
 const toRadians = (degrees: number): number => (degrees * Math.PI) / 180;
 
-// CIEDE2000, Sharma, Wu and Dalal (2005). Plain RGB distance calls two navies far apart and a
-// red and a maroon close, which is backwards from how either pair looks on a card.
+// CIEDE2000, Sharma, Wu and Dalal (2005).
 export const labDifference = (one: Lab, two: Lab): number => {
 	const meanChroma = (labChroma(one) + labChroma(two)) / 2;
 	const chromaWeight = 0.5 * (1 - Math.sqrt(meanChroma ** 7 / (meanChroma ** 7 + 25 ** 7)));

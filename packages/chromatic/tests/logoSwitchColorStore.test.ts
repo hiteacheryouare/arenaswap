@@ -3,8 +3,6 @@ const crest = 'https://a.espncdn.com/i/teamlogos/ncaa/500/120.png';
 const marylandRed = '#CE1126';
 const gold = '#F8DB3F';
 
-// Node's test environment has no localStorage, and the module reads it at import time — so the stub
-// goes on first and the module is imported after it, per test.
 const withStoredValue = async (raw: string | null) => {
 	const store = new Map<string, string>();
 	if (raw !== null) store.set(storageKey, raw);
@@ -19,8 +17,6 @@ const withStoredValue = async (raw: string | null) => {
 	return import('../src/logoSwitchColor');
 };
 
-// The same store, and the same hazard, as the crest legibility verdicts: a colour picked under
-// thresholds that have since moved is never measured again, so it has to be thrown away with them.
 describe('a stored switch colour carries the calibration that picked it', () => {
 	test('serves a colour stored under the calibration in force, matching the primary in any case', async () => {
 		const { switchColorCalibration } = await withStoredValue(null);
@@ -54,9 +50,6 @@ describe('a stored switch colour carries the calibration that picked it', () => 
 		expect((await withStoredValue(JSON.stringify({ calibration: 'x', colors: 'gold' }))).cachedLogoSwitchColor(crest, marylandRed)).toBeUndefined();
 	});
 
-	// Pinned, as the legibility calibration is, so that moving a threshold fails a test that says what
-	// else has to happen. The blend steps decide which pinks count as the primary fading into white,
-	// so they decide the colour too, and today the calibration leaves them out.
 	test('is every threshold the colour depends on, the blend steps included', async () => {
 		const { switchColorCalibration } = await withStoredValue(null);
 

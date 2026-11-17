@@ -3,8 +3,6 @@ import { join } from 'node:path';
 import type { Game, LeagueId } from '@arenaswap/core';
 import { parseScoreboardEvents } from '../src/apiClient';
 
-// Each fixture is one real scoreboard event, trimmed of links, headlines, odds and leaders. See the
-// `source` line in each file for where it was captured.
 const gameFrom = (name: string): Game => {
 	const capture = JSON.parse(readFileSync(join(__dirname, 'fixtures/scoreboardExtras', `${name}.json`), 'utf8')) as { league: LeagueId; event: unknown };
 	const [game] = parseScoreboardEvents({ events: [capture.event] }, capture.league);

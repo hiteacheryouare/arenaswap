@@ -12,7 +12,6 @@ interface VenueImage {
 }
 
 const imageHost = 'https://a.espncdn.com';
-// Twice the 320px popup, so the photo stays sharp on a 2x screen at a fraction of the 2000px original.
 const photoWidth = 640;
 
 const resized = (href: string | undefined): string | undefined => {

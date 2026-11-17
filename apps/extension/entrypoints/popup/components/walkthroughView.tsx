@@ -22,9 +22,6 @@ interface walkthroughViewProps {
 
 const brandColors = ['#F75C03', '#3E9BD1', '#D90368', '#00CC66', '#F1C40F'];
 
-// Onboarding has just said "You're all set", so the tour ends on its last step rather than on a
-// second finish screen. canvas-confetti draws on a canvas of its own on the body, so the burst
-// keeps falling over the games list the tour hands back to.
 const celebrate = async () => {
 	const confetti = (await import('canvas-confetti')).default;
 	void confetti({ particleCount: 120, spread: 70, origin: { y: 0.55 }, colors: brandColors, disableForReducedMotion: true });
@@ -45,7 +42,6 @@ const walkthroughView = ({ onComplete, leagues, scoringMode }: walkthroughViewPr
 		onComplete();
 	};
 
-	// Stepping back into the PowerScore step lands on its last sub-step, the one just left.
 	const back = (from: walkthroughStep) => {
 		if (from === 1) return;
 		if (from === 3) setInitialSubStep(lastPowerScoreSubStep(modeId));

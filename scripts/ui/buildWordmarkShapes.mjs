@@ -1,16 +1,3 @@
-// Regenerates `packages/ui/src/components/wordmarkShapes.ts` from the two SVGs the popup header
-// animates between. Run with `npm run ui:wordmark-shapes` after either file changes.
-//
-// Most of the mark needs nothing from this: the icon's `a` and `s` are the wordmark's own outlines
-// at 0.3453x, so those ship as one path and a transform, and the bar and the dashed tail are
-// redrawn as strokes. The two arrows are the exception. The icon draws a wider head and a lighter
-// chevron, which no transform will reach, so each is emitted as a pair of point rings: the same
-// contour from both files, resampled to the same count at the same arc-length spacing and rotated
-// into correspondence, so lerping index by index walks one outline onto the other.
-//
-// The alignment search runs in unit space so the two sizes cannot skew it, and the result is then
-// applied to the ring in its own coordinates.
-
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -82,7 +69,6 @@ const bboxOf = (pts) => {
 	return { minX, maxX, minY, maxY, w: maxX - minX, h: maxY - minY };
 };
 
-// resample a closed ring to N points spaced evenly by arc length
 const resample = (pts, n) => {
 	const ring = pts.slice();
 	if (ring[0][0] !== ring[ring.length-1][0] || ring[0][1] !== ring[ring.length-1][1]) ring.push(ring[0]);
@@ -100,10 +86,8 @@ const resample = (pts, n) => {
 	return out;
 };
 
-// normalise a ring into a unit box so two shapes can be matched regardless of size
 const unitise = (ring, box) => ring.map(([x, y]) => [(x - box.minX) / box.w, (y - box.minY) / box.h]);
 
-// rotate/reverse ring B so it lines up with ring A
 const align = (a, b) => {
 	let best = null;
 	for (const rev of [false, true]) {
@@ -120,9 +104,6 @@ const align = (a, b) => {
 	return { score: best.sum / a.length, rev: best.rev, rot: best.r };
 };
 
-// The alignment is searched in unit space so the two sizes cannot skew it, then applied to the ring
-// in its own coordinates. Returning the unit-space ring instead is a mistake that reads as the
-// shape simply not being there at the far end of the morph.
 const reorder = (ring, { rev, rot }) => {
 	const cand = rev ? [ring[0], ...ring.slice(1).reverse()] : ring;
 	return cand.map((_, i) => cand[(i + rot) % cand.length]);
@@ -131,15 +112,9 @@ const reorder = (ring, { rev, rot }) => {
 const W = parse(wordmarkFile);
 const I = parse(iconFile);
 
-// split each arrow into bar + head at its joint
 const cutHead = (sub, jointCmdIndex, jointX, jointY) => [['M', [jointX, jointY]], ...sub.slice(jointCmdIndex + 1)];
 const wHeadIdx = W[6].findIndex(([c, a]) => c === 'h' && a.length === 1 && a[0] === 599);
 const wHead = cutHead(W[6], wHeadIdx, 1691, 130);
-// The icon draws its arrow in the other direction, so its head is not one contiguous run. The
-// contour starts at the head's bottom-back, comes up to the joint at (1380, 875), goes left along
-// the bar and back, reaches the top of the joint at (1380, 793) at index 9, then draws the head.
-// Taking only what follows index 9 leaves off the wedge between (1407, 995) and (1380, 875), which
-// is a visible bite out of the underside of the arrowhead.
 const iHead = [['M', [1380, 793]], ...I[6].slice(10, 20), ...I[6].slice(1, 4), ['z', []]];
 
 const shapes = {
@@ -159,7 +134,6 @@ for (const [name, { w, i }] of Object.entries(shapes)) {
 	console.log(`${name}: wordmark ${wb.w.toFixed(1)}x${wb.h.toFixed(1)}  icon ${ib.w.toFixed(1)}x${ib.h.toFixed(1)}  match-score ${score.toFixed(5)} (rev=${rev} rot=${rot})`);
 }
 
-// every piece's box, in its own file's units
 const box = (subs, idx) => bboxOf(idx.flatMap(k => flatten(subs[k])));
 const report = {
 	wordmark: {
@@ -175,7 +149,6 @@ for (const [file, pieces] of Object.entries(report)) {
 }
 console.log('letter scale a:', (report.wordmark.a.h / report.icon.a.h).toFixed(6), ' s:', (report.wordmark.s.h / report.icon.s.h).toFixed(6));
 
-// ─── emit the shape module ───────────────────────────────────────────────────────────────────
 const k = (report.wordmark.a.h / report.icon.a.h + report.wordmark.s.h / report.icon.s.h) / 2;
 const ox = report.icon.chevron.minX * k;
 const oy = report.icon.a.minY * k;
@@ -229,10 +202,6 @@ const d1 = icon.dash1, d2 = icon.dash2, r = d1.h/2;
 console.log('  dashes firstCap', t(d1.minX + r, ox).toFixed(2), 'lastCap', t(d2.maxX - r, ox).toFixed(2),
             'centreY', t((d1.minY+d1.maxY)/2, oy).toFixed(2), 'stroke', (d1.h*k).toFixed(2),
             'seg', ((d1.w - d1.h)*k).toFixed(2), 'gap', (((d2.minX-d1.minX) - (d1.w - d1.h) - d1.h)*k).toFixed(2));
-// The icon file carries an orange period the shipped icon does not: every PNG under
-// `apps/extension/public/icon` has zero orange pixels, and their white ink measures 1.212 wide for
-// its height against this box's 1.218 and the with-the-dot box's 1.414. The mark ends at the
-// arrowhead, so the dot is animated away rather than parked.
 const boxW = icon.head.maxX * k - ox, boxH = icon.s.maxY * k - oy;
 console.log('  collapsed box (no dot)', boxW.toFixed(2), 'x', boxH.toFixed(2), ' aspect', (boxW/boxH).toFixed(4));
 console.log('  dot would have reached cx', (dot.cx * k - ox).toFixed(2), 'cy', (dot.cy * k - oy).toFixed(2));

@@ -7,7 +7,6 @@ import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
 import fil from '../../../locales/fil.json';
 import fr from '../../../locales/fr.json';
-// Not `it` — that would shadow Mocha's global it() and break every test in this file.
 import itLocale from '../../../locales/it.json';
 import ja from '../../../locales/ja.json';
 import ko from '../../../locales/ko.json';
@@ -23,11 +22,8 @@ const minuteMs = 60_000;
 const hourMs = 60 * minuteMs;
 const dayMs = 24 * hourMs;
 
-// Fixed clock so the countdown is deterministic across runs.
 const now = new Date('2026-08-01T12:00:00.000Z');
 
-// Three DM Sans stacks coexist in this project, so the first family is the assertion rather than
-// the whole string.
 const face = ($el: JQuery<HTMLElement>) => getComputedStyle($el[0]!).fontFamily.split(',')[0]!.replace(/["']/g, '');
 
 const makePreGame = (msUntilStart: number): Game => ({
@@ -48,10 +44,6 @@ const seasonLeaders = (side: string) => ([
 	{ category: 'earnedRunAverage', fallbackLabel: 'ERA', player: `${side} Arm`, value: '2.94' },
 ]);
 
-// A bare scheduled game is 422px of content in a 560px popup, so the hero never leaves the
-// viewport and the sticky bar never reaches its compact state. This is what a real scheduled
-// game carries — both probable pitchers, three team leaders a side, a venue, a broadcast, the
-// weather and a line — and it runs to 808px, which puts the hero out of view.
 const makeScheduledSlate = (msUntilStart: number): Game => ({
 	...makePreGame(msUntilStart),
 	league: 'mlb',
@@ -104,11 +96,8 @@ const detailView = (game: Game, overrides: MountOverrides = {}) => (
 
 const mountDetail = (game: Game, overrides: MountOverrides = {}) => cy.mount(detailView(game, overrides));
 
-// `mock-` ids short-circuit useSummaryData to a deterministic LCG, so nothing hits the network.
-// Only mock-4/14/16 also carry a canned playoff series.
 const liveGameId = 'mock-7';
 const seriesGameId = 'mock-14';
-// mock-2 carries canned records and no playoff series, so only the record row changes height.
 const recordsGameId = 'mock-2';
 
 const excitement: PowerScoreResult = {
@@ -124,7 +113,6 @@ const excitement: PowerScoreResult = {
 	reason: '3 lead changes in the last 5 minutes. Lakers up 2 with 2:10 left',
 };
 
-// The charts only render once history exists, so tests that need a scrollable page supply this.
 const powerScoreHistory: PowerScoreSnapshot[] = Array.from({ length: 6 }, (_, i) => ({
 	gameId: liveGameId,
 	timestamp: now.getTime() - (6 - i) * minuteMs,
@@ -173,10 +161,6 @@ const expectSingleLine = (el: HTMLElement, label: string) => {
 		.to.be.at.most(parseFloat(style.lineHeight) + decoration + 1);
 };
 
-// The hero is a band of the two teams' colours, and which colour a team is shown in is the
-// resolver's answer rather than its published primary — two near-identical purples send one side to
-// its alternate. Everything drawn on that hero, the crest included, has to be measured against the
-// colour actually painted, so the resolved pair is what reaches it.
 describe('the hero is painted in the colours the resolver chose', () => {
 	const clashingPurples: Game = {
 		id: 'mock-7',
@@ -193,7 +177,6 @@ describe('the hero is painted in the colours the resolver chose', () => {
 		mountDetail(clashingPurples);
 		cy.get('.gd-hero-live').should('exist').then($hero => {
 			const image = getComputedStyle($hero[0]!).backgroundImage;
-			// The away side gave up its purple for its gold; the home side kept its own purple.
 			expect(image, 'the away alternate').to.include('rgb(253, 185, 39)');
 			expect(image, 'the home primary').to.include('rgb(90, 45, 129)');
 			expect(image, 'and not the away primary').to.not.include('rgb(85, 37, 131)');
@@ -254,8 +237,6 @@ describe('gameDetailView countdown', () => {
 		});
 	});
 
-	// The fallback is a word, not a figure, so it takes the body face. Lekton is only for the
-	// countdown digits it replaces.
 	it('sets the pre-game line in the body font rather than the scoreboard face', () => {
 		mountDetail(makePreGame(0));
 		cy.get('.gd-countdown-soon').should($el => {
@@ -325,9 +306,6 @@ describe('gameDetailView hero', () => {
 		cy.get('.gd-hero').should('not.contain.text', 'OKC');
 	});
 
-	// Blank rather than lettered, since the abbreviation is already directly below it, but it still
-	// holds its box so the grid does not move when a logo arrives. The wash keeps the disc visible on
-	// a hero painted in the team's own colour.
 	it('holds a blank crest box above each team name', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.get('.game-detail-team-logo').should('have.length', 2).each(($crest: JQuery<HTMLElement>) => {
@@ -338,8 +316,6 @@ describe('gameDetailView hero', () => {
 		});
 	});
 
-	// Measured on the digits rather than their boxes: the gap a reader sees is ink to divider. A
-	// lopsided 7-114 is the one shape that cannot keep the divider centred without clipping a digit.
 	it('sets both scores the same distance off the divider, with the divider on the axis', () => {
 		for (const [away, home] of [[7, 14], [112, 108], [7, 114], [100, 99]]) {
 			const game = makeLiveGame();
@@ -364,8 +340,6 @@ describe('gameDetailView hero', () => {
 		}
 	});
 
-	// The longest one-word club name in a league we carry. A word that will not fit its 80px column
-	// has to break somewhere, and a hyphen is a better place than past the column into the score.
 	it('keeps a long club name inside its column, live and before the start', () => {
 		mountDetail(withLongNames(makeLiveGame()), { excitementResult: excitement });
 		expectNamesInColumn('.game-detail-team-name');
@@ -373,7 +347,6 @@ describe('gameDetailView hero', () => {
 		expectNamesInColumn('.gd-poster-name');
 	});
 
-	// Three letters and seven dots read aloud as nothing, and the bases were hidden outright.
 	it('speaks the count and the runners in words', () => {
 		mountDetail(makeInningGame(), { excitementResult: excitement });
 		cy.get('.bso-indicator').should('have.attr', 'role', 'img').and('have.attr', 'aria-label', '2 balls, 1 strike, 2 outs');
@@ -402,7 +375,6 @@ describe('gameDetailView hero', () => {
 		});
 	});
 
-	// The record has a grid row of its own precisely so this holds.
 	it('keeps both records on one line when only one team name wraps', () => {
 		const game = makeLiveGame({ id: recordsGameId });
 		mountDetail({ ...game, homeTeam: { ...game.homeTeam, name: 'Heat' } }, { excitementResult: excitement });
@@ -420,8 +392,6 @@ describe('gameDetailView hero', () => {
 		cy.get('.game-detail-team-record').should('not.exist');
 	});
 
-	// mock-3 carries an eight-character NHL record, the widest any league produces, against an
-	// 80px nowrap column — this is where clipping shows up first.
 	it('fits the widest record a league produces inside its 80px column', () => {
 		mountDetail(makeLiveGame({ id: 'mock-3' }), { excitementResult: excitement });
 		cy.get('.game-detail-team-record').first().should('have.text', '30-28-9');
@@ -446,13 +416,6 @@ describe('gameDetailView hero', () => {
 		});
 	});
 
-	// Records add a third row to the matchup grid, so the hero's height budget is re-asserted
-	// against the layout every real game gets.
-	//
-	// The breakdown budget is 206 rather than the 200 the plain hero gets because the tab strip
-	// now sits between the two, and a records hero is the tallest thing it can sit under. Still
-	// comfortably inside the popup's 560px: what this guards is that the PowerScore is the first
-	// thing on the screen, not an exact offset.
 	it('keeps the hero and the breakdown inside their pixel budgets with records shown', () => {
 		mountDetail(makeLiveGame({ id: recordsGameId }), { excitementResult: excitement });
 		cy.get('.game-detail-team-record').should('have.length', 2);
@@ -467,15 +430,6 @@ describe('gameDetailView hero', () => {
 		});
 	});
 
-	/* The two budgets above cover a hero with nothing extra on it. These two cover the shapes this
-	   change adds, because neither of those fixtures carries a timeout row or an at-bat pair and so
-	   neither would notice the hero growing.
-
-	   Gridiron still fits: the timeout row costs a line and lands at 185 against the same 190.
-	   Baseball deliberately does not. The at-bat pair is two 32px portraits on a plate, and it takes
-	   the hero to 233 and the breakdown to 273 — half a 560px popup before the PowerScore starts.
-	   That is a real cost, taken with eyes on it, and it is pinned here so it cannot grow again
-	   quietly. If it ever has to come back down, the portraits are most of it. */
 	it('keeps the gridiron hero inside the plain budget once timeouts are on it', () => {
 		mountDetail(makeLiveGame({
 			id: recordsGameId,
@@ -534,7 +488,6 @@ describe('gameDetailView hero', () => {
 		});
 	});
 
-	// The tight case: the base diamond puts a ~30px glyph between two 2.4ch numerals.
 	it('fits the score row and base diamond inside the centre column', () => {
 		mountDetail(makeInningGame(), { excitementResult: excitement });
 		cy.get('.base-diamond').should('exist');
@@ -557,9 +510,6 @@ describe('gameDetailView hero', () => {
 			expect(leftGap, 'BSO is centred').to.be.closeTo(rightGap, 2);
 		});
 	});
-
-	// Venue/broadcast/weather ordering moved to gameInfoPanel.cy.tsx, which asserts it for both
-	// the pre-game and live arrangements rather than only the live one.
 
 	it('shows the PowerScore only in the breakdown, never twice in one screen', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
@@ -584,7 +534,6 @@ describe('gameDetailView hero', () => {
 		cy.contains('Commercial break penalty').should('exist');
 	});
 
-	// Baseball has no clock to stall, but its inning breaks are commercials all the same.
 	it('shows the row for baseball too', () => {
 		mountDetail(makeInningGame(), { excitementResult: { ...excitement, breakPenalty: 15 } });
 		cy.contains('Commercial break penalty').should('exist');
@@ -600,8 +549,6 @@ describe('gameDetailView hero', () => {
 		cy.get('.game-detail-period').should('contain.text', 'Halftime');
 	});
 
-	// Lekton is there to hold a ticking clock's digits still. The period beside the clock, an inning
-	// and a word have nothing that moves, so they read in the body face.
 	it('keeps only a running clock in Lekton', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.get('.game-detail-period').should($el => expect(face($el), 'the period').to.equal('DM Sans'));
@@ -620,7 +567,6 @@ describe('gameDetailView hero', () => {
 	it('shows a series without repeating its summary', () => {
 		mountDetail(makeLiveGame({ id: seriesGameId }), { excitementResult: excitement });
 		cy.get('.series-dots-summary').should('contain.text', 'series');
-		// The summary is a label, not tabular data, so it belongs in the sans face rather than Lekton.
 		cy.get('.series-dots-summary').should('have.css', 'font-family').and('contain', 'DM Sans');
 		cy.get('.gd-hero').find('.series-dots-summary').should('have.length', 1);
 	});
@@ -638,8 +584,6 @@ describe('gameDetailView sticky bar', () => {
 		cy.get('.gd-bar-compact').should('have.css', 'opacity', '0');
 	});
 
-	// Bootstrap's `:active` and `:focus-visible` rules read these variables. Left undefined, a press
-	// went transparent and a keyboard focus drew no ring at all.
 	it('keeps its fill when pressed and rings itself on keyboard focus', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement, powerScoreHistory });
 		cy.get('.game-detail-back-button').then(([button]: JQuery<HTMLElement>) => {
@@ -661,8 +605,6 @@ describe('gameDetailView sticky bar', () => {
 		cy.get('.gd-bar-compact').should('contain.text', '108').and('contain.text', '112');
 	});
 
-	// The hero runs on below the score with the count, the bases and the at-bat panel. Waiting for
-	// all of that to leave left a stretch of scrolling with no score on screen anywhere.
 	it('takes over the score as soon as it slides under the bar', () => {
 		const atBat = {
 			pitcher: { name: 'Will Dion', jersey: '76', position: 'RP', summary: '1.1 IP, 0 ER, H, BB' },
@@ -723,8 +665,6 @@ describe('gameDetailView sticky bar', () => {
 		mountDetail(makeLiveGame({ startTime: new Date(now.getTime() - hourMs).toISOString() }), { excitementResult: excitement, powerScoreHistory });
 		cy.get('.popup-container').scrollTo('bottom');
 		cy.get('.gd-bar-score').should('have.length', 2);
-		// startTime is populated for every status, so the countdown is kept off a live bar by the
-		// pre-game gate alone. Pinned to the whole string: a period and clock is what belongs here.
 		cy.get('.gd-bar-status').should('have.text', 'Q3 \u2022 6:42');
 	});
 
@@ -745,9 +685,6 @@ describe('gameDetailView sticky bar', () => {
 	});
 });
 
-// Before a start the two scores are both 0 and stay 0 until first pitch, so the bar hands its
-// whole job to the abbreviations and the figures are noise. The countdown takes the slot the
-// live status text holds, which resolveStatusText leaves empty for a scheduled game.
 describe('gameDetailView sticky bar before a start', () => {
 	beforeEach(() => {
 		cy.viewport(320, 560);
@@ -804,7 +741,6 @@ describe('gameDetailView sticky bar before a start', () => {
 
 	it('fits the slot in every locale, in all three shapes the countdown takes', () => {
 		const target = now.getTime() + dayMs;
-		// The widest value each shape can reach, so a locale that fits these fits everything.
 		const shapes = {
 			'days and hours': 13 * dayMs + 23 * hourMs,
 			'hours and minutes': 23 * hourMs + 59 * minuteMs,
@@ -813,10 +749,6 @@ describe('gameDetailView sticky bar before a start', () => {
 
 		mountScrolled(makeScheduledSlate(dayMs));
 		Object.entries(locales).forEach(([name, locale]) => {
-			// Substituted rather than mounted per locale, which is sound only because the slot is
-			// absolutely positioned at a fixed max-width: its box does not depend on its content or
-			// on anything beside it, so a locale that clips here clips exactly the same way mounted.
-			// The string itself comes from the real formatter reading the real locale file.
 			const t = (key: string) => (locale.detail as unknown as Record<string, string>)[key.split('.')[1]];
 			Object.entries(shapes).forEach(([shape, offset]) => {
 				cy.get('.gd-bar-status').should(([el]: JQuery<HTMLElement>) => {
@@ -828,8 +760,6 @@ describe('gameDetailView sticky bar before a start', () => {
 	});
 });
 
-// The detail screen renders the scorer's number verbatim: the card you tapped, this screen and
-// the score the auto-switcher acted on must never disagree.
 describe('win probability volatility', () => {
 	const withVolatility: PowerScoreResult = { ...excitement, total: 77, winProbabilityVariance: 5 };
 
@@ -848,19 +778,15 @@ describe('win probability volatility', () => {
 			.find('span')
 			.last()
 			.should('have.text', '+5');
-		// 77, not 77 + 5 — the variance is already inside the engine total.
 		cy.get('.powerscore-breakdown-row-total').should('contain.text', '77 / 100');
 	});
 
-	// No line means no measurement, so no row — not a fabricated zero.
 	it('omits the row entirely when the engine had no win probability to measure', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
 		cy.contains('.powerscore-breakdown-row', /Volatility/).should('not.exist');
 		cy.get('.powerscore-breakdown-row-total').should('contain.text', '72 / 100');
 	});
 
-	// Regression: the screen used to recompute volatility and add it on top, so a card reading
-	// 77 opened a screen reading 82.
 	it('matches the list card exactly, with volatility applied', () => {
 		mountDetail(makeLiveGame(), { excitementResult: withVolatility });
 		cy.get('.powerscore-breakdown-row-total').should('contain.text', '77 / 100');
@@ -894,9 +820,6 @@ describe('win probability volatility', () => {
 	});
 });
 
-// This used to live on the list card, directly above the venue and the networks, where it read as
-// one more line of venue chrome. Its home now is a titled section of its own, first in the live
-// stack — so the assertions are about the heading and the ordering as much as the text.
 describe('gameDetailView latest play', () => {
 	beforeEach(() => {
 		cy.viewport(320, 560);
@@ -920,8 +843,6 @@ describe('gameDetailView latest play', () => {
 		});
 	});
 
-	// ESPN joins a penalty's two sentences with a newline. Collapsing it produces one run-on
-	// sentence that reads as a single play.
 	it('keeps a two-sentence penalty on two lines', () => {
 		const penalty = 'A.Jeanty up the middle to LAC 49 for 1 yard (D.Phillips).\nPENALTY on LV-S.Burford, Offensive Holding, 10 yards, enforced at 50 - No Play.';
 		mountDetail(makeLiveGame({ sportType: 'football', league: 'nfl', lastPlay: penalty }), { excitementResult: excitement });
@@ -974,8 +895,6 @@ describe('gameDetailView at-bat panel', () => {
 		mountDetail(makeInningGame(), { excitementResult: excitement });
 		cy.get('.gd-atbat-panel').should('not.exist');
 
-		// The fixture is the bottom of the 7th, so the visitors are pitching and their man stands
-		// on the left, under his own club.
 		mountDetail({ ...makeInningGame(), atBat }, { excitementResult: excitement });
 		cy.get('.gd-atbat-name').first().should('have.text', 'Will Dion');
 		cy.get('.gd-atbat-name').last().should('have.text', 'Nathan Church');
@@ -985,8 +904,6 @@ describe('gameDetailView at-bat panel', () => {
 		cy.get('.gd-atbat-role').last().should('have.text', 'At bat');
 	});
 
-	// The hero puts the away team on the left, and the halves of an inning decide who bats. A
-	// fixed pitcher-left panel would stand a man under the other team's crest for half the game.
 	it('swaps the two ends at the half-inning so each player stands under his own club', () => {
 		mountDetail({ ...makeInningGame(), topOfInning: true, atBat }, { excitementResult: excitement });
 		cy.get('.gd-atbat-side').first().should('have.class', 'gd-atbat-away');
@@ -1000,8 +917,6 @@ describe('gameDetailView at-bat panel', () => {
 		cy.get('.gd-atbat-name').first().should('have.text', 'Will Dion');
 	});
 
-	// Whichever role occupies it, the right-hand half mirrors so the two portraits bracket the
-	// panel — the mirroring is keyed on the side, not on the role, so it must not swap too.
 	it('keeps the mirrored half on the home side through the swap', () => {
 		mountDetail({ ...makeInningGame(), topOfInning: true, atBat }, { excitementResult: excitement });
 		cy.get('.gd-atbat-side.gd-atbat-home').should(([el]: JQuery<HTMLElement>) => {
@@ -1012,8 +927,6 @@ describe('gameDetailView at-bat panel', () => {
 		});
 	});
 
-	// ESPN draws no portrait for a good share of players, so the initials are a normal state
-	// rather than a failure.
 	it('falls back to initials when a player has no headshot', () => {
 		mountDetail({ ...makeInningGame(), atBat }, { excitementResult: excitement });
 		cy.get('.gd-atbat-face-crest').should('have.length', 2);
@@ -1021,8 +934,6 @@ describe('gameDetailView at-bat panel', () => {
 		cy.get('.gd-atbat-face-crest').last().should('have.text', 'NC');
 	});
 
-	// Its whole point is telling one figure from another at a glance, which a proportional face
-	// does as well here as a monospaced one — and Lekton is reserved for clocks that tick.
 	it('sets the line in the body face rather than in Lekton', () => {
 		mountDetail({ ...makeInningGame(), atBat }, { excitementResult: excitement });
 		cy.get('.gd-atbat-line').first().should(([el]: JQuery<HTMLElement>) => {
@@ -1044,7 +955,6 @@ describe('gameDetailView at-bat panel', () => {
 	});
 });
 
-// The same 3px rule the game list's section titles carry, in the colour of whoever made the play.
 describe('gameDetailView latest play accent', () => {
 	beforeEach(() => {
 		cy.viewport(320, 560);
@@ -1073,7 +983,6 @@ describe('gameDetailView latest play accent', () => {
 		cy.get('.gd-play-body').should('not.have.class', 'has-accent').should(([el]: JQuery<HTMLElement>) => {
 			const style = getComputedStyle(el);
 			expect(style.borderLeftColor, 'no team, no colour').to.equal('rgba(0, 0, 0, 0)');
-			// The indent survives so the block does not jump sideways between plays.
 			expect(parseFloat(style.paddingLeft), 'the indent survives').to.be.greaterThan(0);
 		});
 	});
@@ -1106,8 +1015,6 @@ describe('gameDetailView hero timeouts', () => {
 		cy.get('.gd-area-right-timeouts .timeout-dot').not('.is-empty').should('have.length', 1);
 	});
 
-	// The card's rule for these is a light-surface grey, and it has to lose to the hero's — the
-	// same trap the balls/strikes/outs count fell into.
 	it('re-tones both halves of the row for the scrim', () => {
 		mountDetail(gridiron, { excitementResult: excitement });
 		cy.get('.gd-hero-live .timeout-dot.is-empty').first().should(([el]: JQuery<HTMLElement>) => {
@@ -1118,7 +1025,6 @@ describe('gameDetailView hero timeouts', () => {
 		});
 	});
 
-	// The NBA's seven are drawn a size down. Gridiron's three must not be.
 	it('keeps gridiron\'s three at full size', () => {
 		mountDetail(gridiron, { excitementResult: excitement });
 		cy.get('.gd-hero-live .timeout-dots').should('have.length', 2).and('not.have.class', 'is-compact');
@@ -1203,9 +1109,6 @@ const scoreLefts = () => cy.get('.game-detail-score-row').then(([row]: JQuery<HT
 	return [...row.querySelectorAll('.game-detail-score-value, .game-score-sep')].map(el => el.getBoundingClientRect().left - rowLeft);
 });
 
-// The bonus and timeouts, read from the situation resource while the screen is open. A real game
-// id rather than a `mock-` one, so the fetch actually runs; every request it makes is answered
-// here, and nothing reaches the network.
 describe('gameDetailView basketball situation', () => {
 	const situationUrl = /sports\.core\.api\.espn\.com\/.*\/situation/;
 	const realId = '401902644';
@@ -1247,7 +1150,6 @@ describe('gameDetailView basketball situation', () => {
 		cy.get('.gd-bonus:not(.invisible)').should('have.length', 2);
 	});
 
-	// Only the men's college game has a one-and-one, so only there does DOUBLE get its own words.
 	it('says double bonus to a screen reader in men\'s college basketball', () => {
 		answer(basketballSituations.homeInBonus.raw);
 		mountDetail(liveBasketball({ league: 'ncaab' }), { excitementResult: excitement });
@@ -1291,8 +1193,6 @@ describe('gameDetailView basketball situation', () => {
 		});
 	});
 
-	// Seven full-size rings were once thought too wide, so the NBA got "7 TO". They are drawn now,
-	// a size down, and they have to sit under the name the way gridiron's three do.
 	it('draws the NBA\'s seven timeouts as dots, level on both sides and under each name', () => {
 		answer(basketballSituations.homeInBonus.raw);
 		mountDetail(liveBasketball(), { excitementResult: excitement });
@@ -1337,8 +1237,6 @@ describe('gameDetailView basketball situation', () => {
 		cy.get('.gd-area-left-timeouts .timeout-dot:not(.is-empty)').should('have.length', 2);
 	});
 
-	// A timeout row and a bonus line under it. The fouls sentence that used to sit under the period
-	// is gone, so this is the whole of what basketball adds.
 	it('keeps the hero and the breakdown inside their pixel budgets', () => {
 		answer(basketballSituations.homeInBonus.raw);
 		mountDetail(liveBasketball(), { excitementResult: excitement });
@@ -1361,7 +1259,6 @@ describe('gameDetailView basketball situation', () => {
 		cy.get('.gd-hero').invoke('text').should('not.match', /foul/i);
 	});
 
-	// Between periods the fouls have already reset for the next one. The timeouts carry over.
 	it('clears the bonus between periods and keeps the timeouts', () => {
 		answer(basketballSituations.homeInBonus.raw);
 		mountDetail(liveBasketball({ intermission: true, period: 2 }), { excitementResult: excitement });
@@ -1392,7 +1289,6 @@ describe('gameDetailView basketball situation', () => {
 	});
 });
 
-// Read off the last play by core, and held here through the plays that don't say.
 describe('gameDetailView possession arrow', () => {
 	beforeEach(() => {
 		cy.viewport(320, 560);
@@ -1461,8 +1357,6 @@ describe('gameDetailView possession arrow', () => {
 	});
 });
 
-// Soccer sends no play, so a red card is what fills the section: one line a card, each under its
-// own team's rule, the way the play above is drawn for every other sport.
 describe('gameDetailView red cards', () => {
 	beforeEach(() => {
 		cy.viewport(320, 560);

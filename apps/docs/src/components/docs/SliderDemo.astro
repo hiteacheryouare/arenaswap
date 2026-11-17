@@ -34,7 +34,6 @@ const { kind } = Astro.props;
 
 const levels = Object.keys(sensitivityThresholds).map(Number).toSorted((a, b) => a - b);
 
-// The extension's formatSecondsLabel: "45s", "1m 30s", "3m".
 const formatSeconds = (secs: number, offKey: DemoStringKey) => {
 	if (secs === 0) return demoText(offKey);
 	const minutes = Math.floor(secs / 60);

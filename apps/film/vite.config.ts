@@ -4,8 +4,6 @@ import react from '@vitejs/plugin-react';
 import bootstrapTokenPrefix from '@arenaswap/ui/src/bootstrapTokenPrefix';
 import alias from './sourceAliases';
 
-// The stage the films are shot on. It is a page like any other, served beside the built extension
-// by render/server.ts, so it is built once and never run as a dev server.
 export default defineConfig({
 	root: resolve(import.meta.dirname, 'stage'),
 	base: '/film/',

@@ -1,10 +1,7 @@
-// The backup tab's own surface, sized for a full tab rather than the popup's 320px column. A whole
-// tab, so it takes the store art's black.
 @use '@arenaswap/ui/src/motion' as m;
 @use '@arenaswap/ui/src/airbrush';
 
 @layer custom {
-	// On the page rather than :root, which every other page and the component tests share.
 	.backup-page {
 		@include airbrush.tokens;
 		min-height: 100vh;
@@ -39,7 +36,6 @@
 		letter-spacing: -0.04em;
 		line-height:    1;
 
-		// The store art's full stop, and the ideographic one where the language ends on that.
 		&::after {
 			content: '.';
 			color:   var(--as-primary-base);
@@ -96,7 +92,6 @@
 		background:    color-mix(in srgb, var(--as-warning-base) 7%, transparent);
 	}
 
-	// The whole card is the target, and the page takes a drop anywhere besides.
 	.backup-drop {
 		display:        flex;
 		flex-direction: column;
@@ -177,7 +172,6 @@
 
 		.league-toggle-logo { --as-avatar-size: 30px; }
 
-		// On its way out, so it reads as going rather than staying.
 		&[data-removed='true'] {
 			opacity: 0.3;
 			filter:  grayscale(1);

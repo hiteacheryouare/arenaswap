@@ -8,11 +8,8 @@ interface CompetitorName {
 	team: { displayName?: string; shortDisplayName?: string; location?: string; name?: string };
 }
 
-// A canceled game is dropped before it becomes a Game, so it has no member here.
 export const isCanceledStatus = (statusName?: string): boolean => /CANCEL/i.test(statusName ?? '');
 
-// A suspended soccer match stays live (it resumes within the hour), so only a game read as
-// finished carries the suspension as a disruption.
 export const readDisruption = (statusName: string | undefined, state: Game['status']): Disruption | undefined => {
 	const name = statusName ?? '';
 	if (/POSTPONED/i.test(name)) return 'postponed';
@@ -39,8 +36,6 @@ const monthIndex: Record<string, number> = {
 	jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
 };
 
-// "Makeup date April 6", "Makeup on Jul 29", "Makeup date Aug. 20", "Makeup date Sep 3rd". The year is
-// the game's own, moved on one when the makeup month comes before the postponed one.
 export const readMakeupDate = (headline: string | undefined, eventDate: string | undefined): string | undefined => {
 	if (!eventDate) return undefined;
 	const match = headline?.match(/Makeup (?:date|on) ([A-Za-z]{3})[a-z]*\.? (\d{1,2})(?:st|nd|rd|th)?\b/i);
@@ -54,8 +49,6 @@ export const readMakeupDate = (headline: string | undefined, eventDate: string |
 	return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 };
 
-// "Doubleheader - Game 1 – Makeup from April 5". A postponed game can carry the same words about the
-// doubleheader it was meant to be part of, so the caller only asks for a game that is being played.
 export const readDoubleheader = (headline?: string): { doubleheaderGame?: 1 | 2; isMakeup?: true } => {
 	const game = headline?.match(/Doubleheader\s*-\s*Game ([12])\b/i)?.[1];
 	if (!game) return {};

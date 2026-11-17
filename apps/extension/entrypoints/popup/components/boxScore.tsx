@@ -32,8 +32,6 @@ const periodHeading = (label: PeriodLabel): string => {
 		: i18n.t('box.overtimeNumbered', { count: String(label.index) });
 };
 
-// A crest beside the abbreviation in the team's own ink, which is how the pre-game leader rows and
-// the line score both say which team a row belongs to.
 const TeamIdentity = ({ abbreviation, ink, color, logo }: {
 	abbreviation: string;
 	ink: string;
@@ -53,15 +51,6 @@ const TeamIdentity = ({ abbreviation, ink, color, logo }: {
 	</span>
 );
 
-// The pre-game leader rows carry their team by a crest, an abbreviation in the team's own colour
-// and a wash fading out to the right; a line score row is the same shape and takes the same
-// treatment. Here the wash is doing real work rather than decorating: the two rows *are* the two
-// teams, so it says which is which without the reader parsing the abbreviations.
-//
-// No tinted disc under the crest. That exists because a navy crest vanishes on the dark popup —
-// these sit on the light `.gd-setup` card, where a bare crest reads fine and a white disc would
-// be the thing that disappears. And no `label` on the crest: the abbreviation is right beside it,
-// so a second copy of the name is noise to a screen reader.
 const LineRow = ({ row, periodCount, showHitsErrors, color, ink, logo }: {
 	row: LineScoreRow;
 	periodCount: number;
@@ -97,9 +86,6 @@ const PlayerRow = ({ athlete, columns, indent }: {
 			<span className='gd-box-player' title={athlete.name}>{athlete.name}</span>
 			{athlete.position && <span className='gd-box-position'>{athlete.position}</span>}
 		</th>
-		{/* ESPN's reason is an English string — "COACH'S DECISION" — so the row says DNP and stops
-		    rather than shipping one untranslated cell into eleven other languages. The flag rather
-		    than the reason: the reason is regularly absent on a row that really did not play. */}
 		{athlete.didNotPlay
 			? <td className='gd-box-dnp' colSpan={columns.length}>{i18n.t('box.didNotPlay')}</td>
 			: columns.map(column => <td key={column.index}>{athlete.stats[column.index] ?? ''}</td>)}
@@ -117,13 +103,9 @@ const SectionTable = ({ section, isBatting }: { section: BoxScoreSection; isBatt
 			<table className='table table-sm gd-box-table'>
 				<thead>
 					<tr>
-						{/* The name column heads itself; the cells below it are the row headers. */}
 						{/* oxlint-disable-next-line jsx-a11y/control-has-associated-label */}
 						<td className='gd-box-name' />
 						{section.columns.map(column => (
-							// ESPN's own description, untranslated like every other string we pass
-							// through from it. It is the only thing that says SACKS under passing
-							// is sacks suffered and SACKS under defensive is sacks recorded.
 							<th scope='col' key={column.index} title={column.description || undefined}>
 								{i18n.t(column.labelKey)}
 							</th>
@@ -136,9 +118,6 @@ const SectionTable = ({ section, isBatting }: { section: BoxScoreSection; isBatt
 							key={athlete.id || athlete.name}
 							athlete={athlete}
 							columns={section.columns}
-							// Real box scores indent a substitute under the spot in the order they
-							// took over, which is the only thing telling the two apart once they
-							// share a batOrder.
 							indent={isBatting && !athlete.starter}
 						/>
 					))}
@@ -169,12 +148,7 @@ const SectionTable = ({ section, isBatting }: { section: BoxScoreSection; isBatt
 };
 
 const boxScore = ({ game, boxScore: box }: boxScoreProps) => {
-	// Away first, which is the order every convention in every sport lists the two teams in.
 	const [selected, setSelected] = useState<side>('away');
-	// A `role='tab'` announces "tab, 1 of 2", which promises the reader a panel to move to and
-	// arrow keys to move with. These ids are the panel half of that; `onTabKeyDown` is the rest.
-	// Built off the game id rather than `useId`, whose output carries characters no `#id` selector
-	// can hold — and only one game detail screen is ever mounted at a time.
 	const tabId = (which: side) => `gd-box-tab-${game.id}-${which}`;
 	const panelId = `gd-box-panel-${game.id}`;
 	const tabRefs = useRef<Partial<Record<side, HTMLButtonElement | null>>>({});
@@ -193,18 +167,11 @@ const boxScore = ({ game, boxScore: box }: boxScoreProps) => {
 	};
 
 	const config = leagueConfigMap[game.league as LeagueId];
-	// The same pair, and the same fallbacks, the pre-game block resolves — so a team reads as one
-	// colour across both halves of the detail screen.
 	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#2274A5', '#F75C03');
-	// The wash keeps the raw colour, being a 16% background rather than text. Only the labels are
-	// clamped for contrast.
 	const awayInk = readableTeamInkOnCard(awayColor);
 	const homeInk = readableTeamInkOnCard(homeColor);
 	const comparison = buildComparison(game.sportType, box.teamComparison);
 	const teams = { away: box.away, home: box.home };
-	// A side whose every category arrived with empty athletes parses to null, which is the opening
-	// minutes of a football game. The block still renders, and it renders whichever side exists
-	// rather than the selected one — so the identity below has to name the side actually shown.
 	const activeSide: side = teams[selected] ? selected : box.away ? 'away' : 'home';
 	const active = teams[activeSide];
 	const activeTeam = activeSide === 'away' ? game.awayTeam : game.homeTeam;
@@ -216,10 +183,6 @@ const boxScore = ({ game, boxScore: box }: boxScoreProps) => {
 	if (!hasBoxScoreContent(game.sportType, box)) return null;
 
 	const line = box.lineScore;
-	// Baseball is the only sport that sends per-inning hits and errors, which is what turns the
-	// line score into the R-H-E every box score opens with. `line` is checked first rather than
-	// optionally chained: `undefined !== null` is true, so a missing line score would otherwise
-	// report that it has them.
 	const showHitsErrors = line !== null && line.away.hits !== null && line.home.hits !== null;
 
 	return (
@@ -231,8 +194,6 @@ const boxScore = ({ game, boxScore: box }: boxScoreProps) => {
 					<div className='gd-box-subheading'>
 						{i18n.t(lineScoreHeadingKey(config?.periodFormat))}
 					</div>
-					{/* Nine innings plus R-H-E is thirteen columns in 263px. It fits, and extra
-					    innings scroll rather than squeezing the ones that already fit. */}
 					<div className='table-responsive'>
 						<table
 							className='table table-sm gd-box-table gd-box-line-table'
@@ -240,9 +201,6 @@ const boxScore = ({ game, boxScore: box }: boxScoreProps) => {
 						>
 							<thead>
 								<tr>
-									{/* The corner above the team column. It labels nothing, and the name
-									    cells below carry scope='row', which is what actually associates
-									    a screen reader's announcement with its player. */}
 									{/* oxlint-disable-next-line jsx-a11y/control-has-associated-label */}
 									<td className='gd-box-line-team' />
 									{periodLabels({
@@ -319,8 +277,6 @@ const boxScore = ({ game, boxScore: box }: boxScoreProps) => {
 
 			{sections.length > 0 && (
 				<div className='gd-box-players'>
-					{/* One team at a time. Both sides' tables stacked would run to 34 rows for a
-					    basketball game before the reader reaches the second one. */}
 					{hasBothSides ? (
 						<ul className='nav nav-tabs gd-box-tabs' role='tablist'>
 							{sides.map(which => {
@@ -334,8 +290,6 @@ const boxScore = ({ game, boxScore: box }: boxScoreProps) => {
 											id={tabId(which)}
 											aria-selected={activeSide === which}
 											aria-controls={panelId}
-											// Roving: the strip is one tab stop and the arrow keys
-											// move inside it.
 											tabIndex={activeSide === which ? 0 : -1}
 											ref={element => { tabRefs.current[which] = element; }}
 											className={`nav-link${activeSide === which ? ' active' : ''}`}
@@ -357,8 +311,6 @@ const boxScore = ({ game, boxScore: box }: boxScoreProps) => {
 							})}
 						</ul>
 					) : (
-						// One side, no strip, and so nothing else on the screen saying whose
-						// numbers these are.
 						<div className='gd-box-subheading'>
 							<TeamIdentity
 								abbreviation={activeTeam.abbreviation}
@@ -374,9 +326,6 @@ const boxScore = ({ game, boxScore: box }: boxScoreProps) => {
 							: {})}
 					>
 						{sections.map(section => (
-							// Keyed on the side as well as the category, so an expanded football
-							// defense collapses again when the reader switches teams: the request
-							// was for these players, not for however many the other side has.
 							<SectionTable
 								key={`${activeSide}-${section.name}`}
 								section={section}

@@ -2,7 +2,6 @@
 @use '@arenaswap/ui/src/airbrush';
 
 @layer custom {
-	// A whole tab, so it takes the store art's brand, set on the page rather than :root.
 	.multiview {
 		@include airbrush.tokens;
 		--multiview-bar-height: 2.5rem;
@@ -20,7 +19,6 @@
 		background: var(--as-bg-body);
 	}
 
-	// A set piece, so it keeps its own slow clock rather than the motion scale's.
 	.multiview-backdrop {
 		position: absolute;
 		inset: 0;
@@ -28,7 +26,6 @@
 		pointer-events: none;
 	}
 
-	// One isolated layer over black, so the grain's overlay blend only ever shows on lit pixels.
 	.multiview-light {
 		position: absolute;
 		inset: 0;
@@ -45,8 +42,6 @@
 		}
 	}
 
-	// Each beam is a stripe across a layer 3.4 screens wide, so 12% of travel keeps it on screen.
-	// Their sweeps and their dimming run on clocks that never line up, so the light never loops.
 	.multiview-beam {
 		--multiview-beam-strength: 0.62;
 
@@ -102,7 +97,6 @@
 		to { opacity: var(--multiview-beam-strength); }
 	}
 
-	// Earlier in the tree than the light's grain, so the grain lands on top of them.
 	.multiview-flight {
 		--multiview-flight-ink: #fff;
 
@@ -134,7 +128,6 @@
 		stroke-width: 6px;
 	}
 
-	// The wordmark's "swap" line, in proportion to a 28px head.
 	.multiview-flight-dashes {
 		stroke-dasharray: 20 15;
 	}
@@ -181,8 +174,6 @@
 	}
 
 	.multiview-grid {
-		// The widest the grid can be while every cell's picture stays 16:9 under its bar and the whole
-		// thing still fits the window's height.
 		--multiview-width: min(
 			100cqw,
 			max(
@@ -312,7 +303,6 @@
 		background: #000;
 	}
 
-	// Clicks go through to the player underneath, in case it wants one to start.
 	.multiview-off-air {
 		position: absolute;
 		inset: 0;
@@ -353,14 +343,12 @@
 		filter: drop-shadow(0 1px 3px rgb(3 7 12 / 0.6));
 	}
 
-	// Without a game to paint it, the card is the logo alone on black.
 	.multiview-off-air-mark:only-child {
 		top: 50%;
 		bottom: auto;
 		transform: translate(-50%, -50%);
 	}
 
-	// A box's off-air card, the size of the whole tab.
 	.multiview-closed {
 		padding: 2rem;
 		color: var(--as-fg-body);
@@ -379,7 +367,6 @@
 		letter-spacing: -0.04em;
 		line-height: 1;
 
-		// The store art's full stop, and the ideographic one where the language ends on that.
 		&::after {
 			content: '.';
 			color: var(--as-primary-base);

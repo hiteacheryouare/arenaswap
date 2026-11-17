@@ -1,9 +1,5 @@
-// The PowerScore page: one demo game read in and scored, the pair it is compared with, and the
-// package's install path.
 @use '@arenaswap/ui/src/motion' as m;
 @layer custom {
-
-	// ─── Hero ────────────────────────────────────────────────────────────────────
 	.band-hero.ps-hero {
 		padding-bottom: clamp(14rem, 22vw, 18rem);
 		text-align: center;
@@ -49,7 +45,6 @@
 		transform: translateY(0.18em);
 	}
 
-	// ─── Numbers and meters ──────────────────────────────────────────────────────
 	.ps-number {
 		font-family: 'Geist', var(--font-sans);
 		font-weight: 700;
@@ -135,7 +130,6 @@
 		font-variant-numeric: tabular-nums;
 	}
 
-	// ─── What it does ────────────────────────────────────────────────────────────
 	.ps-io {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -235,7 +229,6 @@
 		}
 	}
 
-	// ─── The pair, signal by signal ──────────────────────────────────────────────
 	.ps-pair {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -360,7 +353,6 @@
 		}
 	}
 
-	// ─── Modes ───────────────────────────────────────────────────────────────────
 	.ps-modes {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -439,7 +431,6 @@
 		}
 	}
 
-	// ─── Boosts ──────────────────────────────────────────────────────────────────
 	.ps-boosts {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -503,7 +494,6 @@
 		}
 	}
 
-	// ─── Live ────────────────────────────────────────────────────────────────────
 	.ps-live {
 		margin: 0;
 		padding: 0;
@@ -559,7 +549,6 @@
 		}
 	}
 
-	// ─── Developers ──────────────────────────────────────────────────────────────
 	.ps-dev {
 		border-top: 1px solid var(--color-border);
 	}
@@ -660,8 +649,6 @@
 		}
 	}
 
-	// Shiki writes each token's colour for both themes as custom properties; the page picks one by
-	// its own colour mode instead of the reader's system setting.
 	.ps-code {
 		margin: 0;
 		padding: 1.25rem 1.5rem;

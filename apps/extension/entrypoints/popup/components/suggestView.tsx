@@ -30,8 +30,6 @@ const TeamMark = ({ team }: { team: Team }) => (
 );
 
 const suggestView = ({ suggestions, games, openTabs, formatTabLabel, onApply, onBack }: suggestViewProps) => {
-	// Suggestions arrive best-first, so taking the first pre-checked row per game leaves the
-	// strongest candidate holding it when two tabs both matched the same game.
 	const [checked, setChecked] = useState<string[]>(() => {
 		const claimed = new Set<string>();
 		const initial: string[] = [];
@@ -43,9 +41,6 @@ const suggestView = ({ suggestions, games, openTabs, formatTabLabel, onApply, on
 		return initial;
 	});
 
-	// A game can only hold one tab, so checking a row has to release whichever row was holding that
-	// game. Resolving it here rather than at apply time means the list never shows a state it will
-	// not honour.
 	const toggle = (suggestion: TabSuggestion) => {
 		const key = suggestionPairKey(suggestion.tabId, suggestion.gameId);
 		const sameGame = new Set(suggestions

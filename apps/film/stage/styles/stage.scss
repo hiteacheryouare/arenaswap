@@ -1,10 +1,8 @@
 @use '@arenaswap/ui/src/fonts';
 @use '@arenaswap/ui/src/icons';
-// The homepage hero's browser window, used as is so the film and the site draw the same Chrome.
 @use '../../../docs/src/styles/browser-hero';
 @use '@arenaswap/ui/src/crest';
 @layer custom {
-
 	$dot-orange: #ff751f;
 	$ink: #ffffff;
 	$ink-secondary: #8b949e;
@@ -43,7 +41,6 @@
 		pointer-events: none;
 	}
 
-	// ─── Popups ──────────────────────────────────────────────────────────────────────────────────
 	.popup-layer {
 		position: absolute;
 		inset: 0;
@@ -63,8 +60,6 @@
 		}
 	}
 
-	// ─── Supers ──────────────────────────────────────────────────────────────────────────────────
-	// Apple's large-type rules in our own face: semibold, tight at size, one line where it fits.
 	.supers {
 		position: absolute;
 		inset: 0;
@@ -94,7 +89,6 @@
 		color: $dot-orange;
 	}
 
-	// Black type on the full-frame orange the dot opens up behind it.
 	.super.is-card {
 		left: 0;
 		right: 0;
@@ -119,7 +113,6 @@
 			font-size: 168px;
 		}
 
-		// A line that drops in word by word stays on one line across the card.
 		.super.is-card.is-words {
 			font-size: 124px;
 			white-space: nowrap;
@@ -178,7 +171,6 @@
 		}
 	}
 
-	// ─── The browser window ──────────────────────────────────────────────────────────────────────
 	.film-browser {
 		position: absolute;
 
@@ -214,7 +206,6 @@
 		color: #9aa4b2;
 	}
 
-	// ─── Streams ─────────────────────────────────────────────────────────────────────────────────
 	.stream {
 		position: absolute;
 		inset: 0;
@@ -235,7 +226,6 @@
 		padding: 0 8%;
 	}
 
-	// `height: auto` over the avatar's own, or the ratio has nothing to set.
 	.stream-crest {
 		width: 30%;
 		height: auto;
@@ -249,7 +239,6 @@
 		font-weight: 700;
 	}
 
-	// The Standby Stream's studio channel.
 	.channel-set {
 		position: absolute;
 		inset: 0;
@@ -295,7 +284,6 @@
 		color: #9aa4b2;
 	}
 
-	// ─── The wall ────────────────────────────────────────────────────────────────────────────────
 	.wall {
 		position: absolute;
 		inset: 0;
@@ -350,7 +338,6 @@
 		font-size: 20px;
 	}
 
-	// ─── Leagues ─────────────────────────────────────────────────────────────────────────────────
 	.leagues {
 		position: absolute;
 		inset: 0;
@@ -365,8 +352,6 @@
 		--as-avatar-size: 100%;
 	}
 
-	// ─── Credits ──────────────────────────────────────────────────────────────────────────────────
-	// The parent lockup is DM Serif Text, never DM Sans, and the mark is never recoloured.
 	.credits {
 		position: absolute;
 		inset: 0;
@@ -433,7 +418,6 @@
 		}
 	}
 
-	// ─── End card ────────────────────────────────────────────────────────────────────────────────
 	.end-card {
 		position: absolute;
 		inset: 0;
@@ -452,7 +436,6 @@
 		overflow: visible;
 	}
 
-	// Kentucky's LIVE badge at centre stage, drawn above the popup it was lifted from.
 	.end-live {
 		position: absolute;
 		z-index: 2;

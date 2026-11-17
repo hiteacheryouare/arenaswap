@@ -1,6 +1,5 @@
 import { dominantColorFromPixels } from '../src/logoTint';
 
-// One RGBA quad per entry, in the order the canvas hands them back.
 const pixels = (quads: [number, number, number, number][]): Uint8ClampedArray => (
 	new Uint8ClampedArray(quads.flat())
 );
@@ -46,8 +45,6 @@ describe('dominantColorFromPixels', () => {
 		expect(dominantColorFromPixels(pixels([[0, 0, 0, 0], [255, 0, 0, 10]]))).toBeNull();
 	});
 
-	// Antialiasing and gradients spread one flat colour over neighbouring values, so near-identical
-	// pixels have to land in one bucket or a solid crest loses to a smaller solid area.
 	test('collects near-identical shades into one colour rather than splitting them', () => {
 		expect(dominantColorFromPixels(pixels([
 			...opaque(0, 131, 72, 2),

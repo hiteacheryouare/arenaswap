@@ -10,8 +10,6 @@ import {
 } from '../../../entrypoints/popup/cardReveal';
 import type { Game, Team } from '@arenaswap/core/types';
 
-// The London Lions, as our sources sent them for their preseason game in Portland: a name, a
-// nickname and an abbreviation, and no logo or colour at all.
 const lions = { id: 'a', name: 'London Lions', nickname: 'Lions', abbreviation: 'LON', score: 38 };
 const blazersMark = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFklEQVR4nGP8v03oPwMewIRPcvgoAADe+QLWq7gZUwAAAABJRU5ErkJggg==';
 const blazers = { id: 'h', name: 'Portland Trail Blazers', nickname: 'Trail Blazers', abbreviation: 'POR', score: 51, color: '#E03A3E', logo: blazersMark };
@@ -72,7 +70,6 @@ const inkOf = (element: Element) => {
 	return range.getBoundingClientRect();
 };
 
-// Where an animation's first frame falls on the document timeline.
 const begins = (animation: Animation) => (animation.startTime as number) + Number(animation.effect!.getTiming().delay);
 
 const awayName = '.game-card-reveal-opening-field.is-away .game-card-reveal-opening-field-name';
@@ -82,7 +79,6 @@ const awayDisc = `${awayCrest}.is-named .crest`;
 describe('the open reveal for a club with no crest', () => {
 	beforeEach(() => {
 		cy.viewport(320, 560);
-		// The graphic removes itself on a timer, and these scrub a long way into it.
 		cy.clock();
 	});
 
@@ -115,8 +111,6 @@ describe('the open reveal for a club with no crest', () => {
 		cy.get(awayCrest).should('have.class', 'is-named');
 	});
 
-	// Fitted to the half rather than overhanging it the way a crest does, so every letter is on the
-	// club's own colour and none of them is under the other club's.
 	it('keeps the name in the crest scene clear of the seam, on either side', () => {
 		cy.mount(<Harness subject={game(lions, { ...blazers, logo: undefined })} />);
 		scrubTo(openMs(3500 * 0.22));
@@ -136,8 +130,6 @@ describe('the open reveal for a club with no crest', () => {
 		});
 	});
 
-	// The name is what the bar uncovers, and the card's own placeholder is what lands. The trade is
-	// done before the descent at 78%, so a word never travels down over the score.
 	it('trades the name for the card\'s own disc before it descends', () => {
 		cy.mount(<Harness subject={game(lions, blazers)} />);
 		scrubTo(spineMs(revealBaseDurationMs * 0.74));
@@ -151,8 +143,6 @@ describe('the open reveal for a club with no crest', () => {
 		cy.get(awayDisc).should('have.css', 'opacity', '1');
 	});
 
-	// Opaque over the side's colour rather than the card's translucent white, because the card's disc
-	// steps in underneath this one at the handoff and two translucent ones stacked would brighten.
 	it('lands a disc that matches the one on the card', () => {
 		cy.mount(<Harness subject={game(lions, blazers)} />);
 		scrubTo(spineMs(revealBaseDurationMs) - 10);
@@ -184,9 +174,6 @@ describe('the open reveal for a club with no crest', () => {
 		});
 	});
 
-	// A logo can fail two round trips in, which is when the stand-ins mount and their animations would
-	// otherwise start. They have to run on the crest's clock regardless, or the name is still up when
-	// the descent begins.
 	it('keeps a stand-in that mounted late on the graphic\'s clock', () => {
 		cy.intercept('GET', slowMissingMark, { statusCode: 404, delay: 600 });
 		cy.mount(<Harness subject={game({ ...lions, logo: slowMissingMark }, blazers)} />);

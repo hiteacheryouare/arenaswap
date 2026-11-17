@@ -20,7 +20,6 @@ const defaultProps = {
 	onDone: () => {},
 };
 
-// Favorites live in onboardingView, so this stands in for that owner.
 const StatefulPicker = () => {
 	const [selectedFavorites, setSelectedFavorites] = useState<Set<string>>(new Set());
 
@@ -39,7 +38,6 @@ const StatefulPicker = () => {
 };
 
 describe('onboardingTeamPicker', () => {
-	// Our sources hand teams over in their own order; the 76ers arrive before the Bulls.
 	it('sorts each league\'s teams by name', () => {
 		cy.mount(<OnboardingTeamPicker {...defaultProps} />);
 		cy.get('.team-pick-row .fw-semibold').then(names => [...names].map(name => name.textContent))
@@ -98,7 +96,6 @@ describe('onboardingTeamPicker', () => {
 		cy.contains('Loading teams').should('exist');
 	});
 
-	// The footer's Skip is always there, so the error offers Retry alone rather than a second skip.
 	it('offers a retry and one skip when the fetch failed', () => {
 		cy.mount(
 			<OnboardingTeamPicker

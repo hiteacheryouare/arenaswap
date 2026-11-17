@@ -25,7 +25,6 @@ describe('parseScoreboard', () => {
 		expect(result.droppedEvents).toBe(0);
 	});
 
-	// The whole reason parsing is per-event: rejecting the array as a unit blanks out the league.
 	test('drops only the malformed event, not the whole league', () => {
 		const good = Array.from({ length: 199 }, (_, i) => makeEvent(`g${i}`));
 		const bad = withCompetitor('bad', { id: 'x', homeAway: 'home', team: {} });
@@ -73,8 +72,6 @@ describe('parseTeams', () => {
 		expect(result.droppedTeams).toBe(0);
 	});
 
-	// The whole reason parsing is per-team: rejecting the array as a unit left the onboarding picker
-	// with nothing to offer for that league, and nothing in the console to explain it.
 	test('drops only the malformed team, not the whole league', () => {
 		const good = Array.from({ length: 25 }, (_, i) => makeTeamRow(`g${i}`));
 		const bad = { team: { id: 'bad' } };
@@ -113,8 +110,6 @@ describe('parseTeams', () => {
 			expect(competitor?.leaders?.[0]?.leaders?.[0]?.displayValue).toBe('33');
 		});
 
-		// Cricket returns a `$ref` string where every other sport returns an array. Not a league we
-		// ship, but adding one must not be able to take the event down with it.
 		test('survives leaders arriving as a $ref string instead of an array', () => {
 			const event = withCompetitor('ref', {
 				id: 'h1',
@@ -144,8 +139,6 @@ describe('parseTeams', () => {
 			expect(competitor?.probables?.[0]?.athlete?.jersey).toBe('92');
 		});
 
-		// Zod strips whatever a schema does not declare, so without this nothing proves the rank is
-		// readable downstream — it would simply arrive undefined and every team would look unranked.
 		test('keeps curatedRank, which decides whether a matchup reads as ranked', () => {
 			const event = withCompetitor('rank', {
 				id: 'h1',
@@ -183,8 +176,6 @@ describe('parseTeams', () => {
 			expect(parsed?.lastPlay?.drive?.description).toBe('1 play, 0 yards, 0:04');
 		});
 
-		// The pitcher's position is a bare string; the identically named key inside `leaders` is an
-		// object. They are parsed by two different athlete schemas for exactly that reason.
 		test('reads a pitcher and batter whose position is a plain string', () => {
 			const parsed = situationOf({
 				pitcher: { athlete: { displayName: 'Will Dion', jersey: 76, position: 'RP' }, summary: '1.1 IP, 0 ER, H, BB' },

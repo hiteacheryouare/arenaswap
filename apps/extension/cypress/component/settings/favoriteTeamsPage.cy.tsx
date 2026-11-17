@@ -7,7 +7,6 @@ import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
 import fil from '../../../locales/fil.json';
 import fr from '../../../locales/fr.json';
-// Not `it` — that would shadow Mocha's global it() and break every test in this file.
 import itLocale from '../../../locales/it.json';
 import ja from '../../../locales/ja.json';
 import ko from '../../../locales/ko.json';
@@ -18,7 +17,6 @@ import zhTW from '../../../locales/zh_TW.json';
 
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
 
-// The longest league label we ship, so the sublabel is measured at its worst case.
 const longestLeague = "Olympic Women's Ice Hockey";
 
 const teamsByLeague: Record<string, [string, string][]> = {
@@ -26,7 +24,6 @@ const teamsByLeague: Record<string, [string, string][]> = {
 	nhl: [['15', 'Philadelphia Flyers']],
 };
 
-// ESPN's /teams envelope, trimmed to the fields fetchTeamsForLeagues reads.
 const teamsPayload = (entries: [string, string][]) => ({
 	sports: [{
 		leagues: [{
@@ -37,9 +34,6 @@ const teamsPayload = (entries: [string, string][]) => ({
 	}],
 });
 
-// The page calls the real fetchTeamsForLeagues on mount, and a package entry point has no seam for
-// the component-stub plugin, so the stub goes on the window — the same approach onboardingView
-// takes. Must be installed before mounting, since the fetch fires in the mount effect.
 const stubTeamsFetch = (fails = false) => {
 	cy.window().then(win => {
 		cy.stub(win, 'fetch').callsFake((input: unknown) => {
@@ -72,7 +66,6 @@ const flipped = (set: ReadonlySet<string>, key: string): Set<string> => {
 
 const without = (set: ReadonlySet<string>, key: string): Set<string> => new Set([...set].filter(each => each !== key));
 
-// Both lists live in app.tsx, so this stands in for that owner, including keeping a team on one list.
 const Harness = ({ enabledLeagues = ['nba'], initialFavorites = [], initialRivals = [], onToggle, onToggleRival }: harnessProps) => {
 	const [favorites, setFavorites] = useState(() => new Set(initialFavorites));
 	const [rivals, setRivals] = useState(() => new Set(initialRivals));
@@ -138,7 +131,6 @@ describe('favoriteTeamsPage', () => {
 
 		cy.contains('Philadelphia Flyers').should('exist');
 		cy.contains('NHL · not tracked').should('exist');
-		// The league itself is fetched only to name the favorite, never offered as a group.
 		cy.get('.popup-section-label').should('not.contain', 'NHL');
 	});
 
@@ -201,8 +193,6 @@ describe('favoriteTeamsPage', () => {
 			cy.get('.setting-explainer').first().then(([el]: JQuery<HTMLElement>) => {
 				el.textContent = locale.teamPicker.leagueNotTracked.replace('{league}', longestLeague);
 			});
-			// The sublabel is free to wrap; what it must not do is widen the row past the popup and
-			// push the star off the right edge.
 			cy.get('.overflow-auto').should(([el]: JQuery<HTMLElement>) => {
 				expect(el.scrollWidth, `list does not scroll sideways in ${name}`).to.be.at.most(el.clientWidth + 1);
 			});

@@ -42,7 +42,6 @@ interface Starter extends LineupPlayer {
 	side: number;
 }
 
-// How far up the pitch a position plays, from the position names our sources use (Opta's).
 const positionDepth = (position: string): number => {
 	if (position === 'G' || position === 'GK') return 0;
 	if (/^(CD|CB|SW|D)(-|$)|^[LR]B$/.test(position)) return 1;
@@ -54,7 +53,6 @@ const positionDepth = (position: string): number => {
 	return 5.5;
 };
 
-// Negative is the team's left. Wide positions sit outside the inside-left and inside-right ones.
 const positionSide = (position: string): number => {
 	if (/^L(B|WB|M|W|F)$/.test(position)) return -2;
 	if (/^R(B|WB|M|W|F)$/.test(position)) return 2;

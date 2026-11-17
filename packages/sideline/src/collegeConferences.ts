@@ -4,8 +4,6 @@ import type { CollegeLeagueId, ConferenceDirectory, ConferenceEntry } from '@are
 import { settledInPool, takeRequestSlot } from './apiClient';
 import { coreApiBase, requestSignal } from './endpoints';
 
-// The core API answers in pages of `$ref`s. These leagues' conferences sit under a division group;
-// hockey, baseball and softball are found by walking down from the top of the tree instead.
 const conferenceParents: Partial<Record<CollegeLeagueId, string[]>> = {
 	ncaaf: ['80', '81'],
 	ncaab: ['50'],
@@ -43,7 +41,6 @@ const StandingSchema = z.object({
 
 type GroupDoc = z.infer<typeof GroupDocSchema>;
 
-// The refs come back as http; extension pages may only fetch https.
 const toHttps = (url: string): string => url.replace(/^http:/, 'https:');
 
 const withLimit = (url: string, limit: number): string => {
@@ -83,7 +80,6 @@ const teamIdsAt = async (teamsUrl: string): Promise<string[]> => {
 		.filter((id): id is string => id !== undefined);
 };
 
-// Baseball and softball conferences link no team list, but their standings name every team.
 const conferenceTeamIds = async (group: GroupDoc): Promise<string[]> => {
 	if (group.teams) return await teamIdsAt(group.teams.$ref);
 	if (!group.standings) return [];

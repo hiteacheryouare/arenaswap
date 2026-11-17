@@ -9,9 +9,6 @@ import { inEveryLocale } from '../../support/safetyNet/locales';
 import { mountInPopup, popupSurface } from '../../support/safetyNet/mountInPopup';
 import { worstBroadcasts, worstCaseGames, worstUserText } from '../../support/safetyNet/worstCase';
 
-// The popup's own card wraps this one with the real tab picker (entrypoints/popup/components/
-// liveGameCard.tsx), which this group cannot load. The shared picker stands in, holding the longest
-// tab title, so the footer is as full as it ever gets.
 const tabPicker = (label: string) => (
 	<div className='game-card-tab-assign'>
 		<SelectDropdown value='tab' options={[{ value: 'tab', label }]} onChange={() => {}} ariaLabel={i18n.t('tabAssign.placeholder')} />

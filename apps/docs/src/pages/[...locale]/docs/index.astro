@@ -5,9 +5,6 @@ import UntranslatedNotice from '../../../components/UntranslatedNotice.astro';
 import { localePath, localeRoutes } from '../../../i18n/locales';
 import { useTranslations } from '../../../i18n/ui';
 
-// The hub. Two trees with two audiences: people watching sports, and people scoring games in their
-// own code. Splitting them at the top means neither has to scroll past the other.
-
 export const getStaticPaths = localeRoutes;
 
 const { locale } = Astro.props;

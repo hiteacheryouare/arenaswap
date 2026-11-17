@@ -8,7 +8,6 @@ import type { Game, LeagueId, TabRegistration, UserPreferences } from '@arenaswa
 import { prefsStorageUpdatedAtKey } from '../utils/prefsStorage';
 
 jest.mock('@porkyproductions/hat', () => ({
-	// Always the maximum of the range, so timer delays are deterministic.
 	randomInRange: jest.fn().mockImplementation((_min: number, max: number) => max),
 }));
 
@@ -26,9 +25,6 @@ jest.mock('@arenaswap/sideline', () => ({
 
 const flushPromises = () => new Promise<void>(r => setImmediate(r));
 
-// `loadBackground` resets the module registry, so the mock the background calls is a fresh instance
-// on every load — one captured at spec load is a different function object and would record none of
-// its calls. Read through the registry the same way `fetchMock` is.
 const lookahead = (): jest.Mock => (
 	(require('@arenaswap/sideline') as { fetchNextScheduledStart: jest.Mock }).fetchNextScheduledStart
 );
@@ -49,13 +45,10 @@ const runtimeSendMessage = (): jest.Mock => (
 	(globalThis as unknown as { browser: { runtime: { sendMessage: jest.Mock } } }).browser.runtime.sendMessage
 );
 
-// The wide fetch is whichever call carried `includeUpcoming`, no matter which surface asked: the
-// per-league live polls in between ask for the dateless board and carry no day range at all.
 const lastWideFetchOptions = () => fetchMock.mock.calls
 	.filter(([, options]) => (options as { includeUpcoming?: boolean } | undefined)?.includeUpcoming === true)
 	.at(-1)?.[1] as { upcomingDays?: number; includeFinal?: boolean } | undefined;
 
-// Multiple rounds because each resolved promise can schedule new microtasks.
 const drain = async (rounds = 8) => {
 	for (let i = 0; i < rounds; i++) await flushPromises();
 };
@@ -78,8 +71,6 @@ let onActivatedHandler: ((info: { tabId: number }) => unknown) | undefined;
 let onRemovedHandler: ((tabId: number) => unknown) | undefined;
 let onSyncChangedHandlers: ((changes: Record<string, unknown>) => unknown)[] = [];
 
-// `windowIds` is opt-in: without it the tabs carry no windowId, which is what the browser never
-// does but every test written before tab closing existed assumes. Only the closing rules read it.
 const mockOpenTabIds = (openTabIds: number[], activeTabId: number, windowIds?: Record<number, number>) => {
 	tabsQuery.mockImplementation((q: unknown) => {
 		if ((q as { active?: boolean }).active) return Promise.resolve([{ id: activeTabId }]);
@@ -89,7 +80,6 @@ const mockOpenTabIds = (openTabIds: number[], activeTabId: number, windowIds?: R
 	});
 };
 
-// Holds a win probability sweep open so the chain can be stopped or rebuilt underneath it.
 const deferNextSweep = (winProbMock: jest.Mock): (() => void) => {
 	let release!: () => void;
 	winProbMock.mockImplementationOnce(() => new Promise<number[]>(resolve => {
@@ -129,7 +119,6 @@ interface LoadOptions {
 
 const loadBackground = async (options: LoadOptions = {}) => {
 	jest.resetModules();
-	// setImmediate stays real so flushPromises() can still drain microtasks under fake timers.
 	jest.useFakeTimers({ doNotFake: ['setImmediate'] });
 	if (options.initialSystemTime !== undefined) jest.setSystemTime(options.initialSystemTime);
 
@@ -203,7 +192,6 @@ const loadBackground = async (options: LoadOptions = {}) => {
 		windows: { update: windowsUpdate, get: windowsGet, getLastFocused: windowsGetLastFocused },
 		commands: { onCommand: { addListener: jest.fn() } },
 		alarms: { create: jest.fn(), clear: jest.fn(), onAlarm: { addListener: () => {} } },
-		// A switch notification formats its reason in the UI language, as the popup's fake does.
 		i18n: { getUILanguage: () => 'en-US' },
 	};
 
@@ -305,8 +293,6 @@ describe('postseason boost', () => {
 			expect(await boostForRound(round)).toBe(expected);
 		});
 
-	// A non-playoff bowl and the Pro Bowl reach here as postseason with no round. They must score
-	// nothing rather than falling through to the bottom rung.
 	test('a postseason game with no graded round scores nothing', async () => {
 		expect(await boostForRound(undefined)).toBe(0);
 	});
@@ -317,8 +303,6 @@ describe('postseason boost', () => {
 	});
 });
 
-// Regression: a game at halftime scored 0 from the signals but still collected its favorite,
-// postseason and manual boosts, so a frozen game out-scored games that were actually being played.
 describe('frozen games', () => {
 	const halftimeGame: Game = {
 		id: 'frozen-game',
@@ -390,13 +374,10 @@ describe('frozen games', () => {
 	});
 });
 
-// Regression: tickLeague rescheduled itself unconditionally, so a stopLeaguePolling() during an
-// in-flight fetch re-added the timer after the clear and polled a disabled league forever.
 describe('tickLeague rescheduling', () => {
 	test('does not reschedule a league that was disabled while its fetch was in flight', async () => {
 		await loadBackground({ prefs: { enabledLeagues: ['nba' as LeagueId] } });
 
-		// Deferred so the league can be disabled before the fetch resolves.
 		let resolveDeferred!: (v: { games: never[]; leagueLogos: Record<string, never>; shedLeagues: never[] }) => void;
 		fetchMock.mockImplementationOnce(
 			() => new Promise(resolve => { resolveDeferred = resolve; })
@@ -426,8 +407,6 @@ describe('tickLeague rescheduling', () => {
 	});
 });
 
-// Regression: the popup writes prefs to storage.sync then sends UPDATE_PREFS, so a popup
-// destroyed between those two steps used to leave the background on stale in-memory prefs.
 describe('GET_STATE with forceRefresh', () => {
 	test('re-reads prefs from storage.sync to recover from a popup that closed before UPDATE_PREFS arrived', async () => {
 		await loadBackground({ prefs: { enabledLeagues: ['nba' as LeagueId] } });
@@ -443,9 +422,6 @@ describe('GET_STATE with forceRefresh', () => {
 		expect(storageSyncGet).toHaveBeenCalledWith({ prefs: null, [prefsStorageUpdatedAtKey]: 0 });
 	});
 
-	// Reloading the prefs was only half the recovery: leagueTimers still held timers for the old
-	// league set, so a league the popup had just enabled was fetched once by the re-score and then
-	// never polled again until the next pref change or a worker restart.
 	test('re-arms league polling for the league set it just recovered', async () => {
 		await loadBackground({ prefs: { enabledLeagues: ['nba' as LeagueId] } });
 
@@ -466,9 +442,6 @@ describe('GET_STATE with forceRefresh', () => {
 		expect(polledLeagues).not.toContain('nba');
 	});
 
-	// The review also flagged managed tabs keeping the old master toggle's mute state, but the
-	// re-score at the end of this path runs afterFetch, which already syncs it. Pinned so the
-	// guarantee survives whatever else moves around in here.
 	test('leaves managed tab mute state matching the master toggle it just recovered', async () => {
 		await loadBackground({
 			prefs: { enabled: true, enabledLeagues: ['nba' as LeagueId] },
@@ -493,10 +466,6 @@ describe('GET_STATE with forceRefresh', () => {
 	});
 });
 
-// Regression: run() reassigned winProbTimer unconditionally after its await, so clearTimeout could
-// never reach a sweep that was already in flight. Stopping mid-sweep let the resolving run bring the
-// chain back to life, and rescheduling mid-sweep orphaned a chain nothing held a handle to — each
-// one worth an ESPN summary request per live game every 60 seconds, forever.
 describe('win probability polling', () => {
 	const liveGame: Game = {
 		id: 'g1',
@@ -514,7 +483,6 @@ describe('win probability polling', () => {
 			prefs: { enabledLeagues: ['nba' as LeagueId], notificationsEnabled: false },
 			fetchReturnValue: { games: [liveGame], leagueLogos: {}, shedLeagues: [] },
 		});
-		// The startup seed already swept once, so the count starts from here.
 		const winProbMock = (require('@arenaswap/sideline') as { fetchWinProbability: jest.Mock }).fetchWinProbability;
 		winProbMock.mockClear();
 		return winProbMock;
@@ -528,7 +496,6 @@ describe('win probability polling', () => {
 		await drain();
 		expect(winProbMock).toHaveBeenCalledTimes(1);
 
-		// Demo mode stops the chain while the sweep is still waiting on ESPN.
 		await sendMessage({ type: 'SET_DEMO_MODE', enabled: true });
 		releaseSweep();
 		await drain();
@@ -548,8 +515,6 @@ describe('win probability polling', () => {
 		await drain();
 		expect(winProbMock).toHaveBeenCalledTimes(1);
 
-		// Off and straight back on while the first sweep is still waiting, so the chain is rebuilt
-		// underneath it.
 		await sendMessage({ type: 'SET_DEMO_MODE', enabled: true });
 		await sendMessage({ type: 'SET_DEMO_MODE', enabled: false });
 		releaseSweep();
@@ -559,12 +524,10 @@ describe('win probability polling', () => {
 		jest.advanceTimersByTime(pollWinProbabilityMs);
 		await drain();
 
-		// One live game and one chain: a second chain would double every sweep from here on.
 		expect(winProbMock).toHaveBeenCalledTimes(1);
 	});
 });
 
-// A summary with a real line behind it: twenty plays that never leave the middle of the court.
 const summaryLine = Array.from({ length: 20 }, () => 0.5);
 
 const summaryMock = () => {
@@ -588,7 +551,6 @@ describe('win probability read off the scoreboard', () => {
 		lastPlayId: 'play-1',
 	};
 
-	// `playMoves` has every poll after the first report a new play, as a game in progress does.
 	const loadWith = async (game: Game, storedSession?: Record<string, unknown>, playMoves = false) => {
 		await loadBackground({
 			prefs: { enabledLeagues: [game.league], notificationsEnabled: false },
@@ -614,7 +576,6 @@ describe('win probability read off the scoreboard', () => {
 	test('a football game is summarised once for its full line and then left to the scoreboard', async () => {
 		await loadWith(footballGame);
 		const winProbMock = summaryMock();
-		// The startup sweep ran before this mock had a line to give, so the first sweep here is the read.
 		await sweepsLater(1);
 		expect(winProbMock).toHaveBeenCalledTimes(1);
 
@@ -757,8 +718,6 @@ describe('win probability read off the scoreboard', () => {
 	});
 });
 
-// Browsers take a player out of full screen when its tab stops being the active one, and a tab
-// activated in a window behind this one stays out of sight.
 describe('a switch fills the screen the way the last game did', () => {
 	const liveGame: Game = {
 		id: 'g1',
@@ -850,8 +809,6 @@ describe('a switch fills the screen the way the last game did', () => {
 	});
 });
 
-// Regression: lastSwitchTime survived a disable, so disabling just after a switch and re-enabling
-// left the cooldown blocking the first switch of an otherwise fresh start.
 describe('lastSwitchTime reset on disable', () => {
 	const liveGame: Game = {
 		id: 'g1',
@@ -864,7 +821,6 @@ describe('lastSwitchTime reset on disable', () => {
 		clockSeconds: 60,
 	};
 
-	// Sensitivity 7 → a threshold of 1.
 	const switchPrefs: Partial<UserPreferences> = {
 		enabled: true,
 		enabledLeagues: ['nba' as LeagueId],
@@ -882,7 +838,6 @@ describe('lastSwitchTime reset on disable', () => {
 			initialSystemTime: 1_000_000,
 		});
 
-		// Tab 1 is active and unregistered; tab 2 holds the game.
 		tabsQuery.mockImplementation((q: unknown) => {
 			if ((q as { active?: boolean }).active) return Promise.resolve([{ id: 1 }]);
 			return Promise.resolve([{ id: 1 }, { id: 2 }]);
@@ -902,7 +857,6 @@ describe('lastSwitchTime reset on disable', () => {
 
 		tabsUpdate.mockClear();
 
-		// 5s after the switch, well inside the 60s cooldown.
 		jest.setSystemTime(1_005_000);
 		jest.advanceTimersByTime(pollIntervalMs + 2000);
 		await drain(12);
@@ -914,7 +868,6 @@ describe('lastSwitchTime reset on disable', () => {
 		await sendMessage({ type: 'UPDATE_PREFS', prefs: makePrefs(false) });
 		await sendMessage({ type: 'UPDATE_PREFS', prefs: makePrefs(true) });
 
-		// 10s after the switch: still inside the cooldown unless lastSwitchTime was reset.
 		jest.setSystemTime(1_010_000);
 		jest.advanceTimersByTime(pollIntervalMs + 2000);
 		await drain(12);
@@ -922,8 +875,6 @@ describe('lastSwitchTime reset on disable', () => {
 	});
 });
 
-// Regression: the standby tab is tracked outside the game registry, so mute syncing skipped it
-// and it kept playing over whichever game tab the user was actually watching.
 describe('standby stream tab mute state', () => {
 	const standbyTabId = 5;
 	const gameTabs: TabRegistration[] = [{ gameId: 'g1', tabId: 2 }, { gameId: 'g2', tabId: 3 }];
@@ -935,7 +886,6 @@ describe('standby stream tab mute state', () => {
 		notificationsEnabled: false,
 	};
 
-	// Tab 1 is unmanaged, tabs 2/3 are game tabs, tab 5 is the standby stream.
 	const mockOpenTabs = (activeTabId: number) => {
 		tabsQuery.mockImplementation((q: unknown) => {
 			if ((q as { active?: boolean }).active) return Promise.resolve([{ id: activeTabId }]);
@@ -943,7 +893,6 @@ describe('standby stream tab mute state', () => {
 		});
 	};
 
-	// UPDATE_REGISTRY re-syncs mute state without going through the switching logic.
 	const triggerSync = () => sendMessage({ type: 'UPDATE_REGISTRY', tabRegistry: gameTabs });
 
 	test('mutes the standby stream tab while a game tab is being watched', async () => {
@@ -1024,7 +973,6 @@ describe('standby stream tab mute state', () => {
 
 		tabsUpdate.mockClear();
 
-		// Dropping the tab out of the managed set must not leave it silently muted.
 		await sendMessage({
 			type: 'UPDATE_PREFS',
 			prefs: normalizeUserPreferences({
@@ -1063,9 +1011,6 @@ describe('standby stream tab mute state', () => {
 	});
 });
 
-// Regression: nothing pruned the registry when a tab closed, so a closed tab kept winning the
-// switch selection and every switch then no-opped against a tab that wasn't there.
-
 const mkGame = (id: string, home: number, away: number, period: number, clockSeconds: number): Game => ({
 	id,
 	league: 'nba' as LeagueId,
@@ -1077,7 +1022,6 @@ const mkGame = (id: string, home: number, away: number, period: number, clockSec
 	clockSeconds,
 });
 
-// Measured PowerScores with no history: thriller 78, closeGame 69, blowout 10.
 const thriller = mkGame('thriller', 100, 100, 4, 20);
 const closeGame = mkGame('close', 100, 97, 4, 20);
 const blowout = mkGame('thriller', 120, 90, 4, 300);
@@ -1104,8 +1048,6 @@ describe('closed tab handling', () => {
 	const registry: TabRegistration[] = [{ gameId: 'thriller', tabId: 2 }, { gameId: 'close', tabId: 3 }];
 
 	test('switches to the runner-up when the top game tab closed while the worker was asleep', async () => {
-		// Tab 2 is absent from the very first query: the worker was torn down, the tab closed with
-		// no onRemoved listener alive, and session storage handed the stale registration back.
 		await loadBackground({
 			prefs: switchingPrefs,
 			tabRegistry: registry,
@@ -1200,8 +1142,6 @@ describe('closed tab handling', () => {
 
 		expect((await getDebugState()).standbyStreamTabId).toBeNull();
 
-		// blowout scores 10, under the default standby threshold of 20, so a stale standby tab id
-		// would park on a closed tab and return before considering any game.
 		await runFirstPoll();
 
 		expect(tabsUpdate).not.toHaveBeenCalledWith(5, { active: true });
@@ -1383,9 +1323,6 @@ describe('a queued switch when the user changes course', () => {
 	});
 });
 
-// Regression: a queued switch replayed the target it was created with, so after the delay it
-// switched to a game that had since gone quiet, or ended.
-
 describe('pending switch re-validation', () => {
 	test('re-targets when the queued game ends during the delay', async () => {
 		await loadBackground({
@@ -1404,7 +1341,6 @@ describe('pending switch re-validation', () => {
 		);
 		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
 
-		// Buzzer sounds on the queued game while the delay is still running.
 		fetchMock.mockResolvedValue({
 			games: [{ ...thriller, status: 'post' }, closeGame],
 			leagueLogos: {},
@@ -1434,7 +1370,6 @@ describe('pending switch re-validation', () => {
 		await runFirstPoll();
 		expect((await getDebugState()).pendingSwitch).not.toBeNull();
 
-		// The game falls apart: 78 → 10, under the standby threshold of 20.
 		fetchMock.mockResolvedValue({ games: [blowout], leagueLogos: {}, shedLeagues: [] });
 		jest.advanceTimersByTime(30_000);
 		await drain(16);
@@ -1448,9 +1383,6 @@ describe('pending switch re-validation', () => {
 		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
 	});
 });
-
-// Regression: picking a game tab by hand left the cooldown untouched, so the next poll could
-// override a deliberate choice within seconds.
 
 describe('manual tab activation', () => {
 	test('starts the cooldown when the user lands on a registered game tab', async () => {
@@ -1519,7 +1451,6 @@ describe('manual tab activation', () => {
 		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
 	});
 
-	// A fixed id makes each switch notification replace the last rather than pile up.
 	test('posts every switch notification under the same id', async () => {
 		await loadBackground({
 			prefs: { ...switchingPrefs, cooldownSeconds: 0, notificationsEnabled: true },
@@ -1549,9 +1480,6 @@ describe('manual tab activation', () => {
 		await activateTab(2);
 		const activatedAt = Date.now();
 
-		// Elapsed time compared against a zero cooldown is only ever blocking when the two instants
-		// are equal, so the clock is pinned back to the activation to reach that one case: a poll
-		// evaluating in the same millisecond the user landed on a game tab.
 		jest.advanceTimersByTime(pollIntervalMs + 2000);
 		jest.setSystemTime(activatedAt);
 		await drain(16);
@@ -1559,9 +1487,6 @@ describe('manual tab activation', () => {
 		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
 	});
 });
-
-// Regression: mute updates went out as one Promise.all, so a tab closing inside the
-// query-to-update race window rejected the batch and aborted the switch evaluation after it.
 
 describe('mute sync resilience', () => {
 	test('still evaluates the switch when one tab rejects its mute update', async () => {
@@ -1583,7 +1508,6 @@ describe('mute sync resilience', () => {
 		await runFirstPoll();
 
 		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
-		// Tab 3 never actually muted, so it must not be recorded as ours to unmute later.
 		expect(storageSessionSet).toHaveBeenCalledWith({ mutedTabIds: [2] });
 	});
 });
@@ -1627,8 +1551,6 @@ describe('keeping finished games', () => {
 		for (const options of fetchOptions()) expect(options.includeFinal).toBe(true);
 	});
 
-	// The poll is one dateless request either way, and the guide needs it to see each game go final.
-	// The slate's reach back stays gated: see 'does not reach back for finals when the setting is off'.
 	test('and the poll still asks for them while it is off', async () => {
 		await loadBackground({ prefs: { enabledLeagues: ['nba' as LeagueId], keepFinalGames: false, finishedTabAction: 'keep' } });
 		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
@@ -1654,9 +1576,6 @@ describe('keeping finished games', () => {
 		expect((await stateGames()).map(g => g.id).toSorted()).toEqual(['done', 'playing']);
 	});
 
-	// The per-league polls use the dateless scoreboard, which only carries the current Eastern day.
-	// A game the range fetch found and this one cannot see has to survive the merge, exactly as a
-	// scheduled game already does.
 	test('survives a poll that no longer returns it', async () => {
 		await loadBackground({
 			prefs: { enabledLeagues: ['nba' as LeagueId], keepFinalGames: true },
@@ -1664,7 +1583,6 @@ describe('keeping finished games', () => {
 		});
 		expect((await stateGames()).map(g => g.id)).toContain('yesterday');
 
-		// The next poll answers with the live game alone.
 		fetchMock.mockResolvedValue({ games: [liveGame('playing')], leagueLogos: {}, shedLeagues: [] });
 		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
 		expect((await stateGames()).map(g => g.id).toSorted()).toEqual(['playing', 'yesterday']);
@@ -1677,8 +1595,6 @@ describe('keeping finished games', () => {
 		});
 		expect((await stateGames()).map(g => g.id)).toContain('ageing');
 
-		// Nine hours on, the game is more than a day past its estimated wrap. The poll still cannot
-		// see it, so nothing but the retention check can remove it.
 		fetchMock.mockResolvedValue({ games: [liveGame('playing')], leagueLogos: {}, shedLeagues: [] });
 		jest.setSystemTime(Date.now() + (9 * 60 * 60 * 1000));
 		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
@@ -1729,10 +1645,6 @@ describe('keeping finished games', () => {
 	});
 });
 
-// The two paths this PR shipped that no existing test could see: the history a wrap screen reads,
-// and the scheduled per-league poll. Every other case in this file drives GET_STATE with
-// forceRefresh, which routes through tick() — production polling is tickLeague, and the two merge
-// their results differently.
 const gameAt = (startMs: number, status: Game['status']): Game => ({
 	id: 'wrapper',
 	league: 'nba' as LeagueId,
@@ -1752,12 +1664,6 @@ describe('a game that goes final while the worker is up', () => {
 		((await sendMessage({ type: 'GET_STATE' }) as { games: Game[] }).games).map(g => g.id).toSorted()
 	);
 
-	// The failure this reproduces: retainedFinalGames was only ever written inside refreshSlate,
-	// which runs at worker startup and on a preference change and never on a timer. So a game that
-	// went final mid-session survived only as long as the dateless scoreboard kept returning it,
-	// and vanished at the Eastern-day rollover a couple of hours old against a promised 24.
-	// A second game in the same league, live throughout, so the league never drops to the dormant
-	// poll interval and every advance below genuinely lands a tickLeague.
 	const alsoPlaying: Game = {
 		id: 'other', league: 'nba' as LeagueId, sportType: 'basketball', status: 'in',
 		period: 2, clockSeconds: 400, startTime: new Date(Date.UTC(2026, 8, 7, 23, 30, 0)).toISOString(),
@@ -1765,10 +1671,6 @@ describe('a game that goes final while the worker is up', () => {
 		awayTeam: { id: 'a2', name: 'A2', abbreviation: 'AA', score: 38 },
 	};
 
-	// Fires the scheduled per-league poll and proves it actually ran, so nothing below can pass by
-	// virtue of no poll having happened at all. The interval is adaptive — computeLeagueIntervalMs
-	// reads the best live score in the league — so this steps forward until one lands rather than
-	// hardcoding a delay that a scoring change would silently invalidate.
 	const pollOnce = async () => {
 		fetchMock.mockClear();
 		for (let step = 0; step < 40 && fetchMock.mock.calls.length === 0; step++) {
@@ -1786,14 +1688,11 @@ describe('a game that goes final while the worker is up', () => {
 			fetchReturnValue: { games: [gameAt(startMs, 'in'), alsoPlaying], leagueLogos: {}, shedLeagues: [] },
 		});
 
-		// The scheduled poll finds it final. This is the only place the game is ever seen as post.
 		fetchMock.mockResolvedValue({ games: [gameAt(startMs, 'post'), alsoPlaying], leagueLogos: {}, shedLeagues: [] });
 		jest.setSystemTime(startMs + (2.5 * 60 * 60 * 1000));
 		await pollOnce();
 		expect(await stateIds()).toEqual(['other', 'wrapper']);
 
-		// Eastern midnight rolls over and the dateless scoreboard drops it. Nothing refetches the
-		// range, because nothing restarted the worker.
 		fetchMock.mockResolvedValue({ games: [alsoPlaying], leagueLogos: {}, shedLeagues: [] });
 		jest.setSystemTime(startMs + (3 * 60 * 60 * 1000));
 		await pollOnce();
@@ -1810,7 +1709,6 @@ describe('a game that goes final while the worker is up', () => {
 		await pollOnce();
 		expect(await stateIds()).toEqual(['other', 'wrapper']);
 
-		// 24 hours past the 2.5-hour estimated wrap, plus a few minutes.
 		fetchMock.mockResolvedValue({ games: [alsoPlaying], leagueLogos: {}, shedLeagues: [] });
 		jest.setSystemTime(startMs + (26.6 * 60 * 60 * 1000));
 		await pollOnce();
@@ -1849,9 +1747,6 @@ describe('the history a wrap screen reads', () => {
 				shedLeagues: [],
 			},
 		});
-		// Two-minute polls from tip-off to a couple of minutes short of the estimated wrap. Real
-		// polling is far denser; the point is the span, and the snapshots inside the scorer's own
-		// five-minute window are kept at whatever density they arrive at.
 		for (let minute = 2; minute <= 140; minute += 2) {
 			jest.setSystemTime(startMs + (minute * 60 * 1000));
 			await sendMessage({ type: 'GET_STATE', forceRefresh: true });
@@ -1864,10 +1759,6 @@ describe('the history a wrap screen reads', () => {
 		startTime: new Date(startMs).toISOString(),
 	};
 
-	// This is the assertion the whole chart gate rests on, and nothing used to make it. Under a
-	// rolling per-sport window the retained span was capped at five minutes for basketball, while
-	// coversWholeGame needs 0.8 x the 2.5-hour allowance — two hours. It was unsatisfiable in every
-	// sport by an order of magnitude, so the wrap screen's three charts could never draw.
 	test('covers the whole game, so the wrap screen draws its charts', async () => {
 		const { scoreHistory, powerScoreHistory } = await walkAWholeGame();
 		const now = startMs + (140 * 60 * 1000);
@@ -1883,16 +1774,11 @@ describe('the history a wrap screen reads', () => {
 		expect(snapshots.length).toBeGreaterThan(2);
 	});
 
-	// The tail is thinned rather than kept whole, so a long game cannot fill session storage. The
-	// cap is a backstop above this.
 	test('thins the tail instead of growing without bound', async () => {
 		const { powerScoreHistory } = await walkAWholeGame();
 		expect(powerScoreHistory.played!.length).toBeLessThan(200);
 	});
 
-	// Both maps are written to session storage on every poll, so the tail is only paid for by the
-	// setting that can display it. With Keep finished games off a finished game leaves the list
-	// entirely, there is no wrap screen to draw on, and this is the window it has always been.
 	test('is not kept at all when nothing could draw it', async () => {
 		const { powerScoreHistory } = await walkAWholeGame(false);
 		const snapshots = powerScoreHistory.played!;
@@ -1901,8 +1787,6 @@ describe('the history a wrap screen reads', () => {
 		expect(coversWholeGame(snapshots, finishedGame, end)).toBe(false);
 	});
 
-	// A live screen keeps drawing the window it always drew. Widening a running chart is a separate
-	// decision from making the wrap's charts possible at all.
 	test('is windowed back down for a game that is still being played', async () => {
 		const { powerScoreHistory } = await walkAWholeGame();
 		const now = startMs + (140 * 60 * 1000);
@@ -1915,8 +1799,6 @@ describe('the history a wrap screen reads', () => {
 		expect(final).toEqual(powerScoreHistory.played!);
 	});
 
-	// A game the worker only started watching late still carries a stub, which is the case the gate
-	// exists to catch and the one a length check misses.
 	test('still reports a late start as not covering the game', async () => {
 		const lateStart = { timestamp: startMs + (basketballAllowanceMs * 0.5) };
 		const lateEnd = { timestamp: startMs + (basketballAllowanceMs * 0.95) };
@@ -1924,10 +1806,6 @@ describe('the history a wrap screen reads', () => {
 	});
 });
 
-/* Dormant cannot tell a league quiet with a tip-off tonight from one quiet with nothing for nine
-   weeks, because the dateless scoreboard it polls only carries the current Eastern day. These drive
-   the real `tickLeague` rather than GET_STATE's forceRefresh, which routes through `tick()` and
-   never reschedules anything. */
 describe('polling a league with nothing on', () => {
 	const nbaOnly = { enabledLeagues: ['nba' as LeagueId] };
 	const emptySlate = { games: [], leagueLogos: {}, shedLeagues: [] };
@@ -1937,8 +1815,6 @@ describe('polling a league with nothing on', () => {
 		leagueIntervals: Record<string, number>;
 	};
 
-	// Steps forward until a poll actually lands, so nothing below can pass by virtue of no poll
-	// having run at all. The interval under test is the thing being chosen, so it is never assumed.
 	const pollOnce = async (limitMs = 10 * 60_000) => {
 		fetchMock.mockClear();
 		for (let waited = 0; waited < limitMs && fetchMock.mock.calls.length === 0; waited += 5_000) {
@@ -1948,7 +1824,6 @@ describe('polling a league with nothing on', () => {
 		expect(fetchMock).toHaveBeenCalled();
 	};
 
-	// Two empty polls is the dormant threshold, and the second is where the lookahead is spent.
 	const goQuiet = async () => {
 		await pollOnce();
 		await pollOnce();
@@ -1979,8 +1854,6 @@ describe('polling a league with nothing on', () => {
 		expect(state.leagueIntervals.nba).toBe(pollHebetudinousMaxMs);
 	});
 
-	// The interval is the claim; this is the behaviour. Dormant would have polled ten times by the
-	// first assertion below.
 	test('and genuinely does not poll again until the ceiling is up', async () => {
 		await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
 		await goQuiet();
@@ -2005,8 +1878,6 @@ describe('polling a league with nothing on', () => {
 		expect(state.leagueIntervals.nba).toBe(pollDormantMaxMs);
 	});
 
-	// The whole economy of the feature: one request has to buy the right to skip dozens, so it must
-	// not be spent on every tick the way the poll it replaces was.
 	test('the lookahead is spent once on the way in, not on every tick', async () => {
 		await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
 		await goQuiet();
@@ -2018,10 +1889,6 @@ describe('polling a league with nothing on', () => {
 		expect(lookahead()).toHaveBeenCalledTimes(1);
 	});
 
-	/* The report this was reopened on: MLB sat in hebetudinous at midday with first pitch at seven.
-	   A league with a game on today's card is having a day whatever hour the popup is opened in, so
-	   it stays on the dormant beat however far off the first pitch is. Driven off the poll's own
-	   payload, which is where a real slate's kickoff comes from. */
 	test('a game later today keeps the league dormant, however many hours off it is', async () => {
 		const hours = [1, 5, 19];
 		const seen: { hoursOut: number; mode: string; intervalMs: number }[] = [];
@@ -2036,12 +1903,9 @@ describe('polling a league with nothing on', () => {
 			const state = await debugState();
 			seen.push({ hoursOut, mode: state.pollModes.nba!, intervalMs: state.leagueIntervals.nba! });
 		}
-		// Collected rather than asserted in the loop so a failure names the hour that broke.
 		expect(seen).toEqual(hours.map(hoursOut => ({ hoursOut, mode: 'dormant', intervalMs: pollDormantMaxMs })));
 	});
 
-	// Today's card comes back on the poll's own payload, so a league with a game later today has
-	// already answered the question and the request is never made.
 	test('a kickoff the poll itself carried costs no lookahead at all', async () => {
 		await loadBackground({
 			prefs: nbaOnly,
@@ -2053,8 +1917,6 @@ describe('polling a league with nothing on', () => {
 		expect(lookahead()).not.toHaveBeenCalled();
 	});
 
-	// The other half of the same rule: a lookahead that comes back with tomorrow's game is still
-	// inside the horizon, so an empty card today is not on its own enough to sleep.
 	test('an empty card with a game tomorrow is dormant, not asleep', async () => {
 		await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
 		lookahead().mockResolvedValue(startMs + 20 * 60 * 60_000);
@@ -2077,8 +1939,6 @@ describe('polling a league with nothing on', () => {
 		expect(state.leagueIntervals.nba).toBeLessThanOrEqual(pollMaxEagerMs + 2_000);
 	});
 
-	// Failing to reach ESPN is not the same as ESPN saying nobody plays for two months, and the
-	// difference is 27 minutes of not looking.
 	test('a failed lookahead leaves the league dormant rather than asleep', async () => {
 		await loadBackground({ prefs: nbaOnly, initialSystemTime: startMs, fetchReturnValue: emptySlate });
 		lookahead().mockRejectedValue(new Error('503'));
@@ -2089,8 +1949,6 @@ describe('polling a league with nothing on', () => {
 		expect(state.leagueIntervals.nba).toBe(pollDormantMaxMs);
 	});
 
-	// A refusal used to retry at 15s whatever the league's own cadence was, so a 403 on a sleeping
-	// league multiplied its request rate by sixty. Jitter is pinned to +2s by the `randomInRange` mock.
 	describe('when the poll keeps failing', () => {
 		const refused = { games: [], leagueLogos: {}, shedLeagues: ['nba' as LeagueId] };
 		const retryDelays = async (count: number) => {
@@ -2196,10 +2054,6 @@ const game = (id: string, status: Game['status']): Game => ({
 	clockSeconds: 0,
 });
 
-// The guide draws today's whole slate — scheduled games, live games and finals — whatever the
-// popup's display preferences say. refreshSlate now asks ESPN for that whole superset and applies
-// the display preferences to the answer, so the guide reads what the poll already holds; it only
-// asks for its own when refreshSlate never ran, which is both display preferences off.
 describe('GET_GUIDE_SLATE', () => {
 	const nbaOnly: Partial<UserPreferences> = { enabledLeagues: ['nba' as LeagueId], enabled: false };
 
@@ -2234,8 +2088,6 @@ describe('GET_GUIDE_SLATE', () => {
 		expect(lastWideFetchOptions()?.upcomingDays).toBe(9);
 	});
 
-	// The guide pages a day at a time and its whole point is having somewhere to page to, so the
-	// setting is floored rather than followed all the way down.
 	test('still reaches a few days out when Up Next is set to one day', async () => {
 		await loadBackground({
 			prefs: { ...nbaOnly, upcomingGamesDays: 1 },
@@ -2248,9 +2100,6 @@ describe('GET_GUIDE_SLATE', () => {
 		expect(guideMinUpcomingDays).toBeGreaterThan(1);
 	});
 
-	/* The first open of a session pays for the slate; the repeat opens a day pager invites do not.
-	   It cannot be shared with `refreshSlate` instead — reaching back far enough to cover the guide
-	   truncated the popup's own future days against ESPN's server-side event cap. */
 	test('spends nothing on a repeat open', async () => {
 		await loadBackground({
 			prefs: nbaOnly,
@@ -2287,8 +2136,6 @@ describe('GET_GUIDE_SLATE', () => {
 		expect(slate.games.map(g => g.id).toSorted()).toEqual(['done', 'later']);
 	});
 
-	// The switch target, the debug counts and the popup's own list all read `games`, so widening it
-	// would change which game the extension switches to.
 	test('does not leak its wider slate into the state the switcher scores', async () => {
 		await loadBackground({
 			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },
@@ -2304,8 +2151,6 @@ describe('GET_GUIDE_SLATE', () => {
 
 	test('answers with an error rather than throwing when it has nothing and ESPN cannot be reached', async () => {
 		await loadBackground({
-			// Both display preferences off, so refreshSlate never ran and there is no held slate to
-			// fall back on — the one remaining case where the guide still has to ask ESPN itself.
 			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },
 			fetchReturnValue: { games: [game('live', 'in')], leagueLogos: {}, shedLeagues: [] },
 		});
@@ -2314,8 +2159,6 @@ describe('GET_GUIDE_SLATE', () => {
 		await expect(guideSlate()).resolves.toMatchObject({ games: [], refused: true });
 	});
 
-	// Every league refused resolves rather than throws, so the empty list looked like a quiet day for
-	// the whole ten minutes the slate is held.
 	test('does not cache a slate every league refused, and asks again once the retry window passes', async () => {
 		await loadBackground({
 			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },
@@ -2334,8 +2177,6 @@ describe('GET_GUIDE_SLATE', () => {
 		expect(slate.refused).toBe(false);
 	});
 
-	// Every poll broadcast makes an open Guide ask again, so a refusal asked about each time would
-	// spend a wide fetch per league tick on the quota that caused it.
 	test('costs one wide fetch, not one per open, while a partial refusal is held', async () => {
 		const nflGame = (id: string): Game => ({ ...game(id, 'pre'), league: 'nfl' as LeagueId });
 		await loadBackground({
@@ -2357,8 +2198,6 @@ describe('GET_GUIDE_SLATE', () => {
 		expect(slate.games.map(g => g.id).toSorted()).toEqual(['nba-new', 'nfl-back']);
 	});
 
-	// The first wide fetch queues behind the token bucket, and nothing is stamped until it lands, so
-	// every poll broadcast in that stretch used to start another one.
 	test('costs one wide fetch for three asks made while the first is still running, force included', async () => {
 		await loadBackground({
 			prefs: { ...nbaOnly, showUpcomingGames: false, keepFinalGames: false },
@@ -2455,8 +2294,6 @@ describe('when a guide game actually ended', () => {
 		sportType: 'baseball',
 		startTime: '2026-09-21T17:10:00Z',
 	};
-	// That evening, not today: end times are kept for three days, so against the real clock this
-	// game aged out of the slate on 2026-09-24 and the test failed with nothing wrong.
 	const mlbFinalEvening = new Date('2026-09-21T22:00:00Z').getTime();
 
 	test('stamps a game with the poll that first saw it final', async () => {
@@ -2472,8 +2309,6 @@ describe('when a guide game actually ended', () => {
 		expect(endTimes.g).toBeGreaterThan(sawFinalAt - 5_000);
 	});
 
-	// The fetch drops finals unless asked, so this is the poll seeing the game end, not the guide
-	// seeing it the next time it opens.
 	test('stamps the end from the poll with finished games hidden from the popup', async () => {
 		await loadBackground({
 			prefs: { ...nbaOnly, keepFinalGames: false, finishedTabAction: 'keep' },
@@ -2493,14 +2328,12 @@ describe('when a guide game actually ended', () => {
 		expect(endTimes.g).toBeGreaterThan(sawFinalAt - 5_000);
 	});
 
-	// Stamping the moment it was found would stretch a noon kickoff into the evening.
 	test('leaves a game it only ever saw final without an end time', async () => {
 		await loadBackground({ prefs: nbaOnly, fetchReturnValue: { games: [game('g', 'post')], leagueLogos: {}, shedLeagues: [] } });
 
 		expect((await guideSlate()).endTimes).toEqual({});
 	});
 
-	// The worker that saw the game live is usually not the one that sees it end.
 	test('remembers seeing a game live across a worker restart', async () => {
 		await loadBackground({
 			prefs: nbaOnly,
@@ -2551,7 +2384,6 @@ describe('handing a tab back once its game finishes', () => {
 		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 99 },
 	});
 
-	// Two tabs open in one window, so nothing here is a window's last tab unless a test says so.
 	const load = async (finishedTabAction: UserPreferences['finishedTabAction'], overrides: Partial<LoadOptions> = {}) => (
 		loadBackground({
 			prefs: { ...nbaOnly, finishedTabAction, keepFinalGames: false },
@@ -2564,9 +2396,6 @@ describe('handing a tab back once its game finishes', () => {
 		})
 	);
 
-	// Steps forward until a poll actually lands rather than advancing a fixed amount. The league
-	// drops to the dormant beat the moment its only game is over, so the interval that carried the
-	// first poll is nowhere near enough for the second.
 	const poll = async (limitMs = 10 * 60_000) => {
 		fetchMock.mockClear();
 		for (let waited = 0; waited < limitMs && fetchMock.mock.calls.length === 0; waited += 5_000) {
@@ -2614,7 +2443,6 @@ describe('handing a tab back once its game finishes', () => {
 		expect(notice()).toEqual({ freed: 0, closed: 1 });
 	});
 
-	// A game that is still on cannot have its tab taken, whatever the setting says.
 	test('does nothing while the game is still being played', async () => {
 		await load('close');
 		await poll();
@@ -2655,7 +2483,6 @@ describe('handing a tab back once its game finishes', () => {
 		expect(tabsRemove).toHaveBeenCalledWith(7);
 	});
 
-	// tabs.remove on a window's last tab takes the window with it.
 	test('frees rather than closes the only tab in its window', async () => {
 		await load('close', { openTabIds: [7, 8], activeTabId: 8, windowIds: { 7: 2, 8: 1 } });
 		await whistle();
@@ -2665,8 +2492,6 @@ describe('handing a tab back once its game finishes', () => {
 		expect(notice()).toEqual({ freed: 1, closed: 0 });
 	});
 
-	// The whole point of the split between what the fetch asks for and what reaches `games`:
-	// seeing the game go final is what releases the tab, and the popup's own list is unaffected.
 	test('asks the poll for finals even with Keep finished games off', async () => {
 		await load('free');
 		await whistle();
@@ -2698,8 +2523,6 @@ describe('handing a tab back once its game finishes', () => {
 		await poll();
 		expect(notice()).toEqual({ freed: 1, closed: 0 });
 
-		// storage.session.get is stubbed flat, so the accumulator has to be primed by hand for the
-		// second wave to have anything to add to.
 		(globalThis as { browser: { storage: { session: { get: jest.Mock } } } }).browser.storage.session.get =
 			jest.fn().mockResolvedValue({ finishedTabNotice: { freed: 1, closed: 0 } });
 		fetchMock.mockResolvedValue({ games: [finishedTabGame('wrapped', 'post'), finishedTabGame('other', 'post')], leagueLogos: {}, shedLeagues: [] });
@@ -2708,8 +2531,6 @@ describe('handing a tab back once its game finishes', () => {
 		expect(notice()).toEqual({ freed: 2, closed: 0 });
 	});
 
-	// Demo games reach 'post' on a script and the tabs registered to them are real, so the first
-	// poll after turning the demo on would otherwise close a tab for a game nobody played.
 	test('never touches a tab in demo mode', async () => {
 		await loadBackground({
 			prefs: { ...nbaOnly, finishedTabAction: 'close' },
@@ -2719,7 +2540,6 @@ describe('handing a tab back once its game finishes', () => {
 			windowIds: { 7: 1, 8: 1 },
 		});
 		await sendMessage({ type: 'SET_DEMO_MODE', enabled: true });
-		// Not `poll()`: demo mode reaches ESPN never, so there is no fetch for it to wait on.
 		await runFirstPoll();
 
 		const state = await sendMessage({ type: 'GET_STATE' }) as { games: Game[] };
@@ -2729,10 +2549,6 @@ describe('handing a tab back once its game finishes', () => {
 	});
 });
 
-/* The lie this removes. A league ESPN refuses comes back through `allSettled` with no games and no
-   error, so the poll used to read it as "nothing on here": the popup drew the no-games slate on a
-   full Saturday, and the tail of `tickLeague` handed that to `recordPollResult` and walked a league
-   down towards dormant while its games were being played. */
 describe('a scoreboard ESPN refused', () => {
 	const nbaOnly: Partial<UserPreferences> = { enabledLeagues: ['nba' as LeagueId], enabled: false };
 
@@ -2806,7 +2622,6 @@ describe('a scoreboard ESPN refused', () => {
 		expect((await state()).leagueLastGoodAt.nba).toBeGreaterThan(answeredAt);
 	});
 
-	// An empty answer ESPN actually gave is a quiet night and should read as one.
 	test('is not reported when a league genuinely has nothing on', async () => {
 		await loadBackground({
 			prefs: nbaOnly,
@@ -2817,8 +2632,6 @@ describe('a scoreboard ESPN refused', () => {
 		expect((await state()).slateShedLeagues).toEqual([]);
 	});
 
-	// The lookahead is what a poll spends on its way into a quiet state. A refusal must not buy one,
-	// or a shed league pays an extra request to be put to sleep it should never have been put to.
 	test('does not spend a lookahead on its way to a sleep it has not earned', async () => {
 		await loadWithLiveGame();
 		fetchMock.mockResolvedValue({ games: [], leagueLogos: {}, shedLeagues: ['nba'] });
@@ -2832,9 +2645,6 @@ describe('a scoreboard ESPN refused', () => {
 	});
 });
 
-/* Held in `storage.local` rather than in this worker's memory, which MV3 discards about thirty
-   seconds after the last event — so the cache the comment described as lasting a worker lifetime was
-   close to one per guide open, at 31 `/teams?limit=1000` requests a time. */
 describe('the team marks the guide draws', () => {
 	const nbaOnly: Partial<UserPreferences> = { enabledLeagues: ['nba' as LeagueId], enabled: false };
 	const marks = { dark: 'dark.png', scoreboard: 'scoreboard.png' };
@@ -2865,7 +2675,6 @@ describe('the team marks the guide draws', () => {
 		expect(monoFetch()).not.toHaveBeenCalled();
 	});
 
-	// Enabling a 32nd league should cost one request, not re-fetch the 31 already held.
 	test('are asked for only where the stored copy has a gap', async () => {
 		await loadForGuide(['nba' as LeagueId, 'nhl' as LeagueId]);
 		storeMarks({ fetchedAt: Date.now(), logos: { nba: { '1': marks } } });
@@ -2898,7 +2707,6 @@ describe('the team marks the guide draws', () => {
 		expect(monoFetch()).toHaveBeenCalledWith(['nba']);
 	});
 
-	// Two guide tabs opened together both miss the cache; only one of them should pay for it.
 	test('are fetched once when two guide tabs open together', async () => {
 		await loadForGuide();
 		monoFetch().mockClear().mockResolvedValue({ nba: { '1': marks } });
@@ -2909,10 +2717,6 @@ describe('the team marks the guide draws', () => {
 	});
 });
 
-/* A league whose dated range is refused fails only the slate leg — its live games keep arriving from
-   the undated board while its finals go quiet. Rebuilding the slate lists from the answer wholesale
-   threw those away, which is the "a shed league contributes nothing and says nothing" trap one layer
-   up from where the rest of it was fixed. */
 const slateGame = (id: string, league: string, status: Game['status']): Game => ({
 	id,
 	league: league as LeagueId,
@@ -2937,7 +2741,6 @@ describe('what the slate keeps for a league that did not answer', () => {
 		await sendMessage({ type: 'GET_STATE' }) as { games: Game[] }
 	).games.map(g => g.id);
 
-	// A preference move is what re-runs refreshSlate, which is the fetch that rebuilds both lists.
 	const rerunSlate = () => sendMessage({
 		type: 'UPDATE_PREFS',
 		prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...bothLeagues, upcomingGamesDays: 9 }),
@@ -2954,7 +2757,6 @@ describe('what the slate keeps for a league that did not answer', () => {
 		});
 		expect(await stateGames()).toEqual(expect.arrayContaining(['mlb-final', 'nba-final']));
 
-		// MLB's slate leg is refused; NBA answers with only its own game.
 		fetchMock.mockResolvedValue({
 			games: [slateGame('nba-final', 'nba', 'post')],
 			leagueLogos: {},
@@ -3005,8 +2807,6 @@ describe('what the slate keeps for a league that did not answer', () => {
 		expect(await stateGames()).toContain('mlb-later');
 	});
 
-	// Held entries belong to leagues that refused, not to every league that did not answer: a league
-	// switched off is not asked, and used to keep its kickoffs in the popup until the worker restarted.
 	test('drops the kickoffs of a league that was switched off', async () => {
 		await loadBackground({
 			prefs: bothLeagues,
@@ -3030,10 +2830,6 @@ describe('what the slate keeps for a league that did not answer', () => {
 
 const summary = (games: Game[]) => games.map(g => `${g.id}:${g.status}`).toSorted();
 
-/* The popup's Refresh, closing Settings and finishing onboarding all ask for a fresh state, which
-   polls every league at once. A league refused in that poll answered with nothing, not with no games:
-   its live cards have to stay, and the slate's older copy of a game that has since gone live must
-   not come back beside them as an upcoming one. */
 describe('a fan-out poll with a league refused', () => {
 	const bothLeagues: Partial<UserPreferences> = {
 		enabledLeagues: ['nba' as LeagueId, 'mlb' as LeagueId],
@@ -3068,7 +2864,6 @@ describe('a fan-out poll with a league refused', () => {
 		};
 		await loadBackground({ prefs: bothLeagues, initialSystemTime: 1_000_000 });
 		serveWorld();
-		// A preference move is what re-runs refreshSlate, which is where the upcoming list comes from.
 		await sendMessage({
 			type: 'UPDATE_PREFS',
 			prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...bothLeagues, upcomingGamesDays: 9 }),
@@ -3093,7 +2888,6 @@ describe('a fan-out poll with a league refused', () => {
 		expect(summary((await refresh()).games)).toEqual(['early:in', 'later:pre', 'mlbg:in']);
 	});
 
-	// The preference moves that rebuild the list from the slate: a slate setting, and the league set.
 	const changePrefs = (over: Partial<UserPreferences>) => sendMessage({
 		type: 'UPDATE_PREFS',
 		prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...bothLeagues, ...over }),
@@ -3126,15 +2920,10 @@ describe('a fan-out poll with a league refused', () => {
 	});
 });
 
-/* The regression this exists to catch. ESPN caps a scoreboard response server-side — near 80 events
-   on a dated college football query — and the truncation takes the days furthest ahead. Widening
-   this fetch so the guide could share it spent that whole budget on a college football weekend's
-   *past* games and left the popup showing one day of future. The guide asks for its own slate. */
 describe('what the popup slate asks ESPN for', () => {
 	const nbaOnly: Partial<UserPreferences> = { enabledLeagues: ['nba' as LeagueId], enabled: false };
 	const emptyResult = { games: [], leagueLogos: {}, shedLeagues: [] };
 
-	// loadBackground clears the startup calls, so the setting is moved to make refreshSlate run again.
 	const rerunSlate = (changed: Partial<UserPreferences>) => sendMessage({
 		type: 'UPDATE_PREFS',
 		prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...nbaOnly, ...changed }),
@@ -3151,7 +2940,6 @@ describe('what the popup slate asks ESPN for', () => {
 		expect(guideMinUpcomingDays).toBeGreaterThan(1);
 	});
 
-	// Reaching back is what eats the event budget, so it happens only when finals are actually wanted.
 	test('does not reach back for finals when the setting is off', async () => {
 		await loadBackground({
 			prefs: { ...nbaOnly, keepFinalGames: false, upcomingGamesDays: 4 },
@@ -3330,7 +3118,6 @@ describe('a quiet league with a game about to start', () => {
 		startTime: new Date(startsAt).toISOString(),
 	};
 
-	// A second at a time, so each poll reschedules from the moment it actually ran.
 	const pollsBy = async (atMs: number) => {
 		while (Date.now() < atMs) {
 			jest.advanceTimersByTime(Math.min(1_000, atMs - Date.now()));
@@ -3340,7 +3127,6 @@ describe('a quiet league with a game about to start', () => {
 	};
 
 	test('polls at the listed start instead of waiting out its beat, then at the live beat until it goes live', async () => {
-		// Two empty polls send a league dormant, which would otherwise next look three minutes on.
 		await loadBackground({
 			initialSystemTime: startsAt - 120_000,
 			prefs: { enabledLeagues: ['nhl' as LeagueId] },
@@ -3462,7 +3248,6 @@ describe('a fresh install with no leagues picked yet', () => {
 		const error = jest.spyOn(console, 'error').mockImplementation(() => {});
 		const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 		const nodeEnv = process.env.NODE_ENV;
-		// The logger is silent under Jest, and this is about what it says.
 		process.env.NODE_ENV = 'production';
 		try {
 			await loadBackground({ prefs: { enabledLeagues: [] } });
@@ -3475,9 +3260,6 @@ describe('a fresh install with no leagues picked yet', () => {
 	});
 });
 
-/* The keepalive lets the worker run for days, and the slate used to be fetched only at startup and
-   on a preference change. Once the Eastern day rolled over, the dateless poll stopped returning last
-   night's games, so the slate's `pre` copies were all that was left and Up Next paged back to them. */
 describe('a worker that stays up past midnight', () => {
 	const nbaOnly: Partial<UserPreferences> = { enabledLeagues: ['nba' as LeagueId], enabled: false, showUpcomingGames: true };
 	let slate: Game[];

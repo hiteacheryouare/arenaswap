@@ -4,7 +4,6 @@ import { cardSuperWindow, cardUnder, endActions, endCardHold, endingCues, liveDo
 
 const b = bar;
 const flickTabs = [103, 104, 105, 101];
-// Ctrl+Tab on the soundtrack's eighth notes.
 const flickTimes = flickTabs.map((_, index) => b(2) + musicBeats(1 + index * 0.5));
 const endAt = b(9);
 const ending = shortEndingFor(endAt);
@@ -12,8 +11,6 @@ const creditsAt = endAt + endCardHold;
 const toCal = b(5) + beats(2);
 const payoffAt = b(6) + beats(2);
 
-// 8 bars: the problem, the popup, the orange card on the drop, the switch, the win, the sign-off.
-// Then three of credits.
 const cut15: Cut = {
 	id: '15',
 	bars: 11,

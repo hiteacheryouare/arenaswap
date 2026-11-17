@@ -1,10 +1,6 @@
 import { heroGames, heroTickCount } from '../hero/heroGames';
 import { openingIndex, replayThrough } from '../hero/heroTimeline';
 
-// The three step demos, as one timeline that plays them in turn. A beat sets state from its time
-// onwards and anything it leaves out carries forward, the same rule as the hero's game beats, so the
-// frame at any beat is a pure function of that beat.
-
 export type CursorSpot = 'rest' | 'newTab' | 'toggle' | 'option';
 
 export interface CursorFrame {
@@ -14,7 +10,6 @@ export interface CursorFrame {
 
 export interface OpenFrame {
 	tabCount: number;
-	// The newest tab is still loading: Chrome shows the host as its title and a throbber as its icon.
 	loading: boolean;
 	cursor: CursorFrame;
 }
@@ -42,12 +37,8 @@ interface Beat {
 	best?: Partial<BestFrame>;
 }
 
-// The game whose card gets a tab in step 2: the middle row of the menu, since picking the first one
-// would read as a default.
 export const assignGameIndex = 1;
 
-// The tab ArenaSwap moves to in step 3, in the order the hero moves to them: same games, same
-// algorithm, same decisions.
 const bestHops = replayThrough(heroTickCount - 1).switches.map(hop => heroGames.findIndex(game => game.tabTitle === hop.to));
 
 const press = (spot: CursorSpot): CursorFrame => ({ spot, pressed: true });
@@ -86,7 +77,6 @@ export const stepBeats: Beat[] = [
 	...bestHops.map((onScreen, hop) => ({ at: bestFrom + (hop + 1) * hopEvery, best: { onScreen } })),
 ];
 
-// How long the finished set holds before every demo goes back to its first frame.
 export const loopHoldMs = 2400;
 
 export const stepPlayingAt = (beat: number): number => {

@@ -14,9 +14,6 @@ import { worstBroadcasts, worstCaseGames, worstTeams, worstVenues } from '../../
 
 const StandingsTable = BoxScorePlaceholder;
 
-// Longest short name a real athlete carries in the recordings is far shorter than these, so the
-// player names are the worst a roster can plausibly hand us: a hyphenated double surname and a
-// suffix, which is what the longest real ones look like.
 const longPlayer = 'P. Crow-Armstrong-Fernandez Jr.';
 const longDetail = 'Left Knee Patellar Tendon Soreness';
 

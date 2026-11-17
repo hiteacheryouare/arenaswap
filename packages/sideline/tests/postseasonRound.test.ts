@@ -25,9 +25,6 @@ const grade = (row: CorpusRow) => gradePostseason({
 	notes: notes(row),
 });
 
-// The soccer family's notes are aggregate and penalty results rather than round names, so a
-// corpus row whose headline is one of those is not a round string and is excluded from the
-// label assertions below.
 const resultNotePattern = /\b(advances?|win|wins|leads series|series tied|on aggregate|on penalties|on away goals|1st leg|2nd leg)\b/i;
 const roundHeadlines = rows.filter(r => r.headline && !resultNotePattern.test(r.headline));
 
@@ -58,8 +55,6 @@ describe('reduceEventName', () => {
 		}
 	});
 
-	// Two different games must never present as the same thing. This is the assertion that caught
-	// WBIT and the Women's NIT collapsing onto a shared label while scoring +2 and 0.
 	test('two distinct headlines in one league never reduce to the same label', () => {
 		const byLeague = new Map<string, Map<string, string[]>>();
 		for (const row of roundHeadlines) {
@@ -73,8 +68,6 @@ describe('reduceEventName', () => {
 		const collisions: string[] = [];
 		for (const [league, labels] of byLeague) {
 			for (const [label, sources] of labels) {
-				// ESPN ships one game description twice with a stray double space. Two spellings of
-				// one game reducing to one label is the correct answer, not a collision.
 				const distinct = new Set(sources.map(s => s.replace(/\s+/g, ' ')));
 				if (distinct.size > 1) collisions.push(`${league} ${JSON.stringify(label)} <- ${JSON.stringify([...distinct])}`);
 			}
@@ -108,7 +101,6 @@ describe('reduceEventName', () => {
 		expect(reduceEventName(headline)).toBe(expected);
 	});
 
-	// The four tournaments deliberately kept, because the prefix is the distinguishing fact.
 	test.each([
 		['NIT - Championship', 'NIT · Championship'],
 		['NIT - Semifinal', 'NIT · Semifinal'],
@@ -120,8 +112,6 @@ describe('reduceEventName', () => {
 		expect(reduceEventName(headline)).toBe(expected);
 	});
 
-	// The dash used to be mandatory, which left this one string unstripped while its own regional
-	// games reduced normally — one tournament printing labels two different ways.
 	test.each([
 		["NCAA Men's Hockey National Championship", 'National Championship'],
 		["NCAA Men's Hockey Championship - Frozen Four", 'Frozen Four'],
@@ -185,8 +175,6 @@ describe('resolveRoundFromHeadline', () => {
 		expect(resolveRoundFromHeadline(headline)).toBe(expected);
 	});
 
-	// A conference name containing "East" or "West" must not read as a conference round. This is
-	// the trap that graded "Big East Tournament - Final" as a conference final.
 	test.each([
 		'Big East Tournament - Final',
 		'West Coast Conference Tournament - Final',
@@ -222,8 +210,6 @@ describe('resolveRoundFromSlug', () => {
 		['knockout-round-playoffs', 3],
 		['western-conference-playoffs---round-one', 3],
 		['eastern-conference-playoffs---wild-card', 3],
-		// MLS brackets per conference, so its conference final is one win from MLS Cup rather
-		// than being it. A bare finals rule graded this as the title match.
 		['western-conference-playoffs---final', 1],
 		['eastern-conference-playoffs---semifinals', 2],
 	])('grades slug %s as distance %i', (slug, expected) => {
@@ -308,8 +294,6 @@ describe('gradePostseason', () => {
 		expect(g('fifawc', 'Egypt advance 4-2 on penalties', undefined, 'round-of-32').round).toBe(3);
 	});
 
-	// The fallback that matters in a year's time: ESPN renames a round and we neither lose the
-	// feature nor silently promote the game to a final.
 	test('an unrecognized postseason round falls back to the bottom rung', () => {
 		const graded = g('nba', 'Some Round Nobody Has Seen', 3);
 		expect(graded.round).toBe(3);
@@ -361,9 +345,6 @@ describe('postseasonBoostShare', () => {
 		expect(postseasonBoostShare(undefined)).toBe(0);
 	});
 
-	// Strictly increasing, not merely non-decreasing. A flat ladder satisfies "sorted" and is
-	// exactly the regression this test exists to catch — every rung has to be worth more than the
-	// one below it or the whole feature is the flat boost it replaced.
 	test('is strictly increasing: each rung outscores the one below it', () => {
 		const shares = [3, 2, 1, 0].map(r => postseasonBoostShare(r as 0 | 1 | 2 | 3));
 		for (let i = 1; i < shares.length; i++) expect(shares[i]).toBeGreaterThan(shares[i - 1]!);
@@ -383,8 +364,6 @@ describe('the real ESPN corpus', () => {
 		}
 	});
 
-	// A championship-path final is the top of the ladder wherever it appears. If a rename ever
-	// pushes one of these down a rung, this is the test that says so.
 	test.each([
 		['nfl', 'Super Bowl LX'],
 		['mlb', 'World Series - Game 7'],

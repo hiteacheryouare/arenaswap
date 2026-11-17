@@ -16,8 +16,6 @@ Cypress.Commands.add('setInputValue', { prevSubject: 'element' }, (subject: JQue
 	return cy.wrap(subject, { log: false });
 });
 
-// The popup's pickers are Bootstrap menus (selectDropdown.tsx), so choosing is two clicks on
-// what a person would see rather than one .select() on an element that no longer exists.
 Cypress.Commands.add('choose', { prevSubject: 'element' }, (toggle: JQuery<HTMLElement>, label: string) => {
 	cy.wrap(toggle, { log: false }).click();
 	cy.wrap(toggle, { log: false }).parent().find('.menu.show').contains('.menu-item', label).click();
@@ -27,13 +25,7 @@ Cypress.Commands.add('choose', { prevSubject: 'element' }, (toggle: JQuery<HTMLE
 declare global {
 	namespace Cypress {
 		interface Chainable {
-			/**
-			 * Sets a React-controlled input to `value` in one shot. Use over .type() on any input
-			 * whose value round-trips through background state: typing re-renders per keystroke and
-			 * the stale prop wipes the digits already entered.
-			 */
 			setInputValue: (value: number | string) => Chainable<JQuery<HTMLElement>>;
-			/** Opens a picker from its toggle and clicks the item carrying `label`. */
 			choose: (label: string) => Chainable<JQuery<HTMLElement>>;
 		}
 	}

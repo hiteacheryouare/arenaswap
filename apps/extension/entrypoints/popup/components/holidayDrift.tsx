@@ -5,13 +5,10 @@ import { drawLeaf, leafPalette, leafShadow, leafShapeCount, leafSunlight, mixCol
 
 interface holidayDriftProps {
 	kind: fallingKind;
-	// 0 to 1, from the resolver.
 	depth: number;
 	theme?: ResolvedTheme;
 }
 
-// Crown, middle and foot of the pile, then the contour lines. A white crown vanishes into a white
-// page, so light starts at pale frost and ends in the same blue-grey the falling flakes use there.
 const snowTones: Record<ResolvedTheme, [string, string, string, string]> = {
 	dark: ['#ffffff', '#eef5fd', '#c3d4e8', '#a8bcd4'],
 	light: ['#e4ecf5', '#c9d7e6', '#9fb3c8', '#8ea3bb'],
@@ -20,14 +17,11 @@ const snowTones: Record<ResolvedTheme, [string, string, string, string]> = {
 const maxDriftPx = 96;
 const driftWidth = 320;
 
-// Deterministic, so the pile does not reshuffle itself every time the poll re-renders the screen.
 const pseudoRandom = (seed: number): number => {
 	const x = Math.sin(seed * 12.9898) * 43758.5453;
 	return x - Math.floor(x);
 };
 
-// A crown of overlapping lumps rather than a single curve. Real drifts are piled, not poured, and a
-// smooth sine reads as a gradient with a wavy edge instead of as snow.
 const drawSnowDrift = (ctx: CanvasRenderingContext2D, width: number, height: number, driftHeight: number, theme: ResolvedTheme) => {
 	const [crown, middle, foot, contour] = snowTones[theme];
 	const baseY = height - driftHeight;
@@ -49,8 +43,6 @@ const drawSnowDrift = (ctx: CanvasRenderingContext2D, width: number, height: num
 	ctx.lineTo(width + 4, height + 4);
 	ctx.closePath();
 
-	// Bright along the crown, cooling into blue shadow at the foot. Snow is lit from above and its
-	// shadows are blue, which is the whole reason a white gradient reads as fog instead.
 	const body = ctx.createLinearGradient(0, baseY, 0, height);
 	body.addColorStop(0, crown);
 	body.addColorStop(0.45, middle);
@@ -58,7 +50,6 @@ const drawSnowDrift = (ctx: CanvasRenderingContext2D, width: number, height: num
 	ctx.fillStyle = body;
 	ctx.fill();
 
-	// Contour shadows inside the pile so the lumps read as volume rather than as one flat shape.
 	ctx.clip();
 	ctx.globalAlpha = 0.5;
 	ctx.strokeStyle = contour;
@@ -74,8 +65,6 @@ const drawSnowDrift = (ctx: CanvasRenderingContext2D, width: number, height: num
 	ctx.restore();
 };
 
-// A raked heap: one big pile a little right of centre, a smaller spill on the left, and a low bank
-// running out to both edges. Returns how high the top of the pile is, as a share of driftHeight.
 const leafHeapProfile = (across: number): number => {
 	const heap = Math.exp(-(((across - 0.52) / 0.3) ** 2));
 	const spill = 0.42 * Math.exp(-(((across - 0.1) / 0.18) ** 2));
@@ -83,8 +72,6 @@ const leafHeapProfile = (across: number): number => {
 	return 0.26 + 0.62 * (heap + spill * (1 - heap)) + ripple;
 };
 
-// A solid brown mound first, so whatever shows between the leaves reads as shadow inside the pile
-// rather than the page behind it. Leaves deeper in are darker, the crown along the top is sunlit.
 const drawLeafDrift = (ctx: CanvasRenderingContext2D, width: number, height: number, driftHeight: number) => {
 	const surfaceAt = (x: number) => height - driftHeight * leafHeapProfile(x / width);
 

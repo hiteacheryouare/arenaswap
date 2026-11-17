@@ -12,8 +12,6 @@ const defaultProps = {
 	onNext: () => {},
 };
 
-// The picker holds no state of its own — onboardingView owns the selection — so this mirrors that
-// ownership, which is what lets a click be followed through to the checkbox it should move.
 const StatefulPicker = ({ initial }: { initial: LeagueId[] }) => {
 	const [selectedLeagues, setSelectedLeagues] = useState<Set<LeagueId>>(() => new Set(initial));
 

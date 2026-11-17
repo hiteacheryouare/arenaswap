@@ -7,8 +7,6 @@ const popupWidth = 320;
 const svgLogo = (fill: string) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="80"><rect width="300" height="80" fill="${fill}"/></svg>`)}`;
 const brokenLogo = 'data:image/png;base64,AAAA';
 
-// The shape of an ACC Network and an ESPN+ broadcast, from the 2026-11-06 college scoreboard, plus a
-// regional network that sends no artwork at all.
 const game: Game = makeGame('net', {
 	league: 'ncaab',
 	broadcasts: ['ACC Network', 'ESPNU', 'Local TV'],
@@ -40,7 +38,6 @@ describe('network logos on a live card', () => {
 		cy.get('.game-meta-networks img.network-logo').should('have.length', 1)
 			.and('have.attr', 'alt', 'ACC Network')
 			.and('have.attr', 'src', svgLogo('#ffffff'));
-		// ESPNU has only its colour artwork, which would vanish into a team colour, so it stays text.
 		cy.get('.game-meta-networks').should('contain.text', 'ESPNU').and('contain.text', 'Local TV');
 	});
 

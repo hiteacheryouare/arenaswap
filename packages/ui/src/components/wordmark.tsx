@@ -16,17 +16,6 @@ import {
 import { ringPath } from './wordmarkPose';
 import { arenPath, aPath, chevronFrom, chevronTo, headFrom, headTo, sPath, wapPath } from './wordmarkShapes';
 
-// The ArenaSwap wordmark, drawn inline so it can be taken apart. `wordmarkFrame` decides where the
-// pieces go, `wordmarkPose` writes them, and this file is the pieces.
-//
-// Two of them are not outlines. The bar on the top row and the dashed tail on the bottom are
-// round-capped strokes, because both change length and weight between the two marks and a scaled
-// outline turns its round ends into ellipses. They sit within a unit of the shapes they replace,
-// which is 0.08px at the size the popup renders this.
-//
-// Only `aren` and `wap` are masked. Everything else — including the `a` and the `s`, which are the
-// whole point — is on screen for the entire animation.
-
 // The mask ramps stay white whatever the theme: a mask reads luminance, not colour. The letters and
 // arrows are `currentColor`, and the colour comes from the theme, white unless a page says otherwise.
 const white = '#ffffff';
@@ -78,15 +67,11 @@ const Wordmark = ({ className, ref }: { className?: string; ref?: Ref<SVGSVGElem
 				))}
 			</defs>
 
-			{/* The two doomed words, underneath, so the letters that replace them pass over rather
-			    than through. */}
 			<g mask={`url(#${uid}-mask-aren)`}><path d={arenPath} fill={ink} /></g>
 			<g mask={`url(#${uid}-mask-wap)`}><path data-wm='wap' d={wapPath} fill={ink} /></g>
 
 			<path data-wm='a' d={aPath} fill={ink} />
 			<path data-wm='s' d={sPath} fill={ink} />
-			{/* Fill and stroke in the same colour is how the source file draws it; the stroke is
-			    half a unit of extra radius the dot would otherwise lose. */}
 			<ellipse data-wm='dot' cx={1761.1208} cy={368.38882} rx={27.602106} ry={26.288622} fill={dotOrange} stroke={dotOrange} strokeWidth={1.13729} />
 
 			<line

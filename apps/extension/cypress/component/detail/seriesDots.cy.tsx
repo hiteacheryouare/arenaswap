@@ -2,8 +2,6 @@ import DetailHero from '../../../entrypoints/popup/components/detailHero';
 import type { Game } from '@arenaswap/core/types';
 import type { SeriesEvent, SeriesInfo } from '../../../entrypoints/popup/components/useSummaryData';
 
-// White Sox at Guardians, as ESPN colours them: a black and a navy, the two that disappeared into
-// the hero as published.
 const awayColor = '#000000';
 const homeColor = '#002B5C';
 
@@ -62,7 +60,6 @@ const luminance = (value: string): number => {
 	return (0.2126 * red!) + (0.7152 * green!) + (0.0722 * blue!);
 };
 
-// The darkest the hero gets, under its scrim.
 const contrastOnHero = (value: string): number => (luminance(value) + 0.05) / (luminance('rgb(13, 17, 23)') + 0.05);
 
 describe('series dots', () => {
@@ -88,7 +85,6 @@ describe('series dots', () => {
 		cy.get('.series-dot-empty').should('have.length', 2).and('not.have.class', 'is-if-necessary');
 	});
 
-	// CIN @ LAD, the 2025 NL Wild Card: swept, so game three never happened.
 	it('dashes out the games a clinched series never needed', () => {
 		mountSeries({ type: 'playoff', summary: 'LAD win series 2-0', totalCompetitions: 3, events: [won('5'), won('5')] });
 		cy.get('.series-dot.bi-circle-fill').should('have.length', 2);

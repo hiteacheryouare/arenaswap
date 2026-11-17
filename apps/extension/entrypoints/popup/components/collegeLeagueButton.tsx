@@ -12,10 +12,7 @@ interface collegeLeagueButtonProps {
 	onOpen: () => void;
 }
 
-// Takes the place of a college league's label on the Leagues page. The switch beside it still turns
-// the league on and off; this opens the league's division and conference picker.
 const CollegeLeagueButton = ({ leagueId, leagueLabel, filter, children, onOpen }: collegeLeagueButtonProps) => {
-	// Only what is already cached, for conference names. Opening the picker is what fetches.
 	const [directory, setDirectory] = useState<ConferenceDirectory>();
 	useEffect(() => {
 		let cancelled = false;

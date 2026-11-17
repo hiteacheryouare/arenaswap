@@ -27,7 +27,6 @@ const commonProjectConfig = {
 };
 
 module.exports = {
-	// The demo payloads are data, and `index.ts` only re-exports.
 	collectCoverageFrom: ['src/**/*.ts', '!src/index.ts', '!src/mock*.ts'],
 	coverageReporters: ['json-summary', 'lcov', 'text'],
 	projects: [

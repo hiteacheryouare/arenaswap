@@ -6,12 +6,6 @@ import { directDependencies } from '../../../lib/dependencyLicences';
 import { localeRoutes } from '../../../i18n/locales';
 import { useTranslations } from '../../../i18n/ui';
 
-// The dependency table is read from the manifests at build time, so it cannot drift from what is
-// actually installed. See src/lib/dependencyLicences.ts.
-//
-// The ISC text is reproduced verbatim in every language. A licence is only the licence in the words
-// it was granted in, and a translated one grants nothing.
-
 export const getStaticPaths = localeRoutes;
 
 const { locale } = Astro.props;

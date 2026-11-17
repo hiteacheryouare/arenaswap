@@ -81,7 +81,6 @@ describe('createTeamColorShadePalette', () => {
 	});
 
 	test('returns at most five entries even when the palette would have produced clipped duplicates', () => {
-		// White clips to '#FFFFFF' more than once at the lightest end, so the set must dedup.
 		const palette = createTeamColorShadePalette('#fafafa');
 		expect(palette.length).toBeLessThanOrEqual(5);
 		expect(new Set(palette).size).toBe(palette.length);

@@ -1,18 +1,9 @@
 @layer custom {
-	// Prose scope. Everything written as Markdown, release notes and documentation alike, renders inside
-	// `.prose`, so a body of text picks up the right measure and rhythm without every page setting
-	// them again. Scoped rather than global on purpose: the landing page's type is not this type.
-	//
-	// Bootstrap's own `.prose` is the base. What follows is only where the site's reading type differs
-	// from it.
-
 	.prose {
 		--as-content-font-size: 1rem;
 		--as-content-line-height: 1.75;
 		--as-content-gap: 1.15rem;
 
-		// Bootstrap lays prose out as a flex column with a gap. Block flow is kept so margins still
-		// collapse: a heading opening the block spaces itself from whatever sits above the block.
 		display: block;
 		max-width: 68ch;
 		margin-inline: 0;
@@ -22,7 +13,6 @@
 			margin-top: var(--as-content-gap);
 		}
 
-		// Bootstrap zeroes these, which leaves the last paragraph flush against the table after it.
 		> :where(p, ul, ol, pre) {
 			margin-bottom: 1rem;
 		}
@@ -60,7 +50,6 @@
 			text-underline-offset: 2px;
 		}
 
-		// A long identifier in a sentence would otherwise push the column wider than a phone.
 		code {
 			font-family: var(--font-mono);
 			font-size: 0.9em;
@@ -88,8 +77,6 @@
 			color: var(--color-muted);
 		}
 
-		// Bootstrap's reboot leaves the marker to the UA, and the site's base styles strip it. A list
-		// in a body of prose should look like one.
 		ul {
 			list-style: disc;
 			padding-left: 1.2rem;
@@ -108,7 +95,6 @@
 			margin-top: 0.35rem;
 		}
 
-		// Markdown lists inherit the paragraph rhythm, which is too airy between short bullets.
 		li > p {
 			margin: 0;
 		}
@@ -123,8 +109,6 @@
 			margin-block: 2.4rem;
 		}
 
-		// Inside a table an identifier keeps its shape and the table scrolls, rather than every column
-		// collapsing to its narrowest break.
 		.prose-table {
 			overflow-x: auto;
 

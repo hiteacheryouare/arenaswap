@@ -18,8 +18,6 @@ export const headingIds = (text: string) => {
 
 const collectionRoot = /\/src\/content\/(?:docs|releases)\//;
 
-// A translated heading keeps the English heading's id, so `#closeness` lands on the same section in
-// every language. Headings pair up by position; tests/translations.test.ts holds the counts equal.
 const translatedHeadingIds: HastPluginEntry = ({ fileURL }) => {
 	const filePath = fileURL && fileURLToPath(fileURL).split('\\').join('/');
 	const root = filePath?.match(collectionRoot);

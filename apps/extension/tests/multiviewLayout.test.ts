@@ -7,7 +7,6 @@ const span = (value: string): [number, number] => {
 	return spanned ? [Number(spanned[1]), Number(spanned[2])] : [Number(value), 1];
 };
 
-// Every cell a placement covers, so overlaps and gaps can be counted.
 const cellsOf = ({ column, row }: { column: string; row: string }): string[] => {
 	const [column0, columns] = span(column);
 	const [row0, rows] = span(row);

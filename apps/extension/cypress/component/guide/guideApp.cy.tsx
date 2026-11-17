@@ -4,8 +4,6 @@ import App from '../../../entrypoints/guide/app';
 import { makeGame, makeScore } from '../../support/fixtures';
 import '../../../assets/guide.scss';
 
-// A Sunday afternoon with the early games under way. Fixed rather than relative so the grid, the
-// now line and the day pager all describe the same moment on every run.
 const now = new Date('2026-09-13T20:00:00Z').getTime();
 const tomorrow = new Date('2026-09-14T20:00:00Z').getTime();
 
@@ -32,26 +30,18 @@ const sixers = game('nba-sixers', 'nba', '2026-09-14T23:00:00Z');
 const slateOf = (games: Game[]): GuideSlate => ({ games, leagueLogos: {}, monoLogos: {}, gameBoosts: {}, endTimes: {} });
 
 interface MountOptions {
-	/** Held open so the spec can decide when — or whether — the slate ever arrives. */
 	deferSlate?: boolean;
 	games?: Game[];
-	/** How the background answers the slate request until `recover` is called. */
 	slateFault?: 'rejects' | 'refused';
 	atMs?: number;
-	/** What GET_STATE answers with: the popup's own state, scores and history included. */
 	state?: Partial<BackgroundState>;
 }
 
 interface guideHandle {
-	/** Resolves the slate request the app made on mount. */
 	deliver: (games: Game[]) => void;
-	/** Makes the next slate request succeed, as it does once our sources come back. */
 	recover: (games: Game[]) => void;
-	/** Makes every slate request after this one fail, as a worker that has gone away does. */
 	fail: () => void;
-	/** Fires the broadcast the background sends after every poll. */
 	pushScoresUpdated: () => void;
-	/** Saves prefs the way the popup does, firing storage.onChanged at the open guide. */
 	savePrefsElsewhere: (prefs: UserPreferences) => void;
 	storedPrefs: () => UserPreferences | null;
 	sentMessages: { type: string;[key: string]: unknown }[];
@@ -141,9 +131,6 @@ const openFirstGame = () => {
 };
 
 describe('the guide page', () => {
-	/* Two states that look the same in a screenshot and mean opposite things. Dressing a slow
-	   network up as an answer is how "your Sunday has nothing on it" gets shown to somebody with
-	   twelve games about to kick off. */
 	it('says it is still loading rather than reporting a quiet day it has not heard about', () => {
 		mountGuide({ deferSlate: true });
 
@@ -167,8 +154,6 @@ describe('the guide page', () => {
 		cy.get('.popup-loading-spinner').should('not.exist');
 	});
 
-	/* A refused scoreboard is not a quiet day. The background says so with `refused`, and the guide
-	   shows the popup's own banner rather than the no-games panel. */
 	it('shows the error banner, not a quiet day, when our sources refused to answer', () => {
 		mountGuide({ slateFault: 'refused' });
 
@@ -195,7 +180,6 @@ describe('the guide page', () => {
 
 		cy.get('.guide-bar').should('have.length', 2);
 		cy.get('.popup-error-banner').should('not.exist');
-		// Only the button skips the background's wait on a refusal; the poll-driven asks do not.
 		cy.get<guideHandle>('@guide').should(guide => {
 			const asks = guide.sentMessages.filter(message => message.type === 'GET_GUIDE_SLATE');
 			expect(asks.at(-1)).to.deep.include({ force: true });
@@ -203,7 +187,6 @@ describe('the guide page', () => {
 		});
 	});
 
-	// One bad refresh behind a quiet day is not news: the popup would not flip to its banner for it.
 	it('keeps saying the day is quiet when a later refresh fails', () => {
 		mountGuide({ games: [] });
 		cy.get('.popup-no-games-wrap').should('be.visible');
@@ -240,7 +223,6 @@ describe('the guide page', () => {
 
 	it('draws only the selected day, not the whole slate', () => {
 		mountGuide();
-		// Two NFL games today; the NBA game is tomorrow and belongs to the next page.
 		cy.get('.guide-bar').should('have.length', 2);
 		cy.contains('.guide-league-label', 'NBA').should('not.exist');
 	});
@@ -274,7 +256,6 @@ describe('the guide page', () => {
 		cy.get('.guide-drawer').contains('Philadelphia Eagles').should('exist');
 	});
 
-	// Non-modal on purpose: the grid beside it stays live, so it must not trap focus or go inert.
 	it('opens the drawer as a dialog named for its game, with focus moved inside', () => {
 		mountGuide();
 		openFirstGame();
@@ -292,9 +273,6 @@ describe('the guide page', () => {
 		cy.focused().should('have.class', 'guide-bar');
 	});
 
-	// Two beats, and the pair is the point: with motion on the panel has to stay mounted long
-	// enough to animate out, so a spec that only waited for it to disappear could not tell the
-	// animated path from the reduced-motion one below.
 	it('plays the drawer out on Escape rather than snatching it away', () => {
 		mountGuide();
 		openFirstGame();
@@ -306,8 +284,6 @@ describe('the guide page', () => {
 		cy.get('.guide-drawer').should('not.exist');
 	});
 
-	/* The exit is driven by animationend. Under reduced motion the animation is off, so that event
-	   never arrives and a drawer that trusted it would sit there forever with no way out. */
 	it('closes the drawer immediately under reduced motion, where no animation will ever end', () => {
 		cy.wrap(Cypress.automation('remote:debugger:protocol', {
 			command: 'Emulation.setEmulatedMedia',
@@ -317,7 +293,6 @@ describe('the guide page', () => {
 		mountGuide();
 		openFirstGame();
 
-		// Gone in the same tick as the key, with no closing phase to wait on.
 		cy.get('body').trigger('keydown', { key: 'Escape' }).then(() => {
 			expect(Cypress.$('.guide-drawer')).to.have.length(0);
 		});
@@ -328,15 +303,11 @@ describe('the guide page', () => {
 		}));
 	});
 
-	/* Picking a second game while the first is on its way out has to cancel that exit. Letting it
-	   finish tears the drawer down and takes the newly picked game with it, so the click reads as
-	   having done nothing at all. */
 	it('keeps the drawer open when a second game is picked mid-exit', () => {
 		mountGuide();
 		openFirstGame();
 		cy.get('.guide-drawer').contains('Philadelphia Eagles').should('exist');
 
-		// Escape starts the exit, then the second bar is clicked before it completes.
 		cy.get('body').trigger('keydown', { key: 'Escape' });
 		cy.get('.guide-drawer[data-closing="true"]').should('exist');
 		cy.get('.guide-bar-shape').eq(1).click();
@@ -356,8 +327,6 @@ describe('the guide page', () => {
 		});
 	});
 
-	// Set from the translation catalogue rather than written into index.html, so the tab a reader
-	// finds this page by is in their language.
 	it('names the page in the tab strip in the language the reader is using', () => {
 		mountGuide();
 		cy.document().its('title').should('equal', 'Guide \u00b7 ArenaSwap');
@@ -373,23 +342,18 @@ describe('the guide page', () => {
 		cy.get('.guide-band').should('not.exist');
 	});
 
-	// The slate carries the day but no scores. Without the popup's own state beside it, the drawer
-	// read 0 / 100 on a live game.
 	it('shows the live game its real PowerScore in the drawer', () => {
 		mountGuide({ state: { games: [eagles], scores: [makeScore(eagles.id, 71)] } });
 		openFirstGame();
 		cy.get('.guide-drawer .powerscore-breakdown-row-total').should('contain.text', '71 / 100');
 	});
 
-	// The popup's patter while it waits, and no band switch for a grid that is not there yet.
 	it('waits with a spinner and a line rather than a control that does nothing', () => {
 		mountGuide({ deferSlate: true });
 		cy.get('.popup-loading-text').invoke('text').should('not.be.empty');
 		cy.get('#guideBandToggle').should('not.exist');
 	});
 
-	// The guide has no tab registry to write to, so a picker there would list nothing and save
-	// nothing. The panel closes rather than going back, since there is nothing behind it.
 	it('offers no tab picker on a scheduled game, and closes rather than going back', () => {
 		mountGuide();
 		cy.get("[data-game-id='nfl-niners'] .guide-bar-shape").click();
@@ -398,7 +362,6 @@ describe('the guide page', () => {
 		cy.get('.guide-drawer .game-detail-back-button').should('contain.text', 'Close').find('.bi-x-lg').should('exist');
 	});
 
-	// The guide sits open in its own tab while settings change in the popup.
 	it('follows a preference saved in the popup without being reloaded', () => {
 		mountGuide();
 		cy.get("[data-game-id='nfl-eagles'] .bi-star-fill").should('not.exist');

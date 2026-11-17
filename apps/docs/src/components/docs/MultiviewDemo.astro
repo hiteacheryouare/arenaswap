@@ -4,7 +4,6 @@ import Crest from '@arenaswap/ui/src/components/crest';
 import { buildGameCardSurface, teamsInOrder } from '@arenaswap/ui/src/components/gameCardShared';
 import { arizonaPurdue, arsenalChelsea, celticsKnicks, flyersPenguins } from './demoGames';
 
-// Four games is a 2×2 grid in the extension. The game with the sound is the highest PowerScore.
 const boxes = [celticsKnicks, flyersPenguins, arizonaPurdue, arsenalChelsea].map((entry, index) => {
 	const surface = buildGameCardSurface(entry.game);
 	const [left, right] = teamsInOrder(entry.game);

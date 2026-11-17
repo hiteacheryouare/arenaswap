@@ -2,7 +2,6 @@ import { createSignalInput, scoreGame } from '../src/compose';
 import { computeFantasySituation } from '../src/signals/fantasy';
 import type { FantasyPlayerState, Game } from '../src/types';
 
-// Indianapolis has the ball against Washington, a field goal game in the fourth.
 const drive = (yardsToEndZone: number, down = 1, overrides: Partial<Game> = {}): Game => ({
 	id: 'g',
 	league: 'nfl',
@@ -58,7 +57,6 @@ describe('where the user\'s players are on a drive', () => {
 	});
 
 	test('counts the best player in full and a quarter of everyone else', () => {
-		// Goal line: Taylor 50, Washington's defense 25.
 		expect(situation(drive(2), [taylor, washingtonDefense]).points).toBe(56);
 	});
 
@@ -81,7 +79,6 @@ describe('the drive lifting the game under Fantasy', () => {
 	});
 });
 
-// Detroit pitching the top of the sixth, up a run on Cleveland.
 const ballgame = (baseRunners?: Game['baseRunners']): Game => ({
 	id: 'b',
 	league: 'mlb',

@@ -12,8 +12,6 @@ export interface LeagueOffseason {
 	returnsAt?: number;
 }
 
-// `undefined` is a league we have never heard back about, which says nothing. An empty schedule is
-// ESPN sending no calendar at all, which only happens once a season has finished.
 export const resolveOffseason = (schedule: LeagueSchedule | undefined, now: number): LeagueOffseason | null => {
 	if (!schedule) return null;
 	const { startsAt, endsAt } = schedule;

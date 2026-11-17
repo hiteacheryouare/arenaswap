@@ -39,13 +39,10 @@ export const lightChartPalette: chartPalette = {
 	surface: 'light',
 };
 
-// `locale` is the language the popup's strings are in. Left undefined, it is the browser's own.
 const formatTimeLabel = (timestamp: number, locale?: string): string => (
 	new Date(timestamp).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })
 );
 
-// Read when an option is built rather than once at load, so a chart drawn after the setting
-// changes follows it. Node has no matchMedia, and the tests there build options with motion on.
 const prefersReducedMotion = (): boolean => (
 	typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches
 );
@@ -89,7 +86,6 @@ const baseOption = (
 	},
 });
 
-// The website renders these charts without a translator, so English is the default for every name.
 const englishSignalLabel = (id: string): string => (isModeSignalId(id) ? defaultTranslate(signalPresentation[id].labelKey) : id);
 
 interface axisTooltipParam {
@@ -130,8 +126,6 @@ export const buildPowerScoreOption = (
 	};
 };
 
-// The line colours are a parameter so a caller that already holds them can pass the same pair its
-// legend is drawn in, and memoise on them.
 const chartTeamColors = (game: Game, palette: chartPalette): [string, string] => (
 	resolveChartLineColors(game.awayTeam, game.homeTeam, palette.surface)
 );
@@ -150,10 +144,6 @@ export const buildTeamScoreOption = (
 	const option = baseOption(labels, palette, 24);
 	return {
 		...option,
-		// The history is a rolling window, so a basketball chart's first point is already in the
-		// sixties and a zero baseline spends most of 176px on scores nobody is looking at — which
-		// flattens the gap between the two teams, the one thing the chart exists to show. Safe here
-		// and not on the PowerScore chart above, because these lines carry no area fill.
 		yAxis: { ...(option.yAxis as EChartsOption['yAxis']), scale: true },
 		series: [
 			{
@@ -214,7 +204,6 @@ export const buildWinProbabilityOption = (
 				return arr.map(p => `<span style="color:${p.color}">●</span> ${escapeHtml(p.seriesName)}: ${p.value}%`).join('<br/>');
 			},
 		},
-		// Away first, so the tooltip lists the teams in the order the legend and the hero do.
 		series: [
 			{
 				type: 'line',
@@ -242,7 +231,6 @@ export const buildWinProbabilityOption = (
 
 const classicFields = modeSignalIds.classic satisfies readonly SignalName[];
 
-// A reading from before modes has only the five flat Classic fields, and counts as Classic.
 const modeOf = (snapshot: PowerScoreSnapshot): string => snapshot.modeId ?? 'classic';
 
 const latestModeOf = (powerHistory: readonly PowerScoreSnapshot[]): string | undefined => {
@@ -250,8 +238,6 @@ const latestModeOf = (powerHistory: readonly PowerScoreSnapshot[]): string | und
 	return latest ? modeOf(latest) : undefined;
 };
 
-// Only the mode the game is scored under now, so switching mode and back leaves no stale keys.
-// Readings from another mode stay on the time axis as empty bars.
 export const contributionSignalIds = (powerHistory: readonly PowerScoreSnapshot[]): string[] => {
 	const latestMode = latestModeOf(powerHistory);
 	const ids = new Set<string>();
@@ -268,7 +254,6 @@ const signalValue = (snapshot: PowerScoreSnapshot, id: string, latestMode: strin
 	return (classicFields as readonly string[]).includes(id) ? snapshot[id as SignalName] : 0;
 };
 
-// The tooltip prints the series names, so the popup passes the same translated names its legend uses.
 export const buildComponentContributionOption = (
 	powerHistory: PowerScoreSnapshot[],
 	palette = darkChartPalette,
@@ -293,8 +278,6 @@ const englishLeadLabel = (team: string | undefined, margin: number): string => (
 	margin === 0 || team === undefined ? defaultTranslate('detail.leadTied') : defaultTranslate('detail.leadBy', { team, margin })
 );
 
-// The away team's lead reads above zero and the home team's below, in the order the hero and the
-// legend list them.
 export const buildLeadTrackerOption = (
 	scoreHistory: ScoreSnapshot[],
 	game: Game,

@@ -9,7 +9,6 @@ export const builtInModes: Record<BuiltInModeId, PowerScoreMode> = {
 	fantasy: fantasyMode,
 };
 
-// Checks a custom mode once, up front, rather than on every score.
 export const defineMode = (mode: PowerScoreMode): PowerScoreMode => {
 	const ids = new Set<string>();
 	for (const signal of mode.signals) {

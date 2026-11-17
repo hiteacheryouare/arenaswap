@@ -15,8 +15,6 @@ const searchableText = (game: Game): string => foldForSearch([
 	game.venueLocation,
 ].filter(Boolean).join('\n'));
 
-// Every word has to land somewhere, so "boston tnt" narrows to the Boston game on TNT rather than
-// widening to every Boston game and every TNT game.
 export const matchesGameQuery = (game: Game, query: string): boolean => {
 	const words = foldForSearch(query).split(/\s+/).filter(Boolean);
 	if (words.length === 0) return true;

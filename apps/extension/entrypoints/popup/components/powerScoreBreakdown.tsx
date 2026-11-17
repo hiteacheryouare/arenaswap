@@ -32,25 +32,19 @@ interface powerScoreBreakdownProps {
 	momentum: number;
 	leadChanges: number;
 	comeback: number;
-	// Already folded into the total by the background scorer; absent when ESPN gave no line.
 	winProbabilityVariance?: number;
 	signalsSubtotal: number;
 	breakPenalty: number;
-	// Soccer has no commercials during play, so the row is hidden rather than pinned at 0.
 	hasBreaks: boolean;
 	favoriteBonus: number;
-	// Abbreviations of the favorited teams in this game, for the favorite boost's reason.
 	favoriteTeams?: readonly string[];
 	currentBoost: number;
 	scoringOpportunityBoost: number;
 	postseasonBoost: number;
-	// ESPN's own round name, so the number has something accounting for it. Untranslated, like
-	// every other string this project passes through from ESPN.
 	postseasonLabel?: string;
 	totalLabel: string;
 	reason?: string;
 	disabledSignals?: readonly SignalName[];
-	// A PowerScore 3 score. Without one, the flat fields above draw Classic.
 	breakdown?: ScoreBreakdown;
 	sportType?: SportType;
 }
@@ -137,7 +131,6 @@ const PowerScoreBreakdown = ({
 	const classicTotal = breakdown?.classicTotal;
 	const blend = breakdown?.blend;
 	const blendPercent = blend ? Math.round(blend.weight * 100) : 0;
-	// A floor only shows when it won; a boost adds the mode's weighted share on top of Classic.
 	const showsClassicRow = classicTotal !== undefined && blendTooltipKey !== undefined && (blend?.kind !== 'floor' || blend.floorApplied === true);
 	const classicRowValue = blend?.kind === 'floor'
 		? `${blend.classicTotal} × ${blendPercent}% = ${Math.round(blend.classicTotal * blend.weight)}`
@@ -152,8 +145,6 @@ const PowerScoreBreakdown = ({
 	const showsGeneral = showsBreak || variance !== 0 || generalBoosts.length > 0;
 	const generalTotal = sumOf(generalBoosts) + variance - (showsBreak ? breakPenalty : 0);
 	const sportLabel = sportType ? sportTypeLabels[sportType] : '';
-	// Switching signals off scales the survivors up into the full signals-subtotal space, so the
-	// scaled subtotal differs from rawSignalsSum. Both are pre-cap; the 100 cap lands on `total`.
 	const isSignalNormalized = signalRows.some(row => row.disabled) && scaledSubtotal !== rawSignalsSum;
 	const renderBoost = (boost: boostRow) => {
 		const meta = isBoostId(boost.id) ? boostPresentation[boost.id] : undefined;

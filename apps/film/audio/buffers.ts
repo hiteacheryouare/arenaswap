@@ -8,7 +8,6 @@ export const createStereo = (length: number): Stereo => ({
 	right: new Float32Array(length),
 });
 
-// Equal-power pan, scaled so a centred source keeps unity gain on both sides.
 export const panGains = (pan: number): [number, number] => {
 	const angle = (Math.min(1, Math.max(-1, pan)) + 1) * Math.PI / 4;
 	return [Math.cos(angle) * Math.SQRT2, Math.sin(angle) * Math.SQRT2];

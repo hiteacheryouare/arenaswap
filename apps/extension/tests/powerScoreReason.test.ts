@@ -4,8 +4,6 @@ import { renderReasonEnglish, scoreGame } from 'powerscore';
 import type { Game, ReasonFragment, ScoringContext } from 'powerscore';
 import { capitalizeReason, speakReason, translateReasonFragments } from '../utils/powerScoreReason';
 
-// Echoes the key and whatever it was handed, so a test can see which string each sentence became
-// without depending on any one locale's wording.
 const echo = (key: string, subsOrCount?: unknown) => {
 	if (key === 'powerScore.reasonSentenceJoiner') return ' / ';
 	if (subsOrCount === undefined) return key;
@@ -15,8 +13,6 @@ const echo = (key: string, subsOrCount?: unknown) => {
 
 const en = JSON.parse(readFileSync(join(__dirname, '../locales/en.json'), 'utf8')) as Record<string, Record<string, unknown>>;
 
-// The English locale read the way the extension's i18n reads it: plurals pick "1" or "n" and take
-// the count as $1, named substitutions fill {braces}.
 const english = (key: string, subsOrCount?: unknown, subs?: unknown) => {
 	const [section, name] = key.split('.');
 	const entry = en[section!]?.[name!];
@@ -27,7 +23,6 @@ const english = (key: string, subsOrCount?: unknown, subs?: unknown) => {
 	return message.replace(/\{(\w+)\}/g, (match, sub: string) => (named?.[sub] === undefined ? match : String(named[sub])));
 };
 
-// One of every sentence the built-in modes can write, with parameters a real score would carry.
 const everySentence: ReasonFragment[] = [
 	{ key: 'state', params: { score: 'tied', when: 'clock', clock: '1:04' } },
 	{ key: 'state', params: { score: 'lead', team: 'Celtics', margin: 3, when: 'quarter', period: 2 } },
@@ -114,9 +109,6 @@ describe('translateReasonFragments', () => {
 		expect(translateReasonFragments([], echo, 'de')).toBeUndefined();
 	});
 
-	// The extension speaks English straight from the engine, so en.json is only ever the source the
-	// other locales translate from. It has to say exactly what the engine says, or they translate
-	// something the English user never sees.
 	test('the English locale says exactly what the engine says, sentence by sentence', () => {
 		for (const fragment of everySentence) {
 			expect(translateReasonFragments([fragment], english, 'en')).toBe(renderReasonEnglish(fragment));
@@ -138,8 +130,6 @@ describe('translateReasonFragments', () => {
 	});
 });
 
-// A locale missing a reason string prints the key itself, and a placeholder English doesn't fill
-// prints as braces.
 describe('every locale', () => {
 	const reasonKeys = Object.keys(en.powerScore!).filter(key => key.startsWith('reason'));
 	const localeFiles = ['de', 'es', 'fil', 'fr', 'it', 'ja', 'ko', 'pt_BR', 'pt_PT', 'zh_CN', 'zh_TW'];

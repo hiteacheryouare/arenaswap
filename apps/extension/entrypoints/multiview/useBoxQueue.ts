@@ -6,7 +6,6 @@ const sameStarts = (a: ReadonlyMap<string, number>, b: ReadonlyMap<string, numbe
 	a.size === b.size && [...a].every(([gameId, at]) => b.get(gameId) === at)
 );
 
-// The games whose boxes have started loading their stream.
 export default (boxes: readonly MultiviewBox[], readyIds: ReadonlySet<string>): ReadonlySet<string> => {
 	const [startedAt, setStartedAt] = useState<ReadonlyMap<string, number>>(() => new Map());
 	const waiting = boxes.some(box => !startedAt.has(box.gameId));

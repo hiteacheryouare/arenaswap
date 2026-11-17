@@ -41,8 +41,6 @@ const nba = (id: string, home: number, away: number, period: number, clockSecond
 	lastPlayType: 'Jump Shot',
 });
 
-// A sleepy second quarter on screen, and a one-point game with three minutes left in the other tab.
-// The watched game's clock runs with the wall clock until `whistleAt`, then stops there.
 const serveGames = (whistleAt = Infinity) => {
 	const fetchMock = (require('@arenaswap/sideline') as { fetchGamesWithLeagueLogos: jest.Mock }).fetchGamesWithLeagueLogos;
 	fetchMock.mockImplementation(() => {
@@ -122,7 +120,6 @@ const advance = async (ms: number) => {
 const switchedToOther = () => tabsUpdate.mock.calls.some(([tabId, change]) => tabId === 3 && change.active === true);
 const lastMessage = (): string => notify.mock.calls.at(-1)?.[1].message;
 const lastTitle = (): string => notify.mock.calls.at(-1)?.[1].title;
-// What the popup was last told about a held switch.
 const broadcastHold = () => runtimeSend.mock.calls.map(([msg]) => msg).filter(msg => msg.type === 'SCORES_UPDATED').at(-1)?.heldSwitch;
 const debugState = async () => {
 	const state = onMessageHandler({ type: 'GET_DEBUG_STATE' }) as Promise<DebugState>;

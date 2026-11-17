@@ -22,8 +22,6 @@ describe('scoreMaxTotal', () => {
 	});
 });
 
-// Both sides are asserted against literals. Checking that a tunable equals the constant it is
-// defined from cannot fail, and so would not notice either of them being retuned.
 describe('signal ceilings', () => {
 	it('tops closeness out at 42', () => {
 		expect(scoreMaxCloseness).toBe(42);

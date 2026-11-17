@@ -5,14 +5,12 @@ import type { FantasyPlayerState, Game, ReasonFragment, SignalDefinition, Signal
 
 const none: SignalOutput = { points: 0 };
 
-// Yards from the end zone a kicker is in range: a 54-yard try in the pros, 47 in college.
 const fieldGoalRange: Record<string, number> = { ncaaf: 30 };
 const proFieldGoalRange = 37;
 
 const redZoneWeight: Record<string, number> = { QB: 1, RB: 0.8, WR: 1, TE: 0.9 };
 const goalLineWeight: Record<string, number> = { QB: 0.9, RB: 1, WR: 0.7, TE: 0.8 };
 
-// Points of production that count as a full burst: a touchdown, a home run, a goal.
 const fullProduction: Partial<Record<SportType, number>> = { football: 6, basketball: 6, baseball: 5, softball: 5, hockey: 3, soccer: 3 };
 
 export const activePlayers = (context: SignalInput['context']): FantasyPlayerState[] => (context.fantasy ?? []).filter(player => player.active !== false);
@@ -58,8 +56,6 @@ const baseballSituation = (player: FantasyPlayerState, game: Game<string>): Situ
 	return player.position !== 'P' && batting ? { value: 20 } : { value: 0 };
 };
 
-// Basketball and hockey have no live on-court data, so a player in the game is worth as much as
-// the game itself is close and late.
 const inGameSituation = (player: FantasyPlayerState, input: SignalInput): Situation => {
 	const closeLate = computeCloseness(input).points + computeLateGame(input).points;
 	return { value: 20 + 30 * Math.min(1, closeLate / 80), reason: { key: 'fantasyInGame', params: { name: label(player) } } };
@@ -74,8 +70,6 @@ const situationOf = (player: FantasyPlayerState, input: SignalInput): Situation 
 	}
 };
 
-// Whoever has the most going on, plus a quarter of everyone else's: your RB and your D/ST in the
-// same game both count, and the max follows the ball.
 export const computeFantasySituation = (input: SignalInput): SignalOutput => {
 	const situations = activePlayers(input.context).map(player => situationOf(player, input)).toSorted((a, b) => b.value - a.value);
 	if (situations.length === 0 || situations[0]!.value <= 0) return none;
@@ -84,8 +78,6 @@ export const computeFantasySituation = (input: SignalInput): SignalOutput => {
 	return { points, ...(best!.reason ? { reason: best!.reason } : {}) };
 };
 
-// Fantasy points scored lately, fading like a lead change. Negative plays don't count: a pick-six
-// thrown is no reason to switch in after the fact.
 export const computeFantasyProduction = ({ game, context, sport, now }: SignalInput): SignalOutput => {
 	const full = fullProduction[game.sportType] ?? 6;
 	let recent = 0;
@@ -103,7 +95,6 @@ export const computeFantasyProduction = ({ game, context, sport, now }: SignalIn
 	}
 	const points = Math.round(35 * Math.min(1, recent / full));
 	if (points <= 0 || !topPlayer) return none;
-	// The faded figure ranks players; the reason quotes what they actually scored inside the window.
 	const scored = (topPlayer.pointEvents ?? [])
 		.filter(event => event.points > 0 && ageSince(event.at, now) <= sport.historyWindowMs)
 		.reduce((total, event) => total + event.points, 0);

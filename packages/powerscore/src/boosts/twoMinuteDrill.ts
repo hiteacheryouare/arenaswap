@@ -5,15 +5,11 @@ import { isDecided, isLive, leadOf, none, secondsLeftInPeriod, teamOf } from './
 import type { BoostDefinition } from '../types';
 
 interface FootballLeagueRules {
-	// The deficit one possession can erase.
 	oneScore: number;
-	// Yards from the end zone where field position stops mattering.
 	peakYards: number;
-	// College overtime has no game clock, so there is no drill to run.
 	untimedOvertime?: boolean;
 }
 
-// The UFL's 3-point try makes 9 a one-score game, and its overtime is an untimed two-point shootout.
 const footballRules: Record<string, Partial<FootballLeagueRules>> = {
 	ncaaf: { peakYards: 30, untimedOvertime: true },
 	ufl: { oneScore: 9, untimedOvertime: true },
@@ -28,8 +24,6 @@ const marginFactor = (trailBy: number): number => {
 	return 0.65;
 };
 
-// The trailing team driving late with a one-score deficit (either team when tied). The leader
-// running out the clock pays nothing.
 export const twoMinuteDrillBoost: BoostDefinition = {
 	id: 'twoMinuteDrill',
 	bucket: 'moment',
@@ -54,7 +48,6 @@ export const twoMinuteDrillBoost: BoostDefinition = {
 			? 1
 			: twoMinuteDrillTunables.ownTwentyFactor + (1 - twoMinuteDrillTunables.ownTwentyFactor) * clamp((80 - yards) / (80 - rules.peakYards), 0, 1);
 		const timeouts = teamOf(game, game.possession).timeouts;
-		// Timeouts move the win odds more than whether a fan wants to watch, so they nudge rather than gate.
 		const clockControl = timeouts === undefined ? 0.925 : 0.85 + 0.05 * clamp(timeouts, 0, 3);
 		const points = Math.round(twoMinuteDrillTunables.max * time * field * clockControl * marginFactor(trailBy));
 		const params = { team: teamOf(game, game.possession).abbreviation ?? '?', clock: formatClock(secsLeft), yards, trailBy };

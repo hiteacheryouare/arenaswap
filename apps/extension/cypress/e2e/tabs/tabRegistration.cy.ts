@@ -20,7 +20,6 @@ describe('registering a tab and watching the lead change', () => {
 		cy.background().its('registry').should('deep.equal', [
 			{ tabId: openTabs[0].id, gameId: sixersThunder.id },
 		]);
-		// A registered game is promoted out of Live Games into its own section.
 		cy.contains('.popup-section-title', 'Active Tabs').should('be.visible');
 	});
 
@@ -41,9 +40,6 @@ describe('registering a tab and watching the lead change', () => {
 		cy.background().its('registry').should('deep.equal', []);
 	});
 
-	// A hovered card is lifted with a transform, which makes it a stacking context of its own, and the
-	// card after it in the list then paints over anything that escapes it. Cypress cannot hover, so
-	// the lift is forced on; what is on top at the menu's centre is then asked of the browser itself.
 	it('keeps the open picker above the next card while its own card is hovered', () => {
 		cy.document().then(doc => {
 			const lift = doc.createElement('style');
@@ -62,7 +58,6 @@ describe('registering a tab and watching the lead change', () => {
 	it('re-sorts live when the background pushes a new leader', () => {
 		cy.get('.game-card-ps-score').first().should('have.text', '82 / 100');
 
-		// The blowout turns into the close game and the close one cools off.
 		cy.pushScores({
 			scores: [makeScore(sixersThunder.id, 11), makeScore(bullsHeat.id, 94)],
 		});
@@ -81,15 +76,12 @@ describe('registering a tab and watching the lead change', () => {
 			scores: [...current.scores, makeScore(eaglesCowboys.id, 66)],
 		});
 
-		// Three cards overflow a 560px-tall popup, so the newcomer is only reachable by scrolling.
 		cy.contains('.game-card', 'DAL').should('exist');
 		cy.get('.popup-container').scrollTo('bottom');
 		cy.contains('.game-card', 'DAL').should('be.visible');
 	});
 });
 
-// The background hands a finished game's tab back while the popup is shut, so the toast on the
-// next open is the only place the user is told it happened.
 const bootWithNotice = (finishedTabNotice: unknown) => cy.openPopup({
 	local: { onboardingCompleted: true },
 	sync: { prefs: onboardedPrefs() },
@@ -107,14 +99,12 @@ describe('the report on tabs handed back', () => {
 		cy.contains('Closed the tab for 1 finished game.').should('be.visible');
 	});
 
-	// Both counts are kept, because the setting can change between two polls.
 	it('reports both when the session did both', () => {
 		bootWithNotice({ freed: 1, closed: 3 });
 		cy.contains('1 tab is yours again.').should('be.visible');
 		cy.contains('Closed the tabs for 3 finished games.').should('be.visible');
 	});
 
-	// It is news rather than state: a second open must not repeat it.
 	it('clears the notice once it has been shown', () => {
 		bootWithNotice({ freed: 2, closed: 0 });
 		cy.contains('2 tabs are yours again.').should('be.visible');

@@ -1,16 +1,5 @@
-// Demo tables for the mock slate, shaped like whichever endpoint the league really answers from,
-// so the demo runs through the same parsers the live screen does rather than a simplified
-// stand-in. The professional leagues and the Premier League are league→conference→division trees
-// from `/apis/v2/.../standings`; college football is the flat `/summary` block, because that is
-// what the three college leagues fall back to.
-//
-// Terse on purpose. A literal copy of ESPN's payload is ~160KB for one league — most of it
-// `uid`/`links`/`recordStats` the parser never reads — and these ship inside the popup bundle.
-
 const espnCdn = 'https://a.espncdn.com/i/teamlogos';
 
-// Only the fields the parsers read. `description` is ESPN's own wording, which the column heads
-// pass through as a tooltip.
 const descriptions: Record<string, string> = {
 	wins: 'Wins',
 	losses: 'Losses',
@@ -41,13 +30,9 @@ const statsFor = (statNames: readonly string[], values: readonly string[]) => (
 	}))
 );
 
-// ── The whole league ─────────────────────────────────────────────────────────
-
 interface mockLeagueGroup {
-	// Null for a flat table like the Premier League, which has no middle level.
 	conference: string | null;
 	name: string;
-	// Team id, the location ESPN prints, the crest slug, then one value per stat name.
 	rows: readonly (readonly string[])[];
 }
 
@@ -60,8 +45,6 @@ interface mockLeague {
 	groups: readonly mockLeagueGroup[];
 }
 
-// A conference node carries children and a division node carries entries, so the two arms of the
-// walk below need one declared shape to unify on.
 interface mockNode {
 	name: string;
 	isConference: boolean;
@@ -86,9 +69,6 @@ const divisionNode = (group: mockLeagueGroup, fixture: mockLeague): mockNode => 
 	},
 });
 
-// Rebuilt into the nesting the real endpoint uses — league, then conferences, then divisions —
-// so `parseLeagueStandings` walks the demo exactly as it walks a live response. A flat league
-// whose groups carry no conference hangs its one table straight off the root.
 const expandLeague = (fixture: mockLeague) => {
 	const conferences = [...new Set(fixture.groups.map(group => group.conference))];
 	return {
@@ -336,16 +316,11 @@ const mockLeagues: Record<string, mockLeague> = {
 	},
 };
 
-// ── The matchup's own conference, off the summary ────────────────────────────
-
 interface mockSummaryGroup {
 	header: string;
 	rows: readonly (readonly string[])[];
 }
 
-// College football and basketball send two record strings and nothing countable, and the demo
-// keeps them on the summary block for the same reason the live screen does: the whole national
-// table is 138 teams across 12 conferences.
 const mockSummaries: Record<string, readonly mockSummaryGroup[]> = {
 	'mock-6': [
 		{

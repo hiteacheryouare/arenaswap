@@ -3,7 +3,6 @@ import type { Game, ScoreOptions, ScoreSnapshot, Side } from '../src/types';
 
 const now = 10_000_000;
 
-// Cowboys on the road, so a rival on the away side.
 const nfl = (period: number, clockSeconds: number, home: number, away: number, id = 'nyg-dal'): Game => ({
 	id,
 	league: 'nfl',

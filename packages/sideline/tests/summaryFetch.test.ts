@@ -48,8 +48,6 @@ describe('the detail screen and a hover sharing one request', () => {
 		expect(fetchSpy).toHaveBeenCalledTimes(2);
 	});
 
-	// Hovered a few seconds before tip-off, clicked a few seconds after: the pre-game answer has no
-	// box score in it, so the live screen must not be handed it.
 	it('asks again once the game has changed status, and keeps the new answer for whoever comes next', async () => {
 		const fetchSpy = answering();
 		void fetchSummary('football/nfl', '401', 'pre');
@@ -84,7 +82,6 @@ describe('what a hovered card fetches ahead of the click', () => {
 		expect(requestedUrls(fetchSpy)).toEqual([summaryUrl('football/nfl', '401'), standingsUrl('football/nfl')]);
 	});
 
-	// College basketball reads its table off the summary, so there is no second request to warm.
 	it('fetches only the summary for a league whose table rides along in it', () => {
 		const fetchSpy = answering();
 		prefetchGameDetail({ id: '401', league: 'ncaab', status: 'in' });

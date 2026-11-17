@@ -1,14 +1,6 @@
 import { parseScoreboard, parseTeams } from '../src/espnSchemas';
 import type { LeagueId } from '@arenaswap/core';
 
-/* ESPN publishes no schema and no changelog, so the question this file asks is not "does the happy
-   path work" — the rest of the suite covers that — but "when ESPN moves, what does it cost, and
-   does anybody find out". Every case below is a shape the payload could take tomorrow, and what is
-   asserted is the size of the blast radius and whether the loss is visible.
-
-   The design the code has chosen is salvage per row: one bad event costs that event, not the
-   league. These prove the seams where that holds, and pin the three places where it does not. */
-
 const competitor = (homeAway: 'home' | 'away', over: Record<string, unknown> = {}) => ({
 	id: homeAway === 'home' ? '19' : '25',
 	homeAway,
@@ -48,12 +40,8 @@ const mockScoreboard = (events: unknown[]): typeof import('../src/apiClient') =>
 	return require('../src/apiClient') as typeof import('../src/apiClient');
 };
 
-/* `jest.resetModules()` hands out a fresh copy of every module, logger included — its own comment
-   says so. So the logger has to be woken up inside the same registry the api client is loaded
-   from, or the switch is flipped on a copy nothing is writing through. */
 const verboseClient = (): typeof import('../src/apiClient') => {
 	jest.resetModules();
-	// Quiet by default under NODE_ENV=test, which is the very reason a warning can go unnoticed.
 	(require('@arenaswap/core') as typeof import('@arenaswap/core')).setVerboseLogging(true);
 	return require('../src/apiClient') as typeof import('../src/apiClient');
 };
@@ -65,8 +53,6 @@ const teamRow = (over: Record<string, unknown> = {}) => (
 );
 
 describe('a field ESPN reshapes costs exactly one game', () => {
-	/* The fields that already accept both encodings. The comment on `espnNumericText` says ESPN
-	   varies number-vs-string by sport and by endpoint, and these are the ones that were burned. */
 	test.each([
 		['an id sent as a number', { id: 401584691 as unknown as string }],
 		['a score sent as a number', { home: { score: 104 } }],
@@ -74,9 +60,6 @@ describe('a field ESPN reshapes costs exactly one game', () => {
 		expect(parsedIds([liveEvent(over as never)])).toHaveLength(1);
 	});
 
-	/* And the fields that do not. Each of these is declared a bare number because the reader wants a
-	   number, so a quoted one fails the competition, fails the event, and takes the game off the
-	   board — score, clock and all. The salvage keeps the rest of the league, which is the point. */
 	test.each([
 		['the period', { status: { period: '3' } }],
 		['the attendance', { competition: { attendance: '20491' } }],
@@ -94,35 +77,22 @@ describe('a field ESPN reshapes costs exactly one game', () => {
 });
 
 describe('the three places one bad value costs more than its own row', () => {
-	/* `z.optional` in zod means "may be absent", not "may be null", so a null lands as a type error
-	   and fails the whole competitor. The reader two files over already handles an absent score —
-	   `parseInt(home.score ?? '0', 10) || 0` — so the tolerance was intended and the schema is
-	   stricter than the code that consumes it. A null score from ESPN takes the entire game off the
-	   board instead of reading 0. */
 	test('a null score fails the event, though the reader is written to cope with no score', () => {
 		expect(parsedIds([liveEvent({ home: { score: null } })])).toEqual([]);
 		expect(parsedIds([liveEvent({ home: { score: undefined } })])).toHaveLength(1);
 	});
 
-	/* `score` beside it takes either encoding; `shootoutScore` takes only a number. Soccer is the
-	   only sport that sends it, and soccer is where the quoted-number habit shows up most. */
 	test('a shootout score sent as a string drops the match, though the score beside it would not', () => {
 		expect(parsedIds([liveEvent({ home: { score: '1', shootoutScore: 4 } })])).toHaveLength(1);
 		expect(parsedIds([liveEvent({ home: { score: '1', shootoutScore: '4' } })])).toEqual([]);
 	});
 
-	/* A team with no display name is a whole event gone. ESPN sends placeholder competitors for
-	   unfilled bracket slots, and today it names them ("Winner Match 49"); an unnamed one would be
-	   a knockout fixture that never appears. */
 	test('a competitor with no display name drops the fixture', () => {
 		expect(parsedIds([liveEvent({ home: { team: { abbreviation: 'TBD' } } })])).toEqual([]);
 	});
 });
 
 describe('a state ESPN has not used before', () => {
-	/* Reading an unrecognised `state` as `post` used to drop the game from the slate mid-game, with no
-	   error and no dropped-event count. It is read from the period and `completed` flag instead.
-	   Driven through the real fetch path, because the loss was only visible at the far end. */
 	const slateFor = async (status: Record<string, unknown>, options = { includeUpcoming: false }) => {
 		const client = mockScoreboard([liveEvent({ status })]);
 		return (await client.fetchGamesWithLeagueLogos(['nba'] as LeagueId[], options)).games.map(game => game.status);
@@ -133,7 +103,6 @@ describe('a state ESPN has not used before', () => {
 	});
 
 	test('a game before its first period is upcoming', async () => {
-		// Dated an hour out, so it reads as a game still to come rather than one that never started.
 		const tonight = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 		const client = mockScoreboard([liveEvent({ status: { period: 0, type: { state: 'warmups', completed: false } }, event: { date: tonight } })]);
 		const result = await client.fetchGamesWithLeagueLogos(['nba'] as LeagueId[], { includeUpcoming: false });
@@ -185,9 +154,6 @@ describe('the envelope itself', () => {
 	});
 });
 
-/* A fully drifted league and a league in its off-season both parse to zero games. Read as an answer,
-   the drifted one would be walked down to dormant mid-game with a fresh "last updated" stamp, so it
-   has to come back as a league that did not answer: its live cards then age visibly instead. */
 describe('a league whose every event is unreadable', () => {
 	const fetchNba = (events: unknown[]) => (
 		mockScoreboard(events).fetchGamesWithLeagueLogos(['nba'] as LeagueId[], { includeUpcoming: false })
@@ -247,9 +213,6 @@ describe('the team list the onboarding picker is built from', () => {
 		expect(result.droppedTeams).toBe(1);
 	});
 
-	/* The same id, from the same API, with two different tolerances: the scoreboard's competitor id
-	   is declared `string | number`, and this one is declared `string`. If `/teams` ever quotes its
-	   ids the way the scoreboard already sometimes does, every row in the league drops. */
 	test('a numeric id is read on the scoreboard and dropped here', () => {
 		expect(parsedIds([liveEvent({ home: { id: 19 } })])).toHaveLength(1);
 		expect(parseTeams(teamsPayload([teamRow({ id: 19 })])).droppedTeams).toBe(1);
@@ -268,8 +231,6 @@ describe('the team list the onboarding picker is built from', () => {
 });
 
 describe('the blocks only some sports send', () => {
-	// Each of these carries a `.catch([])` on the array rather than on the row, so a sport that
-	// sends a `$ref` string where every other sport sends a list loses the block and keeps the game.
 	test.each([
 		['leaders', 'leaders'],
 		['records', 'records'],
@@ -283,13 +244,9 @@ describe('the blocks only some sports send', () => {
 	});
 });
 
-/* The console warning is the only place a drifted league leaves a trace, so it is worth knowing it
-   actually fires — and that it stops firing, because at the twelve-second poll floor a warning on
-   every tick would bury the console it is meant to make readable. */
 describe('the warning that is the only trace a drift leaves', () => {
 	const runPoll = async (events: unknown[], api?: typeof import('../src/apiClient')) => {
 		const client = api ?? verboseClient();
-		// Re-served on every poll, so a caller reusing a client can change what ESPN answers with.
 		serveEvents(events);
 		await client.fetchGamesWithLeagueLogos(['nba'] as LeagueId[], { includeUpcoming: false });
 		return client;

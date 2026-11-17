@@ -7,12 +7,6 @@ interface upcomingDayPagerProps {
 	onSelect: (index: number) => void;
 }
 
-// Stands in for the date divider Up Next used to draw, so the day is still headed by its own name.
-// The arrows take the slack and the day keeps its natural width, which gives both controls a real
-// hit area without stretching the active page into a full-width bar of $primary.
-//
-// Rendered even on a one-day slate, with both arrows disabled: dropping it there would leave that
-// day with no heading at all.
 const upcomingDayPager = ({ dayLabel, index, total, onSelect }: upcomingDayPagerProps) => {
 	const atFirst = index <= 0;
 	const atLast = index >= total - 1;

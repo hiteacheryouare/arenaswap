@@ -1,6 +1,3 @@
-// The three states are driven by CSS off `data-crest-state`, so this spec loads the real
-// stylesheets and measures boxes: the point of the component is that the placeholder occupies
-// exactly the image's footprint, and that is not something the markup alone can show.
 import { useState } from 'react';
 import Crest from '@arenaswap/ui/src/components/crest';
 
@@ -8,7 +5,6 @@ const loadableLogo = `data:image/svg+xml,${encodeURIComponent(
 	"<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><circle cx='32' cy='32' r='30' fill='#004C54'/></svg>",
 )}`;
 
-// Declares itself a PNG and is not one, so the decode fails rather than the request.
 const brokenLogo = 'data:image/png;base64,bm90YXBuZw==';
 
 const slowLogo = () => `/crest-test/${Cypress._.uniqueId('logo')}.png`;
@@ -57,9 +53,6 @@ describe('Crest', () => {
 		cy.get('.crest img').should('not.exist');
 	});
 
-	// The docs site hydrates its islands after the page has loaded, so `load` has already fired and
-	// been discarded by the time React attaches a handler. Without the mount-time `complete` check
-	// the crest would sit at `pending` for good, showing a placeholder behind a loaded logo.
 	it('settles a logo that finished loading before the handler was attached', () => {
 		cy.window().then(win => new Promise<void>(resolve => {
 			const warm = new win.Image();
@@ -71,8 +64,6 @@ describe('Crest', () => {
 		cy.get('.crest').should('have.attr', 'data-crest-state', 'loaded');
 	});
 
-	// A failure is remembered against the URL that failed, not as a flag. League marks start on a
-	// hardcoded URL and move to ESPN's once the live list arrives, and a flag would hide the good one.
 	it('retries when the URL changes after a failure', () => {
 		const Harness = () => {
 			const [logo, setLogo] = useState(brokenLogo);

@@ -1,4 +1,3 @@
-// The 2.x API, kept so existing callers and npm users keep working. New code should call scoreGame.
 import {
 	scorerTunables,
 	scoreMaxCloseness,
@@ -42,7 +41,6 @@ export const computePowerScore = (
 		comeback: signalPoints(score, 'comeback'),
 		reason: score.reason,
 	};
-	// A frozen game reports only the zeros, as 2.x did.
 	if (isPlayFrozen(game)) return normalizePowerScoreResult(flat);
 	return normalizePowerScoreResult({
 		...flat,
@@ -57,8 +55,6 @@ export const computeScoringOpportunityBoost = (game: Game<string>): number => {
 	return computeScoringOpportunity(input);
 };
 
-// Public so a consumer drawing a game on a timeline projects its end from the same clock the
-// lateGame signal reads, rather than from a second copy of it.
 export const computeGameProgress = (game: Game<string>): number => (
 	getGameProgress(game, resolveSportConfig(game.sportType), resolveLeagueConfig(game))
 );
@@ -80,8 +76,6 @@ export const normalizePowerScoreResult = (
 	const hasBreakPenalty = typeof score.breakPenalty === 'number' && Number.isFinite(score.breakPenalty);
 	const breakPenalty = hasBreakPenalty ? Math.max(0, Math.round(toFiniteNumber(score.breakPenalty))) : undefined;
 	const clampedSignalsSum = closeness + lateGame + momentum + leadChanges + comeback;
-	// The fallback subtracts the penalty. Falling back to the bare signal sum handed a game on a break
-	// back every point the penalty had removed, any time `total` arrived non-finite.
 	const totalFallback = Math.max(0, clampedSignalsSum - (breakPenalty ?? 0));
 	const total = options.allowTotalOverflow
 		? Math.max(0, toFiniteNumber(score.total, totalFallback))
@@ -92,8 +86,6 @@ export const normalizePowerScoreResult = (
 	const hasGameBoost = typeof score.gameBoost === 'number' && Number.isFinite(score.gameBoost);
 	const hasScoringOpportunityBoost = typeof score.scoringOpportunityBoost === 'number' && Number.isFinite(score.scoringOpportunityBoost);
 	const hasPostseasonBoost = typeof score.postseasonBoost === 'number' && Number.isFinite(score.postseasonBoost);
-	// Clamped to the signals ceiling, not scoreMaxTotal: this is the raw pre-cap subtotal the
-	// breakdown subtracts the break penalty from.
 	const signalsSubtotal = hasSignalsSubtotal ? clamp(toFiniteNumber(score.signalsSubtotal), 0, scoreMaxSignalsSubtotal) : undefined;
 	const favoriteBonus = hasFavoriteBonus ? Math.max(0, Math.round(toFiniteNumber(score.favoriteBonus))) : undefined;
 	const favoriteTeamCount = hasFavoriteTeamCount ? Math.max(0, Math.round(toFiniteNumber(score.favoriteTeamCount))) : undefined;

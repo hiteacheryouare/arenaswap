@@ -4,10 +4,6 @@ import NotFoundCard from '../components/NotFoundCard';
 import { defaultLocale, localePath } from '../i18n/locales';
 import { useTranslations, uiStrings } from '../i18n/ui';
 
-// One 404 for the whole site, in English. GitHub Pages answers every unknown URL under the base
-// path with this single file, so there is no per-locale version it could reach for — a request for
-// /arenaswap/de/nothing-here gets served the same document a request for /arenaswap/nothing-here
-// does. The links point at the English pages for the same reason.
 const t = useTranslations(defaultLocale);
 const base = import.meta.env.BASE_URL;
 ---
@@ -56,8 +52,6 @@ const base = import.meta.env.BASE_URL;
 	</section>
 
 	<script>
-		// GitHub Pages serves this file for any unknown URL under the base path, so the address bar
-		// is the only record of what was actually requested.
 		const target = document.getElementById('notfound-path');
 		if (target) target.textContent = location.pathname + location.search;
 	</script>

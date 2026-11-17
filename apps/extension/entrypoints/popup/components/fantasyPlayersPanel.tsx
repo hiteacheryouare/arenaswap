@@ -23,7 +23,6 @@ const rosterPosition = (entry: FantasyRosterEntry): string => {
 	return entry.position === 'player' || entry.position === 'P' || entry.position === 'H' ? '' : entry.position;
 };
 
-// Your rostered players in this game, with their line from the box score once there is one.
 const fantasyPlayersPanel = ({ game, roster, boxScore }: fantasyPlayersPanelProps) => {
 	const players = rosterInGame(roster, game);
 	if (players.length === 0) return null;

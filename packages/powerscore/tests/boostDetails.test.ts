@@ -164,8 +164,6 @@ describe('the moments name the team they are about', () => {
 	});
 });
 
-// The live feed only says a power play or an empty net is on, never whose, so these are the
-// sentences a hockey fan actually reads.
 describe('hockey says what the feed can tell it', () => {
 	const rink = (home: number, away: number, extra: Partial<Game<string>> = {}) => game('hockey', 'nhl', 'BOS', 'TOR', {
 		period: 3, clockSeconds: 600, homeTeam: { abbreviation: 'BOS', score: home }, awayTeam: { abbreviation: 'TOR', score: away }, ...extra,

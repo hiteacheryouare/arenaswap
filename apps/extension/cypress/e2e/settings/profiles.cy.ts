@@ -2,16 +2,12 @@ import type { DebugState } from '@arenaswap/core/types';
 import { expectHealthyBackground, extensionUrl, openPage, openPopup, startExtension, world } from '../../support/liveExtension';
 import { slate, storedPrefs } from '../../support/liveGames';
 
-// Profiles and backup files, driven from the popup and the backup tab against the shipped worker,
-// so each step is checked where it matters: what the worker is now following.
-
 const tabs = [{ id: 1, url: 'https://news.test/', title: 'News' }];
 const mainLeagues = ['wnba', 'nhl'];
 
 const openSettings = () => cy.get('button.popup-settings-button[aria-label="Settings"]').click();
 const openGroup = (id: string) => cy.get(`#settingsGroup-${id}`).click();
 
-// What the worker is running on, asked of the worker itself until it answers or two seconds pass.
 const workerFollows = (leagues: string[]) => world().then(live => {
 	const ask = (attempt: number): void => {
 		cy.wrap(live.send({ type: 'GET_DEBUG_STATE' }), { log: false }).then(debug => {
@@ -113,7 +109,6 @@ describe('profiles', () => {
 	});
 });
 
-// A backup file written by one browser and read by another, each its own extension and storage.
 describe('moving a setup with a backup file', () => {
 	afterEach(expectHealthyBackground);
 

@@ -6,7 +6,6 @@ import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
 import fil from '../../../locales/fil.json';
 import fr from '../../../locales/fr.json';
-// Not `it` — that would shadow Mocha's global it() and break every test in this file.
 import itLocale from '../../../locales/it.json';
 import ja from '../../../locales/ja.json';
 import ko from '../../../locales/ko.json';
@@ -20,8 +19,6 @@ const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT:
 const awayColor = '#BD3039';
 const homeColor = '#3E9BD1';
 
-// A 1x1 transparent PNG, so the first hitter has a portrait that loads offline and the other two
-// exercise the initials fallback.
 const portrait = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
 const longName = 'Christian Encarnacion-Strand-Villanueva Jr.';
@@ -33,7 +30,6 @@ const liveGame: Game = {
 	status: 'in',
 	period: 7,
 	clockSeconds: 0,
-	// "Mid 7th": the visitors are out, so the home side bats next and nobody is at the plate.
 	topOfInning: false,
 	homeTeam: { id: 'h', name: 'San Diego Padres', abbreviation: 'SD', score: 3, color: homeColor, alternateColor: '#FFC425' },
 	awayTeam: { id: 'a', name: 'Chicago Cubs', abbreviation: 'CHC', score: 2, color: awayColor, alternateColor: '#0E3386' },
@@ -138,8 +134,6 @@ describe('the due-up block', () => {
 		cy.get('.gd-dueup-row').eq(2).find('.crest-initials').should('contain.text', 'XB');
 	});
 
-	// Both halves of the between-innings gap carry the side that bats next, and they spell it
-	// differently: "Mid 7th" is `topOfInning: false`, "End 7th" is only `inningEnded`.
 	describe('the disc colour', () => {
 		const home = 'rgb(62, 155, 209)';
 		const away = 'rgb(189, 48, 57)';
@@ -190,7 +184,6 @@ describe('the due-up block', () => {
 		cy.get('.gd-play-panel').should('not.exist');
 	});
 
-	// The real between-innings state: the pitcher and batter pair has gone, the list has arrived.
 	it('takes the at-bat panel\'s place under the hero on the detail screen', () => {
 		mountDetail(liveGame);
 		cy.get('.gd-atbat-panel').should('not.exist');

@@ -8,6 +8,5 @@ export type { Translator };
 export const TranslationContext = createContext<Translator>(defaultTranslate);
 export const useT = () => useContext(TranslationContext);
 
-// The language dates and numbers are formatted in. Undefined leaves it to the runtime default.
 export const LocaleContext = createContext<string | undefined>(undefined);
 export const useDisplayLocale = () => useContext(LocaleContext);

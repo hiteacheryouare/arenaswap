@@ -56,7 +56,6 @@ describe('periodLabels', () => {
 	});
 
 	test('extra innings are just numbered', () => {
-		// A 12th inning reads "12". A fifth quarter does not read "5".
 		expect(periodLabels({ periodCount: 12, regularPeriods: 9, periodFormat: 'innings', sportType: 'baseball' }).slice(9)).toEqual([
 			{ kind: 'number', value: 10 },
 			{ kind: 'number', value: 11 },
@@ -79,8 +78,6 @@ describe('periodLabels', () => {
 			.toEqual({ kind: 'overtime', index: 2 });
 	});
 
-	// ESPN's soccer linescores are positional — [1H, 2H, ET1, ET2, PENS] — so what a column means
-	// is its index rather than its distance past regulation.
 	test('a match settled in ninety minutes is two halves', () => {
 		expect(periodLabels({ periodCount: 2, regularPeriods: 2, periodFormat: 'halves', sportType: 'soccer' })).toEqual([
 			{ kind: 'number', value: 1 },
@@ -103,15 +100,11 @@ describe('periodLabels', () => {
 	});
 
 	test('a match live in the first period of extra time reads ET1', () => {
-		// Positional slicing gets this for free; counting past regulation would call it OT.
 		expect(periodLabels({ periodCount: 3, regularPeriods: 2, periodFormat: 'halves', sportType: 'soccer' })[2])
 			.toEqual({ kind: 'named', labelKey: 'box.periodEt1' });
 	});
 
 	test('MLS\'s zero-filled extra time is still drawn as extra time', () => {
-		// Round One goes from a 90-minute draw straight to penalties by rule and ESPN still emits
-		// five entries. From the line score alone that is identical to a scoreless real extra
-		// time, so the phantom columns are drawn rather than guessed away.
 		expect(periodLabels({ periodCount: 5, regularPeriods: 2, periodFormat: 'halves', sportType: 'soccer' }).slice(2)).toEqual([
 			{ kind: 'named', labelKey: 'box.periodEt1' },
 			{ kind: 'named', labelKey: 'box.periodEt2' },
@@ -120,8 +113,6 @@ describe('periodLabels', () => {
 	});
 
 	test('college basketball plays halves and its fifth column is still an overtime', () => {
-		// 'halves' over two regular periods describes NCAAB as well as soccer, which is why the
-		// extra-time rule is keyed on the sport instead.
 		expect(periodLabels({ periodCount: 2, regularPeriods: 2, periodFormat: 'halves', sportType: 'basketball' })).toEqual([
 			{ kind: 'number', value: 1 },
 			{ kind: 'number', value: 2 },
@@ -133,8 +124,6 @@ describe('periodLabels', () => {
 	});
 
 	test('a hockey shootout is named as one, and a second overtime is not', () => {
-		// Both arrive as a fifth entry. Shootouts cannot happen in the playoffs, so ESPN's own
-		// Final designation suffix is what separates them.
 		expect(periodLabels({
 			periodCount: 5, regularPeriods: 3, periodFormat: 'periods', sportType: 'hockey', finalPeriodSuffix: 'SO',
 		}).slice(3)).toEqual([
@@ -182,14 +171,10 @@ describe('buildSections column selection', () => {
 		expect(sections[0].columns.map(column => column.labelKey)).toEqual([
 			'box.hitsAtBats', 'box.runs', 'box.rbi', 'box.homeRuns', 'box.walks', 'box.strikeouts',
 		]);
-		// Indices point into ESPN's own parallel arrays, so AB and AVG are skipped rather than
-		// shifting everything after them.
 		expect(sections[0].columns.map(column => column.index)).toEqual([0, 2, 4, 5, 6, 7]);
 	});
 
 	test('carries ESPN\'s own description for the column it kept', () => {
-		// The only thing that can tell a reader SACKS under passing is sacks suffered while SACKS
-		// under defensive is sacks recorded — the same abbreviation on two categories at once.
 		const sections = buildSections('football', team([
 			category(
 				'passing',
@@ -212,8 +197,6 @@ describe('buildSections column selection', () => {
 	});
 
 	test('drops a column the league did not send instead of rendering it empty', () => {
-		// College football sends no sacks under passing and no targets under receiving; the NFL
-		// sends both.
 		const collegePassing = ['completions/passingAttempts', 'passingYards', 'yardsPerPassAttempt', 'passingTouchdowns', 'interceptions', 'adjQBR'];
 		const sections = buildSections('football', team([
 			category('passing', collegePassing, [athlete('L. Weaver', ['21/32', '234', '7.3', '2', '0', '94.7'])]),
@@ -292,8 +275,6 @@ describe('buildSections category order', () => {
 	});
 
 	test('a populated skaters category replaces forwards and defenses rather than joining them', () => {
-		// ESPN sends all three keys and `skaters` duplicates the other two, so rendering all of
-		// them would list every player twice.
 		const sections = buildSections('hockey', team([
 			category('forwards', skaterKeys, [athlete('S. Crosby', ['0', '0', '18:42', '1', '0', '4', '0'])]),
 			category('defenses', skaterKeys, [athlete('K. Letang', ['0', '0', '21:33', '0', '1', '3', '0'])]),
@@ -348,14 +329,11 @@ describe('buildSections row handling', () => {
 			]),
 		]));
 		expect(sections[0].athletes.map(a => a.name)).toEqual([
-			// Within each group ESPN's own order is kept, because it tracks the rotation.
 			'C. White', 'N. Vucevic', 'A. Dosunmu', 'D. Terry', 'Z. Collins',
 		]);
 	});
 
 	test('a did-not-play row with no reason still sorts last', () => {
-		// ESPN sends the flag without the reason often enough that this is the ordinary case, and
-		// a truthiness check on the reason would sort the player among the bench.
 		const sections = buildSections('basketball', team([
 			category('', ['minutes', 'points'], [
 				athlete('unstated', [], { didNotPlay: true }),
@@ -391,8 +369,6 @@ describe('buildSections row handling', () => {
 	});
 
 	test('drops the goalie who never took the ice', () => {
-		// The backup is on the roster with an all-zero line, which renders as a .000 save
-		// percentage — the most wrong-looking number this screen could show.
 		const sections = buildSections('hockey', team([
 			category('goalies', goalieKeys, [
 				athlete('T. Jarry', ['2', '24', '22', '.917', '48:12']),
@@ -446,7 +422,6 @@ describe('buildSections totals and caps', () => {
 	});
 
 	test('a category ESPN sends no totals for reports none rather than a row of blanks', () => {
-		// Every hockey category, and the one basketball case where the array is absent.
 		const sections = buildSections('basketball', team([
 			category('', ['minutes', 'points'], [athlete('T. Maxey', ['29', '24'])]),
 		]));
@@ -518,7 +493,6 @@ describe('buildComparison', () => {
 		expect(zeroish).toHaveLength(1);
 	});
 
-	// The box score's own count, which sees every change; ours only sees the ones a poll lands on.
 	test('closes basketball with the largest lead and the lead changes, after the team stats', () => {
 		const built = buildComparison('basketball', rows([
 			['leadChanges', '9', '9'],

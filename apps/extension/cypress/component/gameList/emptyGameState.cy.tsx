@@ -5,9 +5,6 @@ import EmptyGameState from '../../../entrypoints/popup/components/emptyGameState
 const popupWidth = 320;
 const noGamesTitles = Object.values(en.noGames).map(message => message.title);
 
-// A settling SWR mutate re-renders the popup several times in a row, and the empty state has to
-// survive that untouched. The parent owns `noGames`, so this mirrors that ownership. One button
-// re-renders without changing anything, the other takes the empty state away and brings it back.
 const StatefulEmptyState = () => {
 	const [renders, setRenders] = useState(0);
 	const [noGames, setNoGames] = useState(true);
@@ -40,8 +37,6 @@ describe('empty game state message', () => {
 		});
 	});
 
-	// With seven messages to draw from, a re-rolling render body survives twelve unchanged draws
-	// about once in 13 billion runs, so this fails on the bug every time in practice.
 	it('keeps the same message across re-renders', () => {
 		title().invoke('text').then(chosen => {
 			for (let click = 0; click < 12; click += 1) cy.get('[data-cy=rerender]').click();
@@ -49,8 +44,6 @@ describe('empty game state message', () => {
 		});
 	});
 
-	// The other half of the contract. The roll is tied to the mount, so the message is free to
-	// change once the empty state has been away and come back.
 	it('rolls a new message when the empty state reappears', () => {
 		const seen = new Set<string>();
 		const collect = () => title().invoke('text').then(text => { seen.add(text); });
@@ -69,8 +62,6 @@ describe('empty game state message', () => {
 	});
 });
 
-// A refresh that comes back with the same empty slate changes nothing on screen, so the button has
-// to show the request itself, or it reads as broken.
 describe('empty game state refresh', () => {
 	it('holds the button busy, at the same width, until the refresh settles', () => {
 		let settle: (() => void) | undefined;
@@ -94,8 +85,6 @@ describe('empty game state refresh', () => {
 	});
 });
 
-// The heading was text-white, which in the light theme put white type on an 8% orange wash over
-// white. Read in both themes, against the page it actually sits on.
 const channels = (value: string) => /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(value)!.slice(1).map(Number);
 
 const luminance = (value: string) => {

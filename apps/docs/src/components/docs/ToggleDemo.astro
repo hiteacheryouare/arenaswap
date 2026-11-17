@@ -5,12 +5,10 @@ interface Props {
 	label: string;
 	setting: string;
 	checked?: boolean;
-	// A Bootstrap Icons class, e.g. `bi-pause-circle`.
 	icon?: string;
 	info?: boolean;
 }
 
-// The rows in Settings that carry an icon or a help mark, so naming the setting is enough.
 const knownRows: Record<string, { icon?: string; info?: boolean }> = {
 	'contentAwareSwitching.label': { icon: 'bi-pause-circle', info: true },
 	'setup.demoMode': { info: true },

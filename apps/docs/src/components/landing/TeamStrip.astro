@@ -1,15 +1,4 @@
 ---
-// The games in the hero are an Opening Day ballgame, a college hockey game and a 2018 college
-// football game, because those are the games in the only footage that can legally be put on this
-// page. They are real, and they are also not the teams most people are here for. This is the answer
-// to the question those clips raise: yes, it covers your team.
-//
-// Crests are ESPN's, the same source the game cards pull from, and the row links to the full league
-// list rather than pretending to be a filter.
-//
-// Ten, not twelve: the copy column is about 450px and twelve wrapped to a second row holding three
-// orphans, which reads as a mistake rather than as a grid.
-
 import { leagueConfigs } from '@arenaswap/core/constants';
 import Crest from '@arenaswap/ui/src/components/crest';
 import CrestSettle from '../CrestSettle.astro';
@@ -21,9 +10,6 @@ const t = useTranslations(locale);
 
 const espnTeam = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
 
-// Philadelphia first, which is where this is built, then Boston, which is the other half of the
-// footer. The rest are picked to read on a dark page as much as for being famous: the Cowboys' navy
-// star and the Yankees' navy monogram are both nearly invisible on the black page, so neither is here.
 const teams = [
 	{ name: 'Philadelphia Eagles', abbr: 'PHI', logo: espnTeam('nfl/500/phi'), color: '#004C54' },
 	{ name: 'Philadelphia Phillies', abbr: 'PHI', logo: espnTeam('mlb/500/phi'), color: '#E81828' },
@@ -46,6 +32,4 @@ const teams = [
 	</span>
 </a>
 
-<!-- Static markup rather than an island: this row sits directly under the hero, which is already
-     hydrating a React tree, and settling ten images is not worth a second. -->
 <CrestSettle />

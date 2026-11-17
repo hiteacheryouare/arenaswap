@@ -2,34 +2,18 @@ import { computeGameProgress } from '@arenaswap/core';
 import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, LeagueRunMinutes, SportType } from '@arenaswap/core/types';
 
-// How much of the good part of a game is happening at a given fraction of its run, as
-// [fraction, value] pairs read piecewise-linearly. It only breaks ties between moments with a
-// similar number of games on: see lateGameWeight below.
-//
-// Dead zones sit at a hard zero rather than at a low point on a smooth ramp. Nearly a quarter of a
-// hockey broadcast is intermission, and a curve that smooths through that is lying about a fifth of
-// the game.
 type leveragePoint = readonly [number, number];
 
 const leverageCurves: Record<SportType | 'ncaam', readonly leveragePoint[]> = {
 	football:   [[0, 0.18], [0.45, 0.34], [0.455, 0], [0.515, 0], [0.52, 0.3], [0.72, 0.44], [0.9, 0.95], [1, 1]],
 	basketball: [[0, 0.16], [0.44, 0.32], [0.445, 0], [0.53, 0], [0.535, 0.3], [0.77, 0.5], [0.9, 0.95], [1, 1]],
-	// College men's play halves, so there is no fourth quarter to ramp from — but a 20-minute half
-	// with no reset means a game can be decided at 0.6.
 	ncaam:      [[0, 0.16], [0.46, 0.34], [0.465, 0], [0.545, 0], [0.56, 0.55], [0.62, 0.5], [0.855, 0.7], [0.92, 0.97], [1, 1]],
-	// No clock and genuinely spiky leverage, so this is the weakest approximation of the seven.
-	// The 7th starts at 0.63, the 9th at 0.88.
 	baseball:   [[0, 0.2], [0.4, 0.3], [0.63, 0.55], [0.76, 0.72], [0.88, 0.95], [1, 1]],
 	softball:   [[0, 0.2], [0.4, 0.32], [0.57, 0.55], [0.71, 0.74], [0.85, 0.96], [1, 1]],
 	hockey:     [[0, 0.2], [0.25, 0.35], [0.255, 0], [0.37, 0], [0.375, 0.4], [0.64, 0.55], [0.645, 0], [0.76, 0], [0.765, 0.6], [0.94, 0.97], [1, 1]],
 	soccer:     [[0, 0.2], [0.42, 0.38], [0.425, 0], [0.545, 0], [0.55, 0.45], [0.68, 0.6], [0.81, 0.82], [0.94, 1], [1, 1]],
 };
 
-// A live game's bar is never allowed to end behind the now line. The projection below already runs
-// it out to the end of regulation, but overtime, a rain delay and a knockout going to penalties all
-// sit past that, and this one rule covers them without any per-sport extrapolation. It is always
-// wrong in the safe direction, which matters because with no live colour on a bar, crossing the now
-// line is the only thing saying the game is still on.
 export const liveBarFloorMs = 10 * 60 * 1000;
 
 const interpolate = (curve: readonly leveragePoint[], x: number): number => {
@@ -57,8 +41,6 @@ export const resolveRunMinutes = (game: Pick<Game, 'league' | 'isPostseason'>): 
 	return game.isPostseason && config.knockoutRunMinutes ? config.knockoutRunMinutes : config.runMinutes;
 };
 
-// NCAA men's basketball plays halves rather than quarters, which changes where leverage lives, so it
-// is the one league that does not resolve to its sport's curve.
 const resolveLeverageCurve = (game: Pick<Game, 'league' | 'sportType'>): readonly leveragePoint[] => (
 	game.league === 'ncaab' ? leverageCurves.ncaam : leverageCurves[game.sportType]
 );
@@ -68,13 +50,9 @@ export interface guideBar {
 	startMs: number;
 	endMs: number;
 	isFavorite: boolean;
-	// Set only on a final whose end was seen or published, rather than estimated.
 	endIsActual?: boolean;
 }
 
-// A final ends where it actually ended when that is known, and at its estimate when it is not. A live
-// game ends a typical game's worth of what regulation has left after now, which is what stretches a
-// slow one past its slot and pulls a quick one in, rather than drawing both at the schedule.
 export const buildBar = (game: Game, isFavorite: boolean, now: number, endedAt?: number): guideBar | null => {
 	if (!game.startTime) return null;
 	const startMs = new Date(game.startTime).getTime();
@@ -85,23 +63,14 @@ export const buildBar = (game: Game, isFavorite: boolean, now: number, endedAt?:
 		return { game, startMs, endMs: endedAt, isFavorite, endIsActual: true };
 	}
 	if (game.status === 'in') {
-		// Period 0 is a game held before its first play, such as a weather delay. The shared progress
-		// reading still credits it with a share of the game there.
 		const progress = (game.period ?? 0) < 1 ? 0 : computeGameProgress(game);
 		const projectedEnd = now + runMs * (1 - progress);
 		return { game, startMs, endMs: Math.max(projectedEnd, now + liveBarFloorMs), isFavorite };
 	}
-	// A final nobody saw end has still ended, so its estimate never runs past the present.
 	if (game.status === 'post') return { game, startMs, endMs: Math.max(startMs, Math.min(startMs + runMs, now)), isFavorite };
 	return { game, startMs, endMs: startMs + runMs, isFavorite };
 };
 
-// The probability the game is still running at `t`: flat to p25, then a smoothstep taper to p99.
-// Summing survival probabilities rather than thresholding on the drawn bar is what gives a smooth
-// curve instead of a staircase that drops by nine the moment the one o'clock window nominally ends.
-//
-// A final with a known end is simply on until then. A live game's bar is already a projection
-// from where it stands, so the taper hangs off the end of the bar rather than off the start time.
 export const occupancy = (bar: guideBar, t: number): number => {
 	if (t < bar.startMs) return 0;
 	if (bar.endIsActual) return t < bar.endMs ? 1 : 0;
@@ -141,22 +110,13 @@ export interface heatCurveResult {
 }
 
 const bandSampleMs = 5 * 60_000;
-// ArenaSwap earns its keep when there are a lot of games to switch between, so a game counts for
-// at least 1 - lateGameWeight however early it is, and the leverage curve only covers the rest.
-// Four games in their first quarter beat three in their fourth.
 const lateGameWeight = 0.25;
-// The band is every moment within 10% of the day's peak, rather than the single instant of it.
 const bandThreshold = 0.9;
-// And never narrower than this, however sharp the peak. Bar lengths are ~p75 estimates with tens of
-// minutes of spread in them, so a ten-minute band is arithmetic precision the inputs cannot support
-// — it reads as "be watching at 3:55" when what is true is "late afternoon is the good part".
 const minBandMs = 30 * 60_000;
 
 interface heatCurveOptions {
 	weightFavorites: boolean;
 	favoriteBonusPoints: number;
-	// Today's page passes the present, so the band is the best of what is left rather than the best
-	// of a day that is mostly behind the reader.
 	notBeforeMs?: number;
 }
 

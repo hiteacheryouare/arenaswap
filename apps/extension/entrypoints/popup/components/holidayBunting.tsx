@@ -3,8 +3,6 @@ const center = 50;
 const fanCount = 3;
 const pleatStep = 9;
 
-// Outside in, the way a pleated fan is sewn: red hem, white, a blue band of stars, white, and a
-// red rosette at the top.
 const bands = [
 	{ outer: 39, className: 'holiday-bunting-white' },
 	{ outer: 29, className: 'holiday-bunting-blue' },
@@ -21,7 +19,6 @@ const halfDisc = (distance: number): string => (
 	`M ${center - distance} 0 A ${distance} ${distance} 0 0 0 ${center + distance} 0 Z`
 );
 
-// The hem is gathered at every pleat, so its edge scallops instead of running smooth.
 const hemPath = (() => {
 	const steps = 180 / pleatStep;
 	let d = `M ${center + radius} 0`;

@@ -2,16 +2,8 @@ import { baseMask, leagueConfigMap, runnersOn, sportTypeConfigMap } from 'powers
 import { hockeyFlowTypes, pitchTypes, type CommercialBreakEntry } from './commercialBreaks';
 import type { Game, LeagueId } from './types';
 
-/*
-	Content-aware switching: a switch away from a game waits until that game stops, so the at-bat,
-	the snap or the possession being watched isn't cut off. The signals and caps were measured
-	against nine days of recorded polls: the scoreboard runs 27–45s behind play, about as long as
-	a stoppage, so a switch lands on the break a typical stream is only now showing.
-*/
-
 export type PlayBreakSport = 'baseball' | 'football' | 'basketball' | 'hockey';
 
-// The game as it stood at one poll, for a later poll to be compared against.
 export interface PlayMark {
 	lastPlayId?: string;
 	period: number;
@@ -34,14 +26,12 @@ const leagueCapMs: Partial<Record<LeagueId, number>> = {
 	cbase: 150_000,
 	csoft: 100_000,
 };
-// Feeds too stale to time a break by: holding there lands no more switches on a dead ball.
 const unheldLeagues: ReadonlySet<LeagueId> = new Set(['ncaaf', 'ncaamh']);
 
 // The scoreboard clock only refreshes along with a new play, so one unchanged reading proves
 // little. The same clock three polls running does.
 const clockStoppedPolls = 3;
 
-// Steals ("Bad Pass Turnover", "Lost Ball Turnover") are live; "No Foul" and friends are not plays.
 const basketballDeadBallTypes = /foul|timeout|traveling|kicked ball|lane|delay of game|3-seconds|double dribble|back court|second turnover|shot clock|goaltending|jump ?ball|end period|end game|substitution|free ?throw|challenge|review|ejection|technical|inbound turnover|out of bounds|offensive charge/;
 const basketballNonPlays = /^no (foul|violation|turnover|shot)/;
 
@@ -72,13 +62,11 @@ export const markPlay = (game: Game): PlayMark => ({
 	outs: game.bso?.outs,
 });
 
-// Past the sport's widest closeness margin, where PowerScore already calls it a blowout.
 const isBlowout = (game: Game): boolean => {
 	const widest = sportTypeConfigMap[game.sportType]?.closenessMargins[2];
 	return widest !== undefined && margin(game) > widest;
 };
 
-// Between periods, held up, or in a commercial: nothing on screen for a switch to cut into.
 export const isPlayStopped = (game: Game, entry: CommercialBreakEntry | undefined): boolean => (
 	game.status !== 'in' || game.intermission === true || game.delayed === true || game.inningBreak === true || entry?.kind !== undefined
 );
@@ -98,7 +86,6 @@ const footballDecider = (game: Game): boolean => {
 	return game.down === 4 || (yardsToGoal !== undefined && yardsToGoal <= 35);
 };
 
-// The moments a switch should not sit out a hold for: the last chance to tie or win.
 export const isDecisiveMoment = (game: Game): boolean => {
 	if (game.status !== 'in') return false;
 	const sport = playBreakSport(game);
@@ -111,8 +98,6 @@ export const isDecisiveMoment = (game: Game): boolean => {
 
 const scored = (current: PlayMark, mark: PlayMark): boolean => current.homeScore !== mark.homeScore || current.awayScore !== mark.awayScore;
 
-// Whether play has stopped at least once since `mark`. `clockPolls` counts the polls in a row,
-// this one included, that the clock has read the same.
 export const reachedPlayBreak = (game: Game, mark: PlayMark, clockPolls: number): boolean => {
 	const sport = playBreakSport(game);
 	if (!sport) return true;
@@ -123,10 +108,8 @@ export const reachedPlayBreak = (game: Game, mark: PlayMark, clockPolls: number)
 	if (sport === 'baseball') {
 		if (current.half !== mark.half || current.outs !== mark.outs || scored(current, mark)) return true;
 		if (current.pitcherId !== undefined && mark.pitcherId !== undefined && current.pitcherId !== mark.pitcherId) return true;
-		// A pinch hitter takes over the count, so only a fresh one means a new plate appearance.
 		const freshCount = (game.bso?.balls ?? 0) + (game.bso?.strikes ?? 0) === 0;
 		if (current.batterId !== undefined && mark.batterId !== undefined && current.batterId !== mark.batterId && freshCount) return true;
-		// The ball put in play ends the plate appearance; the break detector counts it as a pitch.
 		return newPlay && (type === 'play result' || !pitchTypes.test(type));
 	}
 	if (sport === 'football') return newPlay;
@@ -143,7 +126,6 @@ export interface HeldSwitch {
 	sport: PlayBreakSport;
 	holdUntil: number;
 	mark: PlayMark;
-	// The clock at the last poll, and how many polls in a row it has read that.
 	clockSeconds: number;
 	clockPolls: number;
 }
@@ -156,9 +138,7 @@ export interface HoldTarget {
 
 export interface HoldCheck {
 	now: number;
-	// Whether this pass carries a fresh poll of the game being left, rather than another league's.
 	observed: boolean;
-	// Whether the game being left is still the one on screen.
 	watching: boolean;
 	arriving?: Game;
 }
@@ -171,15 +151,12 @@ const skipsHold = (leaving: Game, arriving: Game | undefined): boolean => (
 	isBlowout(leaving) || (arriving !== undefined && isDecisiveMoment(arriving) && !isDecisiveMoment(leaving))
 );
 
-// Null when there is nothing to wait for: soccer, a game already stopped or out of reach, or a
-// target at the moment that decides it.
 export const holdSwitch = (target: HoldTarget, leaving: Game, entry: CommercialBreakEntry | undefined, now: number, arriving?: Game): HeldSwitch | null => {
 	const sport = playBreakSport(leaving);
 	if (!sport || isPlayStopped(leaving, entry) || skipsHold(leaving, arriving)) return null;
 	return { ...target, leavingGameId: leaving.id, sport, holdUntil: now + playBreakCapMs(leaving), mark: markPlay(leaving), clockSeconds: leaving.clockSeconds, clockPolls: 1 };
 };
 
-// `waitedFor` is only set when play actually stopped, not when the cap ran out or the user moved on.
 export const checkHeldSwitch = (held: HeldSwitch, leaving: Game | undefined, entry: CommercialBreakEntry | undefined, { now, observed, watching, arriving }: HoldCheck): HoldVerdict => {
 	if (!leaving || !watching || skipsHold(leaving, arriving)) return { release: true };
 	const clockPolls = !observed ? held.clockPolls : leaving.clockSeconds === held.clockSeconds ? held.clockPolls + 1 : 1;

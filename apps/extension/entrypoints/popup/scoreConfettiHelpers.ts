@@ -66,8 +66,6 @@ export const createTeamConfettiPalette = (teamColors: string[]): string[] => (
 		: [...new Set(teamColors.flatMap(createTeamColorShadePalette))]
 );
 
-// Confetti falls over the dark popup, where a black or near-black club colour is not there at all.
-// A club with another colour to show leaves its black out: the Penguins and the Steelers go all gold.
 const nearBlackLuminance = 0.04;
 
 const confettiColors = (team: Team): string[] => {

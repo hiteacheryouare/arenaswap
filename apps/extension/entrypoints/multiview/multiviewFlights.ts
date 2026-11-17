@@ -21,15 +21,12 @@ export interface flight {
 	dashed: boolean;
 	orange: boolean;
 	strength: number;
-	// Pixels a second, averaged over the draw.
 	speed: number;
-	// How long the line takes to pull in, as a share of how long it took to draw.
 	retract: number;
 }
 
 type random = () => number;
 
-// Past the window's edge by more than a head, so a flight starts and ends out of sight.
 const offscreen = 40;
 const cornerRadius = 8;
 const thinnestBand = 60;
@@ -44,7 +41,6 @@ const toward = (from: flightPoint, to: flightPoint, distance: number) => {
 
 const at = ({ x, y }: flightPoint) => `${x.toFixed(1)} ${y.toFixed(1)}`;
 
-// The margins the grid leaves, where a flight can be seen end to end.
 export const openBands = (page: flightArea, grid: flightArea | null): flightBand[] => {
 	const box = grid ?? { x: page.width / 2, y: page.height / 2, width: 0, height: 0 };
 	const bands: flightBand[] = [
@@ -56,13 +52,11 @@ export const openBands = (page: flightArea, grid: flightArea | null): flightBand
 	return bands.filter(band => Math.min(band.width, band.height) >= thinnestBand);
 };
 
-// In from one end of a margin, zigzagging across its depth, and out the far end or the window's edge.
 export const marginRun = (band: flightBand, page: flightArea, random: random): flightPoint[] => {
 	const turnCount = pickFrom(random, [2, 3, 3, 4]);
 	const forwards = random() < 0.5;
 	const depth = band.along === 'x' ? band.height : band.width;
 	const inset = Math.min(28, depth / 3);
-	// Packed into part of the margin's length, so each bend is tight enough to read as a turn.
 	const span = between(random, 0.45, 0.75);
 	const start = between(random, 0.05, 0.95 - span);
 	const startHigh = random() < 0.5;
@@ -98,7 +92,6 @@ export const marginRun = (band: flightBand, page: flightArea, random: random): f
 const sides = ['left', 'right', 'top', 'bottom'] as const;
 const opposite = { left: 'right', right: 'left', top: 'bottom', bottom: 'top' } as const;
 
-// Across the whole window and behind the boxes, from one side to another.
 export const crossing = (page: flightArea, random: random): flightPoint[] => {
 	const entrySide = pickFrom(random, sides);
 	const exitSide = pickFrom(random, [opposite[entrySide], opposite[entrySide], ...sides.filter(side => side !== entrySide && side !== opposite[entrySide])]);
@@ -129,7 +122,6 @@ export const crossing = (page: flightArea, random: random): flightPoint[] => {
 	return [entry, ...turns, exit];
 };
 
-// Straight runs between the turns, each corner rounded just enough for the head to swing round it.
 export const angularPath = (points: readonly flightPoint[], radius = cornerRadius): string => {
 	let path = `M ${at(points[0]!)}`;
 	for (let index = 1; index < points.length - 1; index++) {

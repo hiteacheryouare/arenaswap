@@ -1,14 +1,3 @@
-// The demos on this site are not pictures of the extension. They import the extension's own
-// components out of @arenaswap/ui and the real scorer out of `powerscore`, which is the point and
-// also the risk: a rename in either package takes a section of the marketing site down, the build
-// stays green because Astro only has to render the island's first frame, and the only symptom is a
-// blank rectangle nobody is watching for.
-//
-// Nothing here re-checks the scoring. `validateHeroTimeline` proves the hero's ranking and
-// `gameDetailChartOptions` is tested where it lives. What a browser can answer is whether these
-// things are on the page at all, whether they speak the visitor's language, and whether the one
-// that talks to ESPN survives what ESPN does.
-
 const espnScoreboard = 'https://site.api.espn.com/apis/site/v2/sports/**/scoreboard*';
 const mlbScoreboard = 'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard*';
 
@@ -24,12 +13,9 @@ describe('the hero runs the extension', () => {
 	it('draws three live game cards inside the browser frame', () => {
 		cy.visit('/');
 
-		// One card per game in the hero script, each one the shipped GameCard rather than markup
-		// copied into this repo.
 		cy.get('.browser-popup .game-card').should('have.length', 3);
 		cy.get('.browser-popup .game-card').first().should('be.visible');
 
-		// A card with no score in it is a card whose props stopped matching what GameCard reads.
 		cy.get('.browser-popup .game-card').each($card => {
 			expect($card.text(), 'card rendered a score').to.match(/\d/);
 		});
@@ -37,9 +23,6 @@ describe('the hero runs the extension', () => {
 		cy.get('.browser-caption').should('not.be.empty');
 	});
 
-	// The first switch in the timeline lands on tick 7, which at 1150ms a tick is just over eight
-	// seconds in. Waiting on the caption rather than on a duration: the timeline is deterministic,
-	// so the only question is whether the page is driving it.
 	it('switches the tab on its own, the way the extension would', () => {
 		cy.visit('/');
 		cy.get('.browser-popup .game-card').should('have.length', 3);
@@ -52,9 +35,6 @@ describe('the hero runs the extension', () => {
 		});
 	});
 
-	// The popup chrome comes from @arenaswap/ui and is handed the site's `ui` string map. When a key
-	// goes missing the island renders the key itself rather than throwing, so the failure mode is a
-	// German page with `main.sectionActiveLiveTabs` where a heading should be.
 	it('speaks the language of the page it is on', () => {
 		cy.visit('/');
 		cy.get('.browser-popup .popup-section-title').first().invoke('text').then(english => {
@@ -69,8 +49,6 @@ describe('the hero runs the extension', () => {
 });
 
 describe('the PowerScore charts', () => {
-	// client:visible, so they are not in the DOM until the band scrolls up. Four ECharts canvases
-	// built by the extension's own option builders.
 	it('draw once the band comes into view', () => {
 		cy.visit('/');
 		cy.get('#powerscore').scrollIntoView();
@@ -91,11 +69,6 @@ describe('the PowerScore charts', () => {
 });
 
 describe('the live PowerScore board', () => {
-	// The payloads are a real ESPN MLB scoreboard, captured 2026-09-21 and trimmed to the fields
-	// LivePowerScores reads. Two games were genuinely in progress at the time.
-	//
-	// Every one of these stubs the network. The page polls 31 leagues on its first sweep, and a
-	// spec that let those through would measure ESPN's evening rather than this code.
 	it('ranks the live games it was given, highest first', () => {
 		stubMlbOnly('espnMlbLive.json');
 		cy.visit('/powerscore/');
@@ -114,12 +87,9 @@ describe('the live PowerScore board', () => {
 			expect(scores, 'cards are ordered by PowerScore').to.deep.equal(sorted);
 		});
 
-		// The abbreviations come straight off the payload, so this is the parse working end to end.
 		cy.get('#live-scores').should('contain.text', 'TOR').and('contain.text', 'BAL');
 	});
 
-	// A scoreboard with nothing in progress is the common case — most hours of most days — and it
-	// has to read as "nothing is on", not as an error and not as an empty page.
 	it('says nothing is live rather than showing an empty panel', () => {
 		stubMlbOnly('espnMlbScheduled.json');
 		cy.visit('/powerscore/');
@@ -132,8 +102,6 @@ describe('the live PowerScore board', () => {
 		cy.get('#live-scores .feature-card').invoke('text').should('not.be.empty');
 	});
 
-	// ESPN sheds by IP volume and answers 403. A quiet Tuesday and a shed request used to draw the
-	// same panel; they must not, because one of them is this page's fault and the other is not.
 	it('tells you it could not reach ESPN when every league is shed', () => {
 		cy.intercept('GET', espnScoreboard, { statusCode: 403, body: {} }).as('shed');
 		cy.visit('/powerscore/');
@@ -144,9 +112,6 @@ describe('the live PowerScore board', () => {
 		cy.get('#live-scores .ps-score-bar-fill').should('not.exist');
 	});
 
-	// The whole request budget in this component exists because the page once asked 31 leagues
-	// every 15 seconds for as long as a tab stayed open. The first sweep is 31; a narrow poll after
-	// it is only the leagues that had something live. Nothing else guards that.
 	it('sweeps all leagues once and then polls only the live ones', () => {
 		const asked: string[] = [];
 		cy.intercept('GET', espnScoreboard, req => {
@@ -164,13 +129,10 @@ describe('the live PowerScore board', () => {
 			expect(new Set(asked).size, 'no league asked twice in one sweep').to.equal(sweep);
 		});
 
-		// Scrolling away and back asks for a fresh draw, which the five second floor must refuse.
 		cy.then(() => {
 			const before = asked.length;
 			cy.scrollTo('top');
 			cy.get('#live-scores').scrollIntoView();
-			// Proving an absence needs a window rather than a condition to wait on. 1500ms sits
-			// inside the five second floor and well past the time a request would take to appear.
 			cy.wait(1500);
 			cy.then(() => {
 				expect(asked.length, 'returning to the section did not re-poll inside the floor').to.equal(before);
@@ -199,8 +161,6 @@ describe('the package install commands', () => {
 		cy.intercept('GET', espnScoreboard, { body: { events: [] } });
 		cy.visit('/powerscore/', {
 			onBeforeLoad: win => {
-				// The real clipboard needs a permission prompt in a headless run, and what matters is
-				// the text the button hands over rather than where the browser puts it.
 				cy.stub(win.navigator.clipboard, 'writeText').as('writeText').resolves();
 			},
 		});
@@ -214,17 +174,12 @@ describe('the package install commands', () => {
 });
 
 describe('the 404 page', () => {
-	// The card is the shipped LiveGameCard from @arenaswap/ui, rendered at build time with no client
-	// directive. If that component's props change, this page loses its centrepiece and the build
-	// does not notice.
 	it('renders the joke card out of the shared component', () => {
 		cy.visit('/404.html');
 		cy.get('.notfound-card .game-card').should('be.visible');
 		cy.get('.notfound-card').should('contain.text', '404').and('contain.text', 'YOU');
 	});
 
-	// GitHub Pages answers every unknown URL under the base with this one file, so the address bar
-	// is the only record of what was actually asked for.
 	it('reports the URL that was actually requested', () => {
 		cy.visit('/no-such-page/', { failOnStatusCode: false });
 		cy.get('#notfound-path').should('have.text', '/arenaswap/no-such-page/');

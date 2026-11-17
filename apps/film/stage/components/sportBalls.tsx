@@ -5,8 +5,6 @@ export type BallKind = 'baseball' | 'soccer' | 'hockey' | 'football' | 'basketba
 
 export const ballOrder: BallKind[] = ['baseball', 'soccer', 'hockey', 'football', 'basketball'];
 
-// Drawn the way Bootstrap Icons draws its filled icons: a 16-unit grid, one flat colour, and the
-// details cut out of it in lines one unit wide. The cut-outs are the stage's black showing through.
 const cutOut = '#000';
 
 type Point = [number, number];
@@ -18,7 +16,6 @@ const point = (radius: number, degrees: number, centre: Point = [8, 8]): Point =
 
 const pentagon = (centre: Point, radius: number, rotate: number) => Array.from({ length: 5 }, (_, index) => point(radius, rotate + index * 72, centre).join(',')).join(' ');
 
-// `detail` fades the cut-outs on their own, so one sport's markings can leave before the next one's arrive.
 interface Drawn {
 	detail: number;
 }
@@ -29,7 +26,6 @@ const Cuts = ({ d, detail, width = 1 }: { d: string; detail: number; width?: num
 
 const disc = <circle cx={8} cy={8} r={8} fill={dotOrange} />;
 
-// A point on a cubic curve and the curve's unit normal there, so the stitches sit across their seam.
 const along = (curve: Point[], t: number) => {
 	const [p0, p1, p2, p3] = curve as [Point, Point, Point, Point];
 	const m = 1 - t;
@@ -59,7 +55,6 @@ const Baseball = ({ detail }: Drawn) => {
 	);
 };
 
-// A pentagon in the middle, five more cut off by the edge, and the seams between them.
 const soccerAngles = Array.from({ length: 5 }, (_, index) => -90 + index * 72);
 
 const Soccer = ({ detail }: Drawn) => (
@@ -76,7 +71,6 @@ const Soccer = ({ detail }: Drawn) => (
 	</>
 );
 
-// Three-quarters on: the top face, and the edge that turns away under it.
 const Hockey = ({ detail }: Drawn) => (
 	<>
 		<path d='M0.5 5.5A7.5 3 0 0 1 15.5 5.5V10.5A7.5 3 0 0 1 0.5 10.5Z' fill={dotOrange} />
@@ -100,7 +94,6 @@ const Basketball = ({ detail }: Drawn) => (
 
 const drawings: Record<BallKind, (props: Drawn) => ReactNode> = { baseball: Baseball, soccer: Soccer, hockey: Hockey, football: Football, basketball: Basketball };
 
-// Centred on (x, y) with radius r, which the 16-unit grid's circle fills.
 const SportBall = ({ kind, x, y, r, rotate = 0, opacity = 1, detail = 1 }: { kind: BallKind; x: number; y: number; r: number; rotate?: number; opacity?: number; detail?: number }) => {
 	const Drawing = drawings[kind];
 	return (

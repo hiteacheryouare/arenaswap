@@ -1,7 +1,3 @@
-// The PowerScore page's demo games are scored by the real engine at build time. These read the
-// built page back, so a change to `powerscore` that flips the story the page tells fails here
-// rather than shipping a page that says the blowout is the better watch in Classic.
-
 const everyScoreboard = 'https://site.api.espn.com/apis/site/v2/sports/**/scoreboard*';
 
 const visit = (path = '/powerscore/') => {

@@ -19,9 +19,6 @@ const loadingMessageCount = 120;
 
 const realRandom = Math.random;
 
-// Mounts while Math.random answers with a fixed value, so a component that picks its line at random
-// shows a chosen one. The pick is made on the first render, which lands after the mount command
-// returns, so it is restored only once the picked line is on the page.
 const mountPicking = (value: number, mount: () => void, picked: string) => {
 	cy.then(() => {
 		Math.random = () => value;
@@ -85,7 +82,6 @@ describe('notices and headers containment', () => {
 		}
 	});
 
-	// Pro tips read their strings when the module loads, so they are English whatever the locale.
 	it('keeps every main-list pro tip inside the popup', () => {
 		const tipCount = 13;
 		for (let index = 0; index < tipCount; index += 1) {
@@ -155,7 +151,6 @@ describe('suggest view containment', () => {
 		cy.get(popupSurface).assertContained();
 	});
 
-	// The cut-title check above is its own test, so one missing title is one red test and not twelve.
 	inEveryLocale('keeps the longest names and tab titles inside the popup', locale => {
 		mountSuggest(locale);
 		cy.get(popupSurface).assertContained({ exempt: ['.suggest-tab-label'] });

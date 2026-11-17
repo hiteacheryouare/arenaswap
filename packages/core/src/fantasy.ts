@@ -2,7 +2,6 @@ import type { FantasyPosition, FantasySport } from 'powerscore';
 import { isLeagueId } from './constants';
 import type { Game, LeagueId } from './types';
 
-// One rostered player, or a team defense (athleteId `dst:<teamId>`, position 'DST').
 export interface FantasyRosterEntry {
 	league: LeagueId;
 	athleteId: string;

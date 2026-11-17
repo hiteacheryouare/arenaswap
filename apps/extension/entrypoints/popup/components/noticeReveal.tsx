@@ -3,8 +3,6 @@ import { motionDuration } from '@arenaswap/ui/src/motion';
 
 interface noticeRevealProps {
 	show: boolean;
-	// Off while the list itself is first appearing, so a notice that lands with it does not push
-	// the cards down a beat after they were drawn.
 	animate: boolean;
 	children: ReactNode;
 }
@@ -12,8 +10,6 @@ interface noticeRevealProps {
 const noticeReveal = ({ show, animate, children }: noticeRevealProps) => {
 	const [present, setPresent] = useState(show);
 	const [entering, setEntering] = useState(false);
-	// Whatever made the notice go away has usually emptied the data it was drawn from, so the
-	// last version that was shown is what folds away.
 	const shownChildren = useRef(children);
 	if (show) shownChildren.current = children;
 

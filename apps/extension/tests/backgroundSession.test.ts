@@ -2,7 +2,6 @@ import { createDefaultUserPreferences, normalizeUserPreferences, pollIntervalMs 
 import type { Game, LeagueId, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 
 jest.mock('@porkyproductions/hat', () => ({
-	// Always the maximum of the range, so timer delays are deterministic.
 	randomInRange: jest.fn().mockImplementation((_min: number, max: number) => max),
 }));
 
@@ -20,12 +19,6 @@ const drain = async (rounds = 12) => {
 	for (let i = 0; i < rounds; i++) await flushPromises();
 };
 
-/* MV3 tears the service worker down whenever it goes idle — in practice within about thirty
-   seconds of the last event — and builds a fresh one on the next wake. Everything the worker held
-   in a closure is gone; only what it wrote to browser.storage comes back. `storage.session` in
-   particular outlives the worker and dies with the browser, so this harness keeps one store across
-   worker loads rather than handing each load a fixed snapshot. That is the difference between
-   testing a restart and testing two unrelated boots. */
 let sessionStore: Record<string, unknown> = {};
 let localStore: Record<string, unknown> = {};
 let syncStore: Record<string, unknown> = {};
@@ -68,7 +61,6 @@ interface StartOptions {
 	atMs: number;
 }
 
-/** Boots a service worker against whatever the previous one left in storage. */
 const startWorker = async ({ games, openTabIds, activeTabId, atMs }: StartOptions) => {
 	jest.resetModules();
 	jest.useFakeTimers({ doNotFake: ['setImmediate'] });
@@ -159,9 +151,6 @@ const mkGame = (id: string, home: number, away: number, period: number, clockSec
 	clockSeconds,
 });
 
-// A one-possession game in the closing seconds against a thirty-point runaway with five minutes
-// left: the gap is far wider than any sensitivity threshold, so only the cooldown can hold a
-// switch back.
 const thriller = (id: string) => mkGame(id, 100, 100, 4, 20);
 const runaway = (id: string) => mkGame(id, 120, 90, 4, 300);
 
@@ -174,7 +163,6 @@ const registry: TabRegistration[] = [{ gameId: 'g1', tabId: 2 }, { gameId: 'g2',
 const switchingPrefs: Partial<UserPreferences> = {
 	enabled: true,
 	enabledLeagues: ['nba' as LeagueId],
-	// Sensitivity 7 is a threshold of 1 point, so the runaway/thriller gap always clears it.
 	sensitivity: 7,
 	switchDelaySeconds: 0,
 	notificationsEnabled: false,
@@ -192,12 +180,6 @@ afterEach(() => {
 });
 
 describe('what survives the service worker being torn down', () => {
-	/* The user set a ten-minute cooldown because they hate being yanked between games. One minute
-	   after a switch the worker idles out, which MV3 does constantly. The cooldown is the only
-	   thing standing between them and another switch.
-
-	   Green since `lastSwitchTime` started being written to and read back from session storage.
-	   Delete the storage write or the rehydrate and this goes red again; both were checked. */
 	test('keeps the cooldown running, so a restart does not hand back a free switch', async () => {
 		seedStorage(switchingPrefs);
 
@@ -211,7 +193,6 @@ describe('what survives the service worker being torn down', () => {
 		await poll();
 		expect(tabsUpdate).toHaveBeenCalledWith(2, { active: true });
 
-		// The user is now on g1's tab, and g1 falls apart while g2 becomes the game of the night.
 		mockTabs([1, 2, 3], 2);
 		setGames([runaway('g1'), thriller('g2')]);
 		tabsUpdate.mockClear();
@@ -220,8 +201,6 @@ describe('what survives the service worker being torn down', () => {
 		await poll();
 		expect(tabsUpdate).not.toHaveBeenCalledWith(3, { active: true });
 
-		// The worker idles out here and a later event brings a fresh one up, two minutes into a
-		// ten-minute cooldown.
 		await startWorker({
 			games: [runaway('g1'), thriller('g2')],
 			openTabIds: [1, 2, 3],
@@ -234,16 +213,6 @@ describe('what survives the service worker being torn down', () => {
 		expect(tabsUpdate).not.toHaveBeenCalledWith(3, { active: true });
 	});
 
-	/* The same user, a week later. Their clock ran an hour fast when a switch was recorded, then
-	   NTP pulled it back. `Date.now() - lastSwitchTime` is now negative, which reads as a cooldown
-	   that has not started counting yet, so every switch is refused for the whole hour of skew on
-	   top of the ten minutes they asked for.
-
-	   A finiteness check is not enough on its own: it rejects a string and lets a number through,
-	   but a timestamp from the future is a finite number, and persisting the value means session
-	   storage carries it across every worker restart rather than losing it on the next teardown.
-	   Left unguarded the user sees auto-switching silently stop, with nothing in the UI to say why,
-	   so anything negative or later than now reads as 0. */
 	test('does not freeze switching when the stored switch time is in the future', async () => {
 		seedStorage(switchingPrefs, { lastSwitchTime: 4_600_000 });
 
@@ -254,8 +223,6 @@ describe('what survives the service worker being torn down', () => {
 			atMs: 1_700_000,
 		});
 
-		// Seven hundred seconds past the switch the clock misrecorded, so the ten-minute cooldown
-		// is long over and g2 is the game of the night.
 		await poll();
 		expect(tabsUpdate).toHaveBeenCalledWith(3, { active: true });
 	});
@@ -271,7 +238,6 @@ describe('what survives the service worker being torn down', () => {
 		});
 		await poll();
 
-		// Watching g1 on tab 2: g2's tab is silenced, the watched one is not.
 		expect(tabsUpdate).toHaveBeenCalledWith(3, { muted: true });
 		expect(sessionStore.mutedTabIds).toEqual([3]);
 
@@ -282,8 +248,6 @@ describe('what survives the service worker being torn down', () => {
 			atMs: 1_060_000,
 		});
 
-		// The user gives up and switches the extension off. Tab 3 was muted by a worker that no
-		// longer exists, so only the session record can tell this one to let it speak again.
 		await sendMessage({
 			type: 'UPDATE_PREFS',
 			prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...switchingPrefs, enabled: false }),
@@ -305,8 +269,6 @@ describe('what survives the service worker being torn down', () => {
 		await poll();
 		expect(sessionStore.mutedTabIds).toEqual([3]);
 
-		// The popup drops g2's registration while the worker is down, so the new worker inherits a
-		// muted tab that is no longer under its management.
 		await startWorker({
 			games: [thriller('g1')],
 			openTabIds: [1, 2, 3],
@@ -341,9 +303,6 @@ describe('what survives the service worker being torn down', () => {
 		expect(state.gameBoosts).toEqual({ g2: 40 });
 	});
 
-	/* The boost is the user telling the extension "I care about this one". If it only lived in the
-	   worker's memory it would evaporate minutes after they set it, and the switcher would quietly
-	   go back to ignoring the game they asked for. */
 	test('and still lets that boost decide the switch after the restart', async () => {
 		seedStorage(switchingPrefs);
 
@@ -363,7 +322,6 @@ describe('what survives the service worker being torn down', () => {
 		});
 		await poll();
 
-		// g2 is the blowout. Only the restored boost can put it ahead of the one-possession game.
 		expect(tabsUpdate).toHaveBeenCalledWith(3, { active: true });
 		expect(tabsUpdate).not.toHaveBeenCalledWith(2, { active: true });
 	});
@@ -374,7 +332,6 @@ describe('what survives the service worker being torn down', () => {
 			{ standbyStreamTabId: 5 },
 		);
 
-		// Both games are runaways, under the threshold of 20, so the worker parks on standby.
 		await startWorker({
 			games: [runaway('g1'), runaway('g2')],
 			openTabIds: [1, 2, 3, 5],
@@ -384,8 +341,6 @@ describe('what survives the service worker being torn down', () => {
 		await poll();
 		expect(tabsUpdate).toHaveBeenCalledWith(5, { active: true });
 
-		// The worker dies while the user sits on standby. `onStandbyStream` was never written to
-		// storage, so the fresh worker has to work out from the tab strip that it is parked.
 		await startWorker({
 			games: [runaway('g1'), thriller('g2')],
 			openTabIds: [1, 2, 3, 5],
@@ -415,9 +370,6 @@ describe('what survives the service worker being torn down', () => {
 		expect(tabsUpdate).not.toHaveBeenCalledWith(3, { active: true });
 	});
 
-	/* The wrap screen draws a chart of the whole game, and the worker will have been rebuilt
-	   dozens of times before the final whistle. Re-applying the scorer's window on each wake would
-	   shave the start off the chart every time, so by the end there would be nothing to draw. */
 	test('keeps tip-off in the chart history across a restart, so the wrap screen can draw it', async () => {
 		const tipOff = 1_000_000;
 		seedStorage({ ...switchingPrefs, keepFinalGames: true });
@@ -433,7 +385,6 @@ describe('what survives the service worker being torn down', () => {
 
 		expect(earliestSnapshotMs(sessionStore.scoreHistory)).toBeLessThanOrEqual(tipOff + 1_000);
 
-		// Two hours of play later, and a great many worker teardowns later.
 		await startWorker({
 			games: [thriller('g1')],
 			openTabIds: [1, 2],
@@ -455,7 +406,6 @@ describe('what survives the service worker being torn down', () => {
 			atMs: 1_000_000,
 		});
 
-		// Tab 2 holds the best game and closed with no worker alive to hear it.
 		await startWorker({
 			games: [thriller('g1'), runaway('g2')],
 			openTabIds: [1, 3],
@@ -479,8 +429,6 @@ describe('what survives the service worker being torn down', () => {
 			atMs: 1_000_000,
 		});
 
-		// A worker that wakes before the tab strip is queryable gets an empty answer. Treating
-		// that as proof every tab closed would hand the user back a popup with nothing assigned.
 		jest.resetModules();
 		tabsQuery = jest.fn().mockResolvedValue([]);
 		await startWorker({
@@ -512,10 +460,6 @@ describe('what survives the service worker being torn down', () => {
 	});
 });
 
-
-/* One Saturday, four tabs, from the popup's point of view. Each of the rules below already has a
-   test of its own; what this is for is the order they fire in when they all apply at once, which
-   is the only way the user ever meets them. */
 describe('a Saturday afternoon with four games on', () => {
 	const fourGames: TabRegistration[] = [
 		{ gameId: 'blowout', tabId: 2 },
@@ -535,7 +479,6 @@ describe('a Saturday afternoon with four games on', () => {
 		syncStore = { prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...saturdayPrefs }) };
 	};
 
-	// A late-and-level game against three that are not.
 	const earlyAfternoon = () => [
 		runaway('blowout'),
 		thriller('tight'),
@@ -555,7 +498,6 @@ describe('a Saturday afternoon with four games on', () => {
 		await poll();
 
 		expect(tabsUpdate).toHaveBeenCalledWith(3, { active: true });
-		// And silences the three it is not showing, while leaving the one on screen audible.
 		expect(tabsUpdate).toHaveBeenCalledWith(2, { muted: true });
 		expect(tabsUpdate).toHaveBeenCalledWith(4, { muted: true });
 		expect(tabsUpdate).toHaveBeenCalledWith(5, { muted: true });
@@ -572,8 +514,6 @@ describe('a Saturday afternoon with four games on', () => {
 		await poll();
 		expect(tabsUpdate).toHaveBeenCalledWith(3, { active: true });
 
-		// The tight game is settled and the other one goes to overtime, thirty seconds into a
-		// two-minute cooldown.
 		mockTabs([1, 2, 3, 4, 5], 3);
 		setGames([runaway('blowout'), runaway('tight'), thriller('overtime'), mkGame('sleepy', 60, 52, 1, 700)]);
 		tabsUpdate.mockClear();
@@ -582,7 +522,6 @@ describe('a Saturday afternoon with four games on', () => {
 
 		expect(tabsUpdate).not.toHaveBeenCalledWith(4, { active: true });
 
-		// And takes it the moment the cooldown is up.
 		jest.setSystemTime(2_200_000);
 		await poll();
 
@@ -599,7 +538,6 @@ describe('a Saturday afternoon with four games on', () => {
 		});
 		await poll();
 
-		// The user closes the tight game's tab and the extension has to stop offering it.
 		mockTabs([1, 2, 4, 5], 1);
 		setGames([runaway('blowout'), thriller('tight'), thriller('overtime'), mkGame('sleepy', 60, 52, 1, 700)]);
 		tabsUpdate.mockClear();
@@ -610,9 +548,6 @@ describe('a Saturday afternoon with four games on', () => {
 		expect(tabsUpdate).toHaveBeenCalledWith(4, { active: true });
 	});
 
-	// Two games reaching the same PowerScore in the same poll. Whichever way it breaks the tie, it
-	// must not flip between the two on every tick — that is the thrash the cooldown exists to stop,
-	// and a tie is the one case where the sensitivity threshold cannot separate them.
 	test('settles on one of two games that peak together instead of bouncing between them', async () => {
 		seedSaturday();
 		const tiedSlate = () => [thriller('tight'), thriller('overtime'), runaway('blowout'), runaway('sleepy')];
@@ -637,7 +572,6 @@ describe('a Saturday afternoon with four games on', () => {
 			jest.setSystemTime(at);
 			await poll();
 			const moved = tabsUpdate.mock.calls.filter(([, patch]) => (patch as { active?: boolean }).active);
-			// Still where the first poll put them, three polls later.
 			expect(moved).toHaveLength(0);
 		}
 	});
@@ -668,7 +602,6 @@ describe('the boss button', () => {
 		await drain();
 		tabsUpdate.mockClear();
 
-		// The decoy is in front now, and a game on a tab we manage is begging to be watched.
 		mockTabs([1, 2, 3, 4], 4);
 		await poll();
 
@@ -698,7 +631,6 @@ describe('the boss button', () => {
 		await drain();
 		tabsUpdate.mockClear();
 
-		// The user clicks over to a game tab and lets it speak; the next sync puts it back.
 		mockTabs([1, 2, 3, 4], 2);
 		await onActivatedHandler!({ tabId: 2 });
 		await drain();
@@ -711,8 +643,6 @@ describe('the boss button', () => {
 		await bossIsComing();
 		await drain();
 
-		// The switch was flipped back on and written to storage, but the worker was torn down
-		// before the UPDATE_PREFS arrived, so the next one boots with enabled true and a hush.
 		const resumed = { prefs: normalizeUserPreferences({ ...createDefaultUserPreferences(), ...switchingPrefs, enabled: true }), prefsUpdatedAt: 2_000_000 };
 		syncStore = { ...resumed };
 		localStore = { ...localStore, ...resumed };
@@ -728,8 +658,6 @@ describe('the boss button', () => {
 		seedStorage(switchingPrefs);
 		await startWorker({ games: [runaway('g1'), thriller('g2')], openTabIds: [1, 2, 3], activeTabId: 2, atMs: 1_000_000 });
 
-		// The poll has decided to move to g2's tab. The press arrives while it is still asking the
-		// browser which tabs exist, the last thing it does before activating one.
 		let tabListQueries = 0;
 		tabsQuery.mockImplementation((query: unknown) => {
 			if ((query as { active?: boolean }).active) return Promise.resolve([{ id: 2 }]);

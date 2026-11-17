@@ -5,7 +5,6 @@ interface gameBoostInputProps {
 	gameId: string;
 	currentBoost: number;
 	onSetGameBoost: (gameId: string, boost: number) => void;
-	// Renders the explainer and field alone, for hosts that supply their own card and heading.
 	bare?: boolean;
 }
 

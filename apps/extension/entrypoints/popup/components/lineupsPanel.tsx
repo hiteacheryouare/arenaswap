@@ -6,7 +6,6 @@ import { blackInkContrast, contrastBetween, hexLuminance, isHex, whiteInkContras
 import Crest from '@arenaswap/ui/src/components/crest';
 import type { Lineups, TeamLineup } from '@arenaswap/sideline';
 
-// Percent of the pitch's height from a team's own goal line to its goalkeeper and to its front row.
 const keeperDepth = 6;
 const frontDepth = 42;
 const nearBlack = '#111827';
@@ -31,7 +30,6 @@ const TeamHeader = ({ team, lineup }: { team: Team; lineup: TeamLineup }) => (
 	</div>
 );
 
-// The top team attacks down the screen, so its own left is the screen's right.
 const Players = ({ lineup, color, atTop }: { lineup: TeamLineup; color: string; atTop: boolean }) => {
 	const shirt = lineup.shirtColor ?? color;
 	const ink = numberInk(shirt, lineup.numberColor);

@@ -27,7 +27,6 @@ const backupSyncPage = ({ prefs, fantasyRoster, profiles, profilesBusy, profileA
 	const [dialog, setDialog] = useState<profileDialogRequest | null>(null);
 	const activeName = profiles.profiles.find(profile => profile.id === profiles.activeId)?.name ?? '';
 
-	// Rename and Delete open from a menu that has already closed, so focus goes back to the row's own button.
 	const closeDialog = () => {
 		const rowButton = dialog && dialog.kind !== 'new' ? document.getElementById(`profileMore-${dialog.profile.id}`) : null;
 		(rowButton ?? document.getElementById('profileNew'))?.focus();

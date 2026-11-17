@@ -46,7 +46,6 @@ const thirdQuarter = (overrides: Partial<Game> = {}): Game => ({
 	...overrides,
 });
 
-// Denver erase a nine-point deficit and tie it with 40 seconds left.
 const tiedFinalMinute = (): Game => ({
 	id: 'den-phx',
 	league: 'nba',
@@ -224,7 +223,6 @@ describe('boosts stack in a fixed order', () => {
 });
 
 describe('blending a mode with Classic', () => {
-	// A mode with almost nothing to say about a tied finish, which Classic rates highly.
 	const indifferent = (overrides: Partial<PowerScoreMode> = {}) => testMode({
 		signals: [fixedSignal('alpha', 50, 10), fixedSignal('beta', 50, 0)],
 		...overrides,
@@ -359,9 +357,6 @@ describe('a game with play stopped', () => {
 
 describe('reasons', () => {
 	test('each fragment carries what a translation needs, and the English line is built from them', () => {
-		// The run that tied it is the comeback, so the two signals make one sentence, and a level game
-		// takes the clock rather than a second sentence saying "Tied". The favorite boost is the
-		// breakdown's to show.
 		const score = scoreGame(tiedFinalMinute(), denverRun(), { favoriteTeamCount: 1, favoriteBoostPoints: 10 });
 		expect(score.reasons).toEqual([{ key: 'cameBack', params: { team: 'DEN', from: 9, when: 'clock', clock: '0:40' } }]);
 		expect(score.reason).toBe(renderReasonsEnglish(score.reasons));

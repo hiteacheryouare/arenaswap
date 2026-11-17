@@ -8,7 +8,6 @@ const locale = currentLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 const extension = demoTranslator(locale);
 
-// The mode names and what each one ranks are the extension's own Settings strings.
 const modes: { id: DemoMode; label: string; explainer: string }[] = [
 	{ id: 'classic', label: 'powerScore.modeClassic', explainer: 'setup.modeExplainerClassic' },
 	{ id: 'blowouts', label: 'powerScore.modeBlowouts', explainer: 'setup.modeExplainerBlowouts' },

@@ -9,10 +9,6 @@ import {
 } from '@arenaswap/core/constants';
 import { currentLocale, useTranslations } from '../../i18n/ui';
 
-// Individual settings rather than the groups they live in: a group name tells you where a control is
-// filed, and what people want to know is what the control does. The panel beside them shows the
-// shipped defaults, imported so they cannot go stale the next time one is retuned.
-
 interface Setting {
 	name: string;
 	copy: string;
@@ -39,9 +35,6 @@ const settings = t.list<Setting>('home.settings.items');
 				))}
 			</dl>
 
-			<!-- The panel is a piece of the extension rather than a picture of one, so its labels come
-			     from the same `ui` namespace the demo popups read: what it shows is what the installed
-			     extension shows, in the same language. -->
 			<div class='settings-panel-demo' data-bs-theme='dark'>
 				<p class='settings-panel-head'>{t('ui.setup.groupSwitching')}</p>
 				<div class='settings-panel-row'>

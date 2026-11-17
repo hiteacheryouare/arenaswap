@@ -1,11 +1,5 @@
 import type { LeagueId } from '@arenaswap/core';
 
-/* `fetchWinProbability` had no coverage at all, and it is the only source of the win-probability
-   variance signal — up to five PowerScore points, and the one signal that can go missing without
-   anything on screen saying so. What matters here is which failures are loud and which are silent:
-   a refusal has to throw so the caller can retry, while ESPN simply having no line yet has to come
-   back empty so the scorer reads "no signal" instead of a neutral zero. */
-
 const createResponse = (data: unknown, init: { ok?: boolean; status?: number } = {}): Response => ({
 	ok: init.ok ?? true,
 	status: init.status ?? 200,
@@ -27,8 +21,6 @@ const mockFetch = (response: Response | (() => Promise<Response>)) => {
 
 const nbaGame = { id: '401584691', league: 'nba' as LeagueId };
 
-// Trimmed from a real /summary answer: ESPN ships hundreds of these per game, one per play, oldest
-// first, and every row carries far more than the one field the scorer reads.
 const winProbabilityLine = (percentages: unknown[]) => ({
 	winprobability: percentages.map(homeWinPercentage => ({
 		homeWinPercentage,
@@ -93,9 +85,6 @@ describe('when ESPN has nothing to say', () => {
 });
 
 describe('when ESPN answers badly', () => {
-	/* The distinction this whole describe exists for. A refusal is a state that clears on its own,
-	   so it has to reach the caller; an answer we cannot read is not, so it degrades to no signal.
-	   Collapsing the two would let a rate-shed game look permanently unmodelled. */
 	test('a 403 shed throws rather than reading as a game with no line', async () => {
 		const { api } = mockFetch(createResponse({}, { ok: false, status: 403 }));
 
@@ -128,8 +117,6 @@ describe('when ESPN answers badly', () => {
 
 describe('rows inside the line that do not read', () => {
 	test('one unreadable row is dropped and the rest of the line survives', async () => {
-		// The row schema carries a `.catch({})`, so a row ESPN reshapes costs its own point rather
-		// than the whole line — which is the difference between a slightly coarser signal and none.
 		const { api } = mockFetch(createResponse({
 			winprobability: [
 				{ homeWinPercentage: 0.5 },
@@ -142,10 +129,6 @@ describe('rows inside the line that do not read', () => {
 	});
 
 	test('a percentage sent as a quoted string is dropped, not coerced', async () => {
-		/* Deliberately pinned rather than assumed. ESPN varies number-vs-string encoding by sport
-		   and endpoint — the scoreboard's ids and scores accept both shapes for exactly that reason
-		   — and this field does not. If the summary endpoint ever quotes it, every row drops and the
-		   signal goes silently to nothing. */
 		const { api } = mockFetch(createResponse(winProbabilityLine(['0.62', 0.58])));
 
 		await expect(api.fetchWinProbability(nbaGame)).resolves.toEqual([0.58]);
@@ -177,11 +160,6 @@ describe('the [0, 1] contract the scorer relies on', () => {
 		await expect(api.fetchWinProbability(nbaGame)).resolves.toEqual([0, 1]);
 	});
 
-	/* The one drift in here that fails silently and wrongly rather than loudly. If ESPN ever switched
-	   this field to whole percentages, every value clamps to 1, the line reads as a flat certainty,
-	   its variance is zero, and the signal contributes nothing — with no dropped-row count, no
-	   warning and no empty array to notice. Pinned so the day it happens there is a test to point at
-	   rather than a mystery about a signal that quietly stopped paying out. */
 	test('whole percentages would clamp flat to 1, which is silent rather than loud', async () => {
 		const { api } = mockFetch(createResponse(winProbabilityLine([12, 55, 88])));
 

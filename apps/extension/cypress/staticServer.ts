@@ -23,7 +23,6 @@ export const startStaticServer = (rootDir: string, port: number): Promise<Server
 		const requestPath = new URL(req.url ?? '/', 'http://localhost').pathname;
 		const filePath = join(rootDir, normalize(requestPath));
 
-		// normalize() collapses "..", so anything still outside the root was an escape attempt.
 		if (!filePath.startsWith(rootDir + sep)) {
 			res.writeHead(403).end('Forbidden');
 			return;

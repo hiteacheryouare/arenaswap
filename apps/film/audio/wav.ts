@@ -3,8 +3,6 @@ import { dirname } from 'node:path';
 import createRandom from './random';
 import type { RenderedAudio } from './score';
 
-// Interleaved stereo PCM. 16-bit gets seeded TPDF dither (except on exact digital silence, so a
-// faded-out ending stays at zero); 24-bit is rounded straight.
 export const encodeWav = (audio: RenderedAudio, bitDepth: 16 | 24 = 24): Buffer => {
 	const channels = 2;
 	const frames = audio.left.length;

@@ -6,7 +6,6 @@ import type { Measure } from '../measure';
 
 export interface ShotContext {
 	t: number;
-	// Seconds since this shot started.
 	local: number;
 	shot: Shot;
 	cut: Cut;
@@ -24,9 +23,7 @@ export interface PopupPlacement {
 	y: number;
 	scale: number;
 	opacity: number;
-	// Rounded-corner clip and drop shadow, as the browser draws a popup.
 	chrome?: boolean;
-	// The part of the page to show, in the page's own pixels. Shifted so the visible part sits at x, y.
 	crop?: { top: number; right: number; bottom: number; left: number };
 	rotate?: number;
 }

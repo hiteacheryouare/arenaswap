@@ -1,5 +1,3 @@
-// Runs in every document before its own scripts, popups included.
-//
 // Chrome's virtual time already drives timers, requestAnimationFrame and Date, but CSS animations,
 // transitions and the Web Animations API follow the compositor's wall clock. `filmScrub` pauses
 // every one of them and sets its current time from the virtual clock, so a two-second render and a

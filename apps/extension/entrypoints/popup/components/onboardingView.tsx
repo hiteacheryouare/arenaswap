@@ -16,7 +16,6 @@ interface onboardingViewProps {
 	leagueLogos: LeagueLogoMap;
 	onComplete: (leagues: LeagueId[], favorites: string[]) => void;
 	onStartWalkthrough?: (leagues: LeagueId[], favorites: string[]) => void;
-	// A fresh profile goes straight to the pickers and back out again, with no welcome either side.
 	startStep?: 1 | 2;
 	onLeave?: () => void;
 }
@@ -57,9 +56,6 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough, startStep
 
 	const rosterRequestRef = useRef(0);
 
-	// The picker opens straight away on its own loading state; a roster for a slate of many leagues
-	// takes seconds behind the request throttle. Only the newest request may land, so a double click,
-	// or a trip back to change leagues, can't overwrite the roster with an older answer.
 	const onNext = async () => {
 		const request = ++rosterRequestRef.current;
 		setStep(3);
@@ -103,7 +99,6 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough, startStep
 
 	return (
 		<div className='popup-root'>
-			{/* Onboarding is what the popup opens on, so it starts in place rather than sliding in. */}
 			<div className='popup-view-shell is-opening-view'>
 				{step === 1 && (
 					<OnboardingTabControl onNext={() => setStep(2)} />

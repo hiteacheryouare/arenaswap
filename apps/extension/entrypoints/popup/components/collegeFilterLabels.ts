@@ -34,7 +34,6 @@ export const collegeRankedLabel = (leagueId: CollegeLeagueId): string => (
 
 const maxNamedConferences = 2;
 
-// One line under the league's name on the Leagues page: what the picker currently lets through.
 export const collegeFilterSummary = (leagueId: CollegeLeagueId, filter: CollegeFilter, directory?: ConferenceDirectory): string => {
 	const divisions = collegeDivisions[leagueId];
 	if (divisions.length === 1 && filter.divisions.length > 0) return i18n.t('collegeFilter.summaryAll');

@@ -1,9 +1,5 @@
 import { contrast } from '../colour';
 
-// The site follows the OS until a visitor picks a theme in the nav, and the head's boot script
-// decides before the first paint. Colours are read off computed styles: a theme that sets the right
-// attribute and paints the wrong surface is the failure that matters here, and a DOM check misses it.
-
 const emulateScheme = (scheme: 'light' | 'dark') => {
 	cy.then(() => Cypress.automation('remote:debugger:protocol', {
 		command: 'Emulation.setEmulatedMedia',
@@ -58,7 +54,6 @@ describe('the site theme', () => {
 		cy.get('[data-theme-toggle]').click();
 		expectTheme('light');
 
-		// Read before any bundle runs: only the inline boot script can have set it by then.
 		cy.visit('/faq/', {
 			onBeforeLoad: win => {
 				win.document.addEventListener('readystatechange', () => {

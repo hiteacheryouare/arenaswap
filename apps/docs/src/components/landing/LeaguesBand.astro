@@ -18,8 +18,6 @@ interface Ring {
 	crests: RingCrest[];
 }
 
-// The most watched ring first. Radii and crest sizes are percentages of the arc's width, and
-// leagues that share one logo share one crest.
 const rings: Ring[] = [
 	{
 		radius: 19,
@@ -71,12 +69,9 @@ const leagueCount = leagueConfigs.length;
 const artwork = import.meta.glob<{ default: ImageMetadata }>('../../assets/leagues/*.png', { eager: true });
 const art = (name: string) => artwork[`../../assets/leagues/${name}.png`]?.default;
 
-// The widest the arc gets, in px, so each WebP comes out at 2x its largest size on screen.
 const widestArc = 72 * 16;
 const listFormat = new Intl.ListFormat(locale, { type: 'conjunction' });
 
-// Each ring carries its crests twice, half a turn apart, so the whole ring is always in the top half.
-// Every crest in a ring covers the same area, so a wide wordmark and a tall shield look equally big.
 const arcRings = rings.map((ring, ringIndex) => {
 	const slots = [...ring.crests, ...ring.crests];
 	const step = 360 / slots.length;
@@ -110,9 +105,6 @@ const groups = sportOrder
 	}))
 	.filter(group => group.leagues.length > 0);
 
-// Spelled out, because a headline reading "31 Leagues. 6 sports." mixes a figure set at 104px with
-// a digit set at 40px and looks like a mistake. Each locale supplies its own numerals already in
-// the sentence-initial form, so no call site applies a case transform an alphabet may not have.
 const numerals = t.list<string>('home.leagues.numerals');
 const sportCount = numerals[groups.length] ?? String(groups.length);
 ---

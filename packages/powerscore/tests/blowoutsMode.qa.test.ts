@@ -14,8 +14,6 @@ const nba = (period: number, clockSeconds: number, home: number, away: number): 
 	awayTeam: { score: away, abbreviation: 'MIA' },
 });
 
-// One snapshot every fifteen seconds over the last five minutes, the way the worker records a game,
-// with the score moving linearly from `from` to `to`.
 const window = (from: [number, number], to: [number, number], spanMs = 300_000): ScoreSnapshot[] => {
 	const steps = spanMs / 15_000;
 	return Array.from({ length: steps + 1 }, (_, i) => ({
@@ -76,7 +74,6 @@ describe('piling on', () => {
 
 	test('fades once the leader stops scoring', () => {
 		const stillRunning = blowouts(nba(3, 300, 90, 62), window([78, 62], [90, 62]));
-		// The same 12-0 run, but it ended three minutes ago and nothing has gone in since.
 		const history = window([78, 62], [90, 62], 120_000).map(snapshot => ({ ...snapshot, timestamp: snapshot.timestamp - 180_000 }));
 		const stalled = blowouts(nba(3, 120, 90, 62), [...history, { gameId: 'g', timestamp: now, homeScore: 90, awayScore: 62 }]);
 		expect(signal(stalled, 'pileOn')).toBeLessThan(signal(stillRunning, 'pileOn'));

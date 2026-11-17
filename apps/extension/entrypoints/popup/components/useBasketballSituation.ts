@@ -10,9 +10,6 @@ interface loadedSituation {
 	situation: BasketballSituation | null;
 }
 
-// Timeouts and fouls for the live basketball game on screen, asked for only while this screen is
-// open and at the scoreboard's own pace. The background never fetches it: nothing it scores reads
-// either, and one more request per live game would be spent on screens nobody has open.
 const useBasketballSituation = (game: Pick<Game, 'id' | 'league' | 'sportType' | 'status'>): BasketballSituation | null => {
 	const { id, league, sportType, status } = game;
 	const live = sportType === 'basketball' && status === 'in' && !id.startsWith('mock-');

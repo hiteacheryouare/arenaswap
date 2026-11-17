@@ -3,8 +3,6 @@
 // below compiles to a require() call and the spec fails before any test runs.
 import '../../../assets/guide.scss';
 
-// The drawer is markup in the guide's own app shell rather than a component of its own, so what is
-// worth pinning is the stylesheet contract it depends on — which is where both of its defects were.
 const mountDrawer = (closing = false) => {
 	cy.viewport(1280, 800);
 	cy.mount(
@@ -20,9 +18,6 @@ const mountDrawer = (closing = false) => {
 };
 
 describe('the guide detail drawer', () => {
-	// The detail screen is a hard 320x560. 320 is the width it is laid out against and is kept; 560
-	// is the popup's frame rather than anything about the content, and left alone it leaves a band
-	// of empty surface under the detail in a full browser tab.
 	it('fills the height of the tab rather than stopping at the popup frame', () => {
 		mountDrawer();
 		cy.get('.guide-drawer .popup-container').then(([inner]: JQuery<HTMLElement>) => {
@@ -49,8 +44,6 @@ describe('the guide detail drawer', () => {
 		});
 	});
 
-	// The exit is a different keyframe rather than the entry reversed, and it has `forwards` so the
-	// panel stays off screen for the frame between the animation ending and React unmounting it.
 	it('slides back out when it closes', () => {
 		mountDrawer(true);
 		cy.get('.guide-drawer').then(([drawer]: JQuery<HTMLElement>) => {

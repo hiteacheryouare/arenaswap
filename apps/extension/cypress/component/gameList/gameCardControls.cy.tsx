@@ -5,7 +5,6 @@ import type { GameCardDisplayProps } from '@arenaswap/ui/src/components/gameCard
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 import ExtLiveGameCard from '../../../entrypoints/popup/components/liveGameCard';
 
-// Every rule sits inside an @layer block, so a walk over the stylesheets has to open grouping rules.
 const flatten = (rules: CSSRuleList): CSSRule[] => Array.from(rules).flatMap(rule => (rule instanceof CSSGroupingRule ? flatten(rule.cssRules) : [rule]));
 
 const popupWidth = 320;

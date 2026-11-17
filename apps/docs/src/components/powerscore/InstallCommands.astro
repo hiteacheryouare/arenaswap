@@ -3,7 +3,6 @@ import { currentLocale, useTranslations } from '../../i18n/ui';
 
 const t = useTranslations(currentLocale(Astro.currentLocale));
 
-// The package manager names are not translated: they are the commands you type.
 const commands = [
 	{ id: 'npm', command: 'npm install powerscore' },
 	{ id: 'pnpm', command: 'pnpm add powerscore' },

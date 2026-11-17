@@ -19,7 +19,6 @@ const games: Game[] = [
 	makeGame('g4', { league: 'nba', sportType: 'basketball', awayTeam: team('lal', 'LAL', '#552583'), homeTeam: team('gsw', 'GSW', '#1D428A') }),
 ];
 
-// A page per box, each its own colour, so a failure screenshot shows which box went where.
 const streamPage = (label: string, color: string) => `data:text/html,${encodeURIComponent(
 	`<body style="margin:0;display:grid;place-items:center;height:100vh;background:${color};color:#fff;font:600 32px system-ui">${label}</body>`,
 )}`;
@@ -31,7 +30,6 @@ const lineupOf = (count: number, featuredGameId = 'g1', solo = false): Multiview
 	games: games.slice(0, count),
 });
 
-// Boxes on real-looking sites, so the page can tell which share one. Each site answers with a blank page.
 const lineupOnSites = (urls: string[]): MultiviewLineup => {
 	for (const hostname of new Set(urls.map(url => new URL(url).hostname))) {
 		cy.intercept({ hostname }, { headers: { 'content-type': 'text/html' }, body: '<body style="margin:0;background:#1b2a41"></body>' });
@@ -45,9 +43,7 @@ const lineupOnSites = (urls: string[]): MultiviewLineup => {
 };
 
 interface multiviewHandle {
-	// One report from the frame named for `gameId`, as the frame script sends it. Resolves to the reply.
 	report: (gameId: string, frameId: number, time: number, playing?: boolean, paused?: boolean) => Promise<unknown>;
-	// A report from a box's frame that has ended up at `href`, with nothing playing yet.
 	land: (gameId: string, frameId: number, href: string) => Promise<unknown>;
 	update: (lineup: MultiviewLineup) => void;
 	sent: { type: string;[key: string]: unknown }[];
@@ -89,7 +85,6 @@ const mountMultiview = (lineup: MultiviewLineup | null) => {
 	document.documentElement.style.margin = '0';
 	document.body.style.margin = '0';
 	cy.mount(<App />);
-	// The frame listener goes up once the page knows its tab, which is when the boxes first render.
 	if (lineup) cy.get('.multiview-box').should('have.length', lineup.boxes.length);
 
 	const report = (status: Omit<MultiviewFrameStatusMessage, 'type' | 'firstLevel'>, frameId: number) => Promise.all(listeners.map(listener => listener(
@@ -106,7 +101,6 @@ const mountMultiview = (lineup: MultiviewLineup | null) => {
 	}, { log: false }).as('multiview');
 };
 
-// Two reports with the clock moving between them, which is what counts as playing.
 const play = (gameId: string, frameId: number) => cy.get<multiviewHandle>('@multiview').then(async handle => {
 	await handle.report(gameId, frameId, 1);
 	await handle.report(gameId, frameId, 2);
@@ -119,7 +113,6 @@ const offAir = (gameId: string) => cy.get(`[data-game-id="${gameId}"]`).should('
 const onAir = (gameId: string) => cy.get(`[data-game-id="${gameId}"]`).should('have.attr', 'data-on-air', 'true')
 	.find('.multiview-off-air').should('have.class', 'multiview-off-air-gone');
 
-// The frame script reports once a second. This plays that out on the stopped clock.
 const reportEverySecond = (gameId: string, frameId: number, seconds: number, report: { from: number; advancing: boolean; playing?: boolean; paused?: boolean }) => {
 	for (let second = 1; second <= seconds; second++) {
 		cy.tick(1000);
@@ -127,7 +120,6 @@ const reportEverySecond = (gameId: string, frameId: number, seconds: number, rep
 	}
 };
 
-// Exactly one box carries the outline and the speaker, and it is this game's.
 const heard = (gameId: string) => {
 	cy.get('.multiview-box-audible iframe').should('have.length', 1).and('have.attr', 'name', gameId);
 	cy.get('[aria-label="Sound on"]').should('have.length', 1);
@@ -148,7 +140,6 @@ describe('Multiview page', () => {
 		cy.get('[data-game-id="g1"]').should('have.css', 'grid-column-start', '1');
 		cy.get('[data-game-id="g1"] .multiview-off-air-crest').should('have.length', 2);
 		cy.get<multiviewHandle>('@multiview').then(handle => handle.report('g1', 11, 5, true).then(() => handle.report('g1', 11, 5, true)));
-		// Playing with a clock that never moves is a spinner, not a stream.
 		offAir('g1');
 		play('g2', 12);
 		onAir('g2');
@@ -175,7 +166,6 @@ describe('Multiview page', () => {
 		play('g1', 11);
 		reportEverySecond('g1', 11, 6, { from: 2, advancing: false, playing: false, paused: true });
 		onAir('g1');
-		// A frame that stops reporting has gone, paused or not.
 		cy.tick(4000);
 		offAir('g1');
 	});
@@ -273,7 +263,6 @@ describe('Multiview page', () => {
 				const big = $big[0].getBoundingClientRect();
 				const small = $small[0].getBoundingClientRect();
 				expect(small.width / small.height).to.be.closeTo(16 / 9, 0.02);
-				// Four games: the big box is three columns and two gaps wide, with three stacked beside it.
 				expect(big.width).to.be.closeTo(small.width * 3 + 8, 1);
 				expect(big.top).to.be.closeTo(small.top, 1);
 			});

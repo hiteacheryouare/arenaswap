@@ -1,30 +1,15 @@
 import type { LeagueId, SportType } from '@arenaswap/core/types';
 import type { BoxScore, BoxScoreAthlete, BoxScoreCategory, BoxScoreTeam, TeamComparisonRow } from '@arenaswap/sideline';
 
-// Which categories a sport shows, in what order, and which of ESPN's columns each one keeps.
-//
-// The budget is the reason anything is cut: ~263px inside the card leaves a truncated name column
-// and at most six numbers. So these are condensed box scores, which have their own conventional
-// column orders — not full ones with the right-hand side chopped off. Truncating basketball's full
-// order (MIN | FG 3PT FT | REB AST STL BLK TO PF | PTS) at six gives a basketball table with no
-// points column, which is why PTS-REB-AST sits directly after MIN here instead.
-//
-// Selection is by ESPN's stable `keys`, never by its display `labels`: the labels are the text we
-// are replacing, and the same abbreviation means different things in different categories.
-
 interface columnSpec {
 	statKey: string;
 	labelKey: string;
 }
 
 interface categorySpec {
-	// ESPN's own category name. Basketball's single category arrives unnamed, so '' is a real
-	// category rather than a missing one.
 	name: string;
 	headingKey: string;
 	columns: readonly columnSpec[];
-	// 0 means every row. Only football needs one: a college `defensive` array runs past 30 players
-	// a side, and nobody scrolls 30 rows of tackles to reach the next section.
 	rowCap: number;
 	showTotals: boolean;
 }
@@ -33,10 +18,6 @@ const baseballCategories = [
 	{
 		name: 'batting',
 		headingKey: 'box.batting',
-		// `hits-atBats` leads because it collapses two columns into one and "1-3" is how a fan
-		// says it out loud. The slot that bought pays for HR, the one batting event worth
-		// switching games for. AVG/OBP/SLG are season context, and a batter's `#P` is pitches
-		// seen rather than thrown.
 		columns: [
 			{ statKey: 'hits-atBats', labelKey: 'box.hitsAtBats' },
 			{ statKey: 'runs', labelKey: 'box.runs' },
@@ -51,8 +32,6 @@ const baseballCategories = [
 	{
 		name: 'pitching',
 		headingKey: 'box.pitching',
-		// The canonical newspaper pitching line, unmodified. R and ER are usually the same number
-		// and the pair is still habitual enough that dropping one is noticed.
 		columns: [
 			{ statKey: 'fullInnings.partInnings', labelKey: 'box.inningsPitched' },
 			{ statKey: 'hits', labelKey: 'box.hits' },
@@ -70,16 +49,12 @@ const footballCategories = [
 	{
 		name: 'passing',
 		headingKey: 'box.passing',
-		// QBR and RTG are composites a fan cannot compute or verify, and QBR is ESPN's own —
-		// the same rule that keeps `MLBRating` out of the pre-game leaders block.
 		columns: [
 			{ statKey: 'completions/passingAttempts', labelKey: 'box.completionsAttempts' },
 			{ statKey: 'passingYards', labelKey: 'box.yards' },
 			{ statKey: 'yardsPerPassAttempt', labelKey: 'box.average' },
 			{ statKey: 'passingTouchdowns', labelKey: 'box.touchdowns' },
 			{ statKey: 'interceptions', labelKey: 'box.interceptions' },
-			// Sacks suffered, and only the NFL sends it — college has no such column. Under
-			// `defensive` below the same abbreviation means sacks recorded.
 			{ statKey: 'sacks-sackYardsLost', labelKey: 'box.sacks' },
 		],
 		rowCap: 3,
@@ -107,8 +82,6 @@ const footballCategories = [
 			{ statKey: 'yardsPerReception', labelKey: 'box.average' },
 			{ statKey: 'receivingTouchdowns', labelKey: 'box.touchdowns' },
 			{ statKey: 'longReception', labelKey: 'box.long' },
-			// A receiver at 11 targets and 3 catches is a story the other columns do not tell.
-			// The NFL sends it and college does not.
 			{ statKey: 'receivingTargets', labelKey: 'box.targets' },
 		],
 		rowCap: 6,
@@ -117,9 +90,6 @@ const footballCategories = [
 	{
 		name: 'defensive',
 		headingKey: 'box.defensive',
-		// The only category that answers who is wrecking the game on the other side of the ball.
-		// TOT and SOLO both stay despite correlating: tackles are quoted as the pair. `QB HTS` is
-		// near-duplicative of sacks and the least recognized column on the list.
 		columns: [
 			{ statKey: 'totalTackles', labelKey: 'box.totalTackles' },
 			{ statKey: 'soloTackles', labelKey: 'box.soloTackles' },
@@ -134,9 +104,6 @@ const footballCategories = [
 	{
 		name: 'interceptions',
 		headingKey: 'box.interceptionsHeading',
-		// Cheap to keep: empty in most games, and a takeaway is the highest-leverage play in the
-		// sport. An empty category is dropped by the parser, so this costs a heading only when
-		// somebody actually picked a pass off.
 		columns: [
 			{ statKey: 'interceptions', labelKey: 'box.interceptions' },
 			{ statKey: 'interceptionYards', labelKey: 'box.yards' },
@@ -147,15 +114,7 @@ const footballCategories = [
 	},
 ] as const;
 
-// Kicking, punting, returns and fumbles are deliberately absent. A kicker's 3-for-3 is nine points
-// the reader is already looking at on the scoreboard directly above; what a kicking table adds over
-// that is misses, which are rare. A section that is uninformative in most games teaches the reader
-// to scroll past the whole block.
-
 const basketballColumns = [
-	// MIN is the denominator that makes the rest legible — 18 points in 14 minutes is a different
-	// sentence from 18 in 38 — and it is how a benched or injured starter shows up. FG and 3PT sit
-	// last because they are a shooting pair and the widest strings on the row.
 	{ statKey: 'minutes', labelKey: 'box.minutes' },
 	{ statKey: 'points', labelKey: 'box.points' },
 	{ statKey: 'rebounds', labelKey: 'box.rebounds' },
@@ -164,20 +123,11 @@ const basketballColumns = [
 	{ statKey: 'threePointFieldGoalsMade-threePointFieldGoalsAttempted', labelKey: 'box.threePointers' },
 ] as const;
 
-// Forwards and defenses keep the split ESPN and the NHL's own game summary both use. The position
-// group is what makes +/- and TOI legible — a defenseman at 24:00 is a normal night and a forward
-// at 24:00 is a workhorse — and merging them would need a POS column, which costs one of the six
-// numeric slots to say what a section heading says for free.
 const skaterColumns = [
 	{ statKey: 'goals', labelKey: 'box.goals' },
 	{ statKey: 'assists', labelKey: 'box.hockeyAssists' },
 	{ statKey: 'plusMinus', labelKey: 'box.plusMinus' },
-	// ESPN's own label for `shotsTotal` is `S`, which is shots on goal. Its `SOG` column is
-	// shootout goals, contradicting ESPN's published glossary — so `S` is the label used here and
-	// `SOG` is never rendered, and no column in this file is labelled SOG mapping to another key.
 	{ statKey: 'shotsTotal', labelKey: 'box.shots' },
-	// A penalty creates the power play, which is the thing that makes hockey exciting. Time on ice
-	// is coach-trust analysis; this reader is watching for events. Both fit, so both stay.
 	{ statKey: 'penaltyMinutes', labelKey: 'box.penaltyMinutes' },
 	{ statKey: 'timeOnIce', labelKey: 'box.timeOnIce' },
 ] as const;
@@ -185,15 +135,10 @@ const skaterColumns = [
 const hockeyCategories = [
 	{ name: 'forwards', headingKey: 'box.forwards', columns: skaterColumns, rowCap: 0, showTotals: false },
 	{ name: 'defenses', headingKey: 'box.defensemen', columns: skaterColumns, rowCap: 0, showTotals: false },
-	// Sent empty in every game sampled. When it is populated it replaces the two above rather than
-	// supplementing them, which is what `dropDuplicateSkaters` guards.
 	{ name: 'skaters', headingKey: 'box.skaters', columns: skaterColumns, rowCap: 0, showTotals: false },
 	{
 		name: 'goalies',
 		headingKey: 'box.goaltending',
-		// ESPN's own payload order, which is also Hockey-Reference's. The situational splits
-		// (ESSV/PPSV/SHSV) are analyst territory, and `YTDG` is a season total sitting in a game
-		// box score — rendered as G it would show somebody a 22-goal night.
 		columns: [
 			{ statKey: 'goalsAgainst', labelKey: 'box.goalsAgainst' },
 			{ statKey: 'shotsAgainst', labelKey: 'box.shotsAgainst' },
@@ -215,12 +160,9 @@ const boxSpecs = {
 		headingKey: 'box.players',
 		columns: basketballColumns,
 		rowCap: 0,
-		// Conventional in basketball, and not in football.
 		showTotals: true,
 	}],
 	hockey: hockeyCategories,
-	// No per-player box score exists for soccer. The team comparison table is the whole answer
-	// there, and it is rendered for every sport that sends the flat shape.
 	soccer: [],
 } as const satisfies Record<SportType, readonly categorySpec[]>;
 
@@ -249,15 +191,9 @@ export type PeriodLabel =
 	| { kind: 'overtime'; index: number }
 	| { kind: 'named'; labelKey: BoxPeriodLabelKey };
 
-// Soccer's `linescores` are positionally fixed rather than counted: [1H, 2H, ET1, ET2, PENS]. Two
-// entries at full time, four after extra time, five if it went to penalties, and index 4 is always
-// the shootout. Slicing the list to the entry count is also what gets a match live in the first
-// period of extra time right, at three entries.
-//
-// MLS Round One goes from a 90-minute draw straight to penalties by rule, and ESPN still emits
-// five entries with indices 2 and 3 zero-filled. Those phantom columns are drawn rather than
-// detected: from the line score alone they are identical to a genuinely scoreless extra time,
-// which is the commoner case of the two and the one that must not be erased.
+// The feed's soccer `linescores` are positionally fixed: [1H, 2H, ET1, ET2, PENS].
+// MLS Round One goes from a draw straight to penalties and the feed still sends ET1 and ET2 zero-filled,
+// indistinguishable from a scoreless extra time, so those columns are drawn.
 const soccerPeriodLabels: PeriodLabel[] = [
 	{ kind: 'number', value: 1 },
 	{ kind: 'number', value: 2 },
@@ -271,12 +207,7 @@ export interface PeriodLabelInput {
 	regularPeriods: number;
 	periodFormat: string | undefined;
 	sportType: SportType | undefined;
-	// ESPN's own suffix off the Final designation, already parsed onto the game. 'SO' is the only
-	// value that moves a heading: a hockey shootout and a second overtime both arrive as a fifth
-	// entry, and a shootout cannot happen in the playoffs, so the suffix separates the two.
 	finalPeriodSuffix?: string;
-	// Before the Final there is no suffix, so a live game falls back on the rule itself: only NHL
-	// and NCAA playoff hockey plays a second overtime, and everything else shoots out instead.
 	league?: LeagueId;
 	isPostseason?: boolean;
 }
@@ -289,12 +220,8 @@ const isLiveShootout = ({ periodCount, regularPeriods, finalPeriodSuffix, league
 	&& !(isPostseason && league !== undefined && unlimitedOvertimeHockey.has(league))
 );
 
-// Extra innings are just numbered — a 12th inning reads "12". A fifth quarter does not read "5";
-// it reads OT, and the ones after it 2OT and 3OT.
 export const periodLabels = (input: PeriodLabelInput): PeriodLabel[] => {
 	const { periodCount, regularPeriods, periodFormat, sportType, finalPeriodSuffix } = input;
-	// Keyed on the sport rather than on `periodFormat`: 'halves' over two regular periods also
-	// describes NCAAB, whose fifth column is an overtime and not extra time.
 	if (sportType === 'soccer') {
 		return Array.from({ length: periodCount }, (_, index) => (
 			soccerPeriodLabels[index] ?? { kind: 'number' as const, value: index + 1 }
@@ -316,11 +243,7 @@ export const periodLabels = (input: PeriodLabelInput): PeriodLabel[] => {
 
 export interface BoxScoreColumn {
 	labelKey: BoxColumnLabelKey;
-	// Position in the category's own `labels` / `stats` arrays, which are parallel.
 	index: number;
-	// ESPN's own description of the column, which is the only thing that can tell a reader that
-	// SACKS under passing means sacks suffered while SACKS under defensive means sacks recorded.
-	// English, like every other ESPN string we pass through rather than translate.
 	description: string;
 }
 
@@ -329,22 +252,17 @@ export interface BoxScoreSection {
 	headingKey: BoxHeadingKey;
 	columns: BoxScoreColumn[];
 	athletes: BoxScoreAthlete[];
-	// Aligned to `columns`, or null for a category ESPN sends no totals for — every hockey one.
 	totals: string[] | null;
 	rowCap: number;
 }
 
 const statAt = (athlete: BoxScoreAthlete, index: number): string => athlete.stats[index] ?? '';
 
-// A legitimate stat is often '0', '0-0' or '.000', so nothing here may lean on truthiness — the
-// same trap that ate a rookie's '0-0' in the pre-game leaders block.
 const toNumber = (value: string): number => {
 	const parsed = Number.parseFloat(value);
 	return Number.isFinite(parsed) ? parsed : 0;
 };
 
-// '20:14' is twenty minutes and fourteen seconds. Read as a float it would be 20.14, which happens
-// to sort correctly and happens to be wrong.
 const toSeconds = (value: string): number => {
 	const parts = value.split(':');
 	if (parts.length !== 2) return toNumber(value);
@@ -362,27 +280,17 @@ const orderAthletes = (
 	category: BoxScoreCategory,
 	athletes: BoxScoreAthlete[],
 ): BoxScoreAthlete[] => {
-	// Football and baseball pitching arrive in the order that is already conventional: ESPN sorts
-	// each football category descending by its primary stat, and pitchers arrive in order of
-	// appearance. Neither is re-sorted.
 	if (sportType === 'football') return athletes;
 
 	if (category.name === 'batting') {
-		// The batting order is information, and a fan reads down it looking for their guy. Sort is
-		// stable, so substitutions keep their chronological position inside the slot they took
-		// over. A `batOrder` of 0 means no spot in the order and sorts last.
 		return athletes.toSorted((a, b) => (a.batOrder || 10) - (b.batOrder || 10));
 	}
 
 	if (sportType === 'basketball') {
-		// The announced lineup, then the bench in ESPN's order — which tracks the rotation — then
-		// everyone who did not play, as a group at the bottom.
 		return athletes.toSorted((a, b) => basketballRank(a) - basketballRank(b));
 	}
 
 	if (sportType === 'hockey' && category.name !== 'goalies') {
-		// The one sport whose array order carries nothing a fan can use: line combinations are not
-		// exposed and jersey order is noise. Points, then goals, then time on ice.
 		const goals = indexOfKey(category, 'goals');
 		const assists = indexOfKey(category, 'assists');
 		const timeOnIce = indexOfKey(category, 'timeOnIce');
@@ -401,15 +309,11 @@ const orderAthletes = (
 
 const filterAthletes = (category: BoxScoreCategory, athletes: BoxScoreAthlete[]): BoxScoreAthlete[] => {
 	if (category.name !== 'goalies') return athletes;
-	// Both goalies are on the roster and the backup arrives all zeros, which renders a .000 save
-	// percentage — the most wrong-looking number this screen could show.
 	const timeOnIce = indexOfKey(category, 'timeOnIce');
 	if (timeOnIce === -1) return athletes;
 	return athletes.filter(athlete => toSeconds(statAt(athlete, timeOnIce)) > 0);
 };
 
-// `skaters` duplicates `forwards` and `defenses` rather than adding to them, so a game that sends
-// all three would list every player twice.
 const dropDuplicateSkaters = <T extends { name: string }>(categories: readonly T[], team: BoxScoreTeam): readonly T[] => {
 	const hasSkaters = team.categories.some(category => category.name === 'skaters');
 	if (!hasSkaters) return categories;
@@ -422,9 +326,6 @@ export const buildSections = (sportType: SportType | undefined, team: BoxScoreTe
 		const category = team.categories.find(candidate => candidate.name === spec.name);
 		if (!category) return [];
 
-		// A column ESPN did not send in this league is dropped rather than rendered empty: college
-		// football sends no sacks under passing and no targets under receiving, and the NFL sends
-		// both.
 		const columns = spec.columns.flatMap(column => {
 			const index = indexOfKey(category, column.statKey);
 			return index === -1
@@ -449,23 +350,12 @@ export const buildSections = (sportType: SportType | undefined, team: BoxScoreTe
 	});
 };
 
-// Which team stats a sport compares, in what order. ESPN sends 14 to 28 of them and most are
-// derived or situational — soccer alone ships nine percentage columns computed from other rows.
-//
-// The labels here are words rather than the abbreviations the player columns use, because a row in
-// this table has the full width of the card to sit in and only a column head has to be terse.
-//
-// Baseball is absent on purpose: it sends a nested season-shaped tree instead of the flat rows
-// every other sport sends, and its team totals are already the R-H-E on the line score above.
-
 interface comparisonSpec {
 	name: string;
 	labelKey: string;
 }
 
 const comparisonSpecs = {
-	// The order every match panel prints: control of the match, then discipline. `shotPct` is
-	// derived from the two rows above it and reads 100% off a single shot.
 	soccer: [
 		{ name: 'possessionPct', labelKey: 'box.possession' },
 		{ name: 'totalShots', labelKey: 'box.shotsTaken' },
@@ -496,8 +386,6 @@ const comparisonSpecs = {
 		{ name: 'totalTurnovers', labelKey: 'box.turnovers' },
 		{ name: 'steals', labelKey: 'box.steals' },
 		{ name: 'blocks', labelKey: 'box.blocks' },
-		// How the game went rather than what either side did. Lead changes is one count for the game,
-		// sent on both teams, so it prints the same on both sides.
 		{ name: 'largestLead', labelKey: 'box.largestLead' },
 		{ name: 'leadChanges', labelKey: 'box.leadChanges' },
 	],
@@ -515,8 +403,6 @@ const comparisonSpecs = {
 	softball: [],
 } as const satisfies Record<SportType, readonly comparisonSpec[]>;
 
-// A penalty is match-defining when it happens and a row of zeros in every other match, so the two
-// penalty rows are appended only once one of the four values is something other than zero.
 const conditionalComparisonSpecs = {
 	soccer: [
 		{ name: 'penaltyKickShots', labelKey: 'box.penaltyKicks' },
@@ -561,13 +447,6 @@ export const buildComparison = (
 	return anyPenalty ? [...always, ...conditional] : always;
 };
 
-// Whether there is a box score to show at all. The detail screen asks before offering a tab that
-// leads to it, and the card itself asks before drawing — one answer, so the two cannot disagree
-// and strand the reader on an empty panel.
-//
-// Both sides are checked rather than the selected one: the opening minutes of a football game
-// parse to categories with no athletes on the side you happen to be looking at, and the strip is
-// what gets you to the side that has them.
 export const hasBoxScoreContent = (sportType: SportType | undefined, box: BoxScore): boolean => (
 	box.lineScore !== null
 	|| buildComparison(sportType, box.teamComparison).length > 0

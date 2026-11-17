@@ -16,8 +16,6 @@ import type { StepTab } from './StepBrowser';
 import { assignGameIndex, framesAt, loopHoldMs, stepBeats, stepPlayingAt } from './stepBeats';
 import type { CursorFrame, CursorSpot } from './stepBeats';
 
-// Each demo is drawn at one fixed size and scaled to its column, so the popup inside step 2 keeps the
-// proportions of the real one at every width.
 const stageWidth = 420;
 const stageHeight = 432;
 const fadeMs = 350;
@@ -31,18 +29,13 @@ const allTabs = heroGames.map((_, game) => ({ game }));
 const spotSelectors: Record<Exclude<CursorSpot, 'rest'>, string> = {
 	newTab: '[data-step-spot="newTab"]',
 	toggle: '.game-card-tab-assign .form-control',
-	// The first row of the menu is the placeholder.
 	option: `.select-dropdown-menu .menu-item:nth-child(${assignGameIndex + 2})`,
 };
 const restPoint = { x: 56, y: 330 };
 
-// The card shows its game at its best, whichever tick of the hero's timeline that is.
 const peakOf = (index: number) => Array.from({ length: heroTickCount }, (_, tick) => scoreBoardAt(tick)[index])
 	.reduce((best, entry) => (entry.result.total > best.result.total ? entry : best));
 
-// Measured after every render rather than on a spot change: the new-tab button moves right each
-// time a tab opens, so the same spot is somewhere else the second time round. Written to the element
-// directly, since the position is read back out of layout.
 const Cursor = ({ stageRef, frame, visible }: { stageRef: RefObject<HTMLDivElement | null>; frame: CursorFrame; visible: boolean }) => {
 	const cursorRef = useRef<HTMLSpanElement>(null);
 
@@ -56,7 +49,6 @@ const Cursor = ({ stageRef, frame, visible }: { stageRef: RefObject<HTMLDivEleme
 			return;
 		}
 		const box = stage.querySelector(spotSelectors[frame.spot])?.getBoundingClientRect();
-		// A target that has just closed, like the menu after a pick, leaves the pointer where it was.
 		if (!box?.width) return;
 		const stageBox = stage.getBoundingClientRect();
 		const scale = stageBox.width / stageWidth;
@@ -176,7 +168,6 @@ const Steps = ({ steps }: { steps: Step[] }) => {
 		return () => query.removeEventListener('change', apply);
 	}, []);
 
-	// Only plays while the steps are on screen in a visible tab, the same rule as the hero.
 	useEffect(() => {
 		if (reduced || !rootRef.current) return;
 		let visible = false;

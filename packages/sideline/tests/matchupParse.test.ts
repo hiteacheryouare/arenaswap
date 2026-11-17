@@ -1,9 +1,5 @@
 import { emptyMatchup, hasMatchupContent, parseInjuries, parseRecentForm, parseSeasonStats, parseTickets, parseWinChance } from '../src/matchupParse';
 
-// Every payload below is trimmed off a live pre-game `/summary` response from 2026-10-02:
-// Colts at Commanders (NFL), White Sox at Guardians (MLB), Rangers at Red Wings (NHL) and Leeds at
-// Arsenal (Premier League). Only the keys the parser reads are kept.
-
 const formEvent = (id: string, atVs: string, gameDate: string, homeTeamId: string, homeTeamScore: string, awayTeamScore: string, gameResult: string, opponent: string) => ({
 	id,
 	atVs,
@@ -22,7 +18,6 @@ const nflIds = { home: '28', away: '11' };
 
 const nflSummary = {
 	header: { competitions: [{ competitors: [{ id: '28', homeAway: 'home' }, { id: '11', homeAway: 'away' }] }] },
-	// Home team listed first, which is the order ESPN sends it in for this game.
 	lastFiveGames: [
 		{
 			team: { id: '28' },
@@ -90,8 +85,6 @@ describe('parseRecentForm', () => {
 		expect(parseRecentForm(nflSummary, nflIds).away[0]?.result).toBe('T');
 	});
 
-	// College hockey: the scoreboard's away id is synthesized and never matches, so the header's
-	// `homeAway` has to carry the pairing.
 	it('falls back to the header side when an id is not ours', () => {
 		const data = {
 			header: { competitions: [{ competitors: [{ id: '111', homeAway: 'home' }, { id: '103', homeAway: 'away' }] }] },
@@ -102,7 +95,6 @@ describe('parseRecentForm', () => {
 		expect(form.home).toEqual([]);
 	});
 
-	// Commanders, 2026-10-02: two August preseason games, then weeks 1–3. A 1-2 team read L L L L W.
 	it('leaves out the preseason games the NFL sends ahead of week 1', () => {
 		const data = {
 			...nflSummary,
@@ -120,7 +112,6 @@ describe('parseRecentForm', () => {
 		expect(parseRecentForm(data, nflIds).home.map(result => result.id)).toEqual(['401872929', '401872944', '401872955']);
 	});
 
-	// The playoffs start counting from 1 again too, but after week 18, so a playoff run keeps its regular season.
 	it('keeps the regular season ahead of a playoff game', () => {
 		const data = {
 			...nflSummary,
@@ -165,7 +156,6 @@ describe('parseSeasonStats', () => {
 		const stats = parseSeasonStats(nflSummary, 'football', nflIds);
 		expect(stats.map(stat => [stat.labelKey, stat.away, stat.home, stat.better])).toEqual([
 			['detail.statPoints', '24.0', '25.0', 'home'],
-			// Lower is better, so the home side's 28.7 wins.
 			['detail.statPointsAllowed', '30.3', '28.7', 'home'],
 			['detail.statYards', '307.0', '342.7', 'home'],
 		]);
@@ -192,7 +182,6 @@ describe('parseSeasonStats', () => {
 			},
 		};
 		const stats = parseSeasonStats(data, 'baseball', { home: '5', away: '4' });
-		// Batting runs, not the pitching staff's runs allowed under the same name.
 		expect(stats[0]).toMatchObject({ labelKey: 'detail.statRuns', away: '612', home: '776', awayRank: 28, homeRank: 5 });
 		expect(stats[1]).toMatchObject({ awayRank: 24 });
 		expect(stats[2]).toMatchObject({ labelKey: 'detail.statEra', better: 'home', homeRank: 3 });
@@ -223,7 +212,6 @@ describe('parseSeasonStats', () => {
 		expect(parseSeasonStats(data, 'basketball', nflIds)).toEqual([]);
 	});
 
-	// Opening week staggers debuts, and a team yet to play would otherwise allow the fewest points.
 	it('drops a row where only one side has played', () => {
 		const data = {
 			boxscore: {
@@ -293,7 +281,6 @@ describe('hasMatchupContent', () => {
 		expect(hasMatchupContent({ ...emptyMatchup, injuries: { away: [], home: parseInjuries(nflSummary, nflIds).home } })).toBe(true);
 	});
 });
-// Bengals at Falcons in Madrid, 2026-11-08: our sources' projections add up to 99.9.
 describe('parseWinChance', () => {
 	const madrid = { predictor: { header: 'Matchup Predictor', homeTeam: { id: '1', gameProjection: '22.2' }, awayTeam: { id: '4', gameProjection: '77.7' } } };
 	const ids = { home: '1', away: '4' };

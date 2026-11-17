@@ -1,8 +1,6 @@
 import type { LeagueId } from '@arenaswap/core';
 import { parseScoreboardEvents } from '../src/apiClient';
 
-// The shape our sources send while play is halted: state `post`, but `completed: false`. Taken from
-// a recorded La Liga match that was suspended at 31' and resumed fifteen minutes later.
 const suspendedScoreboard = (displayClock: string) => ({
 	events: [{
 		id: '401882849',

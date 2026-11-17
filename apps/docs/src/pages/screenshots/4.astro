@@ -65,7 +65,6 @@ import iconImg from '../../assets/128.png';
 					</div>
 				</div>
 
-				<!-- Real-OS-style notification (matches macOS Big Sur+) -->
 				<div class='notif-wrap'>
 					<div class='notif'>
 						<div class='notif-icon'>
@@ -103,7 +102,6 @@ import iconImg from '../../assets/128.png';
 	</div>
 
 	<script>
-		// Fires a real OS notification in the extension's exact format.
 		const fireRealNotification = async () => {
 			if (!('Notification' in window)) return;
 			let permission = Notification.permission;
@@ -291,7 +289,6 @@ import iconImg from '../../assets/128.png';
 			align-items: flex-end;
 		}
 
-		/* macOS Big Sur+ banner notification — matches what users actually see */
 		.notif {
 			width: 374px;
 			background: rgba(58, 58, 64, 0.78);

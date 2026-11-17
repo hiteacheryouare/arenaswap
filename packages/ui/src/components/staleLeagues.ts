@@ -5,9 +5,6 @@ export type StaleLeagueMinutes = Partial<Record<LeagueId, number>>;
 
 const minuteMs = 60_000;
 
-// A league that never answered has no age to report, and no games either, so it is left out
-// rather than guessed at. So is one that went quiet less than a full minute ago, which is not yet
-// worth a line on every card.
 export const staleLeagueMinutes = (shedLeagues: LeagueId[], lastGoodAt: LeagueLastGoodAt, nowMs: number): StaleLeagueMinutes => {
 	const minutes: StaleLeagueMinutes = {};
 	for (const leagueId of shedLeagues) {

@@ -2,7 +2,6 @@ export const twoPi = Math.PI * 2;
 
 export const wrapPhase = (phase: number): number => phase - Math.floor(phase);
 
-// PolyBLEP residual: rounds off the discontinuity of a naive saw or square so it stops aliasing.
 export const polyBlep = (phase: number, increment: number): number => {
 	if (phase < increment) {
 		const t = phase / increment;
@@ -26,7 +25,6 @@ export interface MetalBank {
 	increments: Float64Array;
 }
 
-// Six detuned squares at inharmonic ratios: the classic drum-machine recipe for cymbal metal.
 export const createMetalBank = (frequencies: number[], sampleRate: number, phases: number[]): MetalBank => ({
 	phases: Float64Array.from(phases),
 	increments: Float64Array.from(frequencies, frequency => frequency / sampleRate),

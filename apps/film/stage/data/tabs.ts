@@ -9,7 +9,6 @@ export interface FilmTab {
 	host: string;
 }
 
-// The five streams open that night, each on the service the game actually aired on.
 export const filmTabs: FilmTab[] = [
 	{
 		id: 101,
@@ -53,7 +52,6 @@ export const filmTabs: FilmTab[] = [
 	},
 ];
 
-// A 24/7 studio channel, open all night as the viewer's Standby Stream.
 export interface ChannelTab {
 	id: number;
 	title: string;

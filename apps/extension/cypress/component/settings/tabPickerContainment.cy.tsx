@@ -12,7 +12,6 @@ const game = worstCaseGames[0].game;
 const worstTabs: Browser.tabs.Tab[] = [
 	{ id: 1, title: worstUserText.tabTitle, url: 'https://watch.example-stream.test/live/a' },
 	{ id: 2, title: worstUserText.tabTitleUrl, url: worstUserText.tabTitleUrl },
-	// Two tabs with one title get their paths appended to tell them apart.
 	{ id: 3, title: worstUserText.tabTitle, url: 'https://watch.example-stream.test/live/b/with/a/very/long/path/to/the/feed' },
 	{ id: 4, title: worstUserText.unbroken(60), url: 'https://example.test/' },
 ] as Browser.tabs.Tab[];

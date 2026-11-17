@@ -17,14 +17,6 @@ import { TranslationContext, islandTranslator } from '../../i18n/islandStrings';
 
 echarts.use([LineChart, BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
 
-// The four charts from the game detail view, built by the extension's own option builders. Not
-// redrawn as SVG: the axes, the grid, the five signal colours and the smoothing all come from
-// gameDetailChartOptions.ts, so a change there lands here without anybody remembering to copy it.
-//
-// The history below is one game's worth of polls — a fifteen-point deficit that closes, turns
-// into a two-point lead and ends tied. Charts mount only once the section is on screen, so
-// ECharts stays off the critical path.
-
 const espnTeamLogo = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
 const minute = 60_000;
 const start = 1_767_225_600_000;
@@ -52,19 +44,8 @@ const scoreHistory: ScoreSnapshot[] = [
 	{ gameId: game.id, timestamp: start + 28 * minute, homeScore: 100, awayScore: 100 },
 ];
 
-// Written out rather than derived from the margin. A margin formula tracks the score chart above
-// it line for line and never leaves the middle of the axis, which is the opposite of how a real
-// win-probability line behaves: it barely moves while a lead holds, then swings hard once every
-// possession is worth something.
 const winProbability = [0.1, 0.07, 0.12, 0.2, 0.33, 0.44, 0.6, 0.5];
 
-// Replayed through the scorer rather than written out. Each poll is scored against the history
-// up to that point and against the game state at that point, which is what produces a rising
-// late-game contribution and a momentum spike on the run in the middle.
-//
-// Three minutes of game clock a poll against four of wall clock, because eight polls have to
-// land inside the two quarters the deficit closes over. Stepping four ran past the end of
-// regulation and wrapped the clock back to 12:00, which put a false dip in every chart below.
 const clockAt = (index: number) => {
 	const elapsed = index * 3 * 60;
 	const period = Math.min(4, Math.floor(elapsed / 720) + 3);

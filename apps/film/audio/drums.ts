@@ -12,10 +12,8 @@ interface Mode {
 
 const lengthOf = (seconds: number, sampleRate: number): number => Math.ceil(seconds * sampleRate);
 
-// Per-sample multiplier for an exponential decay with this time constant.
 const decayRate = (seconds: number, sampleRate: number): number => Math.exp(-1 / (seconds * sampleRate));
 
-// Modes of a circular membrane, scaled so the fundamental is ratio 1.
 const snareModes: Mode[] = [
 	{ ratio: 1, level: 1, decay: 0.05 },
 	{ ratio: 1.59, level: 0.55, decay: 0.034 },
@@ -37,9 +35,6 @@ export interface SnareStroke {
 	tune: number;
 }
 
-// A cranked Kevlar head over a fast pitch drop, the crack of the stick, and cable wires whose rattle
-// follows the head. A rimshot adds the ring of the hoop. A press stroke is one bounce of a buzz roll:
-// little head, mostly wire.
 export const renderSnare = ({ velocity, rim, press, tune }: SnareStroke, sampleRate: number, random: Random): Float32Array => {
 	const total = press ? 0.12 : rim ? 0.32 : 0.24;
 	const output = new Float32Array(lengthOf(total, sampleRate));
@@ -97,7 +92,6 @@ export const renderSnare = ({ velocity, rim, press, tune }: SnareStroke, sampleR
 	return output;
 };
 
-// Stick laid across the rim: a short wooden knock with no wires.
 export const renderClick = (velocity: number, sampleRate: number, random: Random): Float32Array => {
 	const total = 0.05;
 	const output = new Float32Array(lengthOf(total, sampleRate));
@@ -111,7 +105,6 @@ export const renderClick = (velocity: number, sampleRate: number, random: Random
 	return output;
 };
 
-// Quads tuned to the key, F4 down to F3, struck with hard mallets.
 const tenorPitches = [349.2, 293.7, 233.1, 174.6];
 
 const tenorModes: Mode[] = [
@@ -154,7 +147,6 @@ export const renderTenor = (drum: number, velocity: number, sampleRate: number, 
 	return output;
 };
 
-// Five tuned bass drums, B-flat 2 down to F1, felt beaters.
 const bassPitches = [116.5, 87.3, 73.4, 58.3, 43.7];
 
 const bassModes: Mode[] = [
@@ -223,8 +215,6 @@ const platesFor = (output: Stereo, cutoff: number, sampleRate: number, random: R
 
 const metalOf = (plate: Plate): number => (tickMetalBank(plate.banks[0]) + tickMetalBank(plate.banks[1])) * 0.5;
 
-// Hand cymbals clashed: a bright clang that blooms and darkens. A choke presses them to the chest
-// a fifth of a second in.
 export const renderCymbal = (velocity: number, choke: boolean, sampleRate: number, random: Random): Stereo => {
 	const total = choke ? 0.26 : 3;
 	const output = createStereo(lengthOf(total, sampleRate));
@@ -243,7 +233,6 @@ export const renderCymbal = (velocity: number, choke: boolean, sampleRate: numbe
 	return output;
 };
 
-// The plates touched and let go: a short, bright "tss".
 export const renderTap = (velocity: number, sampleRate: number, random: Random): Stereo => {
 	const total = 0.28;
 	const output = createStereo(lengthOf(total, sampleRate));
@@ -259,7 +248,6 @@ export const renderTap = (velocity: number, sampleRate: number, random: Random):
 	return output;
 };
 
-// The plates rubbed together, rising into the hit that follows and stopping just short of it.
 export const renderSizzle = (length: number, velocity: number, sampleRate: number, random: Random): Stereo => {
 	const total = Math.max(0.1, length);
 	const output = createStereo(lengthOf(total, sampleRate));
@@ -275,7 +263,6 @@ export const renderSizzle = (length: number, velocity: number, sampleRate: numbe
 	return output;
 };
 
-// Weight under the big arrivals: a sub that falls onto F1, a fifth under the band's B-flat.
 export const renderBoom = (velocity: number, sampleRate: number): Float32Array => {
 	const total = 0.9;
 	const output = new Float32Array(lengthOf(total, sampleRate));

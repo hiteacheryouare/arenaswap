@@ -6,7 +6,6 @@ const locale = currentLocale(Astro.currentLocale);
 const demoText = demoTranslator(locale);
 const t = useTranslations(locale);
 
-// The Profiles list in Settings, with the menu open on the profile in use.
 const profiles = [
 	{ name: t('docDemos.profileWeeknights'), active: true },
 	{ name: t('docDemos.profileFantasySunday'), active: false },

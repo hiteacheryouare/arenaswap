@@ -7,7 +7,6 @@ import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
 import fil from '../../../locales/fil.json';
 import fr from '../../../locales/fr.json';
-// Not `it` — that would shadow Mocha's global it() and break every test in this file.
 import itLocale from '../../../locales/it.json';
 import ja from '../../../locales/ja.json';
 import ko from '../../../locales/ko.json';
@@ -35,7 +34,6 @@ const defaultProps = {
 	sportType: 'football',
 } as const;
 
-// Every factor paying at once, so each row is on the card.
 const everyFactor = { breakPenalty: 15, winProbabilityVariance: 3, favoriteBonus: 10, currentBoost: 5, scoringOpportunityBoost: 3, postseasonBoost: 5 } as const;
 
 describe('PowerScoreBreakdown signals', () => {
@@ -61,7 +59,6 @@ describe('PowerScoreBreakdown signals', () => {
 		});
 	});
 
-	// A signal is part of the score's make-up, so it stays on the card at 0 where a boost would not.
 	it('keeps an idle signal on the card at zero', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} />);
 		cy.contains('.powerscore-signal-row', 'Comeback').should('contain', '0/');
@@ -80,8 +77,6 @@ describe('PowerScoreBreakdown commercial break penalty', () => {
 		cy.contains('Commercial break penalty').should('not.exist');
 	});
 
-	// Scoped to its own row: an unscoped match is satisfied by a -15 anywhere on the card.
-	// A real minus sign, which is the width of the plus it sits under, not a hyphen.
 	it('shows the penalty as a negative on the break row', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} breakPenalty={15} signalsSubtotal={28} />);
 		cy.contains('Commercial break penalty').parent().contains('\u221215').should('exist');
@@ -124,8 +119,6 @@ describe('PowerScoreBreakdown win probability variance', () => {
 });
 
 describe('PowerScoreBreakdown factor icons', () => {
-	// The rule, not the table: every factor row carries exactly one icon and no two rows share one.
-	// Pinning the six class names in source order made choosing a nicer icon a test edit.
 	it('gives every factor row an icon of its own', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} {...everyFactor} />);
 		cy.get('.powerscore-factor-icon').then(($icons: JQuery<HTMLElement>) => {
@@ -189,8 +182,6 @@ const luminance = (rgb: string) => {
 	return 0.2126 * channel(red!) + 0.7152 * channel(green!) + 0.0722 * channel(blue!);
 };
 
-// The breakdown is a #f8fafc card in both themes, and the numbers on it are 0.6rem text. Their
-// colours started as the icon colours, where the gold reached 1.6:1 and the green 2.2:1.
 describe('PowerScoreBreakdown legibility', () => {
 	it('writes every boost and penalty value at 4.5:1 or better on the card', () => {
 		cy.mount(<PowerScoreBreakdown {...defaultProps} {...everyFactor} />);
@@ -226,8 +217,6 @@ describe('PowerScoreBreakdown legibility', () => {
 describe('PowerScoreBreakdown in every language', () => {
 	const signalKeys = ['signalCloseness', 'signalLateGame', 'signalMomentum', 'signalLeadChanges', 'signalComeback'] as const;
 
-	// Swapped in place rather than remounted per locale, the way the tab strip spec does it: the
-	// column has to hold each language's names on one line, at the width the popup gives the card.
 	it('keeps every signal name on one line, with the bars lined up under each other', () => {
 		cy.viewport(320, 500);
 		cy.mount(<div style={{ width: '276px' }}><PowerScoreBreakdown {...defaultProps} /></div>);
@@ -269,7 +258,6 @@ describe('PowerScoreBreakdown in every language', () => {
 
 const zeroBoosts = (ids: string[]) => ids.map(id => ({ id, points: 0 }));
 
-// The same reading defaultProps describes, as the background now sends it.
 const classicBreakdown: ScoreBreakdown = {
 	modeId: 'classic',
 	signals: [
@@ -356,7 +344,6 @@ const localeString = (bundle: object, key: string): string | undefined => {
 };
 
 describe('PowerScoreBreakdown from a PowerScore 3 breakdown', () => {
-	// Classic sent as a breakdown has to draw exactly what the flat fields drew.
 	it('draws Classic identically whether it arrives flat or as a breakdown', () => {
 		atPopupWidth({});
 		shapeOf().then(flat => {
@@ -429,7 +416,6 @@ describe('PowerScoreBreakdown from a PowerScore 3 breakdown', () => {
 				expect([...$names].map(name => name.textContent)).to.deep.equal(['Margin', 'Lead held', 'Early rout', 'Piling on']);
 			});
 			shapeOf().then(blowouts => {
-				// The first row has no rule above it, in every mode.
 				blowouts.signalRows.forEach((height, index) => expect(Math.abs(height - classic.signalRows[index]!), `signal row ${index}`).to.be.at.most(0.5));
 				for (const height of blowouts.factorRows) expect(Math.abs(height - classic.factorRows[0]!)).to.be.at.most(0.5);
 			});
@@ -472,8 +458,6 @@ describe('PowerScoreBreakdown from a PowerScore 3 breakdown', () => {
 		});
 	});
 
-	// The column has to hold the longest name in each language on one line. A locale still waiting
-	// on its translation is measured in English.
 	const modeCases = [
 		{ breakdown: blowoutsBreakdown, keys: ['signalBlowoutMargin', 'signalSustained', 'signalTiming', 'signalPileOn'] },
 		{ breakdown: fantasyBreakdown, keys: ['signalSituation', 'signalProduction', 'signalExposure'] },
@@ -527,7 +511,6 @@ describe('PowerScoreBreakdown from a PowerScore 3 breakdown', () => {
 		});
 	}
 
-	// "American football" is the longest sport name in most languages, so it is the one measured.
 	it('keeps every section heading and total on one line in each language', () => {
 		atPopupWidth({ breakdown: payingBreakdown });
 		cy.get('.powerscore-breakdown-section-heading').last().then(([heading]: JQuery<HTMLElement>) => {

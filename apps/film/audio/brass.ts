@@ -46,8 +46,6 @@ interface SectionVoice {
 
 export const brassSections: BrassSection[] = ['trumpet', 'screamer', 'mellophone', 'trombone', 'baritone', 'sousaphone'];
 
-// `dark` and `bright` set the low-pass as multiples of the note's pitch, at rest and at full
-// intensity; `blat` is the extra brightness the attack spits out before it settles.
 const voices: Record<BrassSection, SectionVoice> = {
 	trumpet: {
 		players: 5, detune: 9, scatter: 0.012, field: [-0.45, 0.05],
@@ -89,8 +87,6 @@ const voices: Record<BrassSection, SectionVoice> = {
 
 const controlStep = 16;
 
-// Held notes lean on the front a little; a swell is the band's crescendo into an arrival; a ring
-// is the last chord, hit hard and left to die away.
 const bodyOf = (note: BrassNote, time: number): number => {
 	switch (note.shape) {
 		case 'held': return 0.8 + 0.2 * Math.exp(-time / 0.09);
@@ -99,9 +95,6 @@ const bodyOf = (note: BrassNote, time: number): number => {
 	}
 };
 
-// Every player is a band-limited saw (plus some extra fundamental for the big horns) through a
-// low-pass that opens with how hard they are blowing, so loud notes are brighter as well as louder.
-// Each player is a few cents off, a few milliseconds late and somewhere else on the field.
 export const renderBrassNote = (note: BrassNote, sampleRate: number, random: Random): Stereo => {
 	const voice = voices[note.section];
 	const players = note.players ?? voice.players;
@@ -168,7 +161,6 @@ export const renderBrassNote = (note: BrassNote, sampleRate: number, random: Ran
 	return output;
 };
 
-// The resonance of the bell, applied once to a whole section rather than to every player.
 export const finishSection = (bus: Stereo, section: BrassSection, sampleRate: number): void => {
 	const { bell, highpass } = voices[section];
 	for (const channel of [bus.left, bus.right]) {

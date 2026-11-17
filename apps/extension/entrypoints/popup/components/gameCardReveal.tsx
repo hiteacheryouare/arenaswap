@@ -41,8 +41,6 @@ interface revealSideProps {
 	team: Team;
 	surface: string;
 	side: revealSide;
-	// How long after the graphic started this side was found to have no crest, or undefined if it has
-	// one. A logo can fail two round trips in, and the stand-in's animations start when it mounts.
 	crestlessLate?: number;
 	onCrestFailed: () => void;
 }
@@ -65,8 +63,6 @@ interface revealLanding {
 	crestSize: number;
 	hold: number;
 	sweepRun: number;
-	// The card's own height, which the opening pair are sized off rather than the stage's: they are
-	// drawn to overhang the card, so it is the thing the overhang is a fraction of.
 	cardHeight: number;
 	cardWidth: number;
 	rolls: revealRoll[];
@@ -81,23 +77,6 @@ const timelineNow = () => Number(document.timeline?.currentTime ?? 0);
 
 const lateStyle = (late?: number) => (late ? { '--reveal-late': `${late}ms` } as CSSProperties : undefined);
 
-// Two layers per side, clipped along the same leaning edge from opposite directions: the crest is
-// only drawn where the bar has already been, the tricode only where it has not. They are exact
-// complements, so every pixel of the card is showing one or the other at every instant and the
-// trade happens under the bar rather than as a dissolve near it.
-//
-// The tricode is two copies of itself. An outline of live text is not a stroke on that text: a
-// stroke follows every contour the font draws, including the ones a filled glyph covers up, and DM
-// Sans builds an N out of overlapping stems — so `-webkit-text-stroke` on its own draws the
-// diagonal on through both of them and every junction comes out cross-hatched. The back copy is the
-// glyph solid in the ink and stroked wider than itself; the front copy is the same glyph in the colour
-// behind it, laid exactly over the back one. What is left showing is the stroke outside the
-// silhouette, which is the outline and nothing else.
-//
-// A club we have no crest for is named in the crest's place instead, over the same placeholder disc
-// the card draws for it. The name is what the bar uncovers, and the disc is what it fades into on the
-// way down, so what lands on the card's crest slot is the card's own crest rather than a word that
-// turns into one at the handoff.
 const RevealSide = ({ team, surface, side, crestlessLate, onCrestFailed }: revealSideProps) => {
 	const crestless = crestlessLate !== undefined;
 	return (
@@ -128,24 +107,6 @@ const RevealSide = ({ team, surface, side, crestlessLate, onCrestFailed }: revea
 	);
 };
 
-// Everything that runs ahead of the poster, which is two scenes on one layer.
-//
-// First the crests: each one on its team's colour, drawn past the edges of the card so the stage's
-// clip cuts them, arriving from their own outer side and settling. Each crest's colour goes across
-// its own half of the card at full size, and the crest is the one drawn for a dark ground, as it is
-// on the card underneath.
-//
-// Then the naming, which re-cuts the same two colours as a horizontal split and names both clubs
-// across the full width of the card. It draws over the fields rather than replacing them, so the
-// crests leave under a band closing over them and the layer underneath never has to change.
-//
-// Its own layer rather than the poster's, which is clipped to hide its crests until a bar has passed
-// — these have to be visible from the first frame — and it sits under the poster's colour halves, so
-// the halves growing over it are the whole of the transition out of both scenes.
-//
-// A club with no crest is named across its half instead, fitted to the part of the field the seam
-// never cuts into rather than overhanging it, because a crest cropped by the card is still a crest
-// and a cropped word is not a word.
 const RevealOpening = ({ game, awayColor, homeColor, crestlessLate, onCrestFailed }: revealOpeningProps) => (
 	<div className='game-card-reveal-opening' aria-hidden='true'>
 		{([['away', game.awayTeam, awayColor], ['home', game.homeTeam, homeColor]] as const).map(([side, team, surface]) => (
@@ -159,9 +120,6 @@ const RevealOpening = ({ game, awayColor, homeColor, crestlessLate, onCrestFaile
 	</div>
 );
 
-// The graphic's halves are named away and home but mean left and right: the crests it lands on are
-// read off the card in page order. A league that draws its host on the left hands the graphic its
-// teams the same way round.
 const inDrawnOrder = (game: Game): Game => (
 	isHomeFirst(game) ? { ...game, awayTeam: game.homeTeam, homeTeam: game.awayTeam } : game
 );
@@ -173,16 +131,11 @@ const gameCardReveal = ({ game: listedGame, mode, index, skipping, cut: pickedCu
 	const [staged] = useState(() => mode !== 'none');
 	const [landing, setLanding] = useState<revealLanding | null>(null);
 	const [done, setDone] = useState(false);
-	// Logos that failed to load, and how far into the graphic. By URL rather than by side, so a game
-	// whose crest changes under the card asks for the new one. Timed on the clock the animations run on.
 	const [failedLogos, setFailedLogos] = useState<Record<string, number>>({});
 	const [startedAt] = useState(timelineNow);
 	const delay = revealDelayMs(index, mode);
 	const spineStart = revealSpineStartMs(index, mode);
 
-	// Measured rather than derived, because where a crest sits in a card and how big it is are facts
-	// about the card's own flex row — they move with the locale, the sport and whether there is a tab
-	// picker.
 	const measure = useCallback(() => {
 		const wrapper = wrapperRef.current;
 		if (!wrapper) return;
@@ -193,10 +146,6 @@ const gameCardReveal = ({ game: listedGame, mode, index, skipping, cut: pickedCu
 		const away = crestCentre(awayRect, box);
 		const home = crestCentre(homeCrest.getBoundingClientRect(), box);
 		const crestSize = awayRect.width;
-		// Half the horizontal run of the leaning edges across the stage, which is what every part of
-		// the graphic that leans is cut or skewed by. The stage's height, not the card's: it bleeds a
-		// pixel past the card at each end, and the same run over a taller box is a shallower angle.
-		// Bounded by the card's width rather than left to the height alone — see `revealLeanWidthCap`.
 		const stageHeight = box.height + revealStageBleedPx * 2;
 		const lean = revealLean(stageHeight, box.width);
 		setLanding({
@@ -215,15 +164,6 @@ const gameCardReveal = ({ game: listedGame, mode, index, skipping, cut: pickedCu
 		});
 	}, [cut]);
 
-	// In a layout effect rather than an effect: this runs after the card is in the DOM but before the
-	// browser paints, so the offsets are already on the element in the animation's first frame.
-	//
-	// Observed rather than taken once, because the card reflows underneath a running graphic. Two
-	// ways, both ordinary: a game's PowerScore arrives on a later push and `liveGameCard` grows a bar
-	// row it was not drawing, and a scheduled game going live swaps `PreGameCard` for `LiveGameCard`
-	// under the same key. Measured once, every offset below is then stale by the height of that
-	// change — the crest lands short of the card's own crest and jumps the rest at the handoff, and
-	// the seam is cut at an angle the bars are no longer skewed by.
 	useLayoutEffect(() => {
 		const wrapper = wrapperRef.current;
 		if (!wrapper || mode === 'none' || done) return;
@@ -234,31 +174,16 @@ const gameCardReveal = ({ game: listedGame, mode, index, skipping, cut: pickedCu
 		return () => observer.disconnect();
 	}, [mode, done, measure]);
 
-	// Per card rather than for the list: the first card has finished long before the last one
-	// starts, and until its stage is gone it is a layer sitting over a card you can already click.
 	useLayoutEffect(() => {
 		if (mode === 'none') return;
 		const timer = setTimeout(() => setDone(true), delay + revealCutTotalMs(mode, cut));
 		return () => clearTimeout(timer);
 	}, [mode, cut, delay]);
 
-	// A card that never had a stage over it is handed straight through, which is what a list with no
-	// graphic to play should be. A card that did keeps its wrapper for good, and keeps every layer's
-	// slot with it — the layers stop being rendered, but each `playing &&` leaves a hole where its
-	// element was. Both halves of that matter, and for the same reason: React reconciles children by
-	// position, so dropping the wrapper reparents the card and collapsing the holes slides it up the
-	// list into the slot a stage layer used to hold. Either way it is a different element in that
-	// position, which is a rebuild of the whole card rather than a move. That lands at the instant the
-	// graphic ends, and the thing that ends it is somebody interacting with the popup — so it is
-	// precisely when a tab picker is in use, and it takes the focus, the open dropdown and the
-	// picker's own element with it. The wrapper is layout-neutral: it carries the 0.5rem the card
-	// would have carried.
 	if (!staged) return <>{children}</>;
 	const playing = mode !== 'none' && !done;
 	const poster = playing && cut === 'poster';
 
-	// The pair the card underneath is painted in, down to the fallback, so the colour that retreats
-	// off each side is the colour that side has been all along.
 	const { leftColor: awayColor, rightColor: homeColor } = buildGameCardSurface(listedGame);
 	const teamOn = (side: revealSide) => (side === 'away' ? game.awayTeam : game.homeTeam);
 	const crestlessLate = (side: revealSide) => {
@@ -278,8 +203,6 @@ const gameCardReveal = ({ game: listedGame, mode, index, skipping, cut: pickedCu
 			style={!playing ? undefined : {
 				'--reveal-away': awayColor,
 				'--reveal-home': homeColor,
-				// Per side, because each side is its own surface: a club named on a white band and
-				// one named on a navy one are the same beat in two inks.
 				'--reveal-ink-away': teamDisplayInk(game.awayTeam, awayColor),
 				'--reveal-ink-home': teamDisplayInk(game.homeTeam, homeColor),
 				'--reveal-delay': `${delay}ms`,
@@ -308,8 +231,6 @@ const gameCardReveal = ({ game: listedGame, mode, index, skipping, cut: pickedCu
 					{cut === 'boxScore' && <RevealScoreRoll rolls={landing?.rolls ?? []} />}
 				</div>
 			</>}
-			{/* Outside the stage rather than in it: it goes under the crests the stage carries. Square,
-			    like everything else in here — the wrapper holds the one rounded clip. */}
 			{poster && <span className='game-card-reveal-base' aria-hidden='true' />}
 			{poster && mode === 'full' && (
 				<RevealOpening game={game} awayColor={awayColor} homeColor={homeColor} crestlessLate={crestlessLate} onCrestFailed={onCrestFailed} />
@@ -321,10 +242,6 @@ const gameCardReveal = ({ game: listedGame, mode, index, skipping, cut: pickedCu
 				<RevealSide team={game.homeTeam} surface={homeColor} side='home' crestlessLate={crestlessLate('home')} onCrestFailed={onCrestFailed('home')} />
 			</div>}
 			{children}
-			{/* Three to a side rather than two. A broadcast wipe is cut as a group travelling one path —
-			    the thick bar turns the ground over and the thin ones run behind it on the same line — and
-			    a third costs nothing in kind, since all of them translate and none of them touch layout.
-			    A thirty-game Saturday opens with 48 of these instead of 32, all on the compositor. */}
 			{poster && <div className='game-card-reveal-sweeps' aria-hidden='true'>
 				<span className='game-card-reveal-sweep is-away' />
 				<span className='game-card-reveal-sweep is-away is-chaser' />

@@ -9,9 +9,6 @@ interface heldPossession {
 	side: courtSide;
 }
 
-// A timeout or a substitution says nothing about who has the ball, so the last side a play did
-// name is held through them. A new period starts from nothing: the ball goes to whoever the
-// alternating arrow or the tip says, and the next play will tell us.
 const useBasketballPossession = (game: Pick<Game, 'id' | 'sportType' | 'status' | 'intermission' | 'period' | 'possessionSide'>): courtSide | undefined => {
 	const [held, setHeld] = useState<heldPossession | null>(null);
 	const live = game.sportType === 'basketball' && game.status === 'in' && game.intermission !== true;

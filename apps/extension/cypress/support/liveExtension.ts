@@ -1,12 +1,6 @@
 import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { ExtensionMessage, LeagueId } from '@arenaswap/core/types';
 
-// The built background worker, running for real, with every page it talks to. The fake in
-// fakeBrowser.ts answers the popup on the background's behalf; this one runs background.js itself
-// and fakes only the browser underneath it: tabs, windows, storage, messaging and notifications.
-// So a switch, a standby park or a boss press here is the shipped worker's own decision, made off
-// scoreboards served at the network edge.
-
 export interface liveTab {
 	id: number;
 	windowId: number;
@@ -29,9 +23,7 @@ export interface liveExtensionOptions {
 	local?: Record<string, unknown>;
 	session?: Record<string, unknown>;
 	sync?: Record<string, unknown>;
-	// Whether the user has granted the optional host permission Multiview asks for.
 	permissionsGranted?: boolean;
-	// Scoreboard events per league, as the scoreboard endpoint sends them.
 	events?: Partial<Record<LeagueId, unknown[]>>;
 }
 
@@ -55,29 +47,20 @@ export interface liveWorld {
 	tabs: () => liveTab[];
 	tab: (id: number) => liveTab | undefined;
 	activeTabId: () => number | undefined;
-	// Every tab the background (or a page) brought forward, oldest first.
 	activations: number[];
 	created: { id: number; url: string }[];
 	notifications: liveNotification[];
 	frameMutes: { tabId: number; frameId: number; muted: boolean }[];
 	storage: Record<'local' | 'session' | 'sync', Map<string, unknown>>;
 	errors: string[];
-	// What the background last broadcast, as an open popup would have heard it.
 	state: { scores: { gameId: string; total: number; reason?: string }[]; onStandbyStream: boolean } | null;
 	broadcasts: number;
-	// The scoreboard each league answers with right now. Edit it and the next poll reads the change.
 	events: Partial<Record<LeagueId, unknown[]>>;
-	// Moves the background's clock forward and fires every timer that came due, as a stretch of play would.
 	advanceClock: (ms: number) => void;
-	// A message from outside any page, as when the browser itself hands the background something.
 	send: (message: ExtensionMessage) => Promise<unknown>;
-	// The user clicks a tab in the tab strip.
 	userActivates: (tabId: number) => void;
-	// The user closes a tab.
 	userCloses: (tabId: number) => void;
-	// The user presses a keyboard shortcut registered under `name`.
 	pressCommand: (name: string) => void;
-	// What the Multiview frame script sends from a box: the frame's game, where it is, and its player's clock.
 	frameReport: (tabId: number, frameId: number, status: { name: string; href: string; playing: boolean; paused: boolean; time: number }) => Promise<unknown>;
 	attach: (win: Window, tabId?: number) => void;
 }
@@ -87,7 +70,6 @@ const extensionOrigin = `chrome-extension://${runtimeId}`;
 export const extensionUrl = (path: string) => `${extensionOrigin}/${path.replace(/^\//, '')}`;
 
 const clone = <T>(value: T): T => (value === undefined ? value : JSON.parse(JSON.stringify(value)) as T);
-// Events and messages cross between contexts a task later, as they do between extension processes.
 let inFlight = 0;
 const later = (run: () => void) => {
 	inFlight++;
@@ -419,8 +401,6 @@ const removeBackground = () => {
 	document.getElementById(frameId)?.remove();
 };
 
-// The worker gets a document of its own, in the spec's window rather than the page's, so it keeps
-// running while popups and tabs open and close around it, as a service worker does.
 const startBackground = (world: internalWorld, source: string) => {
 	removeBackground();
 	const frame = document.createElement('iframe');
@@ -439,9 +419,6 @@ const startBackground = (world: internalWorld, source: string) => {
 	const offset = world.clockOffset;
 	const now = () => RealDate.now() + offset();
 
-	// Short waits (request spacing, a two-second situation wait, a zero-delay hop) run in real time.
-	// Anything longer — the league polls, the keepalive, a held switch — waits for the spec to move
-	// the clock, so a minute of play costs no minute of waiting.
 	const realTimerMaxMs = 2000;
 	const realSetTimeout = win.setTimeout.bind(win);
 	const realClearTimeout = win.clearTimeout.bind(win);
@@ -461,8 +438,6 @@ const startBackground = (world: internalWorld, source: string) => {
 		clearInterval: (id?: number) => { if (id !== undefined && !virtual.delete(id)) realClearInterval(id); },
 	});
 	world.scheduledDelays = () => [...virtual.values()].map(timer => timer.delay);
-	// Every random range at its top, as the Jest suite has it, so each league's first poll lands on
-	// a known delay instead of somewhere in its first fifteen seconds.
 	win.Math.random = () => 0.999;
 	world.fireDueTimers = () => {
 		for (let fired = 0; fired < 1000; fired++) {
@@ -493,7 +468,6 @@ const startBackground = (world: internalWorld, source: string) => {
 	(win as unknown as { eval: (code: string) => void }).eval(source);
 };
 
-// A 1x1 transparent PNG, as in e2e.ts: logos never reach the network.
 const blankPng = Cypress.Buffer.from(
 	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
 	'base64',
@@ -517,7 +491,6 @@ beforeEach(() => {
 });
 afterEach(removeBackground);
 
-/** Boots the built background worker against a fake browser holding `options.tabs`. */
 export const startExtension = (options: liveExtensionOptions) => {
 	cy.request('/manifest.json').its('body').then(manifest => {
 		cy.request('/_locales/en/messages.json').its('body').then((messages: Record<string, { message: string }>) => {
@@ -526,7 +499,6 @@ export const startExtension = (options: liveExtensionOptions) => {
 				const followsLeagues = ((options.sync?.prefs as { enabledLeagues?: unknown[] } | undefined)?.enabledLeagues?.length ?? 0) > 0;
 				interceptSources(world);
 				cy.then(() => startBackground(world, source));
-				// Booted once it has scored its first slate and queued each league's first poll.
 				cy.wrap(world, { log: false, timeout: 15_000 }).should(live => {
 					expect(live.state, 'first broadcast').to.not.equal(null);
 					if (followsLeagues) expect(live.scheduledDelays().some(delay => delay >= 14_000 && delay <= 15_000), 'league polls queued').to.equal(true);
@@ -540,24 +512,19 @@ export const startExtension = (options: liveExtensionOptions) => {
 
 export const world = () => cy.get<liveWorld>('@world', { log: false });
 
-/** Lets `ms` of play go by: the worker's clock moves on and every poll that came due runs. */
 export const play = (ms: number) => {
-	// Whatever the user just did reaches the worker before the clock moves past it.
 	cy.wrap(null, { log: false }).should(() => expect(inFlight, 'events still in flight').to.equal(0));
 	world().then(live => {
 		const before = live.broadcasts;
 		live.advanceClock(ms);
-		// Every league the worker follows has polled, scored and acted on what it found.
 		const leagues = Object.keys(live.events).length;
 		if (leagues > 0) cy.wrap(live, { log: false, timeout: 10_000 }).should(settled => expect(settled.broadcasts - before, 'polls answered').to.be.at.least(leagues));
 	});
 	cy.wrap(null, { log: false }).should(() => expect(inFlight, 'events still in flight').to.equal(0));
 };
 
-/** The PowerScore the background last broadcast for `gameId`. */
 export const broadcastTotal = (live: liveWorld, gameId: string) => live.state?.scores.find(score => score.gameId === gameId)?.total;
 
-/** Opens an extension page as the tab `tabId`, or as the popup when there is no tab. */
 export const openPage = (path: string, tabId?: number) => {
 	if (tabId === undefined) cy.viewport(320, 560);
 	else cy.viewport(1280, 720);
@@ -568,7 +535,6 @@ export const openPage = (path: string, tabId?: number) => {
 
 export const openPopup = () => openPage('/popup.html');
 
-/** Fails the test on anything the worker threw that nothing caught. */
 export const expectHealthyBackground = () => {
 	if (running) expect(running.errors, 'background errors').to.deep.equal([]);
 };

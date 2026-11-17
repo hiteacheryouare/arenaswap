@@ -10,7 +10,6 @@ const summary = (competitors: CompetitorFixture[]) => ({
 	header: { competitions: [{ competitors }] },
 });
 
-// Shapes taken from live site.api.espn.com summary responses.
 const mlbSummary = summary([
 	{
 		homeAway: 'home',
@@ -40,7 +39,6 @@ describe('parseTeamRecords', () => {
 	});
 
 	test('falls back to homeAway when the team ids do not match', () => {
-		// College hockey ids are synthesized locally and never match ESPN's.
 		expect(parseTeamRecords(mlbSummary, 'ncaamh-57', 'ncaamh-58'))
 			.toEqual({ home: '59-53', away: '55-58' });
 	});
@@ -53,7 +51,6 @@ describe('parseTeamRecords', () => {
 		expect(parseTeamRecords(soccer, '9720', '189')).toEqual({ home: '4-4-10', away: '9-3-5' });
 	});
 
-	// ESPN appends standings points to `displayValue` in the NHL and nowhere else.
 	test('drops the standings points the NHL appends to displayValue', () => {
 		const nhl = summary([
 			{

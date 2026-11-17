@@ -9,7 +9,6 @@ import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
 import fil from '../../../locales/fil.json';
 import fr from '../../../locales/fr.json';
-// Not `it` — that would shadow Mocha's global it() and break every test in this file.
 import itLocale from '../../../locales/it.json';
 import ja from '../../../locales/ja.json';
 import ko from '../../../locales/ko.json';
@@ -22,9 +21,6 @@ const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT:
 
 const crestPixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
 
-// The shipped demo games, so these run the real parser over the real fixtures with no network.
-// The team ids are what put the wash on the right two rows, which a redeclared game would not
-// have. Only the crests are swapped, for a data URI that needs none.
 const seededGames = new MockGameSimulator().seed();
 
 const demoGame = (id: string): Game => {
@@ -36,15 +32,10 @@ const demoGame = (id: string): Game => {
 	};
 };
 
-// PHI v DAL: one NFL division holding both teams.
 const football = demoGame('mock-5');
-// PHI v CHI: two NBA divisions, one per team.
 const basketball = demoGame('mock-2');
-// LIV v ARS: a twenty-club ranked league table.
 const soccer = demoGame('mock-12');
-// NU v BC, college hockey — the league ESPN publishes no table for at all.
 const noTable = demoGame('mock-10');
-// TEM v PSU, pre-game.
 const preGame = demoGame('mock-6');
 
 const detail = (game: Game) => (
@@ -100,7 +91,6 @@ describe('detail screen tab strip', () => {
 	it('draws no strip at all for a league with neither a box score nor a table', () => {
 		mount(noTable);
 		cy.get('.gd-tabs').should('not.exist');
-		// The screen itself still rendered: this is not an empty mount asserting nothing.
 		cy.get('.gd-setup, .gd-pregame-setup').should('exist');
 	});
 
@@ -146,8 +136,6 @@ describe('detail screen tab strip', () => {
 		cy.get('.tab-pane.active').should('have.id', `gd-pane-${football.id}-box`);
 	});
 
-	// A real id, so the summary goes to the network and the strip arrives a beat after the screen
-	// has drawn with none. The overview's node is marked before that and must survive it.
 	it('keeps the overview mounted when the strip arrives', () => {
 		const live = { ...football, id: '401000005' };
 		cy.intercept({ url: /\/summary\?event=401000005/ }, { body: mockBoxScorePayloads['mock-5'], delay: 300 });
@@ -159,8 +147,6 @@ describe('detail screen tab strip', () => {
 		cy.get('.tab-pane.active .powerscore-breakdown').should('have.attr', 'data-probe', 'kept');
 	});
 
-	// The card's hover answered before the click, so the screen opens on that rather than asking
-	// a second time.
 	it('opens on the requests a hover already finished', () => {
 		const live = { ...football, id: '401000005' };
 		cy.intercept({ url: /\/summary\?event=401000005/ }, { body: mockBoxScorePayloads['mock-5'] }).as('summary');
@@ -185,8 +171,6 @@ describe('detail screen tab strip', () => {
 		cy.get('@summary.all').should('have.length', 2);
 	});
 
-	// Each mount waits on tabs that need the summary, so a second request would have landed
-	// before the counts are read.
 	it('reopens on the same requests when the screen is left and opened again', () => {
 		const live = { ...football, id: '401000005' };
 		cy.intercept({ url: /\/summary\?event=401000005/ }, { body: mockBoxScorePayloads['mock-5'] }).as('summary');
@@ -200,8 +184,6 @@ describe('detail screen tab strip', () => {
 		cy.get('@standings.all').should('have.length', 1);
 	});
 
-	// A finished game opens its overview on the info panel, whose top rule used to draw a second
-	// hairline just under the strip's own.
 	it('draws one rule between the strip and the first section, not two', () => {
 		mount({ ...football, status: 'post' });
 		cy.get('.gd-tabs [role="tab"]').should('have.length.at.least', 2);
@@ -247,8 +229,6 @@ describe('detail screen tab strip', () => {
 
 	it('reads on the dark shell rather than borrowing the light card colours', () => {
 		mount(football);
-		// #f75c03 on #0d1117 is 5.9:1. The nav-tabs skin the box score uses would paint #f8fafc
-		// here, and $nav-link-color's #4b5563 reaches only 2.5:1 on this background.
 		cy.get('.gd-tabs [role="tab"].active').then($tab => {
 			const style = getComputedStyle($tab[0]);
 			expect(style.color).to.equal('rgb(247, 92, 3)');
@@ -267,9 +247,6 @@ describe('detail screen tab strip', () => {
 		});
 	});
 
-	// Substituted into the rendered strip rather than remounted under each locale, which is how
-	// the box score measures its own column heads: the three tabs share the card's width, so a
-	// label has to be measured in the box it will actually render in.
 	it('fits every locale\'s tab labels on one line', () => {
 		mount(football);
 		cy.get('.gd-tabs [role="tab"]').then($tabs => {
@@ -359,7 +336,6 @@ describe('standings table', () => {
 
 	it('draws each matchup team name in its own readable ink', () => {
 		openStandings(football);
-		// Philadelphia's #004C54 and Dallas's #003594, both already dark enough to keep.
 		cy.contains('.gd-standings-name', 'Philadelphia').should('have.css', 'color', 'rgb(0, 76, 84)');
 		cy.contains('.gd-standings-name', 'Dallas').should('have.attr', 'title', 'Dallas');
 		cy.contains('.gd-standings-name', 'Dallas').should('have.css', 'color', 'rgb(0, 53, 148)');
@@ -383,7 +359,6 @@ describe('standings table', () => {
 			expect([...$th].map(th => th.textContent))
 				.to.deep.equal([en.standings.conference, en.standings.overall]);
 		});
-		// College stays on the summary block, which knows nothing above the conference.
 		cy.get('.gd-standings-conference').should('not.exist');
 	});
 
@@ -397,9 +372,6 @@ describe('standings table', () => {
 		}
 	});
 
-	// Proven by substitution rather than by a fixture that happens to fit. "Manchester City" is
-	// the widest name twenty real clubs produce here and it lands inside the column, so a table
-	// that clips correctly and a table that cannot clip at all measure the same on this data.
 	it('gives the name column away first rather than clipping a number', () => {
 		openStandings(soccer);
 		cy.get('.gd-standings-table tbody td').each($cell => {

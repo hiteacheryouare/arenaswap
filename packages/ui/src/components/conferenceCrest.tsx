@@ -7,14 +7,11 @@ import useDocumentTheme from './useDocumentTheme';
 interface conferenceCrestProps {
 	slug?: string;
 	abbreviation: string;
-	// The surface the crest sits on, per theme, as hex: legibility is a fact about the pair.
 	surfaces: { dark: string; light: string };
 	discClassName: string;
 	crestClassName: string;
 }
 
-// A conference's own artwork, on the white disc team crests use when it would vanish into the
-// surface. Conferences have no monochrome marks, so there is no middle step.
 const ConferenceCrest = ({ slug, abbreviation, surfaces, discClassName, crestClassName }: conferenceCrestProps) => {
 	const theme = useDocumentTheme();
 	const background = surfaces[theme];
@@ -35,15 +32,12 @@ const ConferenceCrest = ({ slug, abbreviation, surfaces, discClassName, crestCla
 		setMeasuredPair(`${src}|${background}`);
 	};
 
-	// Crest holds this in a ref, so a new function each render costs nothing.
 	const handleFailed = () => {
 		if (crest.src && crest.fallbackSrc) setFailedSrc(crest.src);
 	};
 
 	return (
 		<span className={`${discClassName}${useDisc ? '' : ' is-bare'}`} style={useDisc ? { background: crestBacking(tint) } : undefined}>
-			{/* Keyed on the surface too: a theme switch can move the surface without changing the image,
-			    and remounting is what gets that pair measured. */}
 			<Crest
 				key={`${src}|${background}`}
 				logo={src}

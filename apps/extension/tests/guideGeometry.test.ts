@@ -19,8 +19,6 @@ const laliga = (status: Game['status']) => makeGame('laliga-401882849', {
 const barsAt = (games: Game[], now: number) => games.map(game => buildBar(game, false, now)!);
 
 describe('a final the guide never saw end', () => {
-	// ncaaf 401864516 ended 2 h 40 min after kickoff, against a 210-minute estimate. Seen the moment
-	// the slate loaded, with nobody having watched it finish.
 	const { game, now } = timeEdges.endsEarly;
 
 	test('is not drawn ending after the present', () => {
@@ -42,8 +40,6 @@ describe('a final the guide never saw end', () => {
 });
 
 describe('a live game that has not started play', () => {
-	// ncaaf 401868347, ETSU at CIT, 2026-10-10: STATUS_DELAYED with state 'in', period 0 and a clock of
-	// zero, seen 12 minutes after its 16:00Z kickoff time. The recorder saw it so for 26 snapshots.
 	const delayed = makeGame('ncaaf-401868347', {
 		league: 'ncaaf', sportType: 'football', status: 'in', period: 0, clockSeconds: 0, startTime: '2026-10-10T16:00:00Z',
 		awayTeam: { id: '2193', name: 'East Tennessee State Buccaneers', abbreviation: 'ETSU', score: 0 },
@@ -69,8 +65,6 @@ describe('the end the guide records for a final', () => {
 		expect(endedAt === undefined || endedAt <= kickoff + resolveRunMinutes(nfl('post')).p99 * minute).toBe(true);
 	});
 
-	// laliga 401882849, ATH at RAY, 2026-10-10: STATUS_SUSPENDED arrives as state 'post' at 31'
-	// of the first half, and fifteen minutes later the same game is back to 'in' at 28'.
 	test('moves to the real final when a suspended game resumes', () => {
 		const start = Date.parse('2026-10-10T12:00:00Z');
 		const suspendedAt = 1791635652656;

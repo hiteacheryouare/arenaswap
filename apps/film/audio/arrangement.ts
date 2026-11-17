@@ -45,8 +45,6 @@ export interface NoteEvent {
 	pan: number;
 }
 
-// `drum` is the tenor (0 to 3, high to low), the bass drum (0 to 4) or the cymbal player (0 or 1).
-// `length` is how long a sizzle rises.
 export interface DrumHit {
 	time: number;
 	kind: DrumKind;
@@ -103,7 +101,6 @@ const shapeBars = (plan: ScorePlan): BarShape[] => {
 			};
 		}
 	}
-	// Bars no section claims carry on with whatever came before, so a sparse plan still plays.
 	let previous: BarShape = { part: 'intro', sectionStart: true, progress: 0, progressEnd: 1 };
 	return shapes.map((shape, index) => {
 		previous = shape ?? { part: previous.part, sectionStart: index === 0, progress: 1, progressEnd: 1 };
@@ -117,8 +114,6 @@ const leadFor = (shape: BarShape, next: BarShape | undefined): Lead => {
 	return 'none';
 };
 
-// Builds, drops and peaks start the loop on the I, and whatever bar leads into a drop, a peak or the
-// outro is pulled onto the V so every arrival is a resolution. The intro, outro and tail stay home.
 const buildBars = (shapes: BarShape[], barLength: number): Bar[] => {
 	let slot = 0;
 	const bars = shapes.map((shape, index): Bar => {
@@ -147,7 +142,6 @@ const buildBars = (shapes: BarShape[], barLength: number): Bar[] => {
 	return bars;
 };
 
-// A bar leading into a peak or the outro turns to the V halfway; the bar before a drop is all V.
 const spansOf = (bar: Bar): ChordSpan[] => {
 	if (bar.lead === 'drop') return [{ offset: 0, chord: dominant }];
 	const spans = progression[bar.slot];
@@ -255,8 +249,6 @@ const runsOf = (line: string[], symbol: string): [number, number][] => {
 	return runs;
 };
 
-// A press roll: bounces about 17 ms apart, swelling from piano to forte when it is long enough to
-// be heading somewhere.
 const voiceRoll = ({ bar, sixteenth, random }: Voicing, [from, to]: [number, number], level: number, drums: DrumHit[]): void => {
 	const start = bar.start + from * sixteenth;
 	const end = bar.start + to * sixteenth;
@@ -346,8 +338,6 @@ const playPhrase = (bar: Bar, sixteenth: number, phrase: PhraseNote[], players: 
 
 type Choir = 'bass' | 'low' | 'middle' | 'high';
 
-// A chord split across the band the way an arranger would: two players to a note, the baritones
-// doubling the bottom, the screamers taking anything above C6.
 const voiceChord = (time: number, duration: number, chord: Chord, choirs: Choir[], velocity: number, shape: BrassShape, brass: BrassNote[]): void => {
 	const push = (section: BrassSection, midi: number, players?: number): void => {
 		brass.push({ time, duration, midi, velocity, section, shape, scoop: 0, fall: 0, players });
@@ -391,8 +381,6 @@ const playBass = (bar: Bar, sixteenth: number, velocity: number, brass: BrassNot
 	playPhrase(bar, sixteenth, walkDown, [{ section: 'sousaphone', transpose: 0, velocity }], brass, until);
 };
 
-// The second half of any bar that leads somewhere: the band swells on the V while the trumpets
-// climb into the downbeat.
 const voiceSwell = (bar: Bar, sixteenth: number, brass: BrassNote[]): void => {
 	const half = bar.start + 8 * sixteenth;
 	voiceChord(half, bar.end - 0.03 - half, dominant, ['bass', 'low', 'middle'], 1, 'swell', brass);
@@ -400,14 +388,12 @@ const voiceSwell = (bar: Bar, sixteenth: number, brass: BrassNote[]): void => {
 	playPhrase(bar, sixteenth, run, [{ section: 'trumpet', transpose: 0, velocity: 1 }], brass);
 };
 
-// The bar before a drop: three hemiola hits on the V, then the swell.
 const voiceSetup = (bar: Bar, sixteenth: number, brass: BrassNote[]): void => {
 	playPhrase(bar, sixteenth, riff[dominantSlot], [{ section: 'trumpet', transpose: 0, velocity: 1 }], brass, 8);
 	for (const step of hemiola) voiceChord(bar.start + step * sixteenth, articulate(2, sixteenth), dominant, ['bass', 'low', 'middle'], 1, 'held', brass);
 	voiceSwell(bar, sixteenth, brass);
 };
 
-// The last hit rings on into the tail (or past the end, where the master's fade takes it).
 const voiceFinale = (bar: Bar, brass: BrassNote[]): void => {
 	voiceChord(bar.start, bar.sectionEnd - bar.start + 0.8, finale, ['bass', 'low', 'middle', 'high'], 1.1, 'ring', brass);
 };
@@ -479,8 +465,6 @@ const voiceBrass = ({ bar, sixteenth }: Voicing, brass: BrassNote[], bells: Note
 
 const tickMaskers = new Set<DrumKind>(['snare', 'rimshot', 'buzz', 'click', 'tenor', 'tap']);
 
-// The ticks share the snare's top end, so right under one the soft strokes are left out and the
-// accents are played at half strength, off the rim.
 const clearForTicks = (drums: DrumHit[], cues: Cue[]): DrumHit[] => {
 	const ticks = cues.filter(cue => cue.kind === 'tick').map(cue => cue.at);
 	return drums.flatMap(hit => {
@@ -496,10 +480,6 @@ const sortByTime = (cues: Cue[]): Cue[] => cues
 	.toSorted((a, b) => a.cue.at - b.cue.at || a.index - b.index)
 	.map(({ cue }) => cue);
 
-// Each hop takes the next chord tone above the previous hop, so the climb keeps rising across chord
-// changes; past the top it starts again from the bottom rung, as does a gap longer than a bar. An
-// explicit `step` picks that rung of the current chord directly. `step` comes out as an index into
-// chord.bell.
 const resolveCues = (plan: ScorePlan, bars: Bar[], harmony: HarmonyChange[], beat: number, barLength: number, duration: number): ResolvedCue[] => {
 	const cues = sortByTime(plan.cues.filter(cue => Number.isFinite(cue.at) && cue.at >= 0 && cue.at < duration));
 	const outroStart = bars.find(bar => bar.part === 'outro' && bar.sectionStart)?.start;
@@ -519,7 +499,6 @@ const resolveCues = (plan: ScorePlan, bars: Bar[], harmony: HarmonyChange[], bea
 	});
 };
 
-// The credits fade the whole tail away; an outro ends on a short fade; anything else gets a bar.
 const fadeLengthOf = (bars: Bar[], barLength: number, duration: number): number => {
 	const last = bars[bars.length - 1];
 	if (last.part === 'tail') return duration - (bars.findLast(bar => bar.part === 'tail' && bar.sectionStart)?.start ?? last.start);
@@ -564,13 +543,11 @@ const sectionsOf = (layout: [number, number, Part][]): ScoreSection[] => layout.
 
 const flick = (from: number, count: number): Cue[] => Array.from({ length: count }, (_, index) => ({ at: from + beats(index * 0.5), kind: 'tick', gain: 0.8 }));
 
-// The sign-off: five dots climbing the ladder over the end card, then the last one home.
 const signOff = (endAt: number, squeeze = 1): Cue[] => [
 	...[9.4, 8.4, 7.4, 6.4, 5.4].map((count, step): Cue => ({ at: endAt - beats(count * squeeze), kind: 'dot', step })),
 	{ at: endAt - beats(3.6 * squeeze), kind: 'dot', step: 0, gain: 1.2 },
 ];
 
-// Laid out the way the cuts in stage/cuts lay theirs out, so an audition sounds like the film.
 export const demoPlans: Record<'15' | '30' | '60', ScorePlan> = {
 	15: {
 		bpm: demoBpm,

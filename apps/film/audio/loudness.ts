@@ -56,8 +56,6 @@ const phaseTaps = [0.25, 0.5, 0.75].map(fraction => {
 	return Float64Array.from(taps, tap => tap / sum);
 });
 
-// Per-sample peak including the three points 4x oversampling would add between each pair of samples,
-// so the limiter and the meter both see inter-sample peaks.
 export const oversampledPeaks = (channel: Float32Array): Float32Array => {
 	const length = channel.length;
 	const peaks = new Float32Array(length);

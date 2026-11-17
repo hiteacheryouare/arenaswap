@@ -8,7 +8,6 @@ import LudicrousStage from './ludicrousStage';
 
 const trailingEllipsis = /(…+|\.{3})$/;
 
-// The announcement's ellipsis is held back so its dots can land one at a time before GO.
 const renderDisplayText = ({ text, cls }: DisplayState) => {
 	const dots = cls === 'announce' ? text.match(trailingEllipsis)?.[0] : undefined;
 	if (!dots) return text;
@@ -33,9 +32,6 @@ export default ({ onClose }: { onClose: () => void }) => {
 	const manualTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 	const finishedRef = useRef(false);
 
-	/* Skipping and braking both stop the ship, and they want different amounts of time for it.
-	   Clicking to skip is someone asking to leave, so it leaves. Pulling the brake is a beat in the
-	   sequence, so the deceleration gets played out the same way the scripted ending does. */
 	const finish = useCallback((fast: boolean) => {
 		if (finishedRef.current) return;
 		finishedRef.current = true;
@@ -71,7 +67,6 @@ export default ({ onClose }: { onClose: () => void }) => {
 		return () => clearTimeout(beatTimerRef.current);
 	}, [runBeat]);
 
-	// Stops a queued skip / emergency-brake timer setting state after unmount.
 	useEffect(() => () => manualTimersRef.current.forEach(clearTimeout), []);
 
 	useEffect(() => {
@@ -89,7 +84,6 @@ export default ({ onClose }: { onClose: () => void }) => {
 		manualTimersRef.current.push(setTimeout(() => finish(false), 500));
 	}, [brakeState, finish]);
 
-	// The overlay is role='button', so these are the click rather than controls of their own.
 	const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
 		if (e.key !== 'Enter' && e.key !== ' ') return;
 		e.preventDefault();
@@ -101,8 +95,6 @@ export default ({ onClose }: { onClose: () => void }) => {
 	const overlayRef = useRef<HTMLDivElement>(null);
 	useEffect(() => overlayRef.current?.focus(), []);
 
-	// The brake is part of the console rather than a floating button, so it is placed onto the rect
-	// the canvas drew its placard into instead of being guessed at in CSS.
 	const brakeRect = size ? cockpitBrakeRect(size.w, size.h) : null;
 	const brakeStyle = brakeRect
 		? { left: `${brakeRect.x}px`, top: `${brakeRect.y}px`, width: `${brakeRect.w}px`, height: `${brakeRect.h}px` }

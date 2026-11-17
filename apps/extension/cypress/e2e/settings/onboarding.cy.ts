@@ -1,10 +1,5 @@
 import { liveState, sixersThunder } from '../../support/fixtures';
 
-// The three onboarding steps plus the "all set" screen, from a genuinely empty profile: no stored
-// prefs and no onboardingCompleted flag, which is the only state a real first install is in.
-
-// `@espnTeams` resolves on the first league's /teams reply, but the picker waits for every enabled
-// league's, and under a loaded runner that has run past the default 4s.
 const teamsLoaded = 15_000;
 
 describe('onboarding', () => {
@@ -52,7 +47,6 @@ describe('onboarding', () => {
 		cy.background().should(background => {
 			expect(background.prefs?.enabledLeagues).to.deep.equal(['nba']);
 			expect(background.prefs?.favoriteTeamIds).to.deep.equal(['nba:20']);
-			// The flag is what stops the next open replaying onboarding.
 			expect(background.storage.local.get('onboardingCompleted')).to.equal(true);
 		});
 	});
@@ -84,8 +78,6 @@ describe('onboarding', () => {
 		cy.background().its('openedUrls').should('deep.equal', ['chrome-extension://arenaswap-e2e/settingsBackup.html#import']);
 	});
 
-	// An import writes prefs but may carry the flag as false, from a browser that never finished
-	// onboarding. Stored prefs are what the popup goes on, so it still skips straight to the games.
 	it('goes straight to the games after an import, whatever the file said about onboarding', () => {
 		cy.openPopup({
 			state: liveState(),

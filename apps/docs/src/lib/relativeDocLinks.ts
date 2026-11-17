@@ -5,9 +5,6 @@ import type { HastPluginEntry } from 'satteri';
 const base = '/arenaswap/';
 const docsRoot = '/src/content/docs/';
 
-// An article is rendered once and served under all twelve locale prefixes, so a link written as
-// /arenaswap/docs/... sent a German reader back to the English site. Written relative to the
-// article's own URL, the same link resolves under whichever prefix the reader arrived on.
 const articlePath = (filePath: string) => {
 	const [section, file] = filePath.slice(filePath.indexOf(docsRoot) + docsRoot.length).split('/').slice(-2);
 	return `docs/${section}/${file!.replace(/\.mdx?$/, '')}/`;

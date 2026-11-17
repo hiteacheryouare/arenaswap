@@ -1,7 +1,3 @@
-// Manual inspection tool, not an automated test: polls a league's public scoreboard every 15s and
-// prints a per-poll table so low-scoring sports can be eyeballed for staying alive via decay.
-//
-// Run: npm run powerscore:validate-live -- <leagueId> [polls]
 import { historyWindowMs as defaultHistoryWindowMs } from '@arenaswap/core';
 import { fetchGamesWithLeagueLogos } from '@arenaswap/sideline';
 import { allLeagueIds, computePowerScore, sportTypeConfigMap, type Game, type ScoreSnapshot, type LeagueId } from 'powerscore';

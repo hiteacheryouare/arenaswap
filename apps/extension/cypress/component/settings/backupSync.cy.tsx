@@ -74,7 +74,6 @@ const pickFile = (contents: string, action: 'select' | 'drag-drop' = 'select') =
 	cy.get(target).selectFile({ contents: Cypress.Buffer.from(contents), fileName: 'arenaswap-settings-main-2026-10-21.json', mimeType: 'application/json' }, { action, force: true });
 };
 
-// The team list behind the favorites' crests. Answered here so a spec never reaches our sources.
 const stubTeams = () => cy.intercept('GET', '**/teams?limit=1000', {
 	sports: [{ leagues: [{ teams: [{ team: { id: '20', displayName: 'Philadelphia 76ers', abbreviation: 'PHI', logos: [] } }] }] }],
 }).as('teams');
@@ -240,7 +239,6 @@ describe('backup tab', () => {
 		pickFile(exportedFile());
 		cy.get('#setupCardHeading').should('have.text', en.backupImport.fromFile);
 		cy.get('#setupCardMeta').should('contain.text', 'Profile "main", exported Oct 21, 2026');
-		// A fresh browser has no leagues on yet, so every league in the file is new.
 		cy.get('#setupRow-leagues .backup-setup-item').should('have.length', 3);
 		cy.get('#setupRow-leagues .backup-setup-change').should('have.text', '+3');
 		cy.get('#setupRow-favorites .backup-setup-change').should('have.text', '+1');

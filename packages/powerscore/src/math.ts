@@ -6,7 +6,6 @@ export const toFiniteNumber = (value: unknown, fallback = 0): number => (
 
 export const isFiniteNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
 
-// A null event timestamp (never happened) ages to Infinity, giving a factor of 0.
 export const decayFactor = (ageMs: number, halfLifeMs: number): number => {
 	if (ageMs <= 0) return 1;
 	if (halfLifeMs <= 0) return 0;

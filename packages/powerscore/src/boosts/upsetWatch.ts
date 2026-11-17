@@ -3,11 +3,9 @@ import { clamp } from '../math';
 import { isDecided, isLive, leadOf, none, otherSide, teamOf } from './shared';
 import type { BoostDefinition, PregameLine, ReasonFragment, SignalInput, SportType } from '../types';
 
-// Spread → win probability uses the spread of final margins around the line.
 const marginSigma: Record<string, number> = { nfl: 13.5, ufl: 13.5, ncaaf: 16, nba: 12, wnba: 11, ncaab: 11, ncaaw: 12 };
 const sportSigma: Partial<Record<SportType, number>> = { football: 13.5, basketball: 12 };
 
-// Win probability where the boost starts, and where it is full.
 const sizeRange: Record<SportType, [number, number]> = {
 	basketball: [0.38, 0.1],
 	football: [0.38, 0.1],
@@ -17,20 +15,16 @@ const sizeRange: Record<SportType, [number, number]> = {
 	soccer: [0.35, 0.15],
 };
 
-// Progress at which an underdog hanging around counts as late.
 const lateProgress: Record<SportType, number> = { basketball: 0.75, football: 0.75, hockey: 0.667, soccer: 0.667, baseball: 0.667, softball: 0.571 };
 
 const impliedProbability = (moneyline: number): number => (moneyline < 0 ? -moneyline / (-moneyline + 100) : 100 / (moneyline + 100));
 
-// Abramowitz & Stegun 7.1.26, plenty for a boost that rounds to whole points.
 const normalCdf = (x: number): number => {
 	const t = 1 / (1 + 0.3275911 * Math.abs(x) / Math.SQRT2);
 	const erf = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-(x * x) / 2);
 	return x >= 0 ? (1 + erf) / 2 : (1 - erf) / 2;
 };
 
-// The underdog's chance before kickoff. A draw counts as half an upset. A puck or run line alone
-// says who is favored but not by how much, so it is not enough.
 export const underdogProbability = (line: PregameLine, sportType: SportType, league: string): number | undefined => {
 	if (line.favoriteMoneyline !== undefined && line.underdogMoneyline !== undefined) {
 		const favorite = impliedProbability(line.favoriteMoneyline);
@@ -47,7 +41,6 @@ export const underdogProbability = (line: PregameLine, sportType: SportType, lea
 	return undefined;
 };
 
-// The chance the underdog wins outright, for saying so. A draw is not a win here.
 const underdogWinChance = (line: PregameLine, p: number): number => {
 	if (line.drawMoneyline === undefined || line.favoriteMoneyline === undefined || line.underdogMoneyline === undefined) return p;
 	const underdog = impliedProbability(line.underdogMoneyline);
@@ -58,7 +51,6 @@ const upsetParts = (input: Pick<SignalInput, 'game' | 'context' | 'sport' | 'pro
 	const { game, context, sport, progress } = input;
 	const line = context.pregameLine;
 	if (!line || !isLive(game) || isDecided({ game, sport, league: input.league, margin: input.margin })) return undefined;
-	// The resolved sport, which falls back to basketball for a sport the tables do not know.
 	const sportId = input.sport.id;
 	const p = underdogProbability(line, sportId, game.league);
 	if (p === undefined) return undefined;
@@ -83,7 +75,6 @@ const upsetDetail = ({ team, chance, underdogLead }: { team: string; chance: num
 	return { key: 'underdogClose', params: { team, chance, margin: -underdogLead } };
 };
 
-// The pregame underdog leading, level, or within one score once the game is past halfway.
 export const upsetWatchBoost: BoostDefinition = {
 	id: 'upsetWatch',
 	bucket: 'context',
@@ -98,7 +89,6 @@ export const upsetWatchBoost: BoostDefinition = {
 	},
 };
 
-// Blowouts' version: the underdog running the favorite off the field.
 export const upsetRoutBoost: BoostDefinition = {
 	id: 'upsetRout',
 	compute: input => {

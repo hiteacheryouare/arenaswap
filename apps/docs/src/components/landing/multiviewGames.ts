@@ -1,7 +1,3 @@
-// The four boxes in the home page's Multiview demo. Each is a real game in a league ArenaSwap tracks,
-// so the crest bar can name it, and the footage is credited on /legal/credits.
-// `left` and `right` follow the league's matchup order: soccer puts the home side on the left.
-
 export interface MultiviewSide {
 	abbreviation: string;
 	logo: string;
@@ -14,8 +10,6 @@ export interface MultiviewGame {
 	right: MultiviewSide;
 }
 
-// Each side's crest is the one drawn for a dark ground where our sources have one, as Multiview draws
-// it; the Fever have none, so theirs is the published crest.
 const espnTeamLogo = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
 
 export const multiviewGames: MultiviewGame[] = [

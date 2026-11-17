@@ -1,9 +1,6 @@
 import { resolve } from 'node:path';
 import { defineConfig } from 'rolldown';
 
-// Both names resolve to their built dist by default; the tools bundle source instead. A replay always
-// runs the engine and core in the working tree, even when dist is stale, and core's own `powerscore`
-// import lands on the same source copy as the tools' import.
 const shared = {
 	platform: 'node' as const,
 	resolve: {

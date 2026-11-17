@@ -1,7 +1,5 @@
 import type { Game } from '@arenaswap/core/types';
 
-// The strip is drawn in yards, so an SVG viewBox of `0 0 120 10` lets every x coordinate below be
-// a real field measurement rather than a pixel derived from one.
 const fieldYards = 100;
 export const endZoneYards = 10;
 export const stripYards = fieldYards + endZoneYards * 2;
@@ -12,38 +10,23 @@ export const stripYards = fieldYards + endZoneYards * 2;
 // away offense driving left to right and the home offense right to left.
 export const yardLineToX = (yardLine: number): number => endZoneYards + (fieldYards - yardLine);
 
-// Two greens a shade apart, which is all a mown band is. Pushing them further apart reads as a
-// striped rug rather than as grass cut in opposite directions. Declared here rather than in the
-// stylesheet because the midfield crest is judged for legibility against the turf it is painted on,
-// and a second copy of the hex is how the paint and the verdict would drift apart.
 export const turfColor = '#22683B';
 export const mownColor = '#2A7645';
 
 export const awayEndZoneX = 0;
 export const homeEndZoneX = endZoneYards + fieldYards;
 
-// 10 through 90 in yards from the away goal line, labelled the way the field is actually painted:
-// mirrored about the 50 and identical whichever way the offense happens to be moving.
 export const yardNumbers = [10, 20, 30, 40, 50, 60, 70, 80, 90].map(fromAwayGoal => ({
 	x: endZoneYards + fromAwayGoal,
 	label: fromAwayGoal > 50 ? fieldYards - fromAwayGoal : fromAwayGoal,
 	isMidfield: fromAwayGoal === 50,
 }));
 
-// --- Cross-field geometry --------------------------------------------------
-// A field is 53 1/3 yards from sideline to sideline, which against 120 yards of length would make
-// the strip 128px tall inside a 320px popup. The viewBox squashes that into 32, so every y below is
-// a real cross-field measurement put through `acrossToY`. Glyphs are the exception and are drawn at
-// their own legible size: a painted numeral is 2 yards tall, which lands under 3px here.
 export const fieldWidthYards = 160 / 3;
 export const stripHeight = 32;
 
 export const acrossToY = (fromSideline: number): number => (fromSideline / fieldWidthYards) * stripHeight;
 
-// The one marking the two codes genuinely disagree about. The NFL sets its hashes 70'9" from each
-// sideline, which puts them 18'6" apart — narrower than the goal posts, so every play starts near
-// the middle of the field. College hashes are 60' from each sideline and 40' apart, which is why a
-// college offense has a real wide side and short side to work with.
 const hashInsetYards: Record<string, number> = {
 	nfl: 70.75 / 3,
 	ncaaf: 20,
@@ -54,15 +37,6 @@ export const resolveHashRows = (league: string): [number, number] => {
 	return [acrossToY(inset), acrossToY(fieldWidthYards - inset)];
 };
 
-// A hash mark is 4 inches wide by 24 inches long and painted at every single yard, and the 24 inches
-// run *lengthwise* — parallel to the sideline, straddling the yard rather than crossing it. That is
-// what makes a hash row read as a near-solid dashed line from above instead of as countable ticks:
-// a 24 inch mark on a 36 inch pitch leaves a gap of only a foot. Drawing them across the field
-// instead would be twice as legible and simply not what a field looks like.
-//
-// They go out as one path rather than 198 elements, and they skip the yard lines themselves, since
-// a mark painted on top of a line is just the line. The end zones carry none: both rulebooks scope
-// hashes to the field of play.
 export const hashLength = 2 / 3;
 
 export const buildHashPath = (rows: [number, number]): string => {
@@ -75,18 +49,13 @@ export const buildHashPath = (rows: [number, number]): string => {
 	return segments.join('');
 };
 
-// Painted numerals sit 12 yards in from each sideline, mirrored top and bottom, and the numeral is
-// what the arrow beside it points away from — always toward the nearer goal line, which is what
-// tells a player which way is downfield when the number alone reads the same from both directions.
 export const numberRowsY: [number, number] = [acrossToY(12), acrossToY(fieldWidthYards - 12)];
 
 export interface FieldDiagram {
-	// All three are x coordinates in the same 0-120 yard space as `yardLineToX`.
 	ballX: number;
 	firstDownX: number | null;
 	driveStartX: number | null;
 	possession: 'home' | 'away' | null;
-	// The direction the offense is moving across the strip. Null while possession is unknown.
 	drivesRight: boolean | null;
 }
 
@@ -119,10 +88,6 @@ const resolvePossession = (game: Game): 'home' | 'away' | null => {
 	return null;
 };
 
-// Where the line to gain sits, in ESPN's absolute yardLine coordinates, or null to draw no line at
-// all. The offense advances toward the end zone it is attacking — the home team toward yardLine
-// 100, the away team toward 0 — so `distance` is added in one direction and subtracted in the
-// other.
 const resolveFirstDownYardLine = (game: Game, possession: 'home' | 'away'): number | null => {
 	const { yardLine, distance } = game;
 	if (typeof yardLine !== 'number' || typeof distance !== 'number' || distance <= 0) return null;
@@ -176,7 +141,6 @@ export const resolveFieldDiagram = (game: Game): FieldDiagram | null => {
 export const resolveFieldFrame = (game: Game, held: FieldFrame | null): FieldFrame | null => {
 	const diagram = resolveFieldDiagram(game);
 	if (diagram !== null) return { gameId: game.id, yardLine: game.yardLine!, diagram };
-	// Keyed on the game as well, because one strip can be handed a different game at the same yard line.
 	if (held !== null && held.gameId === game.id && game.yardLine === held.yardLine) return held;
 	return null;
 };

@@ -47,7 +47,6 @@ describe('when a pointer counts as interest in a card', () => {
 		expect(fetchSpy).toHaveBeenCalledTimes(2);
 	});
 
-	// A test's last hover must not land in the next test's freshly emptied cache.
 	it('drops a pending hover along with the cache', () => {
 		const fetchSpy = answering();
 		jest.useFakeTimers();

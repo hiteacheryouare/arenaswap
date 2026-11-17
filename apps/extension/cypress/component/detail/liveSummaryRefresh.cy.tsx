@@ -61,8 +61,6 @@ describe('the detail screen following a live game', () => {
 	beforeEach(() => {
 		clearSharedRequests();
 		cy.viewport(320, 560);
-		// Only the interval and the clock are faked: the summary itself still travels through the real
-		// network stack, so a slow answer can be raced against a fast one.
 		cy.clock(Date.now(), ['Date', 'setInterval', 'clearInterval']);
 		cy.intercept({ url: /\/standings\?level=3/ }, { body: {} });
 	});
@@ -102,7 +100,6 @@ describe('the detail screen following a live game', () => {
 			cy.get('[data-testid=line]').should('have.text', '0.5,1');
 			cy.then(() => rerender(probe({ ...live, status: 'post' })));
 		});
-		// The status change is its own request, because the final answer is not the live one.
 		cy.get('@summary.all').should('have.length', 2);
 		cy.tick(pollWinProbabilityMs * 3);
 		cy.get('@summary.all').should('have.length', 2);

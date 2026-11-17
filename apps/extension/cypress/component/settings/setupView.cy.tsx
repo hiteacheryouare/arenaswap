@@ -7,7 +7,6 @@ import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
 import fil from '../../../locales/fil.json';
 import fr from '../../../locales/fr.json';
-// Not `it` — that would shadow Mocha's global it() and break every test in this file.
 import itLocale from '../../../locales/it.json';
 import ja from '../../../locales/ja.json';
 import ko from '../../../locales/ko.json';
@@ -142,7 +141,6 @@ const defaultProps = {
 
 const openGroup = (id: string) => cy.get(`#settingsGroup-${id}`).click();
 
-// College tiles carry a button where the other leagues carry a label, so a tile is found by its switch.
 const leagueLabel = (id: string) => cy.get(`#league-${id}`).closest('.league-toggle-row').find('.league-toggle-label');
 
 const measureOffseasonLine = (line: HTMLElement) => {
@@ -217,7 +215,6 @@ describe('setupView navigation', () => {
 		cy.get('@onClose').should('not.have.been.called');
 	});
 
-	// Both the group button and the page's back button unmount when they're clicked.
 	it('moves focus onto the page it opens, and back to the group it came from', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('display');
@@ -226,7 +223,6 @@ describe('setupView navigation', () => {
 		cy.focused().should('have.id', 'settingsGroup-display');
 	});
 
-	// The index row already says what the page is for, so the page doesn't say it again.
 	it('leaves the group description on the index, not under the page header', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.contains('.settings-index-desc', en.setup.groupStandbyDesc).should('exist');
@@ -269,9 +265,7 @@ describe('setupView search', () => {
 		cy.focused().should('have.id', 'holidayDecorationsToggle');
 	});
 
-	// A control id that drifts from the page it names fails quietly, back to the top of the page.
 	it('points every searchable setting at a control that exists on its page', () => {
-		// Custom with a league in each mode, so every mode's controls are on the page at once.
 		const everyModePrefs: UserPreferences = {
 			...defaultPrefs,
 			standbyStreamEnabled: true,
@@ -281,11 +275,9 @@ describe('setupView search', () => {
 			scoringMode: 'custom',
 			leagueModes: { nfl: 'fantasy', nhl: 'blowouts' },
 		};
-		// The Backup & Sync page reads this device's flags out of storage as it opens.
 		const emptyArea = { get: (defaults: Record<string, unknown>) => Promise.resolve(defaults) };
 		(window as unknown as Record<string, unknown>).browser = { storage: { sync: emptyArea, local: emptyArea } };
 		settingsEntries.filter(entry => entry.controlId).forEach(entry => {
-			// Multiview's controls are only on its page while it is on.
 			cy.mount(<SetupView {...defaultProps} prefs={everyModePrefs} multiviewOn />);
 			openGroup(entry.group);
 			cy.get(`#${entry.controlId}`).should('exist');
@@ -312,8 +304,6 @@ describe('setupView search', () => {
 		cy.contains('.settings-index-row', 'Temperature unit').should('exist');
 	});
 
-	// The thing somebody wants off is a thing they have only ever seen, never read a name for, so the
-	// words they reach for are their own rather than the label's.
 	it('finds the opening animation by what it looks like rather than what it is called', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('intro');
@@ -468,7 +458,6 @@ describe('setupView display group', () => {
 		cy.get('@onToggleKeepFinalGames').should('have.been.calledOnce');
 	});
 
-	// It sits directly under the upcoming pair, which is the other end of the same axis.
 	it('sits below the days-ahead slider and above pro tips', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		openGroup('display');
@@ -525,7 +514,6 @@ describe('setupView display group', () => {
 		});
 		cy.get('@onUpcomingGamesDaysChange').should('have.been.called');
 	});
-
 
 	it('shows °F label when temperatureUnit is F', () => {
 		cy.mount(<SetupView {...defaultProps} />);
@@ -655,7 +643,6 @@ describe('setupView demo mode', () => {
 	});
 });
 
-// Nothing on a guide step may push the popup into scrolling.
 const fits = () => cy.get('.popup-container').should($container => {
 	expect($container[0].scrollHeight).to.be.at.most($container[0].clientHeight);
 	expect($container[0].scrollWidth).to.be.at.most($container[0].clientWidth);
@@ -688,7 +675,6 @@ describe('setupView multiview', () => {
 		openGroup('multiview');
 		cy.get('#multiviewGamesSelect').choose('All my games');
 		cy.get('@games').should('have.been.calledWith', 'all');
-		// React keeps its own copy of an input's value, so the value is set the way the browser sets it.
 		cy.get('#multiviewMaxBoxesSlider').then($input => {
 			const input = $input[0] as HTMLInputElement;
 			Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(input, '6');
@@ -833,7 +819,6 @@ describe('setupView standby stream', () => {
 
 		cy.get('#standbyStreamToggle').check({ force: true });
 
-		// Copy only the guide's first step carries, so the settings page behind it cannot satisfy it.
 		cy.contains('A fallback for the slow moments.').should('be.visible');
 		cy.get('.flow-stepper .stepper-item.is-current').should('be.visible');
 		cy.contains('Step 1 of 2').should('exist');
@@ -1087,9 +1072,6 @@ describe('setupView scoring mode', () => {
 	});
 });
 
-// The favorites page fetches rosters on mount, so every test that opens it has to answer that
-// call. One team is the floor, not a convenience: fetchTeamsForLeagues throws outright when every
-// league it asked about comes back empty, so a zero-team stub is a failed load rather than a bare one.
 const stubTeamsFetch = (entries: [string, string][] = [['1', 'Atlanta Hawks']]) => cy.window().then(win => {
 	cy.stub(win, 'fetch').resolves({
 		ok: true,
@@ -1243,7 +1225,6 @@ describe('setupView leagues group', () => {
 		leagueLabel('ncaab').should('contain.text', keepCountTogether(`Back ${tipOffLabel} (30 days)`));
 		leagueLabel('cbase').should('contain.text', 'Offseason');
 		leagueLabel('nba').should('not.contain.text', 'Offseason').and('not.contain.text', 'Back');
-		// A league nothing was heard back about stays unmarked rather than guessing.
 		leagueLabel('nfl').should('not.contain.text', 'Offseason');
 	});
 
@@ -1251,8 +1232,6 @@ describe('setupView leagues group', () => {
 		const tipOff = Date.UTC(new Date().getFullYear() + 1, 10, 30, 7);
 		cy.mount(<SetupView {...defaultProps} leagueSchedules={{ ncaab: { startsAt: tipOff, endsAt: tipOff + 1 } }} />);
 		openGroup('leagues');
-		// The whole label misses the card by about 5px, and an overlay scrollbar hands the card back the
-		// 15px a classic one takes, so the line is narrowed to the date alone rather than left to the system.
 		leagueLabel('ncaab').find('.league-offseason').then(([line]: JQuery<HTMLElement>) => {
 			const { at, open } = measureOffseasonLine(line);
 			line.style.width = `${Math.ceil(at(0, open).width) + 1}px`;
@@ -1343,7 +1322,6 @@ describe('the theme setting', () => {
 		cy.get('#themeSelect').should('be.disabled');
 	});
 
-	// Nobody searches for "theme"; they search for the thing they want to stop squinting at.
 	it('is found by the words people use for it', () => {
 		cy.mount(<SetupView {...defaultProps} />);
 		cy.get('#settingsSearch').type('dark');
@@ -1382,7 +1360,6 @@ describe('what happens to a tab once its game finishes', () => {
 		cy.get('@onFinishedTabActionChange').should('have.been.calledOnceWith', 'free');
 	});
 
-	// Nothing is being taken while it says keep, so there is nothing to explain.
 	it('says nothing extra while it is set to keep', () => {
 		openSwitching();
 		finishedTabTooltip().should('not.exist');
@@ -1393,7 +1370,6 @@ describe('what happens to a tab once its game finishes', () => {
 		cy.contains(en.setup.finishedTabActiveExplainer).should('not.exist');
 		finishedTabTooltip().focus();
 		cy.get('.tooltip').should('contain.text', en.setup.finishedTabActiveExplainer)
-			// Nothing is closing, so the sole-tab rule has nothing to say.
 			.and('not.contain.text', en.setup.finishedTabCloseExplainer);
 	});
 
@@ -1404,14 +1380,10 @@ describe('what happens to a tab once its game finishes', () => {
 			.and('contain.text', en.setup.finishedTabCloseExplainer);
 	});
 
-	// A native select clips rather than wraps, so a string that does not fit is silently
-	// truncated to an ellipsis — measuring the rendered box would never notice.
 	it('fits all three options inside the select in every locale', () => {
 		openSwitching();
 		cy.get('#finishedTabSelect').should(([select]: JQuery<HTMLElement>) => {
 			const style = getComputedStyle(select);
-			// .form-control-caret keeps its right-hand padding for the chevron, so the text gets the
-			// content box and nothing more.
 			const available = select.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
 			expect(available, 'the select has a measurable width').to.be.greaterThan(100);
 

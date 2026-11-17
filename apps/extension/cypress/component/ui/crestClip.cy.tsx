@@ -1,15 +1,5 @@
-// The one thing a round crest frame must never do is cut the artwork. A crest reaches into the
-// corners of its own box — the Giants' 'ny' runs the whole width of theirs — so a circle drawn at
-// the size of the mark shaves its ends off, which is what the sticky bar did to 25px of that one.
-//
-// Two rules, checked here for every frame that has them rather than in each call site's own spec:
-// a bare crest has no plate to keep clear of and is never clipped, and a plated one is inset to
-// three quarters of the plate, the share the widest mark in any league needs to land on it.
 import Crest from '@arenaswap/ui/src/components/crest';
 
-// The plate class and the crest class, exactly as each call site passes them to TeamCrest, and
-// whether that site can plate at all. The poster and the hero sit on the team's own colour and always
-// draw the dark-ground crest bare.
 const frames: [string, string, boolean][] = [
 	['gd-bar-logo-shell', 'gd-bar-logo', true],
 	['gd-poster-crest', 'gd-poster-crest-logo', false],
@@ -18,8 +8,6 @@ const frames: [string, string, boolean][] = [
 	['ff-logo-shell', 'ff-logo-art', true],
 ];
 
-// `.ff-logo-shell` fills its foreignObject rather than carrying a size, so every frame is mounted
-// in a box of its own and measured against what it actually renders at.
 const mountFrame = (plate: string, art: string, bare: boolean) => {
 	cy.viewport(200, 200);
 	cy.mount(

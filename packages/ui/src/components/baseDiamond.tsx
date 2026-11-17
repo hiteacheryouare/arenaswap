@@ -7,7 +7,6 @@ interface baseDiamondProps {
 	third: boolean;
 }
 
-// No home plate and no outline: occupancy is the whole signal.
 const base = (name: string, occupied: boolean) => (
 	<i
 		className={`bi bi-diamond-fill base-marker base-${name}${occupied ? ' occupied' : ''}`}
@@ -15,8 +14,6 @@ const base = (name: string, occupied: boolean) => (
 	/>
 );
 
-// Each of the eight states is one whole sentence, so a translator words it naturally rather than
-// joining base names in English order.
 const spokenRunners = (t: Translator, { first, second, third }: baseDiamondProps): string => {
 	if (first && second && third) return t('bases.loaded');
 	if (first && second) return t('bases.firstSecond');

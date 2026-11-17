@@ -38,7 +38,6 @@ const buildHistory = (random: Random, gameId: string, home: number, away: number
 		} else {
 			if (random.chance(0.3)) h = Math.min(home, h + random.int(1, 3));
 			if (random.chance(0.3)) a = Math.min(away, a + random.int(1, 3));
-			// Feeds revise scores down after a review.
 			if (random.chance(0.03)) h = Math.max(0, h - 2);
 		}
 		snapshots.push({ gameId, timestamp: t, homeScore: h, awayScore: a });
@@ -89,8 +88,6 @@ const buildWinProbability = (random: Random): number[] => {
 	return Array.from({ length }, () => (random.chance(0.03) ? Number.NaN : Math.min(1, Math.max(0, center + (random.next() - 0.5) * 0.4))));
 };
 
-// Classic with only the boost 2.2.0 had, so the sweep pins the pipeline itself. The boosts added
-// since are tested on their own.
 const classicAsShipped = { ...classicMode, boosts: [scoringOpportunityBoost] };
 
 describe('v3 Classic matches the 2.2.0 pipeline', () => {
@@ -129,12 +126,8 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 				gameBoost,
 			});
 
-			// Deliberate: a lead built inside overtime past the close margin no longer pays the
-			// full overtime late-game value, so those games leave late-game and everything summed from it out.
 			const overtimeLead = (game.period ?? 0) > resolveLeagueConfig(game).regularPeriods
 				&& scoreMargin(game) > resolveSportConfig(game.sportType).closenessMargins[1];
-			// Deliberate: 2.x subtracted the unsigned margin, so a trailer that now leads inside the close
-			// margin was read wrongly. Past it the two agree. Those games leave comeback and what sums from it out.
 			const first = history[0];
 			const trailerLead = first === undefined ? 0 : first.homeScore < first.awayScore ? game.homeTeam.score - game.awayTeam.score : game.awayTeam.score - game.homeTeam.score;
 			const trailerNowLeads = first !== undefined && first.homeScore !== first.awayScore
@@ -151,7 +144,6 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 				['postseasonBoost', v2.postseasonBoost, boostPoints(v3, 'postseasonBoost')],
 			];
 
-			// The reason line was rewritten from a list of fragments into sentences, so it is not compared.
 			if (!skipsSubtotal) fields.push(['total', v2.total, v3.total]);
 
 			if (v3.total >= 70) seen.highTotal++;
@@ -170,7 +162,6 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 			}
 		}
 		expect(mismatches).toEqual([]);
-		// The sweep only proves something if it reached the states that matter.
 		for (const [state, count] of Object.entries(seen)) expect([state, count >= 50]).toEqual([state, true]);
 	});
 });

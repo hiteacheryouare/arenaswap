@@ -5,8 +5,6 @@ import type { ReasonFragment, Side, SignalInput } from '../types';
 
 const sideOf = (value: Side | boolean | undefined): Side | undefined => (value === 'home' || value === 'away' ? value : undefined);
 
-// A pulled goalie late in the 3rd of a one- or two-goal game. When the feed says whose net is empty
-// it pays only for the trailing team's: the leader's empty net is a delayed penalty.
 const emptyNetPoints = (input: SignalInput): number => {
 	const { game, context, sport, league, margin } = input;
 	if (!context.emptyNet || game.period !== league.regularPeriods || isDecided(input)) return 0;
@@ -17,7 +15,6 @@ const emptyNetPoints = (input: SignalInput): number => {
 	return margin === 1 ? 12 : margin === 2 ? 7 : 0;
 };
 
-// Without a side, the value assumes the trailing team is as likely to have it as not.
 const sideFreeValue = (margin: number, late: boolean): number => {
 	if (margin === 0) return late ? 10 : 4;
 	if (margin === 1) return late ? 7 : 3;
@@ -40,7 +37,6 @@ const powerPlayPoints = (input: SignalInput): number => {
 	return side === undefined ? sideFreeValue(margin, late) : sidedValue(margin, leadOf(game, side) < 0, late);
 };
 
-// Without a side, the trailing team is the one that pulls its goalie.
 const emptyNetDetail = ({ game, context, sport, league, margin }: SignalInput): ReasonFragment => {
 	const puller = sideOf(context.emptyNet) ?? (leadOf(game, 'home') < 0 ? 'home' : 'away');
 	const secsLeft = secondsLeftInPeriod(game, sport, league) ?? 0;
@@ -56,7 +52,6 @@ const powerPlayDetail = ({ game, context, margin }: SignalInput): ReasonFragment
 	return { key: lead < 0 ? 'powerPlayTeamTrailing' : 'powerPlayTeamLeading', params: { team, margin } };
 };
 
-// A 6-on-4 is both at once, so they stack and the moment bucket's cap trims the sum.
 export const hockeyScoringOpportunity = (input: SignalInput): number => emptyNetPoints(input) + powerPlayPoints(input);
 
 export const hockeyScoringOpportunityDetails = (input: SignalInput): ReasonFragment[] => [

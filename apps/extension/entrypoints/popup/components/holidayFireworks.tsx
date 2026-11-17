@@ -38,8 +38,6 @@ const drag = 0.975;
 
 const randomBetween = (min: number, max: number): number => min + Math.random() * (max - min);
 
-// A navy or a forest green bursts invisibly on a dark hero, so every colour keeps its hue and is
-// lifted to firework brightness.
 export const fireworkColor = (hex: string): string => {
 	const value = Number.parseInt(hex.replace('#', ''), 16);
 	const [r, g, b] = [(value >> 16) & 255, (value >> 8) & 255, value & 255].map(channel => channel / 255) as [number, number, number];
@@ -51,8 +49,6 @@ export const fireworkColor = (hex: string): string => {
 	return `hsl(${Math.round(((hue * 60) + 360) % 360)} 90% 68%)`;
 };
 
-// Over the scorebug rather than the window. Idle until a run scores, and stops drawing the moment
-// the last spark burns out.
 const holidayFireworks = ({ volley }: holidayFireworksProps) => {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 	const rockets = useRef<rocket[]>([]);

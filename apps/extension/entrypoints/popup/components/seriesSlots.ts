@@ -6,9 +6,6 @@ export type SeriesSlot =
 	| { kind: 'ifNecessary' }
 	| { kind: 'notNeeded' };
 
-// A regular-season set plays every game whatever the score, so only a playoff series can end
-// early. Of its unplayed games, the ones the leader could still win the series in are certain to
-// be played; the rest wait on the trailing side, and once a side has clinched none are played.
 export const seriesSlots = (info: SeriesInfo): SeriesSlot[] => {
 	const total = info.totalCompetitions ?? 0;
 	// ESPN returns future games first and completed games last.

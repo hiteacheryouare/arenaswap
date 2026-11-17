@@ -11,13 +11,10 @@ export type CollegeDivisionName = 'fbs' | 'fcs' | 'd1' | 'd2' | 'd3';
 export interface CollegeDivision {
 	key: string;
 	name: CollegeDivisionName;
-	// The scoreboard's `groups=` value. Absent where the league's scoreboard takes none.
 	groups?: string;
 	hasConferences: boolean;
 }
 
-// The first entry of each league is its default, which is what the scoreboard returned before this
-// filter existed.
 export const collegeDivisions: Record<CollegeLeagueId, readonly CollegeDivision[]> = {
 	ncaaf: [
 		{ key: '80', name: 'fbs', groups: '80', hasConferences: true },
@@ -32,7 +29,6 @@ export const collegeDivisions: Record<CollegeLeagueId, readonly CollegeDivision[
 	csoft: [{ key: 'd1', name: 'd1', hasConferences: true }],
 };
 
-// The college hockey poll stops at 20.
 export const collegeRankedPollSize: Record<CollegeLeagueId, number> = {
 	ncaaf: 25,
 	ncaab: 25,
@@ -42,13 +38,10 @@ export const collegeRankedPollSize: Record<CollegeLeagueId, number> = {
 	csoft: 25,
 };
 
-// Our sources list only about half of baseball's and softball's conferences, so every team outside
-// them lands here.
 export const otherConferenceKey = 'other';
 
 export const collegeLeaguesWithOtherConferences: readonly CollegeLeagueId[] = ['cbase', 'csoft'];
 
-// These scoreboards carry no conference on the team, so filtering by conference needs the directory.
 const leaguesWithoutScoreboardConferences: readonly CollegeLeagueId[] = ['ncaamh', 'cbase', 'csoft'];
 
 export const defaultCollegeFilter = (leagueId: CollegeLeagueId): CollegeFilter => ({
@@ -89,7 +82,6 @@ const normalizeCollegeFilter = (leagueId: CollegeLeagueId, raw: Record<string, u
 	};
 };
 
-// Defaults are dropped rather than stored, so prefs only ever hold what someone actually changed.
 export const normalizeCollegeFilters = (value: unknown): CollegeFilterMap => {
 	if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
 	const result: CollegeFilterMap = {};
@@ -119,10 +111,6 @@ export const needsConferenceDirectory = (leagueId: CollegeLeagueId, filter: Coll
 	return leaguesWithoutScoreboardConferences.includes(leagueId) && filter.conferences.length > 0;
 };
 
-/* The `groups=` values to fetch for one league; an empty list means one request with no `groups`.
-   Only football has more than one division, and it fetches each one that something picked could
-   match: a selected division, the division a selected conference sits in, FBS for Top 25, and the
-   division of any favorite team. */
 export const collegeFetchGroups = (
 	leagueId: LeagueId,
 	filter?: CollegeFilter,
@@ -135,7 +123,6 @@ export const collegeFetchGroups = (
 	if (divisions.length === 1 || !filter) return defaultDivision?.groups ? [defaultDivision.groups] : [];
 
 	const wanted = new Set(filter.divisions);
-	// The polls and the Playoff are both FBS.
 	if (filter.ranked || filter.titleRounds) wanted.add(defaultDivision!.key);
 	for (const conferenceId of filter.conferences) {
 		const entry = directory?.conferences.find(conference => conference.id === conferenceId);
@@ -170,8 +157,6 @@ export const passesCollegeFilter = (
 	if (filter.titleRounds && game.collegeTitleRound) return true;
 	const leagueId = game.league;
 
-	// Without the directory there is no way to tell these leagues' conferences apart, and an empty
-	// board would be the worse mistake.
 	if (filter.conferences.length > 0 && !directory && leaguesWithoutScoreboardConferences.includes(leagueId)) return true;
 
 	const divisions = collegeDivisions[leagueId];
@@ -181,7 +166,6 @@ export const passesCollegeFilter = (
 		return true;
 	}
 
-	// In a seeded bracket every team carries a rank, so the field of 64 would all read as Top 25.
 	if (filter.ranked && !game.collegeSeeded && (game.homeTeam.rank !== undefined || game.awayTeam.rank !== undefined)) return true;
 
 	if (filter.conferences.length === 0) return false;
@@ -235,7 +219,6 @@ const conferenceCrestIds: Record<string, { id: string; dark?: boolean }> = {
 	swac: { id: '31', dark: true },
 };
 
-// These leagues' conferences carry no logo, so they borrow the crest of the same conference by name.
 // Hockey's `IND` is deliberately absent: `independents.png` is the FBS independents mark.
 const conferenceCrestAliases: Partial<Record<CollegeLeagueId, Record<string, string>>> = {
 	ncaab: { Metro: 'maac' },
@@ -276,9 +259,7 @@ export const conferenceSlugFromName = (shortName: string): string | undefined =>
 
 export interface ConferenceCrest {
 	src?: string;
-	// Tried when `src` will not load.
 	fallbackSrc?: string;
-	// The artwork was drawn for a dark ground, so it needs no legibility check there.
 	drawnForDark: boolean;
 }
 

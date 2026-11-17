@@ -19,7 +19,6 @@ const tabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel,
 
 	const onSelect = (tabIdStr: string) => {
 		const tabId = Number(tabIdStr);
-		// The placeholder is '', which Number turns into a falsy 0 — that is the unassign path.
 		onChange(tabId
 			? assignTabToGame(registry, tabId, gameId)
 			: registry.filter(r => r.gameId !== gameId));

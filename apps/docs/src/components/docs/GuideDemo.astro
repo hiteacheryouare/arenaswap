@@ -12,8 +12,6 @@ const demoText = demoTranslator(locale);
 
 const espnTeamLogo = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
 
-// One evening, 7 PM to midnight, read at 9:40 PM. Times are built in local time and printed in local
-// time, so the labels come out the same wherever the site is built.
 const at = (hour: number, minute = 0) => new Date(2026, 10, 4, hour, minute).getTime();
 const axisFrom = at(19);
 const axisTo = at(24);

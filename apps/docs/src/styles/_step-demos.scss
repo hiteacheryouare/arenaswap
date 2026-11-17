@@ -1,10 +1,6 @@
 @use '@arenaswap/ui/src/motion' as m;
 @use '@arenaswap/ui/src/popup';
 @layer custom {
-
-	// The demo above each of the three steps: a 420x432 Chrome window, scaled to its column by
-	// `--step-scale`, which StepDemos measures. The default holds the layout until it has.
-
 	.step-demo-frame {
 		order: -1;
 		width: 100%;
@@ -50,7 +46,6 @@
 			aspect-ratio: auto;
 		}
 
-		// The hero's narrow-screen rules key off the page width. This window is 420px at every width.
 		.browser-titlebar {
 			padding-left: 1rem;
 		}
@@ -126,7 +121,6 @@
 		}
 	}
 
-	// Pinned under the extension button, as the real popup opens.
 	.step-demo-popup {
 		position: absolute;
 		top: 0.4rem;
@@ -139,13 +133,10 @@
 			overflow: hidden;
 		}
 
-		// The extension's own weight, a bare `.menu`, so the card's smaller picker still wins over it.
 		:where(&) .menu {
 			@include popup.menu-skin;
 		}
 
-		// No room under the dropdown at the bottom of the card, so it opens upward, as Bootstrap's own
-		// placement would flip it.
 		.select-dropdown-menu {
 			top: auto;
 			bottom: calc(100% + 0.25rem);

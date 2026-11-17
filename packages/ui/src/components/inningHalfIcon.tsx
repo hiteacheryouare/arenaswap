@@ -1,7 +1,6 @@
 import { useT } from './i18nContext';
 
 interface inningHalfIconProps {
-	// Top of inning = true, bottom = false.
 	topOfInning?: boolean;
 }
 

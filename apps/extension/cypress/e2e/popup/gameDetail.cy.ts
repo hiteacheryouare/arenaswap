@@ -74,7 +74,6 @@ describe('game detail drill-down', () => {
 		openDetail(sixersThunder.awayTeam.abbreviation);
 		cy.get('.game-detail-shell').should('exist');
 
-		// The game ends and drops out of the background's list while the user is still looking at it.
 		cy.pushScores({ games: [bullsHeat], scores: [makeScore(bullsHeat.id, 19)] });
 
 		cy.get('.game-detail-shell').should('not.exist');
@@ -82,8 +81,6 @@ describe('game detail drill-down', () => {
 	});
 });
 
-// #104. The popup has no router: `app.tsx` keys the view shell on `view`, so opening a game used to
-// unmount the whole list and take the scroller's offset with it.
 const crowdedSlate = () => {
 	const games = Array.from({ length: 8 }, (_, index) => makeGame(`nba-filler-${index}`, {
 		homeTeam: { id: `h${index}`, name: `Home ${index}`, abbreviation: `H${index}`, score: 90 + index },
@@ -108,9 +105,6 @@ describe('returning from a game detail screen', () => {
 		Array.from(doc.fonts, face => face.load()),
 	).then(() => doc.fonts.ready)));
 
-	// Measured mid-list rather than at the bottom, so the assertion is about the offset itself and not
-	// about how tall the list happens to be. Clamping a saved offset the list has outgrown is the
-	// hook's intended behavior and is asserted exactly in the component spec.
 	it('lands you back where you were scrolled to', () => {
 		cy.get('.popup-container').scrollTo(0, 600);
 		cy.get('.popup-container').should('have.prop', 'scrollTop', 600);
@@ -128,8 +122,6 @@ describe('returning from a game detail screen', () => {
 		cy.get('.popup-container').should('have.prop', 'scrollTop', 600);
 	});
 
-	// The offset is held by the app rather than by the detail screen, so it is not the game screen
-	// specifically that restores it -- any view you come back from does.
 	it('lands you back where you were after a trip through settings', () => {
 		cy.get('.popup-container').scrollTo(0, 600);
 		cy.get('.popup-container').should('have.prop', 'scrollTop', 600);

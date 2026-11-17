@@ -14,7 +14,6 @@ const load = (url: string) => new Promise<void>(resolve => {
 	image.src = url;
 });
 
-// Every image the stage itself draws, fetched before frame 0 so none of them pops in on camera.
 const preloadImages = async (_cut: Cut, slate: Slate) => {
 	const urls = new Set<string>();
 	for (const game of slate.raw.wall) {

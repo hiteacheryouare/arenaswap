@@ -1,7 +1,6 @@
 import StandbyStreamGuide from '../../../entrypoints/popup/components/standbyStreamGuide';
 
 describe('standbyStreamGuide', () => {
-	// It borrowed onboarding's fade, which waits 0.58s for a logo this screen doesn't have.
 	it('fades in without waiting on anything', () => {
 		cy.mount(<StandbyStreamGuide onDone={() => {}} />);
 		cy.get('.standby-guide-content').should('have.css', 'animation-delay', '0s');

@@ -125,8 +125,6 @@ describe('earliestUpcomingStartMs', () => {
 		expect(earliestUpcomingStartMs(games, now)).toBe(now + 90 * 60_000);
 	});
 
-	// A live game's kickoff is in the past and a final game's is further back still. Every state
-	// carries startTime now, so filtering on status is what keeps this answering the right question.
 	test('ignores games that are already under way or over', () => {
 		const games = [
 			makeGame({ id: 'live', status: 'in', startTime: at(-40) }),
@@ -136,7 +134,6 @@ describe('earliestUpcomingStartMs', () => {
 		expect(earliestUpcomingStartMs(games, now)).toBe(now + 150 * 60_000);
 	});
 
-	// A scheduled game whose start has slipped past is about to go live, not about to be waited for.
 	test('ignores a scheduled game whose start has already passed', () => {
 		const games = [makeGame({ id: 'slipped', status: 'pre', startTime: at(-5) })];
 		expect(earliestUpcomingStartMs(games, now)).toBeNull();
@@ -165,7 +162,6 @@ describe('computeHebetudinousIntervalMs', () => {
 		expect(computeHebetudinousIntervalMs(now + 9 * 24 * 60 * 60_000, now)).toBe(pollHebetudinousMaxMs);
 	});
 
-	// The point of the state: sleep up to the edge of the horizon, then hand back to the dormant beat.
 	test('wakes as the kickoff comes inside the horizon', () => {
 		expect(computeHebetudinousIntervalMs(now + day + 25 * 60_000, now)).toBe(25 * 60_000);
 	});
@@ -174,14 +170,10 @@ describe('computeHebetudinousIntervalMs', () => {
 		expect(computeHebetudinousIntervalMs(now + day + 60_000, now)).toBe(pollDormantMaxMs);
 	});
 
-	// Reachable while a schedule is still live but the league has already woken to dormant; the
-	// interval is only read in the sleeping branch, and it must not go negative if it ever is not.
 	test('a kickoff already inside the horizon sleeps for the dormant beat', () => {
 		expect(computeHebetudinousIntervalMs(minutes(90), now)).toBe(pollDormantMaxMs);
 	});
 
-	// Reachable only through a schedule that went stale between the mode being read and the interval
-	// being computed, and the answer has to stay a sleep rather than becoming a negative delay.
 	test('a kickoff already in the past still sleeps for the dormant beat', () => {
 		expect(computeHebetudinousIntervalMs(minutes(-30), now)).toBe(pollDormantMaxMs);
 	});
@@ -195,9 +187,6 @@ describe('computeHebetudinousIntervalMs', () => {
 	});
 });
 
-/* The floor the PowerScore ramp scales down to is ESPN's, read off the `cache-control` it answered
-   the scoreboard with, so these check that supplying one moves the bottom of the ramp and nothing
-   else about its shape. */
 describe('the floor the eager ramp scales down to', () => {
 	it('still pays the whole ramp, just from a different bottom', () => {
 		expect(computeEagerIntervalMs(100, 12_000)).toBe(12_000);
@@ -218,8 +207,6 @@ describe('the floor the eager ramp scales down to', () => {
 		expect(computeEagerIntervalMs(100)).toBe(pollMinEagerMs);
 	});
 
-	// A league reporting a max-age longer than the ceiling would otherwise invert the ramp and have
-	// the most exciting game polled least often.
 	it('never returns anything under the floor, even above the ceiling', () => {
 		const long = pollMaxEagerMs + 30_000;
 		expect(computeEagerIntervalMs(100, long)).toBe(long);

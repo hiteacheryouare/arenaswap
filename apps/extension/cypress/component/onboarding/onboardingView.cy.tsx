@@ -7,7 +7,6 @@ const teamsByLeague: Record<string, [string, string][]> = {
 	mlb: [['22', 'Philadelphia Phillies']],
 };
 
-// ESPN's /teams envelope, trimmed to the fields fetchTeamsForLeagues reads.
 const teamsPayload = (entries: [string, string][]) => ({
 	sports: [{
 		leagues: [{
@@ -18,9 +17,6 @@ const teamsPayload = (entries: [string, string][]) => ({
 	}],
 });
 
-// This view calls the real fetchTeamsForLeagues, and a package entry point has no seam for the
-// component-stub plugin in cypress.config.ts, so the stub goes on the window instead. Each league
-// answers with its own teams, which is what keeps the favorite buttons individually addressable.
 const stubTeamsFetch = () => {
 	cy.window().then(win => {
 		if ('restore' in win.fetch) return;
@@ -46,7 +42,6 @@ const goToLeaguePicker = () => cy.contains('button', 'Got it').click();
 const goToTeamPicker = () => {
 	stubTeamsFetch();
 	cy.contains('button', 'Next').click();
-	// Proves the teams came from the stub rather than a live ESPN call.
 	cy.get('@teamsFetch').should('have.been.called');
 	cy.contains('Pick Your Teams').should('exist');
 };
@@ -98,8 +93,6 @@ describe('onboardingView', () => {
 		cy.contains('Philadelphia Phillies').should('not.exist');
 	});
 
-	// A slate of many leagues takes seconds to roster, and Next used to sit there doing nothing
-	// visible until every one had answered.
 	it('opens the team picker on its spinner while the rosters load', () => {
 		cy.mount(<OnboardingView {...defaultProps} />);
 		goToLeaguePicker();

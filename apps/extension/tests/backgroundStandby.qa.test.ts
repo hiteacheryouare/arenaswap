@@ -20,9 +20,6 @@ const drain = async (rounds = 16) => {
 	for (let i = 0; i < rounds; i++) await flushPromises();
 };
 
-/* Chrome's storage areas serialise what they are given: `undefined` properties vanish and NaN
-   comes back as null. Every write here goes through the same JSON round trip, so a value the worker
-   writes and cannot read back fails here the way it does in the browser. */
 let sessionStore: Record<string, unknown> = {};
 let localStore: Record<string, unknown> = {};
 let syncStore: Record<string, unknown> = {};
@@ -186,7 +183,6 @@ describe('an evening parked on the standby stream', () => {
 		for (let i = 0; i < 4; i++) await poll();
 
 		expect(activations()).toEqual([]);
-		// The stream plays and both games stay silent behind it.
 		const lastMute = (tabId: number) => tabsUpdate.mock.calls.filter(([id, patch]) => id === tabId && 'muted' in (patch as object)).at(-1)?.[1];
 		expect(lastMute(standbyTabId)).toEqual({ muted: false });
 		expect(lastMute(2)).toEqual({ muted: true });
@@ -212,7 +208,6 @@ describe('an evening parked on the standby stream', () => {
 		await poll();
 		expect(activations()).toEqual([standbyTabId]);
 
-		// Inside a ten-minute cooldown, g2 goes to the wire.
 		mockTabs(allTabs, standbyTabId);
 		setGames([runaway('g1'), thriller('g2')]);
 		tabsUpdate.mockClear();
@@ -227,8 +222,6 @@ describe('an evening parked on the standby stream', () => {
 		await poll();
 		expect(activations()).toEqual([standbyTabId]);
 
-		// They would rather watch g1 anyway. Landing on a game tab by hand starts the cooldown, which
-		// is what is supposed to stop the next poll overriding the choice.
 		mockTabs(allTabs, 2);
 		onActivatedHandler?.({ tabId: 2 });
 		await drain();
@@ -279,8 +272,6 @@ describe('a switch waiting out its delay while the games go quiet', () => {
 		const queued = await sendMessage({ type: 'GET_DEBUG_STATE' }) as { pendingSwitch: { tabId: number } | null };
 		expect(queued.pendingSwitch).toEqual(expect.objectContaining({ tabId: 2 }));
 
-		// The user opens the popup inside the delay, which refreshes without switching, and g1 has
-		// fallen apart since.
 		setGames([runaway('g1'), runaway('g2')]);
 		await sendMessage({ type: 'GET_STATE', forceRefresh: true });
 		jest.advanceTimersByTime(10_000);

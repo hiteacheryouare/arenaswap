@@ -3,7 +3,6 @@ import { clamp } from './math';
 import type { RivalBand, RivalryResult, ScoreSnapshot, Side, SignalInput } from './types';
 
 const blownLeadStrength = 20;
-// What's left of a game a rival is running away with.
 const buriedShare = 0.05;
 
 const otherSide = (side: Side): Side => (side === 'home' ? 'away' : 'home');
@@ -18,11 +17,6 @@ const ledEarlier = (history: readonly ScoreSnapshot[], side: Side): boolean => h
 	side === 'home' ? snapshot.homeScore > snapshot.awayScore : snapshot.awayScore > snapshot.homeScore
 ));
 
-/*
-	Ordinary games keep their order, squeezed into 0–ordinaryCeiling. A rival losing by more than two
-	scores takes the range above it, placed by how bad the beating is. A rival in front keeps a share
-	of its ordinary score that shrinks as the lead grows, down to almost nothing at a rout.
-*/
 export const rankAgainstRivals = (input: SignalInput, total: number, rivalSides: readonly Side[], band: RivalBand): { total: number; rivalry: RivalryResult } => {
 	const ceiling = clamp(Math.round(band.ordinaryCeiling), 0, scoreMaxTotal - 1);
 	const [, twoScores, rout] = input.sport.closenessMargins;

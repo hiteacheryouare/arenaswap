@@ -15,15 +15,12 @@ const seriesDots = ({ info, game }: seriesDotsProps) => {
 	const total = info.totalCompetitions ?? 0;
 	if (total < 2) return null;
 
-	// Lifted the way the win probability chart's lines are, since the hero is just as dark: a navy or
-	// black dot as published disappears into it. It also keeps each team one colour across the page.
 	const [awayColor, homeColor] = resolveChartLineColors(game.awayTeam, game.homeTeam, 'dark', '#6b7280', '#9ca3af');
 	const dots = seriesSlots(info).map((slot, i) => {
 		if (slot.kind === 'upcoming') return <i key={i} className='bi bi-circle series-dot series-dot-empty' />;
 		if (slot.kind === 'ifNecessary') return <i key={i} className='bi bi-circle series-dot series-dot-empty is-if-necessary' />;
 		if (slot.kind === 'notNeeded') return <i key={i} className='bi bi-dash series-dot series-dot-not-needed' />;
 		let color = '#8b949e';
-		// seriesInfo is the one summary field that never passes a schema, so team may be absent.
 		if (slot.teamId === game.homeTeam.id) color = homeColor;
 		else if (slot.teamId === game.awayTeam.id) color = awayColor;
 		return <i key={i} className='bi bi-circle-fill series-dot' style={{ color }} />;

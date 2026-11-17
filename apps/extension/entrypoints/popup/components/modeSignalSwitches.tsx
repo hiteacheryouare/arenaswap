@@ -13,13 +13,10 @@ interface modeSignalSwitchesProps {
 	onToggleModeSignal: (mode: BuiltInModeId, signal: string) => void;
 }
 
-// Classic's switches keep the ids they have always had, so a search result or a saved link still lands on them.
 const switchId = (mode: BuiltInModeId, signal: string) => (mode === 'classic' ? `signal-${signal}` : `signal-${mode}-${signal}`);
 const lastActiveNoteId = (mode: BuiltInModeId) => (mode === 'classic' ? 'signalLastActiveNote' : `signalLastActiveNote-${mode}`);
 
 const modeSignalSwitches = ({ prefs, disabled, onToggleSignal, onToggleModeSignal }: modeSignalSwitchesProps) => {
-	// Blowouts and Fantasy both lean on a Classic score, so Classic's switches matter whenever either
-	// is in use, even with Classic itself picked nowhere.
 	const inUse = modesInUse(prefs);
 	const modes: BuiltInModeId[] = inUse.includes('classic') || inUse.length === 0 ? inUse : ['classic', ...inUse];
 	const headed = modes.length > 1;

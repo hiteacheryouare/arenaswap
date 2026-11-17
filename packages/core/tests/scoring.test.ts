@@ -50,8 +50,6 @@ const noPrefs: ScoringPrefs = { favoriteTeamIds: [], favoriteTeamBonusPoints: 10
 const kickoff = Date.UTC(2026, 9, 4, 20, 25);
 const pollMs = 15_000;
 
-// What the background worker does on every poll, in its order: break tracking, then scoring
-// against the history gathered so far, then this poll's snapshot is added and the window trimmed.
 const createPoller = (prefs: ScoringPrefs, keepWholeGame = false) => {
 	const history = new Map<string, ScoreSnapshot[]>();
 	const breaks = new Map<string, CommercialBreakEntry>();
@@ -72,8 +70,6 @@ const createPoller = (prefs: ScoringPrefs, keepWholeGame = false) => {
 };
 
 describe('translating our sources\' game into the engine\'s', () => {
-	// Both situations were transcribed off the live college-football scoreboard on 2026-09-04 (see
-	// apiClient.test.ts): the yard line is measured from the home goal line whoever has the ball.
 	test('UTEP on its own 18 as the away side is 82 yards from scoring', () => {
 		const game = chiefsBills({ possessionTeamId: '2', yardLine: 82, down: 3, distance: 17 });
 		expect(toScoringGame(game)).toMatchObject({ possession: 'away', yardsToEndZone: 82, down: 3, distance: 17 });
@@ -148,8 +144,6 @@ describe('translating our sources\' game into the engine\'s', () => {
 });
 
 describe('a fourth quarter in Kansas City, poll by poll', () => {
-	// Buffalo leads by seven with five minutes left; Kansas City ties it at 3:30, the feed logs the
-	// two-minute warning and sits on it through a long TV break, then the Chiefs drive into the red zone.
 	const chiefsAtPoll = (poll: number): Game => {
 		const play = { lastPlayId: `play-${poll}`, lastPlayType: 'Rush' };
 		if (poll <= 5) return chiefsBills({ ...play, clockSeconds: 300 - poll * 15, possessionTeamId: '2', yardLine: 60, down: 1, distance: 10 });
@@ -232,8 +226,6 @@ describe('the history the scorer sees', () => {
 		status: 'in',
 	});
 
-	// Twenty minutes of polls: Denver's 12-0 run comes in the first five, then both sides trade
-	// baskets evenly.
 	const playThirdQuarter = (keepWholeGame: boolean) => {
 		const { poll, history } = createPoller(noPrefs, keepWholeGame);
 		let home = 60;
@@ -341,7 +333,6 @@ describe('favorite teams', () => {
 		));
 		expect(result.favoriteBonus).toBe(8);
 		expect(result.favoriteTeamCount).toBe(1);
-		// The breakdown shows the bonus; the reason line sticks to what is happening in the game.
 		expect(result.reason).not.toMatch(/favorite/i);
 	});
 });

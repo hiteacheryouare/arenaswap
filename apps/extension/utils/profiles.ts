@@ -37,8 +37,6 @@ interface storedSetup extends profileSetup {
 	updatedAt: number;
 }
 
-// The profile in use is the live prefs and roster every other part of the extension reads, so only
-// the ones set aside are kept here.
 interface profilesState extends profileList {
 	setups: Record<string, unknown>;
 	seen: string | null;
@@ -93,7 +91,6 @@ const timestamp = (value: unknown): number => (typeof value === 'number' && Numb
 
 const setupTime = (value: unknown): number => (isRecord(value) ? timestamp(value.updatedAt) : 0);
 
-// One read, so a follow running in another context at the same moment is seen whole or not at all.
 const readState = async (): Promise<profilesState> => {
 	const local = await browser.storage.local.get({
 		[profilesKey]: null,
@@ -146,10 +143,6 @@ const syncLive = async (payload: Record<string, unknown>): Promise<boolean> => (
 	})
 );
 
-// Only the profile in use syncs, so a switch in another browser arrives as new live prefs under a new
-// profile id. The profile this browser was on is set aside from its local copy, which that browser
-// never writes. Each copy keeps the time it was last edited, so whichever copy of the arriving
-// profile is newer wins, and a newer one set aside here goes back out to the rest.
 export const followSyncedProfile = async (): Promise<profileList> => {
 	const [state, synced] = await Promise.all([readState(), readSyncedActive()]);
 	const unchanged = { profiles: state.profiles, activeId: state.activeId };
@@ -162,7 +155,6 @@ export const followSyncedProfile = async (): Promise<profileList> => {
 		await browser.storage.local.set({ [profilesKey]: profiles });
 		return { profiles, activeId: synced.id };
 	}
-	// Still the last profile this browser saw in sync: its own switch hasn't reached sync yet.
 	if (synced.id === state.seen) return unchanged;
 
 	const remote = await browser.storage.sync.get({ prefs: null, [prefsStorageUpdatedAtKey]: 0, [fantasyRosterStorageKey]: null, [rosterUpdatedAtKey]: 0 });
@@ -203,7 +195,6 @@ export const loadProfileSetup = async (id: string): Promise<profileSetup> => {
 	return id === activeId ? loadLiveSetup() : normalizeSetup(setups[id]);
 };
 
-// Local first, in one write, so a browser hearing the synced switch finds this one already moved.
 const writeLiveSetup = async (entry: profileEntry, setup: profileSetup, local: Record<string, unknown>, updatedAt = Date.now()): Promise<void> => {
 	const live = livePayload(setup, updatedAt);
 	await browser.storage.local.set({ ...live, ...local, [activeProfileIdKey]: entry.id });
@@ -225,7 +216,6 @@ export const switchProfile = async (id: string): Promise<profileList> => {
 	return { profiles, activeId: id };
 };
 
-// Without a setup the new profile starts as a copy of the one in use.
 export const createProfile = async (name: string, setup?: profileSetup): Promise<profileList> => {
 	const { profiles, activeId, setups } = await readState();
 	const current = await loadLiveSetup();

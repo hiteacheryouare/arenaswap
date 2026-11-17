@@ -17,7 +17,6 @@ const chromeCandidates: Record<string, string[]> = {
 	linux: ['/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser'],
 };
 
-// kdenlive bundles a full ffmpeg build, which is the only one on some Macs.
 const ffmpegCandidates: Record<string, string[]> = {
 	darwin: ['/opt/homebrew/bin/ffmpeg', '/usr/local/bin/ffmpeg', '/Applications/kdenlive.app/Contents/MacOS/ffmpeg'],
 	win32: [],

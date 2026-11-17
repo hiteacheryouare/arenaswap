@@ -47,8 +47,6 @@ const slate: Game[] = [
 
 const cards = () => cy.get('[data-testid^="game-card-"]');
 
-// Stands in for app.tsx, which holds the day page and the query so both outlive a trip into a
-// game's details.
 const Harness = ({ games = slate }: { games?: Game[] }) => {
 	const scrollOffsetRef = useRef(0);
 	const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
@@ -209,8 +207,6 @@ describe('Up Next search', () => {
 		cards().should('have.length', 1);
 	});
 
-	// The field takes the title's place, so a few pixels of difference between the two would
-	// shove the pager and every card under it the moment the search opens.
 	it('opens without moving the pager', () => {
 		mount();
 		cy.get('[data-testid="upcoming-day-pager"]').then(([pager]) => {
@@ -255,7 +251,6 @@ describe('Up Next search motion', () => {
 		});
 	});
 
-	// The field wipes over the title as it widens, which only reads if nothing shows through it.
 	it('paints an opaque surface over the title it covers', () => {
 		mount();
 		openSearch();
@@ -294,9 +289,6 @@ describe('Up Next search motion', () => {
 		cards().should('have.length', 3);
 	});
 
-	// The row sits the title in a grid so the field can share its cell. A grid item's margins no
-	// longer collapse into the section's, so the row carries them instead, and the closed state has
-	// to land exactly where the bare title did.
 	it('lays out the closed row exactly where the bare title sat', () => {
 		cy.viewport(320, 600);
 		const pager = <UpcomingDayPager dayLabel='Today' index={0} total={2} onSelect={() => {}} />;

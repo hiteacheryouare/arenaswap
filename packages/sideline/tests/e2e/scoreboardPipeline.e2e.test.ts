@@ -1,9 +1,6 @@
 import type { ScoreSnapshot } from '@arenaswap/core';
 import { buildCurrentDayKeys } from '../../src/apiClient';
 
-// ESPN stopped answering for a span of dates, so every scoreboard request names exactly one Eastern
-// day. The live poll is the days it asks for — today, and the day back that still carries a kickoff
-// filed before Eastern midnight.
 const isLivePoll = (url: string): boolean => (
 	buildCurrentDayKeys().includes(new URL(url).searchParams.get('dates') ?? '')
 );
@@ -17,8 +14,6 @@ const toUrl = (input: RequestInfo | URL): string => {
 const jsonResponse = (body: unknown, status: number = 200): Response => ({
 	ok: status >= 200 && status < 300,
 	status,
-	// `fetchScoreboard` reads `cache-control` off every response to learn how often ESPN will answer
-	// with something new, so a double without headers is not standing in for a Response.
 	headers: new Headers(),
 	json: async () => body,
 } as Response);
@@ -91,8 +86,6 @@ const basketballEvent = (params: {
 });
 
 describe('core API + excitement e2e flow', () => {
-	// The payloads are dated February 2026, and a scheduled game is called off once its broadcast
-	// window has passed. Pinning only the date, to the day before, keeps them scheduled.
 	beforeEach(() => {
 		jest.useFakeTimers({
 			now: new Date('2026-02-10T12:00:00.000Z'),
@@ -240,7 +233,6 @@ describe('core API + excitement e2e flow', () => {
 		expect(result.leagueLogos.nba).toBe('https://example.com/nba-today-logo.png');
 
 		const requestedUrls = fetchSpy.mock.calls.map(([input]) => toUrl(input as RequestInfo | URL));
-		// One request per Eastern day of the live window, and nothing past it.
 		expect(requestedUrls).toHaveLength(buildCurrentDayKeys().length);
 		expect(requestedUrls.every(url => url.includes('/basketball/nba/scoreboard'))).toBe(true);
 		expect(requestedUrls.every(url => isLivePoll(url))).toBe(true);
@@ -412,8 +404,6 @@ describe('core API + excitement e2e flow', () => {
 		expect(result.leagueLogos.nba).toBe('https://example.com/nba-upcoming-only-logo.png');
 
 		const requestedUrls = fetchSpy.mock.calls.map(([input]) => toUrl(input as RequestInfo | URL));
-		// The wide window asks for each of its days once, and today failing costs only today: the
-		// slate wants the roster of games, and its live signal comes from the per-league polls.
 		expect(new Set(requestedUrls).size).toBe(requestedUrls.length);
 		expect(requestedUrls.some(url => !isLivePoll(url))).toBe(true);
 		expect(requestedUrls.some(url => isLivePoll(url))).toBe(true);

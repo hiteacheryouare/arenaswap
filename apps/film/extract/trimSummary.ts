@@ -1,5 +1,3 @@
-// A summary payload carries every play of the game and the night's articles. The popup reads
-// none of that, and keeping it would put tens of megabytes of play-by-play in the data file.
 const droppedKeys = ['plays', 'news', 'article', 'videos', 'commentary', 'meta', 'shot'];
 
 const trimSummary = (raw: Record<string, unknown>): Record<string, unknown> => {

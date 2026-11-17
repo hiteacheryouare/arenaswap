@@ -9,7 +9,6 @@ import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
 import fil from '../../../locales/fil.json';
 import fr from '../../../locales/fr.json';
-// Not `it` — that would shadow Mocha's global it() and break every test in this file.
 import itLocale from '../../../locales/it.json';
 import ja from '../../../locales/ja.json';
 import ko from '../../../locales/ko.json';
@@ -20,15 +19,8 @@ import zhTW from '../../../locales/zh_TW.json';
 
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
 
-// A 1x1 transparent PNG, so the crests are deterministic and need no network. Transparent on
-// purpose: an opaque one would paint over a placeholder that failed to hide.
 const crestPixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
 
-// The shipped demo games rather than a redeclaration of them. `useSummaryData` short-circuits
-// anything starting `mock-` to `mockBoxScorePayloads`, so these mount the real parser over the
-// real fixtures with no network at all — and the team ids are what resolve the two sides, so a
-// spec that declared its own stayed green while demo mode drew each team's numbers under the other
-// team's crest. Only the crests are swapped, for a data URI that needs no network.
 const seededGames = new MockGameSimulator().seed();
 
 const demoGame = (id: string): Game => {
@@ -48,8 +40,6 @@ const games: Record<string, Game> = {
 	soccer: demoGame('mock-9'),
 };
 
-// The one finished demo game, kept out of the per-sport loops: its ten innings plus R-H-E scroll
-// sideways by design, so a "no cell past the popup edge" sweep does not describe it.
 const finalGame = demoGame('mock-20');
 
 const preGame: Game = {
@@ -84,17 +74,11 @@ const mountScreen = (game: Game) => {
 	);
 };
 
-// The box score sits behind the detail screen's tab strip, so every assertion below has to open
-// that tab first. A plain `cy.get` rather than a conditional click: the strip appears only once
-// the summary data resolves, and retrying until it does is the point.
 const mount = (game: Game) => {
 	mountScreen(game);
 	cy.get(`#gd-tab-${game.id}-box`).click();
 };
 
-// A parsed box score mounted at the width the card actually gets. The popup is 320px, the detail
-// screen's own scrollbar takes 15 of them, and `.game-detail-shell` spends `--gd-inset` on each
-// side — so a bare mount measures the table against about 40px of room it will never have.
 const mountBox = (game: Game, box: ParsedBoxScore) => {
 	cy.mount(
 		<div className='game-detail-shell' style={{ width: '305px' }}>
@@ -103,8 +87,6 @@ const mountBox = (game: Game, box: ParsedBoxScore) => {
 	);
 };
 
-// A line score of `count` periods and nothing else, for the header row the period labels render
-// in. Every entry reads 0, so what is being measured is the headings rather than the digits.
 const mountPeriodLine = (game: Game, count: number) => {
 	const periods = Array.from({ length: count }, () => ({ displayValue: '0' }));
 	const homeId = game.homeTeam.id;
@@ -116,21 +98,14 @@ const mountPeriodLine = (game: Game, count: number) => {
 	mountBox(game, parseBoxScore(payload, homeId, awayId, game.homeTeam.abbreviation, game.awayTeam.abbreviation));
 };
 
-// A soccer match that went to penalties: five entries, which is the widest the row gets and the
-// only shape where PEN sits alongside ET1 and ET2.
 const soccerPenalties = () => mountPeriodLine(games.soccer, 5);
 
 // Hockey's fifth entry is the shootout goal rather than a second overtime, and ESPN's own Final
 // designation suffix is what says so.
 const hockeyShootout = () => mountPeriodLine({ ...games.hockey, finalPeriodSuffix: 'SO' }, 5);
 
-// The ink a cell inherits when no team colour reaches it. Asserting a computed colour is merely
-// readable, or merely not the raw team colour, passes with the whole feature removed — so every
-// colour assertion below is pinned to its own expected value and checked against this default.
 const inheritedCardInk = 'rgb(17, 24, 39)';
 
-// Contrast of a computed `rgb(...)` colour against the light .gd-setup card, #f8fafc, whose
-// luminance is 0.9536.
 const srgbChannel = (value: number): number => {
 	const c = value / 255;
 	return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
@@ -142,7 +117,6 @@ const contrastOnCard = (rgb: string): number => {
 	return (0.9536 + 0.05) / (luminance + 0.05);
 };
 
-// Every table cell that carries a number, so a clipping check never has to name them one by one.
 const cells = () => cy.get('.gd-box-table td, .gd-box-table th');
 
 describe('box score', () => {
@@ -151,9 +125,7 @@ describe('box score', () => {
 	});
 
 	it('renders nothing on a pre-game screen', () => {
-		// Mounted without opening a tab, because the missing tab is half of what is being asserted.
 		mountScreen(preGame);
-		// The pre-game screen itself rendered — this is not an empty mount asserting nothing.
 		cy.get('.gd-pregame-setup, .gd-setup').should('exist');
 		cy.get('.gd-box').should('not.exist');
 		cy.get(`#gd-tab-${preGame.id}-box`).should('not.exist');
@@ -171,7 +143,6 @@ describe('box score', () => {
 					['0', '1', '0', '0', '0', '1', '0', '0', '2', '7', '1'],
 				);
 			});
-			// The bottom of the eighth has not been played, so it is empty rather than a 0.
 			cy.get('.gd-box-line-table tbody tr').eq(1).find('td').then($td => {
 				expect([...$td].map(el => el.textContent?.trim())).to.deep.equal(
 					['1', '0', '0', '2', '0', '0', '0', '', '3', '7', '1'],
@@ -180,9 +151,6 @@ describe('box score', () => {
 		});
 
 		it('reads the finished demo game as a completed ten innings', () => {
-			// The wrap screen says Final/10, so the line score under it has to be a finished
-			// ten-inning game: both rows the same length, no blank half-inning, and every total
-			// summing to what the row above it says.
 			mount(finalGame);
 			cy.get('.gd-box-line-table thead th, .gd-box-line-table thead td').then($th => {
 				expect([...$th].map(el => el.textContent?.trim())).to.deep.equal(
@@ -199,7 +167,6 @@ describe('box score', () => {
 					['1', '0', '0', '0', '0', '1', '0', '0', '0', '1', '3', '8', '1'],
 				);
 			});
-			// The R column is the score on the wrap screen above it.
 			cy.get('.gd-box-line-table tbody tr').eq(0).find('.gd-box-line-total').first()
 				.should('have.text', String(finalGame.awayTeam.score));
 			cy.get('.gd-box-line-table tbody tr').eq(1).find('.gd-box-line-total').first()
@@ -214,9 +181,6 @@ describe('box score', () => {
 		});
 
 		it('puts each side of the soccer match under its own crest', () => {
-			// Soccer sends no `boxscore.players`, so the line score and the comparison table below
-			// it are the whole box score. The demo fixture had the two sides transposed, which put
-			// each team's numbers beside the other team's crest and abbreviation.
 			mount(games.soccer);
 			cy.get('.gd-box-line-table tbody tr').eq(0).then($row => {
 				expect($row.find('.gd-box-line-abbr').text()).to.equal(games.soccer.awayTeam.abbreviation);
@@ -243,8 +207,6 @@ describe('box score', () => {
 			}
 		});
 
-		// Mounted directly rather than through the demo fixtures, because the widest line score
-		// this has to survive is a full nine innings plus R-H-E and then extra innings past it.
 		const mountInnings = (count: number) => {
 			const innings = Array.from({ length: count }, () => ({ displayValue: '1', hits: 2, errors: 0 }));
 			const payload = { header: { competitions: [{ competitors: [
@@ -257,7 +219,6 @@ describe('box score', () => {
 		it('fits a full nine innings plus R-H-E inside the card without scrolling', () => {
 			mountInnings(9);
 			cy.get('.gd-box-line-table thead th, .gd-box-line-table thead td').should('have.length', 13);
-			// Measured with the crests in the team column, which is what they cost the innings.
 			cy.get('.gd-box-line-crest').should('have.length', 2);
 			cy.get('.gd-box-line .table-responsive').then($wrap => {
 				const el = $wrap[0];
@@ -288,7 +249,6 @@ describe('box score', () => {
 					['1', '2', '3', en.box.overtime, en.box.periodSo, en.box.lineTotal],
 				);
 			});
-			// Same five entries with a playoff suffix, where a shootout cannot happen.
 			mountPeriodLine({ ...games.hockey, finalPeriodSuffix: '2OT' }, 5);
 			cy.get('.gd-box-line-table thead th').then($th => {
 				expect([...$th].map(el => el.textContent?.trim())).to.deep.equal(
@@ -302,15 +262,12 @@ describe('box score', () => {
 			cy.get('.gd-box-line .table-responsive').then($wrap => {
 				const el = $wrap[0];
 				expect(el.scrollWidth, 'the table is wider than the card').to.be.greaterThan(el.clientWidth);
-				// It scrolls inside the card rather than widening the popup.
 				expect(el.getBoundingClientRect().right).to.be.at.most(320);
 			});
 		});
 	});
 
 	describe('player tables', () => {
-		// DM Sans has no tabular figures, so a column of stats only lines up digit for digit in Geist,
-		// and only when the column is flush right.
 		it('sets every stat flush right in tabular figures, under a heading flush right with it', () => {
 			mount(games.basketball);
 			cy.get('.gd-box-table:not(.gd-box-line-table):not(.gd-box-compare-table) tbody td:not(.gd-box-name)').first()
@@ -333,8 +290,6 @@ describe('box score', () => {
 		});
 
 		it('completes the tab pattern its roles announce', () => {
-			// `role='tab'` announces "tab, 1 of 2", which tells the reader a panel exists to move
-			// to. A tab naming a panel that is not in the document is a promise the screen breaks.
 			mount(games.basketball);
 			cy.get('.gd-box-tabs .nav-link').eq(0).then($away => {
 				const panelId = $away.attr('aria-controls');
@@ -347,7 +302,6 @@ describe('box score', () => {
 					expect(panel!.querySelectorAll('.gd-box-table')).to.have.length.greaterThan(0);
 				});
 			});
-			// Roving: the strip is one tab stop and the arrow keys move inside it.
 			cy.get('.gd-box-tabs .nav-link').eq(0).should('have.attr', 'tabindex', '0');
 			cy.get('.gd-box-tabs .nav-link').eq(1).should('have.attr', 'tabindex', '-1');
 		});
@@ -369,8 +323,6 @@ describe('box score', () => {
 			cy.focused().trigger('keydown', { key: 'Home' });
 			cy.get('.gd-box-tabs .nav-link.active').should('contain.text', 'CHI');
 
-			// The panel follows the selection rather than staying labelled by the first tab.
-			// Scoped to the card: the detail screen's own tab strip puts a second panel on the page.
 			cy.get('.gd-box [role="tabpanel"]').then($panel => {
 				cy.get('.gd-box-tabs .nav-link.active')
 					.should('have.attr', 'id', $panel.attr('aria-labelledby'));
@@ -378,9 +330,6 @@ describe('box score', () => {
 		});
 
 		it('names the one side it has when the other sent no players', () => {
-			// Every category arriving with an empty `athletes` array parses to a null side, which
-			// is the opening minutes of a football game. There is no tab strip to name the team,
-			// so the block has to name it itself — and it must be the side actually rendered.
 			const payload = { boxscore: { players: [
 				{
 					team: { id: '6', abbreviation: 'DAL' },
@@ -401,7 +350,6 @@ describe('box score', () => {
 			cy.get('.gd-box-tabs').should('not.exist');
 			cy.get('.gd-box-players .gd-box-player').should('have.text', 'J. Hurts');
 			cy.get('.gd-box-players .gd-box-player').should('have.attr', 'title', 'J. Hurts');
-			// The home side is what rendered, so the home team is what the block may name.
 			cy.get('.gd-box-players .gd-box-line-abbr')
 				.should('have.length', 1)
 				.and('have.text', games.football.homeTeam.abbreviation);
@@ -425,13 +373,10 @@ describe('box score', () => {
 			mountBox(games.basketball, parseBoxScore(payload, '20', '4', 'PHI', 'CHI'));
 
 			cy.get('.gd-box-dnp').should('have.length', 1).and('have.text', en.box.didNotPlay);
-			// And last, rather than sorted in among the bench.
 			cy.get('.gd-box-players tbody tr').last().should('contain.text', 'Z. Collins');
 		});
 
 		it('collapses an expanded category again when the team switches', () => {
-			// The reader asked for all of Dallas's defenders, not for however many Philadelphia
-			// happens to have.
 			mount(games.football);
 			cy.contains('.gd-box-subheading', en.box.defensive).next('table').as('defense');
 			cy.get('@defense').find('tbody tr').should('have.length', 6);
@@ -460,7 +405,6 @@ describe('box score', () => {
 				expect(order.slice(0, 5)).to.deep.equal(['C. White', 'N. Vucevic', 'J. Giddey', 'P. Williams', 'M. Buzelis']);
 				expect(order[order.length - 1]).to.equal('Z. Collins');
 			});
-			// DNP says DNP rather than a row of zeros, and never ESPN's English reason.
 			cy.get('.gd-box-dnp').should('have.text', en.box.didNotPlay);
 			cy.contains("COACH'S DECISION").should('not.exist');
 		});
@@ -494,7 +438,6 @@ describe('box score', () => {
 		it('drops the goalie who never took the ice', () => {
 			mount(games.hockey);
 			cy.get('.gd-box-players').should('contain.text', 'T. Jarry');
-			// The backup arrives all zeros and would show a .000 save percentage.
 			cy.get('.gd-box-players').should('not.contain.text', 'J. Blomqvist');
 			cy.get('.gd-box-players').should('not.contain.text', '.000');
 		});
@@ -503,7 +446,6 @@ describe('box score', () => {
 			mount(games.hockey);
 			cy.get('.gd-box-tabs .nav-link').eq(1).click();
 			cy.get('.gd-box-players tbody .gd-box-player').then($names => {
-				// Konecny 1G 1A leads Michkov 1G 0A, who leads Couturier 0G 1A.
 				expect([...$names].map(el => el.textContent?.trim()).slice(0, 3))
 					.to.deep.equal(['T. Konecny', 'M. Michkov', 'S. Couturier']);
 			});
@@ -520,8 +462,6 @@ describe('box score', () => {
 		});
 
 		it('keeps a college column set that the NFL sends and college does not', () => {
-			// The NFL fixture carries SACKS under passing and TGTS under receiving; a category is
-			// selected by ESPN's own keys, so a league sending neither simply has fewer columns.
 			mount(games.football);
 			cy.contains('.gd-box-subheading', en.box.passing).next('table').find('thead th, thead td')
 				.then($th => expect([...$th].map(el => el.textContent?.trim()))
@@ -547,11 +487,6 @@ describe('box score', () => {
 		});
 
 		it('prints the rows a match panel prints, in that order, and no others', () => {
-			// Pinned to the whole list rather than asserting one row is absent. The previous
-			// version looked for ESPN's own 'On Target %' string, which no locale file contains
-			// and which every label renders through `i18n.t` — so the derived column could have
-			// been rendered under our own translated label and the assertion would still pass.
-			// It is the ordering rule and the conditional penalty rows in one measurement now.
 			mount(games.soccer);
 			cy.get('.gd-box-compare tbody .gd-box-compare-label').then($labels => {
 				expect([...$labels].map(el => el.textContent?.trim())).to.deep.equal([
@@ -573,8 +508,6 @@ describe('box score', () => {
 				.then($td => expect([...$td].map(el => el.textContent?.trim())).to.deep.equal(['4', '7']));
 			cy.contains('.gd-box-compare-label', en.box.leadChanges).parent().find('td')
 				.then($td => expect([...$td].map(el => el.textContent?.trim())).to.deep.equal(['9', '9']));
-			// Same height, same columns and the same baseline as the row above, so the two new rows
-			// read as part of the table rather than as something appended under it.
 			cy.contains('.gd-box-compare-label', en.box.blocks).parent().then(([blocks]) => {
 				cy.contains('.gd-box-compare-label', en.box.largestLead).parent().then(([lead]) => {
 					const above = blocks.getBoundingClientRect();
@@ -590,7 +523,6 @@ describe('box score', () => {
 			});
 		});
 
-		// The label cell wraps rather than overflowing, so a second line would show up as a taller row.
 		it('keeps both lead labels on one line in every locale', () => {
 			mount(games.basketball);
 			cy.contains('.gd-box-compare-label', en.box.blocks).then(([blocks]) => {
@@ -611,7 +543,6 @@ describe('box score', () => {
 		it('reads nothing from the nested tree baseball sends', () => {
 			mount(games.baseball);
 			cy.get('.gd-box-compare').should('not.exist');
-			// The R-H-E on the line score is already the team line.
 			cy.get('.gd-box-line-table').should('exist');
 		});
 	});
@@ -629,17 +560,11 @@ describe('box score', () => {
 
 		it('keeps the table on the light card rather than the dark popup default', () => {
 			mount(games.basketball);
-			// $table-bg defaults to var(--as-bg-body), which is #0d1117 on this theme.
 			cy.get('.gd-box-table tbody td').first().then($td => {
 				const style = getComputedStyle($td[0]);
 				expect(style.color).to.equal('rgb(17, 24, 39)');
 				expect(style.backgroundColor).to.equal('rgba(0, 0, 0, 0)');
 			});
-			// An absence, deliberately. Bootstrap 5.3 draws the group separator only through the
-			// opt-in `.table-group-divider` class, which nothing in our source uses, so the
-			// `tbody` here has no top border at all — and reading a colour off a border that is
-			// not drawn is an assertion that cannot fail. `$table-group-separator-color` is set in
-			// the stylesheet as a guard for the first component that does opt in.
 			cy.get('.gd-box-table tbody').first().then($tbody => {
 				expect(getComputedStyle($tbody[0]).borderTopWidth).to.equal('0px');
 			});
@@ -652,7 +577,6 @@ describe('box score', () => {
 				expect(style.backgroundColor).to.equal('rgb(248, 250, 252)');
 				expect(style.color).to.equal('rgb(17, 24, 39)');
 			});
-			// $nav-link-color is the orange link colour, which reaches only 3.0:1 here.
 			cy.get('.gd-box-tabs .nav-link').not('.active').then($tab => {
 				expect(getComputedStyle($tab[0]).color).to.equal('rgb(75, 85, 99)');
 			});
@@ -678,7 +602,6 @@ describe('box score', () => {
 			cy.get('.gd-box-line-crest').should('have.length', 2);
 			cy.get('.gd-box-line-table tbody tr').eq(0).find('.gd-box-line-abbr').should('have.text', 'NYM');
 			cy.get('.gd-box-line-table tbody tr').eq(1).find('.gd-box-line-abbr').should('have.text', 'PHI');
-			// The crest sits to the left of the abbreviation, the way the leader rows read.
 			cy.get('.gd-box-line-table tbody tr').eq(0).then($row => {
 				const crest = $row.find('.gd-box-line-crest')[0].getBoundingClientRect();
 				const abbr = $row.find('.gd-box-line-abbr')[0].getBoundingClientRect();
@@ -689,7 +612,6 @@ describe('box score', () => {
 		it('washes each row in its own team\'s colour, fading out before the totals', () => {
 			mount(games.baseball);
 			cy.get('.gd-box-line-table tbody tr').eq(0).then($row => {
-				// The away row takes the Mets navy at the 28 alpha the matchup card uses.
 				expect(getComputedStyle($row[0]).backgroundImage)
 					.to.contain('rgba(0, 45, 114, 0.157)');
 			});
@@ -701,15 +623,12 @@ describe('box score', () => {
 
 		it('leaves a colour that already reads well as the team\'s own', () => {
 			mount(games.baseball);
-			// #002D72 is 12.4:1 on this card, so clamping it would only muddy it.
 			cy.get('.gd-box-line-table tbody tr').eq(0).find('.gd-box-line-abbr')
 				.should('have.css', 'color', 'rgb(0, 45, 114)');
 		});
 
 		it('darkens a gold abbreviation until it is actually readable', () => {
 			mount(games.hockey);
-			// Pittsburgh's #CFC493 reaches 1.68:1 untouched — the case an eyeball lets through. Pinned
-			// to the exact clamped value rather than to "readable", which the inherited ink also is.
 			cy.get('.gd-box-line-table tbody tr').eq(0).find('.gd-box-line-abbr').then($abbr => {
 				const color = getComputedStyle($abbr[0]).color;
 				expect(color, 'the raw gold is gone').to.not.equal('rgb(207, 196, 147)');
@@ -717,7 +636,6 @@ describe('box score', () => {
 				expect(color, 'clamped to a dark bronze').to.equal('rgb(114, 108, 80)');
 				expect(contrastOnCard(color)).to.be.at.least(4.5);
 			});
-			// The other side is the Flyers' orange, 3.40:1 raw, so it moves too.
 			cy.get('.gd-box-line-table tbody tr').eq(1).find('.gd-box-line-abbr')
 				.should('have.css', 'color', 'rgb(182, 54, 2)');
 		});
@@ -727,8 +645,6 @@ describe('box score', () => {
 				mount(games[sport]);
 				cy.get('.gd-box-line-abbr, .gd-box-compare-team').each($el => {
 					const color = getComputedStyle($el[0]).color;
-					// The floor is only worth asserting once a colour is known to have arrived: the
-					// inherited ink clears 4.5:1 on its own.
 					expect(color, `${sport} ${$el.text()} carries a team colour`).to.not.equal(inheritedCardInk);
 					expect(contrastOnCard(color), `${sport} ${$el.text()}`).to.be.at.least(4.5);
 				});
@@ -740,7 +656,6 @@ describe('box score', () => {
 			cy.get('.gd-box-compare-team').should('have.length', 2);
 			cy.get('.gd-box-line-table tbody tr').eq(0).find('.gd-box-line-abbr').then($abbr => {
 				const lineColor = getComputedStyle($abbr[0]).color;
-				// Both being the inherited ink would satisfy "they match" while proving nothing.
 				expect(lineColor).to.not.equal(inheritedCardInk);
 				cy.get('.gd-box-compare-team').eq(0)
 					.should('have.css', 'color', lineColor)
@@ -751,10 +666,6 @@ describe('box score', () => {
 	});
 
 	describe('localization', () => {
-		// Each key measured in the element it actually renders in. `box.heading` is the only one of
-		// these that reaches `.gd-setup-heading`; the four period and section words render in
-		// `.gd-box-subheading`, which is 0.55rem, uppercased and letter-spaced, and the team-stats
-		// heading needs a sport that has a comparison table at all.
 		const headingCases: [keyof typeof en.box, keyof typeof games, string, number][] = [
 			['heading', 'baseball', '.gd-box > .gd-setup-heading', 0],
 			['byInning', 'baseball', '.gd-box-line .gd-box-subheading', 0],
@@ -781,9 +692,6 @@ describe('box score', () => {
 			});
 		}
 
-		// `box.totals` is out of the loop above rather than measured in it: it renders in a
-		// `tfoot th.gd-box-name`, which carries `max-width: 0` and an ellipsis and physically
-		// cannot wrap however long the word is.
 		it('ellipsizes the totals label rather than wrapping it', () => {
 			mount(games.baseball);
 			cy.get('.gd-box-players tfoot th').first().then($th => {
@@ -794,11 +702,6 @@ describe('box score', () => {
 			});
 		});
 
-		// The line score's header row is the tightest in the product, and the period keys land in
-		// it in three scripts. Measured as a whole row for the same reason the column sets below
-		// are: substituting one locale's label into a column the browser sized for English
-		// measures it against a box it will never render in, which is what once reported both
-		// Chinese locales overflowing a row they fit.
 		const measurePeriodHeadRow = (labelsFor: (bundle: typeof en) => string[]) => {
 			cy.get('.gd-box-line-table').then($table => {
 				const table = $table[0];
@@ -811,9 +714,6 @@ describe('box score', () => {
 					expect(labels, 'the label set matches what this row renders').to.have.length(heads.length);
 					heads.forEach((head, index) => { head.textContent = labels[index]; });
 
-					// The table is `table-layout: fixed`, so a heading too wide for its column
-					// overflows the cell rather than widening the table. The clipping is what has
-					// to be asserted; a table-level width check cannot see it.
 					for (const head of heads) {
 						expect(head.scrollWidth, `${code} "${head.textContent}" is not clipped`)
 							.to.be.at.most(head.clientWidth + 1);
@@ -842,9 +742,6 @@ describe('box score', () => {
 			]);
 		});
 
-		// Measured as whole rows rather than one label at a time. Substituting a single locale's
-		// label into a column the browser sized for English measures it against a box it will never
-		// render in — the columns share the row's width, and the name column is what gives way.
 		const columnSets: [keyof typeof games, number, readonly (keyof typeof en.box)[]][] = [
 			['baseball', 0, ['hitsAtBats', 'runs', 'rbi', 'homeRuns', 'walks', 'strikeouts']],
 			['baseball', 1, ['inningsPitched', 'hits', 'runs', 'earnedRuns', 'walks', 'strikeouts']],
@@ -869,9 +766,6 @@ describe('box score', () => {
 						});
 						expect(table.scrollWidth, `${code} ${sport} columns fit the card`)
 							.to.be.at.most(table.clientWidth);
-						// Chinese spells these columns out — 安打-打数 against H-AB — which takes the
-						// room out of the name column rather than out of the card. It still has to
-						// hold a name: "M. Pettersson" runs about 75px.
 						expect(nameCell.getBoundingClientRect().width, `${code} ${sport} name column still readable`)
 							.to.be.greaterThan(80);
 					}

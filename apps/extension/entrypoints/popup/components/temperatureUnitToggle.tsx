@@ -10,7 +10,6 @@ interface temperatureUnitToggleProps {
 	onUnlockRomer: () => void;
 }
 
-// Matches the sweep on the button. There is nothing to read afterwards, so nothing outlives it.
 const revealDurationMs = 1200;
 
 const unitLabelKeys = {

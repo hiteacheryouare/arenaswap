@@ -24,8 +24,6 @@ const barFor = (game: Game, isFavorite = false, now = at('2026-09-13T12:00:00Z')
 };
 
 describe('the per-league duration table', () => {
-	// This is the assertion that would have caught olybb being drawn as a basketball game: it is
-	// Olympic Men's Baseball, and a 110-minute bar on it ends in the sixth inning.
 	test.each(leagueConfigs.map(c => [c.id, c] as const))('%s has a run length ordered p25 <= bar <= p99', (_id, config) => {
 		expect(config.runMinutes.p25).toBeLessThanOrEqual(config.runMinutes.bar);
 		expect(config.runMinutes.bar).toBeLessThanOrEqual(config.runMinutes.p99);
@@ -84,8 +82,6 @@ describe('occupancy', () => {
 });
 
 describe('leverage dead zones', () => {
-	// A hard zero rather than a low point on a smooth ramp. Nearly a quarter of a hockey broadcast
-	// is intermission, and a curve that smooths through that is lying about a fifth of the game.
 	test('hockey reads exactly zero in both intermissions', () => {
 		const bar = barFor(makeGame('nhl-1', 'nhl', '2026-09-13T23:00:00Z'));
 		const run = bar.endMs - bar.startMs;
@@ -119,14 +115,11 @@ describe('leverage dead zones', () => {
 describe('a live bar', () => {
 	test('never ends behind the now line, however long the game has run', () => {
 		const now = at('2026-09-13T23:30:00Z');
-		// Kicked off six and a half hours ago: a rain delay, or a hockey game in double overtime.
 		const game = makeGame('nfl-1', 'nfl', '2026-09-13T17:00:00Z', { status: 'in' });
 		const bar = barFor(game, false, now);
 		expect(bar.endMs).toBeGreaterThanOrEqual(now + liveBarFloorMs);
 	});
 
-	// Three hours in and only through the third quarter: the schedule said 8:15, but a quarter and a
-	// bit is still to be played.
 	test('runs a slow game past its slot by what regulation has left', () => {
 		const now = at('2026-09-13T20:00:00Z');
 		const game = makeGame('nfl-1', 'nfl', '2026-09-13T17:00:00Z', { status: 'in', period: 3, clockSeconds: 300 });
@@ -176,7 +169,6 @@ describe('a final', () => {
 		expect(buildBar(game, false, Date.now(), at('2026-09-13T16:00:00Z'))?.endMs).toBe(estimate);
 	});
 
-	// A stamp belongs to a final. One left over on a game ESPN has since put back in play means nothing.
 	test('ignores an end time on a game that is not final', () => {
 		const live = makeGame('nba-1', 'nba', '2026-09-13T17:00:00Z', { status: 'in', period: 2, clockSeconds: 300 });
 		expect(buildBar(live, false, at('2026-09-13T18:00:00Z'), at('2026-09-13T18:30:00Z'))?.endIsActual).toBeUndefined();
@@ -192,7 +184,6 @@ describe('a final', () => {
 
 describe('the best-time band', () => {
 	const now = at('2026-09-13T12:00:00Z');
-	// An NFL Sunday: nine one o'clock kickoffs against four late ones.
 	const nflSunday = () => {
 		const bars = [];
 		for (let i = 0; i < 9; i += 1) {
@@ -206,8 +197,6 @@ describe('the best-time band', () => {
 
 	const options = { weightFavorites: false, favoriteBonusPoints: 10 };
 
-	// Three early games overlapping six late ones. Weighted purely by how late each game is, the
-	// six finishing alone at six o'clock win; ArenaSwap is more use with all nine on.
 	test('lands where the most games are on, not where the fewest are finishing', () => {
 		const bars = [];
 		for (let i = 0; i < 3; i += 1) bars.push(barFor(makeGame(`early-${i}`, 'nfl', '2026-09-13T17:00:00Z'), false, now));
@@ -234,9 +223,6 @@ describe('the best-time band', () => {
 		expect(band!.toMs).toBeGreaterThan(band!.fromMs);
 	});
 
-	// Bar lengths are ~p75 estimates with tens of minutes of spread in them, so a knife-edge peak
-	// must not be reported as a ten-minute window — that is arithmetic precision the inputs cannot
-	// support. A sharp peak is exactly what a sparse slate produces.
 	test('is never narrower than half an hour, however sharp the peak', () => {
 		const sparse = [
 			barFor(makeGame('a', 'nhl', '2026-09-13T23:00:00Z'), false, now),
@@ -253,8 +239,6 @@ describe('the best-time band', () => {
 		expect(band!.peakMs).toBeLessThanOrEqual(band!.toMs);
 	});
 
-	// Opened at twenty to six, the fourth quarters of the one o'clock games are long over. Telling
-	// somebody the best time to watch was two hours ago is not advice.
 	test('looks only ahead of the moment it is given', () => {
 		const tooLate = at('2026-09-13T21:40:00Z');
 		const { band } = buildHeatCurve(nflSunday(), { ...options, notBeforeMs: tooLate });

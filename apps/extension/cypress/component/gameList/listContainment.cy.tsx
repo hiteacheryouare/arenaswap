@@ -11,8 +11,6 @@ const day = 24 * hour;
 
 const allLeagues = leagueConfigs.map(config => config.id);
 
-// The slate spread across the three states a list can hold, with the upcoming third spread over the
-// whole fourteen-day window so the pager has real pages.
 const mixedSlate = (count: number): Game[] => slateOf(count).map((game, index) => {
 	if (index % 3 === 0) return game;
 	if (index % 3 === 1) {
@@ -75,8 +73,6 @@ const View = ({ games, userPrefs = prefs(), ...rest }: { games: Game[]; userPref
 	);
 };
 
-// The header deliberately reaches into the container's padding, and the glow is a decoration painted
-// behind the whole popup.
 const listOptions = { bleeds: ['.popup-header'], exempt: ['.popup-glow'] };
 
 describe('main list containment', () => {

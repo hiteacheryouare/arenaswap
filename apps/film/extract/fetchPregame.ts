@@ -1,16 +1,9 @@
-// One real upcoming game and its pre-game summary, for the 60-second film's Matchup beat. The
-// Saturday recording holds no pre-game summaries, so this asks our sources for a game that has not
-// kicked off yet.
-//
-// Run: npm run film:pregame -- [game id] [--league nfl]
-// Writes: apps/film/data/pregame.json
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { parseScoreboardEvents } from '@arenaswap/sideline';
 import { leagueConfigMap } from 'powerscore';
 import type { Game, LeagueId } from '@arenaswap/core/types';
 
-// Bears at Packers, Sunday, October 11, 2026.
 const defaultGameId = '401872990';
 
 const args = process.argv.slice(2);
@@ -22,8 +15,6 @@ const root = join(__dirname, '..', '..', '..');
 const outFile = join(root, 'apps', 'film', 'data', 'pregame.json');
 const base = `https://site.api.espn.com/apis/site/v2/sports/${leagueConfigMap[league].espnPath}`;
 
-// Everything useSummaryData reads before kickoff. The rest (plays, news, odds, leaders, the
-// division table the full-league standings fetch replaces) never reaches the screen.
 const keptKeys = ['header', 'boxscore', 'lastFiveGames', 'injuries', 'seasonseries'];
 
 const getJson = async (url: string): Promise<Record<string, unknown>> => {
@@ -45,7 +36,6 @@ const withoutReferral = (_key: string, value: unknown) => {
 	return url.toString();
 };
 
-// Only the two fields parseTickets reads.
 const trimTickets = (ticketsInfo: unknown) => {
 	const seat = (ticketsInfo as { seatSituation?: { eventLink?: unknown; summary?: unknown } } | undefined)?.seatSituation;
 	return seat?.eventLink ? { seatSituation: { eventLink: seat.eventLink, summary: seat.summary } } : undefined;

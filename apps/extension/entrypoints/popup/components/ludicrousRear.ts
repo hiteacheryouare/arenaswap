@@ -1,6 +1,3 @@
-/* The takeoff and the slowdown, watched from behind. There is deliberately no hull stretch: the
-   film has no elongation shot, which is a Millennium Falcon memory. It has the three engine bells
-   blooming white-blue over the bumper placard, and the ship receding into that bloom. */
 const bumperText = 'WE BRAKE FOR NOBODY';
 
 export const paintStern = (ctx: CanvasRenderingContext2D, w: number, h: number, speed: number, frame: number): void => {
@@ -50,7 +47,6 @@ export const paintStern = (ctx: CanvasRenderingContext2D, w: number, h: number, 
 		ctx.fill();
 	}
 
-	// The bumper placard, which is a real prop on the ship's stern and the reason this shot is funny.
 	const plateW = hullW * 0.62;
 	const plateH = Math.max(7, hullH * 0.2);
 	const plateY = cy + hullH / 2 - plateH * 0.1;

@@ -11,7 +11,6 @@ const crest = (...inks: [string, number][]): Uint8ClampedArray => {
 };
 
 describe('crestColorFromPixels', () => {
-	// Northeastern: a black-and-white husky with a red outline.
 	test('takes the colour over the black and white that cover more of the crest', () => {
 		const color = crestColorFromPixels(crest(['#000000', 500], ['#FFFFFF', 300], ['#CC0001', 200]));
 		expect(colorDifference(color!, '#CC0001')).toBeLessThan(2);
@@ -22,8 +21,6 @@ describe('crestColorFromPixels', () => {
 		expect(colorDifference(color!, '#FFCB05')).toBeLessThan(2);
 	});
 
-	// A gold drawn in a dozen near shades by antialiasing is still one gold, and outvotes a flat navy
-	// covering less of the crest than all of them together.
 	test('groups the shades of one colour before counting', () => {
 		const golds: [string, number][] = [['#F0B200', 60], ['#E8AC08', 60], ['#F4B806', 60], ['#ECB000', 60]];
 		const color = crestColorFromPixels(crest(['#13213A', 180], ...golds));

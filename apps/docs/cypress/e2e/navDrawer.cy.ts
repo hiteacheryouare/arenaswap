@@ -1,6 +1,5 @@
 import { pressEscape } from '../keyboard';
 
-// The phone menu is Bootstrap's Drawer on a modal <dialog>.
 // Bootstrap ignores a close while the drawer is still opening, as a person never could, so the
 // tests that close it wait for the open to finish first.
 const openFully = () => {

@@ -11,9 +11,6 @@ import { english, inEveryLocale } from '../../support/safetyNet/locales';
 import { mountInPopup, popupSurface } from '../../support/safetyNet/mountInPopup';
 import { busiestSlateSize, slateOf, worstCaseGames, worstUserText } from '../../support/safetyNet/worstCase';
 
-// The popup's list renders the real card under mainView's own wrappers, which the stubbed card in
-// the mainView specs never exercises. This lays the same wrappers around the same real cards.
-
 const hour = 60 * 60 * 1000;
 
 const asUpcoming = (game: Game, index: number): Game => ({
@@ -33,7 +30,6 @@ const asForfeit = (game: Game): Game => ({ ...game, id: `${game.id}-forfeit`, st
 const asMakeup = (game: Game): Game => ({ ...game, id: `${game.id}-makeup`, status: 'post', doubleheaderGame: 2, isMakeup: true });
 const asResumed = (game: Game): Game => ({ ...game, id: `${game.id}-resumed`, startTime: new Date(Date.now() - 50 * hour).toISOString() });
 
-// The list sorts league-first when it groups, so one league is never split across two headers.
 const byLeague = (games: Game[]): Game[] => games.toSorted((a, b) => a.league.localeCompare(b.league));
 
 const everyState = (): Game[] => byLeague(worstCaseGames.flatMap(({ game }, index) => [
@@ -91,8 +87,6 @@ const cardsList = ({ games, grouped, assignTabs }: { games: Game[]; grouped: boo
 	);
 };
 
-// Forces the 15px classic scrollbar a Windows or Linux popup, or a Mac with a mouse attached, draws
-// down the right side of the list.
 const withClassicScrollbar = () => {
 	cy.document().then(doc => {
 		const style = doc.createElement('style');

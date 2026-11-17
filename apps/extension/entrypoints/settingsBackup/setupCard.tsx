@@ -16,7 +16,6 @@ interface setupCardProps {
 	heading: string;
 	meta?: string;
 	profile: settingsProfile;
-	// This browser's setup, when the card is showing a file that would replace it.
 	compareTo?: settingsProfile;
 	leagueLogos: LeagueLogoMap;
 	teams: ReadonlyMap<string, EspnTeamEntry>;

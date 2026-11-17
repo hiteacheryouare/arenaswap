@@ -1,7 +1,5 @@
 import { playerInitials } from '../entrypoints/popup/components/pregameLabels';
 
-// The placeholder is the common case in soccer, where ESPN sends a headshot for roughly one leader
-// in ten, so these are the names it actually has to render rather than an edge case.
 describe('playerInitials', () => {
 	test('takes the initial and the surname initial from an already-initialled name', () => {
 		expect(playerInitials('D. Peterson')).toBe('DP');

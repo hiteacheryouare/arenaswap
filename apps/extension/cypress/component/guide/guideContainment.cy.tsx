@@ -14,7 +14,6 @@ const containment = { scrollers: ['.guide-scroller'] };
 
 const at = (ms: number) => new Date(ms).toISOString();
 
-// Each worst-case game three ways, so a bar is checked live, upcoming and final.
 const fullSlate = (): { games: Game[]; endTimes: Record<string, number> } => {
 	const games: Game[] = [];
 	const endTimes: Record<string, number> = {};

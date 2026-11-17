@@ -100,8 +100,6 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 
 				{!tapped && (
 					<div
-						// `pe-none`, not Tailwind's `pointer-events-none`: the extension has no Tailwind
-						// build, so the hint was swallowing the tap it is asking for.
 						className='position-absolute top-50 start-50 translate-middle text-center pe-none'
 						style={{ zIndex: 2 }}
 					>

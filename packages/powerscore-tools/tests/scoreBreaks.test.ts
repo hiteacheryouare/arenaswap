@@ -1,9 +1,6 @@
 import type { DeadInterval, Play } from '../src/breaks/groundTruth';
 import { feedLagMs, scoreBreaks, type GameTrace, type PollFlag } from '../src/breaks/scoreBreaks';
 
-// These numbers decided whether commercial detection shipped, so each test is one way the scorer
-// could flatter or punish a detector: a catch, a miss, a false alarm, and what gets left out.
-
 const minute = 60_000;
 const at = (minutes: number) => minutes * minute;
 
@@ -13,7 +10,6 @@ const dead = (fromMinute: number, toMinute: number, kind: DeadInterval['kind'] =
 	{ start: at(fromMinute), end: at(toMinute), kind, after: play(fromMinute) }
 );
 
-// A poll every half minute from `from` to `to`, flagged wherever `flagged` says.
 const polls = (from: number, to: number, flagged: (minute: number) => string | undefined = () => undefined): PollFlag[] => {
 	const out: PollFlag[] = [];
 	for (let m = from; m <= to; m += 0.5) out.push({ at: at(m), kind: flagged(m) });
@@ -65,7 +61,6 @@ test('pregame and postgame polls are outside the game and count for nothing', ()
 	expect(result.hours).toBe(1);
 });
 
-// Flagged just before halftime and just after it, and not in between.
 const aroundHalftime = (m: number) => ((m >= 28 && m <= 28.5) || (m >= 46.5 && m <= 47) ? 'timeout' : undefined);
 
 test('with intermissions excluded, halftime and the minute either side neither catch nor alarm', () => {
@@ -75,8 +70,6 @@ test('with intermissions excluded, halftime and the minute either side neither c
 	expect(result.falseAlarms.every(alarm => alarm.at < at(29) || alarm.at > at(46))).toBe(true);
 });
 
-// The polls dropped around halftime are dropped before runs are found, so the flags either side of it
-// end up adjacent and are joined into one run that spans the whole break.
 test('flags on either side of an excluded halftime are two false alarms, not one that spans it', () => {
 	const result = scoreBreaks([trace({ intervals: [dead(30, 45, 'intermission')], polls: polls(0, 60, aroundHalftime) })], { excludeIntermissions: true });
 
@@ -84,7 +77,6 @@ test('flags on either side of an excluded halftime are two false alarms, not one
 	expect(result.runs).toBe(2);
 });
 
-// Flagged inside a stretch the feed did not record as it happened, and either side of it.
 const aroundGap = (m: number) => ((m >= 18 && m <= 18.5) || (m >= 21 && m <= 31) || (m >= 33.5 && m <= 34) ? 'timeout' : undefined);
 
 test('an unrecorded stretch is left out even where intermissions count, and splits the runs around it', () => {

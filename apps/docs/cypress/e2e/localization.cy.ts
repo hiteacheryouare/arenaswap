@@ -1,17 +1,8 @@
-// What a browser can answer and a unit test cannot: whether the twelve languages fit the layout
-// they were written for, and whether a visit stays in the language it started in.
-//
-// The string bundles themselves are guarded at build time — src/i18n/ui.ts throws on any locale
-// whose shape has drifted from en.json — so nothing here re-checks that a key exists.
-
 const locales = ['de', 'es', 'fil', 'fr', 'it', 'ja', 'ko', 'pt-BR', 'pt-PT', 'zh-CN', 'zh-TW'];
 const everyLocale = ['', ...locales.map(locale => `${locale}/`)];
 
-// 992px is where the desktop links appear. Anything that overflows, overflows here first.
 const navWidths = [992, 1280];
 
-// The site follows the OS until a visitor picks, and the test browser's OS may be light. These
-// specs measure the dark page, so they pick it.
 const pinDarkTheme = (win: Cypress.AUTWindow) => win.localStorage.setItem('arenaswap.theme', 'dark');
 
 const readRow = () =>
@@ -36,8 +27,6 @@ describe('the navigation fits every language', () => {
 					expect(end.right, `nothing past the right edge at ${width}`).to.be.lessThan(row.right + 1);
 				});
 
-				// A wrapped navigation link reads as a layout bug rather than as a long word. This is
-				// what caught Spanish and both Portuguese locales expanding FAQ to a two-word phrase.
 				cy.get('.nav-desktop-links a').each($link => {
 					const style = window.getComputedStyle($link[0]);
 					const lineHeight = Number.parseFloat(style.lineHeight) || Number.parseFloat(style.fontSize) * 1.5;
@@ -51,8 +40,6 @@ describe('the navigation fits every language', () => {
 
 describe('the install button holds its label', () => {
 	everyLocale.forEach(locale => {
-		// The browser name is substituted in at runtime, so the longest real label is a language's
-		// own sentence wrapped around "Google Chrome" rather than anything in the string bundle.
 		it(`stays on one line: /${locale}`, () => {
 			cy.viewport(1280, 900);
 			cy.visit(`/${locale}`);
@@ -66,8 +53,6 @@ describe('the install button holds its label', () => {
 
 describe('a visit stays in the language it started in', () => {
 	locales.forEach(locale => {
-		// Three hops deep, through the documentation, which used to drop you back into English along
-		// with the whole chrome.
 		it(`survives the documentation in ${locale}`, () => {
 			cy.viewport(1280, 900);
 			cy.visit(`/${locale}/`);
@@ -138,9 +123,6 @@ describe('the language switcher', () => {
 		});
 	});
 
-	// Bootstrap 5.3 builds these out of tokens this theme never overrode, so both were the light
-	// defaults: hovering an item put #e6edf3 on #f8f9fa, and the active item was white on $primary
-	// at 3.22:1. Read off the computed style, because that is the only place the answer lives.
 	it('is themed for a dark page rather than left on Bootstrap defaults', () => {
 		cy.visit('/', { onBeforeLoad: pinDarkTheme });
 		cy.get('.lang-switch-trigger').click();
@@ -164,8 +146,6 @@ describe('the language switcher', () => {
 		cy.location('pathname').should('eq', '/arenaswap/de/docs/extension/getting-started/');
 	});
 
-	// The 404 is the one page GitHub Pages can only serve one copy of — it answers every unknown URL
-	// under the base with that file — so it is the only place the switcher falls back to a home page.
 	it('sends the 404 to each locale home, and says why', () => {
 		cy.visit('/404.html');
 		cy.get('.lang-switch-trigger').click();
@@ -186,8 +166,6 @@ describe('the language switcher', () => {
 });
 
 describe('the translated documentation', () => {
-	// A translated heading keeps the English id, so a link written against the English article
-	// lands on the same section in every language.
 	it('keeps the English anchors on translated headings', () => {
 		locales.forEach(locale => {
 			cy.request(`/${locale}/docs/powerscore/signals/`).its('body').then((html: string) => {

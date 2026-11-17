@@ -1,5 +1,3 @@
-// Inlined into the head as a plain blocking script, so a light page never paints dark for a frame.
-// Nothing stored means the visitor never chose, and the OS decides.
 (() => {
 	const preference = localStorage.getItem('arenaswap.theme');
 	const light = preference === 'light'

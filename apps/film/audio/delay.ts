@@ -8,8 +8,6 @@ export interface DelayOptions {
 	highpass: number;
 }
 
-// Ping-pong: the dry signal enters on the left only and each repeat crosses sides, getting darker and
-// thinner on every pass through the band-limit in the feedback path.
 const renderPingPong = (input: Stereo, sampleRate: number, options: DelayOptions): Stereo => {
 	const length = input.left.length;
 	const output = createStereo(length);

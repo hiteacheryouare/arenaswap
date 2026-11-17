@@ -9,7 +9,6 @@ import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
 import fil from '../../../locales/fil.json';
 import fr from '../../../locales/fr.json';
-// Not `it` — that would shadow Mocha's global it() and break every test in this file.
 import itLocale from '../../../locales/it.json';
 import ja from '../../../locales/ja.json';
 import ko from '../../../locales/ko.json';
@@ -51,8 +50,6 @@ const game = (over: Partial<Game> = {}): Game => ({
 
 const snowing = game({ weather: { temperatureF: 24, conditionLabel: 'Snow' } });
 
-// The charts only draw once there is history, and they are what makes the screen tall enough to
-// scroll: the pile and the string are measured against a page that moves.
 const powerScoreHistory: PowerScoreSnapshot[] = Array.from({ length: 6 }, (_, i) => ({
 	gameId: 'g1',
 	timestamp: Date.now() - (6 - i) * 60_000,
@@ -140,8 +137,6 @@ describe('holiday decorations on the detail screen', () => {
 		});
 	});
 
-	// The string drapes over the matchup card the way FOX drapes it over the scorebug, which means
-	// clearing the sticky back bar rather than hiding behind it or sitting on the button.
 	it('hangs the string under the back bar and keeps it there while scrolling', () => {
 		mountDetail(clear, december);
 		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
@@ -169,8 +164,6 @@ describe('holiday decorations on the detail screen', () => {
 		});
 	});
 
-	// The pile belongs to the ground, which is the foot of the page rather than the foot of the
-	// window. Scrolling has to move it, which is exactly what a fixed overlay would not do.
 	it('leaves the pile at the bottom of the page instead of dragging it down the screen', () => {
 		mountDetail(snowing, august);
 		cy.get('.holiday-drift').should('exist');
@@ -519,7 +512,6 @@ describe('reaching the decorations from demo mode', () => {
 		cy.get('@onChange').should('have.been.calledWith', 'december');
 	});
 
-	// The point of the borrowed date: a September session can still see all three.
 	it('decorates a snowy game in September once December is borrowed', () => {
 		cy.viewport(320, 560);
 		cy.mount(
@@ -543,9 +535,6 @@ describe('reaching the decorations from demo mode', () => {
 	});
 });
 
-// Pushing the content in for the light frame narrows the column, and a narrower column is where a
-// label that fitted on one line quietly becomes two. Every text leaf is measured with the frame off
-// and again with it on, and any that grew is a wrap the inset caused.
 const textLeafHeights = (): Cypress.Chainable<Record<string, number>> =>
 	cy.get('.game-detail-shell').then(([shell]: JQuery<HTMLElement>) => {
 		const heights: Record<string, number> = {};
@@ -559,9 +548,6 @@ const textLeafHeights = (): Cypress.Chainable<Record<string, number>> =>
 	});
 
 describe('the lights and the content column', () => {
-	// The string sits over the matchup card rather than around the popup, so the column keeps its
-	// full width. Every text leaf is measured with the lights off and again with them on, and
-	// anything that changed height would be a wrap the decoration caused.
 	it('costs the content column nothing at all', () => {
 		mountDetail(clear, august);
 		textLeafHeights().as('withoutLights');
@@ -599,7 +585,6 @@ describe('the lights celebrating a favourite', () => {
 		mountDetail(clear, december);
 		cy.get('.holiday-lights').should('not.have.class', 'is-celebrating');
 		cy.get('.holiday-bulb').first().should(([bulb]: JQuery<HTMLElement>) => {
-			// Was a hand-picked 3.4s; it now rides $motion-ambient with the rest of the idle motion.
 			expect(getComputedStyle(bulb).animationDuration, 'the resting shimmer').to.equal('3s');
 		});
 	});
@@ -661,8 +646,6 @@ describe('the lights actually moving', () => {
 		});
 	});
 
-	// Proof the keyframes reach the element rather than merely being named by it: scrubbed to the
-	// midpoint of the cycle the bulb has to actually be dimmer, and back at the top of it, full.
 	it('dims the bulb halfway through the cycle and brings it back', () => {
 		mountDetail(clear, december);
 		firstBulbAnimation().then(shimmer => {
@@ -710,10 +693,6 @@ describe('the lights and a reader who asked for less motion', () => {
 		});
 	});
 
-	// The opt-out used to be written as `.holiday-bulb`, one class specific, while the celebration
-	// is `.is-celebrating .holiday-bulb`, two. The opt-out lost on specificity, so a reader who had
-	// asked for stillness got the whole string strobing at 2Hz the moment a favourite scored — the
-	// one piece of motion on this screen it is least safe to leave running. Both selectors now.
 	it('puts the celebration strobe out as well', () => {
 		emulateReducedMotion();
 		cy.viewport(320, 560);

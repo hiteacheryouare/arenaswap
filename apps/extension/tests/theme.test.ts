@@ -6,8 +6,6 @@ import { fullLogoSrc, iconSrc, resolveTheme, themeStorageKey } from '../utils/th
 
 const bootScript = readFileSync(path.join(__dirname, '../public/themeBoot.js'), 'utf8');
 
-// What the boot script sets on <html> for a stored preference and an OS setting, run the way a page
-// runs it: as a plain script with nothing but the globals a page has.
 const bootTheme = (stored: string | null, prefersLight: boolean): string | undefined => {
 	const dataset: Record<string, string> = {};
 	vm.runInNewContext(bootScript, {
@@ -30,8 +28,6 @@ describe('resolveTheme', () => {
 	});
 });
 
-// The boot script repeats resolveTheme's rule because it has to run before the bundle does. If the
-// two ever disagree, the popup opens in one theme and switches to the other a moment later.
 describe('the boot script agrees with resolveTheme', () => {
 	const preferences: ThemePreference[] = ['dark', 'light', 'system'];
 
@@ -42,7 +38,6 @@ describe('the boot script agrees with resolveTheme', () => {
 		},
 	);
 
-	// A profile that has never opened the popup since the setting shipped has no copy at all.
 	test.each([null, '', 'LIGHT', 'sepia'])('an absent or unknown copy (%p) boots dark', stored => {
 		expect(bootTheme(stored, true)).toBe('dark');
 	});

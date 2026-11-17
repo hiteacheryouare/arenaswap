@@ -11,8 +11,6 @@ import focusStepTitle from './stepTitleFocus';
 interface walkthroughStepSettingsProps {
 	onNext: () => void;
 	onBack: () => void;
-	// The leagues just picked in onboarding, so the preview shows the user's own rather than four
-	// that may not be among them.
 	leagues?: readonly LeagueId[];
 }
 

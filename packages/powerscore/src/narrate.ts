@@ -16,12 +16,10 @@ interface Candidate {
 
 const sentenceLimit = 3;
 
-// Below this an upset is a row in the breakdown, not a line of its own.
 const upsetMentionPoints = 3;
 
 const momentBoosts = new Set(['twoMinuteDrill', 'scoringOpportunity', 'goAheadRun', 'noHitter', 'redCard']);
 
-// Boost detail keys that read as a moment, renamed where several say the same thing to a viewer.
 const momentKeys: Record<string, string> = {
 	redZone: 'redZone',
 	redZoneThirdAndShort: 'redZoneThirdAndShort',
@@ -48,10 +46,8 @@ const momentKeys: Record<string, string> = {
 	redCard: 'redCard',
 };
 
-// These give the score and the clock themselves.
 const scoreKeys = new Set(['driveTrailing', 'driveTied', 'emptyNet']);
 
-// These leave the game level, so the score sentence would only say "Tied" again: they take its time.
 const levelKeys = new Set(['tiedIt', 'cameBack']);
 
 const stakesKeys = new Set(['seriesClinch', 'seriesDecider', 'raceClinch', 'raceElimination']);
@@ -85,7 +81,6 @@ const momentOf = (input: SignalInput, signals: readonly SpokenSignal[], boosts: 
 
 const teamOf = (candidate: Candidate | undefined) => candidate?.fragment.params?.team;
 
-// A run that put its team ahead is one sentence, not two, and so is a comeback built on one.
 const storyOf = (signals: readonly SpokenSignal[]): Candidate | undefined => {
 	const stories = signals
 		.filter(signal => signal.reason && !fantasyMomentKeys.has(signal.reason.key) && !fantasyContextKeys.has(signal.reason.key))
@@ -117,7 +112,6 @@ const contextOf = (input: SignalInput, signals: readonly SpokenSignal[], boosts:
 
 type When = Record<string, string | number>;
 
-// Where the game is, in the terms a broadcast uses for that sport.
 const whenOf = ({ game, sport, league }: SignalInput): When | 'shootout' | 'penaltyShootout' | undefined => {
 	const period = game.period;
 	if (period == null) return undefined;
@@ -146,7 +140,6 @@ const whenOf = ({ game, sport, league }: SignalInput): When | 'shootout' | 'pena
 	return { when: regular === 2 ? 'half' : regular === 3 ? 'period' : 'quarter', period };
 };
 
-// English needs no unit on "up 3", but a language that counts goals with their own word does.
 const marginUnit = ({ game }: SignalInput): string => {
 	if (game.sportType === 'hockey' || game.sportType === 'soccer') return 'goal';
 	return game.sportType === 'baseball' || game.sportType === 'softball' ? 'run' : 'point';
@@ -162,8 +155,6 @@ const stateOf = (input: SignalInput, when: ReturnType<typeof whenOf>, previousTe
 	return { key: 'state', params: { ...score, ...when } };
 };
 
-// What is happening right now, what just happened, the score and the time, then what is at stake,
-// dropping the stakes first when all four have something to say.
 export const narrate = (input: SignalInput, signals: readonly SpokenSignal[], boosts: readonly ScoredBoost[]): ReasonFragment[] => {
 	const moment = momentOf(input, signals, boosts)?.fragment;
 	let story = storyOf(signals)?.fragment;

@@ -1,15 +1,10 @@
 import type { ReasonFragment } from '@arenaswap/core/types';
 
-// Why a boost is paying in this game, written under its row; the tooltip keeps the general rule. The
-// engine sends the boosts it scores as keyed sentences; the favorite and manual boosts are built here
-// from what the popup already knows.
-
 type translate = (key: string, subs?: Record<string, string | number>) => string;
 
 export interface boostReasonInput {
 	id: string;
 	details?: readonly ReasonFragment[];
-	// Abbreviations of the favorited teams playing in this game.
 	favoriteTeams: readonly string[];
 }
 
@@ -43,7 +38,6 @@ const favoriteSentence = (teams: readonly string[], t: translate): string | unde
 		: t('boostDetail.favoriteBoth', { team: teams[0]!, other: teams[1]! });
 };
 
-// One line a translator wrote whole beats a line half in English: an unknown key drops them all.
 export const boostReason = ({ id, details, favoriteTeams }: boostReasonInput, t: translate): string | undefined => {
 	if (id === 'favoriteBoost') return favoriteSentence(favoriteTeams, t);
 	if (id === 'gameBoost') return t('boostDetail.gameBoostSet');

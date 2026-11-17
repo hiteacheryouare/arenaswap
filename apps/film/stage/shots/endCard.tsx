@@ -8,14 +8,10 @@ import { beats, easeIn, easeInOut, easeSignature, lerp, progress, spring } from 
 import { Desk, deskLayouts } from './desk';
 import type { ShotContext, ShotModule } from './shotTypes';
 
-// The dot's rest position in the wordmark's own units.
 const dotRest = { cx: 1761.1208, cy: 368.38882, r: 27.6 };
 const barStart = barRest + barStrokeRest / 2;
 const barLength = barJoint - barStart;
 
-// The badge lifts off in the card's first beats, the balls change and the dot lands when the cut's
-// schedule says (on the soundtrack's beats), and the wordmark builds around the landing. Beats are
-// squeezed by the schedule's pace in the 15.
 const scheduleOf = (ctx: ShotContext) => ctx.shot.ending!;
 const lift = (ctx: ShotContext, from: number, to: number) => {
 	const { pace } = scheduleOf(ctx);
@@ -23,8 +19,6 @@ const lift = (ctx: ShotContext, from: number, to: number) => {
 };
 const afterLanding = (ctx: ShotContext, beatsAfter: number) => scheduleOf(ctx).landsAt + beats(beatsAfter * scheduleOf(ctx).pace);
 
-// The dot, then each ball, then the dot again. Each change happens in three clean steps: the old
-// markings fade, the orange shape becomes the next one's, then the new markings come in as it settles.
 type Face = BallKind | 'plain';
 const faces: Face[] = ['plain', ...ballOrder, 'plain'];
 const changeSeconds = 0.36;
@@ -37,7 +31,6 @@ const layoutFor = (ctx: ShotContext) => (ctx.format === 'portrait'
 	? { markWidth: 900, markY: 720, taglineY: 1010, ctaY: 1130, finePrintY: 1800, liveSize: 150, ballRadius: 136 }
 	: { markWidth: 860, markY: 330, taglineY: 610, ctaY: 720, finePrintY: 1010, liveSize: 132, ballRadius: 116 });
 
-// The badge's proportions on the card: a 6px dot and a 4px gap beside 0.65rem of text.
 const badgeDot = 0.58;
 const badgeGap = 0.38;
 const badgeTracking = 0.08;
@@ -63,7 +56,6 @@ interface Badge {
 	label: string;
 }
 
-// Kentucky's badge as it sat on the card before the card started to fall.
 const badges = new Map<number, Badge>();
 
 const fallOf = (ctx: ShotContext) => easeIn(lift(ctx, 0.4, 1.6));
@@ -80,7 +72,6 @@ const EndCard = ({ ctx }: { ctx: ShotContext }) => {
 	const desk = deskLayouts[ctx.format];
 	const badge = badges.get(ctx.shot.from);
 
-	// The badge travels to centre stage, the word steps aside, and the dot becomes every ball.
 	const size = layout.liveSize;
 	const dotNatural = badgeDot * size;
 	const label = badge?.label ?? 'LIVE';
@@ -91,7 +82,6 @@ const EndCard = ({ ctx }: { ctx: ShotContext }) => {
 	const groupX = lerp(badge ? badge.x - (dotNatural / 2) * startScale : width / 2, (width - groupWidth) / 2, travel);
 	const groupY = lerp(badge ? badge.y - (size / 2) * startScale : height / 2, (height - size) / 2, travel);
 	const turnOrange = easeInOut(lift(ctx, 0, 0.4));
-	// The word leaves first; only then does the dot take the middle of the frame.
 	const stepAside = easeInOut(lift(ctx, 2.1, 2.4));
 	const takeCentre = easeInOut(lift(ctx, 2.3, 2.8));
 	const centre = { x: width / 2, y: height / 2 };
@@ -195,8 +185,6 @@ const endCard: ShotModule = {
 		const { popup } = deskLayouts[ctx.format];
 		return fall < 1 ? [{ id: 'main', x: popup.x, y: popup.y + fall * 260, scale: popup.scale, opacity: 1 - fall }] : [];
 	},
-	// Measures the badge off Kentucky's card while the card is still in place; the end card draws it
-	// from there.
 	overlay: (ctx, measure) => {
 		const dot = measure.inPopup('main', liveDotSelector);
 		const label = ctx.host.runtimes.get('main')?.frame?.contentDocument?.querySelector(liveBadgeSelector)?.textContent?.trim();

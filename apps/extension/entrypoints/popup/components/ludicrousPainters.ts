@@ -33,9 +33,6 @@ export const resetStar = (s: Star): void => {
 
 export const makeStars = (n: number): Star[] => Array.from({ length: n }, makeStar);
 
-// Measured off the film: light speed is an achromatic white/blue-white radial field, and ridiculous
-// speed is the same field turned full-spectrum. Neither has any grid in it — that arrives only with
-// the tartan tunnel at ludicrous speed.
 const starTint: Record<Phase, [number, number, number]> = {
 	prelaunch: [0.78, 0.86, 1],
 	windup: [0.78, 0.86, 1],
@@ -49,9 +46,6 @@ const starTint: Record<Phase, [number, number, number]> = {
 	stopping: [1, 0.96, 0.9],
 };
 
-// The measured palette of the plaid itself, which the starlines take on a beat before any of the
-// weave's geometry arrives. Warm coverage of the field runs 5.9% -> 68.8% -> 100% across the
-// transition while the geometry is still only reaching a third of the way out.
 const plaidSpectrum: [number, number, number][] = [
 	[0.74, 0.29, 0.03],
 	[0.65, 0.25, 0.07],
@@ -61,7 +55,6 @@ const plaidSpectrum: [number, number, number][] = [
 	[0.83, 0.75, 0.37],
 ];
 
-// Ridiculous speed reads blue-heavy in the frames, with red, cyan, green, gold and magenta through it.
 const ridiculousSpectrum: [number, number, number][] = [
 	[0.36, 0.52, 1],
 	[0.36, 0.52, 1],
@@ -79,8 +72,6 @@ const starColor = (z: number, phase: Phase, index: number, mix: number): string 
 	if (phase === 'ridiculous') {
 		[r, g, b] = ridiculousSpectrum[index % ridiculousSpectrum.length]!;
 	} else if (phase === 'plaidentry') {
-		// Eased into rather than switched to. A hard palette change at the phase boundary reads as
-		// two effects swapping places; the handoff has to be one escalation.
 		const [pr, pg, pb] = plaidSpectrum[index % plaidSpectrum.length]!;
 		const [lr, lg, lb] = starTint.ludicrous;
 		r = lr + (pr - lr) * mix;
@@ -96,10 +87,7 @@ export interface StarfieldOptions {
 	spread?: number;
 	widthScale?: number;
 	alpha?: number;
-	// How far the field has eased from its warm ludicrous tint toward the plaid's own palette.
 	paletteMix?: number;
-	// Multiplies how far each star travels per frame without moving it through the field any faster,
-	// which is what turns a starline into the elongated streak the plaid resolves out of.
 	stretch?: number;
 }
 
@@ -122,9 +110,6 @@ export const paintStarfield = (
 	ctx.save();
 	if (opts.alpha !== undefined) ctx.globalAlpha = opts.alpha;
 	ctx.lineCap = 'round';
-	// At light speed the film's starlines are dashed rather than continuous, and the centre of the
-	// field stays dark — the flare only arrives with the plaid. Both are deliberate departures from
-	// the Star Wars look this sequence is otherwise quoting.
 	if (phase === 'lightspeed') ctx.setLineDash([5, 4]);
 
 	stars.forEach((star, index) => {
@@ -160,14 +145,6 @@ export const paintStarfield = (
 	ctx.restore();
 };
 
-
-/* ── Tartan tunnel ───────────────────────────────────────────────────────────
-   The film's plaid is not a flat tartan plane: it is a square tunnel in one-point perspective, four
-   walls each carrying the sett, converging on a flared vanishing point. That splits the weave into
-   two families on screen — the cross-corridor threads project as nested squares around the
-   vanishing point, and the along-corridor threads as wedges radiating out of it. Drawing the wedges
-   solid and the rings over them at partial alpha is what reads as woven rather than as a grid. */
-
 export interface SettStripe {
 	color: string;
 	w: number;
@@ -181,8 +158,6 @@ export interface Sett {
 
 const settWidth = (sett: Sett): number => sett.stripes.reduce((sum, s) => sum + s.w, 0);
 
-// Walks the perimeter of a square of half-size `s` centred on the vanishing point. `q` runs 0..4,
-// one unit per wall, and the walls are wound so the parameter is continuous across the corners.
 const squarePoint = (cx: number, cy: number, s: number, q: number): [number, number] => {
 	const wall = ((q % 4) + 4) % 4;
 	const u = (wall % 1) * 2 - 1;
@@ -195,20 +170,12 @@ const squarePoint = (cx: number, cy: number, s: number, q: number): [number, num
 export interface TunnelOptions {
 	travel: number;
 	repeatsAround: number;
-	// The three families ramp independently so the plaid can resolve out of the starfield rather
-	// than cross-fading in as a finished image.
 	wedgeAlpha?: number;
 	ringAlpha?: number;
 	flareAlpha?: number;
 	paintGround?: boolean;
-	// Rungs resolve as an aperture opening out of the flare, not globally: measured band energy at
-	// the midpoint of the transition is 7.7 close in and 0.14 further out.
 	ringAperture?: number;
-	// The vanishing point evacuates to black before the flare ignites. It is the darkest the frame
-	// ever gets, and it is the cue the ignition reads against.
 	voidRadius?: number;
-	// The sett's widths are thread counts, not distances. This is how far apart the cross-corridor
-	// threads sit in depth, and it is what decides how dense the rings look rather than how wide.
 	depthScale: number;
 }
 
@@ -218,7 +185,6 @@ export const paintTartanTunnel = (
 	sett: Sett,
 	{ travel, repeatsAround, depthScale, wedgeAlpha = 1, ringAlpha = 1, flareAlpha = 1, paintGround = true, ringAperture = Infinity, voidRadius = 0 }: TunnelOptions,
 ): void => {
-	// Dead centre and staying there. A drifting vanishing point reads as a rendering fault.
 	const cx = rect.x + rect.w / 2;
 	const cy = rect.y + rect.h / 2;
 	const reach = Math.hypot(rect.w, rect.h) * 1.4;
@@ -234,7 +200,6 @@ export const paintTartanTunnel = (
 		ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
 	}
 
-	// Along-corridor threads: wedges from the vanishing point out past the frame corners.
 	const dq = 4 / (repeatsAround * period);
 	ctx.globalAlpha = wedgeAlpha;
 	let q = 0;
@@ -256,8 +221,6 @@ export const paintTartanTunnel = (
 		}
 	}
 
-	// Cross-corridor threads: nested squares, spaced by the sett in corridor depth and projected so
-	// the band nearest the camera is both widest and thickest. Far to near, so near bands win.
 	const focal = rect.w * 0.5;
 	const near = 0.3;
 	const far = 26;
@@ -302,7 +265,6 @@ export const paintTartanTunnel = (
 		return;
 	}
 
-	// The flare that sits at the vanishing point in every frame of the sequence.
 	ctx.globalAlpha = flareAlpha;
 	const flare = ctx.createRadialGradient(cx, cy, 0, cx, cy, rect.w * 0.2);
 	flare.addColorStop(0, 'rgba(255,252,232,0.95)');
@@ -324,11 +286,6 @@ export const paintTartanTunnel = (
 
 	ctx.restore();
 };
-
-/* ── League logo flyby ───────────────────────────────────────────────────────
-   The joke is that ArenaSwap outran every league it tracks, so the marks have to
-   be gone before they are legible: they are perspective-projected from behind the
-   camera plane and smeared along their own velocity vector. */
 
 export interface FlyingLogo {
 	img: HTMLImageElement;
@@ -395,8 +352,6 @@ export const paintLogoStream = (
 		const dx = prevX === null ? 0 : (prevX - sx) / ghosts;
 		const dy = prevY === null ? 0 : (prevY - sy) / ghosts;
 
-		// A dark halo under each mark. The plaid is a busy mid-tone field and these are mostly light
-		// marks on transparency, so without it they vanish into the bands entirely.
 		const edge = Math.min(1, logo.z * 2.6) * Math.min(1, (1.25 - logo.z) * 6);
 		ctx.save();
 		ctx.globalAlpha = edge * 0.8;

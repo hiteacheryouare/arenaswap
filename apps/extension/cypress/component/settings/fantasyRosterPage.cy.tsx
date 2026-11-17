@@ -29,7 +29,6 @@ const resolved = (result: PlayerSearchResult): FantasyRosterEntry => ({
 	position: 'player',
 });
 
-// Only the services a test does not supply get a default stub, so an alias always names the one in use.
 const services = (overrides: Partial<fantasyRosterServices> = {}): fantasyRosterServices => ({
 	searchPlayers: overrides.searchPlayers ?? cy.stub().as('searchPlayers').resolves([jokic, longName]),
 	resolveRosterEntry: overrides.resolveRosterEntry
@@ -45,7 +44,6 @@ interface harnessProps {
 	onSaved?: (roster: FantasyRosterEntry[]) => void;
 }
 
-// The setup page holds the roster and saves it; this stands in for both.
 const Harness = ({ initial = [], stubs, onSaved }: harnessProps) => {
 	const [roster, setRoster] = useState(initial);
 	return (
@@ -89,14 +87,12 @@ describe('fantasy roster page', () => {
 		search('jokic');
 		cy.tick(searchDebounceMs - 50);
 		cy.get('@searchPlayers').should('not.have.been.called');
-		// One of the game list's own loading lines.
 		const loadingLines = Object.entries(en.loading).filter(([key]) => /^m\d+$/.test(key)).map(([, line]) => line as string);
 		cy.get('[role="status"]').invoke('text').should(text => expect(loadingLines).to.include(text.trim()));
 		cy.tick(60);
 		cy.get('@searchPlayers').should('have.been.calledOnce').its('firstCall.args.0').should('eq', 'jokic');
 	});
 
-	// The line sits in a live region, so it holds still while the name is typed out.
 	it('keeps one loading line for the whole search', () => {
 		cy.clock();
 		cy.mount(<Harness stubs={services()} />);
@@ -125,7 +121,6 @@ describe('fantasy roster page', () => {
 			cy.get('img').should('have.attr', 'src', jokic.headshot);
 			cy.get('.bi-plus-lg').should('exist');
 		});
-		// No headshot, so the disc carries initials.
 		cy.contains('.fantasy-pick-row', longName.name).find('.crest-initials').should('contain.text', 'CA');
 	});
 

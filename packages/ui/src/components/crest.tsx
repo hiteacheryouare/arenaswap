@@ -4,10 +4,6 @@ import { isHex, readableOnBlack } from '@arenaswap/chromatic';
 
 type crestState = 'pending' | 'loaded' | 'failed' | 'missing';
 
-// Where a caller picks its artwork by reading the pixels of artwork it may then replace, this is
-// how far it has got: `'pending'` while it is still holding the image up to the light, `'settled'`
-// once it has an answer. `TeamCrest` is the only caller, and the thing it can answer with is a
-// different image.
 type crestVerdict = 'pending' | 'settled';
 
 interface crestOutcome {
@@ -17,54 +13,29 @@ interface crestOutcome {
 
 interface crestProps {
 	logo?: string;
-	// Never sliced here: the game card wants three characters, the detail poster wants the whole
-	// abbreviation, and a league mark wants its initials.
 	abbreviation: string;
 	className?: string;
-	// Only for the handful of crests that are the sole thing naming what they depict. Everywhere
-	// else the team or league name is already visible text beside the crest, and a second copy of
-	// it is noise to a screen reader.
 	label?: string;
 	title?: string;
 	fallback?: 'abbreviation' | 'blank' | 'none';
-	// The team's own colour, where the call site knows it: the placeholder is filled with it and the
-	// initials take whichever ink reads on it. Anything else gets the neutral disc.
 	teamColor?: string;
-	// A Bootstrap Icons class drawn in the placeholder instead of the abbreviation.
 	icon?: string;
 	loading?: 'eager' | 'lazy';
-	// Both opt-in, and only for a caller that reads the crest's own pixels back off a canvas.
 	// Without `crossOrigin` that canvas is tainted and throws on read; with it the request changes
 	// shape, so a host answering without CORS headers would fail to load at all rather than just
 	// fail to be sampled. Every ESPN logo host we use sends `Access-Control-Allow-Origin: *`.
 	crossOrigin?: 'anonymous';
-	// Only for that same caller, and passing it at all changes how the image is painted: it is held
-	// behind the placeholder until the `logo` it was last handed is the one that loaded. An image
-	// appears the moment it decodes and owes React nothing — `load` is not a discrete event, so a
-	// commit can land a frame or more later, and that frame is the artwork the verdict is about to
-	// replace. The same holds across a swap, where an element may still be painting the source it
-	// is being moved off. `'pending'` holds it back past the load as well, while the pixels are in
-	// hand and the answer is not.
 	verdict?: crestVerdict;
 	onLoaded?: (image: HTMLImageElement) => void;
-	// For a caller with a second piece of artwork to try, which is the team card asking for the
-	// dark-ground variant of a crest the CDN might not have drawn.
 	onFailed?: () => void;
 }
 
-// Keyed on the URL rather than on a boolean, so a crest that fails once retries when the URL
-// changes. Both halves of that happen in practice: game cards are reused across polls, and a
-// league mark starts on a hardcoded URL and switches to ESPN's once the live list arrives.
 export const resolveCrestState = (logo: string | undefined, outcome: crestOutcome | null, verdict?: crestVerdict): crestState => {
 	if (!logo) return 'missing';
 	const state = outcome?.src === logo ? outcome.status : 'pending';
-	// A verdict still out holds the placeholder up over artwork that has already loaded. A failure
-	// is exempt: there are no pixels to judge, nothing will ever be swapped in, and reporting it as
-	// pending would lose the one state a caller can tell from the others.
 	return verdict === 'pending' && state !== 'failed' ? 'pending' : state;
 };
 
-// Inline, so a team colour beats a call site's own neutral tone the way that tone beats the default.
 export const crestFill = (teamColor: string | undefined, fallback: crestProps['fallback'] = 'abbreviation'): CSSProperties | undefined => {
 	if (fallback === 'none') return { '--as-avatar-bg': 'transparent' } as CSSProperties;
 	return isHex(teamColor)
@@ -72,9 +43,6 @@ export const crestFill = (teamColor: string | undefined, fallback: crestProps['f
 		: undefined;
 };
 
-// A Bootstrap avatar whose own box is the placeholder, with the logo laid over it as `.avatar-img`.
-// Layering rather than swapping means a crest already in the cache paints in the first frame, and
-// it lets the docs' static markup (`CrestSettle.astro`) drive the same stylesheet by hand.
 const Crest = ({
 	logo,
 	abbreviation,

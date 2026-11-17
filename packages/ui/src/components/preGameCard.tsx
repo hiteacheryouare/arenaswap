@@ -29,8 +29,6 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 			{...shellProps}
 		>
 			{interactive && <CardDetailsButton game={game} onOpenGameDetail={onOpenGameDetail} />}
-			{/* A scheduled card has no status row of its own, so the league mark or the round name
-			    brings one. Without either, the card keeps the height it has always had. */}
 			{(leagueSlot || game.postseasonLabel || game.isPreseason || game.conference) && (
 				<CardStatusRow league={leagueSlot} conference={<ConferenceMark game={game} />}><SeasonLabel game={game} /></CardStatusRow>
 			)}

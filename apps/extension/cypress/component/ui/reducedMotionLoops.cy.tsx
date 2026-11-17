@@ -5,8 +5,6 @@ const emulateReducedMotion = (on: boolean) => Cypress.automation('remote:debugge
 	params: { features: on ? [{ name: 'prefers-reduced-motion', value: 'reduce' }] : [] },
 });
 
-// Elements carrying the real classes, so this reads the shipped stylesheet rather than the components'
-// timing, which these loops don't depend on.
 const loops = [
 	['the burning Ludicrous Speed label', 'ludicrous-speed'],
 	['the Ludicrous Speed label landing', 'ludicrous-speed landing'],

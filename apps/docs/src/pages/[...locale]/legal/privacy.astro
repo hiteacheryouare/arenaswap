@@ -5,18 +5,11 @@ import LegalTranslationNotice from '../../../components/LegalTranslationNotice.a
 import { localePath, localeRoutes } from '../../../i18n/locales';
 import { tokenize, useTranslations } from '../../../i18n/ui';
 
-// Written against the code rather than from a template. Every claim here is checkable: the
-// permissions and the hosts are in apps/extension/wxt.config.ts, and the storage calls are in
-// apps/extension/utils/prefsStorage.ts. Preferences go to storage.sync with storage.local as the
-// fallback, and the rest is split between storage.local and storage.session.
-
 export const getStaticPaths = localeRoutes;
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 
-// The date is a fact about the notice rather than a piece of copy, so it is the same in every
-// language and is written once, in the English bundle, for all of them.
 const updated = t('legal.privacy.updatedDate');
 
 const website2 = tokenize(t('legal.privacy.website2'));

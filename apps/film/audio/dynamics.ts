@@ -13,8 +13,6 @@ export interface KeyShape {
 	release: number;
 }
 
-// The duck shape is drawn straight from the trigger times rather than followed from audio, so the
-// pump is exactly on the grid and identical on every render.
 export const sidechainKey = (hits: KeyHit[], length: number, sampleRate: number, shape: KeyShape): Float32Array => {
 	const key = new Float32Array(length);
 	const attack = shape.attack * sampleRate;
@@ -57,8 +55,6 @@ const softKneeReduction = (levelDb: number, options: CompressorOptions): number 
 	return slope * (over + halfKnee) ** 2 / (2 * options.kneeDb);
 };
 
-// Stereo-linked RMS glue compressor, in place. The detector is high-passed so sub hits do not pump
-// the whole mix.
 export const compress = (target: Stereo, sampleRate: number, options: CompressorOptions): void => {
 	const detector = Math.exp(-1 / (0.01 * sampleRate));
 	const attack = Math.exp(-1 / (options.attack * sampleRate));
@@ -103,9 +99,6 @@ const slidingMinimumAhead = (values: Float32Array, window: number): Float32Array
 	return result;
 };
 
-// Look-ahead limiter driven by 4x-oversampled peaks. The gain each sample needs is held over the
-// look-ahead window, allowed to recover exponentially, then box-averaged over that same window: the
-// average can never rise above what the peak needs, so the ceiling holds without a hard corner.
 export const limit = (input: Stereo, inputGain: number, sampleRate: number, options: LimiterOptions): Stereo => {
 	const length = input.left.length;
 	const output = createStereo(length);

@@ -18,8 +18,6 @@ export interface DeskLayout {
 	popup: { x: number; y: number; scale: number };
 }
 
-// The browser and the popup side by side, as they sit on a real screen. In landscape the popup
-// hangs from the extension button as Chrome draws it; in portrait it stacks under the window.
 export const deskLayouts: Record<Format, DeskLayout> = {
 	landscape: {
 		window: { x: 96, y: 214, width: 1240, height: 800 },
@@ -33,7 +31,6 @@ export const deskLayouts: Record<Format, DeskLayout> = {
 	},
 };
 
-// The window alone, before the popup opens.
 export const soloLayouts: Record<Format, { window: Rect; windowZoom: number }> = {
 	landscape: { window: { x: 240, y: 230, width: 1440, height: 790 }, windowZoom: 1.45 },
 	portrait: { window: { x: 40, y: 560, width: 1000, height: 760 }, windowZoom: 1.12 },
@@ -58,7 +55,6 @@ export const tabViewAt = (cut: Cut, t: number): TabView => {
 	return { activeTabId: current.tabId, managed };
 };
 
-// The moment of the night the browser shows: that of the popup beside it.
 export const browserSlateTime = (ctx: ShotContext, popupId = 'main') => {
 	const plan = ctx.cut.popups.find(candidate => candidate.id === popupId) ?? ctx.cut.popups.find(candidate => candidate.id === 'main')!;
 	return slateTimeAt(plan.clock, ctx.t);

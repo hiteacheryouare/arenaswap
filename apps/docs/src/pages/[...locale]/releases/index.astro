@@ -6,10 +6,6 @@ import { useTranslations } from '../../../i18n/ui';
 import formatReleaseDate from '../../../lib/releaseDate';
 import { getLocalizedCollection } from '../../../lib/localizedContent';
 
-// The home of the release notes: the newest one gets the room, everything before it gets a line.
-// No side nav — it used to list every version beside a page that is already a list of every
-// version.
-
 export const getStaticPaths = localeRoutes;
 
 const { locale } = Astro.props;

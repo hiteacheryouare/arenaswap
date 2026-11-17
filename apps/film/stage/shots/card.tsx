@@ -20,11 +20,8 @@ const originPoint = (ctx: ShotContext, measure: Measure): { point: Point; radius
 	return { point: { x: ctx.width / 2, y: ctx.height / 2 }, radius: 10 };
 };
 
-// The point the card grew from, kept so it shrinks back about exactly the same place.
 const origins = new Map<number, { point: Point; radius: number }>();
 
-// The dot swells out of the shot before until the frame is orange, holds for the line, then shrinks
-// back down about the same point until it is gone.
 const cardOverlay = (ctx: ShotContext, measure: Measure) => {
 	const { local } = ctx;
 	const { swell: swellSeconds, open: openSeconds, close: closeSeconds } = cardTiming;

@@ -4,13 +4,6 @@ import Shell from '../../layouts/Shell.astro';
 import { localeRoutes } from '../../i18n/locales';
 import { tokenize, useTranslations } from '../../i18n/ui';
 
-// Off the homepage and onto its own page. The questions are worth keeping for search — they
-// are what people actually type — but they were the fourth thing competing for attention at the
-// bottom of the landing page.
-//
-// Native <details> rather than the React accordion this used to be: no JavaScript, open by
-// default when JS never arrives, and Cmd-F finds an answer that is collapsed.
-
 export const getStaticPaths = localeRoutes;
 
 const { locale } = Astro.props;
@@ -23,8 +16,6 @@ interface Item {
 	a: string;
 }
 
-// Only the first answer names the count, and substituting into every one of them costs nothing and
-// means no locale has to remember which one it was.
 const items = t.list<Item>('faq.items').map(item => ({
 	q: item.q,
 	a: item.a.split('{leagues}').join(String(leagueCount)),

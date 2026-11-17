@@ -84,7 +84,6 @@ describe('favoriteTeamRows', () => {
 	});
 
 	test('sorts the untracked favorites last, whatever their league order', () => {
-		// NBA sorts ahead of NHL, so only the tracked-first rule can put the Bruins on top.
 		const rows = favoriteTeamRows(teams, new Set(['nba:2', 'nhl:6']), ['nhl']);
 
 		expect(rows.map(row => row.team.name)).toEqual(['Boston Bruins', 'Boston Celtics']);

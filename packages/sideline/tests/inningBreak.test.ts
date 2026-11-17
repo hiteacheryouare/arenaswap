@@ -15,14 +15,12 @@ const mlbAt = (shortDetail: string, outs: number) => parseScoreboardEvents({
 	}],
 }, 'mlb')[0]!;
 
-// Three of 306 recorded "Mid" readings still carried the top half's three outs.
 test('the break between halves starts the bottom half with no outs', () => {
 	const game = mlbAt('Mid 7th', 3);
 	expect(game.topOfInning).toBe(false);
 	expect(game.bso?.outs).toBe(0);
 });
 
-// Both arrive while the game is still marked in progress, which is why nothing else flags them.
 test('Mid and End are the teams changing sides; Top and Bot are play', () => {
 	expect(mlbAt('Mid 7th', 3).inningBreak).toBe(true);
 	expect(mlbAt('End 7th', 3).inningBreak).toBe(true);

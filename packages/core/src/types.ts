@@ -41,51 +41,31 @@ export type {
 	BlendResult,
 };
 
-// Baseball pitchers and hockey goalies arrive in the same `probables` structure, so this is not
-// named for either one.
 export interface ProbableStarter {
 	name: string;
-	// Present for 97% of pitchers and every goalie sampled. Soccer has almost none, which is why
-	// the UI needs a fallback rather than treating absence as an edge case.
 	headshot?: string;
-	// Assembled from the separate wins and losses stats rather than parsed back out of `line`, so
-	// each number can carry its own label. All 182 upcoming probables sampled had both, plus ERA.
 	winLoss?: string;
 	era?: string;
-	// ESPN's own pre-formatted "(7-7, 5.17)". Rendered unlabelled, and only when the two above are
-	// missing — which no baseball probable sampled was, and every goalie is.
 	line?: string;
-	// Hockey only. ESPN sends no starter status for baseball.
 	status?: 'expected' | 'confirmed';
 }
 
-// The live counterpart to ProbableStarter. That one is deliberately pre-game only, because the
-// categories behind it turn into a box line at first pitch — this is that box line, for the two
-// players the game is currently waiting on.
 export interface AtBatPlayer {
 	id?: string;
 	name: string;
-	// Absent often enough that the panel needs an initials fallback rather than a broken image.
 	headshot?: string;
 	jersey?: string;
-	// A bare string here — "RP", "CF" — unlike the object `leaders` sends under the same name.
 	position?: string;
-	// ESPN's own pre-formatted line: "1.1 IP, 0 ER, H, BB" for a pitcher, "0-2, K" for a batter.
-	// Passed through rather than reassembled, the same way ProbableStarter.line is.
 	summary?: string;
 }
 
-// Only ever set when both sides arrived, so the panel cannot be drawn half-empty. ESPN drops the
-// pair between innings while the rest of the situation survives.
 export interface AtBat {
 	pitcher: AtBatPlayer;
 	batter: AtBatPlayer;
 }
 
 export interface TeamLeader {
-	// ESPN's category name, normalized. The key a label is looked up by, never display text.
 	category: string;
-	// ESPN's own abbreviation, rendered only for a category we have no translation for.
 	fallbackLabel: string;
 	player: string;
 	value: string;
@@ -95,48 +75,26 @@ export interface TeamLeader {
 export interface Team {
 	id: string;
 	name: string;
-	// ESPN's own `team.name`: the nickname alone, without the city or the school. "Titans", not
-	// "Tennessee Titans"; "Nittany Lions", not "Lions", which is why it is carried rather than
-	// sliced off the end of `name`. Painted in the end zones of the football field diagram.
 	nickname?: string;
-	// ESPN's `shortDisplayName`. The school in college and the nickname in the pros, but in soccer it
-	// is what the club is called in passing: "Portland" for the Portland Thorns FC.
 	shortName?: string;
 	abbreviation: string;
 	score: number;
-	// Soccer only, once a match reaches a shootout: `score` stays frozen at the 120-minute
-	// scoreline while this decides the tie.
 	shootoutScore?: number;
 	logo?: string;
-	// CSS hex, from the API, or read off the crest in the background when the API sends none.
-	// `alternateColor` is used when the primary clashes with the opponent.
 	color?: string;
 	alternateColor?: string;
-	// The overall record, e.g. "76-58". Carried in every status because the detail hero shows it
-	// for live and finished games too.
 	record?: string;
-	// Games at home only, e.g. "1-0". Like `record`, it already counts this game once it is final.
 	homeRecord?: string;
-	// Pre-game only, and only where ESPN sends them. Leaders in particular are pre-game only for
-	// correctness rather than economy: once a game starts, the same categories hold that game's box
-	// line ("1-4, HR, 4 RBI") instead of a season total.
 	probableStarter?: ProbableStarter;
 	leaders?: TeamLeader[];
-	// Poll position, 1–25. Undefined for an unranked team and for every league without a poll —
-	// ESPN sends 99 in both cases, which is filtered out on the way in rather than rendered.
 	rank?: number;
-	// College football and basketball only; the other college scoreboards leave it out.
 	conferenceId?: string;
-	// Timeouts left, live games only: gridiron's from the scoreboard, basketball's from the situation
-	// the background fetches beside it.
 	timeouts?: number;
-	// Baseball and softball, live and final.
 	hits?: number;
 	errors?: number;
 }
 
 export interface SeriesState {
-	// 'season' is MLB's regular-season series, which nobody is eliminated from.
 	kind: 'playoff' | 'season';
 	homeWins: number;
 	awayWins: number;
@@ -145,15 +103,12 @@ export interface SeriesState {
 
 export interface RedCardEvent {
 	teamId: string;
-	// Elapsed game minute, from the match clock.
 	minute: number;
-	// Stoppage time, which the clock leaves out: a card at 90'+6' has a `minute` of 90.
 	addedMinutes?: number;
 	player?: string;
 }
 
 export interface GoalEvent {
-	// The team the goal counts for. On an own goal that is not the scorer's team.
 	teamId: string;
 	minute: number;
 	addedMinutes?: number;
@@ -164,7 +119,6 @@ export interface GoalEvent {
 
 export interface BroadcastLogo {
 	logo?: string;
-	// Drawn for a dark ground; most networks have none.
 	darkLogo?: string;
 }
 
@@ -175,10 +129,8 @@ export interface GameConference {
 }
 
 export interface GameCondition {
-	// °F, as reported by ESPN.
 	temperatureF: number;
 	conditionLabel: string;
-	// AccuWeather icon number, 1–44. Codes 33 and up are the night variants.
 	conditionCode?: number;
 }
 
@@ -194,7 +146,6 @@ export interface GameOdds {
 	provider?: GameOddsProvider;
 }
 
-
 export interface Game {
 	id: string;
 	league: LeagueId;
@@ -202,132 +153,68 @@ export interface Game {
 	homeTeam: Team;
 	awayTeam: Team;
 	venueName?: string;
-	// Already comma-joined for display, e.g. 'Inglewood, CA' or 'London, England'.
 	venueLocation?: string;
-	// Only ever set on a final game: ESPN sends the key on every state and fills it in at the same
-	// moment it flips the status, so a scheduled or live game arrives at 0 and is dropped here.
 	attendance?: number;
-	// Whatever ESPN puts after the slash in `Final/3OT`, `Final/10` or `Final/SO` — taken from its
-	// own label rather than derived from the period, which is the only way `SO` is ever produced.
-	// Undefined on a game that ended in regulation, and on every game that has not ended.
 	finalPeriodSuffix?: string;
 	period: number;
 	clockSeconds: number;
-	// Soccer's added minutes, which `clockSeconds` already includes: 2 for "45'+2'". Kept apart so
-	// the clock can be printed the way a broadcast prints it.
 	clockStoppageMinutes?: number;
-	// Basketball under a minute, where the feed sends `45.3`: 453. Display only; scoring reads clockSeconds.
 	clockTenths?: number;
 	status: 'pre' | 'in' | 'post';
 	startTime?: string;
 	broadcasts?: string[];
 	odds?: GameOdds;
 	intermission?: boolean;
-	// Top of inning = true, bottom = false.
 	topOfInning?: boolean;
-	// "End 6th": both halves are done and the next inning hasn't started. Reported live, for a couple
-	// of minutes at a time, with no half-inning to read.
 	inningEnded?: boolean;
-	// "Mid 6th" or "End 6th": the teams are changing sides, which ESPN reports while the game is
-	// still marked in progress. Every one of these is a commercial break on TV.
 	inningBreak?: boolean;
 	baseRunners?: { first: boolean; second: boolean; third: boolean };
 	bso?: { balls: number; strikes: number; outs: number };
-	// Inning sports only. Dropped between innings, which is what makes the panel come and go.
 	atBat?: AtBat;
-	// Inning sports only: the next hitters, in batting order, at most three. Sent between
-	// half-innings, from the third out until the first pitch of the next half, and dropped once a
-	// batter is up — so it and `atBat` all but never exist together.
 	dueUp?: AtBatPlayer[];
-	// The play that just happened, as ESPN describes it. Live games only, and absent in soccer,
-	// which sends no situation at all. Newlines are meaningful — a penalty is two sentences — so
-	// this is rendered with `white-space: pre-line` rather than collapsed.
 	lastPlay?: string;
-	// ESPN's own summary of the drive in progress, e.g. "3 plays, 5 yards, 0:10". Football only.
 	lastPlayDrive?: string;
-	// The home side's chance of winning after the last play, 0 to 1, as the scoreboard reports it.
-	// Live games in the leagues that send it; see scoreboardWinProbability.ts.
 	homeWinProbability?: number;
-	// Which play that probability follows, so a poll that lands between plays isn't counted twice.
 	lastPlayId?: string;
-	// ESPN's name for that play's type: "Official Timeout", "Full Timeout", "Stoppage", "Extra Point
-	// Good". The commercial-break detector reads it; see packages/core/src/commercialBreaks.ts.
 	lastPlayType?: string;
-	// Whose play it was, as ESPN attributes it — the offense in football, the shooting side in
-	// hockey, the fielding side in baseball. Matches `homeTeam.id` or `awayTeam.id`, and is
-	// undefined when ESPN names a team we do not recognise. Colours the play's accent bar.
 	lastPlayTeamId?: string;
-	// Football only, from here down. e.g. "3rd & 5".
 	downDistance?: string;
-	// ESPN's "ABBR yardLine" label; joined onto downDistance via gameCard.downDistanceAt.
 	fieldPosition?: string;
 	isRedZone?: boolean;
-	// Weights the red-zone scoring-opportunity boost.
 	down?: number;
 	distance?: number;
 	isGoalToGo?: boolean;
-	// Absolute field coordinate, 0-100: 0 is the home team's own goal line and 100 is the away
-	// team's. So the home offense always drives toward 100 and the away offense toward 0, and the
-	// field diagram reads its direction of travel off `possessionTeamId` alone.
 	yardLine?: number;
-	// Matches `homeTeam.id` or `awayTeam.id`.
 	possessionTeamId?: string;
-	// Basketball only: whose ball it is after the last play, or undefined when that play doesn't say
-	// (a timeout, a substitution, a missed shot still in the air). See deriveBasketballPossession.
 	possessionSide?: 'home' | 'away';
-	// Where the current drive began, in the same coordinates as `yardLine`.
 	driveStartYardLine?: number;
 	weather?: GameCondition;
-	// ESPN signals this three different ways — see resolvePostseason in packages/sideline/src/apiClient.ts.
 	isPostseason?: boolean;
-	// Distance from the trophy: 0 the title game, 1 a semifinal, 2 a quarterfinal, 3 anything
-	// earlier. Undefined on a postseason game that deliberately scores nothing — a non-playoff
-	// bowl, the Pro Bowl, a secondary tournament's early round — as well as on every game that is
-	// not postseason at all. See gradePostseason in packages/sideline/src/postseasonRound.ts.
 	postseasonRound?: 0 | 1 | 2 | 3;
-	// ESPN's own name for the round, trimmed of the prefix that repeats the league and otherwise
-	// untouched, sponsors included. Passed through untranslated like the venue and broadcast names
-	// beside it. Present on games that score nothing, because a bowl's name is worth showing even
-	// when the game is not.
 	postseasonLabel?: string;
-	// An exhibition before the regular season: NBA and NHL preseason, NFL preseason, MLB spring
-	// training. Read off `season.slug` alone — see resolvePreseason in packages/sideline/src/apiClient.ts.
 	isPreseason?: boolean;
 	delayed?: boolean;
 	delayDescription?: string;
 	delayKind?: 'rain' | 'weather' | 'other';
-	// A game read as `post` that has no ordinary result. A canceled game never becomes a Game.
 	disruption?: 'postponed' | 'suspended' | 'forfeit';
 	postponedReason?: 'rain' | 'weather' | 'airQuality' | 'travel';
-	// YYYY-MM-DD, a calendar day rather than an instant: our sources name the day and not the time.
 	makeupDate?: string;
 	forfeitWinnerId?: string;
 	doubleheaderGame?: 1 | 2;
 	isMakeup?: boolean;
-	// The college division scoreboards that returned this game (`groups=` values). An FBS vs FCS
-	// game comes back from both.
 	collegeGroups?: string[];
-	// A college postseason game the filter lets through when its title-rounds switch is on. See
-	// readCollegeBracket in packages/sideline/src/collegeBracket.ts.
 	collegeTitleRound?: boolean;
-	// A seeded national bracket, where the rank field carries the seed rather than a poll rank.
 	collegeSeeded?: boolean;
 	series?: SeriesState;
-	// Soccer, in the order they were shown. Not `redCards`: the engine's Game uses that name for its
-	// own side-keyed shape, and a core Game has to stay assignable to it.
 	redCardEvents?: RedCardEvent[];
 	goalEvents?: GoalEvent[];
-	// Keyed by the name in `broadcasts`.
 	broadcastLogos?: Record<string, BroadcastLogo>;
 	neutralSite?: boolean;
 	conference?: GameConference;
 }
 
-// What becomes of a registered tab once its game is over. 'keep' is what ArenaSwap has always
-// done. 'free' drops the registration and hands the tab back unmuted; 'close' shuts it.
 export type FinishedTabAction = 'keep' | 'free' | 'close';
 
-// 'system' follows prefers-color-scheme, including when it changes while a page is open.
 export type ThemePreference = 'dark' | 'light' | 'system';
 export type ResolvedTheme = Exclude<ThemePreference, 'system'>;
 
@@ -338,44 +225,27 @@ export interface UserPreferences {
 	contentAwareSwitching: boolean;
 	enabled: boolean;
 	enabledLeagues: LeagueId[];
-	// Stored as `${league}:${teamId}`, e.g. `nba:20`.
 	favoriteTeamIds: string[];
 	favoriteTeamBonusPoints: number;
-	// Same keys as favoriteTeamIds, and never a team that is also a favorite. Only Blowouts reads it.
 	rivalTeamIds: string[];
 	showUpcomingGames: boolean;
-	// Off, the main screen is one list per section across every league; on, each section splits
-	// into league runs in `enabledLeagues` order.
 	groupByLeague: boolean;
-	// Keeps a finished game reachable for finalRetentionMs after it wrapped instead of discarding
-	// it the instant ESPN reports it final.
 	keepFinalGames: boolean;
 	finishedTabAction: FinishedTabAction;
 	proTipsEnabled: boolean;
 	notificationsEnabled: boolean;
-	// Where the boss button takes you. Stored as typed and tidied by the settings field, so an
-	// older or hand-edited value is read again at press time rather than trusted.
 	bossDecoyUrl: string;
 	standbyStreamEnabled: boolean;
-	// Switch to standby once every registered game falls below this.
 	standbyStreamThreshold: number;
-	// Chrome and Edge only. Stays off until the all-sites permission it needs has been granted.
 	multiviewEnabled: boolean;
-	// A registered game at or above this is hot, and two hot games open Multiview.
 	multiviewThreshold: number;
-	// Which registered games get a box once Multiview is open. It only opens for two hot ones either way.
 	multiviewGames: 'hot' | 'all';
 	multiviewMaxBoxes: number;
 	bettingEnabled: boolean;
 	temperatureUnit: 'F' | 'C' | 'Ro';
-	// Rømer is not offered by the settings list, so the toggle needs to know whether this user
-	// has found it before it will cycle through a third unit.
 	romerUnlocked: boolean;
-	// The matchup poster every card arrives as when the popup opens. Off means the list is simply
-	// there, the way it was before the graphic existed.
 	openRevealEnabled: boolean;
 	theme: ThemePreference;
-	// Seasonal decoration on the game detail screen. The parent gates the rest.
 	holidayDecorationsEnabled: boolean;
 	holidaySnowEnabled: boolean;
 	holidayLightsEnabled: boolean;
@@ -384,32 +254,22 @@ export interface UserPreferences {
 	holidayBuntingEnabled: boolean;
 	holidayFireworksEnabled: boolean;
 	postseasonBoostPoints: number;
-	// 1–14.
 	upcomingGamesDays: number;
-	// Classic's switched-off signals. The rest are rescaled to the full range.
 	disabledSignals: SignalName[];
-	// Which question PowerScore answers. 'custom' picks a mode per league from `leagueModes`.
 	scoringMode: ScoringModeChoice;
-	// Custom only. A league left out scores as Classic.
 	leagueModes: Partial<Record<LeagueId, BuiltInModeId>>;
-	// Switched-off signals for the modes other than Classic, by mode.
 	modeDisabledSignals: Partial<Record<Exclude<BuiltInModeId, 'classic'>, string[]>>;
-	// Fantasy's share of the blend with Classic, 0–100.
 	fantasyBlend: number;
-	// Only the rules a user changed; the rest keep the analyst's defaults.
 	fantasyScoring: Partial<Record<FantasySport, Partial<Record<string, number>>>>;
-	// Only leagues the user has changed are stored; a missing league uses its default.
 	collegeFilters: CollegeFilterMap;
 }
 
 export type CollegeLeagueId = Extract<LeagueId, 'ncaaf' | 'ncaab' | 'ncaaw' | 'ncaamh' | 'cbase' | 'csoft'>;
 
-// A game passes if it matches any one of these.
 export interface CollegeFilter {
 	divisions: string[];
 	conferences: string[];
 	ranked: boolean;
-	// The national tournament's later rounds get through whatever else is picked.
 	titleRounds: boolean;
 }
 
@@ -420,7 +280,6 @@ export interface ConferenceEntry {
 	name: string;
 	shortName: string;
 	divisionKey: string;
-	// The CDN file name, e.g. `sec` for `ncaa_conf/500/sec.png`, when we know of one.
 	crestSlug?: string;
 }
 
@@ -428,9 +287,7 @@ export interface ConferenceDirectory {
 	leagueId: CollegeLeagueId;
 	seasonYear: number;
 	conferences: ConferenceEntry[];
-	// Team id → conference id, for leagues whose scoreboard leaves out conferenceId.
 	teamConference: Record<string, string>;
-	// Team id → division key, for football, where a favorite can sit outside every division fetched.
 	teamDivision: Record<string, string>;
 	fetchedAt: number;
 }
@@ -442,7 +299,6 @@ export interface TabRegistration {
 
 export type LeagueLogoMap = Partial<Record<LeagueId, string>>;
 
-// The first and last moments a league has games scheduled, both empty when ESPN sent no calendar.
 export interface LeagueSchedule {
 	startsAt?: number;
 	endsAt?: number;
@@ -450,15 +306,11 @@ export interface LeagueSchedule {
 
 export type LeagueScheduleMap = Partial<Record<LeagueId, LeagueSchedule>>;
 
-// ESPN's two monochrome marks for a team. They are drawn as a pair — of 916 teams sampled across
-// six leagues, 453 have both and not one has only one of them — so a team either has this or has
-// nothing, and a team with nothing keeps the tinted disc.
 export interface TeamMonoMarks {
 	white?: string;
 	black?: string;
 }
 
-// Team id to those marks, per league.
 export type TeamMonoLogoMap = Partial<Record<LeagueId, Record<string, TeamMonoMarks>>>;
 export type ScoreHistoryMap = Record<string, ScoreSnapshot[]>;
 
@@ -478,19 +330,15 @@ export interface PowerScoreSnapshot {
 	gameBoost?: number;
 	scoringOpportunityBoost?: number;
 	postseasonBoost?: number;
-	// Absent on a snapshot from before commercial breaks were detected.
 	onBreak?: boolean;
 	breakPenalty?: number;
 	reason: string;
-	// PowerScore 3. Absent on a snapshot from before modes, which is then Classic.
 	modeId?: string;
 	signals?: Record<string, number>;
 	boosts?: Record<string, number>;
 	reasons?: ReasonFragment[];
 }
 
-// The full PowerScore 3 picture of a score: which mode scored it, every signal and boost as a list,
-// and the reasons as keys a translation can read.
 export interface ScoreBreakdown {
 	modeId: string;
 	signals: ScoredSignal[];
@@ -499,14 +347,11 @@ export interface ScoreBreakdown {
 	frozen: boolean;
 	scaledSubtotal: number;
 	signalCeiling: number;
-	// Classic's total when the mode blends with it or uses it as a floor.
 	classicTotal?: number;
 	blend?: BlendResult;
 	rivalry?: RivalryResult;
 }
 
-// What the background hands the popup: the flat 2.x fields every screen already reads, plus the
-// breakdown the mode-aware ones read.
 export interface LiveScore extends PowerScoreResult {
 	breakdown?: ScoreBreakdown;
 }
@@ -524,13 +369,8 @@ export interface BackgroundState {
 	gameBoosts: Record<string, number>;
 	onStandbyStream: boolean;
 	standbyStreamTabId: number | null;
-	// Leagues ESPN refused on the last slate fetch. An empty slate alongside a non-empty list here
-	// is a slate we cannot vouch for, which the popup reports as a failure rather than as no games.
 	slateShedLeagues: LeagueId[];
-	// When each league last answered a poll, in epoch milliseconds, so a card whose league is in
-	// `slateShedLeagues` can say how old its score is.
 	leagueLastGoodAt: LeagueLastGoodAt;
-	// The switch content-aware switching is holding, and whose break in play it waits for.
 	heldSwitch: { gameId: string; sport: PlayBreakSport } | null;
 }
 
@@ -571,50 +411,36 @@ export interface SetStandbyStreamTabMessage {
 
 export interface MultiviewBox {
 	gameId: string;
-	// The registered tab's address when the box was made. A box never chases a later change, since
-	// pointing an iframe somewhere new reloads the stream.
 	url: string;
 }
 
 export interface MultiviewLineup {
-	// In the order they joined, which is the order the rail fills.
 	boxes: MultiviewBox[];
-	// The game in the big box, which is the only one with sound.
 	featuredGameId: string | null;
-	// Only the featured box is on screen. The others keep playing out of sight in case their games come back.
 	solo: boolean;
 	games: Game[];
 }
 
-// Asked by the Multiview page, which gets null back if it is not the tab Multiview opened.
 export interface GetMultiviewMessage {
 	type: 'GET_MULTIVIEW';
 }
 
 export interface MultiviewUpdatedMessage extends MultiviewLineup {
 	type: 'MULTIVIEW_UPDATED';
-	// Every extension page hears it, so a Multiview page left over from an earlier session can tell it is not the one meant.
 	tabId: number;
 }
 
-// The page's games whose stream is playing, sent whenever that set changes.
 export interface MultiviewReadyMessage {
 	type: 'MULTIVIEW_READY';
 	gameIds: string[];
 }
 
-// From the script in every frame under the Multiview page to the page itself. The reply says
-// whether that frame should be muted.
 export interface MultiviewFrameStatusMessage {
 	type: 'MULTIVIEW_FRAME_STATUS';
-	// The box's own frame carries its game id as its name. Frames nested inside it have to be traced
-	// up to it instead.
 	name: string;
 	firstLevel: boolean;
-	// Where the frame is now, which a site can move it away from after the box loads it.
 	href: string;
 	playing: boolean;
-	// Stopped by the player or the viewer, as opposed to waiting on data with its clock stuck.
 	paused: boolean;
 	time: number;
 }
@@ -632,30 +458,20 @@ export interface GetDebugStateMessage {
 	type: 'GET_DEBUG_STATE';
 }
 
-// The guide draws today's whole slate, including finals, whatever the popup's display preferences
-// say. refreshSlate discards `pre` games when showUpcomingGames is off and `post` games when
-// keepFinalGames is off, and tickLeague evicts anything extra within one poll, so the guide fetches
-// for itself rather than reading GET_STATE.
 export interface GetGuideSlateMessage {
 	type: 'GET_GUIDE_SLATE';
-	// Set only by the Guide's own Retry button, which skips the wait a refusal puts on asking again.
 	force?: boolean;
 }
 
 export interface GuideSlate {
 	games: Game[];
-	// Our sources refused to answer and there is nothing held to show instead, so an empty `games`
-	// is not a quiet day.
 	refused?: boolean;
 	leagueLogos: LeagueLogoMap;
 	monoLogos: TeamMonoLogoMap;
 	gameBoosts: Record<string, number>;
-	// Game id to the moment it ended, for the finals whose end is actually known. Everything else is
-	// still drawn at its estimate.
 	endTimes: Record<string, number>;
 }
 
-// Sent when end times land after the slate already went back, so an open guide asks again.
 export interface GuideSlateUpdatedMessage {
 	type: 'GUIDE_SLATE_UPDATED';
 }

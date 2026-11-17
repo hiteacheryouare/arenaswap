@@ -7,8 +7,6 @@ const noop = () => {};
 
 export const everyLeague = Object.keys(leagueConfigMap) as LeagueId[];
 
-// Every control in its busiest state: all leagues on, Fantasy scoring, the longest explainers
-// showing, and a bare URL where the Boss Button's decoy goes.
 export const busyPrefs: UserPreferences = {
 	...createDefaultUserPreferences(),
 	enabledLeagues: everyLeague,

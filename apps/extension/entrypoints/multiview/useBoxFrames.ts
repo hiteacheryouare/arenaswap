@@ -14,12 +14,8 @@ interface frameState {
 	paused: boolean;
 }
 
-// How long a stream can sit with its clock stuck before its box goes back off air.
 export const stallMs = 3000;
 
-// The games whose picture shows rather than the off-air card. A paused player stays on show, so
-// whatever it paused for (a "still watching?" prompt) is not hidden. A frame that stops reporting
-// has gone, and counts for nothing.
 const onAirAt = (frames: ReadonlyMap<number, frameState>, gameByFrameId: ReadonlyMap<number, string>, now: number) => {
 	const onAir = new Set<string>();
 	for (const [frameId, frame] of frames) {
@@ -32,9 +28,6 @@ const onAirAt = (frames: ReadonlyMap<number, frameState>, gameByFrameId: Readonl
 
 const sameIds = (a: ReadonlySet<string>, b: ReadonlySet<string>) => a.size === b.size && [...a].every(id => b.has(id));
 
-// Read off the reports the frame script sends from every frame in this tab: which boxes have ever
-// had a stream play, which are playing now, where each box's own frame has got to, and which box
-// the sound belongs to, answered back on each report.
 export default (tabId: number | null, boxedIds?: readonly string[]) => {
 	const [readyIds, setReadyIds] = useState<ReadonlySet<string>>(() => new Set());
 	const [onAirIds, setOnAirIds] = useState<ReadonlySet<string>>(() => new Set());
@@ -46,7 +39,6 @@ export default (tabId: number | null, boxedIds?: readonly string[]) => {
 	useEffect(() => {
 		if (tabId === null) return;
 
-		// A box's own frame is named for its game. A player frame nested inside it is traced up to that one.
 		const resolveGame = async (frameId: number, status: MultiviewFrameStatusMessage): Promise<string | undefined> => {
 			const known = gameByFrameId.current.get(frameId);
 			if (known) return known;
@@ -78,7 +70,6 @@ export default (tabId: number | null, boxedIds?: readonly string[]) => {
 				if (message.firstLevel) setHrefs(current => (current.get(gameId) === message.href ? current : new Map([...current, [gameId, message.href]])));
 				const now = Date.now();
 				const previous = frames.current.get(frameId);
-				// Playing is not enough: a player stuck on a spinner reports playing with a clock that never moves.
 				const advanced = message.playing && previous !== undefined && message.time > previous.time;
 				frames.current.set(frameId, { reportedAt: now, time: message.time, advancedAt: advanced ? now : previous?.advancedAt, paused: message.paused });
 				if (advanced) setReadyIds(ready => (ready.has(gameId) ? ready : new Set([...ready, gameId])));

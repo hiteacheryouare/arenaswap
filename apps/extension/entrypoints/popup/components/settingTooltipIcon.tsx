@@ -4,8 +4,6 @@ import { i18n } from '#i18n';
 
 interface settingTooltipIconProps {
 	text: string;
-	// The setting the explainer is about, so the button reads "About Switch cooldown" rather than
-	// the whole explainer, which Bootstrap also hangs on it as a description.
 	label?: string;
 }
 

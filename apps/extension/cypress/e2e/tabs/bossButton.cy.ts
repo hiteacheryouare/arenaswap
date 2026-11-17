@@ -1,9 +1,6 @@
 import { expectHealthyBackground, openPopup, play, startExtension, world } from '../../support/liveExtension';
 import { gameIds, slate, storedPrefs } from '../../support/liveGames';
 
-// The boss button pressed on the shipped worker while a game is on: what hides, what stays hidden
-// while the games carry on, and what comes back when the user turns ArenaSwap on again.
-
 const wnbaTab = 2;
 const nhlTab = 3;
 const decoyUrl = 'https://docs.test/budget';
@@ -46,7 +43,6 @@ describe('the boss button', () => {
 		gameTabsMuted(true);
 		storedEnabled().should('equal', false);
 
-		// The Liberty tie it up while the boss is still standing there. Nothing moves.
 		world().then(live => { live.events = slate({ wnba: { home: 79, away: 79 }, nhl: { clock: 210 } }); });
 		play(60_000);
 		watching(900);

@@ -3,13 +3,9 @@ import SwitchDelaySlider from '../../../entrypoints/popup/components/switchDelay
 
 // The digits-only face is fetched on first use, so it is asked for outright rather than awaited.
 const figuresLoaded = () => cy.document().then(doc => doc.fonts.load('600 10px "Geist Figures"', '0123456789'));
-// The label group holds the label and its tooltip icon, beside the value.
 const labelGroupOf = (id: string) => cy.get(`label[for="${id}"]`).parent();
 
-
 describe('the seconds sliders', () => {
-	// DM Sans has no tabular figures, so "15s" and "45s" used to differ by a few pixels and the
-	// value label jittered as the thumb moved.
 	it('holds the value label at one width while the digits change', () => {
 		cy.mount(<CooldownSlider value={15} onChange={() => {}} />);
 		figuresLoaded();

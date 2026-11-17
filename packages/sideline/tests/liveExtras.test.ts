@@ -22,7 +22,6 @@ const clone = <T>(value: T): T => structuredClone(value);
 
 const classic = (game: Game, context = {}) => scoreGame(toScoringGame(game), context, { mode: 'classic' });
 
-// The Yankees at the Rays, ALDS Game 1, recorded live with New York still hitless.
 const mlbEvent = (edit: (competition: Json) => void = () => {}): Game => {
 	const raw = clone(mlbScoreboard) as Json;
 	edit(raw.events[0].competitions[0]);
@@ -110,8 +109,6 @@ describe('a live no-hit bid, from the recorded scoreboard', () => {
 	});
 });
 
-// Inter Miami at Columbus, 2026-09-27: Miami's Santiago Morales was sent off at 90'+6' with the
-// score 1-1, and Columbus won it at 90'+8'.
 const mlsEvent = (edit: (competition: Json) => void = () => {}): Game => {
 	const raw = clone(mlsScoreboard) as Json;
 	edit(raw.events[0].competitions[0]);
@@ -234,7 +231,6 @@ describe('the pregame line from the summary', () => {
 
 const box = nbaBoxScores as Json;
 
-// Miami at Toronto, NBA preseason. The box score's count went 2 → 3 between the first two polls.
 const nbaGame = {
 	id: '401902644',
 	league: 'nba',
@@ -332,8 +328,6 @@ describe('the basketball situation', () => {
 		});
 	});
 
-	// The away side running out of fouls to give is what puts the home side in the bonus, so the
-	// flag sits on the team that shoots, not on the team that fouled.
 	test('puts the bonus on the side that shoots the free throws', () => {
 		const situation = readBasketballSituation(basketball.homeInBonus.raw)!;
 		expect(situation.home.bonus).toBe('double');
@@ -349,8 +343,6 @@ describe('the basketball situation', () => {
 		});
 	});
 
-	// Inside the last minutes the league caps what a team may still call, and the current count is
-	// the one that says so: the away side had four left a moment earlier without calling one.
 	test('reads the timeouts a team can still call, not the ones it has not used', () => {
 		expect(readBasketballSituation(basketball.lastMinutes.raw)).toMatchObject({ home: { timeoutsLeft: 1 }, away: { timeoutsLeft: 2 } });
 	});
@@ -437,7 +429,6 @@ describe('basketball timeouts on the cards', () => {
 		expect(stamped.awayTeam.timeouts).toBe(7);
 	});
 
-	// The popup is told only when a timeout is called, not on every reply.
 	test('a reply with the same timeouts reports nothing moved', () => {
 		const extras = createLiveExtras();
 		extras.ingestSituation(nbaGame.id, basketball.homeInBonus.raw);

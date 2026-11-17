@@ -8,8 +8,6 @@ import UntranslatedNotice from '../../../../components/UntranslatedNotice.astro'
 import { defaultLocale, localePath, localeRoutesFor } from '../../../../i18n/locales';
 import { useTranslations } from '../../../../i18n/ui';
 
-// One article, one URL per locale. Drafts are excluded from the route table, so a draft is a 404
-// rather than a page nothing links to. Each locale's page swaps in its translation where one exists.
 export const getStaticPaths = async () => {
 	const originals = await getOriginals('docs');
 
@@ -24,7 +22,6 @@ const { entry: page, translated } = await localizeEntry('docs', original, locale
 const { title, description, faq } = page.data;
 const section = page.data.section as DocsSection;
 const t = useTranslations(locale);
-// Structured data describes the copy the canonical points at: this translation, or the English.
 const metaLocale = translated ? locale : defaultLocale;
 const sectionMeta = docsSectionCopy(useTranslations(metaLocale), section);
 const contentLang = translated ? undefined : 'en';
@@ -32,16 +29,12 @@ const path = docPath(page);
 
 const { Content } = await render(page);
 
-// Previous and next inside this section only. Walking from the last extension article into the
-// first PowerScore one would hand a reader documentation for a package they never asked about.
 const siblings = await getSectionDocs(section, locale);
 const index = siblings.findIndex(sibling => sibling.original.id === original.id);
 const previous = siblings[index - 1];
 const next = siblings[index + 1];
 
 const site = Astro.site ?? new URL('https://hiteacheryouare.github.io');
-// An untranslated article describes the English one, which its canonical points at. Twelve URLs
-// claiming to be twelve distinct articles would be twelve claims about the same piece of writing.
 const url = new URL(localePath(metaLocale, path), site).href;
 
 const structuredData: Record<string, unknown>[] = [

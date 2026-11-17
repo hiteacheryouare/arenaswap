@@ -96,8 +96,6 @@ describe('scoring settings read back from sync storage', () => {
 		expect(prefs.fantasyScoring).toEqual({ football: { passingTouchdowns: 6, receptions: 0.5 } });
 	});
 
-	// The scorer clamps an out-of-range rule to its bound, while the prefs reader throws it away and
-	// so lands on the default instead. Pinned so a change to either one is a decision, not a drift.
 	test('discards an out-of-range rule outright rather than clamping it to the bound', () => {
 		const prefs = normalizeUserPreferences({ fantasyScoring: { football: { passingTouchdowns: 12 } } });
 		expect(prefs.fantasyScoring).toEqual({});
@@ -135,7 +133,6 @@ describe('a fantasy roster read back from storage', () => {
 		expect(normalizeFantasyRoster(undefined)).toEqual([]);
 	});
 
-	// Our sources number teams per league, so the same id is a different club in another sport.
 	test('matches a player to a game by league as well as team id', () => {
 		const roster = normalizeFantasyRoster([entry('wr', { teamId: '11' }), entry('pg', { league: 'nba', teamId: '11', position: 'player' })]);
 		expect(rosterInGame(roster, nflOneScore).map(player => player.athleteId)).toEqual(['wr']);

@@ -2,8 +2,6 @@ import { goAheadRunTunables } from '../constants';
 import { baseMask, isBaseball, isLive, none, ramp, runnersOn } from './shared';
 import type { BoostDefinition, ReasonFragment } from '../types';
 
-// On top of the runner count: the batting team has the go-ahead run on base (tied with anyone on,
-// down one with two on, down two with the bases loaded), or failing that the tying run on base.
 export const goAheadRunBoost: BoostDefinition = {
 	id: 'goAheadRun',
 	bucket: 'moment',
@@ -24,11 +22,7 @@ export const goAheadRunBoost: BoostDefinition = {
 			? 1
 			: inning < curve.regulationStartInning
 				? goAheadRunTunables.earlyFactor
-				// Climbs to full value in the last inning, with leverage: a 7th-inning chance shouldn't
-				// outrank a late drive elsewhere.
 				: goAheadRunTunables.earlyFactor + (1 - goAheadRunTunables.earlyFactor) * ramp(inning, curve.regulationStartInning, curve.regulationInnings);
-		// The last chance: the home team's go-ahead run is the winning run, and a trailing road team
-		// may not bat again.
 		const lastChance = inning >= curve.regulationInnings && (battingHome || deficit > 0);
 		const team = (battingHome ? game.homeTeam : game.awayTeam).abbreviation ?? '?';
 		const goAhead = base === goAheadRunTunables.goAhead;

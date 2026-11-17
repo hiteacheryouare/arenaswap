@@ -25,7 +25,6 @@ const score = (home: number, away: number) => ({ homeTeam: { id: 'h', name: 'Hom
 
 const atBat = (batter: string, pitcher = 'p1') => ({ batter: { id: batter, name: batter }, pitcher: { id: pitcher, name: pitcher } });
 
-// The background worker's loop while a switch waits: one fresh poll of the game being left at a time.
 const replay = (first: Game, polls: [seconds: number, game: Partial<Game>][], entry: CommercialBreakEntry = quiet): { seconds: number; verdict: HoldVerdict } | undefined => {
 	let held = holdSwitch(target, first, entry, start);
 	if (!held) return undefined;

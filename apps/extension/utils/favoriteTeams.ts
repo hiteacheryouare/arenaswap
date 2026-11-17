@@ -10,9 +10,6 @@ export interface favoriteTeamRow {
 	isTracked: boolean;
 }
 
-// The picker offers the leagues being tracked, but a favorite outlives its league being switched
-// off. Those leagues are fetched too, purely so what is already saved can still be named and
-// un-starred — otherwise the only way to drop one would be to re-enable the league first.
 export const leaguesForFavoritePicker = (
 	enabledLeagues: readonly LeagueId[],
 	favoriteTeamIds: readonly string[],
@@ -34,9 +31,6 @@ export const matchesTeamQuery = (team: EspnTeamEntry, query: string): boolean =>
 		|| foldForSearch(team.abbreviation ?? '').includes(needle);
 };
 
-// A stored key with no team behind it — a league whose fetch failed, or a team ESPN has since
-// dropped — is left out rather than rendered as its raw id, which would name nothing anyone
-// could act on. Untracked favorites sort last so the inert ones read as a tail.
 export const favoriteTeamRows = (
 	teams: readonly EspnTeamEntry[],
 	favoriteTeamIds: ReadonlySet<string>,

@@ -33,8 +33,6 @@ const mount = (dayNamedAbove?: boolean) => {
 	);
 };
 
-// Up Next pages by day, and the pager above the cards already says which one, so a card under it
-// repeating "Mon, Oct 5" is the same fact twice in a column that has 80px to spare.
 describe('pre-game card start time', () => {
 	it('shows the time alone under a pager that names the day', () => {
 		mount(true);

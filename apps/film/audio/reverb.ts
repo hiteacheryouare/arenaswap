@@ -30,7 +30,6 @@ const tickAllpass = (allpass: Allpass, input: number): number => {
 	return delayed - diffusion * written;
 };
 
-// In-place 8-point fast Walsh-Hadamard transform: an orthogonal, lossless mixing matrix for the network.
 const hadamard = (values: Float64Array): void => {
 	for (let width = 1; width < 8; width <<= 1) {
 		for (let block = 0; block < 8; block += width << 1) {
@@ -45,8 +44,6 @@ const hadamard = (values: Float64Array): void => {
 	for (let i = 0; i < 8; i++) values[i] *= Math.SQRT1_2 / 2;
 };
 
-// Eight-line feedback delay network: diffused stereo input, gently modulated lines so the tail does
-// not ring metallic, a one-pole in every loop so highs die before lows, and per-line gains set from RT60.
 const renderReverb = (input: Stereo, sampleRate: number, options: ReverbOptions): Stereo => {
 	const length = input.left.length;
 	const output = createStereo(length);

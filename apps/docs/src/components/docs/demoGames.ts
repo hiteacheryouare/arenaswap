@@ -1,10 +1,6 @@
 import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { Game, LeagueId, PowerScoreResult } from '@arenaswap/core/types';
 
-// One evening of games shared by every help-article demo, so the popup, the card, the breakdown, the
-// notification and the tab strip all describe the same night. The Celtics and Knicks game is the one
-// ArenaSwap is on: its signals are the breakdown's, and a 5-point Game Boost takes it from 85 to 90.
-
 const espnTeamLogo = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
 
 export interface DemoEntry {
@@ -52,7 +48,6 @@ export const flyersPenguins: DemoEntry = {
 	tabHost: 'max.com',
 };
 
-// Soccer lists the host first, so Arsenal is on the left.
 export const arsenalChelsea: DemoEntry = {
 	game: {
 		id: 'demo-epl',
@@ -89,7 +84,6 @@ export const arizonaPurdue: DemoEntry = {
 	tabHost: 'foxsports.com',
 };
 
-// Ranked by PowerScore, the way the popup lists them.
 export const liveEntries: DemoEntry[] = [celticsKnicks, flyersPenguins, arsenalChelsea];
 
 // A date-time with no offset is read as local time, so the card prints 4:25 PM wherever the site is built.
@@ -119,5 +113,4 @@ export const michiganOhioState: Game = {
 	homeTeam: { id: '194', name: 'Ohio State Buckeyes', abbreviation: 'OSU', score: 27, logo: espnTeamLogo('ncaa/500/194'), color: '#BB0000', alternateColor: '#666666' },
 };
 
-// The league mark drawn for a dark ground, which is what a tab strip and a card's tab picker both are.
 export const leagueFavicon = (league: LeagueId) => resolveLeagueLogoUrl(league, undefined, 'dark');

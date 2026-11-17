@@ -15,12 +15,9 @@ interface startCountdownDisplayProps {
 interface segment {
 	value: number;
 	unit: string;
-	// Trailing segments hold two digits so the row does not reflow as values cross 9.
 	padded: boolean;
 }
 
-// Owns `useStartCountdown` rather than taking parts as a prop so a tick re-renders these few
-// spans and leaves the hero, the breakdown and the four ECharts canvases untouched.
 const startCountdownDisplay = ({ startTime, sportType }: startCountdownDisplayProps) => {
 	const parts = useStartCountdown(startTime);
 	const [startsSoonMessage] = useState(() => getRandomStartsSoonMessage(sportType));

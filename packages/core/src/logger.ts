@@ -1,7 +1,3 @@
-// Every swallowed failure routes through here so the policy for what reaches the console lives in
-// one place. Left on by default: a warning in a user's console is what makes a bug report
-// actionable. Call `setVerboseLogging(false)` to silence it.
-
 const prefix = 'ArenaSwap:';
 
 // Jest sets NODE_ENV=test, so runs start quiet without every suite opting out — which matters

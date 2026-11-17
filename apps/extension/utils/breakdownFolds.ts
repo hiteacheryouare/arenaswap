@@ -1,5 +1,3 @@
-// `localStorage` rather than `storage.local`, like the open reveal's day stamp: a section reads it as
-// it mounts, and an async read would paint it open and then snap it shut.
 export const breakdownFoldsKey = 'arenaswap.breakdownCollapsed';
 
 export type breakdownSectionId = 'signals' | 'general' | 'sport';

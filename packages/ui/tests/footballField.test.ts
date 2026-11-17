@@ -14,8 +14,6 @@ import {
 	yardNumbers,
 } from '../src/components/footballField';
 
-// Philadelphia at home, Dallas away, which puts yardLine 0 on the Eagles' own goal line and 100 on
-// the Cowboys'. Every fixture below overrides only the situation.
 const makeGame = (overrides: Partial<Game> = {}): Game => ({
 	id: 'g1',
 	league: 'nfl',
@@ -32,8 +30,6 @@ const makeGame = (overrides: Partial<Game> = {}): Game => ({
 });
 
 describe('yardLineToX', () => {
-	// The strip is 120 yards wide with the away end zone first, so the home goal line — yardLine 0 —
-	// lands at the far end.
 	test('puts the away goal line at 10 and the home goal line at 110', () => {
 		expect(yardLineToX(100)).toBe(10);
 		expect(yardLineToX(0)).toBe(110);
@@ -68,8 +64,6 @@ describe('acrossToY', () => {
 });
 
 describe('resolveHashRows', () => {
-	// 70'9" from each sideline in the NFL and 60'0" in college, which leaves the pro rows 18'6"
-	// apart — the width of the uprights — and the college ones 40'.
 	test('sets the college rows more than twice as far apart as the professional ones', () => {
 		const [nflTop, nflBottom] = resolveHashRows('nfl');
 		const [collegeTop, collegeBottom] = resolveHashRows('ncaaf');
@@ -85,7 +79,6 @@ describe('resolveHashRows', () => {
 		}
 	});
 
-	// The UFL and anything else ESPN starts sending falls back rather than losing its hash rows.
 	test('falls back to the professional rows for a league it has never seen', () => {
 		expect(resolveHashRows('xfl')).toEqual(resolveHashRows('nfl'));
 	});
@@ -103,7 +96,6 @@ describe('buildHashPath', () => {
 		});
 
 	test('paints every yard that has no line on it already, in both rows', () => {
-		// 99 yards inside the field of play, less the 19 that carry a five-yard line, twice over.
 		expect(marks).toHaveLength(160);
 		expect(new Set(marks.map(mark => mark.y))).toEqual(new Set(rows));
 	});
@@ -111,7 +103,6 @@ describe('buildHashPath', () => {
 	test('runs each mark lengthwise, 24 inches long and straddling its yard', () => {
 		expect(new Set(marks.map(mark => mark.length))).toEqual(new Set([hashLength]));
 		expect(hashLength).toBeCloseTo(2 / 3, 6);
-		// Centred on the yard rather than starting at it, so the marks stay evenly pitched.
 		expect(marks.map(mark => mark.x + hashLength / 2)).toContain(11);
 		expect(marks.map(mark => mark.x + hashLength / 2)).toContain(109);
 	});
@@ -203,18 +194,12 @@ describe('resolveFieldDiagram', () => {
 		});
 	});
 
-	// At 2.4px to the yard the line to gain and the goal line are the same pixel column, so a
-	// goal-to-go snap is not a choice between one line and two — it is a choice about what colour
-	// that column is. Drawing the line at the clamped goal line paints it yellow, which is the
-	// broadcast's result without a special case anywhere in the renderer.
 	describe('the line to gain', () => {
 		test('sets it ahead of the ball in the direction the offense is moving', () => {
-			// 3rd & 5 from the home team's own 30: the line to gain is their own 35, five yards left.
 			const home = resolveFieldDiagram(makeGame({ yardLine: 30, distance: 5, down: 3, possessionTeamId: 'phi' }))!;
 			expect(home.firstDownX).toBe(75);
 			expect(home.firstDownX!).toBeLessThan(home.ballX);
 
-			// 2nd & 8 from the away team's own 45, which is five yards the other way.
 			const away = resolveFieldDiagram(makeGame({ yardLine: 55, distance: 8, down: 2, possessionTeamId: 'dal' }))!;
 			expect(away.firstDownX).toBe(63);
 			expect(away.firstDownX!).toBeGreaterThan(away.ballX);
@@ -232,15 +217,12 @@ describe('resolveFieldDiagram', () => {
 			}))!.firstDownX).toBe(110);
 		});
 
-		// A penalty makes it 1st & 25 and a sack 2nd & 23, so nothing here may assume ten.
 		test('handles a distance well past ten', () => {
 			expect(resolveFieldDiagram(makeGame({
 				yardLine: 17, distance: 25, down: 1, possessionTeamId: 'phi',
 			}))!.firstDownX).toBe(68);
 		});
 
-		// The snap gate lets a zero distance through, and there is no line to draw for it: the line
-		// to gain would land on the ball, which reads as a marker rather than as a target.
 		test('draws no line when there is no distance left to gain', () => {
 			expect(resolveFieldDiagram(makeGame({
 				yardLine: 30, distance: 0, down: 1, possessionTeamId: 'phi',
@@ -251,8 +233,6 @@ describe('resolveFieldDiagram', () => {
 			expect(resolveFieldDiagram(makeGame({ yardLine: 30, distance: 5 }))!.firstDownX).toBeNull();
 		});
 
-		// The ball is drawn at a yard line of 0 — an offense backed up onto its own goal line, which
-		// is where a safety comes from — so the line to gain has to be too.
 		test('still draws a line with the ball on the goal line', () => {
 			const diagram = resolveFieldDiagram(makeGame({
 				yardLine: 0, distance: 10, down: 1, possessionTeamId: 'phi',
@@ -261,9 +241,6 @@ describe('resolveFieldDiagram', () => {
 			expect(diagram.firstDownX).toBe(100);
 		});
 
-		// ESPN converts a first down that would land inside the end zone into goal-to-go itself, so
-		// this is insurance rather than a state anyone has seen. Without the clamp the line is drawn
-		// outside the viewBox, where the SVG quietly clips it away and it reads as missing data.
 		test('holds the line at the goal line rather than losing it off the field', () => {
 			expect(resolveFieldDiagram(makeGame({
 				yardLine: 92, distance: 10, down: 1, possessionTeamId: 'phi',
@@ -273,7 +250,6 @@ describe('resolveFieldDiagram', () => {
 
 	describe('the drive bar', () => {
 		test("measures a home drive as the ground it has taken toward the away end zone", () => {
-			// Stanford's real 11-play, 69-yard drive: their own 25 to the opponent's 6.
 			const diagram = resolveFieldDiagram(makeGame({
 				yardLine: 94, driveStartYardLine: 25, possessionTeamId: 'phi',
 			}))!;
@@ -348,7 +324,6 @@ describe('resolveFieldFrame', () => {
 		expect(resolveFieldFrame(afterScore, frame)).toBeNull();
 	});
 
-	// The Guide drawer reuses one strip across games, and another game can be dead at the same spot.
 	test('never holds one game\'s frame for another game at the same yard line', () => {
 		const otherGame = { ...makeGame({ yardLine: 62, down: 0, distance: 0, fieldPosition: undefined }), id: 'another-game' };
 		expect(resolveFieldFrame(otherGame, frame)).toBeNull();
@@ -359,8 +334,6 @@ describe('resolveFieldFrame', () => {
 		expect(resolveFieldFrame(timeout, null)).toBeNull();
 	});
 
-	// The component writes this back into a ref during render, so feeding it its own output has to
-	// be a no-op or a second pass would drift.
 	test('is idempotent, so writing the result back during render is safe', () => {
 		expect(resolveFieldFrame(live, frame)).toEqual(frame);
 		const timeout = makeGame({ yardLine: 62, down: 0, distance: 0, fieldPosition: undefined });

@@ -10,16 +10,12 @@ import { hockeyScoringOpportunity, hockeyScoringOpportunityDetails } from './hoc
 import { baseMask, runnersOn } from './shared';
 import type { BoostDefinition, Game, ReasonFragment, SignalInput, SportTypeConfig } from '../types';
 
-// An unknown down (between plays, or a feed that doesn't report one) falls through to `other`, so a
-// missing field costs the boost its bonus rather than the whole thing.
 const getRedZoneDownMultiplier = (game: Game<string>): number => {
 	if (game.down === 4) return game.isGoalToGo ? redZoneDownMultipliers.fourthDownGoalToGo : redZoneDownMultipliers.fourthDown;
 	if (game.down === 3 && typeof game.distance === 'number' && game.distance <= thirdAndShortDistance) return redZoneDownMultipliers.thirdAndShort;
 	return redZoneDownMultipliers.other;
 };
 
-// Gated on the margin because closeness and lateGame have already scored a blowout correctly low,
-// and an unconditional +10 on top would undo that.
 const getRedZoneBoost = (game: Game<string>, sport: SportTypeConfig, margin: number): number => {
 	const [, t2, t3] = sport.closenessMargins;
 	const base = margin <= t2 ? scoringOpportunityRedZoneBoost : margin <= t3 ? scoringOpportunityRedZoneFringeBoost : 0;
@@ -30,8 +26,6 @@ const getRedZoneBoost = (game: Game<string>, sport: SportTypeConfig, margin: num
 export const computeScoringOpportunity = (input: SignalInput): number => {
 	const { game, sport, margin } = input;
 	if (game.status !== 'in') return 0;
-	// A freeze holds the situation in place (runners stay on base, the offense stays in the red
-	// zone), so the boost would otherwise keep paying out while nothing can happen.
 	if (isPlayFrozen(game)) return 0;
 	if (game.sportType === 'baseball' || game.sportType === 'softball') {
 		const r = game.baseRunners;
@@ -44,7 +38,6 @@ export const computeScoringOpportunity = (input: SignalInput): number => {
 	return 0;
 };
 
-// Indexed by baseMask.
 const baseKeys = [
 	'basesEmpty',
 	'runnerFirst',
@@ -62,7 +55,6 @@ const redZoneKey = (game: Game<string>): string => {
 	return 'redZone';
 };
 
-// Says nothing when the boost has nothing to read: a game not yet live, or play stopped.
 const scoringOpportunityDetails = (input: SignalInput, points: number): ReasonFragment[] => {
 	const { game } = input;
 	if (game.status !== 'in' || isPlayFrozen(game)) return [];

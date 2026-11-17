@@ -78,7 +78,6 @@ describe('liveGameCard PowerScore bar', () => {
 	});
 });
 
-// `rerender` mounts afresh, so the new score is pushed from inside the tree.
 const ScoreHarness = () => {
 	const [total, setTotal] = useState(42);
 	return (
@@ -147,8 +146,6 @@ describe('liveGameCard inning half indicator', () => {
 	});
 });
 
-// ESPN freezes a shootout match's score at the 120-minute scoreline and reports period 5, so
-// without the secondary readout the card would sit on "1 – 1" while the tie is being decided.
 describe('liveGameCard penalty shootout', () => {
 	const shootoutGame: Game = {
 		...baseGame,
@@ -181,7 +178,6 @@ describe('liveGameCard penalty shootout', () => {
 		cy.get('.game-shootout-score').should('not.exist');
 	});
 
-	// The tally line already reads "PENS 3–5", so a period label above it would print PENS twice.
 	it('drops the period label while the tally is showing, so PENS appears once', () => {
 		cy.mount(<LiveGameCard {...defaultProps} game={shootoutGame} />);
 		cy.get('.game-period').should('not.exist');
@@ -253,9 +249,6 @@ describe('liveGameCard balls/strikes/outs', () => {
 		bso: { balls: 1, strikes: 1, outs: 1 },
 	};
 
-	// Both halves of the count are drawn in the ink the middle of the card takes, so neither can
-	// vanish into a team colour; lit and unlit differ by opacity. `bi-circle` is a hairline ring, so
-	// the unlit half is not allowed to fade far.
 	it('draws the count in the card ink, unlit dots at a reduced opacity', () => {
 		cy.mount(<LiveGameCard {...defaultProps} game={mlbGame} />);
 		cy.get('.bso-dot.is-empty').should('have.length', 4);
@@ -289,8 +282,6 @@ describe('liveGameCard team rank', () => {
 	});
 
 	it('draws nothing for an unranked team', () => {
-		// 99 is ESPN's code for unranked and never reaches the card — parseCuratedRank drops it —
-		// so an unranked side arrives here as an absent field rather than as a number.
 		cy.mount(<LiveGameCard {...defaultProps} game={{
 			...baseGame,
 			homeTeam: { ...baseGame.homeTeam, rank: 5 },
@@ -328,8 +319,6 @@ describe('liveGameCard timeout dots', () => {
 		cy.get('.timeout-dots').last().should('have.attr', 'aria-label', 'HOM: 2 timeouts left');
 	});
 
-	// It used to read "1 timeouts left". Checked through both translators: the extension's, which
-	// reads the locale's plural object, and the one the website falls back to.
 	it('says one timeout, not one timeouts', () => {
 		cy.mount(<LiveGameCard {...defaultProps} game={withTimeouts(1, 3)} />);
 		cy.get('.timeout-dots').last().should('have.attr', 'aria-label', 'HOM: 1 timeout left');
@@ -342,7 +331,6 @@ describe('liveGameCard timeout dots', () => {
 		cy.get('.timeout-dots').first().should('have.attr', 'aria-label', 'AWY: 0 timeouts left');
 	});
 
-	// Past four the row draws a size down, so the NBA's seven fit under a tricode.
 	it('draws the NBA\'s seven a size down, inside each team column', () => {
 		cy.viewport(320, 560);
 		cy.mount(
@@ -381,7 +369,6 @@ describe('liveGameCard timeout dots', () => {
 		cy.get('.team-column.is-home .timeout-dot.is-empty').should('have.length', 1);
 	});
 
-	// Past seven a row would no longer fit, and one silently clipped would misreport the count.
 	it('falls back to a numeral past seven', () => {
 		cy.mount(
 			<LiveGameCard {...defaultProps} game={{
@@ -399,8 +386,6 @@ describe('liveGameCard timeout dots', () => {
 	});
 });
 
-// The delay used to be said twice: "DELAY" in the status row and the description again in an 8px
-// badge under the score. The status row now says what kind of delay it is, once.
 describe('liveGameCard delay', () => {
 	it('names the delay in the status row and nowhere else', () => {
 		cy.mount(<LiveGameCard {...defaultProps} game={{ ...baseGame, delayed: true, delayDescription: 'Rain Delay' }} />);

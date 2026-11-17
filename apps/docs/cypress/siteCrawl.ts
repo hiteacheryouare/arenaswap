@@ -1,17 +1,8 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, posix, relative, sep } from 'node:path';
 
-// Reads the finished `astro build` output the same way GitHub Pages will. A spec could ask the
-// static server for all 361 pages one at a time, but the artifact is the product and the server is
-// a fixture — walking the directory measures what gets published, and does it in under a second
-// rather than in a few hundred round trips.
-
-// The nine store-asset pages are rendered to be screenshotted rather than visited: they carry
-// noindex, they are filtered out of the sitemap, and they are not part of the twelve-locale tree.
 const screenshotDir = 'screenshots';
 
-// Astro writes a retired URL as a meta-refresh stub with no <html lang> and no chrome. They are
-// pages in the filesystem sense only.
 const isRedirectStub = (html: string) => /<meta http-equiv="refresh"/i.test(html);
 
 export interface SiteReport {
@@ -31,18 +22,10 @@ const walk = (dir: string): string[] =>
 		entry.isDirectory() ? walk(join(dir, entry.name)) : [join(dir, entry.name)],
 	);
 
-// A text node that is nothing but dotted lowerCamel segments is almost certainly a translation key
-// that came back missing. `islandTranslator` renders the key rather than throwing, on purpose — an
-// island that failed to hydrate would take a whole demo down over one label — so the page ships
-// with `main.sectionActiveLiveTabs` where a heading should be and nothing anywhere says so.
 const keyShaped = /^[a-z][a-zA-Z0-9]*(\.[a-zA-Z][a-zA-Z0-9]*)+$/;
 
-// Hostnames and file names read as keys and are not. Anything with a known suffix is skipped.
 const notAKey = /\.(com|net|org|io|tv|dev|gg|co|uk|br|pt|cn|tw|jp|kr|mx|de|fr|it|ph|es|png|svg|jpg|webp|mp4|xml|json|js|ts|tsx|css|scss|md)$/i;
 
-// The PowerScore reference documents an object whose properties are dotted paths, so its code
-// samples are full of text this heuristic would otherwise read as a leaked key. Code is never a
-// translated string, so it comes out before the scan.
 const withoutCode = (html: string) => html
 	.replace(/<pre[\s\S]*?<\/pre>/g, '')
 	.replace(/<code[\s\S]*?<\/code>/g, '');
@@ -57,8 +40,6 @@ export const crawlSite = (siteDir: string, basePath: string, localeCodes: string
 		return localeCodes.includes(first) && first !== 'en' ? first : 'en';
 	};
 
-	// `faq/index.html` in the German tree and in the English tree are the same page in two
-	// languages, so the locale segment comes off before the two sets are compared.
 	const pagePathOf = (page: string) => {
 		const locale = localeOf(page);
 		return locale === 'en' ? page : page.slice(locale.length + 1);

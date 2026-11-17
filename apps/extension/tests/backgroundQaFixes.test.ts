@@ -133,8 +133,6 @@ const seed = (prefs: Partial<UserPreferences>, session: Record<string, unknown> 
 afterEach(() => jest.useRealTimers());
 
 describe('re-scoring games already in hand is not another poll', () => {
-	// College hockey sends no plays, so its breaks come from a frozen clock: the one rule a re-score
-	// counted as a poll could trip.
 	test('a fresh worker does not count its own startup re-score as a frozen clock', async () => {
 		seed({ enabledLeagues: ['ncaamh'], enabled: true });
 		currentGames = [mkGame('g1', 'ncaamh', 'hockey', 'in', 0)];

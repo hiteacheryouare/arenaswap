@@ -1,8 +1,6 @@
 @use '@arenaswap/ui/src/bootstrap' as bs;
 @use '@arenaswap/ui/src/motion' as m;
 @layer custom {
-
-	// Custom mode's league list borrows the display-order tile and puts a picker where the arrows were.
 	.league-mode-select {
 		flex:  0 0 8.25rem;
 		width: 8.25rem;

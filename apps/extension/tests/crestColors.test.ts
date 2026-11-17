@@ -72,7 +72,6 @@ describe('createCrestColors', () => {
 		expect(save).toHaveBeenCalledWith({ calibration: crestColorCalibration, colors: { [huskies]: '#DC0000', [falcons]: null } });
 	});
 
-	// A crest that would not load is not a crest without colour, so it is never stored.
 	test('does not store a crest that could not be read, and retries it only after a while', async () => {
 		const { crestColors, save, sample, clock } = setup(undefined, {});
 		const first = await crestColors.paint([collegeHockey()]);

@@ -1,7 +1,6 @@
 import type { BackgroundState, Game, GuideSlate, LiveScore, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import type { FilmSlate, PregameData, ScoreEntry, ScoreTotal } from './slateTypes';
 
-// The popup's live charts keep this much history, the same windows as core's scoring config.
 const historyWindowMs: Record<string, number> = { basketball: 5 * 60_000, hockey: 16 * 60_000, soccer: 20 * 60_000 };
 const windowFor = (game: Game) => historyWindowMs[game.sportType] ?? 12 * 60_000;
 
@@ -40,7 +39,6 @@ const expandScore = (gameId: string, value: LiveScore | ScoreTotal): LiveScore =
 	favoriteTeamCount: 0,
 } as PowerScoreResult);
 
-// The same flattening background.ts does before it stores a PowerScore snapshot.
 const toPowerScoreSnapshot = (score: LiveScore, timestamp: number, newest: boolean): PowerScoreSnapshot => ({
 	gameId: score.gameId,
 	timestamp,
@@ -77,7 +75,6 @@ export interface Slate {
 }
 
 const createSlate = (raw: FilmSlate, pregame: PregameData): Slate => {
-	// Every frame of every game, applied once up front, so any moment is a binary search away.
 	const states = new Map<string, [number, Game][]>();
 	for (const [gameId, track] of Object.entries(raw.games)) {
 		const applied: [number, Game][] = [];
@@ -177,8 +174,6 @@ const createSlate = (raw: FilmSlate, pregame: PregameData): Slate => {
 		games: raw.guide.games.map(game => gameAt(game.id, ts) ?? game),
 	});
 
-	// The recorded box score from the last moment kept before `ts`, carrying the win probability
-	// recorded at `ts` itself.
 	const summaryAt = (gameId: string, ts: number) => {
 		if (gameId === pregame.game.id) return pregame.summary;
 		const summaries = raw.summaries[gameId] ?? [];

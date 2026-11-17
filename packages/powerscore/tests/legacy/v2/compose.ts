@@ -1,6 +1,3 @@
-// The v2 pipeline as it shipped in 2.2.0: the scorer in this folder, then the arithmetic that lived
-// in packages/core (applyDisabledSignals, postseasonBoostShare) and apps/extension
-// (background.ts afterFetch, boostReasonParts). Frozen so v3 can be pinned against it.
 import { computePowerScore, isPlayFrozen, computeScoringOpportunityBoost, normalizePowerScoreResult } from './scorer';
 import {
 	scoreMaxCloseness,

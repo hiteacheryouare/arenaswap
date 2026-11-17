@@ -32,13 +32,11 @@ const toNumber = (value: string | undefined): number => {
 	return Number.isFinite(parsed) ? parsed : 0;
 };
 
-// "18/27" or "1-3" as made and attempted.
 const madeAttempted = (value: string | undefined): [number, number] => {
 	const [made, attempted] = (value ?? '').split(/[/-]/).map(toNumber);
 	return [made ?? 0, attempted ?? 0];
 };
 
-// "6.2" innings pitched as outs.
 const outsFromInnings = (value: string | undefined): number => {
 	const [full, part] = (value ?? '0').split('.').map(toNumber);
 	return (full ?? 0) * 3 + (part ?? 0);
@@ -50,7 +48,6 @@ const add = (line: StatLine, key: string, value: number) => {
 	if (value) line[key] = (line[key] ?? 0) + value;
 };
 
-// One box-score row into the engine's neutral stat names.
 const readRow = (category: string | undefined, keys: readonly string[], stats: readonly string[], line: StatLine, defense: StatLine) => {
 	const at = (key: string) => stats[keys.indexOf(key)];
 	const has = (key: string) => keys.includes(key);
@@ -92,7 +89,6 @@ const readRow = (category: string | undefined, keys: readonly string[], stats: r
 		add(line, 'extraPointsMissed', extraPointTries - extraPoints);
 	} else if (has('hits-atBats')) {
 		const hits = toNumber(at('hits'));
-		// No doubles or triples in the line, so total bases count home runs as four.
 		add(line, 'totalBases', hits + 3 * toNumber(at('homeRuns')));
 		add(line, 'runs', toNumber(at('runs')));
 		add(line, 'runsBattedIn', toNumber(at('RBIs')));
@@ -120,8 +116,6 @@ const readRow = (category: string | undefined, keys: readonly string[], stats: r
 	}
 };
 
-// The rules a box score lets us fill. The rest (two-point tries, steals of a base,
-// pitcher wins and saves, goalie wins) need play-by-play we don't read, so a settings screen hides them.
 export const fantasyRulesRead: Record<'football' | 'basketball' | 'baseball' | 'hockey', readonly string[]> = {
 	football: [
 		'passingYards', 'passingTouchdowns', 'interceptionsThrown', 'rushingYards', 'rushingTouchdowns', 'receptions',
@@ -135,11 +129,8 @@ export const fantasyRulesRead: Record<'football' | 'basketball' | 'baseball' | '
 };
 
 export interface FantasyBoxScore {
-	// Neutral stat lines by athlete id, plus `dst:<teamId>` for each team's defense.
 	lines: Map<string, StatLine>;
-	// Athletes the box score marks as not playing, or the injury report lists as out.
 	inactive: Set<string>;
-	// Teams whose box score already lists players: anyone of theirs missing from it isn't playing.
 	teamsWithLineups: Set<string>;
 }
 

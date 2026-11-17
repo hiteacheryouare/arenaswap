@@ -1,10 +1,6 @@
 import type { Game } from '@arenaswap/core/types';
 import { makeGame } from '../fixtures';
 
-// Games whose geometry comes from time, for anything that lays a game out against a clock (the
-// Guide). Each is a real game from scripts/powerscore/recordings: `now` is when the recorder saw
-// the state, and `endedAt` is when it first saw the final, which is what `slate.endTimes` carries.
-
 export interface timeEdge {
 	label: string;
 	game: Game;
@@ -12,8 +8,6 @@ export interface timeEdge {
 	endedAt?: number;
 }
 
-// nfl 401872988: scheduled 17:00Z, still in overtime 3 h 45 min later, against a 195-minute typical
-// run. Ended in a 27-27 tie.
 const giantsCommanders = makeGame('nfl-401872988', {
 	league: 'nfl', sportType: 'football', startTime: '2026-10-11T17:00:00Z',
 	awayTeam: { id: '19', name: 'New York Giants', nickname: 'Giants', shortName: 'Giants', abbreviation: 'NYG', score: 27, color: '#003C7F', alternateColor: '#C9243F' },
@@ -21,7 +15,6 @@ const giantsCommanders = makeGame('nfl-401872988', {
 	venueName: 'Northwest Stadium', venueLocation: 'Landover, MD',
 });
 
-// ncaaf 401864516: scheduled 23:30Z, final 2 h 40 min later, against a 210-minute typical run.
 const airForceNorthernIllinois = makeGame('ncaaf-401864516', {
 	league: 'ncaaf', sportType: 'football', startTime: '2026-10-10T23:30:00Z', status: 'post', period: 4, clockSeconds: 0,
 	awayTeam: { id: '2005', name: 'Air Force Falcons', nickname: 'Falcons', shortName: 'Air Force', abbreviation: 'AFA', score: 28, color: '#003594', alternateColor: '#FFFFFF' },

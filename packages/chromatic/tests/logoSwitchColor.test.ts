@@ -1,7 +1,6 @@
 import { switchColorFromPixels } from '../src/logoSwitchColor';
 import { colorDifference } from '../src/colorMath';
 
-// A crest as a bag of opaque pixels: each entry is a colour and how many pixels of it there are.
 const crest = (...inks: [string, number][]): Uint8ClampedArray => {
 	const pixels: number[] = [];
 	for (const [hex, count] of inks) {
@@ -19,13 +18,11 @@ describe('switchColorFromPixels', () => {
 		expect(colorDifference(color!, '#F8DB3F')).toBeLessThan(2);
 	});
 
-	// Louisville: the bird is red, the outline black, and the gold is a sliver.
 	test('allows black, which is what Apple paints Louisville in', () => {
 		const color = switchColorFromPixels(crest(['#C9001F', 500], ['#050403', 300], ['#FDB913', 40], ['#FFFFFF', 160]), '#C9001F');
 		expect(colorDifference(color!, '#050403')).toBeLessThan(2);
 	});
 
-	// The Reds: red and white, with every edge pixel a pink somewhere between the two.
 	test('finds nothing in a crest that is only its primary, white, and the blends between them', () => {
 		const pinks: [string, number][] = [['#D84050', 20], ['#E87080', 20], ['#F0A0A8', 20], ['#F8C8CC', 20]];
 		expect(switchColorFromPixels(crest(['#C6011F', 700], ['#FFFFFF', 200], ...pinks), '#C6011F')).toBeNull();

@@ -11,8 +11,6 @@ interface matchupPanelProps {
 	matchup: Matchup;
 }
 
-// Who is playing well, how the two compare, and who is missing. Injuries go last because they are
-// the one section that can run long.
 const matchupPanel = ({ game, matchup }: matchupPanelProps) => {
 	const [awayColor, homeColor] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#2274A5', '#F75C03');
 

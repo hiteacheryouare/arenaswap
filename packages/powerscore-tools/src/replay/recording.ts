@@ -18,14 +18,11 @@ type RecordedLine =
 	| { t: 'standings'; ts: number; league: LeagueId; raw: unknown };
 
 export type ReplayEvent =
-	// One league's poll: every game live in that league right now.
 	| { kind: 'poll'; ts: number; league: LeagueId; live: Game[] }
 	| { kind: 'summary'; ts: number; league: LeagueId; gameId: string; winProbability: number[]; raw: Record<string, unknown> }
 	| { kind: 'situation'; ts: number; league: LeagueId; gameId: string; raw: Record<string, unknown> }
 	| { kind: 'standings'; ts: number; league: LeagueId; raw: unknown };
 
-// Recordings are hourly files under <dir>/<YYYY-MM-DD>/<HH>-<run start>.jsonl.gz; a path may also
-// name one day folder or one file.
 export const listRecordingFiles = (path: string): string[] => {
 	if (!existsSync(path)) throw new Error(`No recording at ${path}`);
 	if (statSync(path).isFile()) return [path];
@@ -36,7 +33,6 @@ export const listRecordingFiles = (path: string): string[] => {
 
 // A file the recorder is still writing ends mid-line after its last sync flush, so the
 // decompressor is told to stop quietly there and the torn line is skipped.
-// Lines that wouldn't parse, by file. Only a torn tail is expected; anything more is worth knowing.
 export const unreadableLines = new Map<string, number>();
 
 const readLines = async function* (file: string): AsyncGenerator<RecordedLine> {
@@ -52,15 +48,12 @@ const readLines = async function* (file: string): AsyncGenerator<RecordedLine> {
 	}
 };
 
-// `leagues` skips everything else before it is parsed, for a run that only needs a few.
 export const readRecording = async function* (files: string[], until?: number, leagues?: ReadonlySet<LeagueId>): AsyncGenerator<ReplayEvent> {
 	const lastRawById = new Map<string, { raw: RawEvent; parsed: Game | null }>();
 	let lastTs = 0;
 	for (const file of files) {
 		for await (const line of readLines(file)) {
 			if (until !== undefined && line.ts > until) return;
-			// Two recorders alive at once would interleave here, and every history and stall count after
-			// it would be wrong, so stop rather than replay it.
 			if (line.ts < lastTs - 5_000) throw new Error(`${file} goes back in time at ${new Date(line.ts).toISOString()}: were two recorders running?`);
 			lastTs = Math.max(lastTs, line.ts);
 			if (leagues && line.t !== 'meta' && !leagues.has(line.league)) continue;

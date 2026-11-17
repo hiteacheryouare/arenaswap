@@ -1,7 +1,3 @@
-// The engine is published to npm and fed straight from ESPN, so it is handed partial and
-// malformed payloads in normal operation. Its output is then sorted numerically to pick a tab: a
-// single non-finite total poisons that comparison and the switcher silently stops working.
-
 import { computePowerScore } from '../src/scorer';
 import { leagueConfigs, scoreMaxTotal, scoreMaxCloseness, scoreMaxLateGame, scoreMaxMomentum, scoreMaxLeadChanges, scoreMaxComeback } from '../src/constants';
 import type { Game, PowerScoreResult, ScoreSnapshot } from '../src/types';
@@ -46,10 +42,6 @@ const describeBadShape = (result: PowerScoreResult): string | null => {
 };
 
 describe('the composed total always agrees with the parts it is built from', () => {
-	// Signals are verified one at a time elsewhere. This walks the whole pipeline — signals, then
-	// the win-probability adjustment, then the cap — over a broad spread
-	// of real league/period/clock/history combinations, because the arithmetic joining them is
-	// where a retune goes wrong without any single signal test noticing.
 	test('signals plus the variance adjustment is the published total', () => {
 		const disagreements: string[] = [];
 		for (let seed = 0; seed < 3_000; seed++) {
@@ -98,10 +90,6 @@ describe('the composed total always agrees with the parts it is built from', () 
 });
 
 describe('a hole in the ESPN payload still produces a score worth sorting', () => {
-	// Each of these is a shape the feed has a real reason to send: a score that has not been
-	// populated yet, a game between innings with no clock, a league added upstream before it was
-	// added here. None of them may produce NaN, because NaN in the comparator silently leaves the
-	// slate unsorted rather than raising anything.
 	const brokenPayloads: Array<[string, Game]> = [
 		['a score the feed has not filled in yet', baseGame({ homeTeam: { abbreviation: 'HOM', score: undefined as unknown as number } })],
 		['a score that parsed to NaN', baseGame({ homeTeam: { abbreviation: 'HOM', score: NaN } })],

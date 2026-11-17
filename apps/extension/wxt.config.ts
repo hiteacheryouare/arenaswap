@@ -13,10 +13,6 @@ const year = new Date().getFullYear();
 const version = pkg.version;
 const banner = `/*! ArenaSwap v${version} Copyright (c) ${year} Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */`;
 
-// Coverage instrumentation for the e2e build only. `build:e2e` writes to .output/e2e, which is
-// gitignored and never zipped, and the environment variable is set by the coverage script
-// alone — so `wxt build`, `build:firefox` and `build:edge` produce the same bytes they always
-// have. vite-plugin-istanbul ships ESM only and this config is loaded as CommonJS.
 const istanbulPlugins = async () => {
 	if (process.env.ARENASWAP_COVERAGE_TARGET !== 'e2e') return [];
 	const { default: istanbul } = await import('vite-plugin-istanbul');
@@ -25,16 +21,7 @@ const istanbulPlugins = async () => {
 
 export default defineConfig({
 	modules: ['@wxt-dev/module-react', '@wxt-dev/i18n/module'],
-	// Cypress serves a build directory over HTTP for the whole length of an e2e run, and `wxt zip`
-	// wipes and rewrites `.output/chrome-mv3` as part of its own build. Turbo schedules those two
-	// tasks in parallel, so they raced and left the served directory half-written. The e2e build
-	// takes this override to claim a directory nothing else writes.
 	outDir: process.env.WXT_OUT_DIR ?? '.output',
-	// The sources zip is the whole workspace an AMO reviewer needs to run `npm ci` and rebuild: it
-	// is rooted at the repo and allowlisted, because the root also holds large gitignored folders
-	// (temporary/, docs/, recordings). The other workspaces contribute only their package.json so
-	// the lockfile resolves. dist/, coverage/ and cypress/screenshots/ are gitignored output, and
-	// marketing/ is ~7MB of store art that has nothing to do with building.
 	zip: {
 		sourcesRoot: '../..',
 		includeSources: [
@@ -119,8 +106,6 @@ export default defineConfig({
 			},
 		},
 		permissions: ['tabs', 'storage', 'notifications', 'alarms', ...multiviewPermissions(browser)],
-		// Multiview asks for these when it is turned on, not at install. Every site, because the player
-		// inside a box usually lives on another domain than the page the user registered.
 		...(browser === 'firefox' ? {} : {
 			optional_host_permissions: ['<all_urls>'],
 			optional_permissions: ['webNavigation'],
@@ -144,7 +129,6 @@ export default defineConfig({
 			96: 'icon/96.png',
 			128: 'icon/128.png',
 		},
-		// img-src stays open to any https host because the tab pickers show each tab's favicon from its own site.
 		content_security_policy: {
 			extension_pages: "script-src 'self'; object-src 'self'; img-src 'self' https: data:;",
 		},

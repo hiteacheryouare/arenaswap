@@ -315,7 +315,6 @@ describe('computePowerScore', () => {
 		const earlySoccerResult = computePowerScore(earlySoccer, []);
 		const lateSoccerResult = computePowerScore(lateSoccer, []);
 
-		// Closeness is progress-scaled, so the assertion is on tier ordering, not raw tier values.
 		expect(basketballResult.closeness).toBeGreaterThan(0);
 		expect(earlyHockeyResult.closeness).toBeGreaterThan(0);
 		expect(lateHockeyResult.closeness).toBeGreaterThan(earlyHockeyResult.closeness);
@@ -325,8 +324,6 @@ describe('computePowerScore', () => {
 	});
 
 	test('applies basketball closeness thresholds at boundary margins', () => {
-		// The value is progress-scaled, so at period 1 every active tier sits near its floor and only
-		// the ordering is meaningful. The reason gives the score whatever tier it lands in.
 		const cases = [
 			{ margin: 5, positive: true },
 			{ margin: 6, positive: true },
@@ -379,12 +376,12 @@ describe('computePowerScore', () => {
 			awayTeam: { ...makeGame().awayTeam, score: 103 },
 		});
 
-		const firstHalf = computePowerScore(withClock(1, 300), []);     // before previous period → none
-		const prevStart = computePowerScore(withClock(3, 720), []);     // start of Q3 → touch ramp at 0
-		const prevEnd = computePowerScore(withClock(3, 1), []);         // end of Q3 → top of the touch
-		const finalStart = computePowerScore(withClock(4, 720), []);    // start of Q4
-		const finalMid = computePowerScore(withClock(4, 360), []);      // mid Q4
-		const finalEnd = computePowerScore(withClock(4, 1), []);        // buzzer
+		const firstHalf = computePowerScore(withClock(1, 300), []);
+		const prevStart = computePowerScore(withClock(3, 720), []);
+		const prevEnd = computePowerScore(withClock(3, 1), []);
+		const finalStart = computePowerScore(withClock(4, 720), []);
+		const finalMid = computePowerScore(withClock(4, 360), []);
+		const finalEnd = computePowerScore(withClock(4, 1), []);
 
 		expect(firstHalf.lateGame).toBe(0);
 		expect(prevStart.lateGame).toBe(0);
@@ -402,7 +399,7 @@ describe('computePowerScore', () => {
 		const sample = (fraction: number) => computePowerScore(makeGame({
 			period: 4,
 			clockSeconds: Math.round(720 * (1 - fraction)),
-			homeTeam: { ...makeGame().homeTeam, score: 110 }, // tight (7-pt) + non-tied → closeCeiling, no OT pre-boost
+			homeTeam: { ...makeGame().homeTeam, score: 110 },
 			awayTeam: { ...makeGame().awayTeam, score: 103 },
 		}), []).lateGame;
 
@@ -413,7 +410,6 @@ describe('computePowerScore', () => {
 		const deltas = points.slice(1).map((value, index) => value - points[index]!);
 		const expectedStep = (closeCeiling - finalPeriodStart) / 4;
 		for (const delta of deltas) {
-			// Within ~1.5 points of a perfectly linear step, so there is no back-loaded spike.
 			expect(Math.abs(delta - expectedStep)).toBeLessThanOrEqual(1.5);
 		}
 	});
@@ -424,15 +420,15 @@ describe('computePowerScore', () => {
 			sportType: 'soccer',
 			period,
 			clockSeconds,
-			homeTeam: { ...makeGame().homeTeam, score: 2 }, // close + non-tied → factor 1, no OT pre-boost
+			homeTeam: { ...makeGame().homeTeam, score: 2 },
 			awayTeam: { ...makeGame().awayTeam, score: 1 },
 		});
 
-		const prevStart = computePowerScore(withElapsed(1, 0), []);         // kickoff, 1st half (0')
-		const prevEnd = computePowerScore(withElapsed(1, 2_700), []);       // end of 1st half (45')
-		const finalStart = computePowerScore(withElapsed(2, 2_700), []);    // start of 2nd half (45')
-		const finalMid = computePowerScore(withElapsed(2, 4_050), []);      // mid 2nd half (67.5')
-		const finalEnd = computePowerScore(withElapsed(2, 5_399), []);      // stoppage (89.98')
+		const prevStart = computePowerScore(withElapsed(1, 0), []);
+		const prevEnd = computePowerScore(withElapsed(1, 2_700), []);
+		const finalStart = computePowerScore(withElapsed(2, 2_700), []);
+		const finalMid = computePowerScore(withElapsed(2, 4_050), []);
+		const finalEnd = computePowerScore(withElapsed(2, 5_399), []);
 
 		expect(prevStart.lateGame).toBe(0);
 		expect(prevEnd.lateGame).toBeGreaterThan(prevStart.lateGame);
@@ -492,7 +488,7 @@ describe('computePowerScore', () => {
 				sportType: league.sportType,
 				period: league.regularPeriods,
 				clockSeconds: toClockSeconds(secsRemaining),
-				homeTeam: { ...makeGame().homeTeam, score: 3 }, // close (≤ every sport's tier-2) + non-tied
+				homeTeam: { ...makeGame().homeTeam, score: 3 },
 				awayTeam: { ...makeGame().awayTeam, score: 2 },
 			});
 
@@ -514,11 +510,11 @@ describe('computePowerScore', () => {
 			period,
 			clockSeconds: 0,
 			homeTeam: { ...makeGame().homeTeam, score: 4 },
-			awayTeam: { ...makeGame().awayTeam, score: 1 },  // 3-run lead: margin=3 ≤ t2=3 → closeCeiling
+			awayTeam: { ...makeGame().awayTeam, score: 1 },
 		});
 
-		const fifth = computePowerScore(withInning(5), []);   // before regulation pressure window
-		const sixth = computePowerScore(withInning(6), []);   // ramp starts
+		const fifth = computePowerScore(withInning(5), []);
+		const sixth = computePowerScore(withInning(6), []);
 		const eighth = computePowerScore(withInning(8), []);
 		const ninth = computePowerScore(withInning(9), []);
 
@@ -569,7 +565,7 @@ describe('computePowerScore', () => {
 
 		const result = computePowerScore(game, history);
 		expect(result.total).toBeGreaterThanOrEqual(78);
-		expect(result.lateGame).toBe(scoreMaxLateGame); // OT pre-boost pushes a tied buzzer to the cap
+		expect(result.lateGame).toBe(scoreMaxLateGame);
 	});
 
 	test('reserves 100 for exceptional overtime scenarios', () => {
@@ -680,7 +676,6 @@ describe('computePowerScore', () => {
 		const noChange = computePowerScore(game, makeHistory([[50, 48], [52, 48], [54, 50]]));
 		expect(noChange.leadChanges).toBe(scorerTunables.scores.leadChanges.none);
 
-		// The flip lands on the latest snapshot, so the tier value is undecayed.
 		const singleChange = computePowerScore(
 			makeGame({ homeTeam: { abbreviation: 'HOM', score: 50 }, awayTeam: { abbreviation: 'AWY', score: 51 } }),
 			makeHistory([[50, 48], [51, 50], [50, 51]]),
@@ -703,8 +698,6 @@ describe('computePowerScore', () => {
 		);
 		expect(noComeback.comeback).toBe(scorerTunables.scores.comeback.none);
 
-		// Comeback is progress-scaled, so this uses a near-buzzer game where the floored value reaches
-		// the tier ceiling and the shrink lands undecayed on the latest snapshot.
 		const moderateComeback = computePowerScore(
 			makeGame({ period: 4, clockSeconds: 1, homeTeam: { ...makeGame().homeTeam, score: 89 }, awayTeam: { ...makeGame().awayTeam, score: 84 } }),
 			makeHistory([[80, 70], [83, 75], [89, 84]]),
@@ -801,8 +794,6 @@ describe('PowerScore v2 — live-action decay & overtime anticipation', () => {
 	});
 
 	test('momentum fades as the scoring run ages (≈half a basketball half-life out)', () => {
-		// All three share the same 8-0 run and differ only in how long ago it happened. Basketball's
-		// momentum half-life is 45s.
 		const fresh = computePowerScore(runGame(), makeHistory([[60, 60], [64, 60], [68, 60]]));
 		const oneHalfLife = computePowerScore(runGame(), makeHistory([[60, 60], [68, 60], [68, 60], [68, 60], [68, 60]]));
 		const stale = computePowerScore(runGame(), makeHistory([[60, 60], [68, 60], [68, 60], [68, 60], [68, 60], [68, 60], [68, 60]]));
@@ -816,7 +807,6 @@ describe('PowerScore v2 — live-action decay & overtime anticipation', () => {
 	});
 
 	test('low-scoring sports retain a scoring spike longer than basketball', () => {
-		// Identical run and age; only the sport-scaled half-life differs.
 		const agedHistory = makeHistory([[5, 5], [13, 5], [13, 5]]);
 		const basketball = computePowerScore(
 			makeGame({ league: 'nba', sportType: 'basketball', period: 1, clockSeconds: 720, homeTeam: { abbreviation: 'HOM', score: 13 }, awayTeam: { abbreviation: 'AWY', score: 5 } }),
@@ -832,7 +822,6 @@ describe('PowerScore v2 — live-action decay & overtime anticipation', () => {
 	});
 
 	test('a fully faded signal stops appearing in the headline reason', () => {
-		// A big run long in the past with nothing since decays to 0, which clears its reason too.
 		const longQuiet = makeHistory([[10, 10], [30, 10], ...Array.from({ length: 20 }, () => [30, 10] as [number, number])]);
 		const result = computePowerScore(
 			makeGame({ league: 'nba', sportType: 'basketball', period: 1, clockSeconds: 720, homeTeam: { abbreviation: 'HOM', score: 30 }, awayTeam: { abbreviation: 'AWY', score: 10 } }),
@@ -864,7 +853,6 @@ describe('PowerScore v2 — live-action decay & overtime anticipation', () => {
 		expect(tied1.lateGame).toBeGreaterThan(tied30.lateGame);
 		expect(tied1.lateGame).toBe(scoreMaxLateGame);
 		expect(tied1.reason).toBe('Tied with 0:01 left');
-		// A non-tied buzzer caps at the close ceiling, so OT-bound games separate from it.
 		expect(nonTiedBuzzer.lateGame).toBe(scorerTunables.scores.lateGame.closeCeiling);
 		expect(tied1.lateGame).toBeGreaterThan(nonTiedBuzzer.lateGame);
 	});
@@ -949,7 +937,7 @@ describe('PowerScore calibration targets', () => {
 			period: 4,
 			clockSeconds: 1,
 			homeTeam: { abbreviation: 'HOM', score: 120 },
-			awayTeam: { abbreviation: 'AWY', score: 90 },  // 30-pt lead, NBA t3=18 → blowout
+			awayTeam: { abbreviation: 'AWY', score: 90 },
 		});
 		const closeResult = computePowerScore(closeGame, []);
 		const blowoutResult = computePowerScore(blowout, []);
@@ -976,7 +964,7 @@ describe('PowerScore calibration targets', () => {
 			period: 4,
 			clockSeconds: 1,
 			homeTeam: { abbreviation: 'HOM', score: 21 },
-			awayTeam: { abbreviation: 'AWY', score: 18 },  // 3-pt game
+			awayTeam: { abbreviation: 'AWY', score: 18 },
 		});
 		const result = computePowerScore(game, []);
 		expect(result.total).toBeGreaterThanOrEqual(63);
@@ -995,7 +983,6 @@ const makeFootballGame = (overrides: Partial<Game> = {}): Game => ({
 });
 
 describe('computeScoringOpportunityBoost', () => {
-
 	test('returns 0 for non-live games', () => {
 		expect(computeScoringOpportunityBoost(makeBaseballGame({ status: 'pre' }))).toBe(0);
 		expect(computeScoringOpportunityBoost(makeBaseballGame({ status: 'post' }))).toBe(0);
@@ -1014,13 +1001,13 @@ describe('computeScoringOpportunityBoost', () => {
 	test('boosts baseball by runner count', () => {
 		expect(computeScoringOpportunityBoost(makeBaseballGame({
 			baseRunners: { first: true, second: false, third: false },
-		}))).toBe(3); // 1 runner
+		}))).toBe(3);
 		expect(computeScoringOpportunityBoost(makeBaseballGame({
 			baseRunners: { first: true, second: true, third: false },
-		}))).toBe(6); // 2 runners
+		}))).toBe(6);
 		expect(computeScoringOpportunityBoost(makeBaseballGame({
 			baseRunners: { first: true, second: true, third: true },
-		}))).toBe(10); // bases loaded
+		}))).toBe(10);
 	});
 
 	test('softball also scales with runners', () => {
@@ -1054,7 +1041,6 @@ describe('computeScoringOpportunityBoost', () => {
 		expect(computeScoringOpportunityBoost(makeFootballGame({ isRedZone: true }))).toBe(10);
 	});
 
-	// Football's closenessMargins are [3, 9, 14].
 	describe('red zone scaling', () => {
 		const redZone = (margin: number, extra: Partial<Game> = {}) => computeScoringOpportunityBoost(
 			makeFootballGame({ isRedZone: true, awayTeam: { score: 7 + margin }, ...extra }),
@@ -1062,38 +1048,36 @@ describe('computeScoringOpportunityBoost', () => {
 
 		test('pays full value while the game is within two scores', () => {
 			expect(redZone(0)).toBe(10);
-			expect(redZone(3)).toBe(10); // t1
-			expect(redZone(9)).toBe(10); // t2, still a two-score game
+			expect(redZone(3)).toBe(10);
+			expect(redZone(9)).toBe(10);
 		});
 
 		test('pays a reduced value in the fringe band', () => {
 			expect(redZone(10)).toBe(5);
-			expect(redZone(14)).toBe(5); // t3, the outer edge of live
+			expect(redZone(14)).toBe(5);
 		});
 
 		test('pays nothing once the game is a blowout', () => {
 			expect(redZone(15)).toBe(0);
 			expect(redZone(31)).toBe(0);
-			// The base is zero before down and distance apply, so they cannot resurrect a blowout.
 			expect(redZone(31, { down: 4, isGoalToGo: true })).toBe(0);
 		});
 
 		test('weights the snap by down, with 4th-and-goal the highest-leverage case', () => {
-			expect(redZone(3, { down: 1, distance: 10 })).toBe(10); // ×1.0
-			expect(redZone(3, { down: 2, distance: 4 })).toBe(10); // ×1.0
-			expect(redZone(3, { down: 3, distance: 8 })).toBe(10); // 3rd-and-long, ×1.0
-			expect(redZone(3, { down: 3, distance: 2 })).toBe(12); // 3rd-and-short, ×1.15 → 11.5
-			expect(redZone(3, { down: 4, distance: 5 })).toBe(14); // ×1.35 → 13.5
-			expect(redZone(3, { down: 4, distance: 1, isGoalToGo: true })).toBe(15); // ×1.5
+			expect(redZone(3, { down: 1, distance: 10 })).toBe(10);
+			expect(redZone(3, { down: 2, distance: 4 })).toBe(10);
+			expect(redZone(3, { down: 3, distance: 8 })).toBe(10);
+			expect(redZone(3, { down: 3, distance: 2 })).toBe(12);
+			expect(redZone(3, { down: 4, distance: 5 })).toBe(14);
+			expect(redZone(3, { down: 4, distance: 1, isGoalToGo: true })).toBe(15);
 		});
 
 		test('scales the down weighting off the reduced fringe base, not the full one', () => {
-			expect(redZone(12, { down: 4, isGoalToGo: true })).toBe(8); // 5 × 1.5 = 7.5
-			expect(redZone(12, { down: 4, distance: 2 })).toBe(7); // 5 × 1.35 = 6.75
+			expect(redZone(12, { down: 4, isGoalToGo: true })).toBe(8);
+			expect(redZone(12, { down: 4, distance: 2 })).toBe(7);
 		});
 
 		test('falls back to the unweighted base when ESPN reports no down', () => {
-			// A missing down should cost the bonus, not the whole boost.
 			expect(redZone(3, { down: undefined })).toBe(10);
 			expect(redZone(3, { down: 3, distance: undefined })).toBe(10);
 		});
@@ -1135,7 +1119,6 @@ describe('computeWinProbVarianceScore', () => {
 	});
 
 	test('returns 0 at the neutral midpoint (avg distance from 50% = maxAvgDist / 2)', () => {
-		// avg|p−0.5| lands at exactly maxAvgDist/2, which maps to 0.
 		const neutral = Array.from({ length: 30 }, (_, i) => (i % 2 === 0 ? 0.325 : 0.675));
 		const score = computeWinProbVarianceScore(neutral);
 		expect(score).toBeGreaterThanOrEqual(-1);
@@ -1175,7 +1158,6 @@ describe('computePowerScore — win probability volatility boost/penalty integra
 	});
 
 	test('includes winProbabilityVariance when sufficient win prob history is supplied', () => {
-		// Alternating far from the middle averages out to maxAvgDist, clamping to the full penalty.
 		const winProb = Array.from({ length: 20 }, (_, i) => (i % 2 === 0 ? 0.15 : 0.85));
 		const result = computePowerScore(baseGame, shortHistory, winProb);
 		expect(result.winProbabilityVariance).toBeDefined();
@@ -1183,15 +1165,15 @@ describe('computePowerScore — win probability volatility boost/penalty integra
 	});
 
 	test('close-to-50% game has a higher total than a one-sided game (other signals equal)', () => {
-		const contestedProb = Array.from({ length: 30 }, () => 0.5);     // avg dist = 0 → +max
-		const dominatedProb = Array.from({ length: 30 }, () => 0.8);     // avg dist = 0.3 → negative
+		const contestedProb = Array.from({ length: 30 }, () => 0.5);
+		const dominatedProb = Array.from({ length: 30 }, () => 0.8);
 		const contestedResult = computePowerScore(baseGame, shortHistory, contestedProb);
 		const dominatedResult = computePowerScore(baseGame, shortHistory, dominatedProb);
 		expect(contestedResult.total).toBeGreaterThan(dominatedResult.total);
 	});
 
 	test('signalsSubtotal holds pure signals subtotal, unaffected by variance', () => {
-		const winProb = Array.from({ length: 20 }, () => 0.8); // stable → variance penalty
+		const winProb = Array.from({ length: 20 }, () => 0.8);
 		const result = computePowerScore(baseGame, shortHistory, winProb);
 		const signalsSubtotal = result.closeness + result.lateGame + result.momentum + result.leadChanges + result.comeback;
 		expect(result.signalsSubtotal).toBe(signalsSubtotal);

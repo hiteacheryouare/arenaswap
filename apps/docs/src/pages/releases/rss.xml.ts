@@ -1,10 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getOriginals } from '../../lib/localizedContent';
 
-// Hand-rolled rather than pulling in @astrojs/rss for one endpoint. The feed carries the summary
-// only, not the body: an item that changes shape every time a release note is edited is worse for
-// a reader than a stable pointer at the page.
-
 const escape = (value: string): string => (
 	value
 		.replace(/&/g, '&amp;')

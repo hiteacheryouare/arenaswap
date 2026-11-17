@@ -1,7 +1,3 @@
-// Fantasy scoring rules: points per stat, keyed by neutral stat names a caller maps its own box
-// score onto. Defaults are the sports analyst's (full PPR for football, Yahoo points for basketball);
-// every rule has bounds a settings screen can enforce.
-
 export type FantasySport = 'football' | 'basketball' | 'baseball' | 'hockey';
 
 export interface FantasyRule {
@@ -83,7 +79,6 @@ export const defaultFantasyScoring: Record<FantasySport, Record<string, FantasyR
 	},
 };
 
-// Where a defense's points-allowed tier comes from.
 const pointsAllowedTier = (allowed: number): string => {
 	if (allowed === 0) return 'pointsAllowed0';
 	if (allowed <= 6) return 'pointsAllowed1To6';
@@ -100,7 +95,6 @@ export const fantasySportOf = (sportType: string): FantasySport | undefined => {
 	return undefined;
 };
 
-// A user's overrides, held to each rule's bounds; unknown rules are ignored.
 export const resolveFantasyScoring = (sport: FantasySport, overrides: Partial<Record<string, number>> = {}): Record<string, number> => (
 	Object.fromEntries(Object.entries(defaultFantasyScoring[sport]).map(([key, { points, min, max }]) => {
 		const override = overrides[key];
@@ -108,7 +102,6 @@ export const resolveFantasyScoring = (sport: FantasySport, overrides: Partial<Re
 	}))
 );
 
-// Fantasy points for one stat line. `pointsAllowed` (a defense's) is scored by tier.
 export const computeFantasyPoints = (sport: FantasySport, stats: Partial<Record<string, number>>, overrides?: Partial<Record<string, number>>): number => {
 	const rules = resolveFantasyScoring(sport, overrides);
 	let total = 0;

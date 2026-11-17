@@ -51,7 +51,6 @@ describe('leaguesBySportType', () => {
 		expect(leaguesBySportType.football.every(l => l.sportType === 'football')).toBe(true);
 	});
 
-	// Regression: without the `in` guard this crashed on any unknown sport type.
 	test('includes every configured league in exactly one sport bucket with no duplicates', () => {
 		const allIds = leagueConfigs.map(c => c.id).toSorted();
 		const bucketedIds = (Object.values(leaguesBySportType) as (typeof leagueConfigs)[])
@@ -291,7 +290,6 @@ describe('insertLeagueAtDefaultPosition', () => {
 	});
 
 	test('respects a custom order when picking the insertion point', () => {
-		// mls was dragged above nba; re-enabling nhl still slots it after nba.
 		expect(insertLeagueAtDefaultPosition(['mls', 'nba'], 'nhl')).toEqual(['mls', 'nba', 'nhl']);
 	});
 });
@@ -473,10 +471,6 @@ describe('normalizeBackgroundState', () => {
 });
 
 describe('fetchState', () => {
-	// Regression: fetchState(true) triggered a full tick() that overwrote the games array, and
-	// SWR's default revalidateIfStale then clobbered data a SCORES_UPDATED mutation had set.
-
-
 	const liveGameState = {
 		games: [makeGame({ id: 'live-1', status: 'in' })],
 		scores: [],
@@ -509,7 +503,6 @@ describe('isInUpcomingWindow', () => {
 		expect(isInUpcomingWindow(startingAt(new Date(2026, 9, 29, 19, 0)), 7, now)).toBe(false);
 	});
 
-	// Kicked off on time by the schedule, but still pregame: a delay, not a stale copy.
 	it('keeps a game from earlier today that has not started yet', () => {
 		expect(isInUpcomingWindow(startingAt(new Date(2026, 9, 30, 0, 5)), 7, now)).toBe(true);
 	});
@@ -539,8 +532,6 @@ describe('resolveSelectedDayIndex', () => {
 		expect(resolveSelectedDayIndex(days, 'Wed Sep 03 2026')).toBe(2);
 	});
 
-	// The day you were parked on can vanish between polls, most often by kicking off and leaving the
-	// pre list. Snapping to the first day always lands on a real one.
 	it('falls back to the first day when the selected one is gone', () => {
 		expect(resolveSelectedDayIndex(days, 'Sun Aug 31 2026')).toBe(0);
 	});
@@ -552,10 +543,6 @@ describe('resolveSelectedDayIndex', () => {
 	});
 });
 
-// The venue address, the pre-game competitor block and `situation.possession` were each lost to a
-// schema that silently dropped what it had not declared. `games` goes through a bare Array.isArray
-// rather than a Zod object, so nothing is stripped — but that is worth pinning for the two fields
-// finished games depend on, since neither has any other route to the popup.
 describe('a finished game surviving the trip from the background', () => {
 	test('keeps its attendance and its start time', () => {
 		const game = makeGame({
@@ -582,7 +569,6 @@ describe('a finished game surviving the trip from the background', () => {
 
 describe('buildFinalComparator', () => {
 	const rank = buildLeagueRank(['nba', 'nfl', 'mlb']);
-	// Same sport, so the wrap allowance is identical and only the start times separate them.
 	const finished = (id: string, startIso: string, league: LeagueId = 'nba'): Game => makeGame({
 		id, league, sportType: 'basketball', status: 'post', startTime: startIso,
 	});
@@ -598,7 +584,6 @@ describe('buildFinalComparator', () => {
 	});
 
 	test('a longer sport wrapping later beats an earlier start', () => {
-		// Kicked off half an hour before the basketball game and still ended after it.
 		const football = makeGame({
 			id: 'nfl', league: 'nfl', sportType: 'football', status: 'post',
 			startTime: '2026-09-06T20:00:00.000Z',
@@ -642,4 +627,3 @@ describe('buildFinalComparator', () => {
 		expect(sorted.map(g => g.id)).toEqual(['nba-late', 'nba-early', 'nfl-middle']);
 	});
 });
-

@@ -7,8 +7,6 @@ interface switchCrestTeam {
 	logo?: string;
 }
 
-// Reads the away crest when a clash needs a colour out of it, and renders again once it has one,
-// so the switch lands in whatever resolveTeamColorPair the component calls next.
 const useSwitchCrest = (away: switchCrestTeam, home: switchCrestTeam): void => {
 	const [, setMeasured] = useState(0);
 	const pending = pendingSwitchCrest(away, home);

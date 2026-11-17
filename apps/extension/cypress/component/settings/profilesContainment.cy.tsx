@@ -21,8 +21,6 @@ const mountPage = (locale: shippedLocale) => mountInPopup(
 	locale,
 );
 
-// A row's name is the same in every language, so it gets one test of its own and the per-locale ones
-// leave it out rather than failing twelve times over it.
 const rowName = '.profile-row-name';
 
 describe('profiles containment', () => {

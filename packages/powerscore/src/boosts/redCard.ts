@@ -3,7 +3,6 @@ import { getElapsedMinutes } from '../progress';
 import { isLive, leadOf, none, teamOf } from './shared';
 import type { BoostDefinition, Game, ReasonFragment, RedCard, Side } from '../types';
 
-// The team a man down, if the cards aren't even.
 export const shorthandedSide = (game: Game<string>): Side | undefined => {
 	const cards = game.redCards ?? [];
 	let home = 0;
@@ -33,8 +32,6 @@ const minutesSince = (card: RedCard, minute: number, period: number | undefined)
 	return minute - card.minute;
 };
 
-// A red card in a tied or one-goal game, fading over the next ten game minutes. Re-gated on the
-// score every poll, so a goal that opens the game up ends it early.
 export const redCardBoost: BoostDefinition = {
 	id: 'redCard',
 	bucket: 'moment',

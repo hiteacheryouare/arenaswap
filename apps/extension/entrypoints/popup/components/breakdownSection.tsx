@@ -4,13 +4,10 @@ import { isSectionCollapsed, rememberSectionCollapsed, type breakdownSectionId }
 interface breakdownSectionProps {
 	id: breakdownSectionId;
 	heading: string;
-	// Stays visible while the rows are folded away.
 	total: ReactNode;
 	children: ReactNode;
 }
 
-// `open` is read from the stored fold once and never recomputed, so a re-render on the next poll
-// leaves whatever the reader has toggled alone.
 const BreakdownSection = ({ id, heading, total, children }: breakdownSectionProps) => {
 	const [startsOpen] = useState(() => !isSectionCollapsed(id));
 

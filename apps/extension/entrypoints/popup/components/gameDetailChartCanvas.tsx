@@ -5,8 +5,6 @@ import { GridComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption, EChartsType } from 'echarts';
 
-// The option builders in @arenaswap/ui only ever emit line and bar series on a cartesian grid with
-// an axis tooltip, so registering those five keeps the full echarts bundle (1.1MB) out of this chunk.
 echarts.use([LineChart, BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
 
 interface gameDetailChartCanvasProps {

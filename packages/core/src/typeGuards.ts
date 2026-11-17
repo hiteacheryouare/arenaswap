@@ -41,8 +41,6 @@ export const isPowerScoreSnapshotLike = (value: unknown): value is PowerScoreSna
 	&& isFiniteNumber(value.favoriteBonus)
 	&& isFiniteNumber(value.favoriteTeamCount)
 	&& typeof value.reason === 'string'
-	// The boosts and volatility are optional: older snapshots predate them, and volatility is
-	// absent whenever ESPN gave us no line.
 	&& (value.gameBoost === undefined || isFiniteNumber(value.gameBoost))
 	&& (value.scoringOpportunityBoost === undefined || isFiniteNumber(value.scoringOpportunityBoost))
 	&& (value.postseasonBoost === undefined || isFiniteNumber(value.postseasonBoost))
@@ -54,7 +52,6 @@ export const isPowerScoreSnapshotLike = (value: unknown): value is PowerScoreSna
 	&& (value.boosts === undefined || isNumberRecord(value.boosts))
 	&& (value.reasons === undefined || (Array.isArray(value.reasons) && value.reasons.every(isReasonFragment)))
 );
-
 
 const isScoredItem = (value: unknown): value is { id: string; points: number; ceiling?: unknown } => (
 	isObjectRecord(value) && typeof value.id === 'string' && isFiniteNumber(value.points)
@@ -68,7 +65,6 @@ const isBlendResult = (value: unknown): value is ScoreBreakdown['blend'] => (
 	&& (value.floorApplied === undefined || typeof value.floorApplied === 'boolean')
 );
 
-// Validated whole or dropped whole: half a breakdown would draw a chart that disagrees with itself.
 const normalizeBreakdown = (value: unknown): ScoreBreakdown | undefined => {
 	if (!isObjectRecord(value) || typeof value.modeId !== 'string') return undefined;
 	const { signals, boosts, reasons } = value;
@@ -87,7 +83,6 @@ const normalizeBreakdown = (value: unknown): ScoreBreakdown | undefined => {
 		...(isBlendResult(value.blend) ? { blend: value.blend } : {}),
 	};
 };
-
 
 export const normalizeGameBoosts = (value: unknown): Record<string, number> => {
 	if (!isObjectRecord(value)) return {};

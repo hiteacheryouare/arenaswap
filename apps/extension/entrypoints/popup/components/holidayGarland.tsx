@@ -15,8 +15,6 @@ const pseudoRandom = (seed: number): number => {
 	return x - Math.floor(x);
 };
 
-// Each needle is drawn again a tile to either side, so the ones that cross a tile's edge carry on
-// into the next tile instead of being cut off at a seam.
 const needles = Array.from({ length: 52 }, (_, i) => {
 	const x = pseudoRandom(i + 1) * tileWidth;
 	const y = spine + (pseudoRandom(i + 41) - 0.5) * 6;
@@ -31,7 +29,6 @@ const needles = Array.from({ length: 52 }, (_, i) => {
 	return { d, color };
 }).toSorted((a, b) => needleGreens.indexOf(a.color) - needleGreens.indexOf(b.color));
 
-// Trim sits at fractions of the width, so a wider Guide window spreads it out rather than adding more.
 const At = ({ x, dy = 0, children }: { x: string; dy?: number; children: ReactNode }) => (
 	<svg x={x} y={spine + dy} overflow='visible'>{children}</svg>
 );
@@ -60,8 +57,6 @@ const Sprig = () => (
 	</g>
 );
 
-// The mantel the stockings hang from, laid along the bottom edge of the hero. Gold all the way
-// along, with one bauble in each team's colour at its own end.
 const holidayGarland = ({ leftColor, rightColor }: holidayGarlandProps) => (
 	<svg className='holiday-garland' height={height} aria-hidden='true'>
 		<defs>

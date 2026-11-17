@@ -34,9 +34,6 @@ const useFavoriteScoreConfetti = ({ games, favoriteTeamIds, stage, onMainView = 
 	}, []);
 
 	const launchBurst = useCallback((nextOptions: confettiOptions) => {
-		// Onboarding and the walkthrough render without the canvas. Without this guard a favorite
-		// scoring during onboarding cached a rejected promise that killed confetti for the rest of the
-		// session.
 		if (!confettiCanvasRef.current) return;
 		void ensureConfettiInstance()
 			.then(confetti => confetti(nextOptions))
@@ -66,7 +63,6 @@ const useFavoriteScoreConfetti = ({ games, favoriteTeamIds, stage, onMainView = 
 		if (!visible) return;
 		const canvasBox = canvas.getBoundingClientRect();
 		for (const burst of bursts) {
-			// No card on screen to tie the burst to, so no burst.
 			const team = stage.locateTeam(burst.gameId, burst.side);
 			if (!team) continue;
 			launchBurst({

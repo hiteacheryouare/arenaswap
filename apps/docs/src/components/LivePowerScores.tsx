@@ -2,8 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { allLeagueIds, computePowerScore, leagueConfigMap } from 'powerscore';
 import type { Game, LeagueId, ScoreSnapshot } from 'powerscore';
-// The real ones, rather than copies. Both live in dependency-free modules precisely so this
-// island can read them without dragging zod or the card's React tree onto a marketing page.
 import { parseClockToSeconds } from '@arenaswap/sideline/gameClock';
 import { formatGameClock, formatPeriod } from '@arenaswap/ui/src/components/gameFormat';
 import { isHomeFirst } from '@arenaswap/core/constants';
@@ -42,7 +40,6 @@ interface EspnScoreboardResponse {
 	events?: EspnEvent[];
 }
 
-// The extension's rule: a soccer club by its short name ("Portland"), everyone else by nickname.
 const nicknameOf = (team: EspnCompetitor['team'], sportType: Game['sportType']): string | undefined => (
 	sportType === 'soccer' ? team.shortDisplayName ?? team.name : team.name ?? team.shortDisplayName
 );
@@ -57,16 +54,9 @@ const espnBase = 'https://site.api.espn.com/apis/site/v2/sports';
 const refreshIntervalMs = 15000;
 const historyMax = 20;
 
-/* ESPN sheds requests from an IP by recent volume and answers 403 to what it drops, so the steady
-   rate matters more than any one burst. This page asked all 31 leagues every 15 seconds for as long
-   as the tab stayed open: 124 requests a minute to draw eight cards. Now only the leagues with
-   something live are asked at that cadence, the full 31 are swept for newcomers every two minutes,
-   the sweep is walked a few at a time, and a tab nobody is looking at asks for nothing. */
 const fullSweepIntervalMs = 120_000;
 const requestPoolSize = 6;
 
-// Scrolling back to the section and returning to the tab both ask for a fresh draw, and neither
-// should be worth a request when one just landed.
 const minPollGapMs = 5000;
 
 const parseLiveState = (state?: string): boolean => {
@@ -115,8 +105,6 @@ const parseLiveGames = (leagueId: LeagueId, payload: EspnScoreboardResponse): Ga
 	});
 };
 
-// The extension pools its own fan-outs through `@arenaswap/sideline`, but importing that here would pull
-// its whole ESPN client and zod onto a marketing page for a twelve-line helper.
 const mapInPool = async <T, R>(items: T[], run: (item: T) => Promise<R>, size = requestPoolSize): Promise<R[]> => {
 	const results: R[] = [];
 	let next = 0;
@@ -136,8 +124,6 @@ interface leagueSweep {
 	shed: number;
 }
 
-// A league that failed used to contribute nothing and say nothing, so a page shed on all 31 drew the
-// same "nothing is live" panel as a quiet Tuesday. The count comes back so the two can be told apart.
 const fetchLiveGames = async (leagueIds: LeagueId[]): Promise<leagueSweep> => {
 	const perLeague = await mapInPool(leagueIds, async (leagueId): Promise<Game[] | null> => {
 		try {
@@ -162,9 +148,6 @@ interface Strings {
 	live: string;
 }
 
-// `card.reason` is not in here. It is composed by the `powerscore` package from the game state, and
-// translating it means translating the package, which is a change to something published on npm on
-// its own rather than to this page.
 const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string, string> }) => {
 	const t = useMemo(() => islandTranslator(ui), [ui]);
 	const [cards, setCards] = useState<LiveScoreCard[]>([]);
@@ -183,15 +166,11 @@ const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string
 		const startedAt = Date.now();
 		if (startedAt - lastPollRef.current < minPollGapMs) return;
 
-		// With nothing live there is nothing to poll narrowly, so the tick is skipped rather than
-		// falling back to all 31 — an evening with no games on is where this page spent the most.
 		const dueForSweep = startedAt - lastSweepRef.current >= fullSweepIntervalMs;
 		if (!dueForSweep && liveLeaguesRef.current.length === 0) return;
 
 		const leagueIds = dueForSweep ? allLeagueIds : liveLeaguesRef.current;
 		lastPollRef.current = startedAt;
-		// Stamped before the request, not after, so a sweep that comes back entirely shed backs off to
-		// the sweep cadence instead of retrying all 31 on the next tick.
 		if (dueForSweep) lastSweepRef.current = startedAt;
 
 		try {
@@ -200,8 +179,6 @@ const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string
 				setError(strings.error);
 				return;
 			}
-			// Only a sweep may narrow the rotation. Doing it on a narrow poll would let one shed request
-			// drop a league that is mid-game until the next sweep two minutes later.
 			if (dueForSweep) liveLeaguesRef.current = [...new Set(liveGames.map(game => game.league))];
 
 			const now = Date.now();
@@ -240,8 +217,6 @@ const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string
 
 		const pollable = (): boolean => onScreenRef.current && document.visibilityState === 'visible';
 
-		// Self-scheduled rather than on an interval: a sweep that outruns the 15s gap would have the
-		// next one start on top of it, which turns a slow answer into more requests.
 		const tick = async (): Promise<void> => {
 			if (cancelled) return;
 			if (pollable()) await refresh();
@@ -249,8 +224,6 @@ const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string
 		};
 		void tick();
 
-		// `client:visible` decides when this hydrates and nothing after that, so without these two a
-		// tab left open on another site, or scrolled well past the section, polls all evening.
 		const onVisibilityChange = (): void => {
 			if (pollable()) void refresh();
 		};
@@ -273,8 +246,6 @@ const LivePowerScores = ({ strings, ui }: { strings: Strings; ui?: Record<string
 		};
 	}, [refresh]);
 
-	// One host element in every state, because the observer above needs something to watch before the
-	// first slate has landed and it must not change when the slate does.
 	const renderBody = (): ReactNode => {
 		if (loading) {
 			return (

@@ -1,5 +1,3 @@
-// Stands in for the `#i18n` virtual module, which resolves through the browser i18n runtime and
-// so is unavailable under Jest.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 

@@ -1,8 +1,5 @@
 @use '@arenaswap/ui/src/motion' as m;
 @layer custom {
-
-	// A college league's label on the Leagues page doubles as the way into its picker. The chevron sits
-	// at the end of the summary line only, so the name and the offseason line keep the tile's full width.
 	.college-league-open {
 		position:        relative;
 		display:         block;
@@ -30,12 +27,10 @@
 		transition:  color m.$motion-instant m.$motion-ease;
 	}
 
-	// Already let through by its division: shown on, faded, and not a switch of its own.
 	.league-toggle-row.is-covered {
 		opacity:    0.5;
 		transition: opacity m.$motion-quick m.$motion-ease;
 
-		// Bootstrap fades a disabled switch as well, which on top of the tile would all but hide it.
 		.switch { opacity: 1; }
 	}
 

@@ -24,7 +24,6 @@ const setFetch = (fetchMock: jest.Mock) => {
 // spec stands one in on the faked `setTimeout` and keeps the duration it was asked for.
 const timeoutSignals: number[] = [];
 
-// What `tickLeague` asks for: the dateless live days only, so a hung one is not queued behind a week of others.
 const livePoll = { includeUpcoming: false };
 
 beforeEach(() => {
@@ -69,7 +68,6 @@ describe('a request that never answers', () => {
 		const callsWhileHung = fetchMock.mock.calls.length;
 		expect(callsWhileHung).toBeGreaterThan(0);
 
-		// Still inside the window, a second poll for the same league and days rides the first request.
 		const alongside = fetchGamesWithLeagueLogos(['nba'], livePoll);
 		await jest.advanceTimersByTimeAsync(1);
 		expect(fetchMock).toHaveBeenCalledTimes(callsWhileHung);
@@ -104,8 +102,6 @@ describe('a request that never answers', () => {
 		expect(timeoutSignals).toEqual([10_000]);
 	});
 
-	// The popup-side requests and an unsignalled win-probability sweep. A hung one used to leave the
-	// detail screen loading until the popup closed, and stop the worker's sweep chain for good.
 	test.each([
 		['win probability with no caller signal', () => loadApiClient().fetchWinProbability({ id: '1', league: 'nba' })],
 		['summary', () => {

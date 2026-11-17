@@ -23,8 +23,7 @@ const EspnCalendarGroupSchema = z.object({
 });
 
 // `calendar` is a list of game days in most leagues and a list of week groups in the gridiron and
-// tournament ones. It is caught on its own so a shape we haven't seen costs the offseason label and
-// not the league logo sitting next to it.
+// tournament ones.
 const EspnLeagueSchema = z.object({
 	id: z.optional(z.string()),
 	logos: z.optional(z.array(EspnLeagueLogoSchema)),
@@ -36,9 +35,7 @@ const EspnTeamSchema = z.object({
 	// The nickname on its own: "Titans", "Nittany Lions". `shortDisplayName` is the school in
 	// college and the nickname in the pros, so it is the wrong field to reach for.
 	name: z.optional(z.string()),
-	// What a soccer club is called in passing: "Portland", "Gotham", "Angel City".
 	shortDisplayName: z.optional(z.string()),
-	// "St. Thomas", "Kansas City": how a forfeit note names a team.
 	location: z.optional(z.string()),
 	abbreviation: z.optional(z.string()),
 	logo: z.optional(z.string()),
@@ -62,8 +59,6 @@ const EspnProbableSchema = z.object({
 	athlete: z.optional(EspnAthleteRefSchema),
 	record: z.optional(z.string()),
 	status: z.optional(z.object({ type: z.optional(z.string()) })),
-	// Declared but unread: a pitcher's W/L/ERA already arrives assembled in `record`, and whether
-	// a goalie carries GAA here cannot be checked until the NHL season starts.
 	statistics: z.optional(z.catch(z.array(z.object({
 		name: z.optional(z.string()),
 		abbreviation: z.optional(z.string()),
@@ -106,8 +101,6 @@ const EspnCompetitorSchema = z.object({
 	// ESPN's poll position. Sent by the pro leagues too, where it is permanently 99 — its code for
 	// unranked — so the reader gates on the value rather than on the key being present.
 	curatedRank: z.optional(z.object({ current: z.optional(z.number()) })),
-	// Baseball and softball, live and final. A malformed value drops the field rather than the game,
-	// and never reads as 0: zero hits is what a no-hitter is made of.
 	hits: z.catch(z.optional(z.number()), undefined),
 	errors: z.catch(z.optional(z.number()), undefined),
 });
@@ -120,7 +113,6 @@ const EspnSeriesSchema = z.object({
 	competitors: z.optional(z.array(z.object({ id: espnNumericText, wins: z.optional(z.number()) }))),
 });
 
-// Soccer's key events: goals, cards, penalties.
 const EspnCompetitionDetailSchema = z.object({
 	redCard: z.optional(z.boolean()),
 	scoringPlay: z.optional(z.boolean()),
@@ -150,23 +142,18 @@ const EspnCompetitionStatusSchema = z.object({
 // equals `yardLine - drive.start.yardLine` for a home drive and the negation of it for an away one.
 const EspnDriveSchema = z.object({
 	start: z.optional(z.object({ yardLine: z.optional(z.number()) })),
-	// ESPN's own summary of the drive so far — "3 plays, 5 yards, 0:10". Football only.
 	description: z.optional(z.string()),
 });
 
 const EspnLastPlaySchema = z.object({
 	id: z.catch(z.optional(espnNumericText), undefined),
-	// "Defensive Rebound", "Free Throw - 2 of 2", "Full Timeout". Basketball reads its possession
-	// off this, and nothing else depends on it, so a shape we don't expect drops the field rather
-	// than the scoreboard.
 	type: z.catch(z.optional(z.object({ text: z.optional(z.string()) })), undefined),
 	team: z.optional(z.object({ id: z.optional(espnNumericText) })),
-	// Points the play put on the board: 0 for a miss, 1 to 3 for a make.
 	scoreValue: z.catch(z.optional(z.number()), undefined),
 	drive: z.optional(EspnDriveSchema),
 	// A sentence describing the play that just happened. Arrives on every sport that sends a
 	// situation at all, and routinely carries a leading space and an embedded newline — a penalty
-	// is two sentences. Normalized in parseLastPlay rather than here.
+	// is two sentences.
 	text: z.optional(z.string()),
 	// The home side's chance of winning after this play, as a fraction of 1. Basketball and football
 	// send it, baseball only now and then, hockey and soccer never.
@@ -323,8 +310,6 @@ export const EspnEventSchema = z.object({
 	weather: z.optional(EspnWeatherSchema),
 });
 
-// The scoreboard envelope only. `events` is deliberately left unvalidated here so a single bad
-// row can't take the whole payload down — see parseScoreboard.
 const EspnScoreboardShellSchema = z.object({
 	events: z.optional(z.array(z.unknown())),
 	leagues: z.optional(z.catch(z.array(EspnLeagueSchema), [])),
@@ -336,10 +321,7 @@ export interface EspnScoreboardResponse {
 	droppedEvents: number;
 }
 
-// ESPN routinely ships one malformed row inside an otherwise healthy scoreboard. Validating
-// `events` as a single array would throw a whole league's games away for that one row, and since
-// an empty result is indistinguishable from "no games today" the league would then be demoted to
-// dormant polling with nothing to show for it.
+// ESPN routinely ships one malformed row inside an otherwise healthy scoreboard.
 export const parseScoreboard = (raw: unknown): EspnScoreboardResponse => {
 	const shell = EspnScoreboardShellSchema.safeParse(raw);
 	if (!shell.success) return { events: [], leagues: [], droppedEvents: 0 };
@@ -355,18 +337,12 @@ export const parseScoreboard = (raw: unknown): EspnScoreboardResponse => {
 	return { events, leagues: shell.data.leagues ?? [], droppedEvents };
 };
 
-
-// The only part of the (very large) summary payload the scorer needs. A row that doesn't match
-// degrades to an empty object rather than rejecting the whole win-probability line.
 export const EspnSummarySchema = z.object({
 	winprobability: z.optional(z.array(
 		z.catch(z.object({ homeWinPercentage: z.optional(z.number()) }), {}),
 	)),
 });
 
-// The teams envelope only, salvaged row by row for the same reason the scoreboard is: one
-// non-conforming row used to empty the whole league, and fetchTeamsForLeagues cannot tell that
-// apart from a league with no teams — so the onboarding picker offered nothing to pick.
 const EspnTeamsShellSchema = z.object({
 	sports: z.optional(z.array(z.object({
 		leagues: z.optional(z.array(z.object({
@@ -380,9 +356,7 @@ const EspnTeamsRowSchema = z.object({
 		id: z.string(),
 		displayName: z.string(),
 		abbreviation: z.optional(z.string()),
-		// `rel` names the variant — `default`, `dark`, `primary_logo_white` and a dozen more. Zod
-		// strips what a schema does not declare, so leaving it off made every variant look alike and
-		// there was no way to ask for the white one.
+		// `rel` names the variant — `default`, `dark`, `primary_logo_white` and a dozen more.
 		logos: z.optional(z.array(z.object({
 			href: z.string(),
 			rel: z.optional(z.array(z.string())),

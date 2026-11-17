@@ -9,7 +9,6 @@ import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
 import fil from '../../../locales/fil.json';
 import fr from '../../../locales/fr.json';
-// Not `it` — that would shadow Mocha's global it() and break every test in this file.
 import itLocale from '../../../locales/it.json';
 import ja from '../../../locales/ja.json';
 import ko from '../../../locales/ko.json';
@@ -39,8 +38,6 @@ const finalGame: Game = {
 	awayTeam: { id: 'a', name: 'Chicago Bulls', abbreviation: 'CHI', score: 104, color: '#CE1141' },
 };
 
-// No attendance: ESPN only fills the figure in when it flips the status, so a live game carrying
-// one is not a state the extension can be in.
 const liveGame: Game = { ...finalGame, id: 'live-1', status: 'in', period: 3, clockSeconds: 284, attendance: undefined };
 
 const excitement: PowerScoreResult = {
@@ -74,9 +71,6 @@ const mountCard = (game: Game, excitementResult?: PowerScoreResult) => {
 	cy.mount(<GameCard {...cardProps} game={game} excitementResult={excitementResult} />);
 };
 
-// Both arguments come back off a computed style, so they arrive as 'rgb(r, g, b)' rather than as
-// hex. Reading the plate rather than hardcoding it is the point: a card whose background moved
-// would otherwise leave the ink measured against a colour it no longer sits on.
 const channelsOf = (color: string): number[] => (
 	(color.match(/\d+(\.\d+)?/g) ?? []).slice(0, 3).map(Number)
 );
@@ -94,7 +88,6 @@ const contrastRatio = (a: string, b: string): number => {
 	return (high! + 0.05) / (low! + 0.05);
 };
 
-// A history whose ends bracket the whole game, and one that only picks it up near the end.
 const spanning = (): PowerScoreSnapshot[] => (
 	[0, 0.5, 0.95].map(fraction => ({
 		gameId: finalGame.id,
@@ -249,8 +242,6 @@ describe('a finished game', () => {
 			cy.contains('61').should('not.exist');
 		});
 
-		// Team colour on the scores was built and rejected: on a plate this light it read as two
-		// unrelated inks rather than as one scoreline. Weight and a receded grey carry the result.
 		it('dims the loser and leaves the winner at full weight', () => {
 			mountCard(finalGame);
 			cy.get('.game-score-value').eq(0).should('have.class', 'is-loser');
@@ -261,15 +252,11 @@ describe('a finished game', () => {
 				expect(Number(winner.fontWeight), 'the winner is the bolder of the two')
 					.to.be.greaterThan(Number(loser.fontWeight));
 				expect(loser.color, 'and a lighter ink').to.not.equal(winner.color);
-				// Pinned, so this cannot pass on whatever a cell happens to inherit.
 				expect(loser.color).to.equal('rgb(124, 135, 148)');
 				expect(winner.color).to.equal('rgb(17, 24, 39)');
 			});
 		});
 
-		// Receded is not the same as illegible. A 2.1rem semibold score is large text, so the dimmed
-		// side still owes 3:1 against the plate it sits on — the same bar the chart and card colour
-		// helpers are built around. The #9aa4b0 this replaced reached 2.33:1 here.
 		it('dims the loser without dropping it under 3:1', () => {
 			mountCard(finalGame);
 			cy.get('.game-card.is-final').then(([card]: JQuery<HTMLElement>) => {
@@ -293,12 +280,10 @@ describe('a finished game', () => {
 			cy.get('.game-score-value').should('have.class', 'fw-bold');
 		});
 
-		// No team colour anywhere on the scoreline, which is a decision rather than an oversight.
 		it('takes no colour from either team', () => {
 			mountCard(finalGame);
 			cy.get('.game-score-value').should('not.have.attr', 'style');
 			cy.get('.game-score-value').then(([away, home]: JQuery<HTMLElement>) => {
-				// CHI red and PHI blue are both on the game; neither reaches the score.
 				for (const el of [away, home]) {
 					const [red, green, blue] = getComputedStyle(el).color.match(/\d+/g)!.map(Number);
 					expect(Math.max(red!, green!, blue!) - Math.min(red!, green!, blue!),
@@ -307,17 +292,12 @@ describe('a finished game', () => {
 			});
 		});
 
-		// The scores were plain spans first, which measure differently from the .flip-score box the
-		// live card puts them in — the difference was visible side by side in the list.
-		//
 		// Both mounts are enqueued at the top level. A `cy.mount` nested inside a `.then` replaces
 		// the root while the surrounding chain still holds the old, now-detached nodes, and a
 		// detached node reports an empty computed style rather than failing loudly.
 		it('sets the scores in the same box the live card uses', () => {
 			const live: { className?: string; fontSize?: string; fontFamily?: string; width?: number; height?: number } = {};
 
-			// The winner's score on both, since the loser is deliberately a lighter weight and would
-			// measure narrower for a reason that has nothing to do with the box it sits in.
 			mountCard(liveGame);
 			cy.get('.game-score-value').eq(1).then(([el]: JQuery<HTMLElement>) => {
 				const style = getComputedStyle(el);
@@ -333,9 +313,6 @@ describe('a finished game', () => {
 			cy.get('.game-score-value').eq(1).should(([el]: JQuery<HTMLElement>) => {
 				const style = getComputedStyle(el);
 				const box = el.getBoundingClientRect();
-				// The harness stubs `./flipScore` down to a plain span, so the wrapper itself is not
-				// observable here — what is, and what actually differed, is the class the score
-				// carries and the metrics that class produces.
 				expect(el.classList.contains('game-score-value')).to.equal(true);
 				expect(live.className).to.contain('game-score-value');
 				expect(style.fontSize).to.equal(live.fontSize);
@@ -362,7 +339,6 @@ describe('a finished game', () => {
 			mountCard(finalGame);
 			cy.get('.game-meta-networks').should('not.exist');
 			cy.contains(en.gameCard.watchLabel).should('not.exist');
-			// The venue survives: where it was played is still true.
 			cy.get('.game-meta-venue').should('have.text', 'Xfinity Mobile Arena');
 		});
 
@@ -377,8 +353,6 @@ describe('a finished game', () => {
 			cy.get('.bi-people').should('not.exist');
 		});
 
-		// ESPN's own label, taken off `shortDetail` rather than derived from the period — which is
-		// the only way SO for a shootout is ever produced.
 		it('carries ESPN\'s own Final designation when there was extra time', () => {
 			mountCard({ ...finalGame, finalPeriodSuffix: 'OT' });
 			cy.get('.final-status-label').should('have.text', `${en.gameCard.final}/OT`);
@@ -417,9 +391,6 @@ describe('a finished game', () => {
 	});
 
 	describe('the list', () => {
-		// `mainView` imports './gameCard', which the component harness replaces with a stub, so
-		// these assert placement by test id. The card's own internals are measured by the direct
-		// mounts above, which import it by a path the stub does not match.
 		it('gives finished games a section of their own', () => {
 			cy.mount(<StatefulMainView games={[finalGame]} prefs={listPrefs} />);
 			cy.get('.popup-section-title').should('contain.text', en.main.sectionFinal);
@@ -459,23 +430,17 @@ describe('a finished game', () => {
 			cy.get('[data-testid="game-card-final-1"]').should('not.exist');
 		});
 
-		// A slate of nothing but results is not an empty slate, and the "no games" state would
-		// otherwise sit above a section full of cards.
 		it('does not read as an empty slate when only results are left', () => {
 			cy.mount(<StatefulMainView games={[finalGame]} prefs={{ ...listPrefs, showUpcomingGames: false }} />);
 			cy.get('[data-testid="empty-no-games"]').should('not.exist');
 			cy.get('[data-testid="game-card-final-1"]').should('exist');
 		});
 
-		// And the reverse, so the assertion above is measuring the new clause rather than a state
-		// this view never reaches.
 		it('still reads as an empty slate with the setting off and nothing else on', () => {
 			cy.mount(<StatefulMainView games={[finalGame]} prefs={{ ...listPrefs, showUpcomingGames: false, keepFinalGames: false }} />);
 			cy.get('[data-testid="empty-no-games"]').should('exist');
 		});
 
-		// Across the whole section rather than inside each league group: the result you came looking
-		// for is your team's, and it should not be a league header down.
 		it('pins your teams to the top, ahead of a game that ended more recently', () => {
 			const older: Game = {
 				...finalGame,
@@ -531,8 +496,6 @@ describe('a finished game', () => {
 			cy.get('.powerscore-breakdown').should('not.exist');
 			cy.contains(en.powerScore.heading).should('not.exist');
 			cy.contains('61').should('not.exist');
-			// The rest of the screen is still there, so the assertions above are measuring the
-			// branch rather than a screen that failed to render.
 			cy.contains(en.detail.gameInfoHeading).should('exist');
 		});
 
@@ -541,8 +504,6 @@ describe('a finished game', () => {
 			cy.get('.game-detail-boost-row').should('not.exist');
 		});
 
-		// Both of the above are absences, so they are worth nothing unless the live screen is shown
-		// to have the things the wrap is missing.
 		it('is missing what a live screen has, rather than the selectors being wrong', () => {
 			mountDetail(liveGame, { powerScoreHistory: spanning(), scoreHistory: scoreSpan() });
 			cy.get('.powerscore-breakdown').should('exist');
@@ -579,8 +540,6 @@ describe('a finished game', () => {
 			cy.contains(en.detail.chartScoreTitle).should('not.exist');
 		});
 
-		// The same fragment is the honest shape of a game still being played, so the rule is the
-		// wrap screen's alone.
 		it('leaves a live screen free to draw a partial line', () => {
 			mountDetail(liveGame, { powerScoreHistory: fragment(), scoreHistory: scoreSpan() });
 			cy.contains(en.detail.chartPowerScoreTitle).should('exist');
@@ -598,8 +557,6 @@ describe('a finished game', () => {
 			});
 		});
 
-		// A dimmed score mid-game would read as the team that is behind rather than the team that
-		// lost, and it would flip on every basket.
 		it('dims neither side while the game is still being played', () => {
 			mountDetail(liveGame);
 			cy.get('.game-detail-score-value.is-loser').should('not.exist');
@@ -612,8 +569,6 @@ describe('a finished game', () => {
 	});
 });
 
-// The feed can still carry the pre-game line after the final whistle. On a finished game that is
-// a stale number about a question that has been answered.
 describe('final card odds', () => {
 	it('leaves the betting line off a decided game even with betting on', () => {
 		const decided: Game = {

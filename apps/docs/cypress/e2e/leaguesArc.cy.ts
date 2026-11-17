@@ -1,6 +1,5 @@
 import { pressEscape } from '../keyboard';
 
-// The full league list is Bootstrap's Dialog on a modal <dialog>.
 const openFully = () => {
 	cy.get('#leagues-dialog').then(([dialog]) => {
 		dialog.addEventListener('shown.bs.dialog', () => dialog.setAttribute('data-test-shown', ''), { once: true });

@@ -1,4 +1,3 @@
-// Topology-preserving state-variable filter (Simper/Cytomic): stays stable while the cutoff moves.
 export interface Svf {
 	k: number;
 	a1: number;
@@ -107,7 +106,6 @@ export const filterInPlace = (buffer: Float32Array, filter: Biquad): void => {
 	for (let i = 0; i < buffer.length; i++) buffer[i] = tickBiquad(filter, buffer[i]);
 };
 
-// Butterworth sections: two cascaded biquads with these Qs give a flat fourth-order response.
 export const butterworthFourthOrderQs = [0.5411961, 1.3065630];
 
 export const onePoleCoefficient = (cutoff: number, sampleRate: number): number => Math.exp(-2 * Math.PI * cutoff / sampleRate);

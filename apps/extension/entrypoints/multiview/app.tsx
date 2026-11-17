@@ -18,8 +18,6 @@ const closeTab = async () => {
 
 const App = () => {
 	const [tabId, setTabId] = useState<number | null>(null);
-	// Undefined while asking. Null means the background did not open this tab, as when the browser
-	// brings an old one back on restart.
 	const [lineup, setLineup] = useState<MultiviewLineup | null | undefined>(undefined);
 	const gridRef = useRef<HTMLDivElement>(null);
 

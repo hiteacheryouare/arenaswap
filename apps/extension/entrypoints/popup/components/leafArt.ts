@@ -22,8 +22,6 @@ const mirroredOutline = (rightHalf: [number, number][]): Path2D => {
 	return path;
 };
 
-// Traced around a radius that varies with the angle from the tip, so the lobes come from the
-// radius function rather than from hand-placed points.
 const polarOutline = (radius: (theta: number) => number, xScale: number): Path2D => {
 	const path = new Path2D();
 	const steps = 40;
@@ -36,8 +34,6 @@ const polarOutline = (radius: (theta: number) => number, xScale: number): Path2D
 	return path;
 };
 
-// Unit size, tip at y = -1 and stem at y = +1. Built on first use because Path2D only exists in
-// a browser, and maple is listed twice so it is the most common leaf in the pile.
 let shapes: Path2D[] | null = null;
 const leafShapes = (): Path2D[] => {
 	if (shapes) return shapes;
@@ -57,11 +53,9 @@ export interface leafStroke {
 	x: number;
 	y: number;
 	size: number;
-	// 1 is face-on, smaller is the leaf tipped away from the viewer.
 	tilt: number;
 	angle: number;
 	shape: number;
-	// Which half of the leaf sits in its own shadow: negative is the left.
 	curl: number;
 	color: rgbColor;
 }

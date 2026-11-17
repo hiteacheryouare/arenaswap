@@ -210,12 +210,6 @@ describe('suggestTabAssignments', () => {
 		expect(rest).toHaveLength(0);
 	});
 
-	// startTime used to be set only on a pre-game event, so every live game read
-	// MAX_SAFE_INTEGER here and two of them fell through to the id comparison. It is populated for
-	// every state now, which makes this tiebreak reachable for the first time: the two games below
-	// are the same fixture twice, so they score identically, and the ids are ordered against the
-	// kickoffs on purpose. Nothing in the product depends on which one wins — the point is that the
-	// answer is now the earlier game rather than whichever id happened to sort first.
 	it('breaks a tie between two live games on the earlier kickoff, not the lower id', () => {
 		const earlierKickoffHigherId = makeGame(
 			'401700002', 'nba', 'basketball',
@@ -378,8 +372,6 @@ describe('isSuggestableUrl', () => {
 });
 
 describe('same-city collisions', () => {
-	// Both reported from manual testing against real Xfinity Stream tabs, where the title is
-	// useless and everything worth matching on lives in the URL.
 	const ramsChargers = makeGame(
 		'401700010', 'nfl', 'football',
 		team('24', 'Los Angeles Chargers', 'LAC'),
@@ -419,7 +411,6 @@ describe('same-city collisions', () => {
 
 	it('does not credit the other side when only one team is named', () => {
 		const tab = makeTab(43, 'Los Angeles Rams', 'https://example.com/watch');
-		// The Rams full name identifies them; the Chargers cannot ride the same 'los angeles'.
 		expect(scoreTabGamePair(tab, ramsChargers)).toBe(30);
 	});
 

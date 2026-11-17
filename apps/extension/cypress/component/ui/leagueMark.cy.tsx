@@ -1,5 +1,3 @@
-// Layout-only, against the real stylesheets: the mark has to share a status row that was sized
-// for one word and, on a postseason game, a round name beside it.
 import type { ComponentType } from 'react';
 import FinalGameCard from '@arenaswap/ui/src/components/finalGameCard';
 import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
@@ -71,7 +69,6 @@ describe('league mark on a card', () => {
 		});
 	});
 
-	// Live and final cards already had a status row, so the mark rides on it for free.
 	['live', 'final'].forEach(label => {
 		it(`costs the ${label} card no height`, () => {
 			const [, Card, status] = cards.find(([name]) => name === label)!;
@@ -92,8 +89,6 @@ describe('league mark on a card', () => {
 		cy.get('.game-card-status-row').should('not.exist');
 	});
 
-	// On team colour the label is written in its side's ink, the same as the LIVE beside it; the grey
-	// it was given for the white plate does not read there.
 	it('writes the label in the ink of the side it sits on', () => {
 		mount(LiveGameCard, { ...game('in', 'nba'), awayTeam: { ...game('in', 'nba').awayTeam, color: '#FDB71A' }, homeTeam: { ...game('in', 'nba').homeTeam, color: '#0C2340' } });
 		cy.get('.live-status-label').then(([live]: JQuery<HTMLElement>) => {
@@ -101,8 +96,6 @@ describe('league mark on a card', () => {
 		});
 	});
 
-	// What the scoreboard hands over is the dark-ground logo, which is right on colour and swapped for
-	// its light-ground twin on a final card's plate.
 	it('takes the dark-ground logo on colour and the light-ground one on a final card', () => {
 		const logos: LeagueLogoMap = { nba: 'https://a.espncdn.com/i/teamlogos/leagues/500-dark/nba.png' };
 		mount(LiveGameCard, game('in', 'nba'), true, logos);
@@ -111,7 +104,6 @@ describe('league mark on a card', () => {
 		cy.get('.game-card-league img').should('have.attr', 'src', 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png');
 	});
 
-	// A gold away side is written in near-black, and the white dark-ground logo would vanish into it.
 	it('takes the light-ground logo when its side is written in dark ink', () => {
 		const logos: LeagueLogoMap = { nba: 'https://a.espncdn.com/i/teamlogos/leagues/500-dark/nba.png' };
 		const live = game('in', 'nba');

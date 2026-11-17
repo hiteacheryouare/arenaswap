@@ -5,9 +5,6 @@ import nhlTiedThirdPeriod from '../../../../packages/sideline/tests/fixtures/sco
 import nflNeutralSite from '../../../../packages/sideline/tests/fixtures/scoreboards/nflNeutralSite.json';
 import wnbaSemifinalFourthQuarter from '../../../../packages/sideline/tests/fixtures/scoreboards/wnbaSemifinalFourthQuarter.json';
 
-// Recorded scoreboard events (each file's `source` says which recording line). A spec moves the
-// score or the clock on a copy to play the game forward; the rest of the event stays as it was sent.
-
 interface capture {
 	league: string;
 	event: { id: string; competitions: { competitors: { homeAway: string; score: string }[]; status: { clock: number; displayClock: string; type: { detail: string; shortDetail: string } } }[] };
@@ -22,7 +19,6 @@ const captures = {
 
 export type capturedLeague = keyof typeof captures;
 
-/** Each capture as recorded: Liberty at Dream 78–79 with 3:53 left, Hurricanes at Flyers 2–2 in the third, Colts at Commanders 20–13 to start the fourth, Leeds at Arsenal 1–2 in stoppage time. */
 export const gameIds: Record<capturedLeague, string> = {
 	wnba: captures.wnba.event.id,
 	nhl: captures.nhl.event.id,
@@ -33,7 +29,6 @@ export const gameIds: Record<capturedLeague, string> = {
 export interface eventPatch {
 	home?: number;
 	away?: number;
-	// Seconds left in the period.
 	clock?: number;
 }
 
@@ -54,12 +49,10 @@ export const liveEvent = (league: capturedLeague, patch: eventPatch = {}): unkno
 	return event;
 };
 
-/** The slate each league answers with: one live event per league named. */
 export const slate = (games: Partial<Record<capturedLeague, eventPatch>>): Partial<Record<LeagueId, unknown[]>> => (
 	Object.fromEntries(Object.entries(games).map(([league, patch]) => [league, [liveEvent(league as capturedLeague, patch)]]))
 );
 
-/** Prefs as a settled user has them, stored the way the popup stores them. */
 export const storedPrefs = (overrides: Partial<UserPreferences> = {}) => {
 	const prefs = { ...createDefaultUserPreferences(), enabledLeagues: ['wnba', 'nhl'] as LeagueId[], ...overrides };
 	return { prefs };

@@ -5,7 +5,6 @@ import type { Game } from '@arenaswap/core/types';
 // between polls, and a game seen live by one worker is usually seen final by the next.
 export const gameEndTimesKey = 'arenaswap.gameEndTimes';
 
-// The guide's slate reaches two local days back, so a record older than three has nothing to draw.
 export const gameEndRetentionMs = 3 * 24 * 60 * 60 * 1000;
 
 export interface gameEndRecord {
@@ -31,16 +30,10 @@ export const readGameEndRecords = (stored: unknown): gameEndRecords => {
 	return records;
 };
 
-// `seenLiveAt` is the last time the game was seen live, refreshed this often rather than on every poll
-// so a live game costs one storage write every few minutes.
 const liveRefreshMs = 5 * 60_000;
 
-// A final is only stamped when it turns up this soon after the game was last seen live. Anything later
-// ended at some point nobody saw, and stamping it with the moment it was found would stretch a noon
-// kickoff into the evening, or, after a night with the browser closed, into the next morning.
 const trustedEndGapMs = 10 * 60_000;
 
-// Null when nothing changed, which is what keeps this from writing to storage on every poll.
 export const recordGameEnds = (records: gameEndRecords, fetched: Game[], now: number): gameEndRecords | null => {
 	let next: gameEndRecords | null = null;
 	for (const game of fetched) {
@@ -77,7 +70,6 @@ export const gameEndTimes = (records: gameEndRecords): Record<string, number> =>
 	)))
 );
 
-// Finals nobody saw end, in the sports whose summary says how long they took.
 export const gamesNeedingDuration = (games: Game[], records: gameEndRecords): Game[] => games.filter(game => (
 	game.status === 'post'
 	&& (game.sportType === 'baseball' || game.sportType === 'softball')

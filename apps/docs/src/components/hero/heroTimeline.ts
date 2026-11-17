@@ -4,26 +4,9 @@ import { defaultCooldownSecs, defaultSensitivity, pollIntervalMs, sensitivityThr
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 import { heroGameAt, heroGames } from './heroGames';
 
-// The scoring and switching behind the hero, as pure functions of a tick.
-//
-// This used to accumulate score history into refs as the animation advanced, which had two
-// problems. It mutated during render, so React was free to run it twice and desynchronise the
-// history from the board. And it meant the state at tick 18 could only be reached by having played
-// ticks 0 to 17, so the reduced-motion still frame — which jumps straight there — scored every card
-// against a two-entry history and under-reported the whole board by 20-odd points.
-//
-// Everything here is derived from the timeline instead, so tick 18 scores the same whether you
-// watched the seventeen ticks before it or not. The history is at most 27 entries per game, so
-// rebuilding it per tick costs nothing.
-//
-// `scripts/docs/validateHeroTimeline.ts` prints the output of these same functions, so the table it
-// prints is the hero rather than a second implementation of it.
-
 export const switchThreshold = sensitivityThresholds[defaultSensitivity];
 export const cooldownTicks = Math.round((defaultCooldownSecs * 1000) / pollIntervalMs);
 
-// A fixed base instead of Date.now(), so a server render and the first client render agree. The
-// scorer only reads differences between snapshot timestamps, so the absolute value is arbitrary.
 const heroEpoch = 1_767_225_600_000;
 
 export interface ScoredGame {
@@ -40,8 +23,6 @@ export interface HeroSwitch {
 	gap: number;
 }
 
-// ESPN's win probability is not in this demo's data, so it is derived from the margin. It only
-// feeds the ±5 variance boost, and omitting it would silently drop a signal the popup does show.
 const winProbability = (game: Game): number => (
 	Math.min(0.97, Math.max(0.03, 0.5 + (game.homeTeam.score - game.awayTeam.score) * 0.045))
 );
@@ -69,7 +50,6 @@ export const bestOf = (board: ScoredGame[]): ScoredGame => (
 	board.reduce((a, b) => (b.result.total > a.result.total ? b : a))
 );
 
-// The shipped rule: clear the sensitivity gap, and be off cooldown.
 export const shouldSwitch = (
 	board: ScoredGame[],
 	onScreenIndex: number,
@@ -90,13 +70,8 @@ export interface HeroStateAt {
 	switches: HeroSwitch[];
 }
 
-// Where the hero opens. Not the first game in the list: if auto-switching has been on, you are
-// already on the best game by the time you look, so starting anywhere else would mean opening on a
-// switch the extension would have made before you arrived.
 export const openingIndex = bestOf(scoreBoardAt(0)).index;
 
-// Runs the whole thing from the first tick, which is the only honest way to answer "which tab would
-// you be on at tick N": being on a tab is a consequence of every switch decision before it.
 export const replayThrough = (tick: number): HeroStateAt => {
 	let onScreenIndex = openingIndex;
 	let lastSwitchTick = -cooldownTicks;

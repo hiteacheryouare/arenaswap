@@ -9,9 +9,6 @@ interface Props {
 const { class: className } = Astro.props;
 const t = useTranslations(currentLocale(Astro.currentLocale));
 
-// Both browser names are links, and which two they are is decided in the browser, so the sentence
-// is broken into parts around them rather than substituted into. The two links are filled in by
-// `applyAlternates` in document order, so a language that names Edge first gets Edge first.
 const alsoFor = tokenize(t('install.alsoFor'));
 ---
 <span class={className}>

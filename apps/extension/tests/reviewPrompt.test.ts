@@ -35,7 +35,6 @@ describe('review prompt thresholds', () => {
 	});
 });
 
-// A user who has earned the ask: enough switches, long enough ago.
 const earnedReviewPromptState = () => {
 	let state = createDefaultReviewPromptState();
 	for (let i = 0; i < reviewPromptSwitchThreshold; i++) {
@@ -45,9 +44,6 @@ const earnedReviewPromptState = () => {
 };
 const wellPast = 1_000_000 + reviewPromptMinUsageMs + 1;
 
-/* The whole point of this state is that the ask happens once. It is read back from storage on
-   every successful switch, and a read that quietly lost the record would put the banner in front
-   of somebody who already said no — repeatedly, for as long as they keep using the extension. */
 describe('a user who has already answered the review prompt', () => {
 	test('is never asked again after dismissing it, however many more games they watch', () => {
 		let state = markReviewPromptDismissed(earnedReviewPromptState(), wellPast);
@@ -65,7 +61,6 @@ describe('a user who has already answered the review prompt', () => {
 
 	test('keeps that answer when it comes back out of storage', () => {
 		const dismissed = markReviewPromptDismissed(earnedReviewPromptState(), wellPast);
-		// What storage.local actually hands back: the same object, round-tripped through JSON.
 		const restored = normalizeReviewPromptState(JSON.parse(JSON.stringify(dismissed)));
 
 		expect(restored).toEqual(dismissed);
@@ -73,7 +68,6 @@ describe('a user who has already answered the review prompt', () => {
 	});
 
 	test('is not re-armed by a record written before the counters existed', () => {
-		// An older shape: the ask was answered, but the fields the current gate reads are absent.
 		const legacy = normalizeReviewPromptState({ dismissedAt: 1_500_000 });
 
 		expect(legacy.dismissedAt).toBe(1_500_000);
@@ -106,8 +100,6 @@ describe('review prompt marketplace detection', () => {
 		expect(getReviewMarketplace('Mozilla/5.0 Chrome/120.0')).toBe('chrome');
 	});
 
-	// Sending an Edge user to the Chrome Web Store listing is a dead end: they cannot leave a
-	// review there for the copy they installed.
 	test('sends each browser to the store it actually installed from', () => {
 		expect(getReviewPromptUrl('id', 'Mozilla/5.0 Firefox/120.0')).toContain('addons.mozilla.org');
 		expect(getReviewPromptUrl('id', 'Mozilla/5.0 Chrome/120.0 Edg/120.0')).toContain('microsoftedge.microsoft.com');

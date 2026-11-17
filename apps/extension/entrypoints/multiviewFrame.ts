@@ -10,8 +10,6 @@ const playingVideo = (): HTMLVideoElement | undefined => {
 		.toSorted((a, b) => b.videoWidth * b.videoHeight - a.videoWidth * a.videoHeight)[0];
 };
 
-// Registered for every frame on every site while a Multiview tab is open, so it leaves at once
-// unless the page at the top is ours.
 export default defineUnlistedScript({
 	include: ['chrome', 'edge'],
 	main() {
@@ -51,8 +49,6 @@ export default defineUnlistedScript({
 			if (elements.length > 0) playPending = false;
 		};
 
-		// What the page last heard, so a clock that starts moving is told at once rather than on the
-		// next tick. The page only counts a stream as playing once two reports show its clock moving.
 		let reportedTime: number | undefined;
 		let reportedAdvancing = false;
 		let reporting = false;
@@ -85,7 +81,6 @@ export default defineUnlistedScript({
 			reportedTime = status.time;
 			try {
 				const reply = await browser.runtime.sendMessage(status) as { muted?: boolean } | undefined;
-				// Only the Multiview page answers, so even an empty reply means this frame is one of its boxes.
 				if (reply) answered = true;
 				if (typeof reply?.muted === 'boolean') {
 					listenForMedia();

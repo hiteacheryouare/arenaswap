@@ -30,7 +30,6 @@ const mount = (Card: typeof LiveGameCard, status: Game['status'], onToggle = () 
 	cy.document().its('fonts.ready');
 };
 
-// The star glyph is 12px across, which is a hard target to land on a moving list.
 describe('favorite star target', () => {
 	for (const [label, Card, status] of [['live', LiveGameCard, 'in'], ['final', FinalGameCard, 'post']] as const) {
 		it(`answers a click 10px off the glyph on a ${label} card`, () => {

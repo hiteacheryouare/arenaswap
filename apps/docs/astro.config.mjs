@@ -29,17 +29,11 @@ const isUntranslatedLocalePage = page => {
 const year = new Date().getFullYear();
 const version = pkg.version;
 
-// Off unless ARENASWAP_SITE_COVERAGE is set, so a normal build — including the one that writes the
-// tracked docs/ directory GitHub Pages serves — never ships instrumented JavaScript. Only the files
-// that actually reach a browser are listed: the React islands and the one helper they share. The
-// rest of src/ runs in Astro frontmatter at build time, and counting it would report a denominator
-// no visitor ever executes.
 const coverage = process.env.ARENASWAP_SITE_COVERAGE === '1';
 const coveragePlugins = coverage
 	? [istanbul({
 		include: ['src/components/**', 'src/i18n/islandStrings.ts'],
 		extension: ['.ts', '.tsx'],
-		// `astro build` is a production build, which the plugin skips instrumenting by default.
 		forceBuildInstrument: true,
 	})]
 	: [];
@@ -48,15 +42,8 @@ export default defineConfig({
 	integrations: [
 		react(),
 		mdx(),
-		// The nine /screenshots/ pages are store assets, rendered to be captured rather than
-		// landed on. They stay out of the sitemap and carry noindex of their own. So do the docs and
-		// release notes under a locale prefix that are still English copies.
 		sitemap({
 			filter: page => !page.includes('/screenshots/') && !isUntranslatedLocalePage(page),
-			// Emits the hreflang alternates into the sitemap as well as into each page's head. The
-			// keys are URL segments and the values are the hreflang codes, which for this site are
-			// the same string — `defaultLocale` is what tells the integration which one owns the
-			// unprefixed URLs.
 			i18n: {
 				defaultLocale: 'en',
 				locales: Object.fromEntries(localeCodes.map(code => [code, code])),
@@ -66,13 +53,6 @@ export default defineConfig({
 	markdown: {
 		processor: satteri({ hastPlugins: [relativeDocLinks, translatedHeadingIds, scrollableTables] }),
 	},
-	// English keeps the root, so every URL this site has ever published still resolves. The other
-	// eleven take one segment: /arenaswap/de/, /arenaswap/pt-BR/ and so on.
-	//
-	// `manual` routing rather than Astro's redirect-based strategies: this is a static build on
-	// GitHub Pages with no server to negotiate on, and the localized pages are generated explicitly
-	// by the `[...locale]` rest parameter in src/pages. What this config buys is `Astro.currentLocale`
-	// and the sitemap's alternates.
 	i18n: {
 		defaultLocale: 'en',
 		locales: localeCodes,
@@ -103,18 +83,12 @@ export default defineConfig({
 			},
 		},
 	},
-	// GitHub Pages project site. Needed for canonical URLs and the release notes feed.
 	site: 'https://hiteacheryouare.github.io',
 	outDir: '../../docs',
 	base: '/arenaswap/',
 	build: {
 		emptyOutDir: true,
 	},
-	// Retired URLs. `/blog/` and the one post it held were published, and `/credits/` shipped in 2.0,
-	// so they redirect rather than 404. Static output makes these meta-refresh pages, which is all
-	// GitHub Pages can serve.
-	// Keys are routes, so `base` is applied to them the same way it is to a page in src/pages.
-	// Destinations are written out literally, base included.
 	redirects: {
 		'/blog': '/arenaswap/releases/',
 		'/blog/introducing-v2': '/arenaswap/releases/2.0.0/',

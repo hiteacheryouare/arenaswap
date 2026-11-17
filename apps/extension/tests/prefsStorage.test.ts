@@ -55,9 +55,6 @@ describe('prefs storage', () => {
 		await expect(loadStoredUserPreferences()).resolves.toEqual(syncPrefs);
 	});
 
-	/* Firefox without a Mozilla account, and Chrome once a profile trips its sync quota, both
-	   reject the read outright rather than answering with nothing. Letting that take the whole load
-	   down would hand the user a factory-reset popup — no leagues, no favourites, onboarding again. */
 	test('falls back to the local copy when storage.sync cannot be read at all', async () => {
 		jest.spyOn(console, 'warn').mockImplementation(() => {});
 		const localPrefs: UserPreferences = {
@@ -101,9 +98,6 @@ describe('prefs storage', () => {
 		await expect(loadStoredUserPreferencesWithPresence()).resolves.toMatchObject({ hasStored: true });
 	});
 
-	/* What an upgrade looks like from here: a blob written by a version that had fewer settings in
-	   it. The ones the user chose have to come through untouched and the ones they never saw have
-	   to arrive at their defaults — a load that dropped either would silently undo their setup. */
 	test('carries an older version settings across and defaults the ones it never knew about', async () => {
 		const legacyPrefs = {
 			enabled: true,
@@ -124,14 +118,11 @@ describe('prefs storage', () => {
 		expect(prefs.sensitivity).toBe(7);
 		expect(prefs.cooldownSeconds).toBe(90);
 		expect(prefs.favoriteTeamIds).toEqual(['nba:20']);
-		// Settings that did not exist in the stored blob.
 		expect(prefs.standbyStreamEnabled).toBe(defaults.standbyStreamEnabled);
 		expect(prefs.finishedTabAction).toBe(defaults.finishedTabAction);
 		expect(prefs.upcomingGamesDays).toBe(defaults.upcomingGamesDays);
 	});
 
-	// A downgrade, a corrupted store, or a hand-edited profile. Sensitivity is the dial the switch
-	// threshold is read from, so an out-of-range one landing in prefs would break switching outright.
 	test('falls back to the default for a stored value the current version cannot use', async () => {
 		setBrowserStorage({
 			syncGet: jest.fn().mockResolvedValue({

@@ -21,7 +21,6 @@ const pickNewestPrefs = (
 
 	const syncTimestamp = normalizeTimestamp(syncUpdatedAt);
 	const localTimestamp = normalizeTimestamp(localUpdatedAt);
-	// A tie (notably 0/0, neither copy timestamped) prefers sync: legacy prefs were sync-only.
 	return localTimestamp > syncTimestamp ? localPrefs : syncPrefs;
 };
 
@@ -30,8 +29,6 @@ interface storedUserPreferencesResult {
 	hasStored: boolean;
 }
 
-// Presence comes back alongside the prefs because the popup needs both before its first paint, and
-// answering them separately meant reading the same two keys from both stores twice.
 export const loadStoredUserPreferencesWithPresence = async (): Promise<storedUserPreferencesResult> => {
 	const [syncResult, localResult] = await Promise.all([
 		browser.storage.sync.get({ prefs: null, [prefsStorageUpdatedAtKey]: 0 }).catch(err => {
@@ -67,7 +64,6 @@ export const prefsPayload = (prefs: UserPreferences, now = Date.now()) => ({
 export const persistStoredUserPreferences = async (prefs: UserPreferences): Promise<void> => {
 	const payload = prefsPayload(prefs);
 
-	// Caught per store so a quota or availability failure in one still lets the other write.
 	await Promise.all([
 		browser.storage.local.set(payload).catch(err => {
 			logWarn('storage.local unavailable while saving prefs.', err);

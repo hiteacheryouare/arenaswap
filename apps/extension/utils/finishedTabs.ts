@@ -2,8 +2,6 @@ import type { FinishedTabAction, TabRegistration } from '@arenaswap/core/types';
 
 export const finishedTabNoticeKey = 'finishedTabNotice';
 
-// Both counts, rather than one number and the action that produced it: the setting can change
-// between two polls, so a session can genuinely have freed some tabs and closed others.
 export interface FinishedTabNotice {
 	freed: number;
 	closed: number;
@@ -12,8 +10,6 @@ export interface FinishedTabNotice {
 export interface FinishedTabResolution {
 	tabId: number;
 	gameId: string;
-	// A window's last tab cannot be closed without taking the window with it, so those degrade to
-	// being freed. The setting still gets honoured everywhere it can be.
 	close: boolean;
 }
 
@@ -22,10 +18,7 @@ export interface ResolveFinishedTabsParams {
 	action: FinishedTabAction;
 	finishedGameIds: ReadonlySet<string>;
 	openTabIds: ReadonlySet<number>;
-	// The tab showing in each window is left alone until the viewer leaves it, so a postgame nobody
-	// asked to be pulled out of stays on screen. It comes back round on the next poll.
 	activeTabIds: ReadonlySet<number>;
-	// Window id per tab, and how many tabs each window holds. Only consulted when closing.
 	windowIdByTabId?: ReadonlyMap<number, number>;
 	tabCountByWindowId?: ReadonlyMap<number, number>;
 }
@@ -69,8 +62,6 @@ export const normalizeFinishedTabNotice = (value: unknown): FinishedTabNotice | 
 	return notice.freed === 0 && notice.closed === 0 ? null : notice;
 };
 
-// Accumulates rather than replaces: the popup is usually shut while this is happening, and a
-// second wave of finals before it opens should not erase the first.
 export const mergeFinishedTabNotice = (
 	current: FinishedTabNotice | null,
 	freed: number,

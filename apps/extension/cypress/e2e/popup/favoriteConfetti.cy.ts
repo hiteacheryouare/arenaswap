@@ -1,6 +1,5 @@
 import { liveState, makeScore, onboardedPrefs, sixersThunder } from '../../support/fixtures';
 
-// Philadelphia is the home side of the close game, and the user's favorite.
 const favorites = { local: { onboardingCompleted: true }, sync: { prefs: onboardedPrefs({ favoriteTeamIds: ['nba:20'] }) } };
 
 const withScores = (home: number, away: number) => {
@@ -24,8 +23,6 @@ const paintedPixels = (canvas: HTMLCanvasElement): number => {
 const canvas = () => cy.get<HTMLCanvasElement>('canvas.popup-confetti-canvas');
 const expectConfetti = () => canvas().should($canvas => expect(paintedPixels($canvas[0]!), 'painted pixels').to.be.greaterThan(0));
 
-// A burst is decided in the render that delivers the new score, and the first thing it does is ask
-// for the confetti chunk. Two frames after that render, a burst that was coming has already asked.
 const expectNoConfetti = () => {
 	cy.window().then(win => new Cypress.Promise<void>(resolve => win.requestAnimationFrame(() => win.requestAnimationFrame(() => resolve()))));
 	cy.get('@confettiChunk.all').should('have.length', 0);
@@ -36,8 +33,6 @@ const favoriteScores = (home: number) => cy.pushScores(withScores(home, 106));
 
 interface paintedCenter { x: number; y: number }
 
-// The middle of the confetti on the first frame it paints. The frames are the popup's: the spec's
-// own frame is hidden and never gets one.
 const watchFirstPaint = () => {
 	let firstPaint: Promise<paintedCenter>;
 	canvas().then($canvas => {
@@ -68,8 +63,6 @@ const watchFirstPaint = () => {
 
 const phiCrest = () => cy.contains('.game-card', 'PHI').find('.team-column.is-home .team-crest');
 
-// The first frame it paints, the confetti has already flown one frame's worth from where it was
-// launched, so it is expected a little way off in the direction it was fired.
 const oneFrameOfFlight = 60;
 
 const scrollListTo = (scrollTop: number) => cy.get('.popup-container').then($scroller => {

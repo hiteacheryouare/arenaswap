@@ -1,6 +1,5 @@
 import { browser } from 'wxt/browser';
 
-// The locale folders we ship, as language tags. Portuguese and Chinese ship only regional variants.
 const shippedLocales = ['de', 'en', 'es', 'fil', 'fr', 'it', 'ja', 'ko', 'pt-BR', 'pt-PT', 'zh-CN', 'zh-TW'];
 
 // The browser shows our strings from the folder that matches its UI language exactly, then from

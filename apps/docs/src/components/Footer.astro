@@ -11,8 +11,6 @@ import { currentLocale, tokenize, useTranslations } from '../i18n/ui';
 const locale = currentLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 
-// The name is a link rather than text, so the sentence is broken into parts around it instead of
-// being substituted into.
 const credit = tokenize(t('footer.madeWith'));
 ---
 <footer class="site-footer">

@@ -21,15 +21,12 @@ describe('constants', () => {
 		expect(resolveLeagueLogoUrl('nba')).toBe(fallback);
 	});
 
-	// A dark-ground mark is white, and on the light theme it is not there at all. The EPL lion was
-	// the one that went missing first.
 	test('swaps a dark-ground league logo for its light-ground variant on a light surface', () => {
 		const eplDark = 'https://a.espncdn.com/i/leaguelogos/soccer/500-dark/23.png';
 		expect(resolveLeagueLogoUrl('epl', eplDark, 'light')).toBe('https://a.espncdn.com/i/leaguelogos/soccer/500/23.png');
 		expect(resolveLeagueLogoUrl('epl', eplDark)).toBe(eplDark);
 		expect(resolveLeagueLogoUrl('ncaab', undefined, 'light')).toBe('https://a.espncdn.com/i/espn/misc_logos/500/ncaa.png');
 		expect(resolveLeagueLogoUrl('nba', undefined, 'light')).toBe(leagueLogoFallbacks.nba);
-		// An override is still a dark-ground mark, and the Olympics' are all seven of them.
 		expect(resolveLeagueLogoUrl('olybb', undefined, 'light')).toBe('https://a.espncdn.com/i/espn/misc_logos/500/olympics.png');
 	});
 
@@ -81,16 +78,11 @@ describe('constants', () => {
 		});
 	});
 
-	// The whole feature hangs off this surviving a round trip through storage: the popup writes
-	// through normalizeUserPreferences and the background reads back through it, so a value this
-	// dropped would leave the setting looking set and doing nothing.
 	test('keeps a stored finished-tab choice', () => {
 		expect(normalizeUserPreferences({ finishedTabAction: 'close' }).finishedTabAction).toBe('close');
 		expect(normalizeUserPreferences({ finishedTabAction: 'free' }).finishedTabAction).toBe('free');
 	});
 
-	// Same round trip, and the same failure if it breaks: the animation reads its own copy of this in
-	// localStorage, and that copy is only ever written from what comes back through here.
 	test('keeps a stored opening-animation choice', () => {
 		expect(normalizeUserPreferences({ openRevealEnabled: false }).openRevealEnabled).toBe(false);
 		expect(normalizeUserPreferences({ openRevealEnabled: 'false' }).openRevealEnabled).toBe(true);
@@ -124,8 +116,6 @@ describe('constants', () => {
 		}
 	});
 
-	// Dark is the only look the extension had before this setting, so an unknown value lands there
-	// rather than flipping somebody's popup to a theme they never picked.
 	test('keeps a stored theme and falls back to dark', () => {
 		expect(normalizeUserPreferences({ theme: 'light' }).theme).toBe('light');
 		expect(normalizeUserPreferences({ theme: 'system' }).theme).toBe('system');
@@ -133,8 +123,6 @@ describe('constants', () => {
 		expect(normalizeUserPreferences({ theme: 1 }).theme).toBe('dark');
 	});
 
-	// 'keep' is the one value that touches nobody's tabs, so anything unrecognised lands there
-	// rather than on a setting that closes things.
 	test.each([undefined, null, 'CLOSE', 'remove', 7, {}])('falls back to keep for %p', value => {
 		expect(normalizeUserPreferences({ finishedTabAction: value }).finishedTabAction).toBe('keep');
 	});
@@ -145,7 +133,6 @@ describe('constants', () => {
 		expect(normalized.postseasonBoostPoints).toBe(0);
 	});
 
-	// The switch thresholds are indexed by step, so a fractional one read as a threshold of 0.
 	test('a sensitivity between steps falls back to the default', () => {
 		expect(normalizeUserPreferences({ sensitivity: 4.5 }).sensitivity).toBe(createDefaultUserPreferences().sensitivity);
 		expect(normalizeUserPreferences({ sensitivity: 6 }).sensitivity).toBe(6);
@@ -258,7 +245,6 @@ describe('constants', () => {
 		expect(normalized.favoriteTeamBonusPoints).toBe(10);
 	});
 
-	// The order is the user's league display order, so normalization must not re-sort it.
 	test('preserves the stored enabledLeagues order verbatim', () => {
 		const custom = ['nhl', 'mlb', 'nba'];
 		expect(normalizeUserPreferences({ enabledLeagues: custom }).enabledLeagues).toEqual(custom);
@@ -314,8 +300,6 @@ describe('constants', () => {
 		expect(resolveLeagueLogoUrl('ncaaw')).toBe(leagueLogoFallbacks.ncaaw);
 	});
 
-	// The demo tab and the onboarding picker resolve logos with no ESPN response behind them, so a
-	// league with neither an override nor a fallback renders no crest at all.
 	test('resolves a fallback for every NCAA league without an ESPN logo', () => {
 		for (const leagueId of ['ncaab', 'ncaaw', 'ncaaf', 'ncaamh'] as const) {
 			expect(resolveLeagueLogoUrl(leagueId)).toMatch(/^https?:\/\//);

@@ -11,7 +11,6 @@ const game = (sportType: Game<string>['sportType'], league: string, [away, awayS
 	...extra,
 });
 
-// Away score, home score, one poll a minute.
 const window = (...scores: [number, number][]): ScoreSnapshot[] => scores.map(([awayScore, homeScore], i) => ({
 	gameId: 'g', timestamp: 1_790_000_000_000 + i * 60_000, homeScore, awayScore,
 }));

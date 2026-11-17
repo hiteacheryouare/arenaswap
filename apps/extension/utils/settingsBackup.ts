@@ -89,7 +89,6 @@ export const parseSettingsFile = (text: string): parsedSettingsFile => {
 	if (!isRecord(raw) || raw.format !== settingsFileFormat || !isRecord(raw.profile)) return { ok: false, problem: 'notOurs' };
 	const version = typeof raw.version === 'number' && Number.isFinite(raw.version) ? raw.version : 0;
 	if (version > settingsFileVersion) return { ok: false, problem: 'tooNew' };
-	// Every field would normalize to its default, so a file missing its settings would quietly reset them all.
 	if (!isRecord(raw.profile.prefs) || !Array.isArray(raw.profile.fantasyRoster)) return { ok: false, problem: 'notOurs' };
 
 	return {
@@ -112,7 +111,6 @@ const readLocalJson = (key: string): unknown => {
 	}
 };
 
-// Device settings stay with the browser, so every profile exports this browser's.
 export const loadSettingsProfile = async (profileId?: string): Promise<settingsProfile> => {
 	const { profiles, activeId } = await loadProfiles();
 	const entry = profiles.find(profile => profile.id === (profileId ?? activeId)) ?? profiles.find(profile => profile.id === activeId);
@@ -175,9 +173,6 @@ export const readBackupHash = (hash: string): { section: string; profileId?: str
 	return { section, profileId: profileId ? decodeURIComponent(profileId) : undefined };
 };
 
-// The popup is shut while this runs in its own tab, so the background hears about the new prefs
-// from the profile write. Demo mode is the background's to store, as it is for the popup's own
-// toggle, and only goes out when it changes: the message restarts the simulator.
 export const applySettingsProfile = async (profile: settingsProfile): Promise<profileList> => {
 	const { prefs, fantasyRoster, device } = profile;
 	const { demoMode: wasDemoMode } = await browser.storage.local.get({ demoMode: false });
@@ -194,7 +189,6 @@ export const applySettingsProfile = async (profile: settingsProfile): Promise<pr
 	return list;
 };
 
-// A file added beside the others brings only its setup; this browser's own device settings stay.
 export const addSettingsProfile = (profile: settingsProfile): Promise<profileList> => (
 	createProfile(profile.name, { prefs: profile.prefs, fantasyRoster: profile.fantasyRoster })
 );

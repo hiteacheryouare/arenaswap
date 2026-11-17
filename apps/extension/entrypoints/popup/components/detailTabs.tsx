@@ -28,13 +28,6 @@ interface detailTabsProps {
 // diffs against its previous render rather than the live DOM, so a `className` whose value does
 // not change between renders is left alone — which is what lets Bootstrap own it from there.
 //
-// That leaves one gap: a tab that goes away while it is open, as Matchup does at kickoff. With
-// nothing active, the strip hands the reader to the first tab rather than an empty screen.
-//
-// `.nav-underline` rather than `.nav-tabs`, which the popup already skins for the light
-// `.gd-setup` card the box score's switcher sits on: a lifted #f8fafc tab would be a white slab
-// on this dark shell.
-//
 // Bootstrap's nav overflow folds whatever a long translation pushes off the strip into a menu. Its
 // copies of the tabs are turned into plain menu items, and the hidden originals are disabled,
 // because the tab plugin would otherwise count both in its arrow-key order and land on tabs that
@@ -50,7 +43,6 @@ const settleOverflow = (wrapper: HTMLElement) => {
 	}
 };
 
-// A folded tab has no box, so its underline goes under the menu button holding it.
 const placeUnderline = (wrapper: HTMLElement, list: HTMLElement) => {
 	const tab = list.querySelector<HTMLElement>(':scope > .nav-item > .nav-link.active');
 	const holder = tab && !tab.offsetParent ? wrapper.querySelector<HTMLElement>('.nav-overflow-toggle') : tab;
@@ -70,8 +62,6 @@ const detailTabs = ({ tabs, tabId, paneId }: detailTabsProps) => {
 
 	const tabKey = tabs.map(tab => tab.id).join();
 
-	// Before paint, so the strip never shows a tab it is about to fold away. Rebuilt whenever the
-	// tabs change, since the component only counts the items it found when it was created.
 	useLayoutEffect(() => {
 		const wrapper = wrapperRef.current!;
 		const list = listRef.current!;
@@ -96,7 +86,6 @@ const detailTabs = ({ tabs, tabId, paneId }: detailTabsProps) => {
 			void Tab.getOrCreateInstance(tab).show();
 			toggle?.focus();
 		};
-		// The menu's copies are taken when it folds, so a change of tab has to refresh them.
 		const refresh = () => {
 			overflow.update();
 			settle();
@@ -104,7 +93,6 @@ const detailTabs = ({ tabs, tabId, paneId }: detailTabsProps) => {
 		wrapper.addEventListener('click', pick);
 		wrapper.addEventListener('shown.bs.tab', refresh);
 		settle();
-		// Placed before the first paint without travelling there.
 		const ready = requestAnimationFrame(() => {
 			list.dataset.underline = 'ready';
 		});

@@ -1,10 +1,6 @@
 import type { BuiltInModeId, ScoringModeChoice, SportType } from '@arenaswap/core/types';
 import { signalColors } from './signalColors';
 
-// How each PowerScore 3 engine id is drawn and named: the breakdown card, the charts, the
-// walkthrough. The engine's ids are plain strings, so the unions below are ours, and a test holds
-// them to the engine's own lists.
-
 export const modeSignalIds = {
 	classic: ['closeness', 'lateGame', 'momentum', 'leadChanges', 'comeback'],
 	blowouts: ['blowoutMargin', 'sustained', 'timing', 'pileOn'],
@@ -35,8 +31,6 @@ export interface SignalPresentation {
 	color: string;
 }
 
-// `color` is for an icon or a fill, which needs 3:1. `ink` is the same hue darkened for a number on
-// the breakdown's light card, which needs 4.5:1.
 export interface FactorTone {
 	color: string;
 	ink: string;
@@ -67,14 +61,10 @@ export interface BoostPresentation extends FactorTone {
 
 export interface ModePresentation {
 	nameKey: string;
-	// The engine pays no commercial-break penalty in this mode, so the breakdown leaves the row out.
 	usesBreakPenalty: boolean;
-	// Present when the mode blends with Classic, to say how.
 	blendTooltipKey?: string;
 }
 
-// Each Blowouts signal takes the tone of the Classic signal it turns inside out: margin for
-// closeness, a lead held for lead changes, an early rout for late-game, piling on for momentum.
 export const signalPresentation = {
 	closeness: { labelKey: 'powerScore.signalCloseness', tooltipKey: 'powerScore.tooltipCloseness', color: signalColors.closeness },
 	lateGame: { labelKey: 'powerScore.signalLateGame', tooltipKey: 'powerScore.tooltipLateGame', color: signalColors.lateGame },
@@ -90,8 +80,6 @@ export const signalPresentation = {
 	exposure: { labelKey: 'powerScore.signalExposure', tooltipKey: 'powerScore.tooltipExposure', color: signalColors.leadChanges },
 } as const satisfies Record<ModeSignalId, SignalPresentation>;
 
-// Every boost and penalty has its own icon and tone, and any two that can share a card sit at least
-// 11 apart in ΔE00. Closer hues only meet across sports, like the two-minute drill and the red card.
 export const boostPresentation = {
 	favoriteBoost: { labelKey: 'powerScore.favoriteBoost', tooltipKey: 'powerScore.tooltipFavoriteBoost', icon: 'star-fill', ...factorTones.gold },
 	gameBoost: { labelKey: 'powerScore.gameBoost', tooltipKey: 'powerScore.tooltipGameBoost', icon: 'lightning-fill', ...factorTones.green },
@@ -106,7 +94,6 @@ export const boostPresentation = {
 	postseasonBoost: { labelKey: 'powerScore.postseasonBoost', tooltipKey: 'powerScore.tooltipPostseasonBoost', icon: 'trophy-fill', ...factorTones.blue },
 } as const satisfies Record<BoostId, BoostPresentation>;
 
-// The boosts only some sports can pay. Every other boost is open to every sport.
 export const boostSports: Partial<Record<BoostId, readonly SportType[]>> = {
 	scoringOpportunity: ['football', 'baseball', 'softball', 'hockey'],
 	goAheadRun: ['baseball', 'softball'],
@@ -115,7 +102,6 @@ export const boostSports: Partial<Record<BoostId, readonly SportType[]>> = {
 	noHitter: ['baseball', 'softball'],
 };
 
-// The two adjustments that are not boosts: they come from a commercial break and the win-probability line.
 export const penaltyPresentation = {
 	commercialBreak: { icon: 'tv-fill', ...factorTones.pink },
 	volatility: { icon: 'activity', ...factorTones.purple },
@@ -146,12 +132,10 @@ export const isModeSignalId = (id: string): id is ModeSignalId => Object.hasOwn(
 export const isBoostId = (id: string): id is BoostId => Object.hasOwn(boostPresentation, id);
 export const isBuiltInModeId = (id: string | undefined): id is BuiltInModeId => id !== undefined && Object.hasOwn(modePresentation, id);
 
-// A custom mode's own ids have no entry, so they draw in a neutral grey under their raw id.
 export const unknownFactorColor = '#6c757d';
 
 export const signalColorOf = (id: string): string => (isModeSignalId(id) ? signalPresentation[id].color : unknownFactorColor);
 
-// Custom picks a built-in mode per league, so a screen that needs one mode shows Classic for it.
 export const displayModeOf = (choice: ScoringModeChoice | undefined): BuiltInModeId => (
 	choice === undefined || choice === 'custom' ? 'classic' : choice
 );

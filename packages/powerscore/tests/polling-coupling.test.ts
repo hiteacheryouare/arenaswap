@@ -1,11 +1,6 @@
-// Regression: history used to be count-capped, so fast polling compressed the window's real-time
-// span and dropped recent events before they decayed — a game being exciting was self-defeating.
-// The time-based window makes fast and slow polling produce the same scores for the same event.
-
 import { computePowerScore } from '../src/scorer';
 import { sportTypeConfigMap } from '../src/constants';
 import type { Game, ScoreSnapshot } from '../src/types';
-
 
 const makeGame = (overrides: Partial<Game> = {}): Game => ({
 	id: 'game-1',
@@ -19,8 +14,6 @@ const makeGame = (overrides: Partial<Game> = {}): Game => ({
 	...overrides,
 });
 
-// Mirrors background.ts: a snapshot every pollIntervalMs, always one at exactly nowMs, and only
-// those within historyWindowMs retained.
 const buildHistory = (
 	pollIntervalMs: number,
 	nowMs: number,
@@ -44,13 +37,10 @@ const FAST_POLL_MS = 6_000;
 const SLOW_POLL_MS = 25_000;
 
 const bballScoreAtT = (t: number): [number, number] => (t === 0 ? [80, 80] : [90, 80]);
-// 150s is a multiple of both poll intervals, so both rates observe the run at the same instant.
 const alignedScoreAtT = (t: number): [number, number] => (t >= 150_000 ? [90, 80] : [80, 80]);
-
 
 describe('Basketball: time-based window decouples momentum from poll rate', () => {
 	const config = sportTypeConfigMap.basketball;
-	// Observed at t=3min, well within the 5-min window for both poll rates.
 	const nowMs = 180_000;
 	const scoreAtT = bballScoreAtT;
 	const game = makeGame({
@@ -60,13 +50,11 @@ describe('Basketball: time-based window decouples momentum from poll rate', () =
 
 	test('fast polling: run is inside 5-min window, momentum > 0', () => {
 		const history = buildHistory(FAST_POLL_MS, nowMs, config.historyWindowMs, scoreAtT);
-		expect(history[0]!.timestamp).toBe(0); // t=0 still in window
+		expect(history[0]!.timestamp).toBe(0);
 		const result = computePowerScore(game, history);
 		expect(result.momentum).toBeGreaterThan(0);
 	});
 
-	// With the change aligned to a shared poll boundary there is nothing left for the poll rate to
-	// alter, which is the whole claim being made here.
 	test('slow polling: identical result once detection lag is taken out of it', () => {
 		const fastHistory = buildHistory(FAST_POLL_MS, nowMs, config.historyWindowMs, alignedScoreAtT);
 		const slowHistory = buildHistory(SLOW_POLL_MS, nowMs, config.historyWindowMs, alignedScoreAtT);
@@ -88,10 +76,8 @@ describe('Basketball: time-based window decouples momentum from poll rate', () =
 	});
 });
 
-
 describe('Hockey: 16-min window keeps goals visible at both poll rates', () => {
 	const config = sportTypeConfigMap.hockey;
-	// Goals at t=1min, observed at t=7min — well inside the 16-minute window.
 	const goalsAtMs = 60_000;
 	const nowMs = 420_000;
 	const scoreAtT = (t: number): [number, number] => (t >= goalsAtMs ? [2, 0] : [0, 0]);
@@ -139,9 +125,6 @@ describe('Hockey: 16-min window keeps goals visible at both poll rates', () => {
 	});
 });
 
-
-// Ages are measured against the newest snapshot rather than Date.now(), so a score depends only on
-// the history it was given — not on when the scorer happened to run.
 describe('Decay is measured from the newest snapshot, not from wall-clock time', () => {
 	const fixedHistory: ScoreSnapshot[] = [
 		{ gameId: 'game-1', timestamp: 0,      homeScore: 80, awayScore: 80 },

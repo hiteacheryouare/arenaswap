@@ -16,12 +16,8 @@ import {
 import { signalColors } from '../src/components/signalColors';
 import { colorDifference } from '@arenaswap/chromatic';
 
-// The engine's ids are plain strings, so nothing at compile time stops it growing one this table
-// has never heard of. That is what these check.
-
 const modes = Object.keys(builtInModes) as BuiltInModeId[];
 const colorOf = (id: string) => (id in boostPresentation ? boostPresentation[id as keyof typeof boostPresentation] : penaltyPresentation[id as keyof typeof penaltyPresentation]).color;
-// The boosts only some sports can pay never land on the same card as another sport's.
 const paysIn = (id: string, sport: SportType) => !(id in boostSports) || boostSports[id as keyof typeof boostSports]!.includes(sport);
 
 describe('scoringModeMeta keeps up with the engine', () => {
@@ -50,7 +46,6 @@ describe('scoringModeMeta keeps up with the engine', () => {
 		expect([...engineBoosts].toSorted()).toEqual([...boostIds].toSorted());
 	});
 
-	// A mode that blends with Classic has a row saying so; Classic does not blend with itself.
 	test('explains the blend for exactly the modes that blend', () => {
 		for (const mode of modes) {
 			expect('blendTooltipKey' in modePresentation[mode]).toBe(builtInModes[mode].classicBlend !== undefined);

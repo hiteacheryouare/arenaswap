@@ -3,8 +3,6 @@ export const bossHushedKey = 'bossHushed';
 
 const schemePattern = /^[a-z][a-z\d+.-]*:\/\//i;
 
-// Empty and unusable both come back null; the settings field tells them apart by looking at the
-// text. A bare host like `docs.google.com` is read as https, which is what people type.
 export const normalizeDecoyUrl = (raw: string): string | null => {
 	const text = raw.trim();
 	if (!text) return null;
@@ -15,7 +13,6 @@ export const normalizeDecoyUrl = (raw: string): string | null => {
 		return null;
 	}
 	if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
-	// `mailto:a@b.co` would otherwise parse as a host with a login.
 	if (url.username || url.password) return null;
 	const { hostname } = url;
 	if (!hostname.includes('.') && !hostname.includes(':') && hostname !== 'localhost') return null;
@@ -32,8 +29,6 @@ const pageKey = (raw: string | undefined): string | null => {
 	}
 };
 
-// The fragment is left out on purpose: a spreadsheet rewrites `#gid=` every time you change sheet,
-// and that tab is still the one the user meant.
 export const isDecoyTab = (tabUrl: string | undefined, decoyUrl: string): boolean => {
 	const wanted = pageKey(decoyUrl);
 	return wanted !== null && wanted === pageKey(tabUrl);
@@ -53,9 +48,7 @@ export interface bossModeDeps {
 	};
 	windows: { update: (windowId: number, info: { focused: true }) => Promise<unknown> };
 	getDecoyUrl: () => string;
-	// Turns auto-switching off and keeps it off; has to take effect before it first awaits.
 	pause: () => Promise<void>;
-	// Re-reads which tabs are muted. It has to honour `isHushed`, which is how the tabs go quiet.
 	muteManagedTabs: () => Promise<void>;
 	saveHushed: (hushed: boolean) => Promise<void>;
 }
@@ -79,8 +72,6 @@ export const createBossMode = (deps: bossModeDeps) => {
 		if (existing.windowId !== undefined) await deps.windows.update(existing.windowId, { focused: true });
 	};
 
-	// The mute has to outlive every poll and tab switch after it, and the ordinary rule is that a
-	// paused extension hands its tabs back unmuted. Hushed is the exception, kept until resume.
 	const press = async () => {
 		hushed = true;
 		const settled = await Promise.allSettled([

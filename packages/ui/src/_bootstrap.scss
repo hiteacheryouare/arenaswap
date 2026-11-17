@@ -1,6 +1,3 @@
-// The theme. This forwards Bootstrap with ArenaSwap's palette, type and motion applied, so an app
-// loads Bootstrap by loading this.
-//
 // Token maps ($root-tokens, $theme-*, the component $*-tokens below) belong to this file alone. An
 // app that passed its own would replace these rather than merge with them, so apps override a
 // component's tokens in CSS instead, inside `@layer custom`. Scalars are safe to configure from an
@@ -12,21 +9,16 @@ $body-font-size: 1rem !default;
 $link-hover-color: theme.pair(link-hover-color) !default;
 
 @forward 'bootstrap/scss/bootstrap' with (
-	// v5 drew neither, and v6 turns both on.
 	$enable-shadows:       false !default,
 	$enable-gradients:     false !default,
 	$enable-smooth-scroll: true !default,
 	$color-mode-type:      data !default,
 	$radius:               .375rem !default,
-	// v5's. The site's own media queries are written against 992 and 1200, and v6 moved lg and xl.
 	$breakpoints:          (xs: 0, sm: 576px, md: 768px, lg: 992px, xl: 1200px, 2xl: 1400px) !default,
 	$container-max-widths: (xl: 1140px, 2xl: 1320px) !default,
 	$color-contrast-dark:  #0d1117 !default,
 
 	$orange: #F75C03 !default,
-	// The UI accent: links, focus and outline buttons on dark. #2274A5, its light-mode ink, is also
-	// momentum's colour in the PowerScore signal palette. Do not "fix" a signal blue to match this;
-	// they are different jobs that happened to share a hex.
 	$blue:   #3E9BD1 !default,
 	$green:  #00CC66 !default,
 	$yellow: #F1C40F !default,
@@ -44,13 +36,10 @@ $link-hover-color: theme.pair(link-hover-color) !default;
 		--link-color: theme.pair(link-color),
 		--link-hover-color: $link-hover-color,
 		--btn-input-bg: var(--bg-1),
-		// v5 sized buttons and inputs from padding and line-height alone, and the popup's small controls
-		// are tuned to that: v6's minimum heights grow every one of them by a few pixels.
 		--btn-input-min-height: auto,
 		--btn-input-xs-min-height: auto,
 		--btn-input-sm-min-height: auto,
 		--btn-input-lg-min-height: auto,
-		// v5 buttons were inline-block and our markup spaces their icons with margin utilities.
 		--btn-input-gap: 0,
 		--btn-input-xs-gap: 0,
 		--btn-input-sm-gap: 0,
@@ -63,8 +52,6 @@ $link-hover-color: theme.pair(link-hover-color) !default;
 		--control-transition-timing: m.$motion-ease,
 	) !default,
 
-	// Bootstrap's motion, brought onto our scale, so a Bootstrap button and the component we wrote
-	// beside it animate alike.
 	$button-tokens:    (--btn-transition-duration: m.$motion-quick, --btn-transition-timing: m.$motion-ease) !default,
 	$nav-tokens:       (--nav-link-transition-duration: m.$motion-quick, --nav-link-transition-timing: m.$motion-ease) !default,
 	$accordion-tokens: (
@@ -73,9 +60,6 @@ $link-hover-color: theme.pair(link-hover-color) !default;
 		--accordion-panel-transition-duration: m.$motion-slow,
 		--accordion-panel-transition-timing: m.$motion-ease,
 	) !default,
-	// The sizes and colours below put the controls back on v5's: a 1em box and a 2em by 1em track at
-	// the type around them, on the input surface, centred in a line of body text. The check mark is v5's
-	// heavier stroke and the switch's knob its quarter-black dot.
 	$range-tokens: (
 		--range-thumb-transition-duration: m.$motion-quick,
 		--range-thumb-transition-timing: m.$motion-ease,
@@ -111,7 +95,6 @@ $link-hover-color: theme.pair(link-hover-color) !default;
 	$collapse-tokens:  (--transition-collapse-duration: m.$motion-slow, --transition-collapse-timing: m.$motion-ease) !default,
 	$progress-tokens:  (--progress-bar-transition: width m.$motion-slow m.$motion-ease) !default,
 
-	// v6 dropped the 1.25 step v5 called lh-sm. Tight two-line labels throughout the popup use it.
 	$utilities: (
 		'line-height': (
 			property: line-height,
@@ -127,7 +110,6 @@ $link-hover-color: theme.pair(link-hover-color) !default;
 	) !default,
 );
 
-// Not Bootstrap's: ArenaSwap constants both apps read at compile time, where a token cannot reach.
 $primary:            #F75C03;
 $warning:            #F1C40F;
 $danger:             #D90368;
@@ -135,15 +117,12 @@ $body-color:         theme.tone(dark, body-color);
 $font-family-base:   ('DM Sans', system-ui, -apple-system, sans-serif);
 $secondary-on-light: #2274A5;
 
-// The dimmed side of a final scoreline, drawn by both the card and the detail hero. It holds 3:1 as
-// large text on both plates it sits on, the card's #f4f6f8 and the hero's white.
 $score-loser-color:  #7c8794;
 
 :root {
 	@include theme.arenaswap-tokens;
 }
 
-// Dark unless asked otherwise. Bootstrap's own default follows the OS.
 :root:not([data-bs-theme='light']) {
 	color-scheme: dark;
 }
@@ -158,20 +137,14 @@ $score-loser-color:  #7c8794;
 		--as-btn-white-space: normal;
 	}
 
-	// A bare .btn is v6's neutral button and fills with --bg-2. Ours are icon and text buttons that
-	// were transparent in v5; the variants still set their own fill.
 	.btn:not(.btn-solid, .btn-outline, .btn-subtle, .btn-text, .btn-link, .btn-icon) {
 		--as-btn-bg: transparent;
 	}
 
-	// Both progress bars we draw, the card's PowerScore bar and the breakdown's signal bars, sit on
-	// light cards, so the track keeps the light grey it has always had rather than the page surface.
 	.progress {
 		--as-progress-bg: #e9ecef;
 	}
 
-	// v6 draws the close as a filled square with the X cut out. This is v5's bare X: 1em, centred in a
-	// 1.5em target, and drawn in the text colour as v6 does.
 	.btn-close {
 		--as-btn-close-size: 1em;
 		--as-btn-close-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414'/%3e%3c/svg%3e");

@@ -2,7 +2,6 @@ import { parseScoreboard } from '../src/espnSchemas';
 import { offseasonGraceMs, resolveOffseason } from '@arenaswap/core';
 import { toLeagueSchedule } from '../src/leagueCalendar';
 
-// Shapes as ESPN sent them on 2026-10-02, trimmed to the ends that matter.
 const collegeBasketballDays = ['2026-11-01T07:00Z', '2026-11-02T08:00Z', '2027-03-07T08:00Z'];
 const nflWeeks = [
 	{ label: 'Preseason', value: '1', startDate: '2026-08-06T07:00Z', endDate: '2026-09-06T06:59Z', entries: [
@@ -37,8 +36,6 @@ describe('telling a league between seasons from one playing through them', () =>
 		expect(resolveOffseason(schedule, at('2027-03-08T05:00Z'))).toBeNull();
 	});
 
-	// The calendar of a season not yet played lists the regular season alone. March Madness is
-	// still to come when the last listed day goes by.
 	it('waits out the grace period before calling a season over', () => {
 		const schedule = scheduleOf(collegeBasketballDays);
 		const lastDayEnds = at('2027-03-08T08:00Z');
@@ -53,7 +50,6 @@ describe('telling a league between seasons from one playing through them', () =>
 		expect(resolveOffseason(schedule, at('2027-05-01T12:00Z'))).toEqual({});
 	});
 
-	// The tournament group itself runs to New Year's Eve; the final was in July.
 	it('dates a tournament by its rounds rather than by the group around them', () => {
 		const schedule = scheduleOf(worldCupRounds);
 		expect(schedule.endsAt).toBe(at('2026-08-01T06:59Z'));
@@ -69,7 +65,6 @@ describe('telling a league between seasons from one playing through them', () =>
 		expect(resolveOffseason(undefined, at('2026-10-02T19:00Z'))).toBeNull();
 	});
 
-	// The calendar sits beside the logo in the same envelope, and the logo matters more.
 	it('keeps the league logo when the calendar comes in a shape it has never seen', () => {
 		const logos = [{ href: 'https://example/ncaab.png', rel: ['full', 'default'] }];
 		const [league] = parseScoreboard({ events: [], leagues: [{ id: '41', logos, calendar: [{ value: 7 }] }] }).leagues;

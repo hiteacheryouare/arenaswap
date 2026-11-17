@@ -15,9 +15,6 @@ const { localized = true } = Astro.props;
 const locale = currentLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 
-// Every one of these stays in the reader's language, including the two whose articles are English.
-// Sending those to the English URL is what made the navigation, the footer and the language
-// switcher all change language at once the moment somebody followed a link to the documentation.
 const links = [
 	{ path: '', label: t('nav.home') },
 	{ path: 'powerscore/', label: t('nav.powerscore') },
@@ -27,8 +24,6 @@ const links = [
 ];
 const legal = { path: 'legal/', label: t('nav.legal') };
 
-// A section's own index is the page; anything under it, like a single release note, is still in
-// that section and is marked so without claiming to be the page itself.
 const current = stripLocale(Astro.url.pathname);
 const currentFor = (path: string) => {
 	if (current === path) return 'page';
@@ -39,10 +34,6 @@ const currentFor = (path: string) => {
 	<nav class="site-nav">
 		<div class="container">
 			<div class="nav-row">
-
-				{/* The extension's own mark rather than a picture of it, and with no client
-				    directive: this renders to inline SVG at build time, and the header's script
-				    below is what takes it apart. */}
 				<a class="nav-logo" href={localePath(locale)}>
 					<Wordmark />
 				</a>
@@ -66,8 +57,6 @@ const currentFor = (path: string) => {
 		</div>
 	</nav>
 
-	{/* Modal, so the page behind goes inert and Tab stays in the menu. It hangs below the bar, and
-	    the bar's X is really the transparent backdrop: a click there is what closes it. */}
 	<dialog class="drawer drawer-top nav-drawer" id="nav-drawer" aria-label={t('nav.menu')}>
 		<div class="drawer-body">
 			<ul>
@@ -82,7 +71,6 @@ const currentFor = (path: string) => {
 </header>
 
 <script>
-// The same module the layout loads, so this is the one Drawer the data API registered, not a copy.
 import { Drawer } from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import driveWordmarkCollapse from '@arenaswap/ui/src/components/wordmarkCollapse';
 
@@ -95,15 +83,10 @@ const header = document.getElementById('site-header');
 drawer?.addEventListener('show.bs.drawer', () => toggle?.setAttribute('aria-expanded', 'true'));
 drawer?.addEventListener('hide.bs.drawer', () => toggle?.setAttribute('aria-expanded', 'false'));
 
-// Closed on the way out, so going Back to this page from the cache does not find the menu open.
 drawer?.querySelectorAll('a').forEach(a => {
 	a.addEventListener('click', () => Drawer.getOrCreateInstance(drawer).hide());
 });
 
-// The bar keeps its 64px — the drawer hangs off that height and the hero measures against it — so
-// unlike the popup's header nothing here condenses but the mark. `is-condensed` arrives with it,
-// which is what brings the bar's own background up; the two used to answer separate listeners and
-// there is no reading of this page where they should disagree.
 const mark = header?.querySelector('.nav-logo svg') as SVGSVGElement | null;
 if (header && mark) driveWordmarkCollapse({ svg: mark, bar: header });
 </script>

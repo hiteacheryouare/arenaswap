@@ -3,7 +3,6 @@ import type { BackgroundState, ExtensionMessage, GuideSlate, TabRegistration, Us
 export interface fakeTab { id: number; title: string; url: string }
 
 export interface fakeBrowserOptions {
-	/** Flattened messages.json from the build, keyed the way `browser.i18n` keys it (dots → underscores). */
 	messages: Record<string, { message: string }>;
 	state?: Partial<BackgroundState>;
 	local?: Record<string, unknown>;
@@ -13,7 +12,6 @@ export interface fakeBrowserOptions {
 	guideSlate?: GuideSlate;
 }
 
-/** Everything a spec can reach into after the popup has booted. */
 export interface fakeBackground {
 	state: BackgroundState;
 	prefs: UserPreferences | null;
@@ -24,7 +22,6 @@ export interface fakeBackground {
 	openedUrls: string[];
 	guideSlate: GuideSlate;
 	storage: { local: Map<string, unknown>; session: Map<string, unknown>; sync: Map<string, unknown> };
-	/** Fires SCORES_UPDATED at the popup the way the real background worker does. */
 	pushScores: (patch?: Partial<BackgroundState>) => void;
 }
 
@@ -91,18 +88,8 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 		},
 	};
 
-	// Stands in for the background service worker. The popup only ever reaches the outside world by
-	// sending an ExtensionMessage, so this switchboard is the whole of its backend. The switch is
-	// exhaustive: a message type added to or renamed in the union fails the Cypress typecheck here.
-	//
-	// It records rather than simulates: a message updates the matching `background` field and
-	// nothing else. Specs assert on those fields and drive visible change with cy.pushScores(),
-	// which keeps scoring logic in the real background where it belongs instead of drifting into a
-	// second copy here.
 	const handleMessage = (message: ExtensionMessage): unknown => {
 		switch (message.type) {
-			// Answering with anything else leaves the popup permanently empty: the reply goes through
-			// BackgroundStateSchema, which quietly falls back to an empty state.
 			case 'GET_STATE':
 				return background.state;
 
@@ -126,15 +113,12 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 				background.standbyStreamTabId = message.tabId;
 				return undefined;
 
-			// The guide fetches its own slate rather than reading GET_STATE, because it draws finals
-			// and scheduled games whatever the popup's display preferences say.
 			case 'GET_GUIDE_SLATE':
 				return background.guideSlate;
 
 			case 'GET_DEBUG_STATE':
 				return null;
 
-			// Multiview is not in a build Cypress serves: the fake manifest carries none of its permissions.
 			case 'GET_MULTIVIEW':
 				return null;
 

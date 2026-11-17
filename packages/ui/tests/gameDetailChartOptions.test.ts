@@ -13,10 +13,6 @@ import { signalPresentation } from '../src/components/scoringModeMeta';
 import { chartEasing, motionDuration } from '../src/motion';
 import { signalColors } from '../src/components/signalColors';
 
-// The four charts on the game detail screen. None of them can fail loudly: a chart handed the wrong
-// field, the wrong team's colour or a label list one short of its data still draws, and what it
-// draws is a confident picture of something that did not happen.
-
 interface seriesLike {
 	type?: string;
 	name?: string;
@@ -37,8 +33,6 @@ const byName = (option: EChartsOption, name: string): seriesLike => (
 	seriesOf(option).find(entry => entry.name === name)!
 );
 
-// Cleveland at home against Boston: two dark primaries the clubs actually publish, which is the
-// pair the lightening in `colorUtils` exists for.
 const game: Game = {
 	id: '401766123',
 	league: 'nba',
@@ -76,7 +70,6 @@ const scorePoint = (index: number, awayScore: number, homeScore: number): ScoreS
 	homeScore,
 });
 
-// The chart surface is #0d1117. A line on it is non-text, so WCAG wants 3:1.
 const srgbChannel = (value: number): number => {
 	const scaled = value / 255;
 	return scaled <= 0.04045 ? scaled / 12.92 : ((scaled + 0.055) / 1.055) ** 2.4;
@@ -132,19 +125,15 @@ describe('buildPowerScoreOption', () => {
 		expect(line.symbolSize).toBe(0);
 	});
 
-	// The axis has to leave the ceiling visible, or a game pinned at the top looks like a game that
-	// has run out of chart.
 	test('keeps headroom above the scoring ceiling', () => {
 		expect(yAxisOf(buildPowerScoreOption(history))!.max).toBeGreaterThan(scoreMaxTotal);
 	});
 
-	// A manual game boost pushes a total past the ceiling, and a fixed max would clip the line flat.
 	test('grows the axis to hold a total boosted past the ceiling', () => {
 		const boosted = [...history, powerPoint(5, { total: scoreMaxTotal + 40 })];
 		expect(yAxisOf(buildPowerScoreOption(boosted))!.max).toBe(scoreMaxTotal + 40);
 	});
 
-	// It carries an area fill, so a floating baseline would fill from mid-air.
 	test('keeps its baseline pinned, because the area fill hangs off it', () => {
 		expect(yAxisOf(buildPowerScoreOption(history))!.scale).toBeUndefined();
 	});
@@ -164,8 +153,6 @@ describe('buildTeamScoreOption', () => {
 		scorePoint(3, 110, 112),
 	];
 
-	// The one thing this chart exists to say is which team is ahead. A swap between the two series
-	// says the opposite, in the right colours, with no error anywhere.
 	test('names each line after the team whose score it carries', () => {
 		const option = buildTeamScoreOption(history, game);
 		expect(byName(option, 'BOS').data).toEqual([98, 104, 108, 110]);
@@ -178,8 +165,6 @@ describe('buildTeamScoreOption', () => {
 		for (const line of seriesOf(option)) expect(line.data).toHaveLength(history.length);
 	});
 
-	// A rolling window opens in the sixties, and a zero baseline spends the chart on scores nobody
-	// is looking at — which flattens the gap between the two teams into a single thick line.
 	test('lets the axis follow the window rather than starting at zero', () => {
 		expect(yAxisOf(buildTeamScoreOption(history, game))!.scale).toBe(true);
 	});
@@ -193,8 +178,6 @@ describe('buildTeamScoreOption', () => {
 		expect(contrastOnChart(home)).toBeGreaterThanOrEqual(3);
 	});
 
-	// The dot and the line have to be the same colour or a one-point chart draws a mark in the
-	// wrong team's colour.
 	test('draws each line and its symbols in one colour', () => {
 		for (const line of seriesOf(buildTeamScoreOption(history, game))) {
 			expect(line.itemStyle!.color).toBe(line.lineStyle!.color);
@@ -208,8 +191,6 @@ describe('buildTeamScoreOption', () => {
 		}
 	});
 
-	// Two clubs who publish the same dark navy. Drawing both lines in it makes the chart useless
-	// rather than merely ugly.
 	test('separates two teams whose published colours are all but identical', () => {
 		const navyDerby: Game = {
 			...game,
@@ -221,7 +202,6 @@ describe('buildTeamScoreOption', () => {
 	});
 });
 
-// A home team pulling slowly clear, which is the shape most win-probability lines take.
 const drift = (count: number): number[] => (
 	Array.from({ length: count }, (_, index) => 0.5 + (index / count) * 0.4)
 );
@@ -233,7 +213,6 @@ describe('buildWinProbabilityOption', () => {
 		expect(axis.max).toBe(100);
 	});
 
-	// The chart is two complementary lines. If they ever fail to add up, one of them is lying.
 	test('the two lines always add up to a whole game', () => {
 		const option = buildWinProbabilityOption(drift(200), game);
 		const home = byName(option, 'CLE').data!;
@@ -244,8 +223,6 @@ describe('buildWinProbabilityOption', () => {
 		}
 	});
 
-	// Thinning is what keeps a four-hour baseball game affordable to draw, and dropping the final
-	// reading would show the game still in the balance at the final whistle.
 	test('keeps the opening and the final reading when it thins a long game out', () => {
 		const long = drift(1_000);
 		const home = byName(buildWinProbabilityOption(long, game), 'CLE').data!;
@@ -279,7 +256,6 @@ describe('buildWinProbabilityOption', () => {
 		const option = buildWinProbabilityOption([0.62], game);
 		for (const name of ['CLE', 'BOS']) {
 			expect(byName(option, name).showSymbol).toBe(true);
-			// Not `> 0`: a 1px dot satisfies that and is invisible, which is the failure itself.
 			expect(byName(option, name).symbolSize).toBeGreaterThanOrEqual(4);
 		}
 	});
@@ -295,8 +271,6 @@ describe('buildWinProbabilityOption', () => {
 		expect(byName(option, 'BOS').data).toEqual([100, 50, 0]);
 	});
 
-	// The axis and the tooltip are the only places the numbers appear as words. An axis of bare
-	// integers reads as a score, not a probability.
 	test('writes the axis as whole percentages', () => {
 		const axis = (buildWinProbabilityOption(drift(20), game) as { yAxis?: { axisLabel?: { formatter?: (v: number) => string } } }).yAxis!;
 		expect(axis.axisLabel!.formatter!(0)).toBe('0%');
@@ -325,8 +299,6 @@ describe('buildWinProbabilityOption', () => {
 		expect(contrastOnChart(away)).toBeGreaterThanOrEqual(3);
 	});
 
-	// Both charts read the same pair off `resolveTeamColorPair`, so a team is the same colour
-	// wherever it appears on the detail screen.
 	test('gives a team the same colour it has on the score chart', () => {
 		const scoreOption = buildTeamScoreOption([scorePoint(0, 1, 2)], game);
 		const probOption = buildWinProbabilityOption(drift(20), game);
@@ -336,8 +308,6 @@ describe('buildWinProbabilityOption', () => {
 });
 
 describe('chart time labels', () => {
-	// The popup's strings follow the browser UI language, and the axis has to agree with them rather
-	// than with navigator.language.
 	test('format in the locale they are handed', () => {
 		const history = [powerPoint(0)];
 		const expected = new Date(history[0]!.timestamp).toLocaleTimeString('de', { hour: 'numeric', minute: '2-digit' });
@@ -354,7 +324,6 @@ describe('win probability series order', () => {
 });
 
 describe('buildComponentContributionOption', () => {
-	// One distinct value per signal, so a bar reading the wrong field cannot pass.
 	const history = [powerPoint(0, {
 		closeness: 21,
 		lateGame: 17,
@@ -363,7 +332,6 @@ describe('buildComponentContributionOption', () => {
 		comeback: 4,
 	})];
 
-	// The tooltip prints the series name, so the popup hands over the legend's translated names.
 	test('names each signal in the language it is given', () => {
 		const labels: Record<string, string> = { closeness: 'Ausgeglichenheit', lateGame: 'Spätphase', momentum: 'Momentum', leadChanges: 'Führungswechsel', comeback: 'Aufholjagd' };
 		const option = buildComponentContributionOption(history, undefined, id => labels[id]!);
@@ -385,8 +353,6 @@ describe('buildComponentContributionOption', () => {
 		expect(byName(option, 'Comeback').data).toEqual([4]);
 	});
 
-	// Five bars sharing one stack is what makes the column height the signals subtotal. Drop one
-	// off the stack and it draws as a separate column alongside.
 	test('stacks all five into one column', () => {
 		const bars = seriesOf(buildComponentContributionOption(history));
 		expect(bars).toHaveLength(5);
@@ -435,7 +401,6 @@ describe('buildComponentContributionOption across modes', () => {
 		]);
 	});
 
-	// A reading from before modes counts as Classic.
 	test('keys only the current mode, leaving the earlier mode\'s stretch empty', () => {
 		const history = [powerPoint(0), powerPoint(1, { modeId: 'classic', signals: { closeness: 30, lateGame: 0, momentum: 0, leadChanges: 0, comeback: 0 } }), blowout(2)];
 		expect(contributionSignalIds(history)).toEqual(['blowoutMargin', 'sustained', 'timing', 'pileOn']);
@@ -468,7 +433,6 @@ describe('boosts on the PowerScore line', () => {
 describe('buildLeadTrackerOption', () => {
 	const scores = [scorePoint(0, 10, 4), scorePoint(1, 12, 12), scorePoint(2, 14, 30)];
 
-	// Boston is away: its lead reads above zero, Cleveland's below, each filled in its own colour.
 	test('splits the signed margin into each team\'s side of zero', () => {
 		const option = buildLeadTrackerOption(scores, game);
 		const [away, home] = seriesOf(option) as (seriesLike & { areaStyle?: { color?: string } })[];

@@ -5,13 +5,10 @@ const options = [
 	{ value: 'dark', label: 'Dark' },
 ] as const;
 
-// What a screen reader announces for an aria-labelledby list: the referenced texts, joined.
 const accessibleName = (button: HTMLElement) => button.getAttribute('aria-labelledby')!.split(' ')
 	.map(id => document.getElementById(id)!.textContent!.trim()).join(' ');
 
 describe('selectDropdown', () => {
-	// A bare aria-label replaced the button's content, so the standby picker said "Standby tab" and
-	// never which tab.
 	it('names a hidden-labelled control with its label and its current value', () => {
 		cy.mount(<SelectDropdown value='dark' options={options} onChange={() => {}} ariaLabel='Theme' />);
 		cy.get('.form-control-caret').should(([button]: JQuery<HTMLElement>) => {

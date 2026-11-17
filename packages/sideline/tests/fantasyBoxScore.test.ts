@@ -23,7 +23,6 @@ describe('readFantasyBoxScore on a real NFL box score', () => {
 		expect(lines.get('dst:11')).toEqual({ sacks: 2, takeaways: 1, pointsAllowed: 13 });
 	});
 
-	// Our sources count an offense falling on its own fumble under `fumblesRecovered` too.
 	test('gives the defense nothing for a fumble the offense recovered itself', () => {
 		const { lines } = readFantasyBoxScore(withFumbleRow(1, ['1', '0', '1']), game);
 		expect(lines.get('dst:11')?.takeaways).toBe(1);

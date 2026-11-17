@@ -4,7 +4,6 @@ import { localePath } from '../i18n/locales';
 import { currentLocale, useTranslations } from '../i18n/ui';
 
 interface Props {
-	// Path without the base, e.g. `docs/extension/installing/`. Marks the matching link as current.
 	current?: string;
 }
 
@@ -12,8 +11,6 @@ const { current = '' } = Astro.props;
 const locale = currentLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 
-// Both trees, always, with the articles under them. A reader on a PowerScore page can see the
-// extension pages exist without going back to a hub to find out.
 const trees = await Promise.all(docsSectionOrder.map(async section => ({
 	section,
 	label: docsSectionCopy(t, section).title,

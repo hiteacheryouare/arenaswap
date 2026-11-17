@@ -5,8 +5,6 @@ import { makeScore } from '../fixtures';
 import { english, withLocale, type shippedLocale } from './locales';
 import { popupViewport } from './mountInPopup';
 
-// The detail view brings its own `.popup-container`, so it mounts straight into the view shell the
-// way app.tsx does. `mountInPopup` would nest a second container inside it.
 export const mountDetailView = (node: ReactNode, locale: shippedLocale = english) => {
 	cy.viewport(popupViewport.width, popupViewport.height);
 	return cy.mount(withLocale(locale, (
@@ -16,14 +14,11 @@ export const mountDetailView = (node: ReactNode, locale: shippedLocale = english
 	)));
 };
 
-// The sticky bar bleeds the shell's 0.75rem padding on purpose, to reach the popup edge.
 export const detailBleeds = ['.game-detail-header'];
 
 const minuteMs = 60_000;
-// A live screen only draws the last few minutes of history, counted back from now.
 const historyEnd = () => Date.now();
 
-// The scorer hands the popup whole numbers; `makeScore` splits a total by fractions.
 export const wholeScore = (gameId: string, total: number) => makeScore(gameId, total, {
 	closeness: Math.round(total * 0.4),
 	lateGame: Math.round(total * 0.3),

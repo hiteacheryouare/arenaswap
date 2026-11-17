@@ -4,8 +4,6 @@ import type { ShotContext, ShotModule } from './shotTypes';
 
 const legalStrings = import.meta.glob<{ default: { legal: { terms: Record<string, string> } } }>('../../../docs/src/i18n/strings/*.json', { eager: true });
 
-// The Lattice mark as the parent site draws it: eight ellipses a sixteenth of a turn apart, each
-// stroke drawing itself on a stagger (latticeandcompany.github.io, rosette.tsx).
 const rosetteRotations = Array.from({ length: 8 }, (_, index) => index * 22.5);
 const strokeSeconds = 0.9;
 const strokeStagger = 0.72 / 8;
@@ -40,7 +38,6 @@ const Rosette = ({ size, local }: { size: number; local: number }) => (
 
 const leaving = (ctx: ShotContext) => 1 - easeIn(progress(ctx.local, ctx.shot.to - ctx.shot.from - fadeOutSeconds, ctx.shot.to - ctx.shot.from));
 
-// The parent company on a slide of its own: the rosette draws, then the name comes in beside it.
 const Lattice = ({ ctx }: { ctx: ShotContext }) => {
 	const wordSize = ctx.format === 'portrait' ? 76 : 84;
 	const word = easeSignature(progress(ctx.local, 0.8, 1.4));
@@ -69,7 +66,6 @@ const Signature = ({ ctx }: { ctx: ShotContext }) => {
 
 export const signature: ShotModule = { Component: Signature };
 
-// The site's own disclaimers, in the film's locale, word for word.
 const legalSections = ['affiliation', 'notStreaming', 'thirdParty', 'estimate', 'warranty', 'availability'] as const;
 const links: Partial<Record<(typeof legalSections)[number], string>> = { estimate: 'estimateLink', warranty: 'warrantyLink' };
 

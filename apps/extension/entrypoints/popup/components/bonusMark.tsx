@@ -5,7 +5,6 @@ interface bonusMarkProps {
 	teamAbbreviation: string;
 }
 
-// Drawn even when the team isn't in the bonus, just hidden, so it holds its line of the hero.
 const bonusMark = ({ bonus, teamAbbreviation }: bonusMarkProps) => {
 	if (!bonus) return <div className='gd-bonus invisible' aria-hidden='true'>{i18n.t('detail.bonus')}</div>;
 

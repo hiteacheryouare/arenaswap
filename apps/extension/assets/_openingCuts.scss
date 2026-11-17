@@ -1,8 +1,5 @@
 @use 'sass:math';
 
-// The short opening cuts that share the shuffle with the poster. Every duration here is absolute
-// rather than `* var(--reveal-rate)`: these only ever play at one speed, and their totals are
-// `revealCutMs` in `cardReveal.ts`.
 $duel: 1850;
 $slam-cut:   540;
 $slam-split: 1080;
@@ -61,8 +58,6 @@ $ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
 	.game-card-reveal-cut-crest.is-away { left: 25%; }
 	.game-card-reveal-cut-crest.is-home { left: 75%; }
 
-	// ── Head to Head ────────────────────────────────────────────────────────────
-
 	.game-card-reveal[data-reveal-cut='headToHead']:not(.is-skipping) {
 		.game-card-reveal-base {
 			animation: revealCutOut 340ms steps(1, end) var(--reveal-delay) both;
@@ -77,7 +72,6 @@ $ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
 		animation: revealDuelShake #{$duel}ms linear var(--reveal-delay) both;
 	}
 
-	// A pixel past the middle, so the two slabs overlap rather than leave a hairline where they meet.
 	.game-card-reveal-duel-slab {
 		position:   absolute;
 		top:        0;
@@ -93,8 +87,6 @@ $ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
 	.game-card-reveal-duel .game-card-reveal-cut-crest {
 		animation: revealDuelCrest #{$duel}ms linear var(--reveal-delay) both;
 	}
-
-	// ── Type Slam ───────────────────────────────────────────────────────────────
 
 	.game-card-reveal[data-reveal-cut='typeSlam']:not(.is-skipping) .game-card .team-crest {
 		animation: cardRevealHandoff #{$slam-land}ms steps(1, end) var(--reveal-delay) both;
@@ -131,7 +123,6 @@ $ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
 		right: 0;
 	}
 
-	// The drain closes on the crest's centre: 50% of a half is the card's 25% or 75% slot.
 	.game-card-reveal-slam-half {
 		--reveal-slam-focus: calc(50% + var(--reveal-dx)) calc(50% + var(--reveal-dy));
 		animation:
@@ -170,8 +161,6 @@ $ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
 	.game-card-reveal-slam .game-card-reveal-cut-crest {
 		animation: revealSlamCrest #{$slam}ms linear var(--reveal-delay) both;
 	}
-
-	// ── Box Score Roll ──────────────────────────────────────────────────────────
 
 	.game-card-reveal[data-reveal-cut='boxScore']:not(.is-skipping) {
 		animation: revealCardRise 380ms $ease-out var(--reveal-delay) both;
@@ -246,12 +235,10 @@ $ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
 		}
 	}
 
-	// Mid-roll digits over the real ones read as a glitch, so these leave at once rather than fading.
 	.game-card-reveal.is-skipping .game-card-reveal-rolls {
 		visibility: hidden;
 	}
 
-	// The H2H and Type Slam covers sit over the card, so nothing underneath needs to arrive.
 	.game-card-reveal:is([data-reveal-cut='headToHead'], [data-reveal-cut='typeSlam']):not(.is-skipping) {
 		.game-card-status-row,
 		.game-card-center,
@@ -263,8 +250,6 @@ $ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
 			animation: none;
 		}
 	}
-
-	// ── Keyframes ───────────────────────────────────────────────────────────────
 
 	@keyframes revealCutOut {
 		from { opacity: 1; }
@@ -291,7 +276,6 @@ $ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
 		#{at(580, $duel)}, 100%  { transform: translateX(0); }
 	}
 
-	// Rides in on its slab, punches on the hit, holds, then flies to the card's own crest at scale 1.
 	@keyframes revealDuelCrest {
 		0%                 { transform: translate(calc(var(--reveal-side) * var(--reveal-width) * 0.505), 0) scale(var(--reveal-hold)); animation-timing-function: $ease-in; }
 		#{at(340, $duel)}  { transform: translate(0, 0) scale(var(--reveal-hold)); animation-timing-function: $ease-out; }

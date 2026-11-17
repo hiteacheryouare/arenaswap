@@ -46,7 +46,6 @@ describe('the go-ahead run on base', () => {
 		const leadoffWalk = down2([true, false, false]);
 		expect([boostPoints(leadoffWalk, 'scoringOpportunity'), boostPoints(leadoffWalk, 'goAheadRun')]).toEqual([3, 0]);
 
-		// Tying run on, go-ahead run at the plate: 5 × 1.25.
 		const single = down2([true, true, false]);
 		expect([boostPoints(single, 'scoringOpportunity'), boostPoints(single, 'goAheadRun')]).toEqual([6, 6]);
 
@@ -68,7 +67,6 @@ describe('the go-ahead run on base', () => {
 		expect(tiedRunnerOn(3)).toBe(4);
 		expect(tiedRunnerOn(6)).toBe(4);
 		expect(tiedRunnerOn(7)).toBe(5);
-		// A tied road team in the 9th is guaranteed nothing extra: the home team still bats.
 		expect(tiedRunnerOn(9)).toBe(8);
 	});
 
@@ -96,7 +94,6 @@ describe('the go-ahead run on base', () => {
 });
 
 describe('a no-hit bid', () => {
-	// Houston (home, pitching the tops) leads 2-0 and Seattle has no hits.
 	const bid = (inning: number, half: 'top' | 'bottom', outs = 0, awayHits = 0) => (
 		classic(ballgame({ inning, half, home: 2, away: 0, outs, awayHits, homeHits: 6 }))
 	);
@@ -156,7 +153,6 @@ describe('a no-hit bid', () => {
 
 	test('two hitless lineups pay the larger bid and half the smaller, inside the no-hitter cap', () => {
 		const doubleBid = (inning: number, outs: number) => classic(ballgame({ inning, half: 'top', home: 0, away: 0, outs, homeHits: 0, awayHits: 0 }));
-		// Houston pitching through 6 with an out (22 + 5.3), Seattle batting through 6 (22 × 0.7).
 		expect(boostPoints(doubleBid(7, 1), 'noHitter')).toBe(35);
 		expect(boostPoints(doubleBid(9, 2), 'noHitter')).toBe(boostBucketCaps.noHitter);
 	});
@@ -196,7 +192,6 @@ interface Possession {
 	down?: number;
 }
 
-// Kansas City (home) has the ball.
 const drive = ({ secs, yards, trailBy, timeouts = 3, period = 4, league = 'nfl', down = 1 }: Possession): Game<string> => ({
 	id: 'buf-kc',
 	league,
@@ -259,7 +254,6 @@ describe('the two-minute drill', () => {
 		expect(boostPoints(classic(drive({ secs: 30, yards: 20, trailBy: 0, period: 5, league: 'ncaaf' })), 'twoMinuteDrill')).toBe(0);
 	});
 
-	// UFL overtime is a two-point shootout from the five with no game clock, so its tries are no drive.
 	test('pays nothing in UFL overtime, which is an untimed shootout', () => {
 		expect(boostPoints(classic(drive({ secs: 0, yards: 5, trailBy: 0, period: 5, league: 'ufl' })), 'twoMinuteDrill')).toBe(0);
 		expect(boostPoints(classic(drive({ secs: 30, yards: 30, trailBy: 3, league: 'ufl' })), 'twoMinuteDrill')).toBeGreaterThan(0);
@@ -285,7 +279,6 @@ interface Match {
 	league?: string;
 }
 
-// Arsenal at home to Chelsea, on a full-game elapsed clock.
 const match = ({ minute, home, away, cards, league = 'epl' }: Match): Game<string> => ({
 	id: 'che-ars',
 	league,
@@ -373,7 +366,6 @@ const rink = ({ period, secs, home, away }: Rink): Game<string> => ({
 describe('hockey: the empty net and the power play are scoring opportunities', () => {
 	const chance = (game: Game<string>, context: ScoringContext) => boostPoints(classic(game, context), 'scoringOpportunity');
 
-	// The scoreboard can read 0:00 of the 3rd, still live, for a poll before it calls the period over.
 	test('a game decided at the horn pays no empty net, as it pays no power play', () => {
 		const horn = rink({ period: 3, secs: 0, home: 2, away: 1 });
 		expect(chance(horn, { powerPlay: true })).toBe(0);

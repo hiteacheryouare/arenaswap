@@ -5,8 +5,6 @@ import {
 	type ResolveFinishedTabsParams,
 } from '../utils/finishedTabs';
 
-// Two tabs in one window and a third alone in its own, which is the layout every closing rule
-// below turns on.
 const windowIdByTabId = new Map([[1, 100], [2, 100], [3, 200]]);
 const tabCountByWindowId = new Map([[100, 2], [200, 1]]);
 
@@ -58,8 +56,6 @@ describe('resolveFinishedTabs', () => {
 		expect(resolveFinishedTabs({ ...base, action: 'close' })).toEqual([{ tabId: 1, gameId: 'g1', close: true }]);
 	});
 
-	// tabs.remove on a window's last tab takes the window with it, so the setting degrades to
-	// freeing rather than shutting a window nobody asked to close.
 	test('frees rather than closes the only tab in its window', () => {
 		expect(resolveFinishedTabs({
 			...base,
@@ -77,8 +73,6 @@ describe('resolveFinishedTabs', () => {
 		}).every(entry => entry.close)).toBe(true);
 	});
 
-	// Without the window maps there is no way to know a tab is alone, and refusing to close
-	// anything would make the setting silently inert.
 	test('closes when the window layout is unknown', () => {
 		expect(resolveFinishedTabs({
 			...base,
@@ -112,8 +106,6 @@ describe('normalizeFinishedTabNotice', () => {
 });
 
 describe('mergeFinishedTabNotice', () => {
-	// The popup is usually shut while this is happening, so a second wave of finals before it
-	// opens must add to the first rather than replace it.
 	test('adds to what was already waiting', () => {
 		expect(mergeFinishedTabNotice({ freed: 1, closed: 0 }, 2, 1)).toEqual({ freed: 3, closed: 1 });
 	});

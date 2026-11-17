@@ -1,47 +1,13 @@
 import type { Game } from '@arenaswap/core/types';
 
-// The three games in the hero, and the play-by-play they run through.
-//
-// Each one is the game that is actually playing in its clip, in a league ArenaSwap tracks. The
-// hockey clip is Bemidji State against Minnesota State at the Sanford Center, which is readable off
-// the jerseys and the boards; the baseball clip is JJ Wetherholt's first big-league hit, a solo home
-// run in the bottom of the third on Opening Day 2026; the football clip is Gardner Minshew's 22-yard
-// touchdown to Dezmon Patmon with 3:40 left, the score that put Oregon away at Martin Stadium in
-// 2018. A card naming a different game from the one on screen would be the first thing anybody
-// noticed, and describing what you are watching is the popup's whole job.
-//
-// The baseball and football beats are the real games wherever the record says what happened: the
-// scores, the inning and count, the quarter, the clock and the down on screen. Only the polls in
-// between are authored. The hockey game is authored throughout, around the goal in its clip.
-//
-// Each clip starts from the top when its tab comes up, so a beat lines up with the footage: the
-// switch-in tick is the clip's first frame, and every tick after it is another 1.15 seconds in.
-//
-// Team ids, abbreviations, colours and crests come from ESPN's own teams endpoint, which is where
-// the extension gets them too. The two hockey colours are the schools' own: ESPN returns empty
-// strings for college hockey, and a grey card would say more about ESPN's feed than about the game.
-// Minnesota State plays in its alternate: its crest is drawn in its primary, so on a card painted in
-// it the crest disappears.
-//
-// Nothing here is a PowerScore. The scores on the cards are computed at render time by
-// `computePowerScore` from the `powerscore` package — the same function the extension calls — over
-// the score history this timeline produces. That split is the point: this file authors a game, and
-// the shipped algorithm decides how good it is. A hardcoded PowerScore would be a number nobody
-// could check, and the first implausible one would give the whole hero away.
-//
-// `npm run docs:validate-hero` asserts the result. Run it after touching any beat below.
-
 const espnTeamLogo = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
 const ncaaLogo = (id: string) => espnTeamLogo(`ncaa/500/${id}`);
 
-// A beat sets state from its tick onwards. Anything it leaves out carries forward, so a run of
-// quiet polls costs one line instead of six.
 export interface HeroBeat {
 	tick: number;
 	away?: number;
 	home?: number;
 	period?: number;
-	// Restated whenever the period changes; between beats it moves by `clockPerTick`.
 	clock?: number;
 	intermission?: boolean;
 	topOfInning?: boolean;
@@ -52,28 +18,20 @@ export interface HeroBeat {
 	isRedZone?: boolean;
 	down?: number;
 	distance?: number;
-	// Not rendered. It labels what this beat is for, so the next person editing the timeline can see
-	// the story in the data instead of reconstructing it from score deltas.
 	note?: string;
 }
 
 export interface HeroGameScript {
-	// The parts of the game that do not move.
 	base: Omit<Game, 'period' | 'clockSeconds' | 'awayTeam' | 'homeTeam'> & {
 		awayTeam: Omit<Game['awayTeam'], 'score'>;
 		homeTeam: Omit<Game['homeTeam'], 'score'>;
 	};
 	video: string;
 	poster: string;
-	// The stream this tab is pretending to be, as it would read in a browser tab.
 	tabTitle: string;
 	tabHost: string;
-	// Seconds of game clock burned per tick. Soccer counts up, everything else counts down. A beat's
-	// clock has to be a whole number of ticks from its period's anchor, or the derived clock
-	// overshoots and the next beat jumps it back the wrong way. The validator checks this.
 	clockPerTick: number;
 	clockCountsUp?: boolean;
-	// Innings and halves have no running clock to advance.
 	clockless?: boolean;
 	periodSeconds: number;
 	beats: HeroBeat[];
@@ -103,9 +61,6 @@ export const heroGames: HeroGameScript[] = [
 		clockPerTick: 0,
 		clockless: true,
 		periodSeconds: 0,
-		// Where the hero opens: scoreless in the bottom of the third, Wetherholt leading off on an 0-2
-		// count. He makes contact two seconds into the clip, and the run posts once the ball has had
-		// time to land. The hero leaves while he is rounding first.
 		beats: [
 			{ tick: 0, away: 0, home: 0, period: 3, topOfInning: false, bso: { balls: 0, strikes: 2, outs: 0 }, baseRunners: emptyBases, note: 'Wetherholt up, 0-2' },
 			{ tick: 6, home: 1, bso: { balls: 0, strikes: 0, outs: 0 }, note: 'STL 1, Wetherholt homers' },
@@ -132,8 +87,6 @@ export const heroGames: HeroGameScript[] = [
 		tabHost: 'flohockey.tv',
 		clockPerTick: 92,
 		periodSeconds: 1200,
-		// The middle. Bemidji State's first goal pulls the hero here, the tying goal is three seconds
-		// into the clip, and the second intermission scores zero, which hands the hero to football.
 		beats: [
 			{ tick: 0, away: 2, home: 0, period: 1, clock: 0, intermission: true, note: 'First intermission' },
 			{ tick: 4, period: 2, clock: 828, intermission: false },
@@ -159,11 +112,6 @@ export const heroGames: HeroGameScript[] = [
 		tabHost: 'foxsports.com',
 		clockPerTick: 49,
 		periodSeconds: 900,
-		// Last on screen. Oregon's comeback has it at 27-17 to start the fourth and 27-20 after a field
-		// goal at 6:38, and the clip is Washington State's next drive: 2nd & 9 at the Oregon 22 with
-		// 3:47 left. The card's clock follows the footage. The hero loops during the celebration,
-		// before the scoreboard has caught up with the catch, which in the extension takes about 30
-		// seconds.
 		beats: [
 			{ tick: 0, away: 17, home: 27, period: 4, clock: 839, downDistance: '1st & 10', fieldPosition: 'WSU 30', down: 1, distance: 10 },
 			{ tick: 9, away: 20, clock: 398, downDistance: '1st & 10', fieldPosition: 'WSU 25', note: 'ORE FG, 6:38' },
@@ -181,11 +129,7 @@ export const heroGames: HeroGameScript[] = [
 	},
 ];
 
-// Resolves a script to the concrete `Game` the card and the scorer both take.
 export const heroGameAt = (script: HeroGameScript, tick: number): Game => {
-	// Carried forward field by field. A generic property copy would need a cast through
-	// Record<string, unknown>, which is exactly the kind of hole that lets a typo in a beat sit
-	// there silently.
 	let state: HeroBeat = { tick: 0 };
 	let clockAnchor = { tick: 0, clock: 0 };
 

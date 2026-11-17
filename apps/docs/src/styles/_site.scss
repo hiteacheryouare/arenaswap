@@ -1,17 +1,7 @@
-// The site's own rules. Split out of `global.scss` so that the four landing-page partials keep
-// loading after this file rather than before it: `@use` has to precede every rule in a stylesheet,
-// so a single file cannot both hold 1,500 rules and load a partial underneath them.
-//
-// The order is not cosmetic. `_bands.scss` widens Bootstrap's own `.container` above 1600px with a
-// bare `.container` inside a media query — the same specificity Bootstrap uses — so it only wins by
-// coming later. Loaded first it would lose, and the page would stop widening on a large display.
 @use '@arenaswap/ui/src/bootstrap' as bs;
 @use '@arenaswap/ui/src/motion' as m;
 @use '@arenaswap/ui/src/airbrush';
 
-// ─── Brand ───────────────────────────────────────────────────────────────────────
-// The page takes the store art's black and neutral greys. Bootstrap's own tokens come out of the
-// build unlayered, so these are unlayered too and one step more specific than its `:root`.
 html:root {
 	@include airbrush.tokens;
 }
@@ -21,9 +11,6 @@ html:root[data-bs-theme='light'] {
 }
 
 @layer custom {
-
-	// The demos that draw the popup keep the popup's own palette, so what the site shows is what the
-	// extension shows.
 	.browser,
 	.notfound-card {
 		@include airbrush.popup-tokens;
@@ -42,33 +29,23 @@ html:root[data-bs-theme='light'] {
 		font-display: block;
 	}
 
-	// ─── CSS custom properties ───────────────────────────────────────────────────
-	// The colour and font tokens live in packages/ui/src/tailwind.css, imported through the Tailwind
-	// entry. Only tokens with no @theme equivalent belong here.
 	:root {
-		// Black shadows vanish into the dark page at any strength that would not be a smudge on white.
 		--lift-shadow:     light-dark(rgba(11, 16, 22, 0.14), rgba(0, 0, 0, 0.55));
 	}
 
-	// ─── Colour modes ────────────────────────────────────────────────────────────
-	// A panel pinned dark on the light page needs its own ink: `color` inherits as the page's
-	// already-resolved dark ink, not as the token.
 	[data-bs-theme] {
 		color: var(--color-text);
 	}
 
-	// Artwork drawn for one ground is rendered once per ground, and only the one for the page shows.
 	:root[data-bs-theme='light'] .for-dark,
 	:root:not([data-bs-theme='light']) .for-light {
 		display: none;
 	}
 
-	// ─── Global resets & base ────────────────────────────────────────────────────
 	*, *::before, *::after {
 		box-sizing: border-box;
 	}
 
-	// The header is fixed at 64px, so a jump to an anchor would otherwise land the heading under it.
 	html {
 		scroll-behavior: smooth;
 		scroll-padding-top: 5rem;
@@ -82,9 +59,6 @@ html:root[data-bs-theme='light'] {
 		}
 	}
 
-	// Headlines break into even lines rather than leaving one word stranded ("À chaque / fois."), and
-	// body copy avoids a lone last word. Korean keeps words whole, as Korean wraps at spaces; Japanese
-	// breaks at phrase boundaries rather than between any two characters.
 	.display-lg,
 	.display-md,
 	.section-title,
@@ -119,14 +93,10 @@ html:root[data-bs-theme='light'] {
 		max-width: 100%;
 	}
 
-	// ─── Orange dots ─────────────────────────────────────────────────────────────
-	// Brand flourish: every sentence-ending period in body copy is painted ArenaSwap orange. Wrapped
-	// at runtime by OrangeDots.astro, and inside React islands by their own markup.
 	.as-dot {
 		color: var(--as-accent-ink);
 	}
 
-	// ─── Scroll reveal ───────────────────────────────────────────────────────────
 	.reveal {
 		opacity: 0;
 		transform: translateY(32px);
@@ -143,7 +113,6 @@ html:root[data-bs-theme='light'] {
 		.reveal-delay-#{$i} { transition-delay: m.$motion-instant * $i; }
 	}
 
-	// Fail-safe: users who prefer reduced motion get the content immediately, with no reveal animation.
 	@include m.reduced-motion {
 		.reveal {
 			opacity: 1;
@@ -152,8 +121,6 @@ html:root[data-bs-theme='light'] {
 		}
 	}
 
-	// ─── Live dot ────────────────────────────────────────────────────────────────
-	// Static, like the one on the popup's cards: the LIVE beside it already says the game is on.
 	.live-dot {
 		display: inline-block;
 		width: 7px;
@@ -162,9 +129,6 @@ html:root[data-bs-theme='light'] {
 		background: #e53935;
 	}
 
-	// ─── Skip link ────────────────────────────────────────────────────────────────
-	// Hidden until a keyboard lands on it, then pinned above the fixed header, which would otherwise
-	// paint straight over it.
 	.skip-link:focus {
 		position: fixed;
 		top: 0.75rem;
@@ -182,7 +146,6 @@ html:root[data-bs-theme='light'] {
 		outline: none;
 	}
 
-	// ─── Site header / nav ────────────────────────────────────────────────────────
 	.site-header {
 		position: fixed;
 		top: 0;
@@ -212,14 +175,6 @@ html:root[data-bs-theme='light'] {
 		gap: 1.5rem;
 	}
 
-	// `--collapse` is written on `.site-header` every frame by `driveWordmarkCollapse`, already eased,
-	// and no transition here on purpose: a CSS curve running alongside the mark's own would have the
-	// two disagree in the middle.
-	//
-	// 3px of it is not a flourish. The wordmark is mostly air — its letters are 39% of its box — and
-	// the favicon is not, so holding the box height would hand the collapsed mark letters an eighth
-	// larger than the ones it replaced. Coming down to 25px is what keeps the `a` and the `s` the size
-	// they were, which is the only way a collapse reads as the same mark folding up.
 	.nav-logo {
 		flex-shrink: 0;
 
@@ -316,8 +271,6 @@ html:root[data-bs-theme='light'] {
 		.ham-bar:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 	}
 
-	// Bootstrap's top drawer, pinned under the 64px bar rather than floating inset from the edges,
-	// and arriving with a short drop and a fade rather than sliding its whole height in.
 	.nav-drawer {
 		--as-drawer-zindex: 999;
 		--as-drawer-bg: color-mix(in srgb, var(--as-bg-body) 98%, transparent);
@@ -343,7 +296,6 @@ html:root[data-bs-theme='light'] {
 			opacity: 0;
 		}
 
-		// The bar stays in sight above the menu, so nothing dims or blurs it.
 		&::backdrop {
 			background: transparent;
 			backdrop-filter: none;
@@ -387,8 +339,6 @@ html:root[data-bs-theme='light'] {
 		padding-top: 0.5rem;
 	}
 
-	// The drawer and the hamburger it belongs to are the only page chrome that travels. `.site-nav`
-	// is left alone on purpose: it changes background and shadow on scroll and never moves.
 	@include m.reduced-motion {
 		.nav-drawer,
 		.ham-bar {
@@ -396,10 +346,6 @@ html:root[data-bs-theme='light'] {
 		}
 	}
 
-	// ─── Language switcher ───────────────────────────────────────────────────────
-	// The trigger borrows the desktop links' resting and hover treatment rather than inventing a
-	// third, so the row still reads as one set of controls. Below 992px it goes with those links and
-	// the drawer shows the twelve languages as a plain list.
 	.lang-switch {
 		@media (max-width: 991px) {
 			display: none;
@@ -427,8 +373,6 @@ html:root[data-bs-theme='light'] {
 		}
 	}
 
-	// The language trigger's resting and hover treatment, on a square that holds one icon. Unlike the
-	// languages it stays in the bar below 992px, where there is room for it beside the menu button.
 	.theme-toggle {
 		display: flex;
 		align-items: center;
@@ -449,8 +393,6 @@ html:root[data-bs-theme='light'] {
 		}
 	}
 
-	// The theme button costs the bar 48px, which at 992 is more than Japanese and both Portuguese
-	// rows had to spare. The flag still says which language this is, and the label is on the button.
 	@media (min-width: 992px) and (max-width: 1199.98px) {
 		.lang-switch-current {
 			display: none;
@@ -459,12 +401,9 @@ html:root[data-bs-theme='light'] {
 
 	.lang-switch-caret {
 		font-size: 0.6rem;
-		// The chevron sits optically high next to a cap-height word.
 		transform: translateY(1px);
 	}
 
-	// Bootstrap's own menu, on the site's surfaces and with v5's square full-width rows. The height is
-	// capped because twelve entries at 992px run past a laptop's fold.
 	.lang-switch-menu {
 		--as-menu-bg:                 var(--as-bg-1);
 		--as-menu-border-color:       var(--as-border-color);
@@ -481,8 +420,6 @@ html:root[data-bs-theme='light'] {
 		overflow-y: auto;
 	}
 
-	// The flag is decoration beside a name that already says which language it is, so it is sized
-	// against the row rather than against the text and takes no part in the reading order.
 	.lang-switch-flag {
 		display: inline-block;
 		width: 1.5em;
@@ -490,17 +427,12 @@ html:root[data-bs-theme='light'] {
 		font-size: 0.95em;
 	}
 
-	// Inside the menu rather than beside the trigger: as a sibling of the button it was a block in the
-	// nav row's normal flow, and a wrapped sentence in a 64px bar pushes the whole row out of shape.
-	// Bootstrap's own item padding, so it lines up with the names under it.
 	.lang-switch-note {
 		font-size: 0.78rem;
 		line-height: 1.45;
 		color: var(--color-muted);
 		margin: 0;
 		padding: 0.25rem 1rem 0.5rem;
-		// Wide enough for the sentence on two lines, which is what sets the menu width on the pages
-		// that carry it. A menu of language names is about 13rem on its own.
 		max-width: 17rem;
 	}
 
@@ -512,7 +444,6 @@ html:root[data-bs-theme='light'] {
 		padding-top: 1.5rem;
 		border-top: 1px solid var(--color-border);
 
-		// Beats `.nav-drawer ul`, which sets a 2rem bottom margin for the link list above this one.
 		ul {
 			list-style: none;
 			padding: 0;
@@ -522,8 +453,6 @@ html:root[data-bs-theme='light'] {
 			gap: 0.35rem 1.25rem;
 		}
 
-		// And `.nav-drawer li a`, whose 1rem block padding and 1.1rem type are sized for the six
-		// navigation links rather than for twelve language names.
 		li {
 			border-bottom: none;
 
@@ -548,16 +477,12 @@ html:root[data-bs-theme='light'] {
 		margin: 0 0 0.75rem;
 	}
 
-	// ─── Buttons ─────────────────────────────────────────────────────────────────
 	.btn-solid.theme-primary {
 		font-weight: 600;
 		letter-spacing: -0.01em;
 	}
 
-	// Black on the brand orange: white on it is 3.2:1, under what a 15px label needs.
 	.btn-cta {
-		// Bootstrap's :active and :focus-visible rules outrank this class and read their colours from
-		// these variables, so leaving them unset turned a pressed button transparent and ringless.
 		--as-btn-color: #000;
 		--as-btn-bg: var(--color-primary);
 		--as-btn-border-color: transparent;
@@ -615,7 +540,6 @@ html:root[data-bs-theme='light'] {
 		}
 	}
 
-	// ─── Section spacing ─────────────────────────────────────────────────────────
 	.section-pad {
 		padding: 7rem 0;
 	}
@@ -635,9 +559,6 @@ html:root[data-bs-theme='light'] {
 		max-width: 560px;
 	}
 
-	// ─── Cards ───────────────────────────────────────────────────────────────────
-	// The live PowerScore board's loading, empty and error states. The landing page's own feature
-	// grid is gone; this is not that.
 	.feature-card {
 		background: var(--color-card);
 		border: 1px solid var(--color-border);
@@ -645,8 +566,6 @@ html:root[data-bs-theme='light'] {
 		padding: 2rem;
 		height: 100%;
 
-		// No hover lift: none of these cards is a link, and the install-command box jumped 4px out from
-		// under the cursor on its way to the Copy button.
 		.feature-icon {
 			font-size: 2rem;
 			color: var(--color-primary);
@@ -681,9 +600,6 @@ html:root[data-bs-theme='light'] {
 		}
 	}
 
-	// ─── Footer ───────────────────────────────────────────────────────────────────
-	// Positioned so it paints after the page, which the closing glow fades into; no background of its
-	// own for the same reason.
 	.site-footer {
 		position: relative;
 		padding: clamp(3.5rem, 7vw, 5rem) 0 2.5rem;
@@ -762,10 +678,6 @@ html:root[data-bs-theme='light'] {
 		}
 	}
 
-	// ─── Lattice & Company endorsement ───────────────────────────────────────────
-	// Parent-company lockup: DM Serif Text, never DM Sans. The mark is never
-	// recolored; the ampersand steps back into ArenaSwap's own muted gray rather
-	// than a Lattice gray.
 	.latticeco-lockup {
 		gap: 0.75rem;
 	}
@@ -804,7 +716,6 @@ html:root[data-bs-theme='light'] {
 		line-height: 1.5;
 	}
 
-	// ─── Divider ──────────────────────────────────────────────────────────────────
 	.section-divider {
 		height: 1px;
 		background: linear-gradient(to right, transparent, var(--color-border), transparent);
@@ -812,7 +723,6 @@ html:root[data-bs-theme='light'] {
 		max-width: 800px;
 	}
 
-	// ─── Bootstrap icon font class ───────────────────────────────────────────────
 	.bi {
 		font-family: 'bootstrap-icons' !important;
 		font-style: normal;
@@ -824,7 +734,6 @@ html:root[data-bs-theme='light'] {
 		-moz-osx-font-smoothing: grayscale;
 	}
 
-	// ─── Footer columns ───────────────────────────────────────────────────────────
 	.footer-col-label {
 		font-size: 0.72rem;
 		font-weight: 700;
@@ -851,9 +760,6 @@ html:root[data-bs-theme='light'] {
 		}
 	}
 
-	// ─── 404 page ─────────────────────────────────────────────────────────────────
-	// The missing page, presented as a scoreboard: three digits, a final horn, and a
-	// PowerScore of zero.
 	.notfound {
 		position: relative;
 		display: flex;
@@ -877,8 +783,6 @@ html:root[data-bs-theme='light'] {
 		text-align: center;
 	}
 
-	// ─── Game card ───────────────────────────────────────────────────────────────
-	// The real extension card, given the same lift it has in the hero popup.
 	.notfound-card {
 		max-width: 340px;
 		margin: 0 auto 2.5rem;
@@ -891,7 +795,6 @@ html:root[data-bs-theme='light'] {
 		to   { opacity: 1; transform: translateY(0); }
 	}
 
-	// ─── Copy & links ────────────────────────────────────────────────────────────
 	.notfound-title {
 		font-size: clamp(2.6rem, 5vw, 4.5rem);
 		font-weight: 700;

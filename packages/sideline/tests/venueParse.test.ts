@@ -1,7 +1,5 @@
 import { parseVenueDetails } from '../src/venueParse';
 
-// Trimmed from the 2026-11-06 summaries: Jaguars at Ravens (football, both photos) and Magic at
-// Suns (basketball, one).
 const stadium = {
 	gameInfo: {
 		venue: {

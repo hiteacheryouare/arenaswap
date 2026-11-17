@@ -11,8 +11,6 @@ interface keepAwakeApis {
 	alarms: { create: (name: string, info: { when: number }) => unknown; clear: (name: string) => unknown };
 }
 
-// `nextDueAt` is the soonest poll anything has scheduled. `busy` is work running on a timer of its
-// own, which has to stay awake however far off the next poll is.
 const createKeepAwake = ({ beat, alarms }: keepAwakeApis) => {
 	let heartbeat: ReturnType<typeof setInterval> | null = null;
 

@@ -1,7 +1,6 @@
 export interface multiviewGrid {
 	columns: number;
 	rows: number;
-	// How many columns and rows the big box covers, from the top-left corner.
 	span: number;
 }
 
@@ -10,9 +9,6 @@ export interface gridPlacement {
 	row: string;
 }
 
-// Featured + rail: the big box takes the top-left square, the rest fill the right column top to
-// bottom and then the bottom row left to right. Every cell is 16:9, so the grid is too. Each count
-// takes the shape that leaves no cell empty, which only 5 and 7 cannot manage.
 export const multiviewGridFor = (count: number): multiviewGrid => {
 	if (count <= 1) return { columns: 1, rows: 1, span: 1 };
 	if (count === 2) return { columns: 2, rows: 1, span: 1 };
@@ -31,7 +27,6 @@ const railCells = ({ columns, rows, span }: multiviewGrid): gridPlacement[] => {
 	return cells;
 };
 
-// Shown boxes in, the featured one wherever it sits: the rest keep their relative order on the rail.
 export const placeBoxes = (shownIds: readonly string[], featuredId: string | null): Map<string, gridPlacement> => {
 	const grid = multiviewGridFor(shownIds.length);
 	const featured = featuredId !== null && shownIds.includes(featuredId) ? featuredId : shownIds[0];
@@ -43,7 +38,6 @@ export const placeBoxes = (shownIds: readonly string[], featuredId: string | nul
 			placements.set(id, { column: `1 / span ${grid.span}`, row: `1 / span ${grid.span}` });
 			continue;
 		}
-		// The grid tops out at eight. Anything past that waits under the big box, the way a loading one does.
 		const cell = rail[railIndex++];
 		if (cell) placements.set(id, cell);
 	}

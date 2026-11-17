@@ -8,8 +8,6 @@ const nextAfter = () => 8000 + Math.random() * 7000;
 const gridArea = (grid: HTMLElement | null): flightArea | null =>
 	grid && grid.childElementCount > 0 ? { x: grid.offsetLeft, y: grid.offsetTop, width: grid.offsetWidth, height: grid.offsetHeight } : null;
 
-// Sends a wordmark arrow across the backdrop every 8 to 15 seconds, one at a time. The
-// grid is read at launch, so a flight takes the margins the boxes leave at that moment.
 export default (page: RefObject<HTMLElement | null>, grid: RefObject<HTMLElement | null>) => {
 	const [flights, setFlights] = useState<flight[]>([]);
 	const nextId = useRef(0);

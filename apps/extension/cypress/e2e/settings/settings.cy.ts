@@ -32,13 +32,11 @@ describe('settings round-trip', () => {
 		cy.contains('.setting-value-label', 'Ludicrous Speed').should('be.visible');
 		cy.background().should(background => {
 			expect(background.prefs?.sensitivity).to.equal(7);
-			// Prefs are mirrored to both areas: sync for portability, local as the offline fallback.
 			expect(background.storage.sync.has('prefs')).to.equal(true);
 			expect(background.storage.local.has('prefs')).to.equal(true);
 		});
 	});
 
-	// Every change saves the moment it is made, so the toast only means something when there was one.
 	it('says settings were saved only when something changed', () => {
 		openSettings();
 		openGroup('switching');
@@ -60,7 +58,6 @@ describe('settings round-trip', () => {
 		cy.get('#upcomingToggle').should('be.checked').uncheck({ force: true });
 
 		cy.background().its('prefs').then(prefs => {
-			// Reopening the popup is a fresh page load reading whatever storage kept.
 			cy.openPopup({ ...onboarded, state: liveState(), sync: { prefs } });
 			openSettings();
 			openGroup('display');
@@ -68,9 +65,6 @@ describe('settings round-trip', () => {
 		});
 	});
 
-	// The one setting that cannot be read at the moment it is needed: the animation picks its mode
-	// inside a `useState` initialiser, long before storage answers, so what it reads is a copy the
-	// previous open left in localStorage. Which makes the second open the only one that can prove it.
 	it('stops the opening animation from the next open onwards', () => {
 		cy.get('.game-card-reveal-stage').should('exist');
 
@@ -144,10 +138,7 @@ const pickTheme = (value: string) => {
 	chooseTheme(value);
 };
 
-// The popup's CSS carries a light palette only under [data-bs-theme=light] on <html>, so the attribute
-// is the whole switch. The copy in localStorage is what the next open's boot script reads.
 describe('the theme setting', () => {
-	// A matchMedia whose answer the test can change, so System can be watched following the OS.
 	const lightScheme = { matches: false, listeners: new Set<() => void>() };
 	const flipScheme = (prefersLight: boolean) => {
 		lightScheme.matches = prefersLight;
@@ -196,7 +187,6 @@ describe('the theme setting', () => {
 		html().should('have.attr', 'data-bs-theme', 'dark');
 	});
 
-	// Recorded from before the boot script runs, so a single dark frame on the way to light shows up.
 	it('opens a stored light theme without ever passing through dark', () => {
 		const seen: (string | undefined)[] = [];
 		cy.on('window:before:load', win => {
@@ -210,7 +200,6 @@ describe('the theme setting', () => {
 		cy.then(() => expect(seen).to.not.be.empty.and.not.include('dark'));
 	});
 
-	// First-run only happens with nothing stored, so it takes the default rather than the stale copy.
 	it('keeps first-run dark even when a light copy is stored', () => {
 		cy.on('window:before:load', win => win.localStorage.setItem('arenaswap.theme', 'light'));
 		cy.openPopup({ state: liveState() });

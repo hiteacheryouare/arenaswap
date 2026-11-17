@@ -42,8 +42,6 @@ export const isTunnelPhase = (phase: Phase): boolean => (
 
 const tunnelShape = { repeatsAround: 11, depthScale: 0.085 };
 
-// One logo roughly every fifth of a second. Slow enough that each one is a readable glimpse and
-// frequent enough that you cannot count them, which is the whole joke.
 const logoSpawnFrames = 12;
 
 export const paintSpace = (
@@ -58,10 +56,6 @@ export const paintSpace = (
 	if (phase === 'plaid' || phase === 'panic') {
 		paintTartanTunnel(ctx, rect, ludicrousTunnelSett, { travel: world.travel, ...tunnelShape });
 	} else if (phase === 'plaidentry') {
-		/* Measured off the transition frames: nothing cross-fades, since lit coverage stays flat
-		   throughout. The order is colour, then the flare igniting out of a blacked-out centre, then
-		   the weave opening outward as an aperture. Trumbull built the 2001 Star Gate the same way,
-		   out of the stars rather than cut to (Cinefex #85, p.112). */
 		ctx.fillStyle = 'rgba(0,0,0,0.11)';
 		ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
 		paintStarfield(ctx, world.stars, rect, {
@@ -69,7 +63,6 @@ export const paintSpace = (
 			phase,
 			spread,
 			widthScale: widthScale * (1 + entry * 1.1),
-			// 3.3x, which is what the streaks actually measure, not the 9x that reads as a smear.
 			stretch: 1 + entry * 2.3,
 			paletteMix: smoothstep(0, 0.5, entry),
 			alpha: 1 - smoothstep(0.86, 1, entry),

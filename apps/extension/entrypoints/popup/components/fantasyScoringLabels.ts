@@ -2,7 +2,6 @@ import type { FantasySport } from 'powerscore';
 import type { plainMessageKey } from './settingsCatalog';
 
 export interface fantasyRuleGroup {
-	// Basketball's six rules need no heading of their own.
 	headingKey?: plainMessageKey;
 	rules: readonly { rule: string; labelKey: plainMessageKey }[];
 }
@@ -126,7 +125,6 @@ export const fantasyRuleGroups = {
 	],
 } as const satisfies Record<FantasySport, readonly fantasyRuleGroup[]>;
 
-// The input's step, from how finely the default is written: 0.04 steps by hundredths, 1.2 by tenths.
 export const ruleStep = (points: number): number => {
 	const decimals = String(points).split('.')[1]?.length ?? 0;
 	return decimals === 0 ? 1 : 10 ** -decimals;

@@ -9,8 +9,6 @@ import type { Phase, View } from './ludicrousScript';
 
 const numStars = 210;
 
-// How many frames the plaid takes to resolve out of the starfield, set just under the entry beat's
-// length so the weave completes before the PLAID sign lands.
 const entryFrames = 106;
 
 interface StageProps {
@@ -54,11 +52,6 @@ const ludicrousStage = ({
 			phaseStartRef.current = frame;
 		}
 
-		/* A cut is a cut. Only the cockpit fills the whole frame each pass — the other two lay a
-		   translucent veil down for star trails — so without an explicit clear the console ghosts
-		   through the next shot for a second. The previous frame's projected positions have to go
-		   with it, or the first frame after the cut draws every star and every logo as a streak
-		   running from where it was in the old framing to where it is in the new one. */
 		if (lastViewRef.current !== view) {
 			lastViewRef.current = view;
 			ctx.fillStyle = '#000';
@@ -80,10 +73,6 @@ const ludicrousStage = ({
 		} else {
 			world.entry = 0;
 		}
-		/* Trumbull's Star Gate element was shot with "a little accelerator motor to make the effect
-		   keep going faster and faster" as its density built (Cinefex #85, p.112), and Spaceballs used
-		   the same technique. So the corridor speeds up as the weave resolves and holds the higher
-		   rate afterwards rather than snapping back to the one it entered on. */
 		if (isTunnelPhase(phase)) world.travel += speed * 0.0075 * (1 + world.entry * 1.6);
 
 		const spaceFrame = { speed, phase, frame, logosOn: logosRef.current, logoImages };

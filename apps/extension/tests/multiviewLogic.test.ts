@@ -11,7 +11,6 @@ const base: multiviewPlanInput = {
 	threshold: 65,
 	games: 'hot',
 	maxBoxes: 4,
-	// Sensitivity 4 is an 11-point margin.
 	sensitivity: 4,
 };
 

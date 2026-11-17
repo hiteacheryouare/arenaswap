@@ -23,8 +23,6 @@ const labels: Record<number, string> = {
 
 const sensitivitySlider = ({ value, onChange }: sensitivitySliderProps) => {
 	const [showLudicrous, setShowLudicrous] = useState(false);
-	// Stable, because the overlay's close timer restarts whenever this changes and Settings
-	// re-renders on every broadcast.
 	const closeLudicrous = useCallback(() => setShowLudicrous(false), []);
 	const [dragged, setDragged] = useState(false);
 

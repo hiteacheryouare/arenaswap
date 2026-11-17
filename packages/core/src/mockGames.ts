@@ -12,7 +12,7 @@ interface SimState {
 	driveIndex: number;
 }
 
-const clockTick = 15; // seconds of game time per tick (matches poll interval)
+const clockTick = 15;
 const preGameTicksBeforeStart = 5;
 const resetPostGameAfterTicks = 4;
 const heldFinalGameIds = new Set(['mock-20']);
@@ -27,14 +27,6 @@ const rareScoreChance = 0.3;
 const lateGameThresholdSeconds = 300;
 const lateGameComebackChance = 0.4;
 
-// Yard lines advance across midfield so the demo card reads like a real drive rather than a
-// random pair of strings; the last entry starts the next possession over. '1st & 10' repeats
-// three times, so the position in this table is tracked in SimState rather than looked up by
-// down — looking it up always matched index 0 and the card jumped backwards across midfield.
-// `yardLine` is the same absolute coordinate ESPN sends: 0 is Philadelphia's own goal line and 100
-// is Dallas's, so the Eagles holding the ball at home means the drive counts upward. Every line to
-// gain below lands on PHI 35 and then DAL 38, which is what makes the yellow line hold still across
-// a set of downs instead of following the ball.
 const footballDrivePatterns = [
 	{ downDistance: '1st & 10', fieldPosition: 'PHI 25', down: 1, distance: 10, yardLine: 25 },
 	{ downDistance: '2nd & 8', fieldPosition: 'PHI 27', down: 2, distance: 8, yardLine: 27 },
@@ -46,23 +38,12 @@ const footballDrivePatterns = [
 	{ downDistance: '1st & 10', fieldPosition: 'PHI 25', down: 1, distance: 10, yardLine: 25 },
 ] as const;
 
-// The drive starts on the Eagles' own 25 and the pattern wraps back to it, so the bar grows across
-// the whole table and resets with the possession.
 const footballDriveStartYardLine = 25;
 
-// Per-tick scoring probabilities are tuned to realistic per-game totals at the 15s tick rate, so
-// each sport's demo cadence matches reality. The continuous pulse for low-scoring sports comes
-// from the progress ramp and decay tails, not from unrealistically frequent scoring.
-// Sanity check (regulation ticks × normalScoreProb × avg points ≈ points/team/game):
-//   basketball ~192 ticks → ~110 pts   football ~240 → ~26   hockey ~240 → ~3.5
-//   soccer ~360 → ~2      baseball ~60 half-inning ticks → ~4.5 runs
 const sportParams: Record<Game['sportType'], {
 	normalScoreProb: number;
-	// While the team is on a hot streak (flurry, power play, scoring drive).
 	streakScoreProb: number;
-	// For the cold team while the other side is streaking.
 	offScoreProb: number;
-	// [frequent, rare]
 	scoreValues: [number, number];
 }> = {
 	basketball: { normalScoreProb: 0.25, streakScoreProb: 0.55, offScoreProb: 0.1, scoreValues: [2, 3] },
@@ -155,8 +136,6 @@ export class MockGameSimulator {
 				topOfInning: false,
 				baseRunners: { first: true, second: false, third: true },
 				bso: { balls: 1, strikes: 0, outs: 1 },
-				// No headshots: the demo slate carries no player portraits, so this is also the
-				// fixture that exercises the panel's initials fallback.
 				atBat: {
 					pitcher: { name: 'Edwin Diaz', jersey: '39', position: 'RP', summary: '0.2 IP, 0 ER, H, BB' },
 					batter: { name: 'Bryce Harper', jersey: '3', position: 'RF', summary: '2-3, 2B, RBI' },
@@ -184,9 +163,6 @@ export class MockGameSimulator {
 				lastPlay: 'J.Hurts pass short right to D.Smith for 8 yards (T.Diggs).',
 				lastPlayDrive: '3 plays, 12 yards, 1:24',
 				broadcasts: ['NBC', 'Peacock'],
-				// Two of the outdoor demo games snow and two do not, across four different sports.
-				// Snow is gated on the weather reading alone, and the weather belongs to a game
-				// rather than to the popup — neither of which is visible from a single fixture.
 				weather: { temperatureF: 26, conditionLabel: 'Snow' },
 			},
 			{
@@ -211,9 +187,6 @@ export class MockGameSimulator {
 				id: 'mock-9',
 				league: 'mls',
 				sportType: 'soccer',
-				// The ids are ESPN's own and the logo filenames already carried them: Philadelphia
-				// Union is 10739 and the Red Bulls are 190. They had been transposed, which drew
-				// each side's numbers under the other side's crest on the demo box score.
 				homeTeam: { id: '10739', name: 'Philadelphia Union', abbreviation: 'PHI', score: 2, logo: `${espnCdn}/soccer/500/10739.png`, color: '#051c2c' },
 				awayTeam: { id: '190', name: 'New York Red Bull', abbreviation: 'NYR', score: 1, logo: `${espnCdn}/soccer/500/190.png`, color: '#b91f31' },
 				venueName: 'Subaru Park',
@@ -310,9 +283,6 @@ export class MockGameSimulator {
 				venueName: 'Daikin Park',
 				venueLocation: 'Houston, Texas',
 				period: 10, clockSeconds: 0, status: 'in',
-				// "Mid 10th": the side is retired and nobody is at the plate, which is the only state
-				// our sources name the next hitters in. So this game has a due-up list and no at-bat
-				// pair, where the live-at-bat demo above has the pair and no list.
 				topOfInning: false,
 				baseRunners: { first: false, second: false, third: false },
 				bso: { balls: 0, strikes: 0, outs: 0 },
@@ -337,8 +307,6 @@ export class MockGameSimulator {
 				bso: { balls: 1, strikes: 0, outs: 0 },
 				broadcasts: ['ESPNU'],
 			},
-			// The two sports ESPN names a starter for. Records, starters and leaders are all shaped
-			// the way the live scoreboard sends them, including the goalie's absent stat line.
 			{
 				id: 'mock-18',
 				league: 'mlb',
@@ -377,7 +345,6 @@ export class MockGameSimulator {
 				homeTeam: {
 					id: '1', name: 'Boston Bruins', abbreviation: 'BOS', score: 0, logo: `${espnCdn}/nhl/500/bos.png`, color: '#FFB81C',
 					record: '24-16-4',
-					// Goalies arrive with an empty record string, so there is no line to render.
 					probableStarter: { name: 'J. Swayman', status: 'confirmed', headshot: `${espnShots}/nhl/players/full/4736758.png` },
 					leaders: [
 						{ category: 'goals', fallbackLabel: 'Goals', player: 'D. Pastrnak', value: '31', headshot: `${espnShots}/nhl/players/full/3891.png` },
@@ -401,14 +368,6 @@ export class MockGameSimulator {
 				startTime: new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString(),
 				broadcasts: ['NESN'],
 			},
-			// The one game that is already over when demo mode starts, so the wrap screen is
-			// reachable without waiting for a simulated game to run its course. Ten innings, so the
-			// line score has an extra column and the card carries an extra-innings label.
-			//
-			// The same two teams as the live MLB game above, and deliberately: the box score behind
-			// it is a real NYM-at-PHI payload keyed by ESPN's own team ids, so a demo game with any
-			// other pair would draw one matchup in the hero and a different one in the line score.
-			// Two games of the same series is also what a Tuesday in September actually looks like.
 			{
 				id: 'mock-20',
 				league: 'mlb',
@@ -437,7 +396,6 @@ export class MockGameSimulator {
 		}
 	}
 
-	// Deep copies, so consumers can't mutate internal state.
 	private copies = (): Game[] => this.games.map(g => ({
 		...g,
 		homeTeam: { ...g.homeTeam },
@@ -447,9 +405,6 @@ export class MockGameSimulator {
 		dueUp: g.dueUp?.map(hitter => ({ ...hitter })),
 	}));
 
-	// The slate as constructed, before any tick has advanced it. Anything that needs the shipped
-	// demo games reads them from here: a test that redeclares them by hand is how the soccer
-	// game's team ids and its box-score fixture drifted apart with every test still green.
 	seed = (): Game[] => this.copies();
 
 	tick = (): Game[] => {
@@ -475,26 +430,21 @@ export class MockGameSimulator {
 		const regularPeriods = leagueConfigMap[game.league].regularPeriods;
 
 		if (game.sportType === 'baseball' || game.sportType === 'softball') {
-			// A game carrying a due-up list is a held between-innings frame. Ticking its count or
-			// inning would put a live count under a list that only exists while nobody is at the plate.
 			if (game.dueUp) return;
 			if (game.bso) {
 				const roll = Math.random();
 				if (roll < 0.3) {
-					// A 4th ball is a walk, which resets the count; ESPN reports 0-3.
 					const newBalls = game.bso.balls + 1;
 					game.bso = newBalls >= 4
 						? { balls: 0, strikes: 0, outs: game.bso.outs }
 						: { ...game.bso, balls: newBalls };
 				} else if (roll < 0.6) {
-					// A 3rd strike is an out, which resets the count; a third out retires the side.
 					const newStrikes = game.bso.strikes + 1;
 					const outsAfterStrikeout = game.bso.outs + 1;
 					game.bso = newStrikes < 3
 						? { ...game.bso, strikes: newStrikes }
 						: { balls: 0, strikes: 0, outs: outsAfterStrikeout >= 3 ? 0 : outsAfterStrikeout };
 				} else if (roll < 0.75) {
-					// A 3rd out retires the side and resets outs; ESPN reports 0-2.
 					const newOuts = game.bso.outs + 1;
 					game.bso = newOuts >= 3
 						? { balls: 0, strikes: 0, outs: 0 }
@@ -514,8 +464,6 @@ export class MockGameSimulator {
 			return;
 		}
 
-		// Field position advances with the drive so the card's "3rd & 5 at PHI 47" line stays
-		// internally consistent — a goal-line down has to sit on a goal-line yard marker.
 		if (game.sportType === 'football' && game.downDistance !== undefined) {
 			if (Math.random() < 0.35) {
 				simState.driveIndex = (simState.driveIndex + 1) % footballDrivePatterns.length;
@@ -538,7 +486,6 @@ export class MockGameSimulator {
 				game.period++;
 				game.clockSeconds = leagueConfigMap[game.league].periodDurationSecs;
 			} else if (game.homeTeam.score === game.awayTeam.score && !(game.sportType === 'soccer' && !game.isPostseason)) {
-				// A league match can end level; only a knockout plays on.
 				game.period++;
 				game.clockSeconds = overtimePeriodSeconds;
 			} else {
@@ -587,9 +534,6 @@ export class MockGameSimulator {
 	};
 
 	private advancePost = (game: Game, simState: SimState): void => {
-		// Every other finished game is put back to live after a few ticks, which is what makes a
-		// game ending watchable. The wrap screen is the opposite: it cannot be read at all if the
-		// game restarts underneath the reader, so this one stays finished.
 		if (heldFinalGameIds.has(game.id)) return;
 		simState.postTicks++;
 		if (simState.postTicks >= resetPostGameAfterTicks) {

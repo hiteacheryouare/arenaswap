@@ -117,7 +117,6 @@ describe('powerScoreColor', () => {
 });
 
 describe('isInteractiveCardTarget', () => {
-	// Positive cases need a real DOM and live in the component tests.
 	test('returns false for null', () => {
 		expect(isInteractiveCardTarget(null)).toBe(false);
 	});

@@ -2,17 +2,6 @@ import { leagueConfigMap, type Side } from 'powerscore';
 import { nextClockStall, type ClockStallEntry } from './scoring';
 import type { Game, LeagueId } from './types';
 
-/*
-	Spots commercial breaks from the scoreboard alone, one poll at a time. Each sport family reads
-	the feed differently: baseball from its inning text and pitcher, the NFL and basketball from the
-	play types our sources log for TV timeouts, college football from the plays a break follows, the
-	NHL from where its TV timeouts fall on the clock. Leagues whose feed carries no plays fall back to
-	a frozen clock, and soccer has no breaks during play.
-
-	The rules and their thresholds were measured against nine days of recorded games; run
-	`npm run powerscore:breaks` to score them again.
-*/
-
 export type CommercialBreakKind =
 	| 'inningBreak'
 	| 'pitchingChange'
@@ -26,16 +15,11 @@ export type CommercialBreakKind =
 export interface CommercialBreakEntry {
 	kind?: CommercialBreakKind;
 	lastPlayId?: string;
-	// When the current last play first showed up.
 	lastPlaySeenAt: number;
-	// Baseball: who was pitching, in which half, and whether a pitch has been thrown in it yet.
 	pitcherId?: string;
 	half?: string;
 	pitchedThisHalf?: boolean;
-	// NHL: the TV timeout marks (minutes remaining) already used, by period.
 	usedTvMarks?: Record<number, number[]>;
-	// College football: the scoreboard clock when the last play arrived, a bit for each of the most
-	// recent plays the clock sat still for (newest lowest), and how many plays that window holds.
 	clockAtLastPlay?: number;
 	clockFrozenPlays?: number;
 	clockPlaysSeen?: number;
@@ -44,7 +28,6 @@ export interface CommercialBreakEntry {
 
 export interface CommercialBreakInput {
 	now: number;
-	// As the scoring context carries it: a side, or `true` when the feed only says one is on.
 	powerPlay?: Side | boolean;
 }
 
@@ -65,18 +48,13 @@ const quietFor = (next: CommercialBreakEntry, now: number): number => now - next
 
 const margin = (game: Game): number => Math.abs(game.homeTeam.score - game.awayTeam.score);
 
-// The last two minutes of a close game: coaches call timeouts to draw up the final play, and the
-// fan wants to see the inbound or the snap. Only a broadcast's own TV timeout counts then.
 const isCloseFinish = (game: Game, closeMargin: number): boolean => {
 	const regularPeriods = leagueConfigMap[game.league]?.regularPeriods ?? 4;
 	return game.period >= regularPeriods && game.clockSeconds <= lateClockSeconds && margin(game) <= closeMargin;
 };
 
-// The last two minutes of either half, whatever the score. A team timeout there is the offense
-// saving the clock, and a score is followed straight by the kickoff: the broadcast saves its break
-// for the two-minute timeout. College plays carry their own clock ("Timeout Kansas, clock 00:59",
-// "(01:21) field goal attempt"), which is the one to trust: the college scoreboard clock can sit
-// frozen for minutes while a drive goes on.
+// College plays carry their own clock ("Timeout Kansas, clock 00:59", "(01:21) field goal attempt"),
+// which is the one to trust: the college scoreboard clock can sit frozen for minutes while a drive goes on.
 const isTwoMinuteDrill = (game: Game): boolean => {
 	const stated = /clock (\d+):(\d+)|^\((\d+):(\d+)\)/.exec(game.lastPlay ?? '');
 	const clockSeconds = stated ? Number(stated[1] ?? stated[3]) * 60 + Number(stated[2] ?? stated[4]) : game.clockSeconds;
@@ -115,7 +93,6 @@ const proFootballTvTypes: Record<string, CommercialBreakKind> = {
 };
 const footballScoreTypes = /^(extra point (good|missed)|field goal good|two point (pass|rush))$/;
 
-// The NFL logs its own TV timeouts, including the one after a score, so a score by itself isn't one.
 const proFootballRule: Rule = game => proFootballTvTypes[playType(game)];
 
 const staleFeedMask = (1 << staleFeedWindow) - 1;
@@ -142,8 +119,6 @@ const trackCollegeClock = (game: Game, previous: CommercialBreakEntry, next: Com
 	return isStaleFeed(next);
 };
 
-// No TV timeouts in the college feed, so a team timeout, the end of a quarter or the kick after a
-// score stands in for one. Each lasts as long as it is the last play.
 const collegeFootballRule: Rule = (game, previous, next) => {
 	const type = playType(game);
 	const stale = trackCollegeClock(game, previous, next);
@@ -154,8 +129,7 @@ const collegeFootballRule: Rule = (game, previous, next) => {
 	return undefined;
 };
 
-// College feeds run the words together ("OfficialTVTimeOut", "RegularTimeOut"). A college short
-// timeout is thirty seconds, too short for the broadcast to cut away.
+// College feeds run the words together ("OfficialTVTimeOut", "RegularTimeOut").
 const basketballTvTypes: Record<string, CommercialBreakKind> = {
 	'full timeout': 'teamTimeout',
 	regulartimeout: 'teamTimeout',
@@ -165,7 +139,6 @@ const basketballTvTypes: Record<string, CommercialBreakKind> = {
 	'media timeout': 'tvTimeout',
 	'end period': 'periodEnd',
 };
-// Plays logged during a timeout that don't mean the ball is back in play.
 const basketballDeadBallTypes = /^(substitution|full timeout|reset timeout|(short|regular)timeout|official( tv)? timeout|officialtvtimeout|media timeout|end period)$/;
 
 const basketballRule: Rule = (game, previous) => {
@@ -176,13 +149,8 @@ const basketballRule: Rule = (game, previous) => {
 	return undefined;
 };
 
-// Plays that happen with the puck in play; anything else on the scoreboard is a stoppage.
 export const hockeyFlowTypes = /^(face off|shot|missed|blocked|hit|giveaway|takeaway|goal|period start|period end|end of game|shootout end)$/;
 
-// Three TV timeouts a period, each at the first stoppage after 14:00, 10:00 and 6:00 remain. Never
-// straight after an icing, and never during a power play. A mark is only used up once the stoppage
-// has lasted long enough to be the TV timeout, so a whistle that was over before the feed showed it
-// leaves the mark for the next one.
 const nhlRule: Rule = (game, previous, next, { now, powerPlay }) => {
 	if (previous.kind === 'tvTimeout' && !isNewPlay(game, previous)) return 'tvTimeout';
 	const text = (game.lastPlay ?? '').toLowerCase();
@@ -220,7 +188,6 @@ const ruleFor = (game: Pick<Game, 'league' | 'sportType'>): Rule | undefined => 
 	return undefined;
 };
 
-// Whether a league's games are ever put on a commercial break. Soccer's run straight through.
 export const hasCommercialBreaks = (game: Pick<Game, 'league' | 'sportType'>): boolean => ruleFor(game) !== undefined;
 
 export const nextCommercialBreak = (game: Game, previous: CommercialBreakEntry | undefined, input: CommercialBreakInput): CommercialBreakEntry => {

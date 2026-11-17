@@ -6,8 +6,6 @@ import type { PopupPlacement, ShotContext, ShotModule } from './shotTypes';
 
 const Empty = () => null;
 
-// A popup on its own, large, on the right in landscape (the super takes the left) and centred
-// under the super in portrait. It slides a short way in as the cut lands.
 const featured = (ctx: ShotContext, id: string): PopupPlacement => {
 	const arrive = easeSignature(progress(ctx.local, 0, 0.45));
 	if (ctx.format === 'portrait') {
@@ -23,7 +21,6 @@ const popupShot = (id: string): ShotModule => ({
 	popups: ctx => [featured(ctx, id)],
 });
 
-// The night ahead, still, so it can be read.
 const guide: ShotModule = {
 	Component: Empty,
 	popups: ctx => {
@@ -31,14 +28,11 @@ const guide: ShotModule = {
 		if (ctx.format === 'portrait') {
 			return [{ id: 'guide', x: 40, y: 560, scale: 1.42, opacity: arrive, crop: { top: 0, right: 520, bottom: 0, left: 0 } }];
 		}
-		// Below the line of copy at the top of the frame.
 		const scale = 1.2;
 		return [{ id: 'guide', x: (ctx.width - 1280 * scale) / 2, y: 190, scale, opacity: arrive }];
 	},
 };
 
-// Every league ArenaSwap follows, one square per mark (the college leagues share the NCAA's and the
-// Olympic events share the rings), filling a grid in one bar with the dot taking the last square.
 const markUrls = (ctx: ShotContext) => [...new Set(allLeagueIds.map(league => resolveLeagueLogoUrl(league, ctx.slate.raw.leagueLogos[league])))];
 const leagueGrid = {
 	landscape: { columns: 8, cell: 132, gap: 54 },
@@ -59,7 +53,6 @@ const leagueCell = (ctx: ShotContext, index: number) => {
 
 const popInSeconds = 0.95;
 
-// The square the dot takes, where an orange card that follows the grid grows from.
 export const leagueDotPoint = (ctx: ShotContext) => {
 	const cell = leagueCell(ctx, markUrls(ctx).length);
 	return { point: { x: cell.x + cell.size / 2, y: cell.y + cell.size / 2 }, radius: cell.size * 0.2 };

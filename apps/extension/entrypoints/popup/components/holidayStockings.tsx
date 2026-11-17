@@ -42,8 +42,6 @@ const Ornament = () => (
 
 const treatsInOrder = [Gift, CandyCane, Ornament];
 
-// The crest sits on the leg like a stitched patch. It stays outside the mirrored group, so a
-// right-hand stocking's crest still reads the right way round.
 const Stocking = ({ team, color, fill, mirrored }: stockingProps) => (
 	<div className={`holiday-stocking${mirrored ? ' is-mirrored' : ''}`} style={{ color }}>
 		<svg viewBox='0 0 24 35' aria-hidden='true'>
@@ -64,8 +62,6 @@ const Stocking = ({ team, color, fill, mirrored }: stockingProps) => (
 	</div>
 );
 
-// One under each crest, in the hero's own crest columns, toes turned in towards the score, all
-// hung from the garland along the hero's bottom edge.
 const holidayStockings = ({ game, awayColor, homeColor }: holidayStockingsProps) => {
 	const fills = stockingFills(game);
 	const away = { team: game.awayTeam, color: awayColor, fill: fills.away };

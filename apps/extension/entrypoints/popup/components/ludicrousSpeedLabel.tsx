@@ -4,7 +4,6 @@ const landingMs = 1200;
 
 interface ludicrousSpeedLabelProps {
 	text: string;
-	// Only a drag onto the top level lands it; opening the popup already at Ludicrous Speed shouldn't.
 	landing: boolean;
 }
 

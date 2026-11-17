@@ -5,11 +5,6 @@ import { getHistoryWindowMsForGame, rosterInGame } from '@arenaswap/core';
 import type { FantasyRosterEntry, FantasyScoringOverrides, Game, LeagueId } from '@arenaswap/core';
 import { readFantasyBoxScore } from './fantasyBoxScore';
 
-// What our sources say about a live game beyond the scoreboard (the summary's closing line and box
-// score, the hockey situation, the league standings), read into the engine's neutral context. The
-// background and the replay harness both drive this, so a replay scores with exactly the extras the
-// extension would have had.
-
 const espnNumber = z.union([z.number(), z.string()]);
 
 const OddsSideSchema = z.object({
@@ -31,8 +26,6 @@ const SummaryExtrasSchema = z.object({
 	})), undefined),
 });
 
-// The line before the game. `pickcenter` carries the closing numbers, and the first one seen is
-// kept for the whole game so a mid-game update can't move it.
 export const readPregameLine = (summary: unknown): PregameLine | undefined => {
 	const parsed = SummaryExtrasSchema.safeParse(summary);
 	const line = parsed.success ? parsed.data.pickcenter?.[0] : undefined;
@@ -53,7 +46,6 @@ export const readPregameLine = (summary: unknown): PregameLine | undefined => {
 	};
 };
 
-// The box score's running full-game count of lead changes (basketball).
 export const readBoxLeadChanges = (summary: unknown): number | undefined => {
 	const parsed = SummaryExtrasSchema.safeParse(summary);
 	if (!parsed.success) return undefined;
@@ -88,10 +80,7 @@ const BasketballSideSchema = z.object({
 
 export interface BasketballTeamSituation {
 	timeoutsLeft?: number;
-	// Whether this team shoots free throws on the other side's next foul. Only men's college
-	// basketball has a one-and-one, so only there does 'double' differ from 'bonus' on the floor.
 	bonus?: 'bonus' | 'double';
-	// How many more this team can commit before the other side is in the bonus.
 	foulsToGive?: number;
 	periodFouls?: number;
 }
@@ -114,8 +103,6 @@ const readBasketballSide = (timeouts: unknown, fouls: unknown): BasketballTeamSi
 	};
 };
 
-// Timeouts, fouls and the bonus from the core situation resource. Undefined when it carries none of
-// them, as a hockey situation or a bare reference does.
 export const readBasketballSituation = (situation: unknown): BasketballSituation | undefined => {
 	if (typeof situation !== 'object' || situation === null) return undefined;
 	const raw = situation as Record<string, unknown>;
@@ -151,7 +138,6 @@ const statOf = (entry: StandingsEntry, name: string): number | undefined => {
 
 const clincherOf = (entry: StandingsEntry): string | undefined => entry.stats?.find(s => s.name === 'clincher')?.displayValue;
 
-// The table each team appears in, at the deepest level our sources send.
 const tablesOf = (node: StandingsNode): StandingsEntry[][] => {
 	const own = (node.standings?.entries ?? [])
 		.map(entry => StandingsEntrySchema.safeParse(entry))
@@ -161,7 +147,6 @@ const tablesOf = (node: StandingsNode): StandingsEntry[][] => {
 	return own.length > 0 && children.length === 0 ? [own] : children;
 };
 
-// Regular-season length, for the race window: the last 15% of the season, or the last four games.
 const seasonLength: Partial<Record<LeagueId, number>> = {
 	mlb: 162, nfl: 17, epl: 38, laliga: 38, seriea: 38, bundesliga: 34, mls: 34, nwsl: 30, ligamx: 17,
 };
@@ -184,8 +169,6 @@ const lineKind = (above: string | undefined, below: string | undefined): TeamSta
 	return 'other';
 };
 
-// Soccer: a line sits wherever two neighbours' notes differ, plus the title line between 1st and
-// 2nd. A team within three points of the team across a line is in that race.
 const soccerStakes = (table: StandingsEntry[], stakes: Map<string, TeamStakes>, league: LeagueId, hasTitleLine: boolean) => {
 	const ordered = table.toSorted((a, b) => (statOf(a, 'rank') ?? 99) - (statOf(b, 'rank') ?? 99));
 	const mark = (entry: StandingsEntry, kind: TeamStakes['nearLine']) => {
@@ -198,7 +181,6 @@ const soccerStakes = (table: StandingsEntry[], stakes: Map<string, TeamStakes>, 
 	for (let i = 0; i < ordered.length - 1; i++) {
 		const upper = ordered[i]!;
 		const lower = ordered[i + 1]!;
-		// Top of a conference table is a seed, not the title.
 		const isTitleLine = i === 0 && hasTitleLine;
 		const crossesZone = upper.note?.description !== lower.note?.description;
 		if (!isTitleLine && !crossesZone) continue;
@@ -209,7 +191,6 @@ const soccerStakes = (table: StandingsEntry[], stakes: Map<string, TeamStakes>, 
 	}
 };
 
-// NFL has no playoff odds: in the hunt means seeded 5th to 10th within a game of the last spot.
 const nflStakes = (tables: StandingsEntry[][], stakes: Map<string, TeamStakes>) => {
 	const conference = tables.flat();
 	const seventh = conference.find(entry => statOf(entry, 'playoffSeed') === 7);
@@ -221,14 +202,12 @@ const nflStakes = (tables: StandingsEntry[][], stakes: Map<string, TeamStakes>) 
 	}
 };
 
-// Race flags per team id, from the full-league standings tree.
 export const readStandingsStakes = (standings: unknown, league: LeagueId, sportType: Game['sportType']): Map<string, TeamStakes> => {
 	const stakes = new Map<string, TeamStakes>();
 	if (typeof standings !== 'object' || standings === null) return stakes;
 	const root = standings as StandingsNode;
 	if (sportType === 'soccer') {
 		const tables = tablesOf(root);
-		// Liga MX's first place wins no trophy; its title is the Liguilla.
 		const hasTitleLine = tables.length === 1 && league !== 'ligamx';
 		for (const table of tables) soccerStakes(table, stakes, league, hasTitleLine);
 		return stakes;
@@ -256,17 +235,11 @@ interface GameExtras {
 	powerPlay?: boolean;
 	emptyNetPolls: number;
 	timeouts?: { home?: number; away?: number };
-	// Rostered players' latest box-score lines, kept as stats rather than points so a rule changed
-	// mid-game rescores both sides of the comparison instead of reading as points just scored.
 	fantasyLines: Map<string, Record<string, number>>;
 	fantasyEvents: Map<string, { at: number; points: number }[]>;
 	fantasyInactive: Set<string>;
 }
 
-// Changes inside the scorer's window: the count now less the count at the window's start (the last
-// sample before it). With no sample before the window, the game's first sample is the baseline, so a
-// full-game total is never read as recent. The latest change is dated midway between the last poll
-// before it and the first poll that showed it.
 const recentLeadChanges = (game: Game, state: GameExtras, now: number): ScoringContext['recentLeadChanges'] => {
 	const samples = state.boxLeadChanges;
 	const latest = samples[samples.length - 1];
@@ -302,7 +275,6 @@ export const createLiveExtras = () => {
 		return state;
 	};
 
-	// The first total seen is a baseline: a player picked up mid-game hasn't just scored them all.
 	const ingestFantasy = (game: Game, state: GameExtras, summary: unknown, ts: number) => {
 		const players = rosterInGame(roster, game);
 		const sport = fantasySportOf(game.sportType);
@@ -338,15 +310,11 @@ export const createLiveExtras = () => {
 		const count = readBoxLeadChanges(summary);
 		const last = state.boxLeadChanges[state.boxLeadChanges.length - 1];
 		if (count === undefined) return;
-		// Every poll is kept, so a change can be dated between the two polls either side of it. A stat
-		// correction that lowers the count is ignored.
 		state.boxLeadChanges.push({ ts, count: Math.max(count, last?.count ?? 0) });
 		if (state.boxLeadChanges.length > 40) state.boxLeadChanges.shift();
 	};
 
-	// True when basketball's timeouts moved, which the cards show and the boosts don't read.
 	const ingestSituation = (gameId: string, situation: unknown): boolean => {
-		// A reply that lands after the game was forgotten mustn't bring it back.
 		if (forgotten.has(gameId)) return false;
 		const state = stateOf(gameId);
 		const { powerPlay, emptyNet } = readHockeySituation(situation);
@@ -403,7 +371,6 @@ export const createLiveExtras = () => {
 			...(state?.pregameLine ? { pregameLine: state.pregameLine } : {}),
 			...(homeStakes || awayStakes ? { stakes: { ...(homeStakes ? { home: homeStakes } : {}), ...(awayStakes ? { away: awayStakes } : {}) } } : {}),
 			...(state?.powerPlay ? { powerPlay: true } : {}),
-			// Two polls in a row: a goalie out for a delayed penalty is back within seconds.
 			...(state && state.emptyNetPolls >= 2 ? { emptyNet: true } : {}),
 			...(leadChanges ? { recentLeadChanges: leadChanges } : {}),
 			...(fantasy.length > 0 ? { fantasy } : {}),

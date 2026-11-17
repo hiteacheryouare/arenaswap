@@ -1,5 +1,3 @@
-// Cards name the venue and stop there — the city, state and country are a detail-screen line, and
-// gameInfoPanel.cy.tsx is where that pairing is covered. A neutral site is the one exception.
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
 import PreGameCard from '@arenaswap/ui/src/components/preGameCard';
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
@@ -41,7 +39,6 @@ const mountLive = (game: Game) => {
 			<LiveGameCard {...cardProps} game={game} excitementResult={result} />
 		</div>,
 	);
-	// Every width here depends on the webfont having landed — the fallback reports different numbers.
 	cy.document().its('fonts.ready');
 };
 
@@ -59,9 +56,6 @@ const mountPreGame = (game: Game) => {
 	cy.document().its('fonts.ready');
 };
 
-// The fixture carries a venueLocation throughout precisely because the cards must ignore it. Both
-// assertions below would pass on a card that simply had no address to show, so they are written
-// against a game that has one.
 describe('card venue line', () => {
 	const mounts: [string, (game: Game) => void][] = [
 		['live card', mountLive],
@@ -98,7 +92,6 @@ describe('card venue line', () => {
 	});
 });
 
-// Bengals at Falcons, played in Madrid on 2026-11-08.
 describe('neutral-site venue line', () => {
 	const madrid: Game = { ...liveGame, venueName: 'Santiago Bernabéu', venueLocation: 'Madrid, Spain', neutralSite: true };
 
@@ -123,8 +116,6 @@ describe('odds attribution', () => {
 		cy.get('.game-meta-odds').find('.game-meta-attribution').should('contain.text', 'ESPN BET');
 	});
 
-	// A tooltip with no affordance is one nobody finds, which is the whole reason the bare title
-	// attribute was not enough here.
 	it('advertises itself as hoverable', () => {
 		mountLive(liveGame);
 		cy.get('.game-meta-attribution').should($attribution => {
@@ -147,10 +138,7 @@ describe('odds attribution', () => {
 
 	it('opens on keyboard focus too', () => {
 		mountLive(liveGame);
-		// Same gate as above: Bootstrap arrives on a lazily imported chunk, and firing the event
-		// before it lands would pass only because an earlier test in this file warmed the module.
 		cy.get('.game-meta-attribution').should('have.attr', 'data-bs-original-title');
-		// A real button, so it is in the tab order without a hand-placed tabIndex.
 		cy.get('.game-meta-attribution').should('match', 'button').focus();
 		cy.get('.tooltip.show').should('be.visible');
 	});
@@ -162,8 +150,6 @@ describe('odds attribution', () => {
 		});
 	});
 
-	// The card's own click handler skips anything inside a button, so the trigger cannot double as
-	// a way to accidentally open the game detail view.
 	it('does not open the detail view when clicked', () => {
 		const onOpenGameDetail = cy.stub().as('openDetail');
 		cy.viewport(popupWidth, 600);

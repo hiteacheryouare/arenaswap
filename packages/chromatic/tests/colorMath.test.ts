@@ -1,12 +1,6 @@
 import { blackInkContrast, colorDifference, contrastBetween, hexToLab, hexToRgb, hexLuminance, isHex, labChroma, labDifference, rgbLuminance, rgbToHex, whiteInkContrast } from '../src/colorMath';
 import type { Lab } from '../src/colorMath';
 
-// The arithmetic every readability decision in the product is built on. Nothing here fails loudly:
-// a transfer function off by a hair still returns a number, and what goes wrong is a crest drawn in
-// the colour that cannot be seen.
-
-// `colorMath`'s header says the two thresholds WCAG has published — 0.03928 and 0.04045 — agree on
-// all 256 channel values, and consolidates on 0.04045 on the strength of it.
 const channelAtThreshold = (threshold: number) => (value: number): number => {
 	const scaled = value / 255;
 	return scaled <= threshold ? scaled / 12.92 : ((scaled + 0.055) / 1.055) ** 2.4;
@@ -22,7 +16,6 @@ describe('the two published sRGB thresholds', () => {
 		}
 	});
 
-	// Both thresholds sit between 10/255 and 11/255, which is why no integer can tell them apart.
 	test('only differ for a channel between the two, which no integer lands on', () => {
 		const between = 0.04 * 255;
 		expect(low(between)).not.toBe(high(between));
@@ -30,9 +23,6 @@ describe('the two published sRGB thresholds', () => {
 	});
 });
 
-// Three ways of asking the same question. `crestInkReads` measures every pixel with
-// `contrastBetween` while `pickMonoMark` chooses a substitute with the other two, so a crest can be
-// judged unreadable and then handed a replacement judged by a different yardstick.
 describe('the ink shortcuts agree with the general contrast', () => {
 	const surfaces = ['#000000', '#0d1117', '#111827', '#0C2340', '#860038', '#C8102E', '#4B9CD3', '#FFB81C', '#f8fafc', '#ffffff'];
 
@@ -50,8 +40,6 @@ describe('the ink shortcuts agree with the general contrast', () => {
 		}
 	});
 
-	// 21:1 is the most sRGB contains, and a formula that exceeds it is reporting a contrast that
-	// cannot exist.
 	test('neither can promise more contrast than black on white', () => {
 		for (let step = 0; step <= 100; step++) {
 			const backdrop = step / 100;
@@ -73,8 +61,6 @@ describe('hexToRgb and rgbToHex', () => {
 		expect(hexToRgb('#123456')).toEqual({ red: 0x12, green: 0x34, blue: 0x56 });
 	});
 
-	// The lightening loops in `colorUtils` scale channels past 255 and the scrim mixes fractions,
-	// so both ends are reached in normal use.
 	test('clamps a channel driven out of range rather than wrapping it', () => {
 		expect(rgbToHex(300, -20, 255.4)).toBe('#ff00ff');
 	});
@@ -95,9 +81,6 @@ describe('hexToRgb and rgbToHex', () => {
 });
 
 describe('isHex', () => {
-	// ESPN publishes colours both with and without the hash and in either case, and `apiClient`
-	// normalises before anything here sees them. What must not happen is a half-parsed value being
-	// treated as a colour.
 	test('takes a six-digit colour in either case', () => {
 		expect(isHex('#0C2340')).toBe(true);
 		expect(isHex('#0c2340')).toBe(true);
@@ -111,7 +94,6 @@ describe('isHex', () => {
 });
 
 describe('rgbLuminance', () => {
-	// The coefficients, checked against the primaries rather than against themselves.
 	test('weights the three primaries the way sRGB does', () => {
 		expect(rgbLuminance(255, 0, 0)).toBeCloseTo(0.2126, 10);
 		expect(rgbLuminance(0, 255, 0)).toBeCloseTo(0.7152, 10);
@@ -124,8 +106,6 @@ describe('rgbLuminance', () => {
 	});
 });
 
-// Sharma, Wu and Dalal's published test pairs, which exercise every branch the formula has: the
-// hue wrap at 0/360, the mean-hue correction, achromatic inputs and the blue rotation term.
 describe('labDifference', () => {
 	const pairs: [Lab, Lab, number][] = [
 		[{ lightness: 50, a: 2.6772, b: -79.7751 }, { lightness: 50, a: 0, b: -82.7485 }, 2.0425],

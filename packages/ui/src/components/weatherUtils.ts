@@ -97,7 +97,6 @@ const conditionCodeIconMap: Record<number, string> = {
 	44: 'bi-cloud-snow',
 };
 
-// "Mostly cloudy w/ showers" reduces to the showers, "Partly Cloudy/Windy" to the partly cloudy.
 export const primaryCondition = (label: string): string => {
 	const normalized = label.trim().toLowerCase();
 	const precipitation = normalized.split(' w/ ')[1] ?? normalized;
@@ -109,8 +108,6 @@ export const conditionIcon = (label: string, code?: number): string =>
 
 export const formatTemperature = (tempF: number, unit: temperatureDisplayUnit): string => {
 	if (unit === 'C') return `${Math.round((tempF - 32) * 5 / 9)}°C`;
-	// A Rømer degree is nearly twice the size of a Fahrenheit one, so whole numbers would round
-	// away the half degrees the scale is built on — blood heat is 22.5 on it, freezing 7.5.
 	if (unit === 'Ro') return `${Number(((tempF - 32) * 7 / 24 + 7.5).toFixed(1))}°Rø`;
 	return `${tempF}°F`;
 };

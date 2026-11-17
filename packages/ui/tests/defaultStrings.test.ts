@@ -2,21 +2,6 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { defaultStrings } from '../src/components/defaultStrings';
 
-/* `defaultStrings` is the English fallback the shared components fall back to when nothing has put
-   a translator on the context. That is not a hypothetical: `apps/docs` renders `LiveGameCard`
-   straight out of `ScreenshotCard.tsx` with no provider around it, which is how the store
-   screenshots get drawn. A key missing from here throws nothing — `i18nContext`'s default
-   translator does `defaultStrings[key] ?? key` — so what ships is a card with the literal text
-   `gameCard.somethingNew` where a label should be, baked into a screenshot.
-
-   Scanning the source rather than rendering, because this project's Jest runs in Node with no
-   document. The scan has to see *every* shape a call site uses, not the common one: an earlier
-   version of this file matched `t('key')` only, and quietly skipped the two keys in
-   `inningHalfIcon.tsx`, which are written `t(cond ? 'a' : 'b')`. Comments are stripped first so a
-   key mentioned in prose cannot invent a requirement, and a call whose key is not a literal at all
-   fails the run rather than being silently dropped — an unenumerable key is exactly the one that
-   would slip through. */
-
 const srcDir = join(__dirname, '..', 'src');
 const skipped = new Set(['defaultStrings.ts', 'i18nContext.tsx']);
 
@@ -27,8 +12,6 @@ const sourceFiles = (dir: string): string[] => readdirSync(dir).flatMap(name => 
 	return [path];
 });
 
-// Walks the file once tracking quotes, so a `//` inside a string survives and a `t('x.y')` inside
-// a comment does not. Comment bodies are blanked rather than removed to keep offsets honest.
 const withoutComments = (source: string): string => {
 	let out = '';
 	let index = 0;
@@ -63,8 +46,6 @@ const withoutComments = (source: string): string => {
 	return out;
 };
 
-// Everything between the opening paren and its match, so a ternary, a nested call or a template
-// all come back whole.
 const callArguments = (source: string, start: number): string => {
 	let depth = 1;
 	let index = start;
@@ -95,8 +76,6 @@ const callArguments = (source: string, start: number): string => {
 	return out;
 };
 
-// The substitutions are the second argument, and their values are never keys, so only the first
-// one is read. Splitting at the first top-level comma.
 const firstArgument = (args: string): string => {
 	let depth = 0;
 	for (let index = 0; index < args.length; index++) {
@@ -139,9 +118,6 @@ describe('defaultStrings covers every label the shared components render', () =>
 		for (const key of site.keys) rendered.set(key, [...(rendered.get(key) ?? []), site.file]);
 	}
 
-	// A scan that quietly stopped matching would turn this whole file green and prove nothing.
-	// The two inningHalfIcon keys are named on purpose: they are the ones the narrow scan missed,
-	// and they are the only call site written as a ternary, so they are the canary for it.
 	test('the scan finds the labels it is supposed to be checking', () => {
 		expect(rendered.size).toBeGreaterThan(25);
 		expect(rendered.has('gameCard.live')).toBe(true);
@@ -156,8 +132,6 @@ describe('defaultStrings covers every label the shared components render', () =>
 		expect(withoutComments('const url = \'https://x.test//y\';')).toContain('https://x.test//y');
 	});
 
-	// A key built at runtime cannot be checked against this map, so the scan refuses to pretend it
-	// checked it. If one ever lands, either enumerate its values here or give it a literal.
 	test('every call site names its key outright, so none escapes the check', () => {
 		const unenumerable = sites
 			.filter(site => site.keys.length === 0)
@@ -172,14 +146,11 @@ describe('defaultStrings covers every label the shared components render', () =>
 		expect(missing).toEqual([]);
 	});
 
-	// The substitutions are positional by name, so a fallback that dropped a placeholder would
-	// render "Add  to favorites" rather than fail.
 	test('a fallback that takes a substitution still has somewhere to put it', () => {
 		expect(placeholders(defaultStrings['gameCard.addToFavorites']!)).toEqual(['team']);
 		expect(placeholders(defaultStrings['gameCard.removeFromFavorites']!)).toEqual(['team']);
 		expect(placeholders(defaultStrings['gameCard.openDetails']!)).toEqual(['away', 'home']);
 		expect(placeholders(defaultStrings['gameCard.teamRank']!)).toEqual(['rank']);
-		// Both plural forms, "one | other", and the count goes in as $1 rather than by name.
 		expect(placeholders(defaultStrings['gameCard.timeoutsRemaining']!)).toEqual(['team', 'team']);
 		expect(defaultStrings['gameCard.timeoutsRemaining']).toContain('$1');
 		expect(placeholders(defaultStrings['gameCard.downDistanceAt']!)).toEqual(['downDistance', 'fieldPosition']);

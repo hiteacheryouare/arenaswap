@@ -10,11 +10,8 @@ import { soundtrack, stretch } from './soundtrack';
 
 export const soundtrackPath = (filmDir: string) => join(filmDir, 'music', soundtrack.file);
 
-// Where the recording sits under the effects before mastering.
 const musicLufs = -19;
 
-// The recording sped up like a record nudged faster, pitch and all, which keeps every moment of it
-// exactly where the arithmetic puts it. Returns the audio and how much its seconds shrank.
 const decode = (path: string, ffmpegPath: string, sampleRate: number): { audio: Stereo; stretch: number } => {
 	const fastRate = Math.round(sampleRate / stretch);
 	const speed = `aresample=${sampleRate},asetrate=${fastRate},aresample=${sampleRate}`;
@@ -44,8 +41,6 @@ interface Scored {
 	cues: Cue[];
 }
 
-// The recording is lined up so its last hit falls where the dot lands; its beats then fall on the
-// film's music grid, and whatever came before that point in the song plays from the first frame.
 const renderSoundtrackMix = (cut: Scored, path: string, ffmpegPath: string, sampleRate = 48000): RenderedAudio => {
 	const length = Math.round(cut.duration * sampleRate);
 	const { audio: recording, stretch: shrink } = decode(path, ffmpegPath, sampleRate);

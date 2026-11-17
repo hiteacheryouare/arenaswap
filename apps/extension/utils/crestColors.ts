@@ -1,19 +1,10 @@
 import { logWarn } from '@arenaswap/core';
 import type { Game, Team } from '@arenaswap/core/types';
-// Only colorMath and crestColor stay clear of logoTint and logoSwitchColor, which read localStorage
-// at import; the package root and /colorUtils both pull those into the service worker.
 import { isHex } from '@arenaswap/chromatic/colorMath';
 import { crestColorCalibration, crestColorFromPixels, crestSampleSize } from '@arenaswap/chromatic/crestColor';
 
-/* Our sources publish no colour at all for some teams — every men's college hockey team, the Olympic
-   hockey nations, and about a hundred programmes each in college baseball, softball and football —
-   and those games painted in the grey or blue-and-orange each surface keeps as a default. This reads
-   one off the crest instead, in the background, so a game reaches every surface already coloured and
-   nothing changes colour on screen once it has been measured. */
-
 export const crestColorCacheKey = 'arenaswap.crestColors';
 
-// Keyed by crest URL, and null records a crest with no colour in it to give.
 export type crestColorMap = Map<string, string | null>;
 
 interface storedCrestColors {
@@ -62,7 +53,6 @@ export const paintCrestColors = (games: Game[], colors: crestColorMap): Game[] =
 	return awayTeam === game.awayTeam && homeTeam === game.homeTeam ? game : { ...game, awayTeam, homeTeam };
 });
 
-// Undefined when the crest could not be read at all, which is not a verdict and is not stored.
 export const sampleCrestColor = async (src: string): Promise<string | null | undefined> => {
 	if (typeof OffscreenCanvas === 'undefined' || typeof createImageBitmap === 'undefined') return undefined;
 	try {
@@ -93,11 +83,7 @@ interface crestColorDeps {
 export const createCrestColors = ({ load, save, sample = sampleCrestColor, now = Date.now }: crestColorDeps) => {
 	let colors: crestColorMap = new Map();
 	let loading: Promise<boolean> | null = null;
-	// Held as promises so a second fetch landing mid-read waits for it.
 	const reads = new Map<string, Promise<boolean>>();
-	// A first college Saturday asks for a couple of hundred crests at once. Fetched all together on a
-	// slow link they would hit the timeout together, so they queue, and a failure waits a while
-	// before it is tried again rather than being tried on every poll.
 	const failedAt = new Map<string, number>();
 	const waiting: (() => void)[] = [];
 	let active = 0;
@@ -153,7 +139,6 @@ export const createCrestColors = ({ load, save, sample = sampleCrestColor, now =
 		const missing = crestsToRead(games, colors);
 		if (missing.length > 0) {
 			const recorded = await Promise.all(missing.map(read));
-			// Saving over a store that never loaded would replace it with just this session's reads.
 			if (loaded && recorded.some(Boolean)) {
 				await save(toStored(colors)).catch(err => logWarn('Failed to persist crest colours.', err));
 			}

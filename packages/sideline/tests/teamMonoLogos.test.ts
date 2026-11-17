@@ -1,13 +1,5 @@
 import type { LeagueId } from '@arenaswap/core';
 
-/* The single-colour team marks. The scoreboard carries one logo per competitor and no variants, so
-   any surface that wants the white one has to ask `/teams` — and none of this had coverage.
-
-   The failure here is cosmetic rather than dangerous: a missing mark falls back to a tinted disc,
-   which is the state every team outside North America is in anyway. What is worth pinning is that
-   it degrades that way instead of throwing, and that the host check is the single point where all
-   of it would silently go dark at once. */
-
 const createResponse = (data: unknown, init: { ok?: boolean; status?: number } = {}): Response => ({
 	ok: init.ok ?? true,
 	status: init.status ?? 200,
@@ -32,10 +24,6 @@ describe('resizing a mark through ESPN\'s own combiner', () => {
 			.toBe('https://a.espncdn.com/combiner/i?img=/i/teamlogos/nba/500/det.png&w=120&h=120');
 	});
 
-	/* The one line that could take every mark in the product out at once. It is a prefix check
-	   against a hard-coded host, so the day ESPN serves artwork from anywhere else, every team in
-	   every league falls back to the tinted disc together — quietly, because a missing mark is a
-	   supported state rather than an error. */
 	test('refuses a host that is not ESPN\'s image CDN, which is all-or-nothing', () => {
 		expect(loadApiClient().monoLogoUrl('https://cdn.example.com/i/det.png', 120)).toBeUndefined();
 		expect(loadApiClient().monoLogoUrl('https://a.espncdn.com.evil.test/i/det.png', 120)).toBeUndefined();
@@ -71,8 +59,6 @@ describe('picking the white and black marks out of a team\'s logo list', () => {
 	});
 
 	test('answers null for a team with no logos at all rather than an empty object', () => {
-		// The caller keys a map on a non-null answer, so the difference decides whether the team
-		// gets an entry that promises artwork it does not have.
 		expect(loadApiClient().monoMarksFromLogos(undefined)).toBeNull();
 		expect(loadApiClient().monoMarksFromLogos([])).toBeNull();
 	});
@@ -143,8 +129,6 @@ describe('fetching a whole league\'s marks', () => {
 	});
 
 	test('every league failing is an empty map rather than a throw', async () => {
-		// Deliberately the opposite of fetchTeamsForLeagues, which throws when every league fails.
-		// Artwork has a fallback and a team picker does not.
 		const { api } = mockFetch(() => createResponse({}, { ok: false, status: 403 }));
 
 		expect(await api.fetchTeamMonoLogos(['nba', 'nhl'] as LeagueId[])).toEqual({});

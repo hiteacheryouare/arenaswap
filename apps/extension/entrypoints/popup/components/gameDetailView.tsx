@@ -67,12 +67,9 @@ interface gameDetailViewProps {
 	bettingPrefs: BettingDisplayPrefs;
 	weatherPrefs: WeatherDisplayPrefs;
 	decorationPrefs: holidayDecorationPrefs;
-	// Demo mode borrows a date so the calendar-gated decorations are reachable in September.
 	decorationDate?: Date;
 	disabledSignals?: readonly SignalName[];
 	fantasyRoster?: readonly FantasyRosterEntry[];
-	// Pre-game only: the setup card and the poster's favourite stars need these. They are
-	// optional so the live screen, and anything mounting it, is unaffected.
 	favoriteTeamIds?: ReadonlySet<string>;
 	openTabs?: Browser.tabs.Tab[];
 	registry?: TabRegistration[];
@@ -81,7 +78,6 @@ interface gameDetailViewProps {
 	onRegistryChange?: (updated: TabRegistration[]) => void;
 	formatTabLabel?: (tab: Browser.tabs.Tab) => string;
 	tabAssignEnabled?: boolean;
-	// A panel beside a page closes; a screen in the popup goes back to the list it came from.
 	dismiss?: 'back' | 'close';
 	onSetGameBoost: (gameId: string, boost: number) => void;
 	onBack: () => void;
@@ -93,8 +89,6 @@ const noRoster: readonly FantasyRosterEntry[] = [];
 
 const favoriteFlashMs = 5000;
 
-// The legend and the chart's tooltip print the same names, so a hover reads in the same language
-// as the swatches under it.
 const signalLabel = (id: string): string => (isModeSignalId(id) ? i18n.t(signalPresentation[id].labelKey) : id);
 const describeLead = (team: string | undefined, margin: number): string => (
 	team === undefined || margin === 0 ? i18n.t('detail.leadTied') : i18n.t('detail.leadBy', { team, margin })
@@ -143,7 +137,6 @@ const gameDetailView = ({
 	const leadChanges = activePowerScore?.leadChanges ?? 0;
 	const comeback = activePowerScore?.comeback ?? 0;
 	const rawSubtotal = closeness + lateGame + momentum + leadChanges + comeback;
-	// On a break this is the signals sum before the penalty came off, which may exceed 100.
 	const signalsSubtotal = activePowerScore?.signalsSubtotal ?? rawSubtotal;
 	const breakPenalty = activePowerScore?.breakPenalty ?? 0;
 	const hasBreaks = hasCommercialBreaks(game);
@@ -166,7 +159,6 @@ const gameDetailView = ({
 	useEffect(() => {
 		const colors = favoriteScoreFlashColors(previousScoreline.current, game, favoriteTeamIds);
 		const bursts = fireworksArmed ? scoringBursts(previousScoreline.current, game) : [];
-		// Seeded on the first pass so opening the screen mid-game does not read as a goal.
 		previousScoreline.current = scorelineOf(game);
 		if (bursts.length > 0) setFireworkVolley(volley => ({ id: (volley?.id ?? 0) + 1, bursts }));
 		if (!colors) return;
@@ -177,20 +169,14 @@ const gameDetailView = ({
 
 	useEffect(() => () => clearTimeout(flashTimer.current), []);
 	const currentBoost = gameBoosts[game.id] ?? 0;
-	// The breakdown mirrors the scorer, which drops every boost while play is frozen. The boost input
-	// keeps showing the stored value, since the setting survives halftime even though it pays nothing.
 	const appliedBoost = activePowerScore?.gameBoost ?? currentBoost;
 	const scoringOpportunityBoost = activePowerScore?.scoringOpportunityBoost ?? 0;
 	const postseasonBoost = activePowerScore?.postseasonBoost ?? 0;
 
 	const chartPalette = theme === 'light' ? lightChartPalette : darkChartPalette;
 	const locale = useDisplayLocale();
-	// The scorer writes its reason in English. Another language gets it rebuilt from locale strings,
-	// or not at all when a fragment has no translation; until a score arrives there is nothing to say.
 	const spokenReason = activePowerScore?.reason ? speakReason(activePowerScore, i18n.t, locale ?? 'en') : undefined;
 	const reason = spokenReason ? capitalizeReason(spokenReason, locale ?? 'en') : undefined;
-	// Before the charts, and handed to them: a clash that needs a colour read off a crest lands on a
-	// render with the same `game`, and a chart memoised on `game` alone would keep the old line.
 	useSwitchCrest(game.awayTeam, game.homeTeam);
 	const [awayLineColor, homeLineColor] = resolveChartLineColors(game.awayTeam, game.homeTeam, chartPalette.surface);
 	const powerScoreOption = useMemo(() => (
@@ -205,7 +191,6 @@ const gameDetailView = ({
 	const componentLegendItems = useMemo(() => (
 		contributionSignalIds(orderedPowerScoreHistory).map(id => ({ label: signalLabel(id), color: signalColorOf(id) }))
 	), [orderedPowerScoreHistory]);
-	// Only a game Blowouts is scoring gets the lead tracker: the margin is what that mode is about.
 	const scoredModeId = excitementResult?.breakdown?.modeId ?? orderedPowerScoreHistory[orderedPowerScoreHistory.length - 1]?.modeId;
 	const leadTrackerOption = useMemo(() => (
 		scoredModeId === 'blowouts' ? buildLeadTrackerOption(orderedScoreHistory, game, chartPalette, [awayLineColor, homeLineColor], locale, describeLead) : undefined
@@ -216,8 +201,6 @@ const gameDetailView = ({
 	const winProbabilityOption = useMemo(() => (
 		buildWinProbabilityOption(winProbability, game, chartPalette, [awayLineColor, homeLineColor])
 	), [winProbability, game, chartPalette, awayLineColor, homeLineColor]);
-	// Read from the scorer, not recomputed from the line fetched above: that would put a different
-	// number here than on the card you tapped. Undefined means ESPN gave too little data.
 	const winProbabilityVariance = activePowerScore?.winProbabilityVariance;
 	const total = activePowerScore?.total ?? 0;
 
@@ -229,16 +212,10 @@ const gameDetailView = ({
 	const isDelayed = game.delayed === true;
 	const isPreGame = game.status === 'pre';
 	const isFinal = game.status === 'post';
-	// A postponed game never started, so it keeps the poster rather than a 0-0 scoreline.
 	const showsPoster = isPreGame || game.disruption === 'postponed';
-	// A wrap draws a chart only when its line covers the whole game. The win-probability line is
-	// exempt because it is not ours: ESPN builds it from the full play-by-play, so it either
-	// arrives complete or does not arrive.
 	const chartsCoverGame = !isFinal
 		|| (coversWholeGame(orderedPowerScoreHistory, game) && coversWholeGame(orderedScoreHistory, game));
 	const [awayAccent, homeAccent] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#2274A5', '#F75C03');
-	// One hero surface for all three states, and the same one the list card is painted with: the two
-	// teams' colours under a shade, with each side written in whichever ink reads on its colour.
 	const heroStyle = isHomeFirst(game)
 		? matchupSurfaceStyle(homeAccent, awayAccent, isDelayed)
 		: matchupSurfaceStyle(awayAccent, homeAccent, isDelayed);
@@ -248,10 +225,6 @@ const gameDetailView = ({
 		? i18n.t('detail.totalLabelBaseMax', { total, max: scoreMaxTotal })
 		: i18n.t('detail.totalLabel', { total, max: scoreMaxTotal });
 
-	// Observing the scoreline itself rather than a scroll offset keeps the sticky-bar handoff exact
-	// at any hero height — pre-game, inning sports and postseason all differ. It is the scoreline
-	// and not the whole hero, and the root is trimmed by the bar, so the compact matchup arrives as
-	// the score slides under the bar rather than once the at-bat panel or field strip below it has.
 	const shellRef = useRef<HTMLDivElement>(null);
 	const heroRef = useRef<HTMLDivElement>(null);
 	const [heroScrolledAway, setHeroScrolledAway] = useState(false);
@@ -271,20 +244,10 @@ const gameDetailView = ({
 		return () => observer.disconnect();
 	}, [showsPoster]);
 
-	// Everything that is not the box score or the table: the PowerScore and what explains
-	// it, what is happening in the game, and where it is being played. Lifted out of the
-	// panel below so the tab markup stays legible as tab markup.
 	const overviewPanel = (
 		<>
-		{/* Nothing has happened yet, so there is no PowerScore to break down — every signal
-		    would read zero. The screen offers what you can actually decide in advance instead. */}
 		{isFinal ? (
 			<>
-				{/* No PowerScore anywhere on a wrap. The number is a live judgement about what to
-				    watch next, and a game that is over is not a candidate — printing its last
-				    value would read as a verdict on the game rather than as the switching signal
-				    it actually was. The boost input goes for the same reason: it can only ever
-				    change a score that will never be computed again. */}
 				<FantasyPlayersPanel game={game} roster={fantasyRoster} boxScore={boxScore} />
 				<GameInfoPanel game={game} bettingPrefs={bettingPrefs} weatherPrefs={weatherPrefs} gameDurationMins={gameDurationMins} venue={venue} />
 			</>
@@ -307,11 +270,7 @@ const gameDetailView = ({
 			</>
 		) : (
 			<>
-				{/* Between half-innings, when the hero has no at-bat panel: who steps in next. */}
 				<DueUpPanel game={game} awayColor={awayLineColor} homeColor={homeLineColor} />
-				{/* Next, and deliberately not next to the info panel: what just happened is
-				    the most time-sensitive thing on this screen, and putting it beside the
-				    venue and the networks is what made it read as venue chrome on the card. */}
 				<LatestPlayPanel game={game} awayColor={awayLineColor} homeColor={homeLineColor} />
 				<FantasyPlayersPanel game={game} roster={fantasyRoster} boxScore={boxScore} />
 
@@ -368,9 +327,6 @@ const gameDetailView = ({
 		</>
 	);
 
-	// A tab is offered only once there is something behind it. Both of the optional two arrive
-	// with the `/summary` fetch, so the strip grows from nothing to its final shape a moment
-	// after the screen opens — and stays absent for the leagues that never fill either one.
 	const tabs: DetailTab[] = [
 		{ id: 'overview', label: i18n.t('detail.tabOverview') },
 		...(isPreGame && hasMatchupContent(matchup)
@@ -388,7 +344,6 @@ const gameDetailView = ({
 	];
 	const tabId = (id: DetailTabId) => `gd-tab-${game.id}-${id}`;
 	const paneId = (id: DetailTabId) => `gd-pane-${game.id}-${id}`;
-	// One tab is not a choice, so there is no strip and the overview is simply the screen.
 	const tabbed = tabs.length > 1;
 
 	const paneFor = (id: DetailTabId) => (

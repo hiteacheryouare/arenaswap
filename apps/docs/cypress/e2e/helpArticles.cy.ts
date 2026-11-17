@@ -1,10 +1,5 @@
 import { localeCodes } from '../../src/i18n/locales';
 
-// The help and PowerScore docs read as a book: a sidebar listing every article and Previous / Next
-// links at the foot of each. Both are generated from each article's `order`, so two articles sharing
-// a number, or a new one slotted in badly, leave a page that Next skips or visits twice while every
-// link on the site still resolves.
-
 interface navLink {
 	href: string;
 	label: string;
@@ -18,7 +13,6 @@ const sidebarLinks = (section: string) => cy.get('nav.docs-nav').then($nav => {
 	}));
 });
 
-// The adjacent article's path, or '' at the end of the section.
 const adjacent = (which: 'previous' | 'next'): Cypress.Chainable<string> => cy.document().then(doc => {
 	const link = [...doc.querySelectorAll<HTMLAnchorElement>('nav.docs-adjacent a')]
 		.find(anchor => anchor.classList.contains('docs-adjacent-next') === (which === 'next'));
@@ -47,9 +41,6 @@ describe('reading the docs from start to finish', () => {
 	}
 });
 
-// The questions are there for search: FAQPage structured data is what earns the expandable answers
-// under a search result. If it drifts from what the page shows, the result quotes an answer the page
-// no longer gives, and nothing on screen looks wrong.
 const faqOnPage = (doc: Document) => [...doc.querySelectorAll('details.faq-item')].map(item => ({
 	q: item.querySelector('summary')!.textContent!.trim(),
 	a: item.querySelector('.accordion-body')!.textContent!.trim(),
@@ -76,7 +67,6 @@ describe('the questions search engines are told about', () => {
 		});
 	}
 
-	// Every article that carries a "Common questions" block, whichever articles the build holds.
 	it('match the common questions on every help article that has them', () => {
 		cy.visit('docs/extension/');
 		cy.get('nav.docs-nav ul a').then($links => {

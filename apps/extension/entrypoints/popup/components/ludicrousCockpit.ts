@@ -13,9 +13,6 @@ export const cockpitWindowRect = (w: number, h: number): Rect => ({
 
 const consoleTop = (h: number): number => Math.round(h * 0.4) + 20;
 
-/* The bridge window is a faceted panorama in a shallow arc, not one flat sheet: five trapezoidal
-   panes divided by heavy pale mullions. The arc is carried by the top and bottom edges bowing away
-   from the middle, which is cheaper than five clipped quads and reads the same. */
 const bowAt = (x: number, r: Rect, depth: number): number => (
 	depth * Math.pow(Math.abs(x - (r.x + r.w / 2)) / (r.w / 2), 2)
 );
@@ -70,9 +67,6 @@ const phaseRank: Record<Phase, number> = {
 	stopping: 0,
 };
 
-/* Field and lettering colours are medians measured off the film's own backlit panels. An unlit panel
-   goes flat pale grey-green carrying a ghost of its own lettering rather than dark, which is what
-   makes the three of them lighting in turn read as a sequence. */
 const panelFields = ['#37c182', '#c2741c', '#b8281a'];
 const panelH = 26;
 const panelGap = 5;
@@ -111,9 +105,6 @@ const paintSpeedPanels = (ctx: CanvasRenderingContext2D, w: number, top: number,
 	});
 };
 
-/* The screen-used console panels are sheet metal with black tape linework, black rub-down decals and
-   off-the-shelf white square pushbuttons carrying two-character legends. That is the grammar here,
-   labels included. */
 const buttonLegends = ['AB', 'CD', 'EF', 'GH', 'JK', '01', '02', '03', '04', '05'];
 const tapeLabels = ['FAULT WARNING', 'FIRE QUADRANT'];
 
@@ -150,7 +141,6 @@ const paintButtonBlock = (ctx: CanvasRenderingContext2D, x: number, y: number, f
 	}
 };
 
-// Frames between each lamp coming on while the ship winds up, so the row is full a beat before GO.
 const windupFramesPerLamp = 5;
 
 const paintPilotLamps = (ctx: CanvasRenderingContext2D, x: number, y: number, count: number, phase: Phase, phaseFrame: number, frame: number): void => {
@@ -170,16 +160,12 @@ const paintPilotLamps = (ctx: CanvasRenderingContext2D, x: number, y: number, co
 	}
 };
 
-// The brake placard and its lever share a pedestal at the foot of the console. The DOM button is
-// positioned onto this exact rect, so the control the user clicks is the one that is drawn.
 export const cockpitBrakeRect = (w: number, h: number): Rect => {
 	const top = consoleTop(h);
 	const y = top + 24 + 3 * (panelH + panelGap) + 6 + 72 + 12 + 30 + 12;
 	return { x: 12, y, w: w - 62, h: 36 };
 };
 
-// The lever on this bridge is the emergency brake, not a throttle: a black rod with a ball handle on
-// a riveted pedestal, and a dome lamp that lights red when it is pulled.
 const paintBrakeLever = (ctx: CanvasRenderingContext2D, x: number, y: number, pulled: boolean): void => {
 	ctx.fillStyle = '#6d716c';
 	ctx.fillRect(x - 14, y + 18, 28, 18);
@@ -218,7 +204,6 @@ export const paintCockpitConsole = (
 	const top = consoleTop(h);
 	const rank = phaseRank[phase];
 
-	// Pale cool grey at the window end, warmer olive-grey aft.
 	const face = ctx.createLinearGradient(0, top, 0, h);
 	face.addColorStop(0, '#8e9491');
 	face.addColorStop(0.1, '#5d615b');
@@ -232,7 +217,6 @@ export const paintCockpitConsole = (
 	paintPilotLamps(ctx, 16, top + 12, 12, phase, phaseFrame, frame);
 	paintSpeedPanels(ctx, w, top + 24, rank);
 
-	// Recessed well. The dialogue is DOM and lands inside this box.
 	const wellTop = top + 24 + 3 * (panelH + panelGap) + 6;
 	ctx.fillStyle = 'rgba(0,0,0,0.55)';
 	ctx.fillRect(10, wellTop, w - 20, 72);

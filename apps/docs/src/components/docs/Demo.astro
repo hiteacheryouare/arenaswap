@@ -23,8 +23,6 @@ import { demoTranslator, demoUiStrings, tiedReason } from './demoStrings';
 import { defaultSensitivity, sensitivityThresholds } from '@arenaswap/core/constants';
 import { currentLocale, uiStrings, useTranslations } from '../../i18n/ui';
 
-// One tag for every demo in the help articles: <Demo name='live-card' favorite />.
-
 export type DemoName =
 	| 'popup'
 	| 'live-card'
@@ -49,13 +47,11 @@ export type DemoName =
 interface Props {
 	name: DemoName;
 	caption?: string;
-	// Replaces the built-in description screen readers hear.
 	description?: string;
 	tabs?: boolean;
 	tab?: boolean;
 	favorite?: boolean;
 	kind?: SliderKind;
-	// An extension string key, e.g. `setup.demoMode`.
 	setting?: string;
 	checked?: boolean;
 	icon?: string;

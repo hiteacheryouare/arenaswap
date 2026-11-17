@@ -7,8 +7,6 @@ import { makeGame } from '../../support/fixtures';
 import { inEveryLocale } from '../../support/safetyNet/locales';
 import { mountInPopup, popupSurface } from '../../support/safetyNet/mountInPopup';
 
-// Real XIs captured 2026-11-06: Everton's 4-2-3-1 at home to Sassuolo's 4-3-3 (two clubs from
-// different leagues, so the two kits are nothing alike).
 const game: Game = makeGame('401879999', {
 	league: 'epl',
 	sportType: 'soccer',

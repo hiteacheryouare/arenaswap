@@ -4,8 +4,6 @@ import { detailBleeds, detailView, mountDetailView, powerScoreHistoryOf, scoreHi
 import { popupSurface } from '../../support/safetyNet/mountInPopup';
 import { worstBroadcasts, worstCaseGames } from '../../support/safetyNet/worstCase';
 
-// `mock-` ids make useSummaryData answer from canned data instead of the network, so the records
-// row (mock-3 holds the widest real record) and the standings tab are on screen without a fetch.
 const mockedGame = (game: Game): Game => ({
 	...game,
 	id: 'mock-3',

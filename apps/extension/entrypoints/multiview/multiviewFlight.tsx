@@ -3,8 +3,6 @@ import type { flight } from './multiviewFlights';
 
 const easing = 'cubic-bezier(0.65, 0, 0.35, 1)';
 
-// One of the wordmark's arrows: the line draws out behind its head, stays whole until the head is off
-// the page, then pulls in after it. A dashed one is a fixed dashed line shown through a moving mask.
 const MultiviewFlight = ({ flight, onLanded }: { flight: flight; onLanded: (id: number) => void }) => {
 	const maskId = `flight${useId().replace(/[^\w-]/g, '')}`;
 	const lineRef = useRef<SVGPathElement>(null);

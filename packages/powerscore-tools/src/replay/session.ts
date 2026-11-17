@@ -21,11 +21,9 @@ export interface ReplayScore {
 	gameId: string;
 	total: number;
 	reason: string;
-	// Moment boosts that fired, for shading and the timeline.
 	boosts?: Record<string, number>;
 }
 
-// The 2.2.0 baseline still penalizes a frozen clock, so it gets the stall count the extension used to keep.
 export interface ReplayScoringInput extends LiveScoringInput {
 	stallCount: number;
 }
@@ -39,14 +37,10 @@ export interface Frame {
 	ts: number;
 	league: LeagueId;
 	games: Map<string, Game>;
-	// Best first, per scorer.
 	rankings: Map<string, ReplayScore[]>;
-	// The game each simulated viewer is watching after this poll.
 	watching: Map<string, string | undefined>;
 	switched: Map<string, boolean>;
-	// A switch away from a game still being played, not the first tune-in or a game ending.
 	switchedAway: Map<string, boolean>;
-	// When each live game was first seen, so a scorecard can leave out games with no history yet.
 	firstSeen: ReadonlyMap<string, number>;
 	commercialBreaks: ReadonlyMap<string, CommercialBreakEntry>;
 }
@@ -55,12 +49,9 @@ interface Viewer {
 	watching?: string;
 	lastSwitchTime: number;
 	switches: number;
-	// Switches made while the game being watched was still on.
 	voluntarySwitches: number;
 }
 
-// Plays a recording through the same steps background.ts takes after each league poll: look for
-// commercial breaks in that league, score every live game against the history so far, then record the poll.
 const sportOf = (league: LeagueId) => leagueConfigMap[league]?.sportType ?? 'basketball';
 
 export const createReplaySession = (scorers: Scorer[], prefs: Pick<UserPreferences, 'sensitivity' | 'cooldownSeconds'>, roster: FantasyRosterEntry[] = []) => {
@@ -77,14 +68,11 @@ export const createReplaySession = (scorers: Scorer[], prefs: Pick<UserPreferenc
 	const handle = (event: ReplayEvent): Frame | null => {
 		if (event.kind === 'summary') {
 			if (event.winProbability.length > 0) winProbability.set(event.gameId, event.winProbability);
-			// The live game, not just its id: Fantasy needs the teams to find rostered players.
 			const game = liveByLeague.get(event.league)?.find(live => live.id === event.gameId);
 			liveExtras.ingestSummary(game ?? { id: event.gameId, sportType: sportOf(event.league) }, event.raw, event.ts);
 			return null;
 		}
 		if (event.kind === 'situation') {
-			// The same gate background.ts applies before fetching, so an empty-net streak counts the
-			// polls the extension would actually have seen.
 			const game = liveByLeague.get(event.league)?.find(live => live.id === event.gameId);
 			const margin = game ? Math.abs(game.homeTeam.score - game.awayTeam.score) : Infinity;
 			if (game && game.league === 'nhl' && !game.intermission && !game.delayed && margin <= (sportTypeConfigMap.hockey?.closenessMargins[2] ?? 3)) liveExtras.ingestSituation(event.gameId, event.raw);

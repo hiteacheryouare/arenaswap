@@ -51,7 +51,6 @@ export const eaglesCowboys = makeGame('nfl-eagles-cowboys', {
 	downDistance: '3rd & 5',
 });
 
-/** A close 4th-quarter game beating a blowout, so ordering by PowerScore is observable. */
 export const liveState = (): BackgroundState => ({
 	games: [bullsHeat, sixersThunder],
 	scores: [makeScore(sixersThunder.id, 82), makeScore(bullsHeat.id, 19)],
@@ -71,7 +70,6 @@ export const openTabs: fakeTab[] = [
 	{ id: 102, title: 'Bulls vs Heat — Stream',     url: 'https://example.test/bulls' },
 ];
 
-/** Stored prefs skip onboarding, which is what most flows want. */
 export const onboardedPrefs = (overrides: Partial<UserPreferences> = {}): UserPreferences => ({
 	...createDefaultUserPreferences(),
 	enabledLeagues: ['nba', 'nfl'],

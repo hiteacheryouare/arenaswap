@@ -36,7 +36,6 @@ const fantasyScoringPage = ({ scoring, initialSport, disabled, onRuleChange, onR
 			/>
 
 			{fantasyRuleGroups[sport]
-				// A rule the box score never fills would change nothing, so it isn't offered.
 				.map(group => ({ ...group, rules: group.rules.filter(({ rule }) => fantasyRulesRead[sport].includes(rule)) }))
 				.filter(group => group.rules.length > 0)
 				.map((group, index) => (

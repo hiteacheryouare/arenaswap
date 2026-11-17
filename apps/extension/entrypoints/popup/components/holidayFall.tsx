@@ -23,7 +23,6 @@ interface particle {
 	color: rgbColor;
 }
 
-// White flakes on a white page are not there at all, so on light they are frosted, with an edge.
 const snowInk: Record<ResolvedTheme, { fill: string; edge?: string }> = {
 	dark: { fill: '238, 247, 255' },
 	light: { fill: '159, 179, 200', edge: '110, 132, 158' },
@@ -54,8 +53,6 @@ const makeParticle = (kind: fallingKind, width: number, height: number, atTop: b
 	};
 };
 
-// Falling only. The pile it lands in lives at the foot of the page in holidayDrift, which is a
-// different place in a different coordinate system — this canvas is pinned to the window.
 const holidayFall = ({ kind, theme = 'dark' }: holidayFallProps) => {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -69,7 +66,6 @@ const holidayFall = ({ kind, theme = 'dark' }: holidayFallProps) => {
 		const ratio = window.devicePixelRatio || 1;
 		let width = 0;
 		let height = 0;
-		// Re-sized with the window it is pinned to, or a wider Guide window stretches every flake.
 		const fitToWindow = () => {
 			width = canvas.clientWidth;
 			height = canvas.clientHeight;
@@ -113,7 +109,6 @@ const holidayFall = ({ kind, theme = 'dark' }: holidayFallProps) => {
 						x,
 						y: p.y,
 						size: p.size,
-						// Flattens and widens as it turns over on the way down.
 						tilt: 0.3 + 0.7 * Math.abs(Math.cos(frame / 45 + p.tumblePhase)),
 						angle: p.angle,
 						shape: p.shape,

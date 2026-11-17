@@ -1,14 +1,7 @@
-// Screenshot page shared styles — fixed 1280x800 canvas
-// These pages are intentionally throwaway routes used only to capture
-// promotional product screenshots for the Chrome Web Store.
-
-// `@arenaswap/ui/src/bootstrap` is the theme and forwards Bootstrap itself, so there is no second
-// Bootstrap load to order these against.
 @use '@arenaswap/ui/src/bootstrap' with ($body-font-size: 0.9375rem);
 @use '@arenaswap/ui/src/game-card';
 @use '@arenaswap/ui/src/motion' as m;
 @use '@arenaswap/ui/src/fonts' with ($font-base-url: '/src/fonts');
-// Under Bootstrap's components, so a class's own margin and padding still win over this.
 @layer reboot {
 	* {
 		box-sizing: border-box;
@@ -18,7 +11,6 @@
 }
 
 @layer custom {
-
 	@font-face {
 		font-family: 'bootstrap-icons';
 		src: url('/src/fonts/bootstrap-icons.woff2') format('woff2'),
@@ -55,10 +47,6 @@
 		background: #000;
 	}
 
-	// Glow is centred at the bottom of the device frames (devices sit at
-	// bottom: 60-80px), so the warmest light emanates from right behind the
-	// device's bottom edge — making it look like the laptop is sitting on
-	// glowing ground rather than floating in front of an unrelated halo.
 	.canvas::before {
 		content: '';
 		position: absolute;
@@ -73,8 +61,6 @@
 		filter: blur(8px);
 	}
 
-	// Soft secondary halo at the very bottom — adds the warm "ground" wash
-	// you see in Apple-style product shots.
 	.canvas::after {
 		content: '';
 		position: absolute;
@@ -87,8 +73,6 @@
 		pointer-events: none;
 	}
 
-	// Bottom-glow is now baked into the .canvas background gradient.
-	// The element is kept (no-op) so existing markup stays valid.
 	.bottom-glow,
 	.over-glow {
 		display: none;
@@ -119,7 +103,6 @@
 		z-index: 1;
 	}
 
-	// ─── Extension popup (shared across screenshots) ─────────────────────────────
 	.popup {
 		width: 320px;
 		background: #0d1117;
@@ -209,8 +192,6 @@
 		flex-shrink: 0;
 	}
 
-	// Real game cards are taller than the old hand-coded mockups.
-	// Scale the popup down so it fits within the 1280×800 canvas.
 	.popup-overlay .popup {
 		transform: scale(0.82);
 		transform-origin: top right;

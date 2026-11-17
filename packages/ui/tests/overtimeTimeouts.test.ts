@@ -44,8 +44,6 @@ describe('timeout allotment by sport', () => {
 	});
 });
 
-// A rain-delayed start still paints the scheduled card's normal shade, so its league mark has to
-// read its ink off that shade too.
 test('a delayed game that has not started takes the league-mark ink of its normal card', () => {
 	const colors = ['#13274F', '#FDB927', '#7BAFD4', '#FF6B00', '#E31837', '#00843D', '#FFFFFF', '#000000', '#C4CED4', '#4B92DB'];
 	for (const away of colors) {

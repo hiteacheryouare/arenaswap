@@ -1,13 +1,11 @@
 import type { SportType } from '@arenaswap/core';
 
 export interface SeasonStatSpec {
-	// ESPN's `name` for the stat in the pre-game `boxscore` block.
 	name: string;
 	// Baseball sends `runs` and `homeRuns` under both batting and pitching, so it is keyed by group.
 	group?: string;
 	labelKey: typeof seasonStatLabelKeys[number];
 	lowerIsBetter?: true;
-	// Soccer sends season totals, where a clean sheet or a level goal difference is a real zero.
 	zeroIsReal?: true;
 }
 
@@ -36,9 +34,6 @@ const seasonStatLabelKeys = [
 	'detail.statGoalDifference',
 ] as const;
 
-// A handful per sport rather than everything ESPN sends: the block carries eleven hockey stats and
-// thirteen basketball ones, several of them duplicates, and the point is a glance at who is better
-// at what. Order is the order they render in.
 const seasonStatSpecs: Record<SportType, SeasonStatSpec[]> = {
 	football: [
 		{ name: 'totalPointsPerGame', labelKey: 'detail.statPoints' },
@@ -90,8 +85,6 @@ export const seasonStatSpecsFor = (sportType: SportType | undefined): SeasonStat
 
 export type InjuryStatus = 'out' | 'doubtful' | 'questionable' | 'dayToDay';
 
-// The game-day statuses only. The injured lists (10-, 15- and 60-day, IR) and paternity leave are
-// dropped: they run to a dozen names a team in baseball, and none of them is news on game day.
 export const injuryStatusByType: Record<string, InjuryStatus> = {
 	INJURY_STATUS_OUT: 'out',
 	INJURY_STATUS_DOUBTFUL: 'doubtful',

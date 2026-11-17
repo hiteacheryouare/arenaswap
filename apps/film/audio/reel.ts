@@ -12,8 +12,6 @@ export const reelKinds: Kind[] = ['dot', 'swap', 'whoosh', 'tick', 'confetti', '
 const reelSeconds = 6;
 const beat = musicBeats(1);
 
-// Roughly the gain a demo cut's master applies to the raw mix, so a reel plays each effect at the
-// level it will have in the film.
 const reelGain = 0.33;
 
 const hop = (at: number, step: number, pan = 0): ResolvedCue => ({ at, kind: 'dot', step, pan });

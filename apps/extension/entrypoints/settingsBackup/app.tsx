@@ -32,7 +32,6 @@ const problemKeys = {
 	saveFailed: 'backupImport.problemSaveFailed',
 } as const satisfies Record<importProblem, string>;
 
-// Onboarding's link lands on the drop zone, a profile's Export on the download button.
 const sectionControls: Record<string, string> = { import: 'importFile', export: 'backupDownload' };
 
 const formatExportedAt = (iso: string): string => {
@@ -92,7 +91,6 @@ const App = () => {
 		return () => { cancelled = true; };
 	}, [exportId]);
 
-	// Crests only for the leagues someone has favorites in, and only once per set of leagues.
 	const teamLeaguesKey = favoriteLeagues([current, exportProfile, file?.profile]).join(',');
 	useEffect(() => {
 		if (!teamLeaguesKey) return;

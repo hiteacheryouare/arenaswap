@@ -8,8 +8,6 @@ interface CachedResponse {
 	contentType: string;
 }
 
-// Crests, league marks and anything else the popup pulls straight off our sources' CDN. The first
-// render downloads each one once; every render after that is offline and byte-identical.
 export const remoteHosts = ['*://a.espncdn.com/*', '*://*.espncdn.com/*', '*://site.api.espn.com/*', '*://sports.core.api.espn.com/*', '*://site.web.api.espn.com/*'];
 
 const keyFor = (url: string) => createHash('sha1').update(url).digest('hex');

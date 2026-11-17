@@ -5,7 +5,6 @@ import { makeGame } from '../../support/fixtures';
 
 const popupWidth = 320;
 
-// #9 BYU at #3 Utah, a Big 12 game on 2026-11-07.
 const big12: Game = makeGame('byu-utah', {
 	league: 'ncaaf',
 	sportType: 'football',

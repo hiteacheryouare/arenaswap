@@ -7,8 +7,6 @@ import { browserTabs, filmTabs, standbyTab } from '../data/tabs';
 import { lerp, progress, easeInOut } from '../timing';
 import type { FilmHost, PopupBoot, PopupHandle } from './hostTypes';
 
-// The viewer's leagues. College hockey is left out: its teams carry no colours, and a grey card at
-// the top of the list reads as a broken one.
 const viewerLeagues = ['ncaaf', 'mlb', 'nhl', 'nwsl', 'nba'] as const;
 const kentuckyKey = 'ncaaf:96';
 
@@ -24,9 +22,7 @@ export const viewerPrefs = (profile: Profile): UserPreferences => ({
 	theme: 'dark',
 });
 
-// Outside its keys a clock runs at real speed rather than stopping: a popup whose night is held
-// still would also freeze every animation in it that is timed off Date, which is how ECharts draws
-// a line in.
+// Outside its keys a clock runs at real speed: ECharts times its line-draw animation off Date.
 export const slateTimeAt = (clock: ClockKey[], t: number): number => {
 	const keys = clock.map(key => ({ at: key.at, slate: Date.parse(key.slate) }));
 	if (t <= keys[0]!.at) return keys[0]!.slate - (keys[0]!.at - t) * 1000;
@@ -34,7 +30,6 @@ export const slateTimeAt = (clock: ClockKey[], t: number): number => {
 		const previous = keys[index - 1]!;
 		const next = keys[index]!;
 		if (t < next.at) {
-			// A key repeated at the same film time is a cut: the night jumps.
 			return next.at === previous.at ? next.slate : lerp(previous.slate, next.slate, (t - previous.at) / (next.at - previous.at));
 		}
 	}
@@ -42,7 +37,6 @@ export const slateTimeAt = (clock: ClockKey[], t: number): number => {
 	return last.slate + (t - last.at) * 1000;
 };
 
-// The film time at which a clock reaches a moment of the night, searched between `from` and `to`.
 export const filmTimeOf = (clock: ClockKey[], slate: string, from: number, to: number): number => {
 	const target = Date.parse(slate);
 	let low = from;
@@ -95,8 +89,6 @@ const createPopupHost = (cut: Cut, slate: Slate, messages: Record<string, { mess
 		return runtime ? Math.round(slateTimeAt(runtime.plan.clock, filmTime)) : Date.now();
 	};
 
-	// What the background would hand this popup: only the viewer's leagues, and from `standbyAt` on,
-	// parked on the Standby Stream.
 	const stateFor = (runtime: PopupRuntime, now: number): BackgroundState => {
 		const { plan } = runtime;
 		if (plan.source === 'pregame') return slate.pregameState();
@@ -206,7 +198,6 @@ const createPopupHost = (cut: Cut, slate: Slate, messages: Record<string, { mess
 		return false;
 	};
 
-	// Called once per frame, before the stage renders.
 	const tick = (t: number) => {
 		filmTime = t;
 		for (const runtime of runtimes.values()) {

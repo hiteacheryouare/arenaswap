@@ -16,7 +16,6 @@ export interface PluckPreset {
 	brightness: number;
 }
 
-// A bell lyre: the partials of a free bar, and a hard mallet.
 export const glockPluck: PluckPreset = {
 	ratios: [1, 2.756, 5.404, 8.933],
 	amplitudes: [1, 0.32, 0.12, 0.05],
@@ -28,8 +27,6 @@ export const glockPluck: PluckPreset = {
 	brightness: 0.3,
 };
 
-// Additive pluck: each partial is a rotating phasor that decays on its own clock, so upper partials
-// die first the way a struck bar does. Band-limited by construction.
 export const renderPluck = (note: NoteEvent, preset: PluckPreset, sampleRate: number, random: Random, cutoff = 20000): Float32Array => {
 	const frequency = midiToFrequency(note.midi);
 	const decayScale = (440 / frequency) ** 0.3;

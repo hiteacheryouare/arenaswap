@@ -1,7 +1,6 @@
 import { computeFantasyPoints, defaultFantasyScoring, fantasySportOf, resolveFantasyScoring } from '../src/fantasyScoring';
 
 describe('a defense scored by the points it has allowed', () => {
-	// Each tier's lower and upper edge, as a box score reports the opponent's score.
 	test.each([
 		[0, 10], [2, 7], [6, 7], [7, 4], [13, 4], [14, 1], [20, 1], [21, 0], [27, 0], [28, -1], [34, -1], [35, -4], [56, -4],
 	])('%i allowed is worth %i', (allowed, points) => {
@@ -9,7 +8,6 @@ describe('a defense scored by the points it has allowed', () => {
 	});
 
 	test('adds its sacks and takeaways on top of the tier', () => {
-		// Washington's defense in London: two sacks, two takeaways, thirty points allowed.
 		expect(computeFantasyPoints('football', { sacks: 2, takeaways: 2, pointsAllowed: 30 })).toBe(5);
 	});
 });

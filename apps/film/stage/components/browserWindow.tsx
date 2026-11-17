@@ -8,11 +8,9 @@ import StreamView, { ChannelView } from './streamView';
 
 export interface TabView {
 	activeTabId: number;
-	// The tab being wiped away during a switch, and how far the incoming one has covered it.
 	previousTabId?: number;
 	wipe?: number;
 	wipeFrom?: 'left' | 'right';
-	// ArenaSwap mutes every registered tab but the one in front.
 	managed: boolean;
 }
 
@@ -24,13 +22,11 @@ interface BrowserWindowProps {
 	width: number;
 	height: number;
 	style?: CSSProperties;
-	// The chrome is drawn at the docs hero's rem sizes and zoomed up to the frame.
 	zoom: number;
 }
 
 const registeredIds = new Set(filmTabs.map(tab => tab.id));
 
-// The night's other live scores, as of the moment on screen, for the studio channel's lower third.
 const channelGames = (slate: Slate, slateTime: number) => Object.keys(slate.raw.games)
 	.filter(gameId => !filmTabs.some(tab => tab.gameId === gameId))
 	.map(gameId => slate.gameAt(gameId, slateTime))
@@ -47,8 +43,6 @@ const Favicon = ({ tab, slate }: { tab: BrowserTab; slate: Slate }) => (isGameTa
 	? <Crest logo={resolveLeagueLogoUrl(tab.league, slate.raw.leagueLogos[tab.league])} abbreviation='' icon='bi-globe2' className='browser-tab-favicon' />
 	: <i className='bi bi-broadcast browser-tab-favicon film-tab-channel' />);
 
-// The docs hero's Chrome window (apps/docs/src/styles/_browser-hero.scss) with the night's streams
-// in it, so the film and the homepage show the same browser.
 const BrowserWindow = ({ view, slate, slateTime, t, width, height, style, zoom }: BrowserWindowProps) => {
 	const active = tabById(view.activeTabId);
 	const previous = view.previousTabId !== undefined && view.wipe !== undefined && view.wipe < 1 ? tabById(view.previousTabId) : undefined;

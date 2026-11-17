@@ -40,16 +40,8 @@ export {
 
 export const pollIntervalMs = 15_000;
 
-// How long a finished game stays reachable once it has wrapped, when keepFinalGames is on.
 export const finalRetentionMs = 24 * 60 * 60 * 1000;
 
-// ESPN's scoreboard publishes no completion timestamp — a competition carries `date` and
-// `startDate` and nothing else — so a final game's wrap has to be estimated from its start plus
-// how long the sport actually takes. These are broadcast-window lengths rather than playing time:
-// an NFL game is sixty minutes of clock and about three and a half hours of television.
-//
-// They are deliberately generous. Over-estimating a wrap only keeps a game around slightly
-// longer, which is the harmless direction; under-estimating drops it while somebody is reading it.
 export const sportWrapAllowanceMs: Record<SportType, number> = {
 	football:   3.5  * 60 * 60 * 1000,
 	baseball:   3.25 * 60 * 60 * 1000,
@@ -59,10 +51,6 @@ export const sportWrapAllowanceMs: Record<SportType, number> = {
 	soccer:     2.5  * 60 * 60 * 1000,
 };
 
-// The instant a final game is treated as having ended. A game with no start time cannot be placed
-// on a clock at all, so it is treated as having just wrapped rather than being dropped: ESPN sends
-// `date` on every event we have ever seen, and losing a real final over a missing field is worse
-// than keeping an old one for a day.
 export const estimatedWrapMs = (game: Pick<Game, 'sportType' | 'startTime'>, now: number): number => {
 	if (!game.startTime) return now;
 	const startMs = new Date(game.startTime).getTime();
@@ -75,51 +63,23 @@ export const isWithinFinalRetention = (
 	now: number = Date.now(),
 ): boolean => now - estimatedWrapMs(game, now) <= finalRetentionMs;
 
-// ESPN can leave a game that never happened on `pre` for days (a Tuesday exhibition still read as
-// scheduled on Thursday). Once a scheduled game's whole broadcast window has gone by, it is not
-// coming; if it does start late, its first live poll brings it straight back.
 export const hasMissedItsWindow = (
 	game: Pick<Game, 'status' | 'sportType' | 'startTime'>,
 	now: number = Date.now(),
 ): boolean => game.status === 'pre' && now > estimatedWrapMs(game, now);
-// Safety net for sports not yet in sportTypeConfigMap; in practice every config defines its own.
 export const historyWindowMs = 300_000;
 
-// After this many consecutive empty polls a league switches to dormant mode
 export const pollDormantThresholdPolls = 2;
 export const pollDormantMinMs = 120_000;
 export const pollDormantMaxMs = 180_000;
 
-/* Below dormant sits hebetudinous, for a league with nothing coming at all. Dormant cannot tell an
-   MLB slate quiet in January with nothing for nine weeks from one quiet between games, because the
-   dateless scoreboard it polls only carries the current Eastern day — so both poll at the same 2-3
-   minutes forever, which in an offseason is ~576 requests a day per league to be told nothing is
-   happening.
-
-   The horizon is the gap that has to exist before a league is allowed to sleep, and it is a full
-   day: a league with a game on today's card is having a day, whatever hour you happen to open the
-   popup in, and dropping to half-hourly polling at noon because first pitch is at seven is not the
-   saving this is for. A league sleeps until it is within a day of the next start it knows about,
-   then hands back to the dormant beat.
-
-   Practically that means hebetudinous only engages in a real gap — an offseason, a break, an All-Star
-   weekend — which is the only place the ~576 was ever worth reclaiming. Everything the poll finds on
-   its own payload is inside the horizon by definition, so those leagues stay dormant and the
-   lookahead only decides leagues whose card is empty. */
 export const pollHebetudinousHorizonMs = 24 * 60 * 60 * 1000;
 export const pollHebetudinousMaxMs = 30 * 60 * 1000;
 
-// How far ahead a lookahead reaches, and how long its answer is trusted before being asked again.
-// The window has to clear the horizon with room to spare, or "nothing found" would mean "nothing
-// inside the horizon" and every league would sleep.
 export const pollLookaheadDays = 7;
 export const pollLookaheadTtlMs = 6 * 60 * 60 * 1000;
 
-/* The interval scales continuously with PowerScore: high scores approach pollMinEagerMs, low
-   scores pollMaxEagerMs. Every live game is polled at least every pollMaxEagerMs so a boring one
-   can still catch a momentum shift. pollIntervalMs remains the stagger, demo and fallback value.
-
-   The floor is ESPN's, not ours. The scoreboard answers with `cache-control: max-age=12` and our
+/* The floor is ESPN's, not ours. The scoreboard answers with `cache-control: max-age=12` and our
    fetch uses the HTTP cache, so a poll inside that window is served the bytes it already has: the
    6s floor this used to hold spent every other request on the hottest game in the product to be
    told nothing. This value is only the assumption made until a response says otherwise —
@@ -137,23 +97,14 @@ export const multiviewMaxBoxesMin = 2;
 export const multiviewMaxBoxesMax = 8;
 export const defaultMultiviewMaxBoxes = 4;
 export const defaultFavoriteTeamBonusPoints = 10;
-// The ceiling a title game is worth, not a flat bump: the round ladder pays quarters of it, so 8
-// gives 2/4/6/8 and every rung lands a whole point clear of the one below. At the previous default
-// of 5 the bottom two rungs rounded onto 1 and 3, which is most of the ladder inside two points.
 export const defaultPostseasonBoostPoints = 8;
-// Fantasy's share of its blend with Classic, the analyst's default.
 export const defaultFantasyBlend = 60;
 export const defaultUpcomingGamesDays = 7;
 export const upcomingGamesDaysMin = 1;
 export const upcomingGamesDaysMax = 14;
 
-// The guide pages a day at a time and its whole point is having somewhere to page to, so it floors
-// the Up Next setting rather than following it all the way down. At 1 there is no future to look at.
 export const guideMinUpcomingDays = 3;
 
-
-// Score delta required to trigger a switch. Calibrated via `npm run powerscore:simulate`, then
-// nudged ~25% stickier; level 4 sits just above the median best-vs-runner-up gap.
 export const sensitivityThresholds: Record<number, number> = {
 	1: 37,
 	2: 27,
@@ -164,7 +115,6 @@ export const sensitivityThresholds: Record<number, number> = {
 	7: 1
 };
 
-// Win over ESPN's API, which for these leagues returns only a generic sport icon.
 const leagueLogoOverrides: Partial<Record<LeagueId, string>> = {
 	cbase: 'https://a.espncdn.com/i/espn/misc_logos/500/ncaa_baseball.png',
 	csoft: 'https://a.espncdn.com/i/espn/misc_logos/500/ncaa_womens_softball.png',
@@ -177,9 +127,6 @@ const leagueLogoOverrides: Partial<Record<LeagueId, string>> = {
 	olysocw: 'https://a.espncdn.com/i/espn/misc_logos/500-dark/olympics.png',
 };
 
-// ESPN serves a usable logo for most of these, so the fallback only shows before the first fetch:
-// the demo tab and the onboarding picker both render leagues with no scoreboard response behind
-// them, and a league missing from here draws no crest at all.
 export const leagueLogoFallbacks: Partial<Record<LeagueId, string>> = {
 	nba: 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png',
 	wnba: 'https://a.espncdn.com/i/teamlogos/leagues/500/wnba.png',
@@ -207,17 +154,12 @@ export const leagueLogoFallbacks: Partial<Record<LeagueId, string>> = {
 
 export const leagueLabels = Object.fromEntries(leagueConfigs.map(config => [config.id, config.label])) as Record<LeagueId, string>;
 
-// Which team is drawn on the left. North American leagues list the visitor first, "Away @ Home",
-// and every soccer competition lists the host first, MLS and the NWSL included. Olympic basketball
-// and hockey follow FIBA and the IIHF, which seat the designated home team on the left.
 const homeFirstLeagues: ReadonlySet<LeagueId> = new Set<LeagueId>(['olybkm', 'olybkw', 'olymih', 'olywih']);
 
 export const isHomeFirst = (game: Pick<Game, 'league' | 'sportType'>): boolean => (
 	game.sportType === 'soccer' || homeFirstLeagues.has(game.league)
 );
 
-// What a game card prints beside the league's logo once the list stops grouping by league. The
-// labels from `powerscore` run as long as "Olympic Men's Ice Hockey", which a status row cannot fit.
 export const leagueShortLabels: Record<LeagueId, string> = {
 	nba: 'NBA',
 	wnba: 'WNBA',
@@ -252,9 +194,6 @@ export const leagueShortLabels: Record<LeagueId, string> = {
 	fifawwc: 'WWC',
 };
 
-// Most of what comes back, and many of the fallbacks above, are the variant our sources draw for a
-// dark background: a white mark that vanishes on the light theme. Their CDN serves the light-ground
-// variant beside it at `/500/`, so a light surface swaps the path rather than keeping a second table.
 export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string, surface: ResolvedTheme = 'dark'): string => {
 	const url = leagueLogoOverrides[leagueId]
 		?? (typeof espnLogoUrl === 'string' && espnLogoUrl.length > 0 ? espnLogoUrl : leagueLogoFallbacks[leagueId])
@@ -262,10 +201,6 @@ export const resolveLeagueLogoUrl = (leagueId: LeagueId, espnLogoUrl?: string, s
 	return surface === 'light' ? url.replace('/500-dark/', '/500/') : url;
 };
 
-// A team's crest as it is drawn on its own colour. The scoreboard hands over the light-ground
-// artwork at `/500/`, which is a navy NY on a navy card; the CDN keeps the variant drawn for a dark
-// ground beside it, and that variant is what Apple Sports puts on every team colour, the Red Sox's
-// red B and the Padres' gold SD included. Anything off that CDN is returned as it came.
 export const teamLogoOnColor = (logo: string | undefined): string | undefined => (
 	logo?.replace(/(\/i\/teamlogos\/[^/]+)\/500\//, '$1/500-dark/')
 );
@@ -290,8 +225,6 @@ export const createFavoriteTeamKey = (leagueId: LeagueId, teamId: string): strin
 	`${leagueId}:${teamId.trim()}`
 );
 
-// Lives here rather than in the popup because the guide asks the same question, and a second
-// favourite-matching path is how the two drift.
 export const isFavoriteTeamGame = (
 	game: Pick<Game, 'league' | 'homeTeam' | 'awayTeam'>,
 	favoriteTeamIds: Set<string>,
@@ -302,15 +235,12 @@ export const isFavoriteTeamGame = (
 
 export const allSignalNames: readonly SignalName[] = ['closeness', 'lateGame', 'momentum', 'leadChanges', 'comeback'] as const;
 
-// Whole numbers only: the thresholds are indexed by step, and 4.5 read as a threshold of 0.
 const isSensitivityValue = (value: unknown): value is UserPreferences['sensitivity'] => (
 	typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 7
 );
 
-// Mirrors the steps the cooldown and switch delay sliders offer.
 export const secondsSliderSteps: readonly number[] = [0, 15, 30, 45, 60, 90, 120, 180];
 
-// Ties go to the lower step.
 const snapToSliderStep = (value: number): number => (
 	secondsSliderSteps.reduce((nearest, step) => (
 		Math.abs(step - value) < Math.abs(nearest - value) ? step : nearest
@@ -323,7 +253,6 @@ const normalizeSecondsPreference = (value: unknown, fallback: number): number =>
 		: fallback
 );
 
-// A boost of the whole scale already wins every switch, so anything past it is a typo.
 export const boostPointsMax = scoreMaxTotal;
 
 export const clampBoostPoints = (value: number): number => (
@@ -404,9 +333,6 @@ const normalizeTemperatureUnit = (value: unknown): UserPreferences['temperatureU
 	value === 'C' || value === 'Ro' ? value : 'F'
 );
 
-// Anything unrecognised falls back to 'keep', which is the one value that touches nobody's tabs.
-// A stored string this does not know about is more likely a typo or a rolled-back release than a
-// request to start closing things.
 const normalizeFinishedTabAction = (value: unknown): FinishedTabAction => (
 	value === 'free' || value === 'close' ? value : 'keep'
 );
@@ -425,7 +351,6 @@ const normalizeLeagueModes = (value: unknown): UserPreferences['leagueModes'] =>
 	return Object.fromEntries(Object.entries(value).filter(([league, mode]) => isLeagueId(league) && isBuiltInModeId(mode)));
 };
 
-// Signal ids are checked against the mode that declares them, so a renamed signal can't linger.
 const normalizeModeDisabledSignals = (value: unknown): UserPreferences['modeDisabledSignals'] => {
 	if (!value || typeof value !== 'object') return {};
 	const result: UserPreferences['modeDisabledSignals'] = {};
@@ -434,7 +359,6 @@ const normalizeModeDisabledSignals = (value: unknown): UserPreferences['modeDisa
 		if (!Array.isArray(stored)) continue;
 		const known = new Set(builtInModes[mode].signals.map(signal => signal.id));
 		const kept = [...new Set(stored.filter((id): id is string => typeof id === 'string' && known.has(id)))];
-		// Every signal off would switch none off, so a list like that is dropped rather than stored.
 		if (kept.length > 0 && kept.length < known.size) result[mode] = kept;
 	}
 	return result;
@@ -459,8 +383,6 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 	if (!storedPrefs || typeof storedPrefs !== 'object') return defaults;
 
 	const candidate = storedPrefs as Partial<UserPreferences> & { enabledLeagues?: unknown; favoriteTeamIds?: unknown };
-	// Order is the user's league display order, so it is preserved — but a repeated id would break
-	// the reorder UI's index math and duplicate React keys.
 	const parsedEnabledLeagues = Array.isArray(candidate.enabledLeagues)
 		? [...new Set(candidate.enabledLeagues.filter(isLeagueId))]
 		: [];
@@ -481,8 +403,6 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		favoriteTeamBonusPoints: normalizeBoostPreference(candidate.favoriteTeamBonusPoints, defaults.favoriteTeamBonusPoints),
 		rivalTeamIds: normalizeFavoriteTeamIds(candidate.rivalTeamIds).filter(key => !favoriteSet.has(key)),
 		showUpcomingGames: typeof candidate.showUpcomingGames === 'boolean' ? candidate.showUpcomingGames : defaults.showUpcomingGames,
-		// Saved prefs that predate the setting belong to someone who has only ever seen league
-		// sections, so they keep them. Only a fresh install starts on the mixed list.
 		groupByLeague: typeof candidate.groupByLeague === 'boolean' ? candidate.groupByLeague : true,
 		keepFinalGames: typeof candidate.keepFinalGames === 'boolean' ? candidate.keepFinalGames : defaults.keepFinalGames,
 		finishedTabAction: normalizeFinishedTabAction(candidate.finishedTabAction),
@@ -503,8 +423,6 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 			: defaults.multiviewMaxBoxes,
 		bettingEnabled: typeof candidate.bettingEnabled === 'boolean' ? candidate.bettingEnabled : defaults.bettingEnabled,
 		temperatureUnit: normalizeTemperatureUnit(candidate.temperatureUnit),
-		// A stored Rømer unit is itself proof the unlock happened, so the two can never
-		// disagree in the direction that would strand someone on a unit they cannot cycle back to.
 		romerUnlocked: candidate.romerUnlocked === true || candidate.temperatureUnit === 'Ro',
 		openRevealEnabled: typeof candidate.openRevealEnabled === 'boolean' ? candidate.openRevealEnabled : defaults.openRevealEnabled,
 		theme: normalizeTheme(candidate.theme),
@@ -519,7 +437,6 @@ export const normalizeUserPreferences = (storedPrefs: unknown): UserPreferences 
 		upcomingGamesDays: typeof candidate.upcomingGamesDays === 'number' && Number.isFinite(candidate.upcomingGamesDays)
 			? Math.max(upcomingGamesDaysMin, Math.min(upcomingGamesDaysMax, Math.round(candidate.upcomingGamesDays)))
 			: defaults.upcomingGamesDays,
-		// Every signal off would switch none off, so a list like that is dropped rather than stored.
 		disabledSignals: parsedDisabledSignals.length < allSignalNames.length ? parsedDisabledSignals : defaults.disabledSignals,
 		scoringMode: normalizeScoringMode(candidate.scoringMode),
 		leagueModes: normalizeLeagueModes(candidate.leagueModes),

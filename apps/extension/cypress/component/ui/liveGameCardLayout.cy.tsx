@@ -1,5 +1,3 @@
-// Layout-only, which is why this spec loads the real stylesheets; the sibling liveGameCard spec
-// asserts on content and mounts unstyled.
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 
@@ -39,12 +37,9 @@ const mountAtPopupWidth = (game: Game) => {
 			<LiveGameCard {...defaultProps} game={game} />
 		</div>,
 	);
-	// Every width here depends on the webfont having landed — the fallback reports different numbers.
 	cy.document().its('fonts.ready');
 };
 
-// The field position takes the line from 8 characters to as many as 20, so it is measured
-// against the real popup rather than assumed to fit inside the 128.75px score row.
 describe('liveGameCard down & distance width', () => {
 	const cases: [string, string, string][] = [
 		['typical', '2nd & 11', 'ARI 34'],
@@ -78,10 +73,6 @@ describe('liveGameCard down & distance width', () => {
 	});
 });
 
-// A rank widens the team column, which is the one column on the card with no slack: it is sized by
-// the 64px crest and capped by what the centre column leaves over. The widest pair the real slate
-// produces is a two-digit rank against a four-letter tricode on both sides — "#15 TENN" — so that
-// is what gets measured rather than the typical "#2 ALA".
 describe('liveGameCard team rank width', () => {
 	const rankedGame: Game = {
 		...nflGame,
@@ -118,8 +109,6 @@ describe('liveGameCard team rank width', () => {
 	});
 });
 
-// The dots are a fourth row in a column that had three, so the question is whether the star below
-// them is still on the card.
 describe('liveGameCard timeout dots', () => {
 	const withTimeouts: Game = {
 		...nflGame,
@@ -150,7 +139,6 @@ describe('liveGameCard timeout dots', () => {
 	});
 });
 
-// These fixture teams carry no logo, which is the case a real card hits whenever ESPN omits one.
 describe('liveGameCard crest placeholder', () => {
 	it('fills the logo slot rather than leaving a hole in the column', () => {
 		mountAtPopupWidth(nflGame);
@@ -167,8 +155,6 @@ describe('liveGameCard crest placeholder', () => {
 
 const face = (el: HTMLElement) => getComputedStyle(el).fontFamily.split(',')[0]!.replace(/["']/g, '');
 
-// Lekton is there to hold a ticking clock's digits still. The period and the down beneath it never
-// move, so they read in the body face.
 describe('liveGameCard faces', () => {
 	it('keeps only the clock in Lekton', () => {
 		mountAtPopupWidth(nflGame);
@@ -182,8 +168,6 @@ describe('liveGameCard faces', () => {
 	});
 });
 
-// The PowerScore changes on every push. In proportional figures "11 / 100" is narrower than
-// "88 / 100", so the bar beside it changed length with each update.
 describe('liveGameCard PowerScore figures', () => {
 	const widthAt = (total: number) => {
 		cy.viewport(popupWidth, 600);

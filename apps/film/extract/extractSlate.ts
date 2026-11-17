@@ -1,12 +1,3 @@
-// Turns a night of raw recordings into the data file the films are rendered from.
-//
-// Run: npm run film:extract -- [--recording <day folder or file>]
-// Reads: packages/powerscore-tools/recordings/2026-10-03 (gitignored; made by `npm run powerscore:record`)
-// Writes: apps/film/data/saturday.json (committed, so a render never needs the recording)
-//
-// Every poll is played through the same steps background.ts takes, with the same core functions:
-// commercial breaks, `scoreLiveGame` against the history so far, then the score and PowerScore history.
-// Nothing here scores a game any other way.
 import { createReadStream, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { createInterface } from 'node:readline';
@@ -38,8 +29,6 @@ const option = (name: string) => {
 	const index = args.indexOf(`--${name}`);
 	return index >= 0 ? args[index + 1] : undefined;
 };
-// npm runs the script from the package folder, so a relative path resolves against the repo root
-// through `npm run film:extract`, or against wherever `npm run extract -w` was run.
 const pathOption = (name: string) => {
 	const value = option(name);
 	return value === undefined ? undefined : resolve(process.env.INIT_CWD ?? process.cwd(), value);
@@ -62,7 +51,6 @@ const readLines = async function* (file: string): AsyncGenerator<RecordedLine> {
 	}
 };
 
-// Our sources' broadcaster names include our sources. The films never name them.
 const withoutSourceNames = (game: Game): Game => {
 	if (!game.broadcasts) return game;
 	const broadcasts = game.broadcasts.filter(name => !/espn/i.test(name));
@@ -72,7 +60,6 @@ const withoutSourceNames = (game: Game): Game => {
 
 const isViewerGame = (game: Game) => viewerLeagues.includes(game.league);
 
-// Only the fields that changed since the last frame, so a clock tick costs a few bytes.
 const deltaOf = (previous: Game | undefined, next: Game): Partial<Game> => {
 	if (!previous) return next;
 	const delta: Record<string, unknown> = {};
@@ -128,7 +115,6 @@ const main = async () => {
 				continue;
 			}
 			if (line.t === 'situation') {
-				// The gate background.ts applies before it fetches one, as the replay harness does.
 				const game = gameById.get(line.gameId);
 				const margin = game ? Math.abs(game.homeTeam.score - game.awayTeam.score) : Infinity;
 				if (game?.league === 'nhl' && !game.intermission && !game.delayed && margin <= (sportTypeConfigMap.hockey?.closenessMargins[2] ?? 3)) liveExtras.ingestSituation(line.gameId, line.raw);
@@ -140,7 +126,6 @@ const main = async () => {
 			}
 
 			const { ts, league } = line;
-			// A box score is taken from the last summary recorded before its moment.
 			for (let index = pendingMoments.length - 1; index >= 0; index--) {
 				const [gameId, at] = pendingMoments[index]!;
 				const latest = lastSummary.get(gameId);
@@ -177,7 +162,6 @@ const main = async () => {
 					const prefs = profiles[profile];
 					const favorites = new Set(prefs.favoriteTeamIds);
 					for (const game of allLive.filter(isViewerGame)) {
-						// The fan only differs from the plain viewer on Kentucky's games.
 						const isFavorite = [game.homeTeam.id, game.awayTeam.id].some(id => createFavoriteTeamKey(game.league, id) === kentuckyKey);
 						if (profile === 'fan' && !isFavorite) continue;
 						const score = toLiveScore(scoreLiveGame({
@@ -188,7 +172,6 @@ const main = async () => {
 							now: ts,
 							extras: liveExtras.contextFor(game, ts),
 						}, prefs, 0, favorites));
-						// The history a snapshot is built from only advances for the league that polled.
 						if (game.league !== league) continue;
 						const series = (scoreTracks[profile][game.id] ??= []);
 						if (detailGameIds.includes(game.id) || isFavorite) {
@@ -203,7 +186,6 @@ const main = async () => {
 					}
 				}
 
-				// Every game in the polled league that the viewer can see, live or not.
 				for (const [id, game] of gameById) {
 					if (leagueOf.get(id) !== league || !isViewerGame(game)) continue;
 					const track = (tracks[id] ??= { league, frames: [] });

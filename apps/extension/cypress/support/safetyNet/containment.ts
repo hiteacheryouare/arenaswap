@@ -3,17 +3,9 @@
 // and styles are read through the page's own window.
 
 export interface containmentOptions {
-	// Selectors for elements left out of the check, along with everything inside them.
 	exempt?: readonly string[];
-	// Selectors for elements designed to reach into the padding of the box that clips them, such as
-	// the popup header's -0.75rem margins. They and everything inside them may use that padding, but
-	// still may not run past the clipping box itself.
 	bleeds?: readonly string[];
-	// Selectors for boxes meant to scroll sideways. A box whose overflow is auto or scroll on both
-	// axes reads the same in computed style as one meant to scroll only up and down, so it counts as
-	// a sideways scroller only when it is listed here.
 	scrollers?: readonly string[];
-	// Subpixel slack, in CSS pixels.
 	tolerance?: number;
 }
 
@@ -58,7 +50,6 @@ const isTransformish = (style: CSSStyleDeclaration) => style.transform !== 'none
 const clipsSideways = (style: CSSStyleDeclaration) => style.overflowX === 'hidden' || style.overflowX === 'clip';
 const scrollsSideways = (style: CSSStyleDeclaration) => style.overflowX === 'auto' || style.overflowX === 'scroll';
 
-// Masked on purpose: screen-reader-only text and anything shaped with clip-path.
 const isMasked = (style: CSSStyleDeclaration) => style.clipPath !== 'none' || style.clip === 'rect(0px, 0px, 0px, 0px)';
 
 const matchesAny = (element: Element, selectors: readonly string[]) => selectors.some(selector => element.matches(selector));
@@ -84,15 +75,12 @@ const findBoundary = (start: Element | null, position: string, root: Element, sc
 	return null;
 };
 
-// The padding box, minus any vertical scrollbar: the part of a box its content can be seen in.
 const paddingSpan = (element: Element): span => {
 	const rect = element.getBoundingClientRect();
 	const left = rect.left + element.clientLeft;
 	return { left, right: left + element.clientWidth };
 };
 
-// Where a clipping box means its content to stop. Text that reaches into the padding sits under
-// whatever the padding was making room for (a select's caret, the popup's margins) or is cut there.
 const contentSpan = (element: Element): span => {
 	const outer = paddingSpan(element);
 	const style = styleOf(element);
@@ -117,8 +105,6 @@ const isTruncated = (element: Element, style: CSSStyleDeclaration) => {
 	return ellipsis || clamped;
 };
 
-// The convention since 0394b1557: wherever text is cut short, the element or one around it carries
-// the whole text as its title.
 const exposesFullText = (element: Element) => {
 	const text = normalize(element.textContent);
 	const titled = element.closest('[title]');

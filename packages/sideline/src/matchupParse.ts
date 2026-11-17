@@ -2,10 +2,6 @@ import type { SportType } from '@arenaswap/core';
 import { injuryStatusByType, injuryStatusOrder, seasonStatSpecsFor } from './matchupSpecs';
 import type { InjuryStatus, SeasonStatSpec } from './matchupSpecs';
 
-// Everything on the Matchup tab, read off the same pre-game `/summary` response the screen already
-// fetches. Each block is keyed by team id and paired to a side here, so the components only ever
-// see away and home.
-
 export interface FormResult {
 	id: string;
 	result: 'W' | 'L' | 'D' | 'T';
@@ -24,9 +20,6 @@ export interface StatComparison {
 	awayRank?: number;
 	homeRank?: number;
 	better: 'away' | 'home' | null;
-	// The away side's share of the bar, 0–1, already flipped for a stat where lower is better so the
-	// longer half always belongs to the better team. Null where a share means nothing, which is a
-	// goal difference either side of zero.
 	awayShare: number | null;
 }
 
@@ -48,7 +41,6 @@ export interface Matchup {
 	form: Paired<FormResult[]>;
 	stats: StatComparison[];
 	injuries: Paired<InjuryEntry[]>;
-	// Whole percentages that add up to 100.
 	winChance: Paired<number> | null;
 }
 
@@ -85,9 +77,6 @@ const teamIdOf = (entry: unknown): string | undefined => {
 	return id === undefined || id === null ? undefined : String(id);
 };
 
-// The three blocks carry no `homeAway` of their own, but the header does, and it is what the box
-// score already pairs by when ESPN's ids are not ours (college hockey). An entry that matches
-// neither side is dropped rather than guessed at.
 const sideMap = (data: unknown, ids: TeamIds): Map<string, 'home' | 'away'> => {
 	const sides = new Map<string, 'home' | 'away'>([[ids.home, 'home'], [ids.away, 'away']]);
 	const competitors = (data as {
@@ -178,7 +167,6 @@ const parseFormEvents = (entry: unknown, teamId: string): FormResult[] => {
 			date,
 		});
 	}
-	// Oldest first, so the row reads left to right the way the season did.
 	return results.toSorted((a, b) => Date.parse(a.date) - Date.parse(b.date));
 };
 
@@ -239,8 +227,6 @@ type StatTable = Map<string, ParsedStat>;
 
 const statKey = (name: string, group?: string) => (group ? `${group}.${name}` : name);
 
-// "5th", "Tied-1st". Read as the number alone and drawn as "#5", which every locale can carry
-// without a set of English ordinal suffixes to translate.
 const rankOf = (value: unknown): number | undefined => {
 	const match = typeof value === 'string' ? /(\d+)/.exec(value) : null;
 	return match ? Number(match[1]) : undefined;
@@ -330,8 +316,6 @@ export const parseMatchup = (data: unknown, sportType: SportType | undefined, id
 	winChance: parseWinChance(data, ids),
 });
 
-// The seller's link carries our sources' referral tag. It comes off so the link is a plain one:
-// the store listings promise no tracking, and an affiliate code has to be disclosed before install.
 const referralParams = ['wsUser'];
 
 export const parseTickets = (data: unknown): TicketLink | null => {
@@ -350,7 +334,6 @@ export const parseTickets = (data: unknown): TicketLink | null => {
 	if (url.protocol !== 'https:') return null;
 	for (const param of referralParams) url.searchParams.delete(param);
 
-	// "Tickets as low as $141". Always dollars, in every league we have seen it for.
 	const price = /\$\s?([\d,]+(?:\.\d+)?)/.exec(str(seat?.summary) ?? '')?.[1];
 	const minPrice = price ? Number.parseFloat(price.replace(/,/g, '')) : undefined;
 	return { url: url.toString(), minPrice: Number.isFinite(minPrice) ? minPrice : undefined };

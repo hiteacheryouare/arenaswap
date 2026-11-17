@@ -8,7 +8,6 @@ const locale = currentLocale(Astro.currentLocale);
 const demoText = demoTranslator(locale);
 const t = useTranslations(locale);
 
-// The backup tab once a file is in: the two ways to bring it in, and what the file would change.
 const current = t('docDemos.profileWeeknights');
 const exported = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date('2026-10-26T12:00:00Z'));
 const favorites = [celticsKnicks.game.awayTeam, flyersPenguins.game.awayTeam];

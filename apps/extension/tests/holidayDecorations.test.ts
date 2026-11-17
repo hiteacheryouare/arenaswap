@@ -142,7 +142,6 @@ describe('inningProgress', () => {
 	test('routes the clockless leagues here through periodProgress', () => {
 		const sixthWithTwoDown = baseball({ topOfInning: false, bso: { balls: 1, strikes: 2, outs: 1 } });
 		expect(periodProgress(sixthWithTwoDown)).toBeCloseTo(4 / 6);
-		// Sixth of nine, two thirds through the inning: 0.667 x 0.667.
 		expect(accumulationDepth(sixthWithTwoDown)).toBeCloseTo(0.444, 3);
 	});
 });
@@ -276,19 +275,10 @@ describe('snow is a weather rule, not a sport rule', () => {
 	});
 });
 
-/* Serves the event as a one-game scoreboard and returns what the parser made of it.
-
-   On a fresh module registry each time, because ESPN stopped answering for a span of dates and the
-   client asks for a window one day at a time now, holding each day's answer so the repeat asks are
-   free. That cache is keyed by league and day and is exactly right in the extension — but here it
-   would hand the second reading below the first one's games, since both are the same league on the
-   same days. */
 const parseThroughFetch = async (event: unknown): Promise<Game> => {
 	(globalThis as { fetch: typeof fetch }).fetch = (async () => ({
 		ok: true,
 		status: 200,
-		// The client reads `cache-control` off every scoreboard response to learn how often ESPN will
-		// actually answer with something new, so a double without headers is not a Response.
 		headers: new Headers(),
 		json: async () => ({ events: [event] }),
 	})) as unknown as typeof fetch;
@@ -299,13 +289,7 @@ const parseThroughFetch = async (event: unknown): Promise<Game> => {
 	return games[0]!;
 };
 
-// Nothing else joins the two halves of the dome rule: the suppression lives in the scoreboard parser and
-// the decoration that acts on it lives here, so a unit test either side of the seam can pass while
-// a snowy dome still buries the screen. This runs a real scoreboard payload through the real fetch.
 describe('a dome game and the snow decoration, end to end', () => {
-	// Transcribed off the live NFL scoreboard on 2026-09-09, down to the `indoor` flag on each
-	// venue. The readings are December's — ESPN drops the weather block entirely once a game is
-	// final, so a snowy January payload cannot be fetched back out to copy.
 	const domeEvent = {
 		id: 'dome',
 		date: '2026-12-14T18:00:00.000Z',
@@ -340,8 +324,6 @@ describe('a dome game and the snow decoration, end to end', () => {
 		expect(resolveDecorations(game, december, allOn).depth).toBe(0);
 	});
 
-	// The control the assertion above is worth nothing without: the same reading on an open roof has
-	// to still snow, or the dome case could be passing because the payload never carried snow at all.
 	test('the same reading outdoors still snows', async () => {
 		const game = await parseThroughFetch(openAirEvent);
 		expect(game.weather).toEqual({ temperatureF: 19, conditionLabel: 'Snow', conditionCode: 22 });

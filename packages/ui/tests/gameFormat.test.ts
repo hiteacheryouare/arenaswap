@@ -3,18 +3,6 @@ import type { LeagueId, SportType } from '@arenaswap/core/types';
 import { formatBreak, formatPeriod, isHalftime } from '../src/components/gameFormat';
 import { translateFrom } from '../src/components/defaultStrings';
 
-/* The label in the middle of a live card is the one thing on it that says where the game is. A
-   league config edit — a periodFormat typo, a regularPeriods off by one, a new league copied from
-   the wrong neighbour — changes that label without changing a line of this module, and the
-   existing "renders something non-empty" sweep in gameCardShared.test.ts would stay green through
-   all of it.
-
-   So the expected labels are written out rather than derived from the same config the function
-   reads, which would only prove the function agrees with itself. Every value below was diffed
-   against the pre-split implementation in `gameCardShared.tsx` at commit 0750e61c, for every
-   league and every period from 0 to regularPeriods + 6: identical throughout. Overtime has since
-   moved to the box score's convention, OT then 2OT and 3OT, where the card used to say OT1. */
-
 const periodLabels: Record<LeagueId, string[]> = {
 	nba: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
 	wnba: ['Q1', 'Q2', 'Q3', 'Q4', 'OT', '2OT', '3OT'],
@@ -49,9 +37,6 @@ const periodLabels: Record<LeagueId, string[]> = {
 	fifawwc: ['1H', '2H', 'ET1', 'ET2', 'PENS'],
 };
 
-// The period a league breaks at, or null for a sport with no half to be in the middle of. Hockey
-// breaks twice and baseball never, and calling either of those intermissions "Halftime" is the
-// mistake this pins.
 const halftimePeriod: Record<LeagueId, number | null> = {
 	nba: 2,
 	wnba: 2,
@@ -94,8 +79,6 @@ const sourceFor = (league: LeagueId, period: number) => ({
 
 const leagueRows = leagueConfigs.map(config => [config.id, config] as const);
 
-// Without this, adding a league and forgetting to add it to either table above would leave both
-// `test.each` runs iterating over the leagues that were already there and reporting all green.
 describe('the tables cover exactly the leagues ArenaSwap ships', () => {
 	test('every shipped league has a row, so a new one cannot land unlabelled', () => {
 		const shipped = leagueConfigs.map(config => config.id).toSorted();
@@ -126,9 +109,6 @@ describe('isHalftime finds the break, and only the break', () => {
 		}
 	});
 
-	// The card prints the halftime word *instead of* the period label, so the two have to be
-	// talking about the same moment. A league whose break landed on a period the label already
-	// calls overtime would put "Halftime" on a card in the fifth quarter.
 	test.each(leagueRows)('%s labels its break as a regulation period, never overtime', id => {
 		const breakPeriod = halftimePeriod[id];
 		if (breakPeriod === null) return;
@@ -150,23 +130,11 @@ describe('hockey overtime', () => {
 });
 
 describe('the edges the card can reach', () => {
-	// ESPN can start sending a league id before we have a config for it, and the card still has to
-	// print something a person can read.
 	test('a league with no config falls back to a bare period number', () => {
 		expect(formatPeriod({ league: 'not-a-league' as LeagueId, period: 2, sportType: 'basketball' })).toBe('P2');
 		expect(isHalftime({ league: 'not-a-league' as LeagueId, period: 1, sportType: 'basketball' })).toBe(false);
 	});
 
-	/* The one behaviour the split changed. `period` went optional so the docs site could pass
-	   `powerscore`'s narrower Game, and the old code would have printed the string "Qundefined"
-	   here. It now reads as period 1.
-
-	   Note what that costs: `isHalftime` was left reading `game.period` raw, so for a league whose
-	   break is period 1 the two disagree — the label says the game is in the first half and the
-	   predicate says it is not at the break, which for period 1 of a two-half league it would be.
-	   Nothing reaches this today: `isHalftime`'s only two callers pass `@arenaswap/core`'s Game,
-	   where `period` is required, and the site's only caller substitutes 1 while parsing ESPN. It
-	   is pinned so that stops being quietly true if a call site ever loosens. */
 	test('an absent period reads as period 1 for the label but not for the halftime check', () => {
 		expect(formatPeriod({ league: 'nba', sportType: 'basketball' })).toBe('Q1');
 		expect(formatPeriod({ league: 'epl', sportType: 'soccer' })).toBe('1H');
@@ -177,9 +145,6 @@ describe('the edges the card can reach', () => {
 	});
 });
 
-// `gameCardShared` re-exports both, and `apps/extension` re-exports that in turn with `export *`.
-// A default export or a renamed binding anywhere along that chain breaks the popup at runtime
-// without breaking this package.
 describe('the re-export chain still carries both helpers', () => {
 	test('gameCardShared hands on the same functions the module defines', async () => {
 		const shared = await import('../src/components/gameCardShared');
@@ -205,8 +170,6 @@ describe('formatBreak names the break the way a broadcast would', () => {
 	});
 });
 
-// The labels used to be English literals, so a German card read "Inn 7" and "2H" beside its
-// translated status line. Every one now comes from the translator it is handed.
 describe('formatPeriod translates', () => {
 	const german = translateFrom(key => ({
 		'gameCard.periodQuarter': 'Q{count}',

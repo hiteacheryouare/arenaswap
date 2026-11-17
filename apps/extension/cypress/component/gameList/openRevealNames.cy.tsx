@@ -9,9 +9,6 @@ import {
 } from '../../../entrypoints/popup/cardReveal';
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 
-// A light mark on navy and a dark mark on gold, so both fields take their team's colour rather than
-// the crest component's plate — and gold is the case that decides whether the naming is legible by
-// luck or by construction.
 const svg = (body: string) => `data:image/svg+xml;base64,${btoa(
 	`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>${body}</svg>`,
 )}`;
@@ -21,11 +18,8 @@ const darkMark = svg(`<circle cx='32' cy='32' r='26' fill='#111111'/><circle cx=
 const awayColor = 'rgb(12, 35, 64)';
 const homeColor = 'rgb(255, 184, 28)';
 
-// The nickname is the club's own, as ESPN sends it, because it is what the line break is taken from.
 const club = (name: string, nickname?: string) => ({ name, nickname: nickname ?? name.split(' ').slice(-1)[0] });
 
-// Overridable, because which ink a name is drawn in is a fact about the club's own palette: the
-// navy-and-gold pair below is the ordinary case, and a club that publishes a white is not.
 interface palette {
 	away: { color: string; alternateColor?: string };
 	home: { color: string; alternateColor?: string };
@@ -48,9 +42,6 @@ const game = (
 	homeTeam: { id: 'h', ...home, ...colors.home, abbreviation: 'HOM', score: 1, logo: darkMark },
 }) as unknown as Game;
 
-// The card the popup really draws a live game on. Without a PowerScore it is 148px tall and with one
-// it is 167, which is the difference between a band of 74px and a band of 84 — and the band's height
-// is what bounds the type on a name of two short lines, so both cards have to be measured.
 const scored: PowerScoreResult = {
 	gameId: 'g1',
 	total: 72,
@@ -103,10 +94,6 @@ const scrubTo = (ms: number) => {
 	});
 };
 
-// Absolute, in the choreography's own units: the crests hold the field to `revealOpenBeatMs`, the
-// naming has it from there, and the poster starts when the two of them are done. The hold is read
-// 300ms short of the poster, which is inside it by a comfortable margin at either end — the naming
-// lands 1050ms before the poster starts and begins to collapse 210ms before it.
 const sceneMs = (ms: number) => ms * revealFullRate;
 const crestScene = revealOpenBeatMs;
 const nameScene = revealOpenBeatMs + revealNameBeatMs - 300;
@@ -114,21 +101,14 @@ const posterScene = revealOpenBeatMs + revealNameBeatMs;
 
 const rectOf = (selector: string) => cy.get(selector).then($el => $el[0].getBoundingClientRect());
 
-// The run of glyphs rather than the box they are centred in, since the box is the full width of the
-// card and says nothing about how big the type came out. Widths only: a range over text measures the
-// content area, which is 1.30em of DM Sans against 0.96em of actual ink, so it says nothing useful
-// about where the letters start and stop down the page.
+// Widths only: a range over text measures the content area, which is 1.30em of DM Sans against
+// 0.96em of actual ink, so it says nothing useful about where the letters start and stop down the page.
 const inkOf = (el: Element) => {
 	const range = el.ownerDocument.createRange();
 	range.selectNodeContents(el);
 	return range.getBoundingClientRect();
 };
 
-// And the ink's real extent down the page, measured off the glyphs with canvas `TextMetrics` rather
-// than derived from the figures `cardReveal` fits against — those are the thing under test, and a
-// check that reads them back would pass whatever they said. The line's own rect is the line box, so
-// the baseline sits half the leftover leading plus the font's ascent below its top, and the ink runs
-// from there by the ascent and descent of these particular letters.
 const inkRowsOf = (line: HTMLElement) => {
 	const style = getComputedStyle(line);
 	const ctx = line.ownerDocument.createElement('canvas').getContext('2d')!;
@@ -149,9 +129,6 @@ const awaitCrests = () => cy.get('.game-card-reveal-opening-logo[data-crest-stat
 describe('the clubs named over the opening beat', () => {
 	beforeEach(() => cy.viewport(320, 560));
 
-	// ESPN's `displayName`, printed whole, on two lines broken where the club's own nickname starts.
-	// Not abbreviated and not wrapped: the poster after this carries the tricodes, and this beat is the
-	// one place the graphic says who is playing.
 	it('names both clubs in full, broken at the nickname', () => {
 		cy.mount(<Harness />);
 		linesOf('home').then($lines => expect([...$lines].map(line => line.textContent))
@@ -161,11 +138,6 @@ describe('the clubs named over the opening beat', () => {
 			.to.deep.equal(['Penn State', 'Nittany Lions']));
 	});
 
-	// And it stays on one line where that draws it bigger, which is the whole of what decides it:
-	// "Miami Marlins" on two lines is bound by the band's height and covers a third of the card at
-	// 35px, and on one line it is 40px across the whole of it. "Washington Commanders" is the other
-	// way about — 21px on one line against 38 on two — so the two clubs on one card can be set
-	// differently, and are.
 	it('keeps a short club on one line, where that draws it bigger', () => {
 		cy.mount(<Harness />);
 		linesOf('away').then($lines => expect([...$lines].map(line => line.textContent))
@@ -173,9 +145,6 @@ describe('the clubs named over the opening beat', () => {
 		linesOf('home').should('have.length', 2);
 	});
 
-	// Only on the first open of the day, like the rest of this beat. Every later open is the poster on
-	// its own and has to stay exactly the graphic it has always been, which is the invariant five
-	// passes on this animation have now been measured against.
 	it('names nobody on the versions that have no opening beat', () => {
 		cy.mount(<Harness mode='full' />);
 		cy.get('.game-card-reveal-opening-name').should('have.length', 2);
@@ -191,8 +160,6 @@ describe('the clubs named over the opening beat', () => {
 		cy.get('.game-card-reveal-opening-name').should('not.exist');
 	});
 
-	// The split laid flat, which is the whole reason a name gets the width of the card: half of it is
-	// what the leaning seam leaves, and at half a card the longest word set the size for everything.
 	it('splits the card horizontally, a band of colour per club', () => {
 		cy.mount(<Harness />);
 		scrubTo(sceneMs(nameScene));
@@ -201,8 +168,6 @@ describe('the clubs named over the opening beat', () => {
 				.forEach(([side, top, colour]) => {
 					cy.get(`.game-card-reveal-opening-band.is-${side}`).should($band => {
 						const box = $band[0].getBoundingClientRect();
-						// The full width of the card, and half its height — the stage bleeds a pixel top
-						// and bottom, which is the tolerance here rather than slop.
 						expect(box.left, `${side} band from the card's edge`).to.be.closeTo(card.left, 0.5);
 						expect(box.width, `${side} band across the card`).to.be.closeTo(card.width, 0.5);
 						expect(box.top, `${side} band on its own half`).to.be.closeTo(top, 1.5);
@@ -213,35 +178,21 @@ describe('the clubs named over the opening beat', () => {
 		});
 	});
 
-	// Filled solid, and the tricode is the one that stays outlined. Same family, weight and tracking
-	// as the tricode, and the same 0.9 it softens its ink to, but a hollow letterform at the size
-	// these are set at is a shape before it is a letter — and this is the beat carrying the words
-	// somebody has to read. Filled also means one copy of the glyph rather than the tricode's two:
-	// there is no stroke to keep outside a silhouette, so there is nothing to lay a second copy over.
 	it('fills the names solid, and leaves the tricodes outlined', () => {
 		cy.mount(<Harness />);
 		linesOf('away').first()
 			.should('have.css', 'color', 'rgb(255, 255, 255)');
-		// Gold is the half that was legible by luck. White reaches 1.7:1 on it, so the name comes down
-		// to the near-black — the club publishes nothing else to be drawn in.
 		linesOf('home').first()
 			.should('have.css', 'color', 'rgb(17, 24, 39)')
 			.and('have.css', '-webkit-text-stroke-width', '0px')
-			// And in the case the club writes its own name in, rather than shouted: the tricode is
-			// upper case because ESPN's abbreviation is, and nothing here transforms anything.
 			.and('have.css', 'text-transform', 'none');
 		linesOf('home').first().should($line => expect($line[0].children).to.have.length(0));
 
-		// And the poster's lettering over the navy is untouched by any of that: white, and stroked
-		// white over the second copy of itself.
 		cy.get('.game-card-reveal-mask.is-away .game-card-reveal-abbr-edge')
 			.should('have.css', '-webkit-text-stroke-color', 'rgb(255, 255, 255)')
 			.and($edge => expect(parseFloat(getComputedStyle($edge[0]).webkitTextStrokeWidth)).to.be.greaterThan(1));
 	});
 
-	// A club with white and nothing else is the one band the graphic still paints white. A club with
-	// an alternate is drawn in that instead, the way Apple Sports draws the Whitecaps and the Spurs.
-	// On a white band the ink is near-black, since the club has no other colour to name itself in.
 	it('names a club on a white band in a dark ink', () => {
 		cy.mount(<Harness
 			away={club('Penn State Nittany Lions', 'Nittany Lions')}
@@ -250,17 +201,11 @@ describe('the clubs named over the opening beat', () => {
 		scrubTo(sceneMs(nameScene));
 		linesOf('away').first().should('have.css', 'color', 'rgb(17, 24, 39)');
 		linesOf('home').first().should('have.css', 'color', 'rgb(255, 255, 255)');
-		// And the tricode the poster draws on that same white, which had the identical problem: two
-		// copies of a white glyph on a white half is nothing on screen at all.
 		cy.get('.game-card-reveal-mask.is-away .game-card-reveal-abbr-edge')
 			.should('have.css', 'color', 'rgb(17, 24, 39)')
 			.and('have.css', '-webkit-text-stroke-color', 'rgb(17, 24, 39)');
 	});
 
-	// The fit, which is the point of the whole pass. Every line of a club is justified to one width and
-	// that width is as much of the card as the band will take, so a club is named across the card
-	// rather than labelled in the middle of it. Measured off the glyphs, at each line's own height,
-	// because an advance is a property of the letters and not of their number.
 	([
 		[club('Miami Marlins'), club('Washington Commanders')],
 		[club('Portland Trail Blazers', 'Trail Blazers'), club('Massachusetts Minutemen')],
@@ -278,17 +223,10 @@ describe('the clubs named over the opening beat', () => {
 					const rows = drawn.map(inkRowsOf);
 					const lines = drawn.map(inkOf);
 
-					// Every letter inside its own band, down to the descenders — past the band's edge is
-					// the other club's colour on one side and the popup's background on the other, and a
-					// budget taken against the line boxes rather than the ink put the bottom of a "g"
-					// within a pixel of the card's own edge.
 					expect(rows[0]!.top, `${side} ink inside its band`).to.be.greaterThan(band.top + 2);
 					expect(rows[rows.length - 1]!.bottom, `${side} ink inside its band`)
 						.to.be.lessThan(band.bottom - 2);
 
-					// And the lines clear of one another, which is what the leading is for: at the
-					// leading a block of caps wanted, a descender on one line went 3.5px through the
-					// ascenders of the next.
 					rows.forEach((row, index) => {
 						if (index === 0) return;
 						expect(row.top, `${side} line ${index} clear of the line above`)
@@ -296,16 +234,10 @@ describe('the clubs named over the opening beat', () => {
 					});
 
 					lines.forEach((ink, index) => {
-						// And across the card by the glyphs, which is where a line that was sized off a
-						// letter count rather than an advance ran out past the edge.
 						expect(ink.left, `${side} line ${index} inside the card`).to.be.greaterThan(band.left);
 						expect(ink.right, `${side} line ${index} inside the card`).to.be.lessThan(band.right);
 					});
 
-					// Justified: every line of a name spans the same width, which is what makes it a
-					// block of type rather than a sentence. Within the spread, rather than exactly:
-					// a line the spread bound has caught stops growing and leaves the block ragged,
-					// which is the point of that bound and is what "Los Angeles" over "Lakers" does.
 					const widest = Math.max(...lines.map(ink => ink.width));
 					lines.forEach((ink, index) => {
 						expect(ink.width, `${side} line ${index} justified`)
@@ -313,28 +245,14 @@ describe('the clubs named over the opening beat', () => {
 						expect(ink.width, `${side} line ${index} justified`).to.be.lessThan(widest + 1.5);
 					});
 
-					// And the block is a real share of the card rather than a caption in the middle of
-					// it. Loose here, because this is the shorter of the two cards the popup draws and
-					// a name of two lines is bound by the band's height on it — the tightest of these
-					// pairs is "Los Angeles" over "Lakers" at 44% of the card, where the spread bound
-					// stops the nickname growing into the room the place name cannot use. The case
-					// that pins how big this actually gets is the live card below.
 					expect(widest, `${side} named across the card`).to.be.greaterThan(band.width * 0.4);
 				});
 			});
 		});
 	});
 
-	// The live card, which is the one the popup spends its time drawing: a PowerScore bar taller, so a
-	// band of 84px, and the height stops binding on anything but the shortest pair of lines. This is
-	// where the ask is answered — a club named across the card rather than labelled in the middle of it
-	// — and how far it gets: a long club on two lines covers about three quarters of the card at 38px
-	// of type, and a short one on a single line covers nine tenths of it at 40, against the 17.6px a
-	// line-per-word block could reach on the same card.
 	([
 		[club('Washington Commanders'), club('Massachusetts Minutemen'), 0.65],
-		// Two short words stack once the card is tall enough that two lines out-size one, which is the
-		// fit choosing the bigger type, so this pair is held to a lower share of the width.
 		[club('Miami Marlins'), club('Boston Celtics'), 0.4],
 	] as const).forEach(([away, home, share]) => {
 		it(`names a club across the live card: ${away.name} v ${home.name}`, () => {
@@ -351,8 +269,6 @@ describe('the clubs named over the opening beat', () => {
 					);
 					expect(widest, `${side} named across the card`).to.be.greaterThan(band.width * share);
 					expect(widest, `${side} inside the card`).to.be.lessThan(band.width);
-					// The size itself, which is the ask: twice the 17.6px a line-per-word block could
-					// reach on the same card.
 					const drawn = $box[0].querySelector<HTMLElement>('.game-card-reveal-opening-name-line')!;
 					expect(parseFloat(getComputedStyle(drawn).fontSize), `${side} type size`)
 						.to.be.greaterThan(28);
@@ -361,38 +277,25 @@ describe('the clubs named over the opening beat', () => {
 		});
 	});
 
-	// Its own scene rather than a caption on the one before it, which is the whole point of the beat:
-	// the crests hold the colour on their own, and then they leave it and the naming takes it. What
-	// this pins is that the two are never up together at either end — an overlap in the middle is the
-	// handover and is meant to be there, but a name on the crests' own frame would be the old design
-	// back, and a crest on the naming's frame would make it a caption again.
 	it('gives the naming a scene of its own, after the crests have left the field', () => {
 		cy.mount(<Harness />);
 		awaitCrests();
 
-		// The crests' own frame: they hold the colour, and nothing is named yet.
 		scrubTo(sceneMs(crestScene));
 		cy.get('.game-card-reveal-opening-logo').first().should('have.css', 'opacity', '1');
 		cy.get('.game-card-reveal-opening-name').first().should('have.css', 'opacity', '0');
 
-		// The naming's own frame: the field is theirs and the crests have gone.
 		scrubTo(sceneMs(nameScene));
 		cy.get('.game-card-reveal-opening-name').first().should('have.css', 'opacity', '0.9');
 		cy.get('.game-card-reveal-opening-logo').first().should('have.css', 'opacity', '0');
 	});
 
-	// And it has left by the frame the poster starts on, rather than being held there for the colour to
-	// cover. The poster's halves grow in from the outer edges, so a name still standing there is eaten
-	// from its ends inward by colour in its own hue: letters going out one at a time with nothing
-	// visible doing it, which is how this beat used to end.
 	it('has collapsed onto the tricode slots by the time the poster starts', () => {
 		cy.mount(<Harness />);
 		awaitCrests();
 		scrubTo(sceneMs(posterScene));
 		cy.get('.game-card-reveal-opening-name').first().should('have.css', 'opacity', '0');
 
-		// Onto the slot rather than merely away: what the name leaves towards is the point the tricode
-		// it is standing in for appears on — the crest slots at 25% and 75%, on the centre line.
 		rectOf('.game-card').then(card => {
 			([['away', 0.25], ['home', 0.75]] as const).forEach(([side, slot]) => {
 				rectOf(`.game-card-reveal-opening-name.is-${side} .game-card-reveal-opening-name-type`)
@@ -406,9 +309,6 @@ describe('the clubs named over the opening beat', () => {
 		});
 	});
 
-	// The colour a name is drawn on is the colour the poster's own half will be, which is what makes
-	// the handover a wipe rather than a cut: the poster grows its leaning halves over these bands in
-	// the same two colours, and the only thing that changes is where the split is.
 	it('paints the bands in the colours the poster resolves to', () => {
 		cy.mount(<Harness />);
 		scrubTo(sceneMs(nameScene));

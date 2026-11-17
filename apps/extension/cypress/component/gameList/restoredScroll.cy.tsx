@@ -16,8 +16,6 @@ const Scroller = ({ offsetRef, rows }: { offsetRef: RefObject<number>; rows: num
 	);
 };
 
-// Mirrors what `app.tsx` does to a view: the scroller is unmounted outright on the way out and a
-// fresh one is mounted on the way back, so nothing about the old element survives the trip.
 const Navigator = ({ rows, rowsOnReturn = rows }: { rows: number; rowsOnReturn?: number }) => {
 	const offsetRef = useRef(0);
 	const [visits, setVisits] = useState(1);
@@ -49,9 +47,6 @@ describe('useRestoredScroll', () => {
 		cy.get('[data-testid="scroller"]').should('have.prop', 'scrollTop', 420);
 	});
 
-	// The extension polls while you are away, so the list you come back to can be shorter than the
-	// one you left. Assigning past the maximum clamps, which puts you at the bottom rather than
-	// throwing, and the clamped value is what gets recorded.
 	it('clamps to the bottom when the list has shrunk while away', () => {
 		cy.mount(<Navigator rows={20} rowsOnReturn={6} />);
 		cy.get('[data-testid="scroller"]').scrollTo(0, 800);
@@ -61,8 +56,6 @@ describe('useRestoredScroll', () => {
 		cy.get('[data-testid="scroller"]').should('have.prop', 'scrollTop', 6 * rowHeight - viewportHeight);
 	});
 
-	// A saved offset the list can no longer reach must not survive as a saved offset, or a later
-	// visit would jump to a place the user never scrolled to.
 	it('forgets an offset the shorter list could not reach', () => {
 		cy.mount(<Navigator rows={20} rowsOnReturn={6} />);
 		cy.get('[data-testid="scroller"]').scrollTo(0, 800);

@@ -143,7 +143,6 @@ describe('settings backup', () => {
 			.toEqual({ ok: false, problem: 'tooNew' });
 	});
 
-	// Every field normalizes to its default, so accepting this would quietly reset someone's whole setup.
 	test('refuses a file with the settings cut out of it', () => {
 		expect(parseSettingsFile(truncated({ name: 'main' }))).toEqual({ ok: false, problem: 'notOurs' });
 		expect(parseSettingsFile(truncated({ prefs: createDefaultUserPreferences() }))).toEqual({ ok: false, problem: 'notOurs' });

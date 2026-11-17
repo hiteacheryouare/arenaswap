@@ -17,8 +17,6 @@ const glideKeyAttribute = 'data-glide-key';
 
 const isGlideWorthy = ({ dx, dy }: glide) => Math.abs(dx) >= 0.5 || Math.abs(dy) >= 0.5;
 
-// Only the cards present on both sides are compared. A card arriving or leaving shifts everything
-// below it without reordering anything, and that stays a plain jump, the same as a banner appearing.
 export const keepsRelativeOrder = (previous: string[], next: string[]) => {
 	const nextKeys = new Set(next);
 	const before = previous.filter(key => nextKeys.has(key));
@@ -46,8 +44,6 @@ const useReorderGlide = (scrollerRef: RefObject<HTMLElement | null>) => {
 		const glides: glide[] = [];
 		cards.forEach(({ card, key }) => {
 			const rect = card.getBoundingClientRect();
-			// A card caught mid-glide is drawn away from its layout box by the running transform, so
-			// that offset is taken out to find where it sits, and added back to find where it starts.
 			const { m41: offsetX, m42: offsetY } = new DOMMatrixReadOnly(getComputedStyle(card).transform);
 			const position = {
 				x: rect.left - origin.left + scroller.scrollLeft - offsetX,

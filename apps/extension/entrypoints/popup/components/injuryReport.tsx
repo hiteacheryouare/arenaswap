@@ -13,12 +13,9 @@ interface injuryReportProps {
 	homeColor: string;
 }
 
-// Out first, so the cap only ever hides the players most likely to play anyway.
 const rowCap = 4;
 
 const InjuryRow = ({ injury, color }: { injury: InjuryEntry; color: string }) => {
-	// Position and body part arrive verbatim, the same way a leader's stat line does. There are
-	// dozens of body parts and no list of them to translate against.
 	const detail = [injury.position, injury.detail].filter(Boolean).join(' · ');
 	return (
 		<li className='gd-injury-row' style={{ backgroundImage: teamRowWash(color) }}>

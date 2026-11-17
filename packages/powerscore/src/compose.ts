@@ -33,7 +33,6 @@ interface ModeRun {
 	baseTotal: number;
 	reasons: ReasonFragment[];
 	boosts: ScoredBoost[];
-	// baseTotal plus the mode's own boosts, capped at 100.
 	automaticTotal: number;
 }
 
@@ -56,9 +55,6 @@ export const createSignalInput = (game: Game<string>, context: ScoringContext, o
 	};
 };
 
-// Disabled signals score nothing and the survivors are rescaled to the mode's full signal ceiling,
-// not to 100: the subtotal is pre-cap and the total is capped at 100 afterwards, so scaling to 100
-// here would cap twice and deflate every score. Switching every signal off switches none of them off.
 const disabledSetFor = (mode: PowerScoreMode, disabledSignals: readonly string[] = []): ReadonlySet<string> => {
 	const disabled = new Set(disabledSignals);
 	return mode.signals.every(signal => disabled.has(signal.id)) ? new Set() : disabled;
@@ -169,17 +165,10 @@ const frozenScore = (game: Game<string>, mode: PowerScoreMode, options: ScoreOpt
 	reason: '',
 });
 
-/*
-	Scores one game. The order is fixed: signals → disabled-signal rescale → break penalty → win
-	probability (clamped 0–100) → the mode's own boosts (capped at 100) → blend with Classic →
-	favorite and postseason boosts (capped at 100) → rivals, in a mode that ranks them → the manual
-	game boost, the only thing allowed past 100.
-*/
 export const scoreGame = (game: Game<string>, context: ScoringContext = {}, options: ScoreOptions = {}): PowerScore => {
 	const requested = getMode(options.mode);
 	const fellBack = requested.appliesTo !== undefined && !requested.appliesTo(game, context);
 	const mode = fellBack ? classicMode : requested;
-	// A game scored as Classic in place of another mode takes Classic's own switches.
 	const disabledSignals = fellBack ? options.classicDisabledSignals : options.disabledSignals;
 	if (isPlayFrozen(game)) return frozenScore(game, mode, options, disabledSignals);
 

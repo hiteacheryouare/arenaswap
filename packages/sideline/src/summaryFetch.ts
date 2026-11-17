@@ -7,8 +7,6 @@ import { usesFullLeagueStandings } from './standingsParse';
 // browser's cache rarely lasts from a hover to the click after it. Both go through this one instead.
 export const sharedRequestFreshMs = 15_000;
 
-// A summary fetched before tip-off has no box score in it, so it only answers for the status it was
-// fetched under. The league table is the same either side of a start and carries no status.
 interface sharedRequest {
 	startedAt: number;
 	status: string | null;

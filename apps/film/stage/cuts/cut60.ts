@@ -4,24 +4,19 @@ import { cardSuperWindow, cardUnder, endActions, endCardHold, endingBeats, endin
 
 const b = bar;
 const flickTabs = [103, 104, 105, 102, 103, 104, 105, 101];
-// Ctrl+Tab on the soundtrack's eighth notes.
 const flickAt = b(4) - musicBeats(1);
 const flickTimes = flickTabs.map((_, index) => flickAt + musicBeats(index * 0.5));
 
-// The first orange card ends on ArenaSwap's switch to Cal; the second opens out of the league grid.
 const toCal = b(9) + beats(3);
 const gotTeamAt = b(25) + beats(2);
 const gotTeamEnd = b(26) + beats(3);
 const starAt = b(27);
-// The Standby Stream switch: the rule at 7:14 PM, when every open tab was below 45.
 const standbyAt = b(19) + beats(3);
 const endAt = b(33);
 const endStart = endAt - beats(endingBeats);
 const ending = endingFor(endAt);
 const creditsAt = endAt + endCardHold;
 
-// 32 bars of film, then five of credits. The problem, the answer, then one benefit per scene, each
-// held long enough to read.
 const cut60: Cut = {
 	id: '60',
 	bars: 37,

@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { motionDuration } from '../motion';
 
-// The quintic ease-out that `cubic-bezier(0.22, 1, 0.36, 1)` approximates.
 const easeOut = (progress: number) => 1 - (1 - progress) ** 5;
 
 const prefersReducedMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Counts from the number on screen to `target` whenever it changes. The first render shows `target`.
 const useCountTo = (target: number, duration: number = motionDuration.slow): number => {
 	const [shown, setShown] = useState(target);
 	const shownRef = useRef(target);

@@ -4,7 +4,6 @@ import { join } from 'node:path';
 import { constants as zlibConstants, createGzip } from 'node:zlib';
 import { listRecordingFiles, readRecording, unreadableLines, type ReplayEvent } from '../src/replay/recording';
 
-// A real live NHL event (Carolina at Philadelphia, tied in the third), shared with packages/sideline.
 const liveEvent = (JSON.parse(readFileSync(join(__dirname, '../../sideline/tests/fixtures/scoreboards/nhlTiedThirdPeriod.json'), 'utf8')) as { event: Record<string, any> }).event;
 const gameId = liveEvent.id as string;
 
@@ -27,8 +26,6 @@ beforeEach(() => {
 });
 afterEach(() => rmSync(dir, { recursive: true, force: true }));
 
-// Written the way the recorder writes: whole lines into one gzip stream, sync-flushed as it goes.
-// `tornTail` is what a killed recorder leaves: part of a line, flushed, and the stream never ended.
 const writeRecording = async (name: string, lines: string[], tornTail?: string): Promise<string> => {
 	const gzip = createGzip();
 	const chunks: Buffer[] = [];

@@ -5,7 +5,6 @@ import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
 import fil from '../../../locales/fil.json';
 import fr from '../../../locales/fr.json';
-// Not `it` — that would shadow Mocha's global it() and break every test in this file.
 import itLocale from '../../../locales/it.json';
 import ja from '../../../locales/ja.json';
 import ko from '../../../locales/ko.json';
@@ -16,8 +15,6 @@ import zhTW from '../../../locales/zh_TW.json';
 
 const shot = (id: string) => `https://a.espncdn.com/i/headshots/mlb/players/full/${id}.png`;
 
-// A 1x1 fully transparent PNG. Deterministic and offline, and transparent on purpose: an opaque
-// image would paint over a placeholder that failed to hide and the test would pass regardless.
 const transparentPixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
 
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
@@ -76,28 +73,21 @@ describe('pre-game detail screen', () => {
 		cy.viewport(320, 560);
 	});
 
-	// Nothing has happened yet, so every signal would read zero.
 	it('drops the PowerScore breakdown entirely', () => {
 		mountPre(preGame);
 		cy.get('.powerscore-breakdown').should('not.exist');
 		cy.get('.gd-poster').should('exist');
 	});
 
-	// The hero surface is the same in all three states now — one scrimmed band of the two team
-	// colours — so `.gd-poster` is no longer what tells a pre-game screen from a live one. The
-	// breakdown is, and the live hero carries its own class for the re-toning the stylesheet does.
 	it('keeps the breakdown once the game is live, on the same hero surface', () => {
 		mountPre({ ...preGame, status: 'in', period: 2, clockSeconds: 300 });
 		cy.get('.powerscore-breakdown').should('exist');
 		cy.get('.gd-poster').should('exist');
 		cy.get('.gd-hero-live').should('exist');
 		cy.get('.game-detail-matchup').should('exist');
-		// The pre-game furniture is gone even though the surface is shared.
 		cy.get('.gd-poster-teams').should('not.exist');
 	});
 
-	// The poster is a card in the column, not a full-bleed banner: it lines up with the setup
-	// card below it and carries the same rounded corner as every other card on the screen.
 	it('sits on the same card geometry as the rest of the screen', () => {
 		mountPre(preGame);
 		cy.get('.gd-setup').then(([setup]: JQuery<HTMLElement>) => {
@@ -121,9 +111,6 @@ describe('pre-game detail screen', () => {
 		});
 	});
 
-	// A crest is drawn in the team's own colours with nothing behind it. The plate is a repair, and
-	// it is only applied to a crest measured as unreadable where it lands — which needs the image's
-	// pixels, so an unmeasured crest is bare. `teamCrest.cy.tsx` drives all three treatments.
 	it('draws each crest bare rather than plating it by default', () => {
 		mountPre(preGame);
 		cy.get('.gd-poster-crest').should('have.length', 2);
@@ -133,8 +120,6 @@ describe('pre-game detail screen', () => {
 		});
 	});
 
-	// The poster's crests come from ESPN, so the slot has to hold its box before they arrive, on a disc
-	// of the team's own colour.
 	it('holds the crest box with the abbreviation until the logo lands', () => {
 		mountPre(preGame);
 		cy.get('.gd-poster-crest-logo').should('have.length', 2).each(($crest: JQuery<HTMLElement>) => {
@@ -161,7 +146,6 @@ describe('pre-game detail screen', () => {
 		cy.wrap(toggled).should('deep.equal', ['3']);
 	});
 
-	// The glyph is about 12px across. The list card's star answers 10px off it, and this one matches.
 	it('answers a tap a few pixels off the glyph', () => {
 		const toggled: string[] = [];
 		mountPre(preGame, { onToggleFavoriteTeam: (_league, teamId) => toggled.push(teamId) });
@@ -182,7 +166,6 @@ describe('pre-game detail screen', () => {
 		cy.get('.gd-setup').should('not.contain.text', 'avorite');
 	});
 
-	// The boost is the one control that was previously hidden until the game started.
 	it('shows the boost before the game starts', () => {
 		mountPre(preGame);
 		cy.get('.powerscore-boost-input').should('exist');
@@ -208,7 +191,6 @@ describe('pre-game detail screen', () => {
 		cy.get('.gd-setup-heading').should('contain.text', 'Game Time');
 	});
 
-	// A postponement is the one thing with something to say before the start time.
 	it('surfaces a delay on the poster', () => {
 		mountPre({ ...preGame, delayed: true, delayDescription: 'Postponed' });
 		cy.get('.gd-poster-status').should('contain.text', 'Postponed');
@@ -269,7 +251,6 @@ describe('pre-game detail screen', () => {
 			},
 		};
 
-		// The reason the leaders row is full width. Real values from a live NFL scoreboard.
 		const football: Game = {
 			...preGame,
 			id: 'nfl-pre',
@@ -320,7 +301,6 @@ describe('pre-game detail screen', () => {
 			cy.get('.gd-pregame-stat-value').eq(1).should('have.text', '2.21');
 		});
 
-		// "(3-1, 4.23)" says nothing about what either number is.
 		it('labels each pitcher number under the value', () => {
 			mountPre(pitchers);
 			cy.get('.gd-pregame-stat').should('have.length', 4);
@@ -333,7 +313,6 @@ describe('pre-game detail screen', () => {
 			});
 		});
 
-		// Not Lekton. These are read as numbers in prose, not scanned down a column.
 		it('sets the pitcher and leader numbers in the body face', () => {
 			mountPre(pitchers);
 			cy.get('.gd-pregame-stat-value').eq(0).then(([el]: JQuery<HTMLElement>) => {
@@ -344,7 +323,6 @@ describe('pre-game detail screen', () => {
 			});
 		});
 
-		// A sport that sends a pre-formatted line and no separate stats still shows the line.
 		it('falls back to the unlabelled ESPN line when there are no separate stats', () => {
 			mountPre({
 				...pitchers,
@@ -395,8 +373,6 @@ describe('pre-game detail screen', () => {
 			cy.get('.gd-pregame-leader-shot').should('have.length', 4);
 		});
 
-		// Soccer sends a headshot for roughly one leader in ten, so the placeholder is the common
-		// case there and has to hold the row's shape rather than collapse it.
 		it('falls back to team-coloured initials when there is no headshot', () => {
 			mountPre(pitchers);
 			cy.get('.gd-pregame-leader-row').eq(0).within(() => {
@@ -413,9 +389,6 @@ describe('pre-game detail screen', () => {
 			});
 		});
 
-
-		// ESPN headshots are transparent PNGs, so a placeholder left in the layout behind one reads
-		// as a white halo around the player's head.
 		it('hides the initials once a headshot has loaded', () => {
 			mountPre({
 				...pitchers,
@@ -437,7 +410,6 @@ describe('pre-game detail screen', () => {
 			});
 		});
 
-		// The other half of the same rule: a starter with no headshot must still show its initials.
 		it('keeps the initials when there is no headshot to load', () => {
 			mountPre(goalies);
 			cy.get('.gd-pregame-starter-shot .crest').should('have.attr', 'data-crest-state', 'missing');
@@ -446,8 +418,6 @@ describe('pre-game detail screen', () => {
 			});
 		});
 
-		// The disc has to survive the placeholder being hidden: it is the team colour behind a
-		// transparent cut-out, not a property of the initials that happened to show through.
 		it('keeps the team-coloured disc behind a loaded headshot', () => {
 			mountPre({
 				...pitchers,
@@ -476,7 +446,6 @@ describe('pre-game detail screen', () => {
 			});
 		});
 
-		// White initials on a gold disc are unreadable, so the ink follows the disc's luminance.
 		it('darkens the initials on a pale team colour', () => {
 			const gold = {
 				...goalies,
@@ -496,7 +465,6 @@ describe('pre-game detail screen', () => {
 			cy.get('.gd-pregame-leader-row').eq(0).should('have.attr', 'style').and('include', 'linear-gradient');
 			cy.get('.gd-pregame-leader-team').eq(0).should('have.text', 'DET');
 			cy.get('.gd-pregame-leader-team').eq(1).should('have.text', 'NYM');
-			// Away and home must not resolve to the same tint, or the colour carries no information.
 			cy.get('.gd-pregame-leader-row').eq(0).then(([away]: JQuery<HTMLElement>) => {
 				cy.get('.gd-pregame-leader-row').eq(1).then(([home]: JQuery<HTMLElement>) => {
 					expect(getComputedStyle(away).backgroundImage).to.not.equal(getComputedStyle(home).backgroundImage);
@@ -515,8 +483,6 @@ describe('pre-game detail screen', () => {
 			cy.get('.gd-pregame-leader-player').eq(0).should('have.attr', 'title', 'K. Carpenter');
 		});
 
-		// The whole reason for the full-width row. A clipped stat is unreadable in a way a clipped
-		// name is not, so the value is what must never be cut.
 		it('never truncates a football stat value', () => {
 			mountPre(football);
 			cy.get('.gd-pregame-leader-value').each(($el: JQuery<HTMLElement>) => {
@@ -567,13 +533,8 @@ describe('pre-game detail screen', () => {
 			cy.get('.gd-poster-record').eq(1).should('have.text', '76-58');
 		});
 
-
-		// The two labels share one half-card row, so a locale that goes native — ja ships 勝敗 and
-		// 防御率 where most ship W-L and ERA — has to fit both without wrapping the pair.
 		it('fits every locale pitcher label beside its partner', () => {
 			mountPre(pitchers);
-			// The budget is the half-card the starter gets, not the row's own shrink-to-fit width:
-			// the row grows with its content, so measuring it before the swap measures English.
 			cy.get('.gd-pregame-starter').eq(0).then(([column]: JQuery<HTMLElement>) => {
 				const budget = column.getBoundingClientRect().width;
 				const row = column.querySelector<HTMLElement>('.gd-pregame-starter-stats')!;

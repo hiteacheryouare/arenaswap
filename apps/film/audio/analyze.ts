@@ -51,8 +51,6 @@ const cueSpan = (cue: Cue, barLength: number): number => {
 	}
 };
 
-// Everything percussive or noise-based, for its full sounding length: a jump inside one of these is
-// the sound itself, not a fault.
 export const transientWindows = (arrangement: Arrangement): TimeWindow[] => [
 	...arrangement.drums.map(hit => ({ from: hit.time - 0.002, to: hit.time + 0.003 + drumSpan(hit) })),
 	...arrangement.cues.map(cue => ({ from: cue.at - 0.002, to: cue.at + cueSpan(cue, arrangement.barLength) })),
@@ -68,8 +66,6 @@ const maskOf = (windows: TimeWindow[], length: number, sampleRate: number): Uint
 	return mask;
 };
 
-// A click is a second-difference spike far above its own neighbourhood: noise and bright content
-// raise the neighbourhood with them, a discontinuity does not.
 const findClicks = (channel: Float32Array, sampleRate: number): number[] => {
 	const length = channel.length;
 	const curvature = new Float64Array(length);
@@ -99,7 +95,6 @@ export interface ArcPoint {
 	lufs: number;
 }
 
-// Loudness of every half bar: the quickest way to see whether a plan's energy arc reads as intended.
 export const loudnessArc = (audio: RenderedAudio, arrangement: Arrangement): ArcPoint[] => {
 	const half = arrangement.barLength / 2;
 	const points: ArcPoint[] = [];

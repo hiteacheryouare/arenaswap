@@ -3,7 +3,6 @@ import { i18n } from '#i18n';
 import { PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 
 interface upcomingSearchTitleProps {
-	// Null while the field is closed. An open field with nothing typed yet is ''.
 	query: string | null;
 	onQueryChange: (query: string | null) => void;
 	first?: boolean;
@@ -16,9 +15,6 @@ const upcomingSearchTitle = ({ query, onQueryChange, first }: upcomingSearchTitl
 	const fieldRef = useRef<HTMLLabelElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const openButtonRef = useRef<HTMLButtonElement>(null);
-	// Motion and focus only follow a toggle the user made. Coming back from a game's details remounts
-	// this with the field already open, and growing it or grabbing focus then would replay an
-	// entrance nobody asked for and scroll the list away from where it was restored to.
 	const [motion, setMotion] = useState<searchMotion>(null);
 	const focusAfterToggleRef = useRef(false);
 
@@ -28,8 +24,6 @@ const upcomingSearchTitle = ({ query, onQueryChange, first }: upcomingSearchTitl
 		(open ? inputRef : openButtonRef).current?.focus();
 	}, [open]);
 
-	// The query is let go once the field has folded back into the magnifier, so the whole day returns
-	// in one change. Under reduced motion there is no animation to wait for, and it goes at once.
 	useEffect(() => {
 		if (motion !== 'collapsing') return;
 		let cancelled = false;
@@ -59,8 +53,6 @@ const upcomingSearchTitle = ({ query, onQueryChange, first }: upcomingSearchTitl
 
 	return (
 		<div className={`upcoming-search-title${first ? ' mt-1' : ''}${open && !motion ? ' upcoming-search-settled' : ''}`}>
-			{/* The magnifier stays painted under the field rather than leaving with the tap, so the field
-			    grows straight out of it and folds straight back into it. */}
 			<PopupSectionTitle
 				action={(
 					<button
@@ -98,7 +90,6 @@ const upcomingSearchTitle = ({ query, onQueryChange, first }: upcomingSearchTitl
 						onChange={e => onQueryChange(e.target.value)}
 						onKeyDown={e => {
 							if (e.key !== 'Escape') return;
-							// Left alone, Escape would also close the whole popup.
 							e.preventDefault();
 							collapse();
 						}}

@@ -3,7 +3,6 @@ import { currentLocale, useTranslations } from '../i18n/ui';
 
 const t = useTranslations(currentLocale(Astro.currentLocale));
 
-// Each label names the mode the visitor is in now, not the one a click would switch to.
 const modes = [
 	{ value: 'system', icon: 'bi-circle-half', label: t('nav.themeLabel', { mode: t('ui.setup.themeSystem') }) },
 	{ value: 'light', icon: 'bi-sun', label: t('nav.themeLabel', { mode: t('ui.setup.themeLight') }) },

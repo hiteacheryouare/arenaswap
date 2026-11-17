@@ -2,9 +2,6 @@ import type { CSSProperties, ReactNode } from 'react';
 import Crest from '@arenaswap/ui/src/components/crest';
 import { heroGames } from '../hero/heroGames';
 
-// A small Chrome window drawn with the hero's own classes, so the steps and the hero are the same
-// browser. Its tabs are the hero's three games, each a placeholder panel in its teams' colours.
-
 export type TabSound = 'audible' | 'muted';
 
 export interface StepTab {

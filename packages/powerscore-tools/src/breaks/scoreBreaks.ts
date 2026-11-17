@@ -24,29 +24,20 @@ export interface FalseAlarm {
 export interface BreakScore {
 	games: number;
 	hours: number;
-	// Stretches of consecutive flagged polls.
 	runs: number;
-	// Runs that overlap no dead interval at all.
 	falseAlarms: FalseAlarm[];
 	falseAlarmShare: number;
-	// Runs and false alarms by the kind of break that started the run.
 	byKind: Record<string, { runs: number; falseAlarms: number }>;
 	breaks: number;
 	caught: number;
 	missed: { gameId: string; start: number; seconds: number; kind: string }[];
-	// Flagged polls that sit inside a dead interval.
 	pollPrecision: number;
-	// Seconds from the start of a break to the first flagged poll in it.
 	latencyMedian?: number;
-	// Seconds from the end of a break to the first unflagged poll after it; negative is early.
 	releaseMedian?: number;
 }
 
 export interface ScoreOptions {
-	// Moves the truth later by the feed's lag, to score against what the feed could have known.
 	shiftMs?: number;
-	// Clock sports: halftimes and intermissions are already frozen by the status, so they and the
-	// minute either side of them are left out. Unrecorded stretches always are.
 	excludeIntermissions: boolean;
 }
 
@@ -56,8 +47,6 @@ const median = (values: number[]): number | undefined => {
 	return Math.round(sorted[Math.floor(sorted.length / 2)]!);
 };
 
-// Polls inside an excluded interval are already gone, so a run also ends where one sat between two
-// polls; otherwise flags either side of halftime would join into one run spanning it.
 const flaggedRuns = (polls: PollFlag[], separated: (from: number, to: number) => boolean): { start: number; end: number; kind?: string }[] => {
 	const runs: { start: number; end: number; kind?: string }[] = [];
 	let current: { start: number; end: number; kind?: string } | undefined;
@@ -169,7 +158,6 @@ export const scoreBreaks = (traces: GameTrace[], options: ScoreOptions): BreakSc
 	};
 };
 
-// How long the feed takes to show a play: when a poll first carried its id, less when it happened.
 export const feedLagMs = (traces: GameTrace[]): number => {
 	const lags = traces.flatMap(trace => {
 		const playedAt = new Map(trace.plays.map(play => [play.id, play.at]));

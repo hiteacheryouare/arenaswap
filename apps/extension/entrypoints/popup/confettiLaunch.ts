@@ -28,9 +28,6 @@ const angleTowardTheMiddle = (x: number, y: number, visible: screenBox): number 
 	return 90;
 };
 
-// A team in view gets confetti from its crest. A team scrolled out of view gets it from the edge
-// it is hiding past, fired back into the list, so the burst never looks like it came from whichever
-// card happens to be sitting where the real one isn't.
 export const launchFromTeam = (team: screenBox, visible: screenBox, canvas: screenBox): confettiLaunch => {
 	const x = (team.left + team.right) / 2;
 	const y = (team.top + team.bottom) / 2;

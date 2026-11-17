@@ -1,10 +1,5 @@
-// The landing page: one idea per band on a black page, type doing the work, and the airbrush glow
-// only twice — under the hero and under the closing install, like the two ends of a store image.
 @use '@arenaswap/ui/src/motion' as m;
 @layer custom {
-
-	// The glows sit at z-index -1 and spill into the band below them, so the page, not each band, is
-	// the stacking context they are painted in.
 	#main {
 		position: relative;
 		z-index: 0;
@@ -33,9 +28,6 @@
 		}
 	}
 
-	// Bootstrap stops widening the container at 1320px, which on a large display leaves a third of the
-	// screen as gutter while the hero is squeezed. The whole page widens together — nav, hero and bands —
-	// so nothing ends up misaligned with anything else.
 	@media (min-width: 1600px) {
 		.container {
 			max-width: 1560px;
@@ -48,9 +40,6 @@
 		}
 	}
 
-	// ─── Display type ────────────────────────────────────────────────────────────
-	// The store art's headlines: heavy, tight and short, ending on the orange full stop OrangeDots
-	// paints at runtime.
 	.display-xl,
 	.display-lg,
 	.display-md {
@@ -112,7 +101,6 @@
 		}
 	}
 
-	// ─── Hero ────────────────────────────────────────────────────────────────────
 	.band-hero {
 		padding: calc(64px + clamp(3rem, 6vw, 5.5rem)) 0 clamp(10rem, 16vw, 14rem);
 
@@ -128,7 +116,6 @@
 			margin-top: 1.6rem;
 		}
 
-		// The demo's caption sits in the glow, where muted grey would sink into the orange.
 		.browser-caption {
 			color: var(--color-text);
 		}
@@ -137,7 +124,6 @@
 	.hero-copy {
 		container-type: inline-size;
 
-		// The longest second line, German "den Moment.", is 5.96em wide: 16cqi keeps every one on one line.
 		.display-xl {
 			font-size: min(clamp(3rem, 5.4vw, 5.25rem), 16cqi);
 		}
@@ -147,8 +133,6 @@
 		}
 	}
 
-	// Copy left, window right, weighted towards the window. The window holds a 320px popup at the
-	// popup's real size, so the narrower the window, the more of it that popup occupies.
 	.hero-grid {
 		display: grid;
 		grid-template-columns: minmax(22rem, 30rem) minmax(0, 1fr);
@@ -156,9 +140,6 @@
 		align-items: center;
 	}
 
-	// Side by side only where there is room for both. Below this the window was coming out at 534px with
-	// a 320px popup beside it, which is neither a browser nor a popup. Stacked, the window gets the whole
-	// container and the video is not cropped at all.
 	@media (max-width: 1399.98px) {
 		.hero-grid {
 			grid-template-columns: minmax(0, 1fr);
@@ -201,7 +182,6 @@
 		}
 	}
 
-	// ─── Above the fold: who is covered ──────────────────────────────────────────
 	.team-strip {
 		display: block;
 		margin-top: 2.75rem;
@@ -230,7 +210,6 @@
 
 		.crest {
 			--as-avatar-size: 1.9rem;
-			// Held slightly back so no one crest shouts over the rest, and brought up together on hover.
 			opacity: 0.9;
 			transition: opacity m.$motion-instant m.$motion-ease;
 		}
@@ -240,8 +219,6 @@
 		opacity: 1;
 	}
 
-	// ─── The three steps ─────────────────────────────────────────────────────────
-	// A real sequence, so the browser's own numbering stays.
 	.steps {
 		list-style: none;
 		counter-reset: step;
@@ -252,7 +229,6 @@
 		padding: 0;
 		text-align: center;
 
-		// A column, so the demo above each step can sit over the rule.
 		li {
 			counter-increment: step;
 			display: flex;
@@ -287,8 +263,6 @@
 		}
 	}
 
-	// Stacks a breakpoint earlier than the text alone needs: three demos across a tablet would each be
-	// drawn at half size.
 	@media (max-width: 991.98px) {
 		.steps {
 			grid-template-columns: minmax(0, 1fr);
@@ -296,7 +270,6 @@
 		}
 	}
 
-	// ─── Charts ──────────────────────────────────────────────────────────────────
 	.charts-grid {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -324,7 +297,6 @@
 		margin: 0 0 0.6rem;
 	}
 
-	// ─── Copy beside a picture ───────────────────────────────────────────────────
 	.band-split-grid {
 		display: grid;
 		grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
@@ -342,9 +314,6 @@
 		}
 	}
 
-	// ─── Multiview ───────────────────────────────────────────────────────────────
-	// The layout the extension uses for four games: the game with the sound big on the left, the
-	// other three stacked beside it, each under a crest bar in its teams' colours.
 	.multiview-demo {
 		display: grid;
 		grid-template-columns: 2fr 1fr;
@@ -453,15 +422,10 @@
 		}
 	}
 
-	// ─── Leagues ─────────────────────────────────────────────────────────────────
-	// The top half of three rings of crests turning around a hub on the arc's bottom edge, most watched
-	// innermost, and the full list grouped by sport in a dialog. LeaguesBand.astro sets each ring's
-	// radius and crest size as a percentage of the arc's width.
 	.band-leagues {
 		overflow-x: clip;
 	}
 
-	// Full bleed, so the glow and the faded edges belong to the screen rather than the container.
 	.league-orbit {
 		position: relative;
 		width: 100vw;
@@ -482,8 +446,6 @@
 		}
 	}
 
-	// Phones crop the arc's sides instead of shrinking it, so the window fades the screen edges too.
-	// The hub sits on the bottom edge, so a crest is gone by the time it sinks level with it.
 	.league-orbit-window {
 		display: flex;
 		justify-content: center;
@@ -595,7 +557,6 @@
 			line-height: 1.35;
 		}
 
-		// The plate is on the image rather than the box, so it goes with the image when the image fails.
 		.crest {
 			--as-avatar-size: 1.3rem;
 			--crest-logo-radius: 4px;
@@ -603,12 +564,10 @@
 
 		.crest > img {
 			padding: 1px;
-			// The light-ground artwork needs the plate only on a dark page.
 			background: light-dark(transparent, #f5f5f5);
 		}
 	}
 
-	// ─── Settings ────────────────────────────────────────────────────────────────
 	.settings-layout {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
@@ -650,10 +609,6 @@
 			grid-template-columns: minmax(0, 1fr);
 		}
 	}
-
-	// ─── Settings panel ──────────────────────────────────────────────────────────
-	// A still of one settings group as the popup draws it: label left, control right. It is a
-	// picture of a panel rather than a working one, so nothing here is focusable.
 
 	.settings-panel-demo {
 		width: 320px;
@@ -756,7 +711,6 @@
 		}
 	}
 
-	// ─── Standby Stream ──────────────────────────────────────────────────────────
 	.standby-chart {
 		--chart-height: clamp(12rem, 24vw, 19rem);
 		position: relative;
@@ -900,7 +854,6 @@
 		}
 	}
 
-	// ─── Free, private, open ─────────────────────────────────────────────────────
 	.free-list {
 		list-style: none;
 		display: grid;
@@ -942,9 +895,6 @@
 		}
 	}
 
-	// ─── Closing install ─────────────────────────────────────────────────────────
-	// The store art's layout: the words above, the light below them, and the light fading out before
-	// the footer.
 	.band-closing {
 		padding: clamp(5rem, 10vw, 8rem) 0 clamp(15rem, 26vw, 22rem);
 

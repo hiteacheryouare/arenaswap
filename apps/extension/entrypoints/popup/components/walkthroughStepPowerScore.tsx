@@ -12,11 +12,9 @@ interface walkthroughStepPowerScoreProps {
 	onNext: () => void;
 	onBack: () => void;
 	initialSubStep?: number;
-	// The mode the reader scores with, so the tour shows the signals they will actually see.
 	modeId?: BuiltInModeId;
 }
 
-// The breakdown card's tooltips are precise; the tour explains the same signals in plainer words.
 const tourDescriptionKeys: Partial<Record<ModeSignalId, plainMessageKey>> = {
 	closeness: 'stepPowerScore.aboutCloseness',
 	lateGame: 'stepPowerScore.aboutLateGame',
@@ -84,10 +82,8 @@ const boostPenaltyMeta = [
 	},
 ] as const;
 
-// The bright tone reads on dark; light mode needs the darkened ink to stay legible on white.
 const boostTone = ({ ink, color }: { ink: string; color: string }) => `light-dark(${ink}, ${color})`;
 
-// The last sub-step: the intro, one per signal, then the boosts and penalties.
 export const lastPowerScoreSubStep = (modeId: BuiltInModeId = 'classic'): number => modeSignalIds[modeId].length + boostPenaltyMeta.length;
 
 const buildDots = (signals: readonly walkthroughSignal[]) =>
@@ -117,7 +113,6 @@ const contrastText = (hex: string): string => {
 	const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 	return lum > 0.55 ? '#111111' : '#ffffff';
 };
-
 
 interface BloomOverlayProps {
 	signal: walkthroughSignal;
@@ -182,7 +177,6 @@ const BloomOverlay = ({ signal, dotPxX, dotPxY, phase, onClick }: BloomOverlayPr
 		</div>
 	);
 };
-
 
 const BLOOM_IN_DURATION = 450;
 const BLOOM_OUT_DURATION = 400;

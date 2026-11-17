@@ -1,8 +1,4 @@
 ---
-// For a `Crest` rendered as static markup with no island behind it, inside a container marked
-// `data-crest-settle`. Nothing would ever run its load check, so it would stay `pending` and show
-// its placeholder through the transparent parts of the logo. This is that check, by hand.
-//
 // The `complete` check is not padding — this is a deferred module, so a crest above the fold has
 // usually fired `load` before it runs. And `complete` is true for a broken image too, which is
 // what `naturalWidth` is deciding.
@@ -22,6 +18,4 @@
 	});
 </script>
 
-<!-- Without the script the crests never leave `pending`, and every placeholder would show through
-     the transparent parts of a loaded crest. -->
 <noscript><style>[data-crest-settle] .crest { border-radius: var(--crest-logo-radius); background-color: transparent; } [data-crest-settle] .crest > :not(img) { display: none; }</style></noscript>

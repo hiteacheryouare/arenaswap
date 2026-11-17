@@ -87,7 +87,6 @@ describe('powerScoreColor', () => {
 		expect(powerScoreColor(scoreMaxTotal, scoreMaxTotal)).toBe('rgb(247,92,3)');
 	});
 
-	// A manual game boost can push a total past 100, and the gradient has to hold at the top.
 	test('clamps above the ceiling', () => {
 		expect(powerScoreColor(140, scoreMaxTotal)).toBe('rgb(247,92,3)');
 	});
@@ -99,7 +98,6 @@ describe('powerScoreColor', () => {
 	});
 });
 
-// The soccer clock keeps counting through stoppage, so nothing here may assume 45 or 90.
 describe('formatGameClock through stoppage time', () => {
 	test('keeps counting a soccer clock past the end of the half', () => {
 		expect(formatGameClock(makeGame('epl', { sportType: 'soccer', clockSeconds: 2_880 }))).toBe("48'");
@@ -116,9 +114,6 @@ describe('formatGameClock through stoppage time', () => {
 	});
 });
 
-// Every league ArenaSwap tracks, rather than the handful anyone remembers to add a case for. A
-// league added with a period format nobody wrote a branch for renders a label all the same — it is
-// just the wrong one, on a card somebody is deciding whether to switch to.
 describe('formatPeriod labels every league we ship', () => {
 	test.each(leagueConfigs.map(config => [config.id, config] as const))('%s', (_id, config) => {
 		const label = (period: number) => formatPeriod(makeGame(config.id, {
@@ -152,14 +147,11 @@ describe('formatPeriod labels every league we ship', () => {
 		},
 	);
 
-	// An id ESPN starts sending that we have no config for still has to render something.
 	test('falls back to a bare period for a league it has never seen', () => {
 		expect(formatPeriod(makeGame('not-a-league' as LeagueId, { period: 2 }))).toBe('P2');
 	});
 });
 
-// A predicate about the calendar of a game, not about its state: the caller ands it with
-// `game.intermission`, because period 2 of 4 is the second quarter right up until the whistle.
 describe('isHalftime', () => {
 	test('finds the midpoint of a sport played in an even number of periods', () => {
 		expect(isHalftime(makeGame('nba', { period: 2 }))).toBe(true);
@@ -173,8 +165,6 @@ describe('isHalftime', () => {
 		expect(isHalftime(makeGame('nba', { period: 5 }))).toBe(false);
 	});
 
-	// Hockey breaks twice and baseball never, so neither has a half to be at the middle of. Calling
-	// the first intermission "Halftime" is the mistake this guards.
 	test('never reports a half in a sport that has none', () => {
 		for (const period of [1, 2, 3, 4, 5, 6, 7]) {
 			expect(isHalftime(makeGame('nhl', { period }))).toBe(false);
@@ -199,7 +189,6 @@ describe('oddsSummary', () => {
 		expect(withOdds({ overUnder: 47.5 })).toBe('O/U 47.5');
 	});
 
-	// A whole-number total is published as `44`, and `44.0` reads as a line that moved.
 	test('prints a whole total without a decimal, and a half with one', () => {
 		expect(withOdds({ overUnder: 44 })).toBe('O/U 44');
 		expect(withOdds({ overUnder: 44.5 })).toBe('O/U 44.5');
@@ -210,8 +199,6 @@ describe('oddsSummary', () => {
 		expect(withOdds({})).toBeNull();
 	});
 
-	// A sportsbook with no numbers behind it is an attribution, not a line. The card renders the
-	// logo from elsewhere; this string must not claim odds exist.
 	test('says nothing for a provider that sent no numbers', () => {
 		expect(withOdds({ provider: { name: 'ESPN BET' } })).toBeNull();
 	});
@@ -248,7 +235,6 @@ describe('buildGameCardSurface', () => {
 		expect(surface.awayColor).not.toBe(surface.homeColor);
 	});
 
-	// Sabres gold, Lions silver and Carolina blue all take the near-black; the navies and reds keep white.
 	test('writes in near-black on a light team and in white on a dark one', () => {
 		const inks = style(makeGame('nhl', { awayTeam: team('BUF', '#FDB71A'), homeTeam: team('PHI', '#0C2340') }));
 		expect(inks['--matchup-ink-left']).toBe('#111827');
@@ -257,7 +243,6 @@ describe('buildGameCardSurface', () => {
 		expect(inks['--matchup-shadow-right']).not.toBe('none');
 	});
 
-	// Soccer lists the host first, so the home colour runs from the left.
 	test('puts the home side on the left for soccer and the away side everywhere else', () => {
 		const teams = { awayTeam: team('AWY', '#FF0000'), homeTeam: team('HOM', '#00FF00') };
 		const soccer = buildGameCardSurface(makeGame('epl', { sportType: 'soccer', ...teams }));

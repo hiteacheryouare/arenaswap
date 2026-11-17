@@ -23,9 +23,6 @@ export const midiToFrequency = (midi: number): number => 440 * 2 ** ((midi - 69)
 
 const note = (step: number, length: number, midi: number, scoop = 0): PhraseNote => ({ step, length, midi, scoop });
 
-// Concert B-flat, where a band lives. `bass` is the sousaphones, `low` the trombones and baritones,
-// `middle` the mellophones and `high` the trumpets. `bell` is the ladder the dot climbs: chord tones
-// from B-flat 5, just above the trumpets, so a dot never lands inside the riff.
 export const bFlat: Chord = {
 	name: 'Bb',
 	bass: 34,
@@ -62,7 +59,6 @@ export const fSeven: Chord = {
 	bell: [81, 84, 87, 89, 91, 93],
 };
 
-// The last hit, with the screamers' D6 on top.
 export const finale: Chord = {
 	name: 'Bb',
 	bass: 34,
@@ -72,7 +68,6 @@ export const finale: Chord = {
 	bell: bFlat.bell,
 };
 
-// What the horns hold under the credits: B-flat with an added ninth, nothing above C5.
 export const amen: Chord = {
 	name: 'Bbadd9',
 	bass: 34,
@@ -88,7 +83,6 @@ export const dominant = fSeven;
 
 export const dominantSlot = 3;
 
-// I, IV, then the rock-band bVII to IV, then V.
 export const progression: ChordSpan[][] = [
 	[{ offset: 0, chord: bFlat }],
 	[{ offset: 0, chord: eFlat }],
@@ -98,9 +92,6 @@ export const progression: ChordSpan[][] = [
 
 export const run: PhraseNote[] = [note(12, 1, 72), note(13, 1, 74), note(14, 1, 75), note(15, 1, 76)];
 
-// The stand tune, one bar per chord: short enough for a student section to shout back. The held
-// note on step 8 smears up from the blue note a semitone under it. Steps 12 to 15 are left open for
-// the low brass to answer, except on the V, which climbs into the next downbeat.
 export const riff: PhraseNote[][] = [
 	[note(0, 2, 77), note(3, 1, 77), note(4, 2, 79), note(6, 2, 77), note(8, 2, 74, 1), note(10, 2, 70)],
 	[note(0, 2, 79), note(3, 1, 79), note(4, 2, 80), note(6, 2, 79), note(8, 2, 75, 1), note(10, 2, 70)],
@@ -108,7 +99,6 @@ export const riff: PhraseNote[][] = [
 	[note(0, 2, 77), note(3, 2, 79), note(6, 2, 81), note(8, 2, 75), note(10, 2, 69), ...run],
 ];
 
-// The mellophones' line under the riff when the band goes big: a third or a fourth below.
 export const riffHarmony: PhraseNote[][] = [
 	[note(0, 2, 74), note(3, 1, 74), note(4, 2, 75), note(6, 2, 74), note(8, 2, 70, 1), note(10, 2, 65)],
 	[note(0, 2, 75), note(3, 1, 75), note(4, 2, 77), note(6, 2, 75), note(8, 2, 70, 1), note(10, 2, 67)],
@@ -123,8 +113,6 @@ export const answers: PhraseNote[][] = [
 	[],
 ];
 
-// Root, third, fifth, sixth, flat seven and back down, one per eighth: the sousaphones' bounce.
 export const boogie = [0, 4, 7, 9, 10, 9, 7, 4];
 
-// The sousaphones on the V: E-flat and A after the hits, then down the scale onto the B-flat.
 export const walkDown: PhraseNote[] = [note(8, 2, 39), note(10, 2, 45), note(12, 1, 41), note(13, 1, 39), note(14, 1, 38), note(15, 1, 36)];

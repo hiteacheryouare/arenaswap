@@ -1,9 +1,3 @@
-// The header mark folds into the favicon on the way down the page and unfolds on the way back up.
-// `wordmarkFrame.test.ts` already proves the choreography across 601 samples of its own progress
-// value, so nothing here re-checks the geometry. What a browser can answer and that test cannot is
-// whether the site's header is wired to it at all, and whether the mark lands at a sane size in a
-// 64px bar it shares with the links.
-
 const restBox = '0 0 1790 471';
 const collapsedBox = '-36 -36 503.76 426.61';
 
@@ -21,8 +15,6 @@ describe('the site header collapses its mark', () => {
 		cy.scrollTo(0, 400);
 		cy.get('#site-header').should('have.class', 'is-condensed');
 		mark().should('have.attr', 'viewBox', collapsedBox);
-		// The box is taller relative to its width than the wordmark by a factor of four, so this
-		// number moving at all means the mark did not end where the favicon is.
 		mark().invoke('outerWidth').should('be.closeTo', 29.5, 2);
 	});
 
@@ -36,7 +28,6 @@ describe('the site header collapses its mark', () => {
 		mark().invoke('outerWidth').should('be.closeTo', 106, 3);
 	});
 
-	// The whole point of the animation, and the one thing a still of either end cannot show.
 	it('keeps the a and the s on screen part-way through', () => {
 		cy.scrollTo(0, 400);
 		cy.wait(200);

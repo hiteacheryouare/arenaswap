@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import type { ResolvedTheme, ThemePreference } from '@arenaswap/core/types';
 import { readDocumentTheme } from '@arenaswap/ui/src/components/useDocumentTheme';
 
-// A copy of the Theme setting outside `UserPreferences`, for public/themeBoot.js, which sets the
-// attribute before the first paint and cannot wait on the async storage API.
 export const themeStorageKey = 'arenaswap.theme';
 
 const lightSchemeQuery = '(prefers-color-scheme: light)';
@@ -20,8 +18,6 @@ export const iconSrc = (theme: ResolvedTheme): string => (
 	theme === 'light' ? '/images/icon_black_on_transparent.svg' : '/images/icon_white_on_transparent.svg'
 );
 
-// `preference` is null while the stored prefs are still loading, which leaves what themeBoot.js set
-// alone instead of flashing the default in and back out.
 export const useTheme = (preference: ThemePreference | null): ResolvedTheme => {
 	const [theme, setTheme] = useState(readDocumentTheme);
 

@@ -7,7 +7,6 @@ export type { GeneratedI18nStructure } from '../../.wxt/i18n/structure';
 
 let messages = enJson as Record<string, unknown>;
 
-// Lets a spec render under any shipped locale (cypress/support/safetyNet/locales.tsx).
 export const setStubLocale = (localeJson: object = enJson) => {
 	messages = localeJson as Record<string, unknown>;
 };

@@ -3,8 +3,6 @@ import OnColorCrest from '@arenaswap/ui/src/components/onColorCrest';
 import { buildGameCardSurface } from '@arenaswap/ui/src/components/gameCardShared';
 import type { Game } from '@arenaswap/core/types';
 
-// What plays in a tab. Not footage: the two teams' colours, split the way the popup's cards split
-// them, with each side's dark-ground crest.
 const StreamView = ({ game, t, className = '', style }: { game: Game; t: number; className?: string; style?: CSSProperties }) => {
 	const { awayColor, homeColor } = buildGameCardSurface(game);
 	const drift = Math.sin(t * 0.45) * 8;
@@ -21,8 +19,6 @@ const StreamView = ({ game, t, className = '', style }: { game: Game; t: number;
 
 export default StreamView;
 
-// The Standby Stream: a studio channel, drawn as a set and a lower third carrying the night's other
-// scores, since a channel has no two teams to split the picture between.
 export const ChannelView = ({ games, className = '', style }: { games: Game[]; className?: string; style?: CSSProperties }) => (
 	<div className={`stream channel ${className}`} style={style}>
 		<div className='channel-set' />

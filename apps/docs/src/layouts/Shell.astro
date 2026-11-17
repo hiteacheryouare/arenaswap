@@ -13,28 +13,13 @@ import { currentLocale, useTranslations } from '../i18n/ui';
 interface Props {
 	title: string;
 	description: string;
-	// Path without the base and without a locale, e.g. `releases/`. Used for the canonical, the
-	// og:url and every hreflang alternate.
 	path?: string;
 	ogTitle?: string;
-	// Article, for a blog post or a release note. Anything else is a page.
 	ogType?: 'website' | 'article';
-	// Absolute or base-relative. Falls back to the social card, because `summary_large_image` with an
-	// icon-sized image renders as a bare link.
 	image?: string;
 	imageAlt?: string;
-	// Keeps a page out of search results. It also drops the canonical, because a noindex page
-	// asserting its own canonical URL is a mixed signal.
 	noindex?: boolean;
-	// False only where no per-locale copy of the URL exists, which is now just the 404: GitHub Pages
-	// answers every unknown path under the base with that one file, so there is nothing per-locale
-	// for it to be. The language switcher offers the localized home page instead.
 	localized?: boolean;
-	// False where the URL exists in every locale but the words on it do not — the documentation and
-	// the release notes. Those pages are built once per locale so that following a link out of a
-	// translated page does not change the language of the navigation around it, but the body is the
-	// same English on all twelve. So they point their canonical at the English URL and emit no
-	// hreflang alternates: alternates announce translations, and there are none to announce.
 	translated?: boolean;
 }
 
@@ -60,8 +45,6 @@ const socialImagePath = image ?? `${import.meta.env.BASE_URL}images/social-card.
 const socialImage = new URL(socialImagePath, site);
 const socialImageSize = socialImagePath.startsWith('http') ? undefined : publicImageSize(socialImagePath);
 
-// x-default points at English, which is the copy that answers a request carrying no language
-// preference and the only one guaranteed to exist for every path on the site.
 const alternates = localized && translated
 	? locales.map(entry => ({
 			hreflang: entry.code,
@@ -119,8 +102,6 @@ const alternates = localized && translated
 				const detected =
 					/Firefox\//.test(ua)         ? { primary: firefox,         alternates: [chrome, edge] }
 					: /Edg(?:A|iOS)?\//.test(ua) ? { primary: edge,            alternates: [chrome, firefox] }
-					// Chromium forks install from the Chrome Web Store, so they get its link under their own
-					// name and a neutral icon — Bootstrap Icons ships no mark for any of them.
 					: navigator.brave             ? { primary: arenaSwapInstallFork('Brave', chromeUrl),   alternates: [firefox, edge] }
 					: /OPR\//.test(ua)           ? { primary: arenaSwapInstallFork('Opera', chromeUrl),   alternates: [firefox, edge] }
 					: /Vivaldi/.test(ua)          ? { primary: arenaSwapInstallFork('Vivaldi', chromeUrl), alternates: [firefox, edge] }
@@ -132,8 +113,6 @@ const alternates = localized && translated
 					if (!el) return;
 					el.href = detected.primary.href;
 					el.querySelector('[data-install-icon]').className = `bi ${detected.primary.icon} me-3`;
-					// The browser name is a proper noun and is not translated, but the sentence around
-					// it is, and in several languages the name does not come last.
 					el.querySelector('[data-install-label]').textContent =
 						addToTemplate.split('{browser}').join(detected.primary.name);
 				},

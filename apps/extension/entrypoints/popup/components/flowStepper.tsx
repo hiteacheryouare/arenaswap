@@ -6,8 +6,6 @@ interface flowStepperProps {
 	className?: string;
 }
 
-// The markers are drawn for the eye and hidden from screen readers, which hear the same sentence the
-// step caption used to print.
 const flowStepper = ({ step, total, className = '' }: flowStepperProps) => (
 	<div className={`flow-stepper small ${className}`}>
 		<span className='visually-hidden'>{i18n.t('flowStepper.step', [step, total])}</span>

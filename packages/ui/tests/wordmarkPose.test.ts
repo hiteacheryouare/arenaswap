@@ -1,12 +1,6 @@
 import { ringPath } from '../src/components/wordmarkPose';
 import { chevronFrom, chevronTo, headFrom, headTo, ringPoints } from '../src/components/wordmarkShapes';
 
-// The two arrows in the wordmark are not scaled into the favicon's — the icon draws a wider head and
-// a lighter chevron — so each travels as a pair of matched point rings that `ringPath` walks one
-// onto the other. `wordmarkShapes.ts` is generated, and the failure mode of a bad regeneration is
-// silent: a ring pair of unequal length produces `NaN` coordinates, the browser rejects the whole
-// path, and the arrow simply is not drawn.
-
 const pointsOf = (d: string): [number, number][] => {
 	expect(d.endsWith('Z')).toBe(true);
 	return d.slice(0, -1).split(/[ML]/).filter(Boolean).map(pair => {
@@ -15,8 +9,6 @@ const pointsOf = (d: string): [number, number][] => {
 	});
 };
 
-// `ringPath` rounds every coordinate to a tenth of a unit, which is 0.008px at the size this
-// renders, so half a step is as close as any assertion here can ask for.
 const roundingStep = 0.05 + 1e-9;
 const expectWithinRounding = (actual: number, expected: number): void => {
 	expect(Math.abs(actual - expected)).toBeLessThanOrEqual(roundingStep);
@@ -56,8 +48,6 @@ describe.each(rings)('%s', (_label, from, to) => {
 		}
 	});
 
-	// Point for point, and in a straight line, which is what makes running the scroll back up the
-	// reverse animation rather than a second one.
 	test('walks each vertex straight from one outline to the other', () => {
 		const half = pointsOf(ringPath(from, to, 0.5));
 		for (let index = 0; index < ringPoints; index++) {
@@ -66,7 +56,6 @@ describe.each(rings)('%s', (_label, from, to) => {
 		}
 	});
 
-	// The one that catches a bad regeneration of `wordmarkShapes.ts`.
 	test('never emits a coordinate that is not a number, at any point in the run', () => {
 		for (let step = 0; step <= 20; step++) {
 			const d = ringPath(from, to, step / 20);
@@ -80,8 +69,6 @@ describe.each(rings)('%s', (_label, from, to) => {
 });
 
 describe('the two rings together', () => {
-	// They are generated as one pass over both marks; a resample that changed only one of them
-	// would tear the arrow in half without either ring being wrong on its own.
 	test('carry the same point count, so the head and the chevron stay one arrow', () => {
 		expect(chevronFrom).toHaveLength(headFrom.length);
 		expect(chevronTo).toHaveLength(headTo.length);

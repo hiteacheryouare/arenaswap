@@ -23,10 +23,6 @@ const all = (text: string, pattern: RegExp) => [...text.matchAll(pattern)].map(m
 
 const withoutCode = (body: string) => body.replace(/^(`{3,}|~{3,})[\s\S]*?^\1\s*$/gm, '');
 
-// What a translator carries across untouched: the code, the links, and whatever the page renders
-// in place of a line of Markdown.
-// A translation sits one folder deeper, so its relative imports climb one more level to reach the
-// same file. They are compared by what they resolve to.
 const resolvedImport = (filePath: string, line: string) =>
 	line.replace(/(['"])(\.[^'"]+)\1/, (_, quote: string, specifier: string) =>
 		`${quote}${relative(contentRoot, resolve(dirname(filePath), specifier))}${quote}`);

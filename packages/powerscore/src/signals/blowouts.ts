@@ -2,15 +2,10 @@ import { ageSince, clamp, decayFactor } from '../math';
 import { lastScoreChangeTimestamp, runReason } from './classic';
 import type { SignalDefinition, SignalInput, SignalOutput, SportType } from '../types';
 
-// The margin that earns full credit: four scores in football, a 30-point game in basketball.
 const fullMargin: Record<SportType, number> = { basketball: 30, football: 28, hockey: 5, baseball: 10, softball: 10, soccer: 5 };
 
 const none: SignalOutput = { points: 0 };
 
-// Closeness turned inside out: nothing until the game is two scores apart, then climbing to full
-// credit at a rout, and surer as the game goes on.
-// The score sentence already gives the margin and the time, so the first three signals have nothing to
-// add to it.
 export const computeBlowoutMargin = ({ sport, progress, margin }: SignalInput): SignalOutput => {
 	const [, t2, t3] = sport.closenessMargins;
 	if (margin <= t2) return none;
@@ -21,8 +16,6 @@ export const computeBlowoutMargin = ({ sport, progress, margin }: SignalInput): 
 	return { points: Math.round(50 * shape * certainty) };
 };
 
-// Built and held, not a run that may revert: the share of the window the current leader has been
-// more than two scores up, discounted while the window is still filling.
 export const computeSustained = ({ game, context, sport, margin }: SignalInput): SignalOutput => {
 	const history = context.history ?? [];
 	const [, t2] = sport.closenessMargins;
@@ -34,13 +27,11 @@ export const computeSustained = ({ game, context, sport, margin }: SignalInput):
 	return { points: Math.round(30 * held * coverage) };
 };
 
-// An early rout has more beatdown left to watch than one that is nearly over.
 export const computeTiming = ({ sport, progress, margin, game }: SignalInput): SignalOutput => {
 	if (game.period == null || margin <= sport.closenessMargins[2] || progress >= 1) return none;
 	return { points: Math.round(25 * Math.pow(1 - clamp(progress, 0, 1), 0.7)) };
 };
 
-// Momentum read only in the leader's direction: still extending, not hanging on.
 export const computePileOn = ({ game, context, sport, now }: SignalInput): SignalOutput => {
 	const history = context.history ?? [];
 	if (history.length < 3) return none;

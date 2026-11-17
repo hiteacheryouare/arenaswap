@@ -2,7 +2,6 @@ import Range from 'bootstrap/js/dist/range.js';
 import { useLayoutEffect, useRef, type InputHTMLAttributes, type ReactNode } from 'react';
 
 interface formRangeProps extends InputHTMLAttributes<HTMLInputElement> {
-	// A <datalist> the input names with `list`; Range draws a tick under the track for each option.
 	children?: ReactNode;
 }
 

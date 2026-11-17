@@ -12,7 +12,6 @@ afterEach(() => {
 });
 
 describe('leagueOffseasonLabel', () => {
-	// No Dutch strings ship, so the label reads in English and the month has to as well.
 	it('writes the return date in English when the browser is Dutch', () => {
 		withUiLanguage('nl');
 		expect(leagueOffseasonLabel({ startsAt: returnsAt, endsAt: returnsAt + 1 }, now)).toMatch(/Mar.15/);

@@ -25,25 +25,19 @@ const gameAt = (poll: Poll, period: number): Game => ({
 });
 
 describe('fantasy points read off a real London box score', () => {
-	// Full PPR: 0.1 a rushing or receiving yard, 1 a catch, 6 a rushing touchdown.
 	test('scores a running back across his rushing and receiving rows', () => {
 		const before = readFantasyBoxScore(beforeTaylorTd.summary, gameAt(beforeTaylorTd, 2)).lines.get(taylor.athleteId)!;
 		const after = readFantasyBoxScore(afterTaylorTd.summary, gameAt(afterTaylorTd, 2)).lines.get(taylor.athleteId)!;
 
-		// 6 carries for 23, 1 catch for 2.
 		expect(computeFantasyPoints('football', before)).toBe(3.5);
-		// 7 carries for 28 and a touchdown, the same catch.
 		expect(computeFantasyPoints('football', after)).toBe(10);
 	});
 
-	// 0.04 a passing yard, -2 an interception, -2 a fumble lost.
 	test('scores a quarterback who throws, runs, and gives the ball away', () => {
 		const before = readFantasyBoxScore(beforeJonesTd.summary, gameAt(beforeJonesTd, 4)).lines.get(jones.athleteId)!;
 		const after = readFantasyBoxScore(afterJonesTd.summary, gameAt(afterJonesTd, 4)).lines.get(jones.athleteId)!;
 
-		// 128 passing yards, 1 interception, 1 carry for 1, 1 fumble lost.
 		expect(computeFantasyPoints('football', before)).toBe(1.22);
-		// 135 passing yards, the same pick and fumble, 2 carries for 5 and a rushing touchdown.
 		expect(computeFantasyPoints('football', after)).toBe(7.9);
 	});
 
@@ -68,7 +62,6 @@ describe('a rostered player scoring between two polls', () => {
 		const fantasy = extras.contextFor(gameAt(afterTaylorTd, 2), afterTaylorTd.ts).fantasy!;
 
 		expect(fantasy.find(player => player.id === taylor.athleteId)?.pointEvents).toEqual([{ at: afterTaylorTd.ts, points: 6.5 }]);
-		// Jones's line did not move, so he has nothing to show.
 		expect(fantasy.find(player => player.id === jones.athleteId)).not.toHaveProperty('pointEvents');
 	});
 
@@ -94,7 +87,6 @@ describe('a rostered player scoring between two polls', () => {
 	});
 
 	test('does not count a defense giving up a touchdown as fantasy production', () => {
-		// Washington's defense drops from the 14-20 tier to 21-27 when Jones scores.
 		const extras = pollTwice([washingtonDefense], beforeJonesTd, afterJonesTd, 4);
 		const game = gameAt(afterJonesTd, 4);
 		const context = extras.contextFor(game, afterJonesTd.ts);
@@ -108,15 +100,12 @@ describe('a rostered player scoring between two polls', () => {
 		const extras = createLiveExtras();
 		extras.setRoster([jones]);
 		extras.ingestSummary(gameAt(beforeJonesTd, 4), beforeJonesTd.summary, beforeJonesTd.ts);
-		// Six-point passing touchdowns and harsher picks, set between the two polls.
 		extras.setFantasyScoring({ football: { passingTouchdowns: 6, interceptionsThrown: -4 } });
 		extras.ingestSummary(gameAt(afterJonesTd, 4), afterJonesTd.summary, afterJonesTd.ts);
 
-		// Only the rushing touchdown and the extra yards: (7.9 - 2) - (1.22 - 2).
 		const events = extras.contextFor(gameAt(afterJonesTd, 4), afterJonesTd.ts).fantasy?.[0]?.pointEvents;
 		expect(events).toHaveLength(1);
 		expect(events![0]!.at).toBe(afterJonesTd.ts);
-		// The difference of two rounded totals is not itself rounded, so it carries float noise.
 		expect(events![0]!.points).toBeCloseTo(6.68, 10);
 	});
 });

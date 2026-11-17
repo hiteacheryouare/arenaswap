@@ -1,8 +1,6 @@
 import { join } from 'node:path';
 import { deadIntervals, playByPlayPath, readPlays } from '../src/breaks/groundTruth';
 
-// Indianapolis at Washington in London, 2026-10-04: the post-game play-by-play, trimmed to the fields
-// the reader uses. The same game is the NFL scoreboard capture in packages/sideline.
 const plays = readPlays(playByPlayPath(join(__dirname, '../fixtures/playByPlay'), 'nfl', '401872965'));
 const { intervals, action } = deadIntervals('football', plays);
 const ofKind = (kind: string) => intervals.filter(interval => interval.kind === kind);
@@ -52,8 +50,6 @@ test('a game with no play-by-play on disk has no plays rather than an error', ()
 	expect(readPlays(join(__dirname, 'nowhere.json'))).toEqual([]);
 });
 
-// Sacramento at the Lakers, 2026-10-05 preseason, third and fourth quarters. The feed entered the last
-// 4:09 of the third under one timestamp, 14 minutes after the turnover before it.
 describe('a quarter the feed backfilled', () => {
 	const backfilled = deadIntervals('basketball', readPlays(playByPlayPath(join(__dirname, '../fixtures/playByPlay'), 'nba', '401898716'))).intervals;
 	const unrecorded = backfilled.filter(interval => interval.kind === 'unrecorded');

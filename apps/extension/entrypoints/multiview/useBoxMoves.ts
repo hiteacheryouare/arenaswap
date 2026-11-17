@@ -4,8 +4,6 @@ const boxesIn = (grid: HTMLElement) => [...grid.querySelectorAll<HTMLElement>('.
 
 const measure = (grid: HTMLElement) => new Map(boxesIn(grid).map(box => [box.dataset.gameId, box.getBoundingClientRect()]));
 
-// A box changes place by grid position alone, so the browser would jump it there. This starts each
-// one back where it was and lets it slide and grow into its new place.
 export default (grid: RefObject<HTMLElement | null>, layoutKey: string) => {
 	const settled = useRef(new Map<string | undefined, DOMRect>());
 

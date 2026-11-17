@@ -2,10 +2,6 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { componentAliases, componentStubs } from '../../cypress/componentResolve';
 
-// Turbo caches each Cypress group on its own inputs, so a group that loads a file its inputs leave
-// out replays a stale pass. This walks every spec's imports and fails on any such file, and on any
-// spec that no group would run.
-
 const extensionDir = path.resolve(__dirname, '../..');
 const repoDir = path.resolve(extensionDir, '../..');
 const testingTypes = ['component', 'e2e'] as const;
@@ -57,7 +53,6 @@ const workspaceDirs: Record<string, string> = Object.fromEntries(readdirSync(pat
 	.filter(dir => existsSync(path.join(dir, 'package.json')))
 	.map(dir => [readJson(path.join(dir, 'package.json')).name, dir]));
 
-// A workspace dependency's files reach every group through its `^build` hash, test files aside.
 const dependencyDirs = Object.keys({ ...manifest.dependencies, ...manifest.devDependencies })
 	.filter(name => workspaceDirs[name])
 	.map(name => `${repoPath(workspaceDirs[name])}/`);

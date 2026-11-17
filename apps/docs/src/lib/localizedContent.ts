@@ -16,7 +16,6 @@ const translationLocale = (id: string) => {
 
 const originalId = (id: string) => id.slice(id.indexOf('/') + 1);
 
-// Every published English entry, each swapped for its translation where this locale has one.
 export const getLocalizedCollection = async <C extends LocalizedCollection>(collection: C, locale: LocaleCode) => {
 	const entries = await getCollection(collection);
 	const translations = new Map(entries

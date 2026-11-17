@@ -1,8 +1,6 @@
 import { leagueConfigMap, sportTypeConfigMap } from './constants';
 import type { Game, LeagueConfig, LeagueId, SportType, SportTypeConfig } from './types';
 
-// A league the table has never heard of is scored like its sport's best-known league, so a feed
-// with its own league ids keeps the right period count and clock length.
 const defaultLeagueBySport: Record<SportType, LeagueId> = {
 	basketball: 'nba',
 	hockey: 'nhl',

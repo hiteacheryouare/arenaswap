@@ -34,8 +34,6 @@ interface Routing {
 	reverb: number;
 }
 
-// Where the whole band sits under the film's effects. The gains below only balance the band
-// against itself; this keeps the effects at the level the sound-effect reels audition them at.
 const bandTrim = 0.19;
 
 const drumRouting: Record<DrumKind, Routing> = {
@@ -52,7 +50,6 @@ const drumRouting: Record<DrumKind, Routing> = {
 	boom: { gain: 0.55, reverb: 0 },
 };
 
-// Three snares on every note, a hair apart and spread a little: the line, not one drummer.
 const snareLine = [
 	{ pan: -0.22, offset: 0.0014, tune: 0.985 },
 	{ pan: 0.02, offset: 0, tune: 1 },
@@ -74,7 +71,6 @@ const brassRouting: Record<BrassSection, Routing & { stem: 'brass' | 'lowBrass' 
 
 const bellRouting = { gain: 0.3, reverb: 0.3, delay: 0.08 };
 
-// Balanced against the soundtrack, so each hit stands a few decibels clear of the music it lands on.
 const cueRouting: Record<Cue['kind'], { gain: number; reverb: number; delay: number }> = {
 	dot: { gain: 0.23, reverb: 0.12, delay: 0 },
 	swap: { gain: 0.12, reverb: 0.08, delay: 0 },
@@ -135,7 +131,6 @@ const renderCueSound = (cue: ResolvedCue, sampleRate: number, random: Random, be
 
 const cueKinds = Object.keys(cueRouting);
 
-// Each cue's noise is seeded by its own time and kind, so editing one cue never re-rolls the others.
 export const renderCueLayer = (cues: ResolvedCue[], target: Stereo, sends: Sends, sampleRate: number, seed: number, beat: number): void => {
 	for (const cue of cues) {
 		const routing = cueRouting[cue.kind];
@@ -161,8 +156,6 @@ export const renderReturns = (sends: Sends, beat: number, sampleRate: number): S
 	return { reverb, delay };
 };
 
-// The dot, the swap and the ticks are the film talking, so the band leans out of their way for a
-// moment: the brass most, the drums a little.
 const cueDucks: Partial<Record<Cue['kind'], number>> = { dot: 1, swap: 1, tick: 0.5 };
 
 const renderStems = (arrangement: Arrangement, sampleRate: number, seed: number): Stems => {

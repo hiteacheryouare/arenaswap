@@ -8,7 +8,6 @@ const team = (abbreviation: string, color: string, alternateColor: string, logo:
 
 const sabres = team('BUF', '#FDB71A', '#00468B', 'https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/buf.png');
 const flyers = team('PHI', '#0C2340', '#FE5823', 'https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/phi.png');
-// A club with white and nothing else: one that publishes an alternate is drawn in that instead.
 const whiteOnly = team('TOT', '#FFFFFF', '', 'https://a.espncdn.com/i/teamlogos/soccer/500/367.png');
 
 const game = (awayTeam: Team, homeTeam: Team, status: Game['status'] = 'in'): Game => ({
@@ -26,8 +25,6 @@ const props = {
 const white = 'rgb(255, 255, 255)';
 const nearBlack = 'rgb(17, 24, 39)';
 
-// Every crest answered locally, so the specs below assert which URL was asked for without depending on
-// the network. The missing-variant case overrides this with a 404.
 const stubCrest = '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="8" height="8" fill="#888"/></svg>';
 
 beforeEach(() => {
@@ -49,14 +46,12 @@ describe('a live card painted in the two teams\' colours', () => {
 		cy.get('.team-column.is-home .team-crest img').should('have.attr', 'src', 'https://a.espncdn.com/i/teamlogos/nhl/500-dark/scoreboard/phi.png');
 	});
 
-	// The dark-ground cockerel is white, and so is the side it would be drawn on.
 	it('keeps the published crest on a side painted near-white', () => {
 		cy.mount(<LiveGameCard {...props} game={game(whiteOnly, flyers)} />);
 		cy.get('.team-column.is-away .team-crest img').should('have.attr', 'src', whiteOnly.logo);
 	});
 
 	it('falls back to the published crest when there is no dark-ground variant', () => {
-		// A URL no earlier test loaded, so the browser cannot answer it from its image cache.
 		const uncached = { ...sabres, logo: `${sabres.logo}?case=missing-dark` };
 		cy.intercept('GET', '**/500-dark/scoreboard/buf.png?case=missing-dark', { statusCode: 404 });
 		cy.mount(<LiveGameCard {...props} game={game(uncached, flyers)} />);
@@ -69,8 +64,6 @@ describe('a live card painted in the two teams\' colours', () => {
 		cy.get('.game-card-footer').children().should('have.length', 1).first().should('have.class', 'game-card-tab-assign');
 	});
 
-	// The gradient used to tile out under the 1px border, putting a sliver of each team's colour on
-	// the other team's edge.
 	it('lays the painted surface out to the outer edge of the border', () => {
 		cy.mount(<LiveGameCard {...props} game={game(sabres, flyers)} />);
 		cy.get('.game-card').should('have.css', 'background-origin').and('match', /^border-box(, border-box)*$/);
@@ -85,8 +78,6 @@ describe('a final card', () => {
 	});
 });
 
-// Soccer lists the host first, so a Premier League card draws Brentford on the left and Liverpool on
-// the right, in Brentford's ink and colour, while a hockey card keeps the visitor on the left.
 describe('the order the two teams are drawn in', () => {
 	const brentford = team('BRE', '#F42727', '#0F1C3F', 'https://a.espncdn.com/i/teamlogos/soccer/500/337.png');
 	const liverpool = team('LIV', '#00A398', '#FFFFFF', 'https://a.espncdn.com/i/teamlogos/soccer/500/364.png');

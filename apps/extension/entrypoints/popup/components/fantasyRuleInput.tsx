@@ -11,8 +11,6 @@ interface fantasyRuleInputProps {
 	ariaDescribedBy?: string;
 }
 
-// The boost input's draft handling, with a rule's own bounds. A lone "-" or "." is a number on its
-// way in, so it waits in the draft rather than committing as zero.
 const fantasyRuleInput = ({ id, value, min, max, step, onChange, ariaLabel, ariaDescribedBy }: fantasyRuleInputProps) => {
 	const [draft, setDraft] = useState<string | null>(null);
 

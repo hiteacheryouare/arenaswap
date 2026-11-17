@@ -10,7 +10,6 @@ import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
 import fil from '../../../locales/fil.json';
 import fr from '../../../locales/fr.json';
-// Not `it` — that would shadow Mocha's global it() and break every test in this file.
 import itLocale from '../../../locales/it.json';
 import ja from '../../../locales/ja.json';
 import ko from '../../../locales/ko.json';
@@ -46,8 +45,6 @@ const baseball = directory('cbase', [
 	{ id: '58', name: 'American Athletic Conference', shortName: 'American', divisionKey: 'd1', crestSlug: 'american' },
 ]);
 
-// Component specs have no extension runtime, so `browser.storage.local` is a Map, and the network
-// fails loudly: every test here is meant to run off what is already stored.
 const installStorage = (stored: ConferenceDirectory[]) => {
 	cy.window().then(win => {
 		const local = new Map<string, unknown>(stored.map(entry => [conferenceDirectoryKey(entry.leagueId), entry]));
@@ -124,7 +121,6 @@ describe('collegeFilterPage', () => {
 		cy.get('@onChange').should('have.been.calledWith', { divisions: ['50'], conferences: [], ranked: false, titleRounds: false });
 	});
 
-	// The tile is a third of a 320px popup, and "College Football Playoff" is its longest name.
 	it('fits every sport\'s title-rounds name in its tile, in every locale', () => {
 		cy.viewport(320, 560);
 		installStorage([football]);

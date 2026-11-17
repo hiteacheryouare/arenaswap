@@ -1,6 +1,5 @@
 export type Random = () => number;
 
-// mulberry32: tiny, fast and good enough for audio noise; the same seed always yields the same stream.
 const createRandom = (seed: number): Random => {
 	let state = seed >>> 0;
 	return () => {

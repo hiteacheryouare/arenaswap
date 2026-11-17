@@ -1,7 +1,6 @@
 import { boostPoints, renderReasonsEnglish, scoreGame, scorerTunables, signalPoints } from '../src';
 import type { Game, LeagueId, SportType } from '../src';
 
-// A feed that is not ours: its own league ids, and only the fields it happens to publish.
 const feedGame = (overrides: Partial<Game<string>> & Pick<Game<string>, 'league' | 'sportType'>): Game<string> => ({
 	id: 'feed-1',
 	homeTeam: { score: 2 },
@@ -85,7 +84,6 @@ describe('overriding the tables for a league that plays differently', () => {
 describe('a streak that takes the lead', () => {
 	test('reads as one sentence when the game started level', () => {
 		const game = feedGame({ league: 'kbo', sportType: 'baseball', period: 7, topOfInning: false, homeTeam: { score: 3 }, awayTeam: { score: 6 } });
-		// The feed takes a run back off the home side (4 to 3), so the away side's 3 are unanswered.
 		const history = ([[3, 3], [4, 3], [3, 6]] as const).map(([homeScore, awayScore], index) => ({
 			gameId: 'feed-1', timestamp: 1_790_000_000_000 + index * 60_000, homeScore, awayScore,
 		}));
@@ -123,8 +121,6 @@ describe('a feed that publishes more as it matures', () => {
 	});
 });
 
-// A feed that keeps tenths, as the basketball leagues do under a minute. The extension rounds before
-// it gets here; an npm caller passing the raw value should still read a clock, not "0:5.3".
 test('a fractional clock reads as whole seconds in the reason', () => {
 	const game = feedGame({ league: 'nba', sportType: 'basketball', period: 4, clockSeconds: 5.3, homeTeam: { score: 100 }, awayTeam: { score: 99 } });
 	const reason = renderReasonsEnglish(scoreGame(game).reasons);
@@ -132,8 +128,6 @@ test('a fractional clock reads as whole seconds in the reason', () => {
 	expect(reason).not.toMatch(/\d\.\d/);
 });
 
-// Plain JavaScript can hand over a sport the tables have no row for. The engine reads it as
-// basketball, so the per-sport tables in upset watch and the blowout margin have to as well.
 test('an unknown sport scores like basketball instead of throwing or going NaN', () => {
 	const sportType = 'lacrosse' as SportType;
 	const game = feedGame({ league: 'pll', sportType, period: 4, clockSeconds: 200, homeTeam: { score: 30 }, awayTeam: { score: 10 } });

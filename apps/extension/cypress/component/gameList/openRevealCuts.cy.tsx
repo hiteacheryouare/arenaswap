@@ -52,7 +52,6 @@ const scrubTo = (ms: number) => {
 
 const centreOf = (rect: DOMRect) => ({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
 
-// `calc(50% + -12px) calc(50% + 3px)` → the two expressions, split on the space between them.
 const topLevelTerms = (text: string) => {
 	const terms: string[] = [];
 	let depth = 0;
@@ -165,8 +164,6 @@ describe('the short opening cuts', () => {
 		cy.get('.game-card .game-score-value').first().should('have.css', 'visibility', 'visible');
 	});
 
-	// A one-digit score sits at the separator end of a box wider than itself, so the rolling digits
-	// have to land where the real digit is drawn, not at the box's edge.
 	it('rolls a one-digit score where the card draws it', () => {
 		cy.clock(Date.now(), ['setTimeout', 'clearTimeout']);
 		cy.mount(<Harness cut='boxScore' subject={makeGame(2, 1)} />);

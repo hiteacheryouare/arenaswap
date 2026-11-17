@@ -72,9 +72,6 @@ describe('filling the width', () => {
 });
 
 describe('the fixed scale', () => {
-	// The scale is fixed and the grid scrolls, rather than fitting the day to the viewport. The
-	// shortest bar in the whole league table has to stay wide enough to hold two crests and a
-	// matchup, which is the reason no narrow-bar variant exists.
 	test('the shortest league bar is still wide enough to read a matchup off', () => {
 		const shortest = Math.min(...leagueConfigs.map(c => c.runMinutes.bar));
 		expect(minutesToPx(shortest)).toBeGreaterThan(200);
@@ -98,7 +95,6 @@ describe('the fixed scale', () => {
 
 describe('grouping', () => {
 	test('orders leagues by the popup display order, not by when they happen to start', () => {
-		// NBA is first in leagueConfigs and NHL fourth, so a late NBA game still heads the grid.
 		const groups = groupByLeague([
 			bar('nhl-1', 'nhl', '2026-09-13T17:00:00Z'),
 			bar('nba-1', 'nba', '2026-09-14T02:00:00Z'),
@@ -128,8 +124,6 @@ describe('grouping', () => {
 
 const dayOf = (iso: string) => new Date(iso).toDateString();
 
-// The slate reaches two local days into the past, because that is what the range query does once
-// finals are asked for. Opening on the first group therefore opened on a day of old results.
 describe('the day the guide opens on', () => {
 	const nowMs = at('2026-09-12T15:00:00Z');
 
@@ -153,7 +147,6 @@ describe('the day the guide opens on', () => {
 		expect(defaultDayKey(days, nowMs)).toBe(dayOf('2026-09-14T23:00:00Z'));
 	});
 
-	// Only results left. The most recent of them is the one worth opening on, not the oldest.
 	test('is the most recent day when every day is in the past', () => {
 		const days = daysFrom('2026-09-09T23:00:00Z', '2026-09-10T23:00:00Z', '2026-09-11T23:00:00Z');
 		expect(defaultDayKey(days, nowMs)).toBe(dayOf('2026-09-11T23:00:00Z'));

@@ -14,9 +14,7 @@ import type { Translator } from './i18nContext';
 import { formatBreak, formatClock, formatGameClock, formatPeriod, isHalftime } from './gameFormat';
 import TimeoutDots from './timeoutDots';
 
-// Re-exported so the card's existing callers keep one import site.
 export { formatBreak, formatClock, formatGameClock, formatPeriod, isHalftime };
-
 
 export const formatStartTime = (iso: string, locale?: string): string => (
 	new Date(iso).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })
@@ -28,13 +26,11 @@ export const formatStartDay = (iso: string, locale?: string): string => new Date
 
 export const formatStartDateTime = (iso: string, locale?: string): string => `${formatStartDay(iso, locale)} • ${formatStartTime(iso, locale)}`;
 
-// A YYYY-MM-DD day, built as local midnight so no time zone can move it to the day before.
 export const formatCalendarDay = (day: string, locale?: string): string => {
 	const [year, month, date] = day.split('-').map(Number);
 	return new Date(year!, month! - 1, date).toLocaleDateString(locale, dayFormat);
 };
 
-// No game runs twelve hours, so a live one that started that long ago is a suspended game picking back up.
 // Only baseball finishes a suspended game on a later day; anywhere else it is a feed left stuck on live.
 const resumedAfterMs = 12 * 60 * 60 * 1000;
 export const isResumedGame = (game: Pick<Game, 'status' | 'startTime' | 'league'>, now: number = Date.now()): boolean => {
@@ -43,7 +39,6 @@ export const isResumedGame = (game: Pick<Game, 'status' | 'startTime' | 'league'
 	return Number.isFinite(startMs) && now - startMs > resumedAfterMs;
 };
 
-// Gradient from muted slate rgb(139,148,158) at 0 to orange rgb(247,92,3) at max.
 export const powerScoreColor = (score: number, max: number): string => {
 	const ratio = Math.min(score / max, 1);
 	const red = Math.round(139 + (247 - 139) * ratio);
@@ -69,7 +64,6 @@ export const oddsSummary = (game: Game): string | null => {
 	return parts.join(' • ');
 };
 
-// A team with no colour of its own sits on the popup's raised grey, which takes white ink.
 const missingTeamColor = '#30363d';
 
 export interface gameCardSurface {
@@ -80,17 +74,12 @@ export interface gameCardSurface {
 	rightColor: string;
 }
 
-// The two teams in the order a card draws them, left to right.
 export const teamsInOrder = (game: Pick<Game, 'league' | 'sportType' | 'awayTeam' | 'homeTeam'>): [Team, Team] => (
 	isHomeFirst(game) ? [game.homeTeam, game.awayTeam] : [game.awayTeam, game.homeTeam]
 );
 
-// White ink on a mid-tone — Carolina blue, a bright orange — is the case neither ink wins outright,
-// and a soft shadow is what keeps its edges.
 const inkShadow = (ink: string): string => (ink === '#ffffff' ? '0 1px 2px rgba(3, 7, 12, 0.45)' : 'none');
 
-// The card's and the detail hero's surface as an inline style: the painted background, and the ink
-// and shadow for each side as variables the stylesheet hangs every piece of text on.
 export const matchupSurfaceStyle = (leftColor: string, rightColor: string, delayed = false): CSSProperties => {
 	const { backgroundImage, inks } = matchupSurface(leftColor, rightColor, delayed);
 	return {
@@ -110,18 +99,12 @@ export const buildGameCardSurface = (game: Game, delayed = false): gameCardSurfa
 	return { style: matchupSurfaceStyle(leftColor, rightColor, delayed), awayColor, homeColor, leftColor, rightColor };
 };
 
-// The league mark heads the left side, so it takes the logo drawn for that side's ink: the dark-ground
-// one under white ink, and the light-ground one on a gold or a final card's light plate.
-// Only a live card wears the delayed shade, so only a live game reads its ink off it.
 export const leagueMarkOnColor = (game: Game): boolean => {
 	if (game.status === 'post') return false;
 	const { leftColor, rightColor } = buildGameCardSurface(game);
 	return matchupSurface(leftColor, rightColor, game.status === 'in' && game.delayed === true).inks.left === '#ffffff';
 };
 
-// The card is a group, not a button, so the stars, the odds tooltip and the tab picker stay controls
-// of their own. A click anywhere else on it still opens the game; the keyboard and screen readers
-// get the same thing from CardDetailsButton.
 export const buildCardShellProps = (game: Game, t: Translator, onOpenGameDetail: (gameId: string) => void, interactive: boolean) => ({
 	role: 'group' as const,
 	'aria-label': `${game.awayTeam.abbreviation} ${t('gameCard.vs')} ${game.homeTeam.abbreviation}`,
@@ -133,8 +116,6 @@ export const buildCardShellProps = (game: Game, t: Translator, onOpenGameDetail:
 		: undefined,
 });
 
-// First in the card, so it is the first stop in the tab order. It covers the card so its focus ring
-// and its focus box are the card's, but ignores the pointer: clicks reach the card's own handler.
 export const CardDetailsButton = ({ game, onOpenGameDetail }: { game: Game; onOpenGameDetail: (gameId: string) => void }) => {
 	const t = useT();
 	return (
@@ -161,7 +142,6 @@ export const TeamColumn = ({
 	isFavorited: boolean;
 	onToggleFavoriteTeam: (leagueId: LeagueId, teamId: string) => void;
 	side: 'away' | 'home';
-	// The colour this side of the card is painted in, where it is painted in one.
 	surface?: string;
 	timeoutsMax?: number;
 	interactive?: boolean;
@@ -171,8 +151,6 @@ export const TeamColumn = ({
 		<div className={`d-flex flex-column align-items-center gap-1 team-column is-${side}`}>
 			<OnColorCrest team={team} surface={surface} className='team-crest' />
 			<span className='fw-bold text-center text-nowrap team-abbreviation'>
-				{/* Smaller and greyed rather than same-size, so the tricode stays the thing you read
-				    first. A ranked pair is the widest this column ever gets — see the layout spec. */}
 				{team.rank !== undefined && (
 					<span className='team-rank' title={t('gameCard.teamRank', { rank: team.rank })}>
 						#{team.rank}
@@ -200,7 +178,6 @@ export const TeamColumn = ({
 };
 
 export const OddsProvider = ({ game, dark }: { game: Game; dark?: boolean }) => {
-	// As above — the failed URL, so a changed provider logo retries.
 	const [failedSrc, setFailedSrc] = useState<string | null>(null);
 	const provider = game.odds?.provider;
 	if (!provider?.name) return null;
@@ -221,15 +198,6 @@ export const OddsProvider = ({ game, dark }: { game: Game; dark?: boolean }) => 
 	return <span className='d-inline-flex align-items-center'>{provider.name}</span>;
 };
 
-// ESPN's own name for the round, trimmed of the prefix that repeats the league and otherwise
-// untouched — sponsors, casing and all. Deliberately not uppercased like the status beside it:
-// uppercasing turns Cheez-It and AT&T into shouting, and the sponsor is most of the reason a bowl
-// name is worth printing.
-//
-// Present on games that score nothing. A non-playoff bowl gets no boost and still gets its name,
-// because the label and the boost answer different questions.
-//
-// A preseason game takes the same spot with our own word instead, since ESPN names no round for it.
 const doubleheaderLabel = (game: Game, t: Translator): string | undefined => {
 	if (!game.doubleheaderGame) return undefined;
 	return t(game.isMakeup ? 'gameCard.doubleheaderMakeup' : 'gameCard.doubleheaderGame', { game: game.doubleheaderGame });
@@ -245,7 +213,6 @@ export const SeasonLabel = ({ game }: { game: Game }) => {
 	return label ? <span className='game-postseason-label'>{label}</span> : null;
 };
 
-// A conference game's conference, beside the league. A title game's round name already says it.
 export const ConferenceMark = ({ game }: { game: Game }) => {
 	const conference = game.conference;
 	if (!conference || game.postseasonLabel) return null;
@@ -260,10 +227,6 @@ export const ConferenceMark = ({ game }: { game: Game }) => {
 	);
 };
 
-// The row every card puts its status on. The postseason label shares it, which costs no vertical
-// space on a card that has none to spare — and when the label is too wide to share, the row wraps
-// and it takes a full line to itself rather than being truncated. Two of the 389 real ESPN round
-// names need that; nothing needs cutting.
 export const CardStatusRow = ({ children, status, league, conference }: { children?: ReactNode; status?: ReactNode; league?: ReactNode; conference?: ReactNode }) => (
 	<div className='d-flex align-items-center flex-wrap game-card-status-row mb-1'>
 		{league || conference ? (
@@ -294,10 +257,6 @@ export const GameMeta = ({
 }) => {
 	const t = useT();
 	const networks = hideBroadcasts ? undefined : game.broadcasts?.length;
-	// The card names the building only. `venueLocation` is a detail-screen line — see GameInfoPanel
-	// — because the answer a card exists to give is "should I switch to this", not "where is it".
-	// A neutral site is the exception: a Falcons home game at the Bernabéu reads as a mistake without
-	// the city.
 	const venueName = hideVenue ? undefined : game.venueName;
 	const venueCity = venueName && game.neutralSite ? game.venueLocation : undefined;
 	const bettingOn = bettingPrefs?.bettingEnabled ?? false;
@@ -323,11 +282,6 @@ export const GameMeta = ({
 				<div className='d-flex align-items-center justify-content-center game-meta-odds'>
 					{odds && <span>{odds}</span>}
 					{hasOddsProvider && (
-						// Attribution rides at the end of the line it describes rather than spending a
-						// line of its own, as it already does in the detail panel; the tooltip carries
-						// the wording, the sportsbook's own name and logo stay visible. The provider
-						// goes into the tooltip too, because that string ends in the colon it used to
-						// introduce a visible name with.
 						<HoverTooltip
 							className='game-meta-attribution'
 							inert={!interactive}

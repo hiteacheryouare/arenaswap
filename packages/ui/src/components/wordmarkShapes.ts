@@ -1,17 +1,5 @@
 // Generated from `full_logo_white_on_transparent.svg` and `icon_white_on_transparent.svg`.
 // Run `npm run ui:wordmark-shapes` to rebuild it; do not edit any of this by hand.
-//
-// The two marks share their letterforms — the icon's `a` and `s` are the wordmark's own
-// outlines at 0.3453x — so those travel as one path under a transform. Their arrows do not:
-// the icon draws a wider head and a lighter chevron, which is why those two are stored as
-// matched point rings instead. Each pair is the same contour resampled to the same count at
-// the same arc-length spacing and rotated into correspondence, so lerping index by index
-// walks one outline onto the other. At 0 the ring is the wordmark's shape and at 1 it is the
-// icon's, both to well under a tenth of a pixel at the size this renders.
-//
-// Everything is in the wordmark's own viewBox units. Icon coordinates were mapped in by the
-// ratio of the two files' letter heights, then shifted so the icon's chevron and ascender
-// land on the origin.
 
 export const arenPath = 'M41,63c11.1,0,31.68,4.04,41.72,-0.6c3.25,-1.5,4.04,-6.58,5.84,-9.39C91.56,48.31,96.04,44.51,101,42C118.42,33.15,143.59,36.66,153.45,55C157.15,61.89,157,69.43,157,77C125.45,77,85.57,71.3,58,90.09C24.45,112.96,32.35,165.75,70,179.14c21.09,7.5,49.8,8.02,69,-4.89c8.72,-5.86,13.31,-14.73,21,-21.25l4,27h38V87C202,64.55,201.49,41.29,184.96,24C145.64,-17.13,43.87,-3.62,41,63M156,105c-1.13,8.74,-3.86,17.45,-8.46,25c-10.76,17.67,-41.57,28.73,-58.35,11.81C76.43,128.95,86.89,110.37,102,106.48C108.3,104.86,114.55,105,121,105h35M273,37h-1L268,5h-40v175h44c0,-27.14,-1.74,-55,0.83,-82C274.41,81.38,276.63,65.98,292,55.97C304.9,47.56,321.26,48,336,48V1c-25.2,1.08,-51.53,11.86,-63,36M514,125c-13.03,0,-31.32,-3.36,-43.79,0.32c-3.63,1.07,-5.39,5.95,-7.68,8.64C458.68,138.49,453.53,142.34,448,144.54C418.88,156.07,386.26,134.08,386,103H519C519,70.31,515.01,39.89,487,18.5C432.72,-22.94,348.83,11.47,342.17,80C338.95,113.16,348.05,146.68,376,167.24C422.13,201.17,498.13,183.01,514,125M474,76H416L386,75C389.8,61.52,395.07,49.89,408,42.9C435.47,28.04,472.57,42.84,474,76M583,34L580,5h-40v175h45V108C585,92.36,583.8,76.31,591.26,62C602.5,40.44,637.13,28.3,655.53,49.09C667.26,62.34,667,80.41,667,97v83h44V99C711,80.11,712.15,61.17,705.92,43C693.17,5.81,647.78,-9.53,613,7.26C599.23,13.91,593.4,23.93,583,34';
 

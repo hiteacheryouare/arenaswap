@@ -3,8 +3,6 @@ import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
 import PreGameCard from '@arenaswap/ui/src/components/preGameCard';
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 
-// The shipping popup width, so every measurement below is taken against the box the label will
-// really render in rather than against a viewport that flatters it.
 const popupWidth = 320;
 
 const baseGame: Game = {
@@ -51,7 +49,6 @@ describe('the postseason label on a card', () => {
 	it('shares the status row with LIVE rather than taking a line of its own', () => {
 		mountLive({ ...baseGame, isPostseason: true, postseasonRound: 0, postseasonLabel: 'NBA Finals · Game 7' });
 		cy.get('.game-postseason-label').should('have.text', 'NBA Finals · Game 7');
-		// Same line: the two boxes share a top edge to within a pixel of rounding.
 		cy.get('.live-status-label').then($status => {
 			cy.get('.game-postseason-label').then($label => {
 				const status = $status[0]!.getBoundingClientRect();
@@ -74,10 +71,6 @@ describe('the postseason label on a card', () => {
 		});
 	});
 
-	// `text-transform` inherits, so the rule on the label is a guard against an ancestor turning
-	// the popup uppercase rather than decoration. Mounted inside exactly that ancestor, because
-	// without one the rule is inert and the assertion passes whether it exists or not — which is
-	// what a first pass at this test did.
 	it('keeps ESPN\'s own casing even inside an uppercased ancestor', () => {
 		cy.mount(
 			<div className='text-uppercase' style={{ width: popupWidth, padding: '0.75rem', background: '#0d1117' }}>
@@ -89,15 +82,11 @@ describe('the postseason label on a card', () => {
 		);
 		cy.get('.game-postseason-label').should('have.css', 'text-transform', 'none');
 		cy.get('.live-status-label').should('have.css', 'text-transform', 'uppercase');
-		// innerText is the text as painted, so this is what actually catches a shouted sponsor.
 		cy.get('.game-postseason-label').then($label => {
 			expect($label[0]!.innerText).to.equal('Cheez-It Citrus Bowl');
 		});
 	});
 
-	// Asserted directly rather than inferred from a width comparison. While the row still wraps,
-	// an ellipsis rule is inert and every geometric assertion keeps passing — so a future change
-	// could add one and only be caught once something else also removed the wrap.
 	it('applies no truncation to the label at all', () => {
 		mountLive({ ...baseGame, isPostseason: true, postseasonLabel: 'NBA Finals · Game 7' });
 		cy.get('.game-postseason-label')
@@ -106,10 +95,6 @@ describe('the postseason label on a card', () => {
 			.and('have.css', 'overflow-y', 'visible');
 	});
 
-	// Muted grey rather than the accent the breakdown's postseason row uses: two coloured items on
-	// one row makes the reader choose between them, and LIVE should win that outright.
-	// On a team colour the round takes the same ink as everything else on its side, since a grey picked
-	// for one colour is wrong on the next. It steps back by weight, size and case instead.
 	it('stays quieter than the LIVE marker beside it', () => {
 		mountLive({ ...baseGame, isPostseason: true, postseasonLabel: 'NBA Finals · Game 7' });
 		cy.get('.live-status-label').then($live => {
@@ -129,8 +114,6 @@ describe('the postseason label on a card', () => {
 		cy.get('.game-card-status-row').should('exist');
 	});
 
-	// Two of the 389 real ESPN round names are too wide to share the row. They must wrap to a line
-	// of their own rather than being cut, because cutting one loses a sponsor mid-word.
 	it('wraps a too-wide label onto its own line instead of truncating it', () => {
 		const longest = 'Quarterfinal · Rose Bowl Presented by Prudential';
 		mountLive({ ...baseGame, league: 'ncaaf', isPostseason: true, postseasonRound: 2, postseasonLabel: longest });
@@ -140,9 +123,7 @@ describe('the postseason label on a card', () => {
 				const status = $status[0]!.getBoundingClientRect();
 				const el = $label[0]!;
 				const label = el.getBoundingClientRect();
-				// It dropped to a second line...
 				expect(label.top).to.be.greaterThan(status.bottom - 1);
-				// ...and once there it is whole: one line box, nothing clipped, no ellipsis.
 				expect(el.getClientRects()).to.have.length(1);
 				expect(el.scrollWidth).to.be.at.most(Math.ceil(label.width));
 				expect(el.innerText).to.equal(longest);
@@ -188,8 +169,6 @@ describe('the postseason label on the other two card states', () => {
 		});
 	});
 
-	// A scheduled card has no status row of its own, so the label brings one — and only when
-	// there is something to put in it.
 	it('brings its own row to a scheduled card, and only when there is a round', () => {
 		const scheduled: Game = { ...baseGame, status: 'pre', startTime: '2026-10-28T23:08Z' };
 		cy.mount(
@@ -215,7 +194,6 @@ describe('the postseason label on the other two card states', () => {
 	});
 });
 
-// Preseason has no round for ESPN to name, so the card supplies its own word in the same spot.
 describe('the preseason label', () => {
 	const mountFinal = (game: Game) =>
 		cy.mount(

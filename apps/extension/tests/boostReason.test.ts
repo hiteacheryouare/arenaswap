@@ -83,7 +83,6 @@ describe('boost detail strings', () => {
 	});
 });
 
-// What @wxt-dev/i18n does with a named substitution it wasn't handed: it leaves `{name}` in the text.
 const wxtTranslator = (messages: Record<string, Record<string, string>>) => (key: string, subs?: Record<string, string | number>): string => {
 	const [section, name] = key.split('.');
 	const message = messages[section!]?.[name!];
@@ -115,8 +114,6 @@ const pitch = (extra: Partial<Game<string>>) => live('soccer', 'epl', 'EVE', 'LI
 const court = (extra: Partial<Game<string>>) => live('basketball', 'nba', 'OKC', 'DEN', { period: 2, clockSeconds: 300, ...extra });
 const underdogLine = { pregameLine: { favorite: 'home' as const, spread: 10 } };
 
-// One game for every sentence a boost can say, so a key the engine gains or the allowlist loses
-// shows up here rather than as a row that quietly loses its reason.
 const everySituation: [Game<string>, ScoringContext][] = [
 	[bases(true, false, false), {}], [bases(false, true, false), {}], [bases(false, false, true), {}], [bases(true, true, false), {}],
 	[bases(true, false, true), {}], [bases(false, true, true), {}], [bases(true, true, true), {}], [bases(false, false, false), {}],
@@ -191,7 +188,6 @@ describe('a hockey power play, from the feed to the reason', () => {
 		return toLiveScore(scoreLiveGame({ game, history: [], onBreak: false, winProbability: [], now: recorded.ts, extras: extras.contextFor(game, recorded.ts) }, prefs, 0));
 	};
 
-	// The popup reads scores back out of storage, so they go through the same JSON and guard it does.
 	const scoringOpportunityReason = (score: unknown) => {
 		const breakdown = normalizeScores(JSON.parse(JSON.stringify([score])))[0]!.breakdown!;
 		const boost = breakdown.boosts.find(entry => entry.id === 'scoringOpportunity')!;

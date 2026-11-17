@@ -1,5 +1,3 @@
-// Journeys through games as a viewer actually experiences them: a whole slate competing for the
-// tab, a clock winding down period by period, and a feed that revises a score after a review.
 
 import { computePowerScore } from '../src/scorer';
 import { leagueConfigs, scorerTunables, sportTypeConfigMap } from '../src/constants';
@@ -17,8 +15,6 @@ const snapshots = (rows: Array<[number, number]>): ScoreSnapshot[] => (
 const clockLeagues = leagueConfigs.filter(league => sportTypeConfigMap[league.sportType].clockBased);
 const inningLeagues = leagueConfigs.filter(league => !sportTypeConfigMap[league.sportType].clockBased);
 
-// Soccer's feed reports total elapsed time rather than a per-period clock, and count-up sports
-// report elapsed rather than remaining, so a shared walk has to translate for each.
 const clockForElapsed = (league: typeof leagueConfigs[number], period: number, elapsedSecs: number): number => {
 	const config = sportTypeConfigMap[league.sportType];
 	if (!config.clockCountsUp) return league.periodDurationSecs - elapsedSecs;
@@ -28,8 +24,6 @@ const clockForElapsed = (league: typeof leagueConfigs[number], period: number, e
 };
 
 describe('a slate of concurrent games ranks the way a fan would pick', () => {
-	// This is the product: given everything on at once, PowerScore decides which tab the viewer is
-	// looking at. If this ordering inverts, the extension quietly sends people to boring games.
 	const slate = {
 		overtimeThriller: computePowerScore(
 			{
@@ -91,8 +85,6 @@ describe('a slate of concurrent games ranks the way a fan would pick', () => {
 
 	test('orders the live games by how much is at stake, not by how much scoring happened', () => {
 		expect(slate.tiedFinalMinute.total).toBeGreaterThan(slate.closeThirdQuarter.total);
-		// The blowout has the busiest history of the three, and must still finish behind a quiet
-		// one-score game: a 38-point lead is the least watchable thing on the slate.
 		expect(slate.closeThirdQuarter.total).toBeGreaterThan(slate.blowout.total);
 		expect(slate.blowout.total).toBeGreaterThan(slate.openingTip.total);
 	});
@@ -105,9 +97,6 @@ describe('a slate of concurrent games ranks the way a fan would pick', () => {
 });
 
 describe('a score never dips while the game is being played', () => {
-	// A dip makes the extension switch away from a game and back again for no reason the viewer can
-	// see. Every per-signal ramp is monotonic on its own; this walks the composed total across the
-	// period boundaries, which is where a discontinuity would actually show up.
 	test.each(clockLeagues.map(league => [league.id, league] as const))(
 		'%s: a tied game only ever climbs from the opening whistle to the final buzzer',
 		(_id, league) => {
@@ -128,7 +117,6 @@ describe('a score never dips while the game is being played', () => {
 			}
 			const dips = walk.filter((point, index) => index > 0 && point.total < walk[index - 1]!.total);
 			expect(dips).toEqual([]);
-			// It has to actually climb, or a flat zero would satisfy monotonicity trivially.
 			expect(walk[walk.length - 1]!.total).toBeGreaterThan(walk[0]!.total);
 		},
 	);
@@ -156,9 +144,6 @@ describe('a score never dips while the game is being played', () => {
 });
 
 describe('a signal is worth almost nothing by the time it leaves the history window', () => {
-	// historyWindowMs is sized at 4x the longest half-life so a signal fades out rather than being
-	// cut off. Retuning a half-life without the window would put a visible step in the graph at the
-	// moment the oldest snapshot is discarded.
 	test.each(leagueConfigs.map(league => [league.id, league] as const))(
 		'%s: discarding the oldest snapshot moves the total by at most a point or two',
 		(_id, league) => {
@@ -188,9 +173,6 @@ describe('a signal is worth almost nothing by the time it leaves the history win
 });
 
 describe('the feed revises a score after a video review', () => {
-	// ESPN really does send a score backwards: a goal is overturned on review, a touchdown is
-	// reversed, a run is rescored. The scorer reads history as a differential, so a score going
-	// down looks exactly like the other team going on a run.
 	const disallowedGoal = () => computePowerScore(
 		{
 			id: 'game-1', league: 'nhl', sportType: 'hockey',
@@ -198,7 +180,6 @@ describe('the feed revises a score after a video review', () => {
 			awayTeam: { abbreviation: 'MTL', score: 1 },
 			period: 3, clockSeconds: 300, status: 'in',
 		},
-		// Boston led 3-1, then had two goals wiped out on review. Montreal has not scored.
 		snapshots([[3, 1], [3, 1], [1, 1]]),
 	);
 
@@ -210,9 +191,6 @@ describe('the feed revises a score after a video review', () => {
 		expect(disallowedGoal().reason).not.toContain('0-0');
 	});
 
-	// The harder version: the review lands while the other team is genuinely scoring, so the
-	// window holds a real run and a correction at the same time. Read signed, the correction is
-	// added to the run and inflates the tier.
 	const mixedWindow = (rows: Array<[number, number]>) => computePowerScore(
 		{
 			id: 'game-1', league: 'nba', sportType: 'basketball',
@@ -224,27 +202,19 @@ describe('the feed revises a score after a video review', () => {
 	);
 
 	test('scores a mixed window on the points scored, not on the points taken away', () => {
-		// Home scored five while away had four wiped out. That is a five-point run, which basketball
-		// calls a small one; signed, the nine-point swing reads as the biggest run there is.
 		const result = mixedWindow([[100, 100], [100, 100], [105, 96]]);
 		expect(result.momentum).toBe(scorerTunables.scores.momentum.smallRun);
 	});
 
 	test('does not turn one basket plus a correction into a run', () => {
-		// Two points for home, six taken off away. Nobody is rolling.
 		expect(mixedWindow([[100, 100], [100, 100], [102, 94]]).momentum).toBe(0);
 	});
 
 	test('credits the run to the team that scored it', () => {
-		// Away's four came off, so the window is nine unanswered for home.
 		const result = mixedWindow([[100, 100], [100, 100], [109, 96]]);
 		expect(result.reason).toMatch(/^HOM on a 9–0 run\./);
 	});
 
-	// The tie the floor creates. Two teams that both had points taken off come out with equal
-	// floored deltas, and `homeIsRunning` resolves a tie to the away team on nothing but the
-	// comparison operator. Nothing reads that attribution today, because a tie means a run of 0
-	// and every sport needs at least 1 to register. This is the assumption that keeps it unread.
 	test('needs at least a one-point run everywhere, so a tied window is never attributed', () => {
 		for (const config of Object.values(sportTypeConfigMap)) {
 			expect(config.momentumSmallRun).toBeGreaterThanOrEqual(1);
@@ -252,7 +222,6 @@ describe('the feed revises a score after a video review', () => {
 	});
 
 	test('never prints a negative scoreline in the run description', () => {
-		// "HOM outscoring AWY 9--4" is what a signed differential renders.
 		expect(mixedWindow([[100, 100], [100, 100], [109, 96]]).reason).not.toContain('--');
 	});
 });

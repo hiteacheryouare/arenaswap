@@ -4,15 +4,9 @@ import {
 	parseTeamComparison,
 } from '../src/boxScoreParse';
 
-// Every payload below is transcribed off a live ESPN `/summary` response: WSH at SD in the top of
-// the 7th (401816852), NY at SA (401859963), NO at ATL (401772966), CAR at VGK (401874176) and
-// NE at CLB (761758).
-
 const mlbLineScore = {
 	header: {
 		competitions: [{
-			// ESPN put the home team first here. It orders `competitors` by its own field, which is
-			// away-then-home in most sports and reversed in others, so nothing may read position.
 			competitors: [
 				{
 					homeAway: 'home',
@@ -82,7 +76,6 @@ const mlbBoxScore = {
 				},
 			],
 		}],
-		// The nested season-shaped tree baseball sends instead of a comparison table.
 		teams: [{
 			team: { id: '20', abbreviation: 'WSH' },
 			homeAway: 'away',
@@ -96,7 +89,6 @@ const nbaBoxScore = {
 		players: [{
 			team: { id: '18', abbreviation: 'NY' },
 			statistics: [{
-				// Basketball sends one unnamed category holding the whole box score.
 				labels: ['MIN', 'PTS', 'FG', '3PT'],
 				keys: ['minutes', 'points', 'fieldGoalsMade-fieldGoalsAttempted', 'threePointFieldGoalsMade-threePointFieldGoalsAttempted'],
 				descriptions: ['Minutes', 'Points', 'Field Goals Made/Attempted', 'Three Point Field Goals Made/Attempted'],
@@ -150,8 +142,6 @@ describe('parseLineScore', () => {
 		const line = parseLineScore(mlbLineScore, '25', '20', 'SD', 'WSH');
 		expect(line?.periodCount).toBe(7);
 		expect(line?.away.periods).toEqual(['0', '0', '0', '0', '0', '2', '0']);
-		// Bottom of the 7th has not been played. An empty string, not a '0' — a zero would claim
-		// San Diego batted and failed to score.
 		expect(line?.home.periods).toEqual(['1', '0', '2', '0', '0', '0', '']);
 	});
 
@@ -162,7 +152,6 @@ describe('parseLineScore', () => {
 	});
 
 	test('resolves the sides by team id rather than by array position', () => {
-		// The fixture lists the home team first; reading position would swap the two rows.
 		const line = parseLineScore(mlbLineScore, '25', '20', 'SD', 'WSH');
 		expect(line?.away.teamId).toBe('20');
 		expect(line?.home.teamId).toBe('25');
@@ -213,7 +202,6 @@ describe('parseBoxScore player categories', () => {
 		const box = parseBoxScore(mlbBoxScore, '25', '20', 'SD', 'WSH');
 		expect(box.away?.categories[0]!.athletes[0]).toEqual({
 			id: '4918256',
-			// The initialled short name, which is what fits the one name column a 320px popup has.
 			name: 'J. Wood',
 			position: 'RF',
 			stats: ['1-3', '3', '0', '1', '0'],
@@ -247,8 +235,6 @@ describe('parseBoxScore player categories', () => {
 	});
 
 	test('keeps the did-not-play flag when ESPN sends no reason with it', () => {
-		// Both readers branch on the flag rather than the reason: an empty reason is the case where
-		// a truthiness check renders a row of empty stat cells instead of DNP.
 		const box = parseBoxScore({
 			boxscore: { players: [{
 				team: { id: '18' },
@@ -266,8 +252,6 @@ describe('parseBoxScore player categories', () => {
 	});
 
 	test('keeps a category ESPN sends keys for but no display labels', () => {
-		// Columns are selected by `keys` and every heading comes from our own catalog, so a missing
-		// `labels` array costs nothing that would stop the table rendering.
 		const box = parseBoxScore({
 			boxscore: { players: [{
 				team: { id: '18' },
@@ -283,9 +267,6 @@ describe('parseBoxScore player categories', () => {
 	});
 
 	test('places the second side by elimination when only one id matches', () => {
-		// A `players` block carries no `homeAway`, so the id match is its only direct route — and
-		// the id compared is ESPN's competitor id against its team id. Two blocks, one of them
-		// placed, leaves exactly one answer for the other.
 		const box = parseBoxScore({
 			boxscore: { players: [
 				{
@@ -309,8 +290,6 @@ describe('parseBoxScore player categories', () => {
 				team: { id: '18' },
 				statistics: [
 					{ name: 'passing', labels: ['C/ATT'], keys: ['completions/passingAttempts'], totals: ['23/35'], athletes: [{ athlete: { shortName: 'D. Carr' }, stats: ['23/35'] }] },
-					// A phase that never happened, and hockey's `skaters` beside the `forwards` and
-					// `defenses` it duplicates.
 					{ name: 'puntReturns', labels: ['NO', 'YDS'], keys: ['puntReturns', 'puntReturnYards'], totals: [], athletes: [] },
 				],
 			}] },
@@ -355,10 +334,6 @@ describe('parseBoxScore player categories', () => {
 	});
 });
 
-// Containment is asymmetric, which is why these are guards rather than a reliance on the caller:
-// the network path parses inside a `.catch` and degrades to an empty box score, and the demo path
-// parses synchronously in an effect, where a throw reaches the top-level ErrorBoundary and blanks
-// the whole popup.
 describe('parseBoxScore null elements', () => {
 	test('reads a null athlete as a blank row rather than throwing', () => {
 		const box = parseBoxScore({
@@ -454,8 +429,6 @@ describe('parseTeamComparison', () => {
 	});
 
 	test('reads nothing from the nested tree baseball sends instead', () => {
-		// `{ name, displayName, stats: [] }` is a season-shaped tree of ~100 stats, not a
-		// comparison table. The shape is detected rather than the sport being listed.
 		expect(parseTeamComparison(mlbBoxScore, '25', '20')).toEqual([]);
 	});
 

@@ -9,7 +9,6 @@ const deskPopup = (ctx: ShotContext, id = 'main'): PopupPlacement => {
 	return { id, x: popup.x, y: popup.y, scale: popup.scale, opacity: 1 };
 };
 
-// The browser and the popup side by side, held still while the popup does the work.
 const deskShot = (id = 'main', extra: Partial<ShotModule> = {}): ShotModule => ({
 	Component: ({ ctx }) => {
 		const layout = deskLayouts[ctx.format];
@@ -19,7 +18,6 @@ const deskShot = (id = 'main', extra: Partial<ShotModule> = {}): ShotModule => (
 	...extra,
 });
 
-// ─── The popup opens ─────────────────────────────────────────────────────────────────────────
 const PopupOpen = ({ ctx }: { ctx: ShotContext }) => {
 	const solo = soloLayouts[ctx.format];
 	const desk = deskLayouts[ctx.format];
@@ -37,7 +35,6 @@ const popupOpen: ShotModule = {
 		const portrait = ctx.format === 'portrait';
 		return [{
 			id: 'main',
-			// Grows out of the extension button in landscape, rises into place in portrait.
 			x: portrait ? popup.x + (fullWidth - popupWidth * scale) / 2 : popup.x + fullWidth - popupWidth * scale - 40 * (1 - grow),
 			y: popup.y + (portrait ? (1 - grow) * 120 : -(1 - grow) * 18),
 			scale,
@@ -51,10 +48,8 @@ const assign = deskShot();
 const swaps = deskShot();
 const payoff = deskShot();
 
-// The settings popup beside the browser, so the Standby Stream switch it causes is in frame.
 const standby = deskShot('standby');
 
-// ─── Starring Kentucky ───────────────────────────────────────────────────────────────────────
 const starSelector = 'button[data-team-star="true"][aria-label="Remove UK from favorites"], button[data-team-star="true"][aria-label="Add UK to favorites"]';
 
 const favorite = deskShot('main', {

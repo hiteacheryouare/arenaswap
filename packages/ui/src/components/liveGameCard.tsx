@@ -33,16 +33,11 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 	const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
 	const awayFavorited = favoriteTeamIds.has(awayFavoriteTeamKey);
 	const homeFavorited = favoriteTeamIds.has(homeFavoriteTeamKey);
-	// A shootout freezes the main score at the 120-minute scoreline, so without this the card sits
-	// on "1 – 1" while the tie is being decided. Secondary rather than replacing the score, which
-	// everywhere else means goals scored in the match. Shows nothing until both tallies arrive.
 	const homeFirst = isHomeFirst(game);
 	const [leftTeam, rightTeam] = homeFirst ? [game.homeTeam, game.awayTeam] : [game.awayTeam, game.homeTeam];
 	const shootout = leftTeam.shootoutScore !== undefined && rightTeam.shootoutScore !== undefined
 		? t('gameCard.shootout', { away: leftTeam.shootoutScore, home: rightTeam.shootoutScore })
 		: null;
-	// The yard line is what tells you whether the down matters. Falls back to the down and distance
-	// alone when ESPN omits the field position, as it does at halftime and between drives.
 	const downDistanceLine = game.downDistance && game.fieldPosition
 		? t('gameCard.downDistanceAt', { downDistance: game.downDistance, fieldPosition: game.fieldPosition })
 		: game.downDistance;
@@ -99,8 +94,6 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 					{!isInningSport && hasClock && !onBreak && (
 						<span className='game-clock'>{formatGameClock(game)}</span>
 					)}
-					{/* The shootout line already carries the period, so rendering the
-					    period label above it would just say PENS twice. */}
 					{!shootout && (
 						<span className='game-period'>
 							{isInningSport && <InningHalfIcon topOfInning={game.topOfInning} />}

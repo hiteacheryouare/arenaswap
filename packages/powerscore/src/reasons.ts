@@ -10,7 +10,6 @@ type Params = ReasonFragment['params'];
 
 const text = (params: Params, name: string): string => String(params?.[name] ?? '');
 const nth = (params: Params, name: string): string => ordinal(Number(params?.[name] ?? 0));
-// "an 11–2 run", "an 8–0 run", "a 10–0 run".
 const article = (n: string): string => (/^(8|11|18)(\D|$)/.test(n) || /^8\d/.test(n) ? 'an' : 'a');
 const lastMinutes = (params: Params): string => (Number(params?.minutes) === 1 ? 'in the last minute' : `in the last ${text(params, 'minutes')} minutes`);
 
@@ -45,7 +44,6 @@ const stateEnglish = (params: Params): string => {
 	return when ? `${score} ${when}` : score;
 };
 
-// Every key the built-in modes emit. A custom mode's own keys render as themselves.
 export const renderReasonEnglish = ({ key, params }: ReasonFragment): string => {
 	const team = text(params, 'team');
 	const name = text(params, 'name');

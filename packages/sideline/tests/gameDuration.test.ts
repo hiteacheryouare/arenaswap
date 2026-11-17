@@ -1,8 +1,5 @@
 import { parseGameDurationMins } from '../src/apiClient';
 
-// ESPN sends `gameInfo.gameDuration` as hours and minutes — "3:14" — not as a clock time. It is
-// the only field anywhere in the payload that makes an actual finish time knowable, since no
-// endpoint publishes a completion timestamp.
 const withDuration = (gameDuration: unknown) => ({ gameInfo: { gameDuration } });
 
 describe('parseGameDurationMins', () => {
@@ -37,8 +34,6 @@ describe('parseGameDurationMins', () => {
 		expect(parseGameDurationMins(undefined)).toBeNull();
 	});
 
-	// Football, basketball and hockey send no gameDuration, which is why the row it feeds is
-	// absent on those sports rather than blank.
 	test('a payload whose gameInfo omits the key', () => {
 		expect(parseGameDurationMins({ gameInfo: { attendance: 42793 } })).toBeNull();
 	});

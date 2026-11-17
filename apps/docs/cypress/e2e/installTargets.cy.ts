@@ -1,11 +1,3 @@
-// Where the install button sends people, which is the only thing this whole site is for.
-//
-// The detection is an inline script in Shell.astro: it reads the user agent, picks a store, and
-// rewrites the call to action in place. Getting it wrong sends a Firefox visitor to the Chrome Web
-// Store, where there is nothing they can install, and nothing about that page says so. The script
-// runs before anything else on the page, so the agent has to be in place before the document is,
-// which is what `onBeforeLoad` is for.
-
 const chromeWebStore = 'https://chromewebstore.google.com/detail/arenaswap/gibojibgihombdmmfnhnimajppamfeee';
 const firefoxAddons = 'https://addons.mozilla.org/addon/arenaswap/';
 const edgeAddons = 'https://microsoftedge.microsoft.com/addons/detail/arenaswap/oeballpnidkinkcbjokogdgjckdjeeba';
@@ -38,13 +30,9 @@ describe('the install button points at a store the visitor can install from', ()
 		{ name: 'Chrome', pretend: { agent: chromeAgent }, href: chromeWebStore, label: 'Chrome' },
 		{ name: 'Firefox', pretend: { agent: firefoxAgent }, href: firefoxAddons, label: 'Firefox' },
 		{ name: 'Edge', pretend: { agent: edgeAgent }, href: edgeAddons, label: 'Edge' },
-		// The Chromium forks install from the Chrome Web Store but are named for themselves, because
-		// "Add to Chrome" in a Brave window reads as the wrong button.
 		{ name: 'Brave', pretend: { agent: chromeAgent, brave: true }, href: chromeWebStore, label: 'Brave' },
 		{ name: 'Opera', pretend: { agent: operaAgent }, href: chromeWebStore, label: 'Opera' },
 		{ name: 'Vivaldi', pretend: { agent: vivaldiAgent }, href: chromeWebStore, label: 'Vivaldi' },
-		// Anything unrecognised gets the Chrome Web Store, which is the largest catalogue and the
-		// only honest guess.
 		{ name: 'Safari', pretend: { agent: safariAgent }, href: chromeWebStore, label: 'Chrome' },
 	];
 
@@ -52,7 +40,6 @@ describe('the install button points at a store the visitor can install from', ()
 		it(`sends ${name} to the right store, on every call to action on the page`, () => {
 			visitAs('/', pretend);
 
-			// Three of them render on the home page: the navigation bar, the drawer and the hero.
 			cy.get('[data-install-cta]').should('have.length.at.least', 3);
 			cy.get('[data-install-cta]').each($cta => {
 				expect($cta.attr('href'), `${name} call to action target`).to.equal(href);
@@ -61,10 +48,6 @@ describe('the install button points at a store the visitor can install from', ()
 		});
 	});
 
-	// `applyAlternates` fills the two links in document order from a list that is always
-	// [the other two stores], so the name written into each link has to match the store behind it.
-	// A visitor who clicks "Edge" and lands on addons.mozilla.org has been lied to. The home page
-	// offers them twice, under the hero's install button and the closing one.
 	it('names each alternate store after the store it links to', () => {
 		visitAs('/', { agent: chromeAgent });
 
@@ -87,9 +70,6 @@ describe('the install button points at a store the visitor can install from', ()
 		});
 	});
 
-	// The browser name is a proper noun and is not translated, but the sentence around it is, and
-	// several languages do not put the name last. The script substitutes into the locale's own
-	// template rather than concatenating, and this is the only place that is checked.
 	it('writes the browser name into the language of the page', () => {
 		visitAs('/', { agent: firefoxAgent });
 		cy.get('[data-install-cta]').first().invoke('text').then(english => {

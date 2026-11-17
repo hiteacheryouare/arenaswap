@@ -3,9 +3,6 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join, posix } from 'node:path';
 import { defaultLocale, localeCodes, type LocaleCode } from '../i18n/locales.ts';
 
-// File-system view of the translated docs and release notes, shared by the build (sitemap, heading
-// ids) and tests/translations.test.ts. Paths are relative to a collection root and use `/`.
-
 export const translatedLocales = localeCodes.filter(code => code !== defaultLocale);
 
 export const listContentFiles = (root: string, directory = ''): string[] =>
@@ -52,8 +49,6 @@ export const markdownHeadings = (text: string): MarkdownHeading[] => {
 
 const readOriginal = (root: string, originalPath: string) => readFileSync(join(root, originalPath), 'utf8');
 
-// The locale URLs, without the base, whose words are this locale's rather than the English copy:
-// each translated article or release note, and an index page once everything it lists is translated.
 export const translatedPagePaths = (docsRoot: string, releasesRoot: string) => {
 	const pages = new Set<string>();
 

@@ -163,7 +163,6 @@ const mkGame = (id: string, home: number, away: number, clockSeconds: number): G
 
 const thriller = (id: string) => mkGame(id, 100, 100, 20);
 const runaway = (id: string) => mkGame(id, 120, 90, 300);
-// A few points under the default Exciting line, inside the 10 that warm Multiview up.
 const closeBehind = (id: string) => mkGame(id, 100, 96, 200);
 
 const multiviewPrefs: Partial<UserPreferences> = {
@@ -193,7 +192,6 @@ describe('Multiview in the background', () => {
 		await poll();
 
 		expect(tabsCreate).toHaveBeenCalledWith(expect.objectContaining({ url: 'chrome-extension://x/multiview.html', active: false, windowId: 1, index: 2 }));
-		// The frame rule is held to the Multiview tab alone, and is in place before the tab is shown.
 		expect(sessionRules).toHaveBeenCalledWith(expect.objectContaining({
 			addRules: [expect.objectContaining({ id: multiviewTabId, condition: { tabIds: [multiviewTabId], resourceTypes: ['sub_frame'] } })],
 		}));

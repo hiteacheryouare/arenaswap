@@ -1,8 +1,5 @@
 import type { SportType } from '@arenaswap/core/types';
 
-// Baseball and hockey are the only sports ESPN names a starter for, and they are not the same
-// person: a pitcher is the whole shape of the game to come, a goalie is one line of it.
-// `as const` keeps the literals so these stay assignable to i18n.t's key union.
 const starterHeadingKeys = {
 	baseball: 'detail.probablePitchers',
 	softball: 'detail.probablePitchers',
@@ -41,7 +38,6 @@ const leaderLabelKeys = {
 		reboundspergame: 'detail.leaderReboundsPerGame',
 		assistspergame: 'detail.leaderAssistsPerGame',
 	},
-	// Hockey points are goals plus assists, not basketball's points, so they do not share a label.
 	hockey: {
 		goals: 'detail.leaderGoals',
 		assists: 'detail.leaderHockeyAssists',
@@ -57,12 +53,8 @@ const leaderLabelKeys = {
 	},
 } as const satisfies Record<SportType, Record<string, string>>;
 
-// Mapped over SportType rather than indexed by it: `keyof` on a union of the per-sport objects
-// gives the keys they have in common, which is none of them, so the union collapses to never.
 type LeaderLabelKey = { [S in SportType]: typeof leaderLabelKeys[S][keyof typeof leaderLabelKeys[S]] }[SportType];
 
-// A category we have no label for falls back to ESPN's own abbreviation rather than rendering a
-// raw key, so a league that starts sending a new one degrades instead of breaking.
 export const leaderLabelKey = (sportType: SportType | undefined, category: string): LeaderLabelKey | undefined => {
 	const forSport: Partial<Record<string, LeaderLabelKey>> = sportType ? leaderLabelKeys[sportType] : {};
 	return forSport[category];

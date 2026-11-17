@@ -5,20 +5,6 @@ import LegalTranslationNotice from '../../../components/LegalTranslationNotice.a
 import { localeRoutes } from '../../../i18n/locales';
 import { useTranslations } from '../../../i18n/ui';
 
-// The footage in the hero and the Multiview demo is real game footage, which means somebody filmed
-// it. The CC BY clips require attribution, and this page is where that is said out loud.
-//
-// Each clip is a game in a league ArenaSwap tracks: a clip whose game the popup cannot describe has
-// no business in a demo about describing what you are watching. A Mexican League baseball game and a
-// UEFA Nations League match were cut for exactly that reason.
-//
-// Kept as data rather than prose so scripts/docs/fetchHeroClips.sh and this list can be checked
-// against each other by eye.
-//
-// The sport takes a translated label; nothing else here does. A licence is named by its identifier,
-// a venue and a broadcaster by their own names, and a fixture by the two teams playing in it —
-// translating any of those would break the attribution the CC BY licence is asking for.
-
 export const getStaticPaths = localeRoutes;
 
 const { locale } = Astro.props;

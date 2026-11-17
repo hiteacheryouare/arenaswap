@@ -9,22 +9,15 @@ interface multiviewBoxProps {
 	box: MultiviewBoxData;
 	game?: Game;
 	placement: gridPlacement;
-	// Out of sight behind a solo box, still playing.
 	hidden: boolean;
 	onAir: boolean;
-	// Has played at some point since the box opened.
 	played: boolean;
 	audible: boolean;
-	// Its turn to load has come. Until then the box holds its place behind the off-air card.
 	started: boolean;
-	// Its frame has ended up on another box's game.
 	stray: boolean;
-	// The tab has been on screen, which a warm-up's has not.
 	pageShown: boolean;
 }
 
-// How long a box that has never played keeps its card once the tab is on screen before the player
-// is shown anyway, in case it is waiting on a sign-in or a play button.
 const neverPlayedMs = 30_000;
 
 const frameAllow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
@@ -89,7 +82,6 @@ const MultiviewBox = ({ box, game, placement, hidden, onAir, played, audible, st
 		const timer = setTimeout(() => setWaitedOut(true), neverPlayedMs);
 		return () => clearTimeout(timer);
 	}, [started, pageShown]);
-	// Once only, so a site that insists cannot keep the box reloading.
 	if (stray && !reloaded) setReloaded(true);
 	const showPicture = onAir || (waitedOut && !played);
 
@@ -104,7 +96,6 @@ const MultiviewBox = ({ box, game, placement, hidden, onAir, played, audible, st
 		>
 			{game ? <CrestBar game={game} audible={audible} /> : <header className='multiview-bar' />}
 			<div className='multiview-picture'>
-				{/* The user's own logged-in stream, which has to play the way it does in its own tab. Its DRM and sign-in were only ever tried unsandboxed. */}
 				{/* oxlint-disable-next-line react/iframe-missing-sandbox */}
 				{started && <iframe
 					key={reloaded ? 'reloaded' : 'first'}

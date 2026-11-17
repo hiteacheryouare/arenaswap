@@ -6,13 +6,11 @@ interface refreshButtonProps {
 	onRefresh: () => unknown;
 }
 
-// Holds its width while the request runs: the label stays in the flow, hidden, under the spinner.
 const refreshButton = ({ label, className, onRefresh }: refreshButtonProps) => {
 	const [pending, setPending] = useState(false);
 
 	const refresh = async () => {
 		setPending(true);
-		// A refresh that fails again is already on screen as the error state it was pressed from.
 		try {
 			await onRefresh();
 		} catch {

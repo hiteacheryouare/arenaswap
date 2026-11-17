@@ -7,8 +7,6 @@ const t = useTranslations(currentLocale(Astro.currentLocale));
 const base = import.meta.env.BASE_URL;
 const threshold = createDefaultUserPreferences().standbyStreamThreshold;
 
-// Three games on a 0–100 PowerScore scale, drawn into a 1000×300 box. All three sink under the
-// shipped standby line, which is when the standby tab takes over, and the leader climbs back out.
 const height = 300;
 const y = (score: number) => height - (score / 100) * height;
 const thresholdY = y(threshold);
@@ -76,7 +74,6 @@ const standbyTo = 707;
 	</div>
 </section>
 
-<!-- Without script, or with reduced motion, the markup above is the finished chart. -->
 <script>
 	const sweepMs = 6500;
 	const holdMs = 1000;

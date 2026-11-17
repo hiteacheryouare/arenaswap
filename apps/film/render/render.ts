@@ -1,17 +1,3 @@
-// Shoots the films: drives the stage in headless Chrome one frame at a time on a virtual clock, pipes
-// every frame into ffmpeg, and lays the soundtrack under it (the synthesized score when the
-// recording in apps/film/music/ is missing).
-//
-// Run: npm run film -- [options]   (builds first; `npm run film:render -- …` skips the build)
-//   --cut 15,30,60           which cuts (default: all three)
-//   --format landscape,portrait
-//   --locale en              any locale under apps/extension/locales (default: en)
-//   --stills 12.5,23         write PNG stills at these times instead of a video
-//   --jobs 2                 how many renders run at once (default: 2)
-//   --scale 0.5              a smaller, quicker preview (default: 1)
-//   --offline                never fetch a crest the cache does not already hold
-//
-// Output: apps/film/out/ (gitignored)
 import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -52,8 +38,6 @@ const jobs = Math.max(1, Number(option('jobs') ?? 2));
 const offline = args.includes('--offline');
 const scale = Number(option('scale') ?? 1);
 
-// The night starts here on the page's own clock. The stage reads its own time off frame numbers and
-// every popup reads the night off its clock in the cut, so this only has to be the right evening.
 const initialVirtualTime = Date.parse('2026-10-03T23:25:00Z') / 1000;
 
 const formatTag: Record<Format, string> = { landscape: '16x9', portrait: '9x16' };

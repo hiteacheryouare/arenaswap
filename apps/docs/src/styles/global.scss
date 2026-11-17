@@ -1,19 +1,12 @@
-// The site's stylesheet, in load order. `@arenaswap/ui/src/bootstrap` is the theme and forwards
-// Bootstrap itself, so configuring it here is how Bootstrap gets configured.
 @use '@arenaswap/ui/src/bootstrap' as bs with (
-	// The dark side is the site's own, a touch brighter than the popup's on the wider page.
 	$link-hover-color: light-dark(#9a3412, #d44e00),
 );
 @use '@arenaswap/ui/src/icons' with ($font-dir: '/src/fonts');
 @use '@arenaswap/ui/src/game-card';
-// The popup chrome the site's demos are built from. Shared with the extension so the two cannot
-// describe different popups.
 @use '@arenaswap/ui/src/popup';
 @use '@arenaswap/ui/src/fonts' with ($font-base-url: '/src/fonts');
 @use 'site';
 
-// ─── Landing page: bands, hero browser, reading shell ────────────────────────
-// These come last on purpose. See the note at the top of `_site.scss`.
 @use 'bands';
 @use 'browser-hero';
 @use 'step-demos';

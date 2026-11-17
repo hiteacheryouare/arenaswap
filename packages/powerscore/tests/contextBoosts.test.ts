@@ -150,7 +150,6 @@ describe('stakes: a postseason series', () => {
 		expect(seriesStakes(0, 0, 1)).toBe(0);
 	});
 
-	// Rows are home wins, columns away wins. Best-of-nine has no elimination values of its own.
 	test.each([
 		[1, [[0]]],
 		[2, [[0]]],

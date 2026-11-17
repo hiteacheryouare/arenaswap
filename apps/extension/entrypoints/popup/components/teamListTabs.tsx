@@ -14,8 +14,6 @@ const labelFor = (list: teamList): string => (list === 'favorites' ? i18n.t('tea
 
 export const teamListTabId = (list: teamList): string => `teamListTab-${list}`;
 
-// The detail screen's strip and travelling underline. Both tabs show the same picker, so the
-// open one is React state rather than Bootstrap's tab plugin, which wants a pane per tab.
 const teamListTabs = ({ list, panelId, onChange }: teamListTabsProps) => {
 	const listRef = useRef<HTMLUListElement>(null);
 

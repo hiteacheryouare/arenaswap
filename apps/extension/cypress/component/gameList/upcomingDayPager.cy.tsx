@@ -43,8 +43,6 @@ describe('upcomingDayPager', () => {
 		cy.get('@select').should('have.been.calledWith', 1);
 	});
 
-	// The day name comes from toLocaleDateString rather than our locale files, so its length is not
-	// something a string audit can bound. German dates are the longest of the twelve we ship.
 	it('holds the longest plausible day label inside the popup width', () => {
 		mountPager(1, 7, 'Mittwoch, 10. Sept.');
 		cy.get('[data-testid="upcoming-day-pager"]').then(([nav]: JQuery<HTMLElement>) => {
@@ -55,23 +53,17 @@ describe('upcomingDayPager', () => {
 		});
 	});
 
-	// Pagination is the first component in the popup to reach for --as-bg-2, which this theme
-	// never overrode and which is therefore still Bootstrap's light default. Unfixed, an arrow at the
-	// end of the range is an #e9ecef slab on a #0d1117 popup.
 	it('keeps a disabled arrow on the popup background rather than a light default', () => {
 		mountPager(0, 5);
 		cy.get('[data-testid="upcoming-day-previous"]').should('have.css', 'background-color', 'rgb(13, 17, 23)');
 	});
 
-	// Same gap, via --as-bg-1: a focused arrow used to flash #f8f9fa.
 	it('keeps a focused arrow dark', () => {
 		mountPager(2, 5);
 		cy.get('[data-testid="upcoming-day-next"]').click();
 		cy.get('[data-testid="upcoming-day-next"]').should('have.css', 'background-color', 'rgb(22, 27, 34)');
 	});
 
-	// The active page is $primary, and Bootstrap's default active colour is a flat white that only
-	// reaches 3.22:1 on it. The override lives in bootstrap.scss and is easy to lose in a refactor.
 	it('sets the active day label dark enough to read on the primary fill', () => {
 		mountPager(0, 3);
 		cy.get('[data-testid="upcoming-day-label"]').should('have.css', 'color', 'rgb(13, 17, 23)');

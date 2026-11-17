@@ -23,7 +23,6 @@ describe('tabAssignSelect favicons', () => {
 
 		menuItem('Celtics vs 76ers live').find('.tab-favicon.avatar img').should('have.attr', 'src', favicon);
 		menuItem('New Tab').find('.tab-favicon .bi-globe2').should('be.visible');
-		// The icon URL exists but will not load, which is what an internal page's chrome:// icon does.
 		menuItem('Settings').find('.tab-favicon').should('have.attr', 'data-crest-state', 'failed');
 		menuItem('Settings').find('.tab-favicon .bi-globe2').should('be.visible');
 		menuItem('Settings').find('.tab-favicon img').should('not.be.visible');

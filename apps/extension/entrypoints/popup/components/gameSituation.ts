@@ -4,24 +4,17 @@ import type { Game, GoalEvent, LeagueId, RedCardEvent } from '@arenaswap/core/ty
 import { formatBreak, formatGameClock, formatPeriod } from './gameCardShared';
 import { formatDisruption } from '@arenaswap/ui/src/components/gameFormat';
 
-// Injected rather than imported so the resolver stays pure and Jest-testable.
 type Translate = (key: string, subsOrCount?: unknown, subs?: unknown) => string;
 
-// The clock rides separately so only its digits take Lekton, which holds them still while it
-// counts down. The period beside it, an inning or a "Halftime", stays in the body face.
 export interface GameStatus {
 	text: string;
 	clock?: string;
 }
 
-// During an intermission or a delay the period and clock stop meaning anything, so those states
-// say what is actually happening instead — except for the inning sports, where the half-inning
-// change ESPN can report as an intermission is exactly what the inning line already says.
 export const resolveStatus = (game: Game, isInningSport: boolean, t: Translate): GameStatus => {
 	const disruption = formatDisruption(game, t);
 	if (disruption) return { text: disruption };
 	if (game.delayed === true) return { text: game.delayDescription ?? t('gameCard.delayFallback') };
-	// The same token the list card and the Guide print, so a shootout reads "Final/SO" on all three.
 	if (game.status === 'post') {
 		return { text: game.finalPeriodSuffix ? `${t('detail.final')}/${game.finalPeriodSuffix}` : t('detail.final') };
 	}
@@ -40,8 +33,6 @@ export const bonusKind = (side: BasketballTeamSituation, league: LeagueId): 'bon
 	return side.bonus === 'double' && league === 'ncaab' ? 'double' : 'bonus';
 };
 
-// The minute as a match clock prints it: 26:20 played is the 27th minute, and stoppage time rides
-// on the end of the half it was added to.
 export const formatMatchMinute = (event: Pick<RedCardEvent, 'minute' | 'addedMinutes'>, t: Translate): string => {
 	const minute = Math.max(1, Math.ceil(event.minute));
 	return event.addedMinutes
@@ -49,8 +40,6 @@ export const formatMatchMinute = (event: Pick<RedCardEvent, 'minute' | 'addedMin
 		: t('detail.matchMinute', { minute });
 };
 
-// One line per scorer, their goals in order: "Barry 56', 61'". An own goal is listed under the team
-// it counted for, so it keeps its own line apart from anything the same player scored at the right end.
 export const describeScorers = (goals: readonly GoalEvent[], t: Translate): string[] => {
 	const lines = new Map<string, { player?: string; minutes: string[] }>();
 	for (const goal of goals) {
@@ -66,7 +55,6 @@ export const describeScorers = (goals: readonly GoalEvent[], t: Translate): stri
 	return [...lines.values()].map(({ player, minutes }) => [player, minutes.join(', ')].filter(Boolean).join(' '));
 };
 
-// Built here rather than taken from our sources' sentence, which only ever arrives in English.
 export const describeRedCard = (card: RedCardEvent, game: Game, t: Translate): string => {
 	const team = card.teamId === game.homeTeam.id ? game.homeTeam : card.teamId === game.awayTeam.id ? game.awayTeam : undefined;
 	const teamName = team ? team.name || team.abbreviation : '';

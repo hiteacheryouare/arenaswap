@@ -1,5 +1,3 @@
-// ArenaSwap's own palette rather than a generic Christmas red and green — these are the five
-// PowerScore colours, which happen to read as a string of bulbs.
 const bulbColors = ['#d90368', '#00cc66', '#3e9bd1', '#f1c40f', '#f75c03'];
 
 const bulbCount = 9;
@@ -9,16 +7,12 @@ const swagSpan = stringWidth / bulbCount;
 const swagDip = 8;
 const pinY = 2;
 
-// One sagging swag between each pair of pins. A quadratic with its control point at twice the dip
-// passes through the dip itself, which is where the bulb hangs.
 const wirePath = Array.from({ length: bulbCount }, (_, i) => {
 	const startX = i * swagSpan;
 	return `M ${startX} ${pinY} Q ${startX + swagSpan / 2} ${pinY + swagDip * 2} ${startX + swagSpan} ${pinY}`;
 }).join(' ');
 
 interface holidayLightsProps {
-	// Set while a team the user follows has just scored. The string takes that team's colours and
-	// picks up the pace, which is the confetti's job done by the only decoration on this screen.
 	flashColors?: string[] | null;
 }
 

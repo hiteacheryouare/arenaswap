@@ -48,14 +48,12 @@ export const useLudicrousCanvas = (
 
 		const step = () => {
 			const phase = phaseRef.current;
-			// Slower coming down than going up. The ship has to be seen to come off its speed.
 			const lerp = phase === 'stopping' ? 0.028 : 0.04;
 			current += (speedRef.current - current) * lerp;
 
 			drawRef.current(ctx, { w, h, speed: current, phase, frame });
 			frame += 1;
 
-			// Parks the loop once nothing is moving. Closing is the script's job, not this one's.
 			if (phase === 'stopping' && current < 0.006) return;
 			raf = requestAnimationFrame(step);
 		};

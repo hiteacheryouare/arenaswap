@@ -22,13 +22,6 @@ const resultLetterKeys = {
 
 const hourMs = 3600_000;
 
-// Elapsed hours rather than calendar days, because a calendar day is the viewer's and not the
-// venue's: in Europe a 7:30pm Eastern tip lands after midnight and splits a back-to-back across
-// two dates. Anything under 36 hours is consecutive days at the venue, matinee or not. Past a week
-// it is a break, and rest stops being the story.
-//
-// Only for a game starting soon. The last five are games already played, so a game further out
-// may have another one before it that the list cannot know about yet.
 export const restPhrase = (lastPlayed: string | undefined, startTime: string | undefined, now = Date.now()): string | null => {
 	if (!lastPlayed || !startTime) return null;
 	const start = Date.parse(startTime);

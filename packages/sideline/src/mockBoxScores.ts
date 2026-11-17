@@ -1,12 +1,3 @@
-// Demo-mode box scores, shaped exactly like ESPN's `/summary` payload so the mock path runs
-// through `parseBoxScore` rather than around it. A fabricated parsed object would let the parser
-// and the screen drift apart without any test noticing.
-//
-// Five games, one per sport we ship a live demo game for, so every table on this screen — the
-// R-H-E line, both clock-sport line scores, all four category shapes and the team comparison — is
-// reachable in September without waiting on a real slate. A sixth covers the finished game, whose
-// line score has to read as a completed one rather than as a live game's.
-
 interface mockRow {
 	name: string;
 	position?: string;
@@ -55,7 +46,6 @@ const teamStats = (id: string, side: 'home' | 'away', stats: [string, string, st
 	statistics: stats.map(([name, label, displayValue]) => ({ name, label, displayValue })),
 });
 
-// ── mock-2 · NBA · CHI 65 @ PHI 68, third quarter ─────────────────────────────
 const basketballKeys = [
 	'minutes', 'points', 'rebounds', 'assists',
 	'fieldGoalsMade-fieldGoalsAttempted', 'threePointFieldGoalsMade-threePointFieldGoalsAttempted',
@@ -125,7 +115,6 @@ const basketball = {
 	},
 };
 
-// ── mock-4 · MLB · NYM 2 @ PHI 3, top of the eighth ──────────────────────────
 const battingKeys = ['hits-atBats', 'atBats', 'runs', 'hits', 'RBIs', 'homeRuns', 'walks', 'strikeouts'];
 const battingLabels = ['H-AB', 'AB', 'R', 'H', 'RBI', 'HR', 'BB', 'K'];
 const pitchingKeys = ['fullInnings.partInnings', 'hits', 'runs', 'earnedRuns', 'walks', 'strikeouts'];
@@ -143,7 +132,6 @@ const baseball = {
 			{ displayValue: '0', hits: 0, errors: 0 },
 			{ displayValue: '0', hits: 1, errors: 0 },
 		]),
-		// One entry short, because the bottom of the eighth has not been played.
 		competitor('home', '22', 'PHI', '3', [
 			{ displayValue: '1', hits: 2, errors: 0 },
 			{ displayValue: '0', hits: 0, errors: 0 },
@@ -198,8 +186,6 @@ const baseball = {
 				],
 			},
 		],
-		// Baseball's nested season-shaped tree, which the comparison table correctly reads nothing
-		// from — the R-H-E above is already the team line.
 		teams: [
 			{ team: { id: '21' }, homeAway: 'away', statistics: [{ name: 'batting', displayName: 'Batting', stats: [{ name: 'atBats', displayValue: '29' }] }] },
 			{ team: { id: '22' }, homeAway: 'home', statistics: [{ name: 'batting', displayName: 'Batting', stats: [{ name: 'atBats', displayValue: '29' }] }] },
@@ -207,10 +193,6 @@ const baseball = {
 	},
 };
 
-// ── mock-20 · MLB · NYM 2 @ PHI 3, final in ten innings ──────────────────────
-// The one finished demo game, and it needs its own line score: the fixture above stops in the top
-// of the eighth, so borrowing it drew Final/10 over an eight-inning card with a blank bottom of
-// the 8th. Both rows run the full ten here, and every total sums to what the row above it says.
 const baseballFinal = {
 	header: { competitions: [{ competitors: [
 		competitor('away', '21', 'NYM', '2', [
@@ -225,8 +207,6 @@ const baseballFinal = {
 			{ displayValue: '0', hits: 0, errors: 0 },
 			{ displayValue: '0', hits: 1, errors: 0 },
 		]),
-		// The home side bats in the bottom of the tenth and the winning run ends it, so both rows
-		// are the same length rather than the away side running one half-inning long.
 		competitor('home', '22', 'PHI', '3', [
 			{ displayValue: '1', hits: 2, errors: 0 },
 			{ displayValue: '0', hits: 0, errors: 0 },
@@ -294,7 +274,6 @@ const baseballFinal = {
 	},
 };
 
-// ── mock-5 · NFL · DAL 14 @ PHI 17, fourth quarter ───────────────────────────
 const passingKeys = ['completions/passingAttempts', 'passingYards', 'yardsPerPassAttempt', 'passingTouchdowns', 'interceptions', 'sacks-sackYardsLost'];
 const passingLabels = ['C/ATT', 'YDS', 'AVG', 'TD', 'INT', 'SACKS'];
 const rushingKeys = ['rushingAttempts', 'rushingYards', 'yardsPerRushAttempt', 'rushingTouchdowns', 'longRushing'];
@@ -330,7 +309,6 @@ const football = {
 						{ name: 'Jake Ferguson', stats: ['4', '38', '9.5', '0', '14', '5'] },
 						{ name: 'Javonte Williams', stats: ['3', '18', '6.0', '0', '9', '3'] },
 					]),
-					// Eight rows against a cap of six, so the expander is reachable in demo mode.
 					category('defensive', defensiveKeys, defensiveLabels, [
 						{ name: 'DaRon Bland', stats: ['9', '7', '0', '1', '2', '0'] },
 						{ name: 'Micah Parsons', stats: ['7', '5', '1.5', '3', '1', '0'] },
@@ -399,7 +377,6 @@ const football = {
 	},
 };
 
-// ── mock-3 · NHL · PIT 1 @ PHI 2, third period ───────────────────────────────
 const skaterKeys = ['goals', 'assists', 'plusMinus', 'shotsTotal', 'penaltyMinutes', 'timeOnIce'];
 const skaterLabels = ['G', 'A', '+/-', 'S', 'PIM', 'TOI'];
 const goalieKeys = ['goalsAgainst', 'shotsAgainst', 'saves', 'savePct', 'timeOnIce'];
@@ -425,13 +402,9 @@ const hockey = {
 						{ name: 'K. Letang', position: 'D', stats: ['0', '1', '0', '3', '0', '21:33'] },
 						{ name: 'M. Pettersson', position: 'D', stats: ['0', '0', '-1', '1', '2', '19:47'] },
 					]),
-					// Sent empty in every game sampled; kept here so the dedupe guard has nothing
-					// to trip over and the parser drops it.
 					category('skaters', skaterKeys, skaterLabels, []),
 					category('goalies', goalieKeys, goalieLabels, [
 						{ name: 'T. Jarry', position: 'G', stats: ['2', '24', '22', '.917', '48:12'] },
-						// The backup, all zeros: filtered out by the time-on-ice rule rather than
-						// rendering a .000 save percentage.
 						{ name: 'J. Blomqvist', position: 'G', stats: ['0', '0', '0', '.000', '0:00'] },
 					]),
 				],
@@ -480,10 +453,6 @@ const hockey = {
 	},
 };
 
-// ── mock-9 · MLS · NYR 1 @ PHI 2, second half ────────────────────────────────
-// No `boxscore.players` at all, which is what soccer really sends. The comparison table is the
-// whole box score here, and a 1-2 with these numbers is exactly the kind of match it has to speak
-// for on its own.
 const soccer = {
 	header: { competitions: [{ competitors: [
 		competitor('away', '190', 'NYR', '1', [{ displayValue: '1' }, { displayValue: '0' }]),

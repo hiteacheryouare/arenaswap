@@ -1,8 +1,6 @@
 import { Fragment, useState } from 'react';
 import type { BroadcastLogo, Game } from '@arenaswap/core/types';
 
-// What the list is drawn on. A team colour is dark under its scrim, but a colourful mark like a
-// red wordmark disappears into a red team, so only the white artwork made for a dark ground is used there.
 export type NetworkSurface = 'dark' | 'light' | 'team';
 
 const logoFor = (logos: BroadcastLogo | undefined, surface: NetworkSurface): string | undefined => {

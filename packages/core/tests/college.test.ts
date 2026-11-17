@@ -157,7 +157,6 @@ describe('passesCollegeFilter', () => {
 
 	test('without a directory, a conference filter in a league that needs one lets everything through', () => {
 		expect(passesCollegeFilter(game('cbase', { id: 'x' }, { id: 'y' }), filter({ conferences: ['58'] }), undefined, false)).toBe(true);
-		// Football carries its own conference ids, so it has no reason to give up.
 		expect(passesCollegeFilter(game('ncaaf', { id: 'x', conferenceId: '1' }, { id: 'y' }), filter({ conferences: ['8'] }), undefined, false)).toBe(false);
 	});
 
@@ -192,7 +191,6 @@ describe('picker helpers', () => {
 
 describe('conference crests', () => {
 	test('a crest is found by name, never by a non-football id', () => {
-		// Basketball's SEC is 23 and its 8 is the Big 12, so the slug is what points at the right art.
 		const slug = conferenceCrestSlug('ncaab', 'SEC', 'https://a.espncdn.com/i/teamlogos/ncaa_conf/500/sec.png');
 		expect(slug).toBe('sec');
 		expect(resolveConferenceCrest(slug, 'light')).toEqual({
@@ -223,7 +221,6 @@ describe('conference crests', () => {
 		expect(resolveConferenceCrest(undefined, 'dark')).toEqual({ drawnForDark: false });
 	});
 
-	// Checked against the crest files for every conference playing on 2026-11-07.
 	test('a scoreboard conference name finds its crest file', () => {
 		expect(conferenceSlugFromName('Big 12')).toBe('big_12');
 		expect(conferenceSlugFromName('Pac-12')).toBe('pac_12');
@@ -242,7 +239,6 @@ describe('the title rounds', () => {
 		expect(passesCollegeFilter(eliteEight, bigTenOnly, undefined, false)).toBe(false);
 	});
 
-	// In March the rank field holds the seed, and every team in the field has one.
 	test('Top 25 ignores a seed, and still trusts a bowl\'s poll rank', () => {
 		const rankedOnly = filter({ ranked: true });
 		const sixteenSeeds = game('ncaab', { id: 'a', rank: 16 }, { id: 'b', rank: 1 }, { collegeSeeded: true });

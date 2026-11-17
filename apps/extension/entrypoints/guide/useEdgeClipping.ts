@@ -1,10 +1,6 @@
 import { useEffect, useLayoutEffect, type RefObject } from 'react';
 import { gutterPx } from './guideLayout';
 
-// What CSS cannot tell on its own: whether a pinned label still fits inside its bar, and whether an
-// hour label is half under the league column or half off the end of the scroll. Both are only ever
-// true at the edges of the viewport, so this reads every box first and writes every flag after, once
-// a frame, rather than re-rendering thirty bars on each scroll event.
 const sync = (canvas: HTMLElement) => {
 	const scroller = canvas.parentElement;
 	if (!scroller) return;
@@ -29,7 +25,6 @@ const sync = (canvas: HTMLElement) => {
 };
 
 const useEdgeClipping = (canvasRef: RefObject<HTMLElement | null>) => {
-	// Every render, since a poll can move a bar's end or change what its label says.
 	useLayoutEffect(() => {
 		if (canvasRef.current) sync(canvasRef.current);
 	});

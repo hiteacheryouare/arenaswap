@@ -1,7 +1,5 @@
 import { findLocale, type LocaleCode } from '../../i18n/locales';
 
-// The demos mock pieces of the popup the site cannot import, so they read the extension's own
-// strings by key, in the reader's language, and say exactly what the extension says.
 const bundles = import.meta.glob<Record<string, unknown>>('../../../../extension/locales/*.json', { eager: true, import: 'default' });
 
 const bundleFor = (locale: LocaleCode) => bundles[`../../../../extension/locales/${findLocale(locale).extensionCode}.json`]!;
@@ -24,7 +22,6 @@ export type DemoStringKey = string;
 
 export type DemoTranslator = (key: DemoStringKey, subs?: Record<string, string | number>) => string;
 
-// `{name}` placeholders by name; a `$1`-style one is passed as `{ $1: value }`.
 export const demoTranslator = (locale: LocaleCode): DemoTranslator => (key, subs = {}) => {
 	const template = lookup(bundleFor(locale), key);
 	if (typeof template !== 'string') throw new Error(`Missing extension string for a docs demo: ${locale} ${key}`);
@@ -34,11 +31,9 @@ export const demoTranslator = (locale: LocaleCode): DemoTranslator => (key, subs
 	);
 };
 
-// The demo game's switch reason, built the way the extension builds it.
 export const tiedReason = (demoText: DemoTranslator) => demoText('powerScore.reasonJoinWhen', {
 	sentence: demoText('powerScore.reasonScoreTied'),
 	when: demoText('powerScore.reasonWhenClock', { clock: '2:10' }),
 });
 
-// The flat map the shared @arenaswap/ui components read, for the React demos.
 export const demoUiStrings = (locale: LocaleCode) => flatten(bundleFor(locale));

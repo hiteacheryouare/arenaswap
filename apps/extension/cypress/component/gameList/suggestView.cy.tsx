@@ -3,7 +3,6 @@ import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
 import fil from '../../../locales/fil.json';
 import fr from '../../../locales/fr.json';
-// Not `it` — that would shadow Mocha's global it() and break every test in this file.
 import itLocale from '../../../locales/it.json';
 import ja from '../../../locales/ja.json';
 import ko from '../../../locales/ko.json';
@@ -15,8 +14,6 @@ import SuggestView from '../../../entrypoints/popup/components/suggestView';
 import type { Game } from '@arenaswap/core/types';
 import type { TabSuggestion } from '../../../utils/tabSuggestions';
 
-// A 4x4 solid #008348 PNG. A data URI so the test needs no network and cannot taint the canvas on
-// its own — what it is proving is that a crest is readable back off the page at all.
 const greenCrest = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAD0lEQVR4nGNgaPZAIOI4AEWjDLFo9OSUAAAAAElFTkSuQmCC';
 
 const channelsOf = (color: string): number[] => (
@@ -97,7 +94,6 @@ describe('suggestView', () => {
 			{ tabId: 2, gameId: 'g1', score: 61, preChecked: true },
 		];
 		cy.mount(<SuggestView {...defaultProps} suggestions={twoForOne} />);
-		// Only the stronger row may hold the game on mount.
 		cy.get('#suggest-1\\:g1').should('be.checked');
 		cy.get('#suggest-2\\:g1').should('not.be.checked');
 
@@ -127,9 +123,6 @@ describe('suggestView', () => {
 
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
 
-// The two crests in a row sit on the popup's #0d1117, where a navy or black mark is a silhouette.
-// The white disc is the only thing separating them from it, so its plate is measured rather than
-// trusted to the stylesheet — a disc that resolves to the surface behind it is the whole defect.
 describe('suggestView crest discs', () => {
 	beforeEach(() => cy.viewport(320, 560));
 
@@ -161,8 +154,6 @@ describe('suggestView crest discs', () => {
 		});
 	});
 
-	// The disc grows around the mark rather than squeezing it: at this size a crest shrunk to fit
-	// inside its old footprint is a smaller crest than the one that was already hard to read.
 	it('leaves the crest the size it was and rings it', () => {
 		cy.mount(<SuggestView {...withCrests} />);
 		cy.get('.suggest-crest').first().should(([crest]: JQuery<HTMLElement>) => {
@@ -175,8 +166,6 @@ describe('suggestView crest discs', () => {
 		});
 	});
 
-	// The placeholder is the shared grey circle, which on a white plate would read as a hole rather
-	// than as a crest still loading.
 	it('drops the grey placeholder inside the plate', () => {
 		cy.mount(<SuggestView {...defaultProps} />);
 		cy.get('.suggest-crest').first()
@@ -193,8 +182,6 @@ describe('suggestView crest discs', () => {
 });
 
 describe('suggestView locale widths', () => {
-	// The apply button spans the popup and must not wrap: a two-line primary button pushes the row
-	// list up and reads as a layout bug rather than a long word.
 	it('fits every locale apply label on one line', () => {
 		cy.viewport(320, 560);
 		cy.mount(<SuggestView {...defaultProps} />);

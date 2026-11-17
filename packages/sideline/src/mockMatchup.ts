@@ -1,6 +1,3 @@
-// Demo-mode `/summary` blocks for the pre-game demo games, shaped like the real response so the
-// Matchup tab runs the same parser it does live. Only the four blocks it reads are here.
-
 const logo = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
 const shot = (path: string) => `https://a.espncdn.com/i/headshots/${path}.png`;
 

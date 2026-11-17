@@ -10,7 +10,6 @@ interface harnessProps {
 	onSaved?: (scoring: UserPreferences['fantasyScoring']) => void;
 }
 
-// Settings applies the same two helpers app.tsx does, so what is saved here is what would be stored.
 const Harness = ({ initial = {}, sport = 'football', onSaved }: harnessProps) => {
 	const [scoring, setScoring] = useState(initial);
 	const save = (next: UserPreferences['fantasyScoring']) => {

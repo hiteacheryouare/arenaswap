@@ -1,28 +1,16 @@
 import { isObjectRecord } from './typeGuards';
 import type { Game, LeagueId } from './types';
 
-// Leagues whose scoreboard carries the home side's win probability on a live game, checked against
-// recorded live feeds: it agrees with the last entry of the summary's line. In these the line is
-// built from our own polls instead of the summary's history. Basketball sends it too but is left
-// out, because its summary also carries the box score's lead-change count, so nothing would be
-// saved. College basketball and the UFL had no live game to check.
 export const scoreboardWinProbabilityLeagues: ReadonlySet<LeagueId> = new Set<LeagueId>(['nfl', 'ncaaf']);
 
-// The summary's line has one entry per play, and a poll that lands between plays reads the same
-// play again, so one reading is kept per play. That keeps the average weighted the way the
-// summary's was. A football game runs to about 200 plays and a basketball game to about 500.
 const maxReadingsPerGame = 600;
 
 export interface SummaryNeeds {
-	// The scoreboard is giving this game a win probability right now.
 	hasScoreboardReadings: boolean;
-	// The summary's line for this game is already in hand, closing line and all.
 	hasSummaryLine: boolean;
 	hasRosteredPlayer: boolean;
 }
 
-// The summary also carries the closing line, the box score behind the fantasy points, and
-// basketball's running lead-change count, so it is only dropped once none of them still need it.
 export const summaryStillNeeded = (game: Pick<Game, 'league' | 'sportType'>, needs: SummaryNeeds): boolean => (
 	!scoreboardWinProbabilityLeagues.has(game.league)
 	|| !needs.hasScoreboardReadings
@@ -35,7 +23,6 @@ export const createWinProbabilityTracker = () => {
 	const readings = new Map<string, number[]>();
 	const lastPlayIds = new Map<string, string>();
 
-	// Without a play id on either side, a reading that matches the last one is taken as the same play.
 	const isSamePlay = (game: Game, line: number[]): boolean => {
 		const previousPlayId = lastPlayIds.get(game.id);
 		if (game.lastPlayId !== undefined && previousPlayId !== undefined) return game.lastPlayId === previousPlayId;
@@ -57,8 +44,6 @@ export const createWinProbabilityTracker = () => {
 
 	const historyOf = (gameId: string): number[] | undefined => readings.get(gameId);
 
-	// The summary's line goes back to the first play, which a tracker started mid-game never saw.
-	// A game with no readings of its own stays untracked, so the summary line keeps its own slot.
 	const adopt = (gameId: string, summaryLine: readonly number[]) => {
 		const own = readings.get(gameId);
 		if (!own || summaryLine.length <= own.length) return;

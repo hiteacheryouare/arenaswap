@@ -3,8 +3,6 @@ import SettingTooltipIcon from '../../../entrypoints/popup/components/settingToo
 const explainer = 'Minimum seconds between automatic switches.';
 
 describe('settingTooltipIcon', () => {
-	// Bootstrap hangs the explainer on the button as its description, so naming the button with the
-	// explainer too had screen readers read it twice.
 	it('names the button after its setting, not its explainer', () => {
 		cy.mount(<SettingTooltipIcon text={explainer} label='Switch cooldown' />);
 		cy.get('.setting-tooltip-btn').should('have.attr', 'aria-label', 'About Switch cooldown');

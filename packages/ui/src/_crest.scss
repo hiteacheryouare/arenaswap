@@ -1,9 +1,4 @@
 @layer custom {
-	// A crest is a Bootstrap avatar: the box is the placeholder disc, with the initials as its text, and
-	// the logo sits over it as an `.avatar-img`. Size, colours and the disc's shape are the avatar
-	// tokens. The logo takes `--crest-logo-radius`, square by default, since a circle would shave the
-	// corners off most transparent artwork.
-	//
 	// A size container, so the initials scale off the box itself. Bootstrap's own
 	// `calc(var(--avatar-size) * .4)` breaks on the many crests sized in `%` or `em`.
 	.crest {
@@ -31,7 +26,6 @@
 		border-radius: var(--crest-logo-radius);
 	}
 
-	// Clear rather than faded, so transparent artwork never shows the disc through it.
 	.crest[data-crest-state='loaded'] {
 		border-radius:    var(--crest-logo-radius);
 		background-color: transparent;
@@ -39,15 +33,11 @@
 		> :not(img) { display: none; }
 	}
 
-	// A disc on a side painted in the team's own colour would vanish into it, so a call site there sets
-	// `--crest-wash` to a light gradient.
 	.crest:not([data-crest-state='loaded']) { background-image: var(--crest-wash, none); }
 
 	[data-crest-state='failed']  > img,
 	[data-crest-state='missing'] > img { display: none; }
 
-	// A crest whose treatment is decided by measuring its own pixels paints nothing until the artwork
-	// it asked for is the artwork that loaded: an image appears a frame or more ahead of the verdict.
 	// `visibility` rather than `display`, which would leave a lazy image no box to scroll into.
 	[data-crest-verdict]:not([data-crest-state='loaded']) > img { visibility: hidden; }
 }

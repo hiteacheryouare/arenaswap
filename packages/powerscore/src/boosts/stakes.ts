@@ -6,7 +6,6 @@ const decisiveValue: Record<number, number> = { 7: 10, 5: 9, 3: 8 };
 
 const seriesKey = (bestOf: number, leader: number, trailer: number): number => (bestOf << 8) | (leader << 4) | trailer;
 
-// Keyed by series length, then the leader's wins, then the wins of the team facing elimination.
 const eliminationValue: Record<number, number> = {
 	[seriesKey(7, 3, 2)]: 7,
 	[seriesKey(7, 3, 1)]: 5,
@@ -28,7 +27,6 @@ const seriesStakes = (series: SeriesState): number => {
 	return eliminationValue[seriesKey(series.bestOf, leader, trailer)] ?? 4;
 };
 
-// The scoreboard already shows the series record, so this says only what the game decides.
 const seriesDetail = (game: Game<string>, series: SeriesState): ReasonFragment => {
 	if (series.homeWins === series.awayWins) return { key: 'seriesDecider', params: { game: series.homeWins + series.awayWins + 1 } };
 	const leader = teamOf(game, series.homeWins > series.awayWins ? 'home' : 'away');
@@ -60,7 +58,6 @@ const raceKeys: Record<NonNullable<TeamStakes['nearLine']>, string> = {
 	other: 'raceLine',
 };
 
-// Says the flag that earned the team's race value, the biggest one first.
 const raceDetail = (game: Game<string>, side: Side, stakes: TeamStakes): ReasonFragment | undefined => {
 	const team = teamOf(game, side).abbreviation ?? '?';
 	if (stakes.nearLine === 'title' || stakes.nearLine === 'relegation') return { key: raceKeys[stakes.nearLine], params: { team } };
@@ -71,9 +68,6 @@ const raceDetail = (game: Game<string>, side: Side, stakes: TeamStakes): ReasonF
 	return undefined;
 };
 
-// What the result decides: a postseason series on the brink, or in the regular season a meeting of
-// ranked teams and a late-season race. Kept apart by season so it never double-counts the
-// postseason boost. Gated on the margin: a decided Game 7 has nothing left to decide.
 export const stakesBoost: BoostDefinition = {
 	id: 'stakes',
 	bucket: 'context',

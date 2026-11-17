@@ -4,7 +4,6 @@ import FlowStepper from './flowStepper';
 import focusStepTitle from './stepTitleFocus';
 
 interface multiviewGuideProps {
-	// Starts the browser's permission prompt, so it has to run inside the click on Continue.
 	onAllow: () => void;
 	onNotNow: () => void;
 }
@@ -21,7 +20,6 @@ const teamColors = (matchup: keyof typeof matchups) => ({
 	'--guide-ground': matchups[matchup].ground,
 }) as CSSProperties;
 
-// Two games in the list get more exciting, then become Multiview's two boxes.
 const StoryMockup = () => (
 	<div className='multiview-guide-story' aria-hidden='true'>
 		<div className='multiview-guide-story-popup' />
@@ -37,7 +35,6 @@ const StoryMockup = () => (
 	</div>
 );
 
-// The screen itself: two boxes, a third joins, and the new leader takes the big one.
 const GridMockup = () => (
 	<div className='multiview-guide-grid' aria-hidden='true'>
 		{(['a', 'b', 'c'] as const).map(matchup => (

@@ -51,7 +51,6 @@ const weekdayPrefs = prefsWith({ enabledLeagues: ['nba'], sensitivity: 2 });
 const weekendPrefs = prefsWith({ enabledLeagues: ['nfl', 'nhl'], favoriteTeamIds: ['nfl:21'], scoringMode: 'fantasy' });
 const roster = [{ league: 'nfl' as const, athleteId: '3139477', name: 'Patrick Mahomes', teamId: '12', position: 'QB' as const }];
 
-// Both stores, the way the popup saves: whatever is in use right now.
 const seedLive = (fake: fakeBrowser, prefs: UserPreferences, fantasyRoster: unknown[] = []) => {
 	for (const area of [fake.areas.sync, fake.areas.local]) {
 		area.set('prefs', prefs);
@@ -83,7 +82,6 @@ describe('profiles', () => {
 		expect(created.activeId).toBe(weekend.id);
 		expect(await loadStoredUserPreferences()).toEqual(weekdayPrefs);
 
-		// Edited while in use, the way the popup saves a setting.
 		seedLive(fake, weekendPrefs, roster);
 		await switchProfile('main');
 		expect(await loadStoredUserPreferences()).toEqual(weekdayPrefs);
@@ -148,7 +146,6 @@ describe('profiles', () => {
 	test('follows a switch made in another browser, setting its own profile aside first', async () => {
 		const desktop = installBrowser();
 		seedLive(desktop, weekdayPrefs);
-		// The laptop switched to Weekend: its setup and name arrive through sync.
 		desktop.areas.sync.set('prefs', weekendPrefs);
 		desktop.areas.sync.set('prefsUpdatedAt', 0);
 		desktop.areas.sync.set('fantasyRoster', roster);
@@ -158,15 +155,12 @@ describe('profiles', () => {
 			profiles: [{ id: 'main', name: 'main' }, { id: 'w1', name: 'Weekend' }],
 			activeId: 'w1',
 		});
-		// The synced copy wins even though its clock reads older.
 		expect(await loadStoredUserPreferences()).toEqual(weekendPrefs);
 		expect(await loadFantasyRoster()).toEqual(roster);
 		expect((await loadProfileSetup('main')).prefs).toEqual(weekdayPrefs);
 		expect(await followSyncedProfile()).toEqual(await loadProfiles());
 	});
 
-	// Laptop edits main, then switches to Weekend. The desktop never saw that edit, so the main it sets
-	// aside is older, and switching back to it there must not overwrite the laptop's newer copy.
 	test('a stale copy of a profile loses to the newer one set aside in another browser', async () => {
 		const laptop = installBrowser();
 		seedLive(laptop, weekdayPrefs);
@@ -175,7 +169,6 @@ describe('profiles', () => {
 		const { activeId: weekendId } = await createProfile('Weekend', { prefs: weekendPrefs, fantasyRoster: [] });
 		expect(laptop.areas.local.get('profileSetups')).toHaveProperty(['main', 'updatedAt'], 50);
 
-		// The desktop's main arrives through sync with the older time it was last edited.
 		laptop.areas.sync.set('prefs', prefsWith({ enabledLeagues: ['mlb'] }));
 		laptop.areas.sync.set('prefsUpdatedAt', 10);
 		laptop.areas.sync.set('fantasyRosterUpdatedAt', 10);

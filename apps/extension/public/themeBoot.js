@@ -1,5 +1,3 @@
-// A plain blocking script, so a light page never opens dark for a frame. Mirrors utils/theme.ts,
-// and tests/theme.test.ts holds the two to the same answer.
 (() => {
 	const preference = localStorage.getItem('arenaswap.theme');
 	const light = preference === 'light'

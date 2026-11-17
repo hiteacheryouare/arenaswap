@@ -10,8 +10,6 @@ const secondMs = 1_000;
 
 const StaleLeaguesContext = createContext<StaleLeagueMinutes>({});
 
-// One clock for every card, running only while some league is not answering. A site demo or a
-// test that mounts a card without this provider simply never has a stale league.
 export const StaleLeaguesProvider = ({ shedLeagues, lastGoodAt, children }: {
 	shedLeagues: LeagueId[] | undefined;
 	lastGoodAt: LeagueLastGoodAt | undefined;

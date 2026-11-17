@@ -40,9 +40,6 @@ export const tabSuggestionWeights = {
 	minLeadingTokenLength: 4,
 } as const;
 
-// Club-form and place-qualifier words that identify nothing on their own. Unlike a streaming-domain
-// or team-nickname list, this one tracks language rather than the outside world, so it does not grow
-// when a league adds a team or a new site launches.
 const genericTokens = new Set([
 	'fc', 'cf', 'sc', 'ac', 'afc', 'club', 'deportivo', 'sport', 'sporting', 'athletic', 'atletico',
 	'united', 'city', 'town', 'county', 'real', 'olympic', 'olympique', 'national', 'state',
@@ -69,9 +66,6 @@ const decodeUrl = (url: string): string => {
 	}
 };
 
-// Title and URL become one padded token string separated by a sentinel the tokenizer can never
-// emit. The padding gives every lookup a word boundary for free, so 'bos' cannot match inside
-// 'jobs'; the sentinel stops a phrase from spanning the title/URL join.
 export const buildTabHaystack = (tab: SuggestionTab): string =>
 	` ${[...tokenize(tab.title), '|', ...tokenize(decodeUrl(tab.url))].join(' ')} `;
 
@@ -90,14 +84,10 @@ const containsSubPhrase = (haystack: string, tokens: readonly string[]): boolean
 
 interface NameMatch {
 	multiplier: number;
-	// A full or nickname-anchored match identifies a team on its own. A location fragment does not:
-	// 'new york' and 'ohio state' are the same shape, so strength alone cannot tell the New York
-	// Times from a Buckeyes game. scoreHaystack settles that by looking at both teams together.
 	strong: boolean;
 }
 
 interface TeamNameMatch extends NameMatch {
-	// The text the match was made on, so two teams cannot both claim the same mention.
 	phrase: string;
 }
 
@@ -108,9 +98,6 @@ interface NameCandidate {
 	anchor: number;
 }
 
-// The index of the last non-generic token. Not simply the last token: that would make the anchor of
-// 'Liverpool FC' the meaningless 'fc', and of 'Manchester United' the 'united' shared with a dozen
-// other clubs.
 const anchorIndex = (tokens: readonly string[]): number => {
 	for (let index = tokens.length - 1; index >= 0; index--) {
 		const token = tokens[index];
@@ -129,7 +116,6 @@ const classifyNameCandidate = ({ start, end, tokenCount, anchor }: NameCandidate
 	if (end - start >= 2) {
 		return { multiplier: tabSuggestionWeights.partialMultiplier, strong: false };
 	}
-	// A lone leading token is the city, not the team.
 	return { multiplier: tabSuggestionWeights.partialMultiplier, strong: false };
 };
 
@@ -186,9 +172,6 @@ const scoreTeam = (haystack: string, team: Team): TeamSignal => {
 const phrasesShareText = (a: string, b: string): boolean =>
 	` ${a} `.includes(` ${b} `) || ` ${b} `.includes(` ${a} `);
 
-// Los Angeles Rams and Los Angeles Chargers both match the one 'los angeles' in a Dodgers URL, and
-// two teams reading the same mention is a single coincidence billed twice. A weak match whose text
-// the other team already claimed is dropped, so a shared city cannot be evidence for both sides.
 const dropSharedMention = (subject: TeamSignal, other: TeamSignal): TeamSignal => {
 	if (subject.strong || subject.phrase === null || other.phrase === null) return subject;
 	if (!phrasesShareText(subject.phrase, other.phrase)) return subject;
@@ -206,8 +189,6 @@ const scoreLeague = (haystack: string, game: Game): number => {
 	if (!config) return 0;
 
 	const [sport = '', leagueSegment = ''] = config.espnPath.split('/');
-	// Dotted segments ('eng.1', 'usa.nwsl') tokenize into fragments too short to carry meaning, so
-	// only the sport half of those paths participates.
 	const leagueTokens = leagueSegment.includes('.')
 		? []
 		: tokenize(leagueSegment).filter(token => token.length >= 3);
@@ -216,17 +197,12 @@ const scoreLeague = (haystack: string, game: Game): number => {
 	const labelTokens = tokenize(config.label).filter(token => token.length >= 3);
 	const labelHit = containsSubPhrase(haystack, labelTokens);
 
-	// Max rather than sum: for the NBA the label and the path segment are the same token, and one
-	// coincidence should not be counted twice.
 	return Math.max(
 		pathHit ? tabSuggestionWeights.leaguePath : 0,
 		labelHit ? tabSuggestionWeights.leagueLabel : 0,
 	);
 };
 
-// The id must sit immediately after a recognisable key. A bare number has no provenance: soccer
-// event ids are only six digits, which a bare-number rule would match against half the product URLs
-// on the web.
 const matchesEventId = (url: string, gameId: string): boolean => {
 	if (!/^\d{5,}$/.test(gameId)) return false;
 	const matches = url.toLowerCase().matchAll(/(?:gameid|eventid|matchid|competitionid)[/=:_-]+(\d{5,})/g);
@@ -243,9 +219,6 @@ const scoreHaystack = (haystack: string, url: string, game: Game): number => {
 	const home = dropSharedMention(rawHome, rawAway);
 	const away = dropSharedMention(rawAway, rawHome);
 
-	// One team identified outright is enough. So is a faint read on both of them at once — two
-	// coincidences in one tab is not a coincidence. Anything less stays silent, which is what keeps
-	// 'Boston Globe' and 'The New York Times' off the list.
 	const originated = idHit || home.strong || away.strong || (home.matched && away.matched);
 	if (!originated) return 0;
 
@@ -283,9 +256,6 @@ const startTimeValue = (game: Game): number => {
 	return Number.isNaN(parsed) ? Number.MAX_SAFE_INTEGER : parsed;
 };
 
-// Live is a tiebreak rather than a bonus. A bonus would let a weak live match beat a strong
-// scheduled one; the signal set is small enough that two games of the same tab often score
-// identically, which is exactly where a tiebreak belongs.
 const compareCandidates = (a: { score: number; game: Game }, b: { score: number; game: Game }): number =>
 	b.score - a.score
 	|| (a.game.status === 'in' ? 0 : 1) - (b.game.status === 'in' ? 0 : 1)
@@ -338,8 +308,6 @@ export const suggestTabAssignments = ({
 	return suggestions.toSorted((a, b) => b.score - a.score || a.tabId - b.tabId);
 };
 
-// The registry is a bijection: one tab per game and one game per tab. This is the rule the assign
-// dropdown has always applied inline; both callers share it now so they cannot drift.
 export const assignTabToGame = (
 	registry: readonly TabRegistration[],
 	tabId: number,
@@ -369,8 +337,6 @@ export const normalizeDismissedSuggestions = (value: unknown): string[] => {
 	return [...new Set(value.filter((entry): entry is string => typeof entry === 'string' && entry.length > 0))];
 };
 
-// Every shown pair is recorded, not just the accepted ones: leaving the unchecked rows out would
-// re-raise the banner the moment the popup reopened.
 export const dismissSuggestions = (
 	dismissed: readonly string[],
 	shown: readonly TabSuggestion[],

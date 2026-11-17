@@ -38,7 +38,6 @@ describe('deriveBasketballPossession, on recorded plays', () => {
 		expect(derive(name)).toBe(opposite(sideOf(name).team));
 	});
 
-	// The play is hung on the team that committed the foul, so the ball goes to the other side.
 	test.each<recordedPlay>(['shootingFoul', 'personalFoul', 'looseBallFoul', 'offensiveFoul'])('a foul hands it to the fouled team: %s', name => {
 		expect(derive(name)).toBe(opposite(sideOf(name).team));
 	});

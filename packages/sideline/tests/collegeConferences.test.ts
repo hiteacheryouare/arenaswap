@@ -8,7 +8,6 @@ const ok = (data: unknown): Response => ({ ok: true, status: 200, json: async ()
 
 const refs = (...urls: string[]) => ({ count: urls.length, items: urls.map($ref => ({ $ref })) });
 
-// Answers by path, ignoring the query, the way the real API ignores `lang` and `region`.
 const routeFetch = (routes: Record<string, unknown>) => {
 	const fetchMock = jest.fn().mockImplementation(async (url: string) => {
 		const { pathname } = new URL(url);
@@ -48,7 +47,6 @@ describe('fetchConferenceDirectory', () => {
 		]);
 		expect(directory.teamDivision).toEqual({ 333: '80', 149: '81' });
 		expect(directory.teamConference).toEqual({});
-		// Refs arrive as http; nothing may be fetched that way from an extension page.
 		expect(fetchMock.mock.calls.every(([url]) => String(url).startsWith('https://'))).toBe(true);
 	});
 
@@ -63,7 +61,6 @@ describe('fetchConferenceDirectory', () => {
 			[`${groups}/58`]: { id: '58', name: 'American Athletic Conference', shortName: 'American', standings: { $ref: abs(`${groups}/58/standings`) } },
 			[`${groups}/58/standings`]: refs(abs(`${groups}/58/standings/0`)),
 			[`${groups}/58/standings/0`]: { standings: [{ team: { $ref: abs(`${base}/seasons/2026/teams/151`) } }, { team: { $ref: abs(`${base}/seasons/2026/teams/2655`) } }] },
-			// An empty table comes back with no `standings` at all.
 			[`${groups}/52`]: { id: '52', name: 'Metro Atlantic Athletic Conference', shortName: 'Metro', standings: { $ref: abs(`${groups}/52/standings`) } },
 			[`${groups}/52/standings`]: refs(abs(`${groups}/52/standings/0`)),
 			[`${groups}/52/standings/0`]: { id: '0', name: 'overall' },

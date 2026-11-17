@@ -1,9 +1,6 @@
 import { expectHealthyBackground, openPopup, play, startExtension, world } from '../../support/liveExtension';
 import { gameIds, slate, storedPrefs } from '../../support/liveGames';
 
-// Standby Stream set up from the popup the way a user does it, then the shipped worker parking on
-// it when both recorded games turn into blowouts, and leaving it when one tightens up again.
-
 const wnbaTab = 2;
 const nhlTab = 3;
 const channelTab = 4;
@@ -68,7 +65,6 @@ describe('Standby Stream', () => {
 		openPopup();
 		standbyBanner().should('be.visible');
 
-		// Carolina claws back to a tie with three and a half minutes left.
 		world().then(live => { live.events = slate({ wnba: blowouts.wnba, nhl: { home: 6, away: 6, clock: 210 } }); });
 		play(30_000);
 		watching(nhlTab);

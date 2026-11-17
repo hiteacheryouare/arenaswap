@@ -18,11 +18,9 @@ import zhTW from '../../../locales/zh_TW.json';
 
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
 
-// The popup is 320 wide and a card in its list is 289 of that, which is the width the line has to fit.
 const popupWidth = 320;
 const cardWidth = 289;
 const minute = 60_000;
-// Ages are written a few seconds past the minute, since the card reads its clock in whole seconds.
 const past = 5_000;
 
 const game: Game = {
@@ -52,8 +50,6 @@ const cardProps = {
 	bettingPrefs: { bettingEnabled: false },
 };
 
-// What the extension's own translator does with a locale file: a plural object picks a form by
-// count and fills $1. The shared card only knows the one-pipe-other string shape.
 const translatorFor = (bundle: Record<string, unknown>) => translateFrom(key => {
 	const value = key.split('.').reduce<unknown>((node, part) => (node as Record<string, unknown> | undefined)?.[part], bundle);
 	if (typeof value === 'string') return value;

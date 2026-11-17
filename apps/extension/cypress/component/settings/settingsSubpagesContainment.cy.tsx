@@ -53,7 +53,6 @@ describe('settings sub-pages containment', () => {
 		cy.get(popupSurface).assertContained();
 	});
 
-	// The echoed query is the same line in every language, so it gets one test and the per-locale ones leave it out.
 	const noMatchLine = '.mt-5.text-center';
 
 	it('keeps the favorite teams page inside the popup when a long search finds nothing', () => {
@@ -101,7 +100,6 @@ describe('settings sub-pages containment', () => {
 		cy.get('#fantasyPlayerSearch').should('exist');
 	};
 
-	// Every earlier roster test leaves its team fetches queued in the shared request bucket, and the search waits behind them at 10 a second.
 	const drainedBucketMs = 20000;
 
 	const playerName = '.fantasy-roster-scroll span.d-block.fw-semibold';

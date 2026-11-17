@@ -17,15 +17,12 @@ const isHex = (value: string | undefined): value is string => (
 
 const withHash = (value: string): string => (value.trim().startsWith('#') ? value.trim() : `#${value.trim()}`);
 
-// Both colours where a team has two, so the string alternates rather than reading as one flat wash.
 // ESPN sends these without a leading hash about as often as with one.
 export const teamColors = (color?: string, alternateColor?: string): string[] => {
 	const colors = [color, alternateColor].filter(isHex).map(withHash);
 	return colors.length > 0 ? colors : ['#ffffff'];
 };
 
-// Returns the colours to flash the lights in, or null when nothing worth celebrating happened.
-// Only the game on screen, and only a team this user follows.
 export const favoriteScoreFlashColors = (
 	previous: gameScoreline | null,
 	game: Game,
@@ -34,8 +31,6 @@ export const favoriteScoreFlashColors = (
 	if (!previous) return null;
 	const next = scorelineOf(game);
 
-	// A home score and an away score cannot both arrive in one poll of a real game, and if they
-	// somehow do, the home side is as good a pick as any.
 	const scorer = next.home > previous.home
 		? game.homeTeam
 		: next.away > previous.away ? game.awayTeam : null;
@@ -50,8 +45,6 @@ export interface scoringBurst {
 	count: number;
 }
 
-// One burst per point, so a three-run homer is three. Capped, because a feed that catches up on a
-// whole inning at once should not empty the sky.
 export const maxBurstsPerPoll = 4;
 
 export const scoringBursts = (previous: gameScoreline | null, game: Game): scoringBurst[] => {

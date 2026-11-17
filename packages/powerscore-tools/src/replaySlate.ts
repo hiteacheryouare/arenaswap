@@ -1,18 +1,3 @@
-// Replays recorded slates through 2.2.0 and the working tree's PowerScore, then scores both against
-// labelled flip-to moments.
-//
-// Run: npm run powerscore:replay -- [options]
-//   --recording <path>   a recordings folder, day folder or file (default: every recording)
-//   --from <iso>         only report from here (state still warms up from the start)
-//   --to <iso>           stop here
-//   --labels <file>      labelled moments to score against (default: fixtures/labels/*.json)
-//   --modes a,b          v3 modes to run beside v2 (default: classic)
-//   --timeline <file>    write a minute-by-minute slate for labelling
-//   --blind              leave the scores out of the timeline, so labels can't echo a scorer
-//   --diff               list the stretches where the first two scorers disagree on the top game
-//   --json <file>        write the scorecard as JSON
-//   --include-cold       also score labels on games seen for less than one history window
-//   --roster <file>      a fantasy roster (JSON array of roster entries) for Fantasy mode
 import { mkdirSync, readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { listRecordingFiles, readRecording, unreadableLines } from './replay/recording';
@@ -26,7 +11,6 @@ interface LabelledMoment {
 	ts: string | number;
 	flipTo: string;
 	acceptable?: string[];
-	// 0–3, how strongly a fan would want to be on this game.
 	level?: number;
 	note?: string;
 }
@@ -42,8 +26,6 @@ const option = (name: string): string | undefined => {
 	const index = args.indexOf(`--${name}`);
 	return index >= 0 ? args[index + 1] : undefined;
 };
-// npm runs the script from the package folder, so relative paths resolve against the repo root when
-// run through `npm run powerscore:replay`, or the package folder when run there directly.
 const pathOption = (name: string): string | undefined => {
 	const value = option(name);
 	return value === undefined ? undefined : resolve(process.env.INIT_CWD ?? process.cwd(), value);
@@ -93,7 +75,6 @@ const main = async () => {
 		return;
 	}
 
-	// Hours with polls in them: a recorder gap (the machine asleep, a restart) isn't time anyone watched.
 	const polledMs = frames.slice(1).reduce((total, frame, i) => total + Math.min(frame.ts - frames[i]!.ts, 5 * 60_000), 0);
 	const hours = Math.max(1 / 60, polledMs / 3_600_000);
 	const labels = readLabels().flatMap(file => file.moments.map(moment => ({ ...moment, ts: toTime(moment.ts)! })))
@@ -108,8 +89,6 @@ const main = async () => {
 		return found && ts - found.ts <= 90_000 ? found : undefined;
 	};
 
-	// A game first seen moments ago has no momentum or lead-change history yet, so neither scorer can
-	// be judged on it. Those labels are left out unless asked for.
 	const isCold = (moment: { ts: number; flipTo: string }, frame: Frame) => {
 		const seen = frame.firstSeen.get(moment.flipTo);
 		return seen === undefined || moment.ts - seen < historyWindowOf(moment.flipTo, frame);
@@ -136,14 +115,11 @@ const main = async () => {
 			const ranking = frame.rankings.get(scorer.name)!;
 			const momentWeight = moment.level ?? 1;
 			weight += momentWeight;
-			// Totals are whole numbers, so ties at the top are common: each tied game gets an even share
-			// of the credit rather than whichever one the sort happened to leave first.
 			const top = ranking[0]?.total;
 			const tied = ranking.filter(score => score.total === top);
 			if (tied.length > 1) ties++;
 			const share = tied.filter(score => allowed.has(score.gameId)).length / Math.max(1, tied.length);
 			hits += momentWeight * share;
-			// The best place any acceptable game holds, with tied games sharing a place.
 			const placeOf = (gameId: string) => {
 				const total = ranking.find(score => score.gameId === gameId)?.total;
 				return total === undefined ? ranking.length + 1 : 1 + ranking.filter(score => score.total > total).length;

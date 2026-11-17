@@ -1,7 +1,3 @@
-// Bootstrap 6 renamed most of its tokens and every prerelease can rename more. A var() that names a
-// token nobody declares does not fail the build: the property falls back or goes unset, and the
-// first anyone hears of it is a colour that quietly went wrong. This reads every stylesheet and
-// component in the repo for --as- names and checks each one is declared by Bootstrap or by us.
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 

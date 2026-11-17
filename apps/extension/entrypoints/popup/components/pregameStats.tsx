@@ -18,9 +18,6 @@ const hasLabelledStats = (starter: ProbableStarter): boolean => (
 	starter.winLoss !== undefined || starter.era !== undefined
 );
 
-// "(3-1, 4.23)" says nothing about what either number is. The label goes under the value rather
-// than beside it: a box score puts the heading above its column, and two labelled pairs still fit
-// the half-card a starter gets.
 const StatPair = ({ value, label }: { value: string; label: string }) => (
 	<div className='gd-pregame-stat'>
 		<span className='gd-pregame-stat-value'>{value}</span>
@@ -28,9 +25,6 @@ const StatPair = ({ value, label }: { value: string; label: string }) => (
 	</div>
 );
 
-// Away left, home right, under the crests they belong to. A missing starter leaves its half empty
-// rather than re-centring the one we have: 14 of 98 upcoming games named only one side, and a lone
-// centred name reads as belonging to neither team.
 const StarterColumn = ({ starter, color }: { starter?: ProbableStarter; color: string }) => (
 	<div className='gd-pregame-starter'>
 		{starter && (
@@ -53,22 +47,15 @@ const StarterColumn = ({ starter, color }: { starter?: ProbableStarter; color: s
 	</div>
 );
 
-// Full width, one player per row. Football values run to 21 characters — "14/23, 141 YDS, 1 INT" —
-// against four for every other sport, and there is no half-width column that fits both. The name
-// takes the slack and the value keeps its own width, so a long name truncates before a stat does.
 const LeaderRow = ({ leader, team, color }: { leader?: TeamLeader; team: Team; color: string }) => {
 	if (!leader) return null;
 	return (
 		<div className='gd-pregame-leader-row' style={{ backgroundImage: teamRowWash(color) }}>
 			<PlayerShot url={leader.headshot} name={leader.player} color={color} className='gd-pregame-leader-shot' />
-			{/* Clamped for contrast: the raw colour is fine on the wash behind it and unreadable as
-			    9px text — a gold reaches 1.7:1 on this card. */}
 			<span className='gd-pregame-leader-team' style={{ color: readableTeamInkOnCard(color) }}>
 				{team.abbreviation}
 			</span>
 			<span className='gd-pregame-leader-player' title={leader.player}>{leader.player}</span>
-			{/* Verbatim from ESPN. The football values carry their own English units and there is no
-			    version of "12 CAR, 68 YDS, 1 TD" we could assemble ourselves. */}
 			<span className='gd-pregame-leader-value'>{leader.value}</span>
 		</div>
 	);
@@ -79,7 +66,6 @@ const pregameStats = ({ game }: pregameStatsProps) => {
 	const homeStarter = game.homeTeam.probableStarter;
 	const hasStarter = awayStarter !== undefined || homeStarter !== undefined;
 
-	// One row per category either side has a leader in, in the order the away team's arrived.
 	const awayLeaders = game.awayTeam.leaders ?? [];
 	const homeLeaders = game.homeTeam.leaders ?? [];
 	const categories = [...new Set([...awayLeaders, ...homeLeaders].map(l => l.category))];

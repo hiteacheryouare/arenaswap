@@ -51,8 +51,6 @@ const base = import.meta.env.BASE_URL;
 
 <CrestSettle />
 
-<!-- Four videos only play while the grid is on screen, and not at all for anyone who has asked the
-     browser for less motion: they see the first frame of each. -->
 <script>
 	const clips = [...document.querySelectorAll<HTMLVideoElement>('[data-multiview-clip]')];
 	const still = window.matchMedia('(prefers-reduced-motion: reduce)');

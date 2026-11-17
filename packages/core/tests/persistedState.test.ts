@@ -13,16 +13,10 @@ import type { BackgroundState, PowerScoreSnapshot, ScoreSnapshot } from '../src/
    the same journey over and over: the worker writes its state out, dies, wakes, and reads it back.
    The write goes through `JSON.stringify` on the way into extension storage, which is why every
    round trip here goes through JSON rather than handing the same object back — `NaN` and
-   `undefined` do not survive that trip, and the guards are what decide whether the loss is noticed.
-
-   The stakes are the whole reason these guards are strict: `powerScoreHistory` is what draws the
-   game's excitement chart and what the wrap screen reads, and there is no second copy of it
-   anywhere. A guard that rejects too much deletes a user's game silently. */
+   `undefined` do not survive that trip, and the guards are what decide whether the loss is noticed. */
 
 const reload = <T>(value: T): unknown => JSON.parse(JSON.stringify(value));
 
-// Exactly the shape `updatePowerScoreHistory` in the extension's background worker writes today,
-// field for field. If this ever stops loading, every user loses their history on the next upgrade.
 const snapshotAsShipped = (over: Partial<PowerScoreSnapshot> = {}): PowerScoreSnapshot => ({
 	gameId: 'game-1',
 	timestamp: 1_764_000_000_000,
@@ -78,8 +72,6 @@ describe('a worker restart with everything intact', () => {
 	});
 
 	test('tab id zero is a real tab, not an absent one', () => {
-		// The one number in the state that is falsy and still means something. Read with a
-		// truthiness check instead of a type check and the first tab a user ever registers is lost.
 		const parsed = BackgroundStateSchema.parse(reload({ standbyStreamTabId: 0 }));
 
 		expect(parsed.standbyStreamTabId).toBe(0);
@@ -104,11 +96,6 @@ describe('an upgrade, reading what an older release wrote', () => {
 		expect(isPowerScoreSnapshotLike(reload(future))).toBe(true);
 	});
 
-	/* The upgrade cliff, pinned deliberately rather than discovered in the field. Every field the
-	   guard does not mark optional is mandatory, so promoting one new field to required deletes
-	   every snapshot every existing user has, with no migration, no warning and no way back — the
-	   chart simply comes up empty and the wrap screen has nothing to show. The convention that keeps
-	   this safe is "new fields are optional", and this is the test that makes breaking it visible. */
 	test('a snapshot missing a required field is dropped in full, taking the game\'s chart with it', () => {
 		const { favoriteTeamCount: _dropped, ...withoutRequiredField } = snapshotAsShipped();
 
@@ -125,8 +112,6 @@ describe('an upgrade, reading what an older release wrote', () => {
 
 describe('values that do not survive JSON', () => {
 	test('a NaN timestamp becomes null in storage and the snapshot is dropped', () => {
-		// Worth knowing because nothing upstream rejects a NaN clock, so a snapshot can be written
-		// with one. It does not come back, and it does not say that it did not.
 		const written = { 'game-1': [scoreSnapshot({ timestamp: Number.NaN })] };
 
 		expect(reload(written)).toEqual({ 'game-1': [{ ...scoreSnapshot(), timestamp: null }] });
@@ -140,8 +125,6 @@ describe('values that do not survive JSON', () => {
 });
 
 describe('storage that came back corrupt', () => {
-	// Nothing in here is allowed to throw: a throw during hydration takes the worker down on every
-	// single wake, which is an extension that never starts again until storage is cleared by hand.
 	test.each([
 		['a string where the state should be', '{"games":[]}'],
 		['an array', []],
@@ -195,10 +178,6 @@ describe('the per-game boost the user set by hand', () => {
 		expect(normalizeGameBoosts(7)).toEqual({});
 	});
 
-	/* An array gets through `isObjectRecord`, because an array is an object, and comes back keyed
-	   by index rather than empty. Harmless in practice — no ESPN game is filed under the id "0" — so
-	   this pins what actually happens rather than claiming a defect. The same guard sits under both
-	   history maps, so if the answer should be an empty map it is one change in one place. */
 	test('an array of boosts comes back keyed by index rather than discarded', () => {
 		expect(normalizeGameBoosts([15, 20])).toEqual({ '0': 15, '1': 20 });
 	});
@@ -206,10 +185,6 @@ describe('the per-game boost the user set by hand', () => {
 
 describe('the scores the popup draws from', () => {
 	test('a score missing everything but its id is filled in rather than dropped', () => {
-		/* Deliberately the opposite policy from the history guard above, and worth seeing side by
-		   side: a score is the current standing and is rewritten on the next poll a few seconds
-		   later, so filling the gaps costs one stale frame. A history snapshot is a permanent record
-		   with nothing to replace it, so a doubtful one is thrown away. */
 		const [score] = normalizeScores([{ gameId: 'game-1' }]);
 
 		expect(score).toMatchObject({ gameId: 'game-1', total: 0, closeness: 0 });

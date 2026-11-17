@@ -1,6 +1,5 @@
 import type { MultiviewBox } from '@arenaswap/core/types';
 
-// How long a box gets to start playing before the next box on its site starts anyway.
 export const boxQueueWaitMs = 15_000;
 
 const siteOf = (url: string): string => {

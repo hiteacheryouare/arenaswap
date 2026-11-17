@@ -83,8 +83,6 @@ describe('resolveStatus', () => {
 	});
 });
 
-// Our sources send DOUBLE for every league once a team is past the limit. Only the men's college
-// game has a one-and-one, so only there is DOUBLE a different thing from the bonus.
 describe('bonusKind', () => {
 	test('reads DOUBLE as the bonus everywhere but men\'s college basketball', () => {
 		expect(bonusKind({ bonus: 'double' }, 'nba')).toBe('bonus');
@@ -106,7 +104,6 @@ describe('red card lines', () => {
 		awayTeam: { id: '20232', name: 'Inter Miami CF', abbreviation: 'MIA', score: 1 },
 	});
 
-	// Our sources print 1580 seconds as 27' and 5400 as 90', with stoppage time on the end.
 	test('prints the minute a match clock would', () => {
 		expect(formatMatchMinute({ teamId: '183', minute: 1580 / 60 }, t)).toBe('27\'');
 		expect(formatMatchMinute({ teamId: '183', minute: 1620 / 60 }, t)).toBe('27\'');
@@ -123,7 +120,6 @@ describe('red card lines', () => {
 		expect(describeRedCard({ teamId: '999', minute: 64.5, player: 'Somebody' }, soccer, t)).toBe('65\' Somebody');
 	});
 });
-// The first case is Everton 3-1 Coventry City, from the 2026-11-06 scoreboard.
 describe('describeScorers', () => {
 	test('puts each scorer on one line with every minute they scored in', () => {
 		expect(describeScorers([

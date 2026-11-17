@@ -16,10 +16,8 @@ const mountStrip = (labels: string[]) => {
 };
 
 const englishLabels = [en.detail.tabOverview, en.detail.tabMatchup, en.box.heading, en.detail.tabStandings];
-// Longer than any locale ships today, so the strip has to fold whatever the translations do next.
 const longLabels = ['Spielübersicht', 'Direktvergleich', 'Spielstatistiken', 'Tabellenstände'];
 
-// The underline is the strip's ::after, so its box is read off its computed style.
 const underlineBox = (strip: HTMLElement) => {
 	const style = getComputedStyle(strip, '::after');
 	const rect = strip.getBoundingClientRect();

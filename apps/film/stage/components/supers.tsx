@@ -8,13 +8,10 @@ const lineStagger = 0.08;
 const wordStagger = 0.26;
 const wordDrop = 0.7;
 
-// The last character is the sentence's full stop in whatever script it is written in, and it is
-// always drawn in the dot's orange: every line of copy ends on the motif.
 const sentenceEnd = /[.。．!?！？]$/u;
 
 export const splitEnding = (text: string): [string, string] => (sentenceEnd.test(text) ? [text.slice(0, -1), text.slice(-1)] : [text, '']);
 
-// Words as the locale breaks them, so a line in Japanese or Chinese drops in phrase by phrase too.
 const wordsOf = (text: string) => [...new Intl.Segmenter(document.documentElement.lang || 'en', { granularity: 'word' }).segment(text)].map(part => part.segment);
 
 const Ending = ({ ending }: { ending: string }) => (ending ? <span className='super-stop' data-super-stop>{ending}</span> : null);
@@ -25,11 +22,9 @@ const Line = ({ line, arrive }: { line: string; arrive: number }) => {
 	return <span className='super-line' style={style}>{body}<Ending ending={ending} /></span>;
 };
 
-// Each word falls in from above, one after another, and lands without a bounce.
 const DroppingLine = ({ line, local }: { line: string; local: number }) => {
 	const [body, ending] = splitEnding(line);
 	const segments = wordsOf(body);
-	// How many words come before each segment, which is when it starts to fall.
 	const order = segments.map((_, index) => segments.slice(0, index).filter(segment => segment.trim() !== '').length);
 	return (
 		<span className='super-line'>

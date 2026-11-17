@@ -2,8 +2,6 @@ import { hasCommercialBreaks, nextCommercialBreak, type CommercialBreakEntry, ty
 import { nextClockStall, type ClockStallEntry } from '../src/scoring';
 import type { Game, Team } from '../src/types';
 
-// Every sequence below is a run of real polls from the recordings, at the recorder's own cadence:
-// seconds since the first poll, then what the scoreboard said.
 type BaseballPoll = [seconds: number, shortDetail: string, lastPlayId: string, lastPlayType: string, pitcherId: string | undefined, outs: number];
 type ClockPoll = [seconds: number, displayClock: string, lastPlayId: string, lastPlayType: string];
 type TextPoll = [seconds: number, displayClock: string, lastPlayId: string, lastPlayType: string, lastPlay: string];
@@ -22,7 +20,6 @@ interface Verdict {
 	kind?: CommercialBreakKind;
 }
 
-// The background worker's loop, for one game: each poll's verdict is fed into the next.
 const replay = (
 	polls: { seconds: number; game: Game; powerPlay?: CommercialBreakInput['powerPlay'] }[],
 	initial?: Omit<CommercialBreakEntry, 'lastPlaySeenAt'>,
@@ -42,7 +39,6 @@ const between = (verdicts: Verdict[], from: number, to: number): number[] => (
 	verdicts.filter(verdict => verdict.seconds >= from && verdict.seconds <= to).map(verdict => verdict.seconds)
 );
 
-// CLE @ CHW, 2026-10-09 02:29:13 UTC onward.
 const whiteSoxGuardiansSixth: BaseballPoll[] = [
 	[0, 'Top 6th', '4019079931008020036', 'Strike Looking', '4927630', 1],
 	[15, 'Top 6th', '4019079931008990057', 'Play Result', '4927630', 1],
@@ -113,7 +109,6 @@ const whiteSoxGuardiansSixth: BaseballPoll[] = [
 	[995, 'Bot 6th', '4019079931104020036', 'Strike Looking', '4187661', 2],
 ];
 
-// ATL @ NO, 2026-10-06 02:49:25 UTC onward.
 const falconsSaintsTouchdown: ClockPoll[] = [
 	[0, '13:33', '4018729793434', 'Pass Incompletion'],
 	[15, '13:28', '4018729793457', 'Pass Reception'],
@@ -139,7 +134,6 @@ const falconsSaintsTouchdown: ClockPoll[] = [
 	[318, '12:55', '4018729793535', 'Official Timeout'],
 ];
 
-// SAC @ LAL, 2026-10-09 03:42:10 UTC onward.
 const lakersKingsTimeout: ClockPoll[] = [
 	[0, '3:00', '401898717321', 'Defensive Rebound'],
 	[15, '3:00', '401898717323', 'Full Timeout'],
@@ -157,7 +151,6 @@ const lakersKingsTimeout: ClockPoll[] = [
 	[196, '2:06', '401898717334', 'Offensive Rebound'],
 ];
 
-// PHX @ DET, 2026-10-06 01:38:54 UTC onward.
 const pistonsSunsFinalMinute: ClockPoll[] = [
 	[0, '49.3', '401908947753', 'Out of Bounds - Lost Ball Turnover'],
 	[15, '49.3', '401908947757', 'Offensive Foul Turnover'],
@@ -172,8 +165,6 @@ const pistonsSunsFinalMinute: ClockPoll[] = [
 	[152, '33.8', '401908947760', 'Full Timeout'],
 ];
 
-// The recordings predate the college season, so these three are plays from the play-by-play,
-// laid out at the recorder's cadence. UConn @ Michigan, 2026-04-06, first half.
 const michiganUconnTvTimeout: ClockPoll[] = [
 	[0, '15:42', '401856600120416946', 'Block Shot'],
 	[15, '15:42', '401856600120416948', 'OfficialTVTimeOut'],
@@ -188,7 +179,6 @@ const michiganUconnTvTimeout: ClockPoll[] = [
 	[150, '15:41', '401856600120416947', 'Offensive Rebound'],
 ];
 
-// The same game, later in the first half.
 const michiganUconnShortTimeout: ClockPoll[] = [
 	[0, '2:31', '401856600120416919', 'LayUpShot'],
 	[15, '2:24', '401856600120417120', 'ShortTimeOut'],
@@ -197,7 +187,6 @@ const michiganUconnShortTimeout: ClockPoll[] = [
 	[60, '2:24', '401856600120417124', 'Substitution'],
 ];
 
-// Lehigh @ Holy Cross, 2026-03-15, the final seconds.
 const holyCrossLehighTimeout: ClockPoll[] = [
 	[0, '0:11', '401851596120280573', 'MadeFreeThrow'],
 	[15, '0:11', '401851596120280574', 'RegularTimeOut'],
@@ -207,7 +196,6 @@ const holyCrossLehighTimeout: ClockPoll[] = [
 	[75, '0:07', '401851596120280576', 'JumpShot'],
 ];
 
-// CGY @ VAN, 2026-10-04 02:31:55 UTC onward.
 const canucksFlamesFirst: TextPoll[] = [
 	[0, '10:30', '401892440000001980', 'Penalty Shot Infraction', 'Brennan Othmann Minor'],
 	[15, '10:30', '401892440000001980', 'Penalty Shot Infraction', 'Brennan Othmann Minor'],
@@ -235,7 +223,6 @@ const canucksFlamesFirst: TextPoll[] = [
 	[351, '8:56', '401892440000000140', 'Stoppage', 'Goalie Stopped'],
 ];
 
-// SC @ FLA, 2026-10-10 19:19:26 UTC onward.
 const gatorsGamecocksExtraPoint: ClockPoll[] = [
 	[0, '8:36', '401856714502', 'Passing Touchdown'],
 	[15, '8:36', '-89282057', 'Extra Point Good'],
@@ -259,7 +246,6 @@ const gatorsGamecocksExtraPoint: ClockPoll[] = [
 	[289, '8:09', '401856714519', 'Rush'],
 ];
 
-// KU @ UTAH, 2026-10-11 01:42:04 UTC onward.
 const utesJayhawksDrill: TextPoll[] = [
 	[0, '0:58', '401856827400', 'Pass Reception', '(01:09) Shotgun #8 I.Marshall pass compl'],
 	[15, '0:56', '401856827400', 'Pass Reception', '(01:09) Shotgun #8 I.Marshall pass compl'],
@@ -372,7 +358,6 @@ describe('basketball, from its timeouts', () => {
 
 describe('the NHL, from where its TV timeouts fall on the clock', () => {
 	const game = clockGame({ id: '401892440', league: 'nhl', sportType: 'hockey', homeTeam: team('22', 'VAN', 1), awayTeam: team('3', 'CGY', 1), period: 1, status: 'in' });
-	// The 14:00 timeout had already been taken earlier in the period.
 	const earlierInThePeriod = { usedTvMarks: { 1: [14] } };
 
 	test('a whistle that was over in seconds leaves the 10:00 timeout for the next stoppage, which is it', () => {
@@ -424,8 +409,6 @@ describe('college football, from the plays a break follows', () => {
 		expect(flagged(replay(polls(drive(false), college)))).toEqual([]);
 	});
 
-	// One character per play, the extra point last: 1 when the clock moved since the play before,
-	// 0 when it sat still. The first play always reads as moved, having nothing to compare with.
 	const playsFrom = (pattern: string): TextPoll[] => {
 		let clock = 900;
 		const rows = [...pattern].map((moved, index): TextPoll => {

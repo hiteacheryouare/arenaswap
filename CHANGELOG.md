@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Comments only where the code can't speak — 2026-11-17
+
+About 10,700 comment lines came out of every package and app, following the Comment Sicko rules from pstack: what stays is license headers, quirks of the browser, the feed or a vendor we can't change, functional comments (`/// <reference>`, JSDoc `@type` in JS configs, lint suppressions), public API docs in `powerscore` and `@arenaswap/core`, and spec citations. Comments that explained a surprise in our own code were flagged for a rename or refactor instead of being kept.
+
 ## "Resumed from" only on baseball — 2026-11-08
 
 The label for a suspended game picking back up now needs an inning sport as well as a start more than 12 hours old, because only baseball finishes a suspended game on a later day; anywhere else an old live game is a feed left stuck on live.

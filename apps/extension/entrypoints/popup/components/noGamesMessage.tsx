@@ -4,13 +4,10 @@ import { getRandomNoGamesMessage } from '../popupHelpers';
 import RefreshButton from './refreshButton';
 
 interface noGamesMessageProps {
-	// Absent where there is no settings screen to open, as in the Guide's own tab.
 	onOpenSetup?: () => void;
 	onRefresh: () => unknown;
 }
 
-// Rendered only while the empty state is showing, so the message is tied to the mount rather than to
-// a render body that a settling SWR mutate re-enters several times.
 const noGamesMessage = ({ onOpenSetup, onRefresh }: noGamesMessageProps) => {
 	const [msg] = useState(getRandomNoGamesMessage);
 

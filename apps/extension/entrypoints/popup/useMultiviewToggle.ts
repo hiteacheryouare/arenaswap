@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { isMultiviewBuild, multiviewPermissions } from '../../utils/multiview';
 
-// Multiview counts as on only while the permission it needs is still granted, since the browser's
-// own settings can take it back at any time.
 export default (enabled: boolean, setEnabled: (enabled: boolean) => void) => {
 	const available = useMemo(() => isMultiviewBuild(browser.runtime.getManifest()), []);
 	const [granted, setGranted] = useState(false);

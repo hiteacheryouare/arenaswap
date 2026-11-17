@@ -2,7 +2,6 @@ import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 import { TranslationContext, islandTranslator } from '../i18n/islandStrings';
 
-// The missing page as a game the extension would never switch you to.
 const game: Game = {
 	id: 'not-found',
 	league: 'nba',
@@ -27,9 +26,6 @@ const excitementResult: PowerScoreResult = {
 	reason: '',
 };
 
-// The two team names are the joke rather than copy, so they stay as they are. What the card puts
-// around them — the LIVE flag, the labels a screen reader reads out — comes off the same string map
-// the rest of the site's demo popups use.
 const NotFoundCard = ({ strings }: { strings?: Record<string, string> }) => (
 	<TranslationContext.Provider value={islandTranslator(strings)}>
 		<LiveGameCard

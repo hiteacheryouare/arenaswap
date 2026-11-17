@@ -18,10 +18,8 @@ export interface decorationState {
 	lights: boolean;
 	christmas: boolean;
 	bunting: boolean;
-	// Armed for the day. What actually sets one off is a score change, which the screen watches.
 	fireworks: boolean;
 	falling: fallingKind | null;
-	// 0 to 1, how buried the floor of the screen is right now.
 	depth: number;
 }
 
@@ -39,14 +37,12 @@ export const isSnowing = (game: Game): boolean => {
 	return primary.includes('snow') || primary.includes('sleet') || primary === 'flurries';
 };
 
-// US Thanksgiving: the fourth Thursday of November.
 export const thanksgivingDate = (year: number): Date => {
 	const firstOfNovember = new Date(year, 10, 1);
 	const firstThursday = 1 + ((4 - firstOfNovember.getDay() + 7) % 7);
 	return new Date(year, 10, firstThursday + 21);
 };
 
-// The Monday-to-Sunday week around it, so Tuesday and Wednesday college football are included.
 export const isThanksgivingWeek = (now: Date): boolean => {
 	const thanksgiving = thanksgivingDate(now.getFullYear());
 	const monday = new Date(thanksgiving);
@@ -62,8 +58,6 @@ export const isDecember = (now: Date): boolean => now.getMonth() === 11;
 
 const isCalendarDay = (date: Date, month: number, day: number): boolean => date.getMonth() === month && date.getDate() === day;
 
-// The last Christmas tip-off is 10:30 at night on the East Coast, so a game still going after
-// midnight keeps the day it started on.
 export const isGameOnDay = (game: Game, now: Date, month: number, day: number): boolean => {
 	if (isCalendarDay(now, month, day)) return true;
 	if (game.status !== 'in' || !game.startTime) return false;
@@ -123,8 +117,6 @@ const fillFor = (score: number, opponentScore: number, lostAtFinal: boolean): st
 	return { treats: Math.max(1, Math.round((maxTreats * score) / leader)), coal: false };
 };
 
-// The leader's stocking is the full one, and the other fills in proportion. A draw at the final
-// leaves both without coal; a shootout does not, since somebody still lost it.
 export const stockingFills = (game: Game): { home: stockingFill; away: stockingFill } => {
 	const home = game.homeTeam.score;
 	const away = game.awayTeam.score;
@@ -144,9 +136,6 @@ export const demoSeasons: readonly demoSeason[] = ['real', 'thanksgiving', 'dece
 export const isDemoSeason = (value: unknown): value is demoSeason =>
 	demoSeasons.includes(value as demoSeason);
 
-// Demo mode borrows a date rather than forcing a decoration, so what it shows is a state the real
-// rules can actually produce. Thanksgiving is computed for the current year rather than pinned to
-// one, so this cannot go stale.
 export const resolveDecorationDate = (now: Date, season: demoSeason): Date => {
 	if (season === 'thanksgiving') return thanksgivingDate(now.getFullYear());
 	if (season === 'december') return new Date(now.getFullYear(), 11, 14, 12);
@@ -156,8 +145,6 @@ export const resolveDecorationDate = (now: Date, season: demoSeason): Date => {
 	return now;
 };
 
-// How far through the current period, quarter, half or inning the game is.
-//
 // The clock sports read it off the clock and the league's own period length. Soccer's clock is
 // total elapsed rather than per-half, so the second half runs 45:00 to 90:00 and needs the offset
 // taken back off. The inning sports have no clock at all and are handled separately.
@@ -175,20 +162,12 @@ export const periodProgress = (game: Game): number => {
 	return clamp01(1 - game.clockSeconds / league.periodDurationSecs);
 };
 
-// Baseball and softball have no clock, so progress through an inning is read off the outs. Six to
-// an inning, three to a half, which makes each out a sixth and the half change the midpoint rather
-// than a second run at the whole range. An inning where nobody is retired sits at zero the whole
-// time, which is exactly when it is longest — the alternative was to read the base runners too, and
-// a pile that shrinks because a runner was thrown out at second is a stranger thing to ship.
 export const inningProgress = (game: Game): number => {
 	const outs = game.bso?.outs ?? 0;
-	// Defaults to the top: an unreported half should read as the start of the inning, not its middle.
 	const topOfInning = game.topOfInning ?? true;
 	return clamp01(((topOfInning ? 0 : 3) + outs) / 6);
 };
 
-// Every period ends deeper than the one before it, so a game gets visibly worse to play in as it
-// goes. Overtime keeps the regulation maximum rather than pushing past it.
 export const accumulationDepth = (game: Game): number => {
 	if (game.status === 'pre') return 0;
 	if (game.status === 'post') return 1;
@@ -201,7 +180,6 @@ export const accumulationDepth = (game: Game): number => {
 export const resolveDecorations = (game: Game, now: Date, prefs: holidayDecorationPrefs): decorationState => {
 	if (!prefs.holidayDecorationsEnabled) return noDecorations;
 
-	// Thanksgiving is four days a year and snow is most of a winter, so the rarer one wins the week.
 	const leaves = prefs.holidayLeavesEnabled && game.sportType === 'football' && isThanksgivingWeek(now);
 	const snow = prefs.holidaySnowEnabled && isSnowing(game);
 	const falling: fallingKind | null = leaves ? 'leaves' : snow ? 'snow' : null;

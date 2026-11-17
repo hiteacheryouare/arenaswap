@@ -10,32 +10,23 @@ import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 
 interface teamPickerListProps {
 	teams: EspnTeamEntry[];
-	// Held by the caller so a pinned section can filter on the same text the league groups do.
 	query: string;
 	onQueryChange: (query: string) => void;
 	isLoading: boolean;
 	hasError: boolean;
 	list?: teamList;
 	selected: ReadonlySet<string>;
-	// Teams on the other list, marked so picking one here reads as moving it.
 	otherListSelected?: ReadonlySet<string>;
 	onToggle: (team: EspnTeamEntry) => void;
 	onRetry: () => void;
-	// Sits above the league groups. Callers drop it while a search is running rather than filtering
-	// it, so it never competes with the results.
 	pinned?: ReactNode;
 }
 
-// A fragment rather than a wrapper, so the search box and the scrolling list stay siblings of
-// whatever chrome the caller puts around them — onboarding pins its footer against that column.
 const teamPickerList = ({
 	teams, query, onQueryChange, isLoading, hasError, list = 'favorites', selected, otherListSelected, onToggle, onRetry, pinned,
 }: teamPickerListProps) => {
 	const locale = useDisplayLocale();
-	// Kept across renders: with the college leagues on this is well over a thousand teams, and the
-	// popup re-renders on every broadcast while Settings is open.
 	const groups = useMemo(() => {
-		// Our sources list a league's teams in their own order, which reads as no order at all.
 		const collator = new Intl.Collator(locale);
 		const grouped = teams
 			.filter(team => matchesTeamQuery(team, query))

@@ -62,8 +62,6 @@ import {
 	shouldShowReviewPrompt,
 } from '../../utils/reviewPrompt';
 
-// Shared rather than a fresh [] per render, which would rebuild the detail view's chart memos on
-// every push for a game with no history yet.
 const noSnapshots: ScoreSnapshot[] = [];
 const noPowerScoreSnapshots: PowerScoreSnapshot[] = [];
 
@@ -92,8 +90,6 @@ export default () => {
 	if (!navigated && view !== 'main') setNavigated(true);
 	const viewSlide = useSlideDirection(view === 'main' ? 0 : 1);
 	const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
-	// Held here rather than inside MainView: the view shell is keyed on `view`, so anything the main
-	// view owns itself is thrown away the moment you open a game, a setting or the suggestion sheet.
 	const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
 	const [upcomingQuery, setUpcomingQuery] = useState<string | null>(null);
 	const mainScrollOffset = useRef(0);
@@ -120,13 +116,8 @@ export default () => {
 	const [reviewPromptState, setReviewPromptState] = useState<ReviewPromptState>(normalizeReviewPromptState(null));
 	const [settled, setSettled] = useState(false);
 	const theme = useTheme(prefsLoaded ? prefs.theme : null);
-	// Owned up here because the view shell is keyed on `view`: left to MainView it would replay in
-	// full every time you came back from a setting or a game detail. Cleared once the last card has
-	// landed, which is what makes the return trip quiet.
 	const [revealMode, setRevealMode] = useState(resolveOpenRevealMode);
 	const [revealCut] = useState(() => resolveOpenRevealCut(revealMode));
-	// Seeded rather than empty: every league already has a pinned or fallback URL, so the pickers are
-	// correct on the first frame and the refresh below is an upgrade rather than the only source.
 	const [allLeagueLogoCache, setAllLeagueLogoCache] = useState<LeagueLogoMap>(seededLeagueLogos);
 	const [leagueSchedules, setLeagueSchedules] = useState<LeagueScheduleMap>({});
 	const settledRef = useRef(false);
@@ -134,34 +125,18 @@ export default () => {
 	const { toasts, showToast, dismissToast, pauseToast, resumeToast } = useToast();
 	const bossShortcut = useBossShortcut();
 
-	// Updates arrive by push, so revalidation is off: a second SWR fetch (StrictMode remount or
-	// a React 19 store re-snapshot) would overwrite data that came in via SCORES_UPDATED.
 	const { data, error, isLoading, mutate } = useSWR('bg-state', () => fetchState(false), {
 		revalidateOnFocus: false,
 		revalidateOnReconnect: false,
 		revalidateIfStale: false,
 	});
 
-	// Timed from the first painted list rather than from mount, because the cards do not exist until
-	// the slate lands and the animation starts with them. Started at mount it would expire partway
-	// through a slow open and take the stage off cards still using it.
-	//
-	// "Painted" means the list is the thing on screen, not merely that a fetch came back. Onboarding
-	// is a shell above `view` and its own initial fetch settles with no leagues enabled, so timed from
-	// the fetch alone the whole window expired behind the wizard — and since `resolveOpenRevealMode`
-	// has stamped the day by then, the first real slate a new user ever sees arrived with the
-	// animation already over and the next open got the quick version. The full one was unreachable on
-	// day one.
 	const listOnScreen = onboardingDone === true && view === 'main' && !isLoading && settled;
 	const revealStartedRef = useRef(false);
 	useEffect(() => {
 		if (revealMode === 'none') return;
 		if (!listOnScreen) {
-			// Not started yet — onboarding, or the slate still on its way. Wait for it.
 			if (!revealStartedRef.current) return;
-			// Started, and then the list went away. It ends here rather than waiting: MainView unmounts,
-			// each card's own `done` state goes with it, and coming back inside the window would play the
-			// whole graphic again — which is the thing owning the mode up here was meant to prevent.
 			setRevealMode('none');
 			return;
 		}
@@ -170,16 +145,6 @@ export default () => {
 		return () => clearTimeout(timer);
 	}, [revealMode, revealCut, listOnScreen]);
 
-	// Five seconds a card is long enough to need a way out, and the way out is anything at all: the
-	// first touch or keystroke ends it. Capture phase, and the handler neither prevents nor stops the
-	// event — the click that ends the graphic is still the click that opens the card it landed on, and
-	// the Tab that ends it still moves the focus.
-	//
-	// Two steps rather than going straight to 'none', which is what the teardown above does. That
-	// removes the wrapper, and every beat of the card coming into focus fills `both`, so a cut
-	// mid-graphic blanks the card for a frame and then brings it back — a worse thing than the
-	// animation somebody was trying to escape. The class takes the graphic off over `revealSkipOutMs`
-	// and releases the card underneath at once; the mode follows when it has gone.
 	const [revealSkipping, setRevealSkipping] = useState(false);
 	useEffect(() => {
 		if (revealMode === 'none' || revealSkipping) return;
@@ -198,21 +163,11 @@ export default () => {
 		return () => clearTimeout(timer);
 	}, [revealSkipping]);
 
-	// The setting is read a whole popup open before it is written — `resolveOpenRevealMode` runs in a
-	// `useState` initialiser, and the prefs it belongs to are still in flight then. So the copy it
-	// reads is refreshed here instead, once per open, as soon as the real value lands: switching the
-	// animation off takes effect the next time the popup opens, which is the only open it could ever
-	// have affected anyway.
 	useEffect(() => {
 		if (!prefsLoaded) return;
 		writeOpenRevealEnabled(prefs.openRevealEnabled);
 	}, [prefsLoaded, prefs.openRevealEnabled]);
 
-	// The onboarding and settings pickers show every league, not just the enabled ones — which is 31
-	// scoreboard requests, more than ESPN's burst allowance in one call, and this ran on every single
-	// popup open with the result discarded on close. It was the pickers, not the slate, spending the
-	// budget the slate then came back short of. Cached for a week now, and the seed above means a miss
-	// costs nothing visible.
 	useEffect(() => {
 		let cancelled = false;
 		void (async () => {
@@ -231,7 +186,6 @@ export default () => {
 				setAllLeagueLogoCache(current => ({ ...current, ...logos }));
 				setLeagueSchedules(schedules);
 			} catch {
-				// Storage unavailable, or ESPN shed the whole fan-out. The seed is already drawable.
 			}
 		})();
 		return () => { cancelled = true; };
@@ -239,15 +193,8 @@ export default () => {
 
 	const games = useMemo(() => data?.games ?? [], [data?.games]);
 
-	/* An empty list with leagues ESPN refused behind it is not a quiet night, and the no-games panel
-	   said it was — on a full Saturday, with confidence. The fetch itself resolves either way, because
-	   the slate is collected best-effort and a refused league contributes nothing and throws nothing,
-	   so this is the only place the difference is visible. Only when the list is empty: a slate that
-	   lost one league of thirty-one still has games to show, and those are worth more than a banner. */
 	const slateUnvouchable = games.length === 0 && (data?.slateShedLeagues?.length ?? 0) > 0;
 
-	// openTabs is a mount-time snapshot, so this settles once per popup open. That is what lets a
-	// dismissal stick for the session while still re-raising when a genuinely new pair shows up.
 	const suggestions = useMemo(() => suggestTabAssignments({
 		tabs: openTabs.flatMap<SuggestionTab>(tab => tab.id === undefined || !tab.url
 			? []
@@ -273,8 +220,6 @@ export default () => {
 
 	useEffect(() => {
 		const init = async () => {
-			// A profile switch made in another browser is settled first, or the prefs read below
-			// would belong to the profile this browser is about to set aside.
 			setProfiles(await followSyncedProfile().catch(() => defaultProfiles));
 			const [{ prefs: normalizedPrefs, hasStored: hasStoredPrefs }, localResult, storedRoster] = await Promise.all([
 				loadStoredUserPreferencesWithPresence(),
@@ -320,8 +265,6 @@ export default () => {
 			setStandbyStreamTabId((result.standbyStreamTabId as number | null) ?? null);
 			setDismissedSuggestions(normalizeDismissedSuggestions(result[tabSuggestionDismissalsKey]));
 
-			// The background hands tabs back while the popup is shut, so this is where the user
-			// finds out it happened. Cleared on read: it is news, not state.
 			const finishedTabs = normalizeFinishedTabNotice(result[finishedTabNoticeKey]);
 			if (!finishedTabs) return;
 			if (finishedTabs.freed > 0) showToast(i18n.t('finishedTabs.toastFreed', finishedTabs.freed), 'info');
@@ -333,8 +276,6 @@ export default () => {
 			setOpenTabs(tabs.filter(tab => tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('about:')));
 		});
 
-		// The picker lists this window's tabs, so a standby tab in another window is fetched by id.
-		// A tab that has since closed is left out, which shows the placeholder as before.
 		const lookupStandbyElsewhere = async () => {
 			const { standbyStreamTabId: savedId } = await browser.storage.session.get({ standbyStreamTabId: null });
 			if (typeof savedId !== 'number') return;
@@ -343,7 +284,6 @@ export default () => {
 		};
 		void lookupStandbyElsewhere();
 
-		// Fallback for when no SCORES_UPDATED ever arrives.
 		const settleTimer = setTimeout(() => {
 			if (!settledRef.current) { settledRef.current = true; setSettled(true); }
 		}, 5000);
@@ -395,9 +335,6 @@ export default () => {
 		enabled => persistPrefs(currentPrefs => ({ ...currentPrefs, multiviewEnabled: enabled })),
 	);
 
-	// Queued behind any preferences save still on its way, so an earlier UPDATE_PREFS carrying
-	// `enabled: true` cannot land after the press and switch auto-switching back on. The popup shows
-	// the pause itself in case the browser leaves it open behind the new tab.
 	const pressBossButton = () => {
 		const paused = { ...prefsRef.current, enabled: false };
 		prefsRef.current = paused;
@@ -412,8 +349,6 @@ export default () => {
 		persistPrefs(currentPrefs => ({ ...currentPrefs, enabledLeagues: leagues, favoriteTeamIds: favorites }));
 		void browser.storage.local.set({ onboardingCompleted: true });
 		showToast(i18n.t('app.welcomeToast'), 'success');
-		// `settled` is already true from the initial fetch, which ran during onboarding with no
-		// leagues, so without this reset MainView flashes "no games" on the first transition.
 		settledRef.current = false;
 		setSettled(false);
 		setOnboardingDone(true);
@@ -431,11 +366,9 @@ export default () => {
 		fantasyRosterRef.current = nextRoster;
 		setPrefs(nextPrefs.prefs);
 		setFantasyRoster(nextRoster);
-		// A switch is not an edit, so closing settings afterwards doesn't claim anything was saved.
 		settingsOnOpenRef.current = settingsSnapshot();
 	};
 
-	// Queued behind any save still on its way, so the setup set aside is the one on screen.
 	const runProfileChange = (change: () => Promise<profileList>, toast?: (list: profileList) => string) => {
 		setProfilesBusy(true);
 		const done = prefsSyncRef.current.catch(() => {}).then(async () => {
@@ -471,7 +404,6 @@ export default () => {
 		},
 	};
 
-	// A popup left open while another browser switches profiles moves with it.
 	const followRemoteSwitchRef = useRef(() => {});
 	followRemoteSwitchRef.current = () => { void runProfileChange(followSyncedProfile); };
 	useEffect(() => {
@@ -538,12 +470,10 @@ export default () => {
 		}));
 	};
 
-
 	const onToggleSignal = (signal: SignalName) => {
 		persistPrefs(currentPrefs => toggleModeSignal(currentPrefs, 'classic', signal));
 	};
 
-	// The background reads the roster from storage on its own schedule, so saving it is the whole hand-off.
 	const onFantasyRosterChange = (update: (current: FantasyRosterEntry[]) => FantasyRosterEntry[]) => {
 		const next = update(fantasyRosterRef.current);
 		fantasyRosterRef.current = next;
@@ -557,8 +487,6 @@ export default () => {
 		void browser.runtime.sendMessage({ type: 'UPDATE_REGISTRY', tabRegistry: updated } satisfies ExtensionMessage);
 	};
 
-	// Every pair the sheet showed is recorded, not just the accepted ones. Leaving the rejected rows
-	// out would raise the banner again the next time the popup opened.
 	const retireShownSuggestions = () => {
 		const updated = dismissSuggestions(dismissedSuggestions, suggestions);
 		setDismissedSuggestions(updated);
@@ -577,7 +505,6 @@ export default () => {
 		setView('main');
 	};
 
-	// Shared by the game list and the pre-game poster's stars, so the two can't drift.
 	const toggleFavoriteTeam = (leagueId: LeagueId, teamId: string) => {
 		const favoriteTeamKey = createFavoriteTeamKey(leagueId, teamId);
 		persistPrefs(currentPrefs => {

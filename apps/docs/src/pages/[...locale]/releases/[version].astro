@@ -9,9 +9,6 @@ import formatReleaseDate from '../../../lib/releaseDate';
 import publicImageSize from '../../../lib/publicImageSize';
 import { getOriginals, localizeEntry } from '../../../lib/localizedContent';
 
-// A release note reads like an announcement, so it is laid out like one: centred masthead, an
-// optional lead image, one column of prose, and the note's own section headings pinned beside it.
-
 export const getStaticPaths = async () => {
 	const releases = (await getOriginals('releases'))
 		.toSorted((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -20,7 +17,6 @@ export const getStaticPaths = async () => {
 		params: { version: release.data.version },
 		props: {
 			original: release,
-			// Sorted newest first, so the next index is the older release.
 			newer: releases[index - 1],
 			older: releases[index + 1],
 		},
@@ -40,8 +36,6 @@ const newerTitle = newer && (await localizeEntry('releases', newer, locale));
 const olderTitle = older && (await localizeEntry('releases', older, locale));
 const { Content, headings } = await render(release);
 
-// Only the note's own top-level sections. Deeper headings would turn the aside into an outline of
-// an outline.
 const sections = headings.filter(heading => heading.depth === 2);
 
 const t = useTranslations(locale);
@@ -119,8 +113,6 @@ const imageSize = release.data.image ? publicImageSize(release.data.image) : und
 	</div>
 
 	<script>
-		// Marks the section you are reading in the aside. Progressive: without this the list is still
-		// a working set of anchors.
 		const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
 		const headings = [...links]
 			.map(link => document.getElementById(link.dataset.tocLink ?? ''))
@@ -133,8 +125,6 @@ const imageSize = release.data.image ? publicImageSize(release.data.image) : und
 
 			const observer = new IntersectionObserver(
 				entries => {
-					// The topmost heading currently in the reading band wins, so scrolling up highlights
-					// the section you are moving into rather than the one you just left.
 					const visible = entries
 						.filter(entry => entry.isIntersecting)
 						.toSorted((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);

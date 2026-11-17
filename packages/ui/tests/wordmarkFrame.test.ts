@@ -15,14 +15,8 @@ import wordmarkFrameAt, {
 } from '../src/components/wordmarkFrame';
 import { headFrom, headTo } from '../src/components/wordmarkShapes';
 
-// Sampled rather than spot-checked. Every failure this guards against is a few frames wide — a
-// letter blinking out for 40ms behind something that has not quite covered it — so the interesting
-// question is never what one value is, it is whether a property holds across the whole run.
 const everyFrame = Array.from({ length: 601 }, (_, step) => step / 600);
 
-// The arrowhead's true right edge at a given point along its morph, read off the ring the
-// component actually draws. Standing in for it with a scaled constant is close but not exact, and
-// the box now closes onto this tip precisely enough for the difference to matter.
 const headRight = (morph: number) => {
 	let max = -Infinity;
 	for (let i = 0; i < headFrom.length; i += 2) {
@@ -34,7 +28,6 @@ const headRight = (morph: number) => {
 
 const progress = (value: number, from: number, to: number) => (value - from) / (to - from);
 
-// A box's placement under a frame's pose, which is what the browser actually draws.
 const placed = (box: { x: number; y: number; w: number; h: number }, at: { x: number; y: number; scaleX: number; scaleY: number }) => ({
 	left: box.x * at.scaleX + at.x,
 	right: (box.x + box.w) * at.scaleX + at.x,
@@ -62,8 +55,6 @@ describe('the wordmark at rest', () => {
 		expect(rest.dot).toEqual(extents.dotRest);
 	});
 
-	// The bands sit inside each leading edge. At rest that puts them in the gap between word and
-	// arrow, which is the only reason the mark is pixel-identical to the file it came from.
 	test('parks both fade bands clear of every letter', () => {
 		expect(rest.arenFade.from).toBeGreaterThan(extents.arenRight);
 		expect(rest.wapFade.from).toBeGreaterThan(extents.wapBox.x + extents.wapBox.w);
@@ -73,9 +64,6 @@ describe('the wordmark at rest', () => {
 describe('the wordmark collapsed', () => {
 	const end = wordmarkFrameAt(1);
 
-	// Not an impression of the icon — the icon. Every one of these was measured off
-	// `icon_white_on_transparent.svg` and is asserted to the hundredth of a unit, which is a
-	// thousandth of a pixel at the size the popup draws this.
 	test('lands on the favicon, piece for piece', () => {
 		const a = placed(extents.aBox, end.a);
 		expect(a.left).toBeCloseTo(extents.aEnd.x, 2);
@@ -86,7 +74,6 @@ describe('the wordmark collapsed', () => {
 		expect(s.top).toBeCloseTo(extents.sEnd.y, 2);
 		expect(s.right - s.left).toBeCloseTo(extents.sEnd.w, 2);
 
-		// The period is gone, not parked: the shipped icon has no orange in it at any size.
 		expect(end.dot.rx).toBe(0);
 		expect(end.dot.ry).toBe(0);
 		expect(end.dot.stroke).toBe(0);
@@ -96,9 +83,7 @@ describe('the wordmark collapsed', () => {
 		expect(end.barCentre).toBeCloseTo(extents.barEnd.centre, 2);
 		expect(end.dashX1).toBeCloseTo(extents.dashEnd.firstCap, 2);
 		expect(end.dashX2).toBeCloseTo(extents.dashEnd.lastCap, 2);
-		// Seven pills become two, at the icon's own pitch.
 		expect(end.dashPattern).toBe(`${extents.dashEnd.seg} ${extents.dashEnd.gap}`);
-		// Both point rings all the way onto the icon's outlines.
 		expect(end.chevronMorph).toBe(1);
 		expect(end.headMorph).toBe(1);
 	});
@@ -106,8 +91,6 @@ describe('the wordmark collapsed', () => {
 	test('closes the box around what survives, with nothing hanging out of it', () => {
 		expect(end.box.width).toBeCloseTo(collapsedBox.width, 6);
 		expect(end.box.height).toBeCloseTo(collapsedBox.height, 6);
-		// The arrowhead is the rightmost thing in the icon once the dot has gone, so the box closes
-		// onto its tip — one margin clear of it, not a period's width.
 		const right = collapsedBox.x + collapsedBox.width;
 		expect(right - headRight(1)).toBeCloseTo(collapsedMargin, 1);
 		expect(collapsedBox.x).toBe(-collapsedMargin);
@@ -121,10 +104,6 @@ describe('the wordmark collapsed', () => {
 });
 
 describe('across the whole run', () => {
-	// The point of the whole rebuild. The `a` and the `s` are not masked by anything, so the only
-	// way either can leave the screen is by being placed outside the viewBox — which is exactly
-	// what a mistake in the pose or the box would do, and exactly what nobody would notice until
-	// the animation was already shipped.
 	test('never lets the `a` or the `s` out of frame', () => {
 		everyFrame.forEach(t => {
 			const frame = wordmarkFrameAt(t);
@@ -139,7 +118,6 @@ describe('across the whole run', () => {
 		});
 	});
 
-	// Both mask edges only ever close. Nothing eaten can come back, in either direction of travel.
 	test('never uncovers a word it has already eaten', () => {
 		everyFrame.slice(1).forEach((t, index) => {
 			const now = wordmarkFrameAt(t);
@@ -149,9 +127,6 @@ describe('across the whole run', () => {
 		});
 	});
 
-	// It has to still be there long enough to be the thing visibly clearing `wap`, and gone before
-	// the box narrows past where it ends up — otherwise it either survives into the icon or winks
-	// out while there is still a letter for it to push.
 	test('keeps the period until the word it is clearing has gone, then closes it', () => {
 		const wapGone = everyFrame.find(t => {
 			const frame = wordmarkFrameAt(t);
@@ -163,8 +138,6 @@ describe('across the whole run', () => {
 		everyFrame.filter(t => t < wapGone * 0.6).forEach(t => {
 			expect(wordmarkFrameAt(t).dot.rx).toBeGreaterThan(10);
 		});
-		// While it can still be seen it has to be somewhere the box can show it. Where its centre
-		// drifts after that does not matter, because there is nothing left of it to draw.
 		everyFrame.filter(t => wordmarkFrameAt(t).dot.rx > 0).forEach(t => {
 			const frame = wordmarkFrameAt(t);
 			expect(frame.dot.cx + frame.dot.rx).toBeLessThanOrEqual(frame.box.x + frame.box.width);
@@ -179,8 +152,6 @@ describe('across the whole run', () => {
 		});
 	});
 
-	// The top arrow's head used to run on the box's clock and landed a good 100ms after the rest of
-	// the mark. Each arrow's progress is measured end to end, so this holds whatever the curve is.
 	test('collapses both arrows together', () => {
 		const rest = wordmarkFrameAt(0);
 		const end = wordmarkFrameAt(1);
@@ -198,8 +169,6 @@ describe('across the whole run', () => {
 		});
 	});
 
-	// Scrolling back up is the same function run backwards and nothing else, so it is only truly
-	// reversible if no frame depends on how it was reached.
 	test('depends on nothing but `t`, which is what makes scrolling up the reverse', () => {
 		everyFrame.forEach(t => {
 			expect(wordmarkFrameAt(t)).toEqual(wordmarkFrameAt(t));
@@ -226,9 +195,6 @@ describe('the fade bands', () => {
 			const frame = wordmarkFrameAt(t);
 			expect(frame.arenFade.to - frame.arenFade.from).toBeCloseTo(fadeWidth, 6);
 			expect(frame.wapFade.to - frame.wapFade.from).toBeCloseTo(fadeWidth, 6);
-			// The band's opaque end leads the `a`'s shoulder, so a letter is already gone by the
-			// time the `a` reaches it. The transparent end runs on past — harmless, because the `a`
-			// is not in this mask and only `aren` is behind it.
 			const a = placed(extents.aBox, frame.a);
 			expect(frame.arenFade.from).toBeLessThanOrEqual(a.left + 0.01);
 		});

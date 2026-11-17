@@ -23,11 +23,8 @@ interface directoryResult {
 	failed?: boolean;
 }
 
-// `--as-bg-1` in each theme, which is what a tile is painted with.
 const tileSurfaces = { dark: '#161b22', light: '#f3f5f8' };
 
-// Loading is whatever has no answer for the current request yet, so a retry or a different league
-// reads as loading without a state reset of its own.
 const useConferenceDirectory = (leagueId: CollegeLeagueId) => {
 	const [attempt, setAttempt] = useState(0);
 	const requestKey = `${leagueId}:${attempt}`;

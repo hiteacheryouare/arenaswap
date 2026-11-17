@@ -7,7 +7,6 @@ import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
 import fil from '../../../locales/fil.json';
 import fr from '../../../locales/fr.json';
-// Not `it` — that would shadow Mocha's global it() and break every test in this file.
 import itLocale from '../../../locales/it.json';
 import ja from '../../../locales/ja.json';
 import ko from '../../../locales/ko.json';
@@ -20,7 +19,6 @@ const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT:
 
 const crestPixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
 
-// The shipped demo games, so these run the real parser over the real demo payloads.
 const seededGames = new MockGameSimulator().seed();
 
 const demoGame = (id: string): Game => {
@@ -32,11 +30,8 @@ const demoGame = (id: string): Game => {
 	};
 };
 
-// DET at NYM: grouped baseball stats with league ranks, and injured-list names to filter out.
 const baseball = demoGame('mock-18');
-// MTL at BOS: five Bruins on the report against none for Montreal.
 const hockey = demoGame('mock-19');
-// PSU at TEM: football, no injury report.
 const football = demoGame('mock-6');
 
 const detailView = (game: Game) => (
@@ -114,10 +109,8 @@ describe('Matchup tab', () => {
 			pane(baseball).find('.gd-form-row').should('have.length', 2).each($row => {
 				const cells = $row.find('.gd-form-cell');
 				expect(cells).to.have.length(5);
-				// The last cell is yesterday's game.
 				expect(cells.last().attr('title')).to.contain(new Date(Date.now() - 24 * 3600_000).toLocaleDateString([], { month: 'short', day: 'numeric' }));
 			});
-			// Away first: Detroit's last game was a 2–3 loss at home to Kansas City.
 			pane(baseball).find('.gd-form-row').first().find('.gd-form-abbreviation').should('have.text', 'DET');
 			pane(baseball).find('.gd-form-row').first().find('.gd-form-cell').last()
 				.should('have.attr', 'data-result', 'L')
@@ -132,19 +125,14 @@ describe('Matchup tab', () => {
 			pane(baseball).find('.gd-form-rest').should('not.exist');
 		});
 
-		// Venue times in Eastern, written as UTC so the viewer's own timezone cannot move them.
 		it('counts rest the way the venue sees it, matinees included', () => {
 			const now = Date.parse('2026-03-03T15:00:00Z');
-			// Sunday 1pm, then Monday 7:30pm: a back-to-back that lands on two different dates in Europe.
 			expect(restPhrase('2026-03-01T18:00:00Z', '2026-03-03T00:30:00Z', now)).to.equal(en.detail.backToBack);
-			// Saturday 7pm, then Monday 1pm: a day off, even though it is under 48 hours.
 			expect(restPhrase('2026-03-01T00:00:00Z', '2026-03-02T18:00:00Z', Date.parse('2026-03-02T15:00:00Z'))).to.equal("1 day's rest");
 			expect(restPhrase('2026-03-01T00:00:00Z', '2026-03-04T00:00:00Z', Date.parse('2026-03-03T15:00:00Z'))).to.equal("2 days' rest");
-			// Past a week it is a break, not rest.
 			expect(restPhrase('2026-02-20T00:00:00Z', '2026-03-04T00:00:00Z', Date.parse('2026-03-03T15:00:00Z'))).to.equal(null);
 		});
 
-		// The last five only hold games already played, so tomorrow's game may have one before it.
 		it('says nothing about rest for a game that is not coming up next', () => {
 			expect(restPhrase('2026-03-02T00:00:00Z', '2026-03-04T00:00:00Z', Date.parse('2026-03-02T12:00:00Z'))).to.equal(null);
 		});
@@ -162,7 +150,6 @@ describe('Matchup tab', () => {
 			});
 		});
 
-		// Detroit's 3.61 ERA beats the Mets' 4.02, so the away side is bold and owns the longer half.
 		it('flips the winner and the bar for a stat where lower is better', () => {
 			openMatchup(baseball);
 			pane(baseball).find('.gd-compare-row').eq(4).within(() => {
@@ -181,7 +168,6 @@ describe('Matchup tab', () => {
 			pane(baseball).find('.gd-injury-team').first().find('.gd-injury-name').should($names => {
 				expect([...$names].map(name => name.textContent)).to.deep.equal(['P. Meadows', 'M. Vierling']);
 			});
-			// Two of the three Mets are on the injured list, which is not news on game day.
 			pane(baseball).find('.gd-injury-team').last().find('.gd-injury-row').should('have.length', 1)
 				.find('.gd-injury-status').should('have.text', en.detail.injuryDayToDay);
 		});
@@ -216,7 +202,6 @@ describe('Matchup tab', () => {
 		}
 	});
 
-	// Swapped in place so the real column widths measure every locale's longest strings.
 	it('fits every locale\'s labels in their columns', () => {
 		openMatchup(baseball);
 		pane(baseball).find('.gd-compare-row').first().then(([row]) => {

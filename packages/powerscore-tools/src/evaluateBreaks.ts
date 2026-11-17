@@ -1,17 +1,3 @@
-// Scores the commercial-break detector against what really happened. Replays the recordings through
-// the same steps the extension takes, then compares every poll's verdict with the dead time in each
-// game's post-game play-by-play.
-//
-// Run: npm run powerscore:breaks -- [options]
-//   --recording <path>     a recordings folder, day folder or file (default: scripts/powerscore/recordings)
-//   --play-by-play <path>  cached post-game summaries, <league>-<gameId>.json (default: <recordings>/playByPlay)
-//   --max-false <share>    the most false alarms a league may raise, as a share of its flagged runs (default 0.05)
-//   --leagues a,b          only these leagues (default: all)
-//   --examples             list every false alarm
-//   --misses               list every break no rule caught
-//
-// The play-by-play is fetched once per game with `--fetch`, which only asks for games in the
-// recordings that have no cached file yet.
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { leagueConfigMap } from 'powerscore';

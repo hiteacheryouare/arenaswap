@@ -5,8 +5,6 @@ import { installFakeBrowser, type fakeBackground, type fakeBrowserOptions } from
 
 export type openPopupOptions = Omit<fakeBrowserOptions, 'messages'>;
 
-// A 1x1 transparent PNG. Crests and league logos point at a.espncdn.com, and a real fetch would
-// make every spec depend on ESPN being up and on the network being fast enough to beat a timeout.
 const blankPng = Cypress.Buffer.from(
 	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
 	'base64',
@@ -21,7 +19,6 @@ export const teamsByLeague: Record<string, [string, string][]> = {
 	mlb: [['22', 'Philadelphia Phillies']],
 };
 
-// ESPN's /teams envelope, trimmed to the fields fetchTeamsForLeagues reads.
 const teamsEnvelope = (entries: [string, string][]) => ({
 	sports: [{
 		leagues: [{
@@ -39,8 +36,6 @@ Cypress.Commands.add('openPopup', (options: openPopupOptions = {}) => {
 
 	cy.intercept({ hostname: 'site.api.espn.com' }, { statusCode: 200, body: {} }).as('espnApi');
 
-	// The onboarding team picker calls ESPN's /teams directly rather than going through the
-	// background, so it is the one screen that needs a real payload rather than a blanket stub.
 	cy.intercept({ hostname: 'site.api.espn.com', pathname: /\/teams$/ }, request => {
 		const league = Object.keys(teamsByLeague).find(id => request.url.includes(`/${id}/`));
 		request.reply({ statusCode: 200, body: teamsEnvelope(league ? teamsByLeague[league] : []) });
@@ -68,11 +63,8 @@ Cypress.Commands.add('pushScores', (patch: Partial<BackgroundState> = {}) => {
 declare global {
 	namespace Cypress {
 		interface Chainable {
-			/** Boots the built popup at extension size against an in-memory background. */
 			openPopup: (options?: openPopupOptions) => Chainable<void>;
-			/** The in-memory background the popup is talking to. */
 			background: () => Chainable<fakeBackground>;
-			/** Fires SCORES_UPDATED the way the real background worker does. */
 			pushScores: (patch?: Partial<BackgroundState>) => Chainable<void>;
 		}
 	}

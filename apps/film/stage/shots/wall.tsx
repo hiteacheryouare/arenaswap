@@ -15,7 +15,6 @@ interface Grid {
 	gap: number;
 }
 
-// The grid sits a little below centre in landscape, leaving the top of the frame to the copy.
 const gridDrop: Record<Format, number> = { landscape: 56, portrait: 0 };
 
 const grids: Record<Format, Grid> = {
@@ -38,7 +37,6 @@ const cellOf = (index: number, count: number, format: Format, width: number, hei
 	};
 };
 
-// Timed for a two-bar opening and squeezed proportionally into a shorter one.
 const fullLength = bar(3) + 0.7;
 const splitAt = 0.62;
 const bloomAt = 1.25;

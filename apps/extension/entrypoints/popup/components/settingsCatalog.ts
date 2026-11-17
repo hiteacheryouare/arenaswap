@@ -24,9 +24,7 @@ export interface settingsEntry {
 	group: settingsGroupId;
 	labelKey: plainMessageKey;
 	keywordsKey: plainMessageKey;
-	// The control a search result lands on. Entries without one open their page at the top.
 	controlId?: string;
-	// A control that only exists while this mode is in use, so search leaves it out otherwise.
 	requires?: ScoringModeChoice;
 }
 
@@ -109,10 +107,6 @@ export interface settingsSearchResult {
 // the assignment once here and calling through it is instant.
 export const translate: (key: plainMessageKey) => string = i18n.t;
 
-// Group text is matched per group, never folded into each entry's haystack: "bonus" appears in
-// the Scoring description, and mixing the two returned all five signals for it.
-// `available` is every mode whose controls are on screen; without it, nothing is left out.
-// `hidden` is every group this build does not have.
 export const searchSettings = (query: string, available?: ReadonlySet<ScoringModeChoice>, hidden?: ReadonlySet<settingsGroupId>): settingsSearchResult[] => {
 	const needle = normalize(query);
 	if (!needle) return [];

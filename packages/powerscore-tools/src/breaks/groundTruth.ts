@@ -2,13 +2,6 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { LeagueId } from '@arenaswap/core';
 
-/*
-	What really happened, from a game's post-game play-by-play: every stretch of 90 seconds or more
-	between two pieces of action is a dead interval, labelled by what was logged inside it. Reviews
-	and injuries land in here too, so the truth is rough, but it is the same truth every rule is
-	scored against.
-*/
-
 export type DeadIntervalKind =
 	| 'inningBreak' | 'pitchingChange' | 'review' | 'delay' | 'gap'
 	| 'intermission' | 'periodEnd' | 'twoMinuteWarning' | 'tvTimeout' | 'teamTimeout'
@@ -25,7 +18,6 @@ export interface Play {
 	text: string;
 	summaryType?: string;
 	period?: number;
-	// Seconds on the game clock.
 	clock?: number;
 }
 
@@ -33,7 +25,6 @@ export interface DeadInterval {
 	start: number;
 	end: number;
 	kind: DeadIntervalKind;
-	// The action play the interval follows.
 	after: Play;
 }
 

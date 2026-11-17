@@ -1,15 +1,8 @@
-// One quiet reading shell for every page that is not the landing page: release notes, docs, the
-// FAQ, credits. Only the homepage carries the visual idea; these pages carry text, and the job
-// here is a comfortable measure and a side-nav that stays out of the way.
 @use '@arenaswap/ui/src/motion' as m;
 @layer custom {
-
-	// For dates, outlines and other small secondary text: 5.6:1 on black and 5.3:1 on white, a step
-	// quieter than muted.
 	$text-subtle: light-dark(#6b6b6b, #8a8a8a);
 
 	.page-head {
-		// Clears the fixed header with room to breathe, on a page whose first element is a heading.
 		padding: calc(64px + clamp(3.5rem, 7vw, 5.5rem)) 0 0;
 	}
 
@@ -46,8 +39,6 @@
 		position: sticky;
 		top: 5.5rem;
 
-		// Kept flat rather than collapsible: with this few links, a disclosure control would be one
-		// more thing to operate for no less scrolling.
 		h2 {
 			font-size: 0.95rem;
 			font-weight: 600;
@@ -80,16 +71,8 @@
 				color: var(--as-accent-ink);
 			}
 		}
-
 	}
 
-	// ─── Documentation ───────────────────────────────────────────────────────────
-	// The hub at /docs/, the two section indexes, and one article per page. Everything here shares the
-	// reading shell with the release notes; only the pieces the docs add need styles of their own.
-
-	// Both trees are listed in the side nav, so the section names became links. `font: inherit` keeps
-	// them reading as the headings they are; the generic `.reading-nav a` rule would otherwise shrink
-	// them to the size of the articles underneath.
 	.docs-nav h2 a {
 		display: inline;
 		font: inherit;
@@ -106,8 +89,6 @@
 		}
 	}
 
-	// An article title is a sentence, not a word. At the size the section headings use, "How to watch
-	// several games at once" would take three lines and shout while doing it.
 	.docs-title {
 		font-size: clamp(1.9rem, 3.6vw, 2.5rem);
 		letter-spacing: -0.038em;
@@ -154,12 +135,6 @@
 		}
 	}
 
-	// Questions a reader arrives with, kept below the article rather than woven into it. Same
-	// disclosure widget as the FAQ page.
-	//
-	// No rule of its own: every .faq-item already draws one above itself and the last draws one below,
-	// so a section border lands a second identical line a couple of rem from the first, and the band
-	// between them reads as a question with nothing in it.
 	.docs-faq {
 		max-width: 68ch;
 		margin: 3.5rem 0 0;
@@ -185,14 +160,12 @@
 			}
 		}
 
-		// Sits second in the source so a single "Next" still lands on the right.
 		.docs-adjacent-next {
 			grid-column: 2;
 			text-align: right;
 		}
 	}
 
-	// The FAQ list closes with a rule of its own, so the nav borrows it rather than drawing a second.
 	.docs-faq + .docs-adjacent {
 		margin-top: 1.5rem;
 		padding-top: 0;
@@ -280,8 +253,6 @@
 		}
 	}
 
-	// ─── Release notes: index ────────────────────────────────────────────────────
-	// The newest release carries the page; everything before it is a line in a list.
 	.release-index {
 		padding: 2.75rem 0 5rem;
 		max-width: 70ch;
@@ -370,7 +341,6 @@
 		margin: 0.5rem 0 0;
 	}
 
-	// ─── Release notes: one release ──────────────────────────────────────────────
 	.release-page {
 		padding: 6rem 0 5rem;
 	}
@@ -391,7 +361,6 @@
 		padding: 3.25rem 0 0;
 
 		.release-meta {
-			// Centred by the block, not by the flow: the separator dots would otherwise sit ragged.
 			display: block;
 		}
 	}
@@ -437,13 +406,10 @@
 		}
 	}
 
-	// The note's own section headings, pinned beside it. The bar on the left of each row is the
-	// reading position.
 	.release-toc {
 		position: sticky;
 		top: 6rem;
 		grid-column: 3;
-		// 2.0.0 has fifteen sections, which on a laptop screen runs past the bottom of a sticky aside.
 		max-height: calc(100vh - 7rem);
 		overflow-y: auto;
 		overscroll-behavior: contain;
@@ -495,7 +461,6 @@
 			}
 		}
 
-		// Sits second in the source so a single "Next" still lands on the right.
 		.release-adjacent-next {
 			grid-column: 2;
 			text-align: right;
@@ -513,7 +478,6 @@
 			}
 		}
 
-		// An outline stacked above the article it outlines is two lists to scroll past.
 		.release-toc {
 			display: none;
 		}
@@ -528,7 +492,6 @@
 		}
 	}
 
-	// ─── Legal notices ───────────────────────────────────────────────────────────
 	.legal-index {
 		list-style: none;
 		margin: 0;
@@ -569,13 +532,9 @@
 		}
 	}
 
-	// Bootstrap's alert, doing the work. Only the measure and the two type sizes are set here: an alert
-	// is styled for a full-width form, and this one heads a reading column.
 	.untranslated-notice {
 		margin: 1.5rem 0 2rem;
 		max-width: 70ch;
-		// The accent's own ink is 4.2:1 on its pale light-mode surface, and the body is drawn fainter
-		// still. Its emphasis shade clears 4.5:1 for both.
 		color: light-dark(var(--as-blue-800), var(--as-accent-fg));
 	}
 
@@ -588,8 +547,6 @@
 	.untranslated-notice-body {
 		font-size: 0.875rem;
 		line-height: 1.65;
-		// Bootstrap's .alert sets a bottom margin on its own children; the body is the last thing in
-		// the box and does not need one.
 		margin: 0.3rem 0 0;
 		opacity: 0.85;
 	}
@@ -603,7 +560,6 @@
 		color: $text-subtle;
 	}
 
-	// ─── Credits ─────────────────────────────────────────────────────────────────
 	.credit-list {
 		list-style: none;
 		margin: 1.5rem 0 0;
@@ -647,13 +603,8 @@
 		}
 	}
 
-	// ─── FAQ ─────────────────────────────────────────────────────────────────────
-	// Bootstrap's accordion on native <details>, flattened to the site's ruled list: no fill, no
-	// side borders or radius, and the open question keeps its plain heading colour.
 	.faq-list {
 		margin-top: 0.5rem;
-		// Without the side nav the list would run the width of the container, leaving each rule about
-		// twice as long as the answer it sits under.
 		max-width: 52rem;
 
 		--as-accordion-padding-x: 0;
@@ -681,7 +632,6 @@
 			box-shadow: none;
 		}
 
-		// Sits where the old border-drawn caret did, which hung a few pixels past the text's right edge.
 		.accordion-icon {
 			translate: 0.35rem 0.33rem;
 			color: var(--as-accent-ink);
@@ -696,8 +646,6 @@
 		}
 	}
 
-	// Without `interpolate-size` the answer can only jump open, and the accordion's discrete
-	// transition would hold that jump back by half its duration.
 	@supports not (interpolate-size: allow-keywords) {
 		.faq-item::details-content {
 			transition: none;

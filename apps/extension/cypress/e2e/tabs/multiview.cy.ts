@@ -2,15 +2,10 @@ import { extensionUrl, expectHealthyBackground, openPage, play, startExtension, 
 import type { liveWorld } from '../../support/liveExtension';
 import { gameIds, slate, storedPrefs } from '../../support/liveGames';
 
-// Multiview opened by the shipped worker when two or more registered games are exciting at once,
-// and the page it opens laying those games out, one box per game tab. The frame script that runs
-// inside each box cannot run here, so each box's reports are sent as that script sends them.
-
 const wnbaTab = 2;
 const nhlTab = 3;
 const eplTab = 4;
 
-// The two basketball and hockey streams are on one streaming site; the soccer is on another.
 const streams = {
 	wnba: 'https://stream.test/live/wnba',
 	nhl: 'https://stream.test/live/nhl',
@@ -52,7 +47,6 @@ const openMultiview = () => {
 	world().then(live => openPage('/multiview.html', multiviewTabId(live)));
 };
 
-// Two reports with the player's clock moving between them, which is what the page counts as playing.
 const plays = (gameId: string, frameId: number, href: string) => world().then(async live => {
 	const tabId = multiviewTabId(live)!;
 	await live.frameReport(tabId, frameId, { name: gameId, href, playing: true, paused: false, time: 1 });

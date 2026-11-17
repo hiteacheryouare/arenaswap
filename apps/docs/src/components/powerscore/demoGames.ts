@@ -4,9 +4,6 @@ import { capitalizeReason, translateReasonFragments } from '../../../../extensio
 import { extensionString } from '../docs/demoStrings';
 import type { LocaleCode } from '../../i18n/locales';
 
-// Two games on the same night, scripted through the fourth quarter. Each event is
-// [secondsLeft, away, home]; the history handed to the engine is every event up to the moment.
-
 export interface DemoScript {
 	id: string;
 	away: { abbreviation: string; nickname: string };
@@ -73,8 +70,6 @@ export const scoreDemo = (script: DemoScript, mode: DemoMode = 'classic'): Power
 	return scoreGame(demoGame(script), { history, fantasy }, { mode });
 };
 
-// The extension's translator takes `$1` plurals as `{ "1": …, "n": … }` objects and `{name}`
-// placeholders by name. This is the same rule, read from the extension's locale files.
 const reasonTranslator = (locale: LocaleCode) => (key: string, subsOrCount?: unknown) => {
 	const value = extensionString(locale, key);
 	if (value && typeof value === 'object') {
@@ -87,7 +82,6 @@ const reasonTranslator = (locale: LocaleCode) => (key: string, subsOrCount?: unk
 	return Object.entries(subs).reduce((text, [name, replacement]) => text.split(`{${name}}`).join(String(replacement)), value);
 };
 
-// The reason as a finished sentence, ending on the full stop the locale joins its sentences with.
 export const reasonIn = (score: PowerScore, locale: LocaleCode) => {
 	const stop = String(extensionString(locale, 'powerScore.reasonSentenceJoiner')).trim();
 	if (locale === 'en') return `${score.reason}${stop}`;

@@ -25,8 +25,6 @@ const getInternals = (simulator: MockGameSimulator): SimulatorInternals => (
 	simulator as unknown as SimulatorInternals
 );
 
-// 'PHI 48' and 'DAL 48' are 4 yards apart on the field but read almost the same, so comparing the
-// yard lines as written would score a 44-yard gain as a 4-yard loss. PHI has the ball in mock-5.
 const yardsFromOwnGoal = (fieldPosition: string): number => {
 	const [side, yardLine] = fieldPosition.split(' ');
 	return side === 'PHI' ? Number(yardLine) : 100 - Number(yardLine);
@@ -411,8 +409,6 @@ describe('MockGameSimulator', () => {
 			expect(updated.bso?.strikes).toBeLessThanOrEqual(2);
 		});
 
-		// Our sources only name the next hitters while nobody is at the plate, so a demo game
-		// carrying both would show a screen the live feed never produces.
 		test('no demo game carries the at-bat pair and a due-up list together', () => {
 			const games = new MockGameSimulator().tick();
 			expect(games.filter(g => g.atBat && g.dueUp)).toEqual([]);
@@ -421,7 +417,6 @@ describe('MockGameSimulator', () => {
 			expect(getGameById(games, 'mock-16').atBat).toBeUndefined();
 		});
 
-		// The "Mid 10th" demo is a held frame: its list is only true while nobody is at the plate.
 		test('a game carrying a due-up list stays a still between-innings frame', () => {
 			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.1);
 			const simulator = new MockGameSimulator();
@@ -496,12 +491,7 @@ describe('MockGameSimulator', () => {
 			randomSpy.mockRestore();
 		});
 
-		// Regression: the table was walked by looking the current down up in it, but '1st & 10' sits at
-		// indices 0, 4 and 7, so every lookup resolved to index 0 — indices 5-7 were unreachable and
-		// the card teleported from DAL 48 back to PHI 27, a 25-yard retreat across midfield.
 		test('walks the whole drive table without losing yards inside a drive', () => {
-			// Under the 0.35 play threshold so every tick advances the drive, and over football's
-			// scoring probabilities so the clock is the only other thing moving.
 			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.1);
 			const simulator = new MockGameSimulator();
 
@@ -510,7 +500,6 @@ describe('MockGameSimulator', () => {
 				return { downDistance: game.downDistance!, fieldPosition: game.fieldPosition! };
 			});
 
-			// A full cycle starting from the table's second entry, so all eight positions are visited.
 			expect(walk).toEqual([
 				{ downDistance: '2nd & 8', fieldPosition: 'PHI 27' },
 				{ downDistance: '3rd & 5', fieldPosition: 'PHI 30' },
@@ -526,7 +515,6 @@ describe('MockGameSimulator', () => {
 			const startOfDrive = { downDistance: '1st & 10', fieldPosition: 'PHI 25' };
 			walk.forEach((snap, index) => {
 				const previous = index === 0 ? startOfDrive : walk[index - 1]!;
-				// The goal-line snap ends the drive, so the entry after it is a fresh possession.
 				if (previous.downDistance === '3rd & Goal') return;
 				expect(yardsFromOwnGoal(snap.fieldPosition))
 					.toBeGreaterThanOrEqual(yardsFromOwnGoal(previous.fieldPosition));

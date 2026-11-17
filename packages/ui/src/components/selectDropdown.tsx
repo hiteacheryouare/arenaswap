@@ -15,20 +15,12 @@ export interface selectDropdownProps<T extends string> {
 	onChange: (value: T) => void;
 	id?: string;
 	disabled?: boolean;
-	// The control's name: the id of a visible label, or text for a hidden one. Either way the name
-	// read out is that label followed by the current value, so "Theme, Dark" rather than one or the
-	// other.
 	labelId?: string;
 	ariaLabel?: string;
-	// Wires Bootstrap's Menu to the toggle and returns its teardown. The extension passes it; the
-	// website's demos leave it out and drive `open` themselves, so they never load Menu's script.
 	attach?: (toggle: HTMLElement, menu: HTMLElement) => () => void;
 	open?: boolean;
 }
 
-// Bootstrap's Menu opened off a form control with the select caret, so it sits among the popup's other
-// controls with the same chevron and size while its items can carry an icon, a tick and a disabled
-// state.
 const selectDropdown = <T extends string>({ value, options, onChange, id, disabled = false, labelId, ariaLabel, attach, open = false }: selectDropdownProps<T>) => {
 	const toggleRef = useRef<HTMLButtonElement>(null);
 	const menuRef = useRef<HTMLDivElement>(null);

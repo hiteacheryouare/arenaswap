@@ -14,7 +14,6 @@ export interface PlayerSearchResult {
 	league: LeagueId;
 	athleteId: string;
 	name: string;
-	// The team's display name, as our sources write it.
 	teamName?: string;
 	headshot?: string;
 }
@@ -31,11 +30,8 @@ const SearchSchema = z.object({
 	}))),
 });
 
-// Letters and digits from any script survive, so a name typed in kana, hangul or hanzi is still
-// a query rather than an empty string.
 export const foldName = (text: string): string => text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().replace(/[^\p{L}\p{N} ]/gu, ' ').trim();
 
-// One insertion, deletion, substitution or swap of neighbours apart, at most.
 const withinOneEdit = (a: string, b: string): boolean => {
 	if (Math.abs(a.length - b.length) > 1) return false;
 	let i = 0;
@@ -44,8 +40,6 @@ const withinOneEdit = (a: string, b: string): boolean => {
 	return a.length > b.length ? a.slice(i + 1) === b.slice(i) : a.slice(i) === b.slice(i + 1);
 };
 
-// How well a name answers a query: every query word has to match a name word by prefix or, for
-// words of five letters or more, within one typo. Higher is better; 0 is no match.
 export const nameMatchScore = (query: string, name: string): number => {
 	const words = foldName(name).split(/\s+/);
 	const terms = foldName(query).split(/\s+/).filter(Boolean);
@@ -83,7 +77,6 @@ export const parsePlayerSearch = (payload: unknown, query: string): PlayerSearch
 					...(player.subtitle ? { teamName: player.subtitle } : {}),
 					...(player.image?.default ? { headshot: player.image.default } : {}),
 				},
-				// The search already ranks well; a name that matches the words typed goes first.
 				score: nameMatchScore(query, player.displayName),
 			};
 		})
@@ -114,7 +107,6 @@ export const toFantasyPosition = (league: LeagueId, abbreviation: string | undef
 	return 'player';
 };
 
-// The position and team a roster entry needs, read once when the player is added.
 export const resolveRosterEntry = async (result: PlayerSearchResult): Promise<FantasyRosterEntry> => {
 	const [sport, leaguePath] = leagueConfigMap[result.league].espnPath.split('/');
 	await takeRequestSlot();
@@ -132,7 +124,6 @@ export const resolveRosterEntry = async (result: PlayerSearchResult): Promise<Fa
 	};
 };
 
-// A team defense, for football rosters.
 export const defenseRosterEntry = (league: LeagueId, team: { id: string; name: string }): FantasyRosterEntry => ({
 	league,
 	athleteId: `dst:${team.id}`,

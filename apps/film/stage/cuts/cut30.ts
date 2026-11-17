@@ -4,11 +4,9 @@ import { cardSuperWindow, cardUnder, endActions, endCardHold, endingBeats, endin
 
 const b = bar;
 const flickTabs = [103, 104, 105, 102, 103, 104, 105, 101];
-// Ctrl+Tab on the soundtrack's eighth notes.
 const flickAt = b(4) - musicBeats(1);
 const flickTimes = flickTabs.map((_, index) => flickAt + musicBeats(index * 0.5));
 const toCal = b(9) + beats(3);
-// The second orange card grows out of Kentucky's LIVE dot and shrinks back into it.
 const gotTeamAt = b(10) + beats(3);
 const gotTeamEnd = b(12);
 const starAt = b(12) + beats(1);
@@ -17,7 +15,6 @@ const endStart = endAt - beats(endingBeats);
 const ending = endingFor(endAt);
 const creditsAt = endAt + endCardHold;
 
-// 16 bars: the problem, the popup, the switch, your team, the sign-off. Then three of credits.
 const cut30: Cut = {
 	id: '30',
 	bars: 19,

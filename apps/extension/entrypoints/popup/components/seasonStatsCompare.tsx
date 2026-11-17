@@ -45,8 +45,6 @@ const seasonStatsCompare = ({ game, stats, awayColor, homeColor }: seasonStatsCo
 							<span className='gd-compare-label'>{i18n.t(stat.labelKey)}</span>
 							{homeFirst ? away : home}
 							{stat.awayShare !== null && (
-								// The longer half is always the better team's, already flipped for the
-								// stats where lower wins, so the bar never needs a legend.
 								<span className='gd-compare-bar' aria-hidden='true'>
 									{homeFirst ? homeHalf : awayHalf}
 									{homeFirst ? awayHalf : homeHalf}

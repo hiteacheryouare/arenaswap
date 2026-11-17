@@ -1,13 +1,9 @@
 import { ordinal } from 'powerscore';
 import type { ReasonFragment } from '@arenaswap/core/types';
 
-// The engine writes each reason as sentences of keys with parameters, and English as prose. Any
-// other language rebuilds the sentences from locale strings.
-
 type translate = (key: string, subsOrCount?: unknown, subs?: unknown) => string;
 type params = NonNullable<ReasonFragment['params']>;
 
-// Sentences whose parameters go straight into the string.
 const sentenceKeys: Record<string, string> = {
 	redZone: 'powerScore.reasonRedZone',
 	redZoneThirdAndShort: 'powerScore.reasonRedZoneThirdAndShort',
@@ -73,12 +69,10 @@ const scoreKeys: Record<string, string> = {
 	upGoals: 'powerScore.reasonScoreUpGoals',
 };
 
-// Only English has suffixes to add; every other locale's strings place the number themselves.
 const ordinalFor = (n: unknown, locale: string): string => (locale.toLowerCase().startsWith('en') ? ordinal(Number(n)) : String(n));
 
 const lastMinutes = (p: params, t: translate) => t('powerScore.reasonLastMinutes', Number(p.minutes));
 
-// Undefined when the time is a kind this build has no string for, which drops the whole line.
 const withWhen = (sentence: string, p: params, t: translate, locale: string): string | undefined => {
 	if (p.when === undefined) return sentence;
 	const whenKey = whenKeys[String(p.when)];
@@ -93,7 +87,6 @@ const translateFragment = ({ key, params: p = {} }: ReasonFragment, t: translate
 	const run = `${p.scoredFor}–${p.scoredAgainst}`;
 	switch (key) {
 		case 'state': {
-			// Some languages count goals with their own word, so a lead in hockey or soccer has its own string.
 			const scoreKey = scoreKeys[`${p.score}${p.score !== 'tied' && p.unit === 'goal' ? 'Goals' : ''}`];
 			return scoreKey ? withWhen(t(scoreKey, p), p, t, locale) : undefined;
 		}
@@ -110,8 +103,6 @@ const translateFragment = ({ key, params: p = {} }: ReasonFragment, t: translate
 	}
 };
 
-// One line a translator wrote whole beats a line half in English: a key this build does not know
-// (a custom mode's own) drops the line.
 export const translateReasonFragments = (fragments: readonly ReasonFragment[], t: translate, locale: string): string | undefined => {
 	if (fragments.length === 0) return undefined;
 	const sentences = fragments.map(fragment => translateFragment(fragment, t, locale));
@@ -121,9 +112,7 @@ export const translateReasonFragments = (fragments: readonly ReasonFragment[], t
 
 interface spokenScore {
 	reason: string;
-	// A live score's.
 	breakdown?: { reasons: readonly ReasonFragment[] };
-	// A history snapshot's.
 	reasons?: readonly ReasonFragment[];
 }
 

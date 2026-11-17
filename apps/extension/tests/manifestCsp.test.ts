@@ -12,7 +12,6 @@ const imageSources = (browser: string): string[] => {
 };
 
 describe('extension page CSP', () => {
-	// Tab favicons are served by every site the user has open, so a host allowlist blanks them all.
 	test.each(['chrome', 'edge', 'firefox'])('lets the %s popup load a favicon from any https site', browser => {
 		expect(imageSources(browser)).toContain('https:');
 	});
@@ -32,7 +31,6 @@ describe('Multiview permissions', () => {
 	}
 	const manifestFor = (browser: string) => (config.manifest as (env: { browser: string }) => permissionsManifest)({ browser });
 
-	// AMO forbids relaxing a page's security headers at all.
 	test('leaves the Firefox build without them', () => {
 		const manifest = manifestFor('firefox');
 		expect(manifest.permissions).not.toContain('declarativeNetRequestWithHostAccess');
@@ -41,7 +39,6 @@ describe('Multiview permissions', () => {
 		expect(manifest.optional_permissions).toBeUndefined();
 	});
 
-	// Every site and the frame tree are asked for when Multiview is turned on, never at install.
 	test.each(['chrome', 'edge'])('asks %s for every site only as an optional permission', browser => {
 		const manifest = manifestFor(browser);
 		expect(manifest.permissions).toEqual(expect.arrayContaining(['declarativeNetRequestWithHostAccess', 'scripting']));

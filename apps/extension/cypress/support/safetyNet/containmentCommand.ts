@@ -12,11 +12,6 @@ Cypress.Commands.add('assertContained', { prevSubject: 'element' }, (subject: JQ
 declare global {
 	namespace Cypress {
 		interface Chainable {
-			/**
-			 * Loads every font face the subject uses, then asserts that nothing inside it runs past its
-			 * sides or past a box that clips it, that text cut short carries its full value as a title,
-			 * and that the subject itself never scrolls sideways. Retries until it settles.
-			 */
 			assertContained: (options?: containmentOptions) => Chainable<JQuery<HTMLElement>>;
 		}
 	}

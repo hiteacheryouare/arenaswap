@@ -1,6 +1,5 @@
 import { scoreGame, type BuiltInModeId } from 'powerscore';
 import { createDefaultUserPreferences, scoreOptionsFor, scoringContextFor, toScoringGame } from '@arenaswap/core';
-// The frozen 2.2.0 scorer is powerscore's own test code, outside its published API.
 import { scoreGameV2 } from '../../../powerscore/tests/legacy/v2/compose';
 import type { Game as V2Game } from '../../../powerscore/tests/legacy/v2/types';
 import type { Scorer } from './session';
@@ -9,7 +8,6 @@ export const replayPrefs = createDefaultUserPreferences();
 
 const universalBoosts = new Set(['favoriteBoost', 'gameBoost', 'postseasonBoost']);
 
-// 2.2.0 exactly as it shipped: the frozen scorer plus the arithmetic background.ts did after it.
 export const v2Scorer: Scorer = {
 	name: 'v2',
 	score: input => {
@@ -26,7 +24,6 @@ export const v2Scorer: Scorer = {
 	},
 };
 
-// The working tree's engine through core's adapter, as the background calls it.
 export const createV3Scorer = (mode: BuiltInModeId = 'classic', name = `v3-${mode}`): Scorer => ({
 	name,
 	score: input => {

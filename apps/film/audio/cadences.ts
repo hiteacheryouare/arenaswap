@@ -1,8 +1,3 @@
-// One bar of drumline per cadence, sixteen steps, spaced by beat for reading.
-//   snare    R rimshot  A accent  f flam  t tap  g ghost  d diddle  D accented diddle  x rim click  z buzz roll
-//   tenors   a b c d    drums high to low; capitals are accents
-//   basses   1 to 5     drums high to low; U is the whole line in unison
-//   cymbals  C crash (both players)  k crash-choke  s tap  S sizzle rising into whatever comes next
 export interface Cadence {
 	snare: string;
 	tenors: string;
@@ -91,7 +86,6 @@ const cadences = {
 	},
 } satisfies Record<string, Cadence>;
 
-// Laid over the second half of whatever bar leads into a peak or the outro.
 export const rollOut: Cadence = {
 	snare: 'zzzz zzzz',
 	tenors: '.... DCBA',

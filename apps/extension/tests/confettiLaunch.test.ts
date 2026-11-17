@@ -1,6 +1,5 @@
 import { launchFromTeam } from '../entrypoints/popup/confettiLaunch';
 
-// The popup: a 320x560 canvas, with the sticky header covering the list's top 60px.
 const canvas = { top: 0, left: 0, right: 320, bottom: 560 };
 const visible = { top: 60, left: 0, right: 320, bottom: 560 };
 const crestAt = (x: number, y: number) => ({ top: y - 16, bottom: y + 16, left: x - 16, right: x + 16 });

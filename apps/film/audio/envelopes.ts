@@ -1,4 +1,3 @@
-// Raised cosine: a fade with no corner at either end, so it never clicks.
 export const smoothStep = (x: number): number => {
 	if (x <= 0) return 0;
 	if (x >= 1) return 1;
@@ -36,7 +35,6 @@ const valueAt = (keyframes: Keyframe[], time: number, cursor: { index: number })
 	return lerp(current.value, next.value, (time - current.time) / (next.time - current.time));
 };
 
-// Piecewise-linear automation sampled every 32 samples, then eased with a one-pole so steps glide.
 export const renderCurve = (keyframes: Keyframe[], length: number, sampleRate: number, smoothing = 0.02): ControlCurve => {
 	const sorted = keyframes.toSorted((a, b) => a.time - b.time);
 	const values = new Float32Array(Math.ceil(length / controlStep) + 2);

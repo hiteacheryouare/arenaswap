@@ -10,14 +10,11 @@ export interface playerStatGroup {
 
 export interface rosterPlayerLine {
 	entry: FantasyRosterEntry;
-	// The box score's own position for this game, which beats the roster's coarser one.
 	position: string;
 	didNotPlay: boolean;
 	groups: playerStatGroup[];
 }
 
-// Each rostered player's row in this game's box score, read through the same condensed columns the
-// Box tab shows, so a stat here is always one the reader can find there.
 export const rosterPlayerLines = (sportType: SportType | undefined, boxScore: BoxScore, players: readonly FantasyRosterEntry[]): rosterPlayerLine[] => {
 	const sections = [boxScore.away, boxScore.home].flatMap(team => (team ? buildSections(sportType, team) : []));
 	return players.map(entry => {

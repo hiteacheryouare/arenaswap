@@ -1,9 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-// A key missing from a locale silently falls back to English, and a dropped placeholder silently
-// prints a sentence with a hole in it, so neither shows up anywhere but on a translated screen.
-
 const localesDir = join(__dirname, '../locales');
 const localeFiles = readdirSync(localesDir).filter(file => file.endsWith('.json') && file !== 'en.json');
 
@@ -21,8 +18,6 @@ const placeholders = (text: string): string[] => [...text.matchAll(/\{[a-zA-Z]+\
 
 const english = flatten(readLocale('en.json'));
 
-// A fragment of a sentence split around inline markup (English "When ") can rightly be empty in a
-// language that orders the sentence differently, so only whole strings are held to the blank check.
 const isFragment = (text: string) => /^\s|\s$/.test(text);
 
 describe.each(localeFiles)('%s', file => {

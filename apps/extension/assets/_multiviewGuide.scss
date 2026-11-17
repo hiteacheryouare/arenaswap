@@ -1,11 +1,7 @@
 @use '@arenaswap/ui/src/motion' as m;
 @layer custom {
-
-	// Both mockups are set pieces on their own loop, so they keep their own clock rather than the
-	// motion scale's. Positions are percentages of the mockup, so they scale with the popup.
 	$story-loop: 7s;
 	$grid-loop: 9s;
-	// The Multiview page in miniature: orange beams crossing on black.
 	$mock-page:
 		linear-gradient(100deg, transparent 22%, rgb(248 130 60 / 0.55) 30%, transparent 38%),
 		linear-gradient(78deg, transparent 52%, rgb(233 102 30 / 0.5) 62%, transparent 72%),
@@ -58,7 +54,6 @@
 	.multiview-guide-story-card-a { animation: multiview-guide-card-a $story-loop m.$motion-ease infinite; }
 	.multiview-guide-story-card-b { animation: multiview-guide-card-b $story-loop m.$motion-ease infinite; }
 
-	// What turns a card into a box: the picture rises under the crest bar.
 	.multiview-guide-story-ground {
 		position: absolute;
 		inset: 22% 0 0;
@@ -182,7 +177,6 @@
 		background: linear-gradient(90deg, var(--guide-left), var(--guide-right));
 	}
 
-	// The sound always belongs to the big box, so its outline stays put while the boxes trade places under it.
 	.multiview-guide-grid-sound {
 		position: absolute;
 		display: flex;
@@ -236,7 +230,6 @@
 		100% { left: 0; top: 0; width: 66.667%; height: 100%; opacity: 0; }
 	}
 
-	// Still, the mockups hold the moment they are explaining: the boxes in place and the sound on the big one.
 	@include m.reduced-motion {
 		.multiview-guide-story-popup,
 		.multiview-guide-story-score-before,

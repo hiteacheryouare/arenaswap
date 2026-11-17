@@ -2,13 +2,6 @@
 import { defaultLocale } from '../i18n/locales';
 import { currentLocale, useTranslations } from '../i18n/ui';
 
-// Sits above a documentation article or a release note that exists at this locale's URL but is
-// written in English. Saying so is the point: without it a reader who has been on a translated site
-// for three pages hits a wall of English and cannot tell whether they have fallen off it.
-//
-// The alternative was leaving those two trees on English URLs only, which is what they did until a
-// review caught it — following the Docs link from a German page changed the language of the
-// navigation, the footer and the switcher all at once, with no way back to where you were.
 const locale = currentLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 ---

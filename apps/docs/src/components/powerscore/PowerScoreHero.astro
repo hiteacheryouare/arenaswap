@@ -3,15 +3,8 @@ import { currentLocale, useTranslations } from '../../i18n/ui';
 
 const t = useTranslations(currentLocale(Astro.currentLocale));
 
-// League abbreviations, so the rotation is the same twelve tokens everywhere. The word the
-// rotation lands on is translated; the abbreviations are not, because a league is called what it
-// is called.
 const supportedLeagues = ['NFL', 'MLB', 'NHL', 'NBA', 'NCAAF', 'NCAAB', 'NCAAW', 'MLS', 'EPL', 'FIFAWC', 'NCAAMH', 'WNBA'];
 
-// The token rotates through the league abbreviations and then lands on the word for a score, and
-// the tail after it changes when it does: in English " score." becomes "." because the word is
-// now in the slot. Four separate strings rather than one template with a hole in it, so a language
-// can put its own words on either side of the token and change both when the rotation settles.
 const taglinePrefix = t('powerscore.heroTaglinePrefix');
 const taglineSuffix = t('powerscore.heroTaglineSuffix');
 ---

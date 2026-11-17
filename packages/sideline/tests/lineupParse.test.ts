@@ -1,8 +1,6 @@
 import { emptyLineups, hasLineups, parseLineups } from '../src/lineupParse';
 import rosters from './fixtures/lineups/rosters.json';
 
-// Real rosters from summaries captured 2026-11-06, trimmed to the keys the parser reads: Everton,
-// Sassuolo, Parma, Sevilla and Hamburg, one for each formation below.
 type RosterKey = keyof typeof rosters;
 
 const lineupOf = (key: RosterKey) => {

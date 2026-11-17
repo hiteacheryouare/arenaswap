@@ -37,8 +37,6 @@ const rollStepCap = 3;
 const RevealScoreRoll = ({ rolls }: { rolls: revealRoll[] }) => {
 	const layerRef = useRef<HTMLDivElement | null>(null);
 
-	// Pinned to the real numbers every frame rather than once: the score font can swap in, or a push
-	// can change a score, after the first frame, and the real number re-centres while the copy would not.
 	useLayoutEffect(() => {
 		const layer = layerRef.current;
 		const wrapper = layer?.closest('.game-card-reveal');
@@ -76,7 +74,6 @@ const RevealScoreRoll = ({ rolls }: { rolls: revealRoll[] }) => {
 						{chars.map((char, position) => {
 							if (position < first || position > last) return <span key={position}>{char}</span>;
 							const column = position - first;
-							// The ones column spins a full turn first, so a low score still reads as a roll.
 							const sequence = [...(position === last ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] : []), ...Array.from({ length: Number(char) + 1 }, (_, n) => n)];
 							const delay = rollStartMs + Math.min(row, rollStepCap) * rollRowStepMs + Math.min(column, rollStepCap) * rollColumnStepMs;
 							return (

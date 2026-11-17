@@ -22,8 +22,6 @@ const LeagueOrderList = ({ order, leagueLogos, disabled, onReorder, onReset }: l
 	const dragIndexRef = useRef<number | null>(null);
 	const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
 	const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
-	// A row that moves, a button that disables itself at either end and a Reset that removes itself
-	// all take keyboard focus down with them, so it is put back once the new order has rendered.
 	const pendingFocusRef = useRef<{ leagueId: LeagueId; direction: 'up' | 'down' } | null>(null);
 
 	useLayoutEffect(() => {

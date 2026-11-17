@@ -3,11 +3,7 @@ import { findLocale, locales, localePath, stripLocale } from '../i18n/locales';
 import { currentLocale, useTranslations } from '../i18n/ui';
 
 interface Props {
-	// The drawer lays the same twelve entries out as a plain list, because a dropdown inside a
-	// dropdown on a phone is a menu you have to open twice.
 	variant?: 'dropdown' | 'list';
-	// False on the pages that were never translated. Every entry then points at that language's
-	// home page, which is somewhere real, rather than at a URL the build never produced.
 	localized?: boolean;
 }
 

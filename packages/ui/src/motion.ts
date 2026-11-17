@@ -1,11 +1,3 @@
-// The same scale as `_motion.scss`, for the motion that is configured in JavaScript rather than
-// declared in CSS. Today that is the ECharts charts in the popup and on the landing page, which
-// take a duration in milliseconds and an easing by name.
-//
-// Two copies of a number is a drift risk, so the SCSS file is the one to edit and this one follows.
-// It cannot read the Sass: these values are consumed at runtime by a chart library, and the
-// stylesheet is compiled long before that.
-
 export const motionDuration = {
 	instant: 100,
 	snap: 140,

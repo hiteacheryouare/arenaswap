@@ -84,20 +84,15 @@ describe('buildWinProbabilityOption', () => {
 		expect(result).not.toContain('<b>');
 	});
 
-	// A 320px chart cannot resolve more than a couple of hundred points, and a five-hour baseball
-	// game arrives with thousands. The sampling has to hold the drawn count down however long the
-	// game runs, and it has to keep the last value: the end of the line is the number on screen.
 	test.each([200, 2_000, 20_000])('draws a readable line from a %i-point win probability history', length => {
 		const line = Array.from({ length }, (_, i) => i / length);
 		const option = buildWinProbabilityOption(line, makeGame());
-		// Away is drawn first, to match the legend.
 		const [away, home] = option.series as Array<{ data: number[] }>;
 
 		expect(home!.data.length).toBeLessThanOrEqual(161);
 		expect(home!.data.length).toBeGreaterThanOrEqual(Math.min(80, length));
 		expect(away!.data).toHaveLength(home!.data.length);
 
-		// Tip-off and the current moment both survive the thinning.
 		expect(home!.data[0]).toBe(0);
 		expect(home!.data.at(-1)).toBe(Math.round((length - 1) / length * 100));
 	});

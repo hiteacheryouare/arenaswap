@@ -4,9 +4,6 @@ import { createDefaultUserPreferences } from '@arenaswap/core/constants';
 import { scoreLiveGame } from '@arenaswap/core/scoring';
 import type { Game, LeagueId } from '@arenaswap/core';
 
-// Each fixture is one live event exactly as the scoreboard sent it, cut from the slate recordings
-// (its `source` says which line). The expectations are what a fan watching that moment would see.
-
 interface Capture {
 	recordedAt: string;
 	league: LeagueId;
@@ -33,7 +30,6 @@ const fetchLive = async (name: string) => {
 
 const powerScoresOf = async (names: string[]): Promise<number[]> => {
 	const totals: number[] = [];
-	// One at a time: each capture swaps the global fetch.
 	for (const name of names) totals.push(await powerScoreOf(name));
 	return totals;
 };
@@ -68,7 +64,6 @@ test('a one-point playoff game late in the fourth reads the way the broadcast sh
 	expect([game.period, game.clockSeconds]).toEqual([4, 233]);
 	expect(game.postseasonLabel).toBe('Semifinals · Game 2');
 	expect(game.series).toEqual({ kind: 'playoff', homeWins: 1, awayWins: 0, bestOf: 5 });
-	// The last play was Atlanta's defensive rebound, so the ball is Atlanta's.
 	expect(game.possessionSide).toBe('home');
 });
 
@@ -80,8 +75,6 @@ test('a London game keeps its listed home side and places the ball on the right 
 	expect([game.period, game.clockSeconds]).toEqual([4, 900]);
 	expect(game.possessionTeamId).toBe(game.awayTeam.id);
 	expect([game.downDistance, game.fieldPosition]).toEqual(['1st & 10', 'WSH 42']);
-	// 0 is the home goal line, so the visitors on Washington's 42 are at 42, and a ten-yard drive
-	// towards that goal line began at 52.
 	expect([game.yardLine, game.driveStartYardLine]).toEqual([42, 52]);
 });
 
@@ -91,7 +84,6 @@ test('a college drive across midfield is placed from the home goal line, and kee
 	expect([game.awayTeam.abbreviation, game.awayTeam.score, game.homeTeam.abbreviation, game.homeTeam.score]).toEqual(['CAL', 25, 'UNLV', 32]);
 	expect([game.period, game.clockSeconds]).toEqual([4, 386]);
 	expect(game.possessionTeamId).toBe(game.homeTeam.id);
-	// The home offense on the visitors' 47 is 53 yards from its own goal line.
 	expect([game.fieldPosition, game.yardLine]).toEqual(['CAL 47', 53]);
 	expect(game.collegeGroups).toEqual(['80']);
 });
@@ -133,8 +125,6 @@ describe('PowerScore on real moments', () => {
 		expect(total).toBeLessThanOrEqual(100);
 	});
 
-	// Tied or one-score games with the end in sight, against seven-point games with more football
-	// left. A fan picks any of the first four over either of the last two.
 	test('every one-score finish outranks both seven-point football games', async () => {
 		const finishes = await powerScoresOf(['wnbaSemifinalFourthQuarter', 'nhlTiedThirdPeriod', 'mlbPostseasonRunnersOn', 'eplStoppageTime']);
 		const football = await powerScoresOf(['nflNeutralSite', 'ncaafFourthQuarter']);

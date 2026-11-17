@@ -15,9 +15,7 @@ import zhCN from '../../../locales/zh_CN.json';
 import zhTW from '../../../locales/zh_TW.json';
 
 export interface shippedLocale {
-	// The folder name under locales/, which is also what a failing test is named after.
 	folder: string;
-	// The language tag dates and numbers are formatted in.
 	tag: string;
 	messages: typeof en;
 }
@@ -44,8 +42,6 @@ beforeEach(() => {
 	document.documentElement.lang = english.tag;
 });
 
-// Switches the `#i18n` stub and wraps the tree in the same two contexts the popup's main.jsx and
-// app.tsx provide, so both extension components and shared @arenaswap/ui ones read the locale.
 export const withLocale = (locale: shippedLocale, node: ReactNode) => {
 	setStubLocale(locale.messages);
 	document.documentElement.lang = locale.tag;
@@ -58,7 +54,6 @@ export const withLocale = (locale: shippedLocale, node: ReactNode) => {
 	);
 };
 
-// One test per shipped locale, named after it, so a failure says which translation broke the layout.
 export const inEveryLocale = (title: string, body: (locale: shippedLocale) => void) => {
 	for (const locale of shippedLocales) {
 		it(`${title} (${locale.folder})`, () => body(locale));

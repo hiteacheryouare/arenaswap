@@ -7,7 +7,6 @@ interface boostPointsInputProps {
 	onChange: (value: number) => void;
 	className: string;
 	ariaLabel?: string;
-	// Drawn inside the field, after the number. `className` then styles that wrapper, not the input.
 	unit?: string;
 }
 
@@ -15,8 +14,6 @@ interface boostPointsInputProps {
 // number is committed once typing pauses, and at once on blur, Enter and unmount.
 const commitDelayMs = 400;
 
-// The field holds what was typed rather than the committed number, so it can sit empty while the
-// user retypes it. Without that, deleting "10" snapped straight back to "0" and typing 5 read "05".
 const boostPointsInput = ({ id, value, onChange, className, ariaLabel, unit }: boostPointsInputProps) => {
 	const [draft, setDraft] = useState<string | null>(null);
 

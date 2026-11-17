@@ -4,10 +4,6 @@ import LegalNav from '../../../components/LegalNav.astro';
 import { localePath, localeRoutes } from '../../../i18n/locales';
 import { useTranslations } from '../../../i18n/ui';
 
-// A hub rather than one long page: these four get linked individually — to a store reviewer, to an
-// issue, to a licence header — and a URL that lands on the right clause beats a URL plus "scroll
-// down a bit".
-
 export const getStaticPaths = localeRoutes;
 
 const { locale } = Astro.props;

@@ -13,8 +13,6 @@ interface StandbyStreamDecisionParams {
 	activeTabIsStandby: boolean;
 }
 
-// A tab that holds a game is that game's tab, whatever an older version or another synced browser
-// saved. Standby stands down rather than parking the worker on a tab the user is watching a game in.
 export const usableStandbyTabId = (
 	standbyStreamTabId: number | null,
 	openTabIds: ReadonlySet<number>,
@@ -39,7 +37,6 @@ export const computeStandbyStreamDecision = ({
 		return 'none';
 	}
 
-	// The user navigated away from the standby tab by hand.
 	if (onStandbyStream && !activeTabIsStandby) return 'resume';
 
 	const allBelowThreshold = registeredScores.every(s => s.total < standbyStreamThreshold);

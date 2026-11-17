@@ -17,7 +17,6 @@ const createDeps = () => ({
 
 const exciting = [{ gameId: 'a', total: 80 }, { gameId: 'b', total: 72 }, { gameId: 'c', total: 20 }];
 const cooled = [{ gameId: 'a', total: 80 }, { gameId: 'b', total: 30 }, { gameId: 'c', total: 20 }];
-// One game over the line, and another within 10 points of it.
 const closing = [{ gameId: 'a', total: 80 }, { gameId: 'b', total: 60 }, { gameId: 'c', total: 20 }];
 
 const pass = (overrides: Partial<multiviewPass> = {}): multiviewPass => ({
@@ -36,7 +35,6 @@ const pass = (overrides: Partial<multiviewPass> = {}): multiviewPass => ({
 	...overrides,
 });
 
-// Opened and switched to, so the user is on it.
 const openMultiview = async (deps: ReturnType<typeof createDeps>) => {
 	const multiview = createMultiview(deps);
 	await multiview.update(pass());

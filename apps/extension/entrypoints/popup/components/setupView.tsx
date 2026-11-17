@@ -37,7 +37,6 @@ import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHel
 import { changedFantasyRuleCount } from '../../../utils/scoringPrefs';
 import useSlideDirection, { slideClassName } from '../useSlideDirection';
 
-// Both pages pull in code nothing else in the popup needs, so they load when opened.
 const FantasyRosterPage = lazy(() => import('./fantasyRosterPage'));
 const FantasyScoringPage = lazy(() => import('./fantasyScoringPage'));
 
@@ -87,9 +86,7 @@ interface setupViewProps {
 	onStandbyThresholdChange: (val: number) => void;
 	onSetStandbyTab: (tabId: number | null) => void;
 	onStandbyOnboardingDone: () => void;
-	// False in the Firefox build, which has no Multiview.
 	multiviewAvailable: boolean;
-	// On in prefs and the permission it needs still granted.
 	multiviewOn: boolean;
 	multiviewOnboardingDone: boolean;
 	onMultiviewOnboardingDone: () => void;
@@ -123,7 +120,6 @@ interface setupViewProps {
 	profileActions: profileActionHandlers;
 }
 
-// The rules page opens on the sport of the first league you follow that Fantasy can score.
 const firstFantasySport = (leagues: readonly LeagueId[]): FantasySport => {
 	for (const league of leagues) {
 		const sport = fantasySportOf(leagueConfigMap[league]?.sportType ?? '');
@@ -168,7 +164,6 @@ const setupView = ({
 
 	const modes = modesInUse(prefs);
 	const fantasyInUse = modes.includes('fantasy');
-	// Search only offers a mode's controls while they are on the page.
 	const availableModesKey = [...modes, prefs.scoringMode].join(',');
 	const hiddenGroups = useMemo(() => new Set<settingsGroupId>(multiviewAvailable ? [] : ['multiview']), [multiviewAvailable]);
 	const results = useMemo(
@@ -189,17 +184,12 @@ const setupView = ({
 		setQuery('');
 	};
 
-	// The button that was clicked unmounts with the page it was on, which would leave keyboard focus
-	// on <body>. A page takes focus on its own header, and the index hands it back to the group
-	// button it was opened from.
 	useEffect(() => {
 		if (page) {
-			// A search result lands on the setting it named, not on top of a dozen others.
 			const control = pendingControlRef.current ? document.getElementById(pendingControlRef.current) : null;
 			pendingControlRef.current = undefined;
 			control?.scrollIntoView({ block: 'center' });
 			control?.focus({ preventScroll: true });
-			// A section heading scrolls into view but can't hold focus, so the page header keeps it.
 			if (!control || document.activeElement !== control) pageRef.current?.querySelector<HTMLElement>('.setup-header')?.focus({ preventScroll: true });
 			return;
 		}
@@ -228,7 +218,6 @@ const setupView = ({
 		if (last) document.getElementById(last === 'roster' ? 'fantasyRosterOpen' : 'fantasyRulesOpen')?.focus({ preventScroll: true });
 	}, [scoringPage]);
 
-	// Back from a college picker or a Fantasy page lands where its row was, not at the top of the page.
 	useLayoutEffect(() => {
 		if (collegeLeague || scoringPage || subPageScrollTop.current === null) return;
 		if (pageRef.current) pageRef.current.scrollTop = subPageScrollTop.current;
@@ -251,8 +240,6 @@ const setupView = ({
 		return <StandbyStreamGuide onDone={handleStandbyGuideDone} />;
 	}
 
-	// The guide explains the browser's permission prompt before it appears, so the first time
-	// Multiview is turned on, the toggle opens the guide and Continue is what asks.
 	const handleToggleMultiview = () => {
 		if (!multiviewOn && !multiviewOnboardingDone) {
 			setShowMultiviewGuide(true);
@@ -818,8 +805,6 @@ const setupView = ({
 
 	if (page) {
 		const group = settingsGroups.find(candidate => candidate.id === page);
-		// Every other page is short enough to scroll as one block. The team picker is the only one
-		// that has to keep its own search box in view, so it takes the column and scrolls inside it.
 		const scrollsWithin = page === 'favorites';
 		return (
 			<div key={page} ref={pageRef} className={`popup-container settings-view${scrollsWithin ? ' d-flex flex-column' : ''}${slide}`}>

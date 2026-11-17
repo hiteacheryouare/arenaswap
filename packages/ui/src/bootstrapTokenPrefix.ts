@@ -1,5 +1,4 @@
 /// <reference types="node" />
-// Runs in the build, not the browser: Vite and Cypress load it from their configs.
 import { readdirSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';

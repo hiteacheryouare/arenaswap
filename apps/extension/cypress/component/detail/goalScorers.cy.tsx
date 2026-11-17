@@ -4,7 +4,6 @@ import { makeGame } from '../../support/fixtures';
 import { inEveryLocale } from '../../support/safetyNet/locales';
 import { mountInPopup, popupSurface } from '../../support/safetyNet/mountInPopup';
 
-// Everton 3-1 Coventry City, 2026-11-06. Soccer heroes put the home side on the left.
 const everton: Game = makeGame('401879242', {
 	league: 'epl',
 	sportType: 'soccer',

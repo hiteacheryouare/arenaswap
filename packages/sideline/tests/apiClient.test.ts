@@ -10,13 +10,10 @@ interface MockResponseInit {
 const createResponse = (data: unknown, init: MockResponseInit = {}): Response => ({
 	ok: init.ok ?? true,
 	status: init.status ?? 200,
-	// `fetchScoreboard` reads `cache-control` off every response to learn how often ESPN will answer
-	// with something new, so a double without headers is not standing in for a Response.
 	headers: new Headers(init.cacheControl ? { 'cache-control': init.cacheControl } : {}),
 	json: async () => data,
 } as Response);
 
-// Far enough ahead that a scheduled fixture is never old enough to count as called off.
 const fixtureStart = '2099-10-05T00:00:00.000Z';
 
 const makeEvent = (params: {
@@ -38,8 +35,6 @@ const makeEvent = (params: {
 	attendance?: number;
 	homeShootoutScore?: number;
 	awayShootoutScore?: number;
-	// Merged into the competitor, for the per-competitor blocks ESPN only sends on some sports:
-	// probables, records, leaders.
 	homeExtra?: Record<string, unknown>;
 	awayExtra?: Record<string, unknown>;
 }): Record<string, unknown> => ({
@@ -116,16 +111,10 @@ const getCompetition = (event: Record<string, unknown>): Record<string, unknown>
 );
 
 const dateOf = (url: unknown): string => new URL(String(url)).searchParams.get('dates') ?? '';
-// Today as our sources file it: the Eastern date, which runs a day behind UTC every evening.
 const easternToday = (): string => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date()).replaceAll('-', '');
 
-/* A window is one request per Eastern day, so a chain of `mockResolvedValueOnce` runs out and
-   resolves `undefined` on the day after its last entry. The chains below list the days they care
-   about and then fall back to this, which is what a day with nothing scheduled answers with anyway. */
 const emptyDay = () => createResponse({ events: [] });
 
-// One Eastern day per request now, so the days a fan-out asked for are read off the calls rather
-// than split out of a single range string.
 const datesAsked = (fetchMock: jest.Mock): string[] => [...new Set(fetchMock.mock.calls
 	.map(([url]) => dateOf(url))
 	.filter(dates => dates !== ''))].toSorted();
@@ -141,9 +130,6 @@ const loadApiClient = (): typeof import('../src/apiClient') => {
 	return require('../src/apiClient') as typeof import('../src/apiClient');
 };
 
-/* Every scoreboard request names exactly one Eastern day, because ESPN stopped answering for a
-   span. So a mock says which day it is answering rather than relying on call order, and the live
-   days are the near end of whatever window was asked for rather than a request of their own. */
 const isLivePoll = (url: string): boolean => buildCurrentDayKeys().includes(dateOf(url));
 
 const mockSingleEvent = (event: Record<string, unknown>) => {
@@ -165,9 +151,6 @@ const withHeadshot = (cat: ReturnType<typeof leaderCategory>, url: string) => ({
 });
 
 describe('apiClient', () => {
-	/* The fixtures here are dated across the 2026 season, and a scheduled game is called off once its
-	   broadcast window has passed. Pinning only the date, to before every one of them, keeps them
-	   scheduled whatever day the suite runs; timers stay real. */
 	beforeEach(() => {
 		jest.useFakeTimers({
 			now: new Date('2026-05-01T12:00:00.000Z'),
@@ -257,7 +240,6 @@ describe('apiClient', () => {
 			'/apis/site/v2/sports/basketball/nba/teams',
 			'/apis/site/v2/sports/basketball/mens-college-basketball/teams',
 		]);
-		// 200 cut college football to 200 of its 762 teams, Alabama among the missing.
 		expect(requestedUrls.map(url => url.searchParams.get('limit'))).toEqual(['1000', '1000']);
 		expect(requestedUrls.map(url => url.searchParams.get('groups'))).toEqual([null, null]);
 	});
@@ -391,10 +373,6 @@ describe('apiClient', () => {
 
 		await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: true, upcomingDays: 3 });
 
-		// TZ is UTC in these tests, so the viewer's Sep 5 through Sep 8 runs from 20:00 Eastern on
-		// Sep 4 to 19:59 Eastern on Sep 8. One window covers that now, and it opens a day earlier
-		// than the slate range used to because the live leg's own reach-back is folded into it —
-		// the same Eastern dates the two ranges named between them, each asked for once.
 		expect(datesAsked(fetchMock)).toEqual([
 			'20260903', '20260904', '20260905', '20260906', '20260907', '20260908',
 		]);
@@ -418,12 +396,8 @@ describe('apiClient', () => {
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
 		const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
-		// The live window and nothing past it: today, plus the day back that still carries a kickoff
-		// filed before Eastern midnight. It names the days rather than leaning on ESPN's undated
-		// board, which in college football is a curated week rather than a full card.
 		expect(datesAsked(fetchMock)).toEqual(buildCurrentDayKeys().toSorted());
 		expect(fetchMock.mock.calls.every(([url]) => isLivePoll(String(url)))).toBe(true);
-		// The same event answered for every day of the window is still one game.
 		expect(result.games).toHaveLength(1);
 		expect(result.leagueLogos.mlb).toBe(leagueLogoFallbacks.mlb);
 	});
@@ -447,9 +421,6 @@ describe('apiClient', () => {
 		const dec5Game = result.games.find(g => g.id === 'sub-min-dec-5');
 		expect(intGame?.clockSeconds).toBe(45);
 		expect(floatGame?.clockSeconds).toBe(45);
-		// Seconds, not decimal minutes. Checked against ESPN on 2026-09-21: the basketball leagues
-		// drop the colon under a minute and count down 40.8 -> 0.1, so 0.75 is three quarters of a
-		// second — still time left, so it reads as 1 rather than as the buzzer.
 		expect(dec75Game?.clockSeconds).toBe(1);
 		expect(dec5Game?.clockSeconds).toBe(1);
 	});
@@ -472,7 +443,7 @@ describe('apiClient', () => {
 		const halfGame = result.games.find(g => g.id === 'soccer-45');
 		const zeroGame = result.games.find(g => g.id === 'soccer-zero');
 		expect(normalGame?.clockSeconds).toBe(5100);  // 85 * 60
-		expect(stoppageGame?.clockSeconds).toBe(5880); // (90 + 8) * 60
+		expect(stoppageGame?.clockSeconds).toBe(5880);
 		expect(halfGame?.clockSeconds).toBe(2700);    // 45 * 60
 		expect(zeroGame?.clockSeconds).toBe(0);       // 0 * 60
 	});
@@ -569,8 +540,6 @@ describe('apiClient', () => {
 	});
 
 	test('filters out post games across every day of the window', async () => {
-		// Keyed on which day is being asked for rather than on call order: the window is many
-		// requests now, so a mock that answered twice and then undefined would crash on day three.
 		const liveDay = [
 			makeEvent({
 				id: 'today-live', state: 'in', period: 3, clock: '1:15', homeScore: '100', awayScore: '98',
@@ -618,13 +587,11 @@ describe('apiClient', () => {
 
 		await fetchLeagueLogos(['ncaab']);
 
-		// A window is one request per day, and the override has to ride on every one of them.
 		const calledUrls = fetchMock.mock.calls.map(([url]) => String(url));
 		expect(calledUrls.length).toBeGreaterThan(1);
 		expect(calledUrls.every(url => url.includes('groups=50'))).toBe(true);
 	});
 
-	// 49 looked right and answered every dated query with no games at all.
 	test('adds NCAA womens basketball groups=50 query parameter', async () => {
 		const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [makeEvent({
 			id: 'ncaaw-live',
@@ -712,8 +679,6 @@ describe('apiClient', () => {
 	test('keeps the days that answered when one day of the window fails', async () => {
 		jest.useFakeTimers().setSystemTime(new Date('2026-09-15T18:00:00.000Z'));
 		try {
-			// Today answers, so the league is not shed. A day further out fails and the rest still
-			// contribute — today's own failure is a different case and sinks the league on purpose.
 			const fetchMock = jest.fn(async (url: string) => {
 				if (dateOf(url) === '20260920') return createResponse({}, { ok: false, status: 500 });
 				if (isLivePoll(url)) return createResponse({ events: [] });
@@ -954,8 +919,6 @@ describe('apiClient', () => {
 	});
 
 	test('soccer finished game with odds: [null] does not discard valid events in same response', async () => {
-		// Regression: ESPN returns null as an *array element* for finished soccer games, and without
-		// .nullable() on the element Zod rejected the whole response, dropping valid pre-games too.
 		const postGame = makeEvent({
 			id: 'post-null-odds',
 			state: 'post',
@@ -987,8 +950,6 @@ describe('apiClient', () => {
 	});
 
 	test('FIFAWC opening-day scenario: multiple finished games with odds: [null] do not hide upcoming matches', async () => {
-		// Reproduces the June 11 2026 bug: two finished games with odds: [null] failed the whole
-		// response, dropping a third game that was still scheduled for that evening.
 		const rsa_mex = makeEvent({ id: 'rsa-mex', state: 'post', period: 2, clock: "90'", homeScore: '0', awayScore: '2' });
 		getCompetition(rsa_mex).odds = [null];
 
@@ -1009,7 +970,6 @@ describe('apiClient', () => {
 	});
 
 	test('null odds element pattern applies consistently across all three soccer leagues', async () => {
-		// MLS, EPL and FIFAWC all return odds: [null] for finished games.
 		const soccerLeagues = ['mls', 'epl', 'fifawc'] as const;
 		for (const league of soccerLeagues) {
 			const post = makeEvent({ id: 'post', state: 'post', period: 2, clock: "90'", homeScore: '1', awayScore: '0' });
@@ -1026,8 +986,6 @@ describe('apiClient', () => {
 	});
 
 	test('NFL preseason rich odds object with extra fields parses cleanly', async () => {
-		// NFL preseason returns a far richer odds object than in-season, with fields the schema does
-		// not declare; Zod's non-strict default has to keep ignoring them.
 		const event = makeEvent({
 			id: 'nfl-pre-rich-odds',
 			state: 'pre',
@@ -1068,8 +1026,6 @@ describe('apiClient', () => {
 			overUnder: 44.5,
 		});
 	});
-
-	// Fixture shapes are derived from live ESPN API responses for each league.
 
 	test('NHL: live game with END_PERIOD intermission flag is correctly set', async () => {
 		const fetchMock = jest.fn().mockResolvedValue(createResponse({
@@ -1225,7 +1181,6 @@ describe('apiClient', () => {
 	});
 
 	test('WNBA: large batch from range all produce valid Game objects with correct fields', async () => {
-		// A real 30-day WNBA range in season, to exercise the pipeline on a large batch.
 		const events = Array.from({ length: 10 }, (_, i) => makeEvent({
 			id: `wnba-pre-${i}`,
 			state: 'pre',
@@ -1257,8 +1212,6 @@ describe('apiClient', () => {
 	});
 
 	test('MLS: in-season live game from today returned when range endpoint is empty', async () => {
-		// MLS publishes no far-ahead schedule on the range endpoint, so live games have to come
-		// from the no-date today endpoint instead.
 		const liveGame = makeEvent({
 			id: 'mls-live',
 			state: 'in',
@@ -1323,8 +1276,6 @@ describe('apiClient', () => {
 	});
 
 	test('FIFAWC: knockout-round placeholder with null odds from range appears as upcoming', async () => {
-		// Knockout games have odds: [null] before opponents are determined, and must still survive
-		// as pre-games so the full bracket shows.
 		const knockout = makeEvent({
 			id: 'ko-r16',
 			state: 'pre',
@@ -1357,7 +1308,6 @@ describe('apiClient', () => {
 	});
 
 	test('FIFAWC: group stage pre-game with rich soccer odds parses details and overUnder correctly', async () => {
-		// Group stage games carry soccer-specific odds fields the schema does not declare.
 		const groupGame = makeEvent({
 			id: 'group-bih-can',
 			state: 'pre',
@@ -1423,7 +1373,6 @@ describe('apiClient', () => {
 	});
 
 	test('all leagues: every game carries its start time, whatever its state', async () => {
-		// startTime on a live game would break the popup's "Up Next" vs "Live Now" split.
 		const preGame = makeEvent({ id: 'pre', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0', date: '2026-09-01T00:00:00.000Z' });
 		const liveGame = makeEvent({ id: 'live', state: 'in', period: 3, clock: '5:00', homeScore: '88', awayScore: '85' });
 
@@ -1437,15 +1386,10 @@ describe('apiClient', () => {
 		const pre = result.games.find(g => g.id === 'pre')!;
 		const live = result.games.find(g => g.id === 'live')!;
 		expect(pre.startTime).toBe('2026-09-01T00:00:00.000Z');
-		// A live game keeps its start time too. Nothing renders it — every reader is behind a
-		// pre-game check — but the retention window for finished games has nothing else to
-		// measure from, ESPN publishing no completion timestamp of any kind.
 		expect(live.startTime).toBe(fixtureStart);
 	});
 
 	describe('venue location parsing', () => {
-		// Every address below is a verbatim ESPN payload, which is why the state styles disagree:
-		// the NFL and NHL send abbreviations, MLB sends full names, and England sends no state.
 		const cases: [string, Record<string, unknown> | undefined, string | undefined][] = [
 			['city and abbreviated state', { city: 'Inglewood', state: 'CA', country: 'USA' }, 'Inglewood, CA'],
 			['city and spelled-out state', { city: 'Chicago', state: 'Illinois' }, 'Chicago, Illinois'],
@@ -1490,8 +1434,6 @@ describe('apiClient', () => {
 	});
 
 	describe('weather parsing', () => {
-		// Every weather block below is transcribed off a live scoreboard on 2026-09-09, and every
-		// venue below carries the `indoor` flag ESPN sent with it on that same response.
 		const weatherFor = async (venue: Record<string, unknown>, weather: Record<string, unknown>) => {
 			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
 				id: 'weather',
@@ -1515,8 +1457,6 @@ describe('apiClient', () => {
 				.toEqual({ temperatureF: 86, conditionLabel: 'Thunderstorms', conditionCode: 15 });
 		});
 
-		// ESPN swaps the two fields on live baseball: loanDepot park came back with displayValue '35'
-		// and the words in conditionId. The numeric one has to lose whichever key it arrives under.
 		test('reads the label out of conditionId when displayValue holds the icon number', async () => {
 			expect(await weatherFor(openVenue, { displayValue: '35', temperature: 82, highTemperature: 82, conditionId: 'Partly cloudy' }))
 				.toEqual({ temperatureF: 82, conditionLabel: 'Partly cloudy', conditionCode: 35 });
@@ -1530,9 +1470,6 @@ describe('apiClient', () => {
 			expect(await weatherFor(openVenue, { displayValue: 'Sunny', conditionId: '1' })).toBeUndefined();
 		});
 
-		// The bug this gate exists for: ESPN sends the stadium postcode's outdoor forecast on a dome
-		// exactly as it does on an open-air venue, so a September dome game rendered a weather chip
-		// for conditions nobody in the building could feel.
 		test('drops the outdoor forecast ESPN sends for a dome', async () => {
 			expect(await weatherFor(domeVenue, { displayValue: 'Thunderstorms', temperature: 64, highTemperature: 64, conditionId: '15' }))
 				.toBeUndefined();
@@ -1540,9 +1477,6 @@ describe('apiClient', () => {
 				.toBeUndefined();
 		});
 
-		// The winter case the decoration reads. ESPN drops the weather block entirely once a game is
-		// final, so a snowy dome payload cannot be fetched back out of January — the venue is verbatim
-		// and the reading is the one a Minneapolis forecast supplies in December.
 		test('drops a snowy dome forecast, which is what feeds the snow decoration', async () => {
 			expect(await weatherFor(domeVenue, { displayValue: 'Snow', temperature: 19, highTemperature: 19, conditionId: '22' }))
 				.toBeUndefined();
@@ -1553,9 +1487,6 @@ describe('apiClient', () => {
 				.toEqual({ temperatureF: 19, conditionLabel: 'Snow', conditionCode: 22 });
 		});
 
-		// MLS and the European soccer competitions send no `indoor` key on the venue at all. They send
-		// no weather either, so the pairing never arises today — but a missing flag must not be read
-		// as a dome the day one of them starts carrying a forecast.
 		test('treats a venue with no indoor flag as open air', async () => {
 			expect(await weatherFor({ fullName: 'Subaru Park', address: { city: 'Chester', state: 'PA' } }, { displayValue: 'Snow', temperature: 31, conditionId: '22' }))
 				.toEqual({ temperatureF: 31, conditionLabel: 'Snow', conditionCode: 22 });
@@ -1704,8 +1635,6 @@ describe('apiClient', () => {
 		});
 	});
 
-	// possessionText is the yard-marker half of what ESPN pre-joins into downDistanceText; the
-	// halves are joined in the locale files instead.
 	describe('fieldPosition parsing', () => {
 		const parseFor = async (league: 'nfl' | 'mls', situation: Record<string, unknown> | undefined, state = 'in') => {
 			const fetchMock = jest.fn().mockResolvedValue(createResponse({
@@ -1739,8 +1668,6 @@ describe('apiClient', () => {
 		});
 	});
 
-	// These feed the red-zone boost's down weighting, so they have to survive the messy shapes
-	// ESPN actually sends, not only the tidy one.
 	describe('gridiron down, distance and goal-to-go', () => {
 		const parseNfl = async (situation: Record<string, unknown> | undefined, state = 'in') => {
 			const fetchMock = jest.fn().mockResolvedValue(createResponse({
@@ -1788,8 +1715,6 @@ describe('apiClient', () => {
 		});
 	});
 
-	// Every situation below was transcribed off the live college-football scoreboard on 2026-09-04,
-	// with the two competitor ids renamed to the ones makeEvent mints.
 	describe('field position, possession and drive parsing', () => {
 		const parseField = async (situation: Record<string, unknown> | undefined, state = 'in', league: 'nfl' | 'mls' = 'nfl') => {
 			const fetchMock = jest.fn().mockResolvedValue(createResponse({
@@ -1801,8 +1726,6 @@ describe('apiClient', () => {
 			return result.games.find(g => g.id === 'ff');
 		};
 
-		// UTEP at Oklahoma, 3rd & 17. UTEP is the away side on its own 18, which ESPN sends as 82 —
-		// the coordinate is measured from the home goal line whoever is holding the ball.
 		test('carries the absolute yardLine through untouched', async () => {
 			const game = await parseField({ down: 3, distance: 17, yardLine: 82, possessionText: 'UTEP 18', possession: 'away-ff' });
 			expect(game?.yardLine).toBe(82);
@@ -1814,16 +1737,11 @@ describe('apiClient', () => {
 			expect((await parseField({ down: 1, distance: 10, yardLine: 25, possession: 'away-ff' }))?.possessionTeamId).toBe('away-ff');
 		});
 
-		// A team id that belongs to neither competitor is worse than none: it would leave the field
-		// diagram drawing a direction of travel for a team that is not in this game. The numeric
-		// form is the shape ESPN sends on some endpoints, and it is normalized before the compare.
 		test('drops a possession id matching neither competitor', async () => {
 			expect((await parseField({ down: 1, distance: 10, yardLine: 25, possession: '99999' }))?.possessionTeamId).toBeUndefined();
 			expect((await parseField({ down: 1, distance: 10, yardLine: 25, possession: 12345 }))?.possessionTeamId).toBeUndefined();
 		});
 
-		// Fresno State at USC at the end of the 2nd quarter: ESPN drops `possession` entirely at a
-		// dead ball while the rest of the situation survives.
 		test('falls back to lastPlay.team when possession is dropped at a dead ball', async () => {
 			const game = await parseField({
 				down: 2,
@@ -1845,7 +1763,6 @@ describe('apiClient', () => {
 			expect(game?.possessionTeamId).toBe('home-ff');
 		});
 
-		// Stanford's 11-play, 69-yard drive: 94 - 25 is exactly the yardage ESPN reported for it.
 		test('carries the drive start through', async () => {
 			const game = await parseField({
 				down: 4, distance: 6, yardLine: 94, possession: 'home-ff',
@@ -1901,7 +1818,6 @@ describe('apiClient', () => {
 			expect(result.games.find(g => g.id === 'no-season')?.isPostseason).toBe(false);
 		});
 
-		// The season object a real NBA preseason game arrived with.
 		test('marks a preseason game as preseason and not postseason', async () => {
 			const { fetchGamesWithLeagueLogos } = fetchWith([
 				makeEvent({ id: 'preseason', state: 'in', period: 1, clock: '10:00', homeScore: '0', awayScore: '0', season: { year: 2027, type: 1, slug: 'preseason' } }),
@@ -1922,7 +1838,6 @@ describe('apiClient', () => {
 			expect(result.games.map(g => [g.id, g.isPreseason])).toEqual(expect.arrayContaining([['regular', false], ['playoff', false], ['no-season', false]]));
 		});
 
-		// Soccer's season.type is a per-competition id, so a type of 1 says nothing about the calendar.
 		test('ignores a season.type of 1 that is not slugged preseason', async () => {
 			const { fetchGamesWithLeagueLogos } = fetchWith([
 				makeEvent({ id: 'odd-type', state: 'in', period: 1, clock: '10:00', homeScore: '0', awayScore: '0', season: { year: 2026, type: 1, slug: 'regular-season' } }),
@@ -1931,8 +1846,6 @@ describe('apiClient', () => {
 			expect(result.games.find(g => g.id === 'odd-type')?.isPreseason).toBe(false);
 		});
 
-		// These competitions use a per-tournament type id that is never 3, so slug is the only
-		// signal. Every pair below is a real payload, not an invented shape.
 		describe('competitions where season.type is never 3', () => {
 			const expectPostseason = async (
 				league: Parameters<Awaited<ReturnType<typeof loadApiClient>>['fetchGamesWithLeagueLogos']>[0][number],
@@ -1984,8 +1897,6 @@ describe('apiClient', () => {
 			});
 		});
 
-		// The Olympics report `type: 2, slug: 'regular-season'` for every game including the Gold
-		// Medal Game; the round exists only in competition.notes[0].headline.
 		describe('Olympic medal rounds, where slug is useless', () => {
 			const olympicGame = (id: string, headline?: string) => makeEvent({
 				id,
@@ -2017,7 +1928,6 @@ describe('apiClient', () => {
 				expect(await isPostseason(olympicGame('none'), 'olybkm')).toBe(false);
 			});
 
-			// Scoped to the Olympic leagues because headline is free-text editorial copy.
 			test('does not apply the headline heuristic to non-Olympic leagues', async () => {
 				expect(await isPostseason(olympicGame('nba1', 'Some Invitational - Semifinal'), 'nba')).toBe(false);
 			});
@@ -2042,7 +1952,6 @@ describe('apiClient', () => {
 			const { fetchGamesWithLeagueLogos } = loadApiClient();
 			const result = await fetchGamesWithLeagueLogos(['ucl'], { includeUpcoming: false });
 			const game = result.games.find(g => g.id === 'pens');
-			// The 120-minute scoreline stays put; the shootout rides alongside it.
 			expect(game?.homeTeam.score).toBe(1);
 			expect(game?.awayTeam.score).toBe(1);
 			expect(game?.homeTeam.shootoutScore).toBe(5);
@@ -2060,9 +1969,6 @@ describe('apiClient', () => {
 		});
 	});
 
-	// Every payload shape in this block was transcribed from live site.api.espn.com scoreboard
-	// responses sampled 2026-08-27 across in-season date windows. Sampling one day put the NHL and
-	// NBA in their offseason and made it look like they send none of this.
 	describe('team records', () => {
 		test('reads the overall record from type total', async () => {
 			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
@@ -2230,8 +2136,6 @@ describe('apiClient', () => {
 				});
 		});
 
-
-		// The record needs both halves to mean anything; ERA stands on its own.
 		test('leaves the record off when only one of wins and losses is present', async () => {
 			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
 				id: 'mlb-half', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
@@ -2335,7 +2239,6 @@ describe('apiClient', () => {
 			]);
 		});
 
-
 		test('carries the athlete headshot ESPN sends with a leader', async () => {
 			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
 				id: 'shot-ldr', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
@@ -2376,8 +2279,6 @@ describe('apiClient', () => {
 				.toEqual([{ category: 'goals', fallbackLabel: 'Goals', player: 'D. Kamada', value: '1', headshot: undefined }]);
 		});
 
-		// The WNBA sends only the per-game variants and the NBA only the totals; no league was found
-		// sending both. Collapsing them would relabel 19.4 as season points, a different number.
 		test('keeps the per-game categories the WNBA sends distinct from season totals', async () => {
 			const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
 				id: 'wnba-ldr', state: 'pre', period: 1, clock: '0:00', homeScore: '0', awayScore: '0',
@@ -2448,8 +2349,6 @@ describe('apiClient', () => {
 				date: new Date().toISOString(),
 				homeExtra: { leaders: [leaderCategory('homeRuns', 'HR', 'J. Soto', '1-4, HR, 4 RBI, 2 R, BB')] },
 			}));
-			// includeFinal, or the game is filtered out before the assertion can see it and this
-			// passes whether the leaders are stripped or not.
 			const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });
 			const game = result.games.find(g => g.id === 'post-ldr');
 			expect(game).toBeDefined();
@@ -2571,37 +2470,21 @@ describe('finished games', () => {
 			expect(result.games.map(g => g.id)).toEqual(['final-1']);
 		});
 
-		// Written out as literal dates under a pinned clock rather than as arithmetic on the answer.
-		// The previous version asserted the opening date was the plain one minus one, which is both
-		// the expression under test and wrong across the start of a month.
 		const openingDate = async (now: string, options: Record<string, unknown>): Promise<string[]> => {
 			jest.useFakeTimers().setSystemTime(new Date(now));
 			const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }));
 			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 			const { fetchGamesWithLeagueLogos } = loadApiClient();
 			await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: true, upcomingDays: 7, ...options });
-			// Read while the clock is still pinned. The two edges of the one window, which is what
-			// the live range and the slate range used to carry between them.
 			const days = datesAsked(fetchMock);
 			jest.useRealTimers();
 			return [days[0]!, days[days.length - 1]!];
 		};
 
-		// Two local days back, not one. Retention runs 24 hours past the estimated wrap, so a game
-		// still inside the window kicked off up to 27.5 hours ago — which is the day before
-		// yesterday for anyone whose local clock has passed midnight.
 		test('reaches back two days for finals and one without them', async () => {
 			const plain = await openingDate('2026-09-07T12:00:00.000Z', {});
 			const withFinals = await openingDate('2026-09-07T12:00:00.000Z', { includeFinal: true });
 
-			// The clock is UTC and ESPN files by US Eastern, so a UTC day opens on the previous
-			// Eastern date. Both ends go through that same translation.
-			//
-			// One day back without finals rather than none, because the live leg's reach-back is part
-			// of this window now instead of being a second request: a kickoff filed under yesterday is
-			// still on screen after Eastern midnight. Two days back with them, because retention runs
-			// 24 hours past an estimated wrap and a final still inside it can have started 27.5 hours
-			// ago, which is the day before yesterday once local midnight has passed.
 			expect(plain[0]).toBe('20260905');
 			expect(withFinals[0]).toBe('20260904');
 			expect(withFinals[1]).toBe(plain[1]);
@@ -2621,8 +2504,6 @@ describe("ESPN's own Final designation", () => {
 		shortDetail,
 	});
 
-	// Every value here was read off a live scoreboard: MLB sends Final/10, the NHL sends Final/OT
-	// and Final/SO, the NBA sends Final/OT and college football sends Final/3OT.
 	test.each([
 		['extra innings', 'Final/10', '10'],
 		['a single overtime', 'Final/OT', 'OT'],
@@ -2641,8 +2522,6 @@ describe("ESPN's own Final designation", () => {
 		expect(result.games[0]?.finalPeriodSuffix).toBeUndefined();
 	});
 
-	// A live game's shortDetail carries the inning — "Top 7th" — and an in-progress overtime reads
-	// "OT 2:41". Neither is a final designation, and neither should be stored as one.
 	test('a live game gets no suffix, whatever its shortDetail says', async () => {
 		const { fetchGamesWithLeagueLogos } = mockSingleEvent(withShortDetail('in', 'OT 2:41'));
 		const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
@@ -2662,7 +2541,6 @@ describe("ESPN's own Final designation", () => {
 		expect(result.games[0]?.finalPeriodSuffix).toBeUndefined();
 	});
 });
-
 
 describe('the polling lookahead', () => {
 	const now = new Date('2026-01-14T17:00:00.000Z');
@@ -2692,7 +2570,6 @@ describe('the polling lookahead', () => {
 		await expect(fetchNextScheduledStart('mlb', { now })).resolves.toBe(new Date(at(6)).getTime());
 	});
 
-	// The window opens at the start of today's local day, so it carries this morning's games too.
 	test('ignores anything that has already started', async () => {
 		const { fetchNextScheduledStart } = mockEvents([
 			scheduled('this-morning', at(-4)),
@@ -2709,11 +2586,6 @@ describe('the polling lookahead', () => {
 		await expect(fetchNextScheduledStart('mlb', { now })).resolves.toBe(new Date(at(11)).getTime());
 	});
 
-	/* The point of the state this feeds is to spend fewer requests, so a lookahead that cost as much
-	   as a poll would be self-defeating. A span is no longer answerable, so instead of one ranged
-	   request it walks the days and stops at the first kickoff — which is one request for any league
-	   with something on soon, and the full window only for the league that has genuinely nothing and
-	   is therefore about to sleep half an hour at a time. */
 	test('stops at the first day carrying a kickoff', async () => {
 		const { fetchMock, fetchNextScheduledStart } = mockEvents([scheduled('tonight', at(3))]);
 		await fetchNextScheduledStart('mlb', { days: 7, now });
@@ -2723,16 +2595,12 @@ describe('the polling lookahead', () => {
 	test('only pays for the whole window when there is nothing in it', async () => {
 		const { fetchMock, fetchNextScheduledStart } = mockEvents([]);
 		await fetchNextScheduledStart('mlb', { days: 7, now });
-		// Nine Eastern dates for a seven-day window: the suite runs in UTC and the query is rendered
-		// in Eastern, so the local day start on the 14th is the evening of the 13th over there.
 		expect(datesAsked(fetchMock)).toEqual([
 			'20260113', '20260114', '20260115', '20260116', '20260117',
 			'20260118', '20260119', '20260120', '20260121',
 		]);
 	});
 
-	// The same two overrides the scoreboard fetch carries; a college league 404s on a ranged query
-	// without them, which would read as a failed lookahead rather than as a missing parameter.
 	test('carries the NCAA group parameters a ranged query needs', async () => {
 		const { fetchMock, fetchNextScheduledStart } = mockEvents([]);
 		await fetchNextScheduledStart('ncaab', { now });
@@ -2743,7 +2611,6 @@ describe('the polling lookahead', () => {
 		expect(new URL(toUrl(second.fetchMock.mock.calls[0]![0] as RequestInfo)).searchParams.get('groups')).toBe('50');
 	});
 
-	// An FCS-only filter has to wake for the next FCS kickoff, not the next FBS one.
 	test('asks for the divisions it is given', async () => {
 		const { fetchMock, fetchNextScheduledStart } = mockEvents([]);
 		await fetchNextScheduledStart('ncaaf', { now, groups: ['81', '58'] });
@@ -2751,7 +2618,6 @@ describe('the polling lookahead', () => {
 		expect([...asked].toSorted()).toEqual(['58', '81']);
 	});
 
-	// Null is what puts a league to sleep for half an hour, so a failed request must not produce it.
 	test('a failed request throws rather than reading as nothing scheduled', async () => {
 		const fetchMock = jest.fn().mockResolvedValue(createResponse({}, { ok: false, status: 503 }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -2760,14 +2626,7 @@ describe('the polling lookahead', () => {
 	});
 });
 
-
-// ESPN sheds load on `site.api.espn.com` by recent request volume from an IP and answers 403 to
-// whatever it drops. Every fan-out here collects with `allSettled` and keeps the fulfilled ones, so
-// a shed league contributes nothing and says nothing: the symptom is a slate that comes back short,
-// or the empty-state screen on a day full of sport. Thirty-one leagues at once was over the line.
 describe('how wide a fan-out at ESPN is allowed to get', () => {
-	// Every request holds its slot until a macrotask passes, so the pool's whole width is in flight
-	// at once and the peak is the real thing rather than an artefact of how fast the mock resolves.
 	const trackConcurrency = () => {
 		const seen = { inFlight: 0, peak: 0 };
 		const fetchMock = jest.fn().mockImplementation(async () => {
@@ -2775,7 +2634,6 @@ describe('how wide a fan-out at ESPN is allowed to get', () => {
 			seen.peak = Math.max(seen.peak, seen.inFlight);
 			await new Promise<void>(resolve => { setTimeout(resolve, 0); });
 			seen.inFlight -= 1;
-			// Both shapes at once, so the same mock serves the scoreboard and the teams endpoint.
 			return createResponse({
 				events: [],
 				leagues: [{ logos: [] }],
@@ -2786,15 +2644,6 @@ describe('how wide a fan-out at ESPN is allowed to get', () => {
 		return { seen, fetchMock };
 	};
 
-	/* Two pools now, one inside the other: leagues six at a time, and the days of a league three at a
-	   time within that. A window is a request per day since ESPN stopped answering for a span, so
-	   without the inner one a ten-day window in 31 leagues would put 310 requests in flight at once —
-	   the shape that got us shed in the first place.
-
-	   Sized to a dozen leagues rather than all 31: twice the outer pool is enough to prove it bounds
-	   anything, and the token bucket deliberately paces a real 31-league sweep over tens of seconds,
-	   which would otherwise be wall time this spec spends waiting. The sweep's own completeness is
-	   pinned separately below, at full width. */
 	const severalLeagues = allLeagueIds.slice(0, 12);
 
 	test('never has more than both pools multiplied in flight', async () => {
@@ -2808,8 +2657,6 @@ describe('how wide a fan-out at ESPN is allowed to get', () => {
 		expect(seen.peak).toBeLessThanOrEqual(espnRequestPoolSize * espnDayPoolSize);
 	});
 
-	// More days than the inner pool, so it is the day pool being proved here and not just the league
-	// one: a two-day-ahead window is four Eastern dates against a day pool of three.
 	test('a window of more days than the inner pool does not widen it', async () => {
 		const { seen } = trackConcurrency();
 		const { fetchGamesWithLeagueLogos, espnRequestPoolSize, espnDayPoolSize } = loadApiClient();
@@ -2819,8 +2666,6 @@ describe('how wide a fan-out at ESPN is allowed to get', () => {
 		expect(seen.peak).toBeLessThanOrEqual(espnRequestPoolSize * espnDayPoolSize);
 	});
 
-	// At full width, and the reason the timeout is generous: 31 leagues times the live window is ~93
-	// requests, which the bucket paces to about ten a second on purpose.
 	test('still asks every league for every day of the window', async () => {
 		const { fetchMock } = trackConcurrency();
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
@@ -2840,9 +2685,6 @@ describe('how wide a fan-out at ESPN is allowed to get', () => {
 	}, 30_000);
 });
 
-/* Polling faster than ESPN refreshes buys a cache hit and no information, so the floor the eager
-   ramp scales down to is read off the response rather than chosen. `Cache-Control` is on the
-   CORS-safelist, which is why this is readable at all on a cross-origin response. */
 describe('how often ESPN says it will answer with something new', () => {
 	it('assumes the constant until a response has been seen', () => {
 		const { scoreboardRefreshMs } = loadApiClient();
@@ -2934,7 +2776,6 @@ describe('how often ESPN says it will answer with something new', () => {
 		expect(scoreboardRefreshMs('nba')).toBe(20_000);
 	});
 
-	// A header we cannot make sense of is not a reason to poll at zero.
 	it('ignores a missing or unusable max-age', async () => {
 		for (const cacheControl of [undefined, 'no-store', 'max-age=0', 'max-age=nonsense']) {
 			const fetchMock = jest.fn().mockResolvedValue(createResponse({ events: [] }, { cacheControl }));
@@ -2948,7 +2789,6 @@ describe('how often ESPN says it will answer with something new', () => {
 	});
 });
 
-/* A refused past day used to keep its expired entry, so every poll inside the window asked again. */
 describe('a refused past day', () => {
 	afterEach(() => jest.useRealTimers());
 
@@ -2981,8 +2821,6 @@ describe('a refused past day', () => {
 	});
 });
 
-/* The silence this removes: `allSettled` keeps the leagues that answered and says nothing about the
-   ones that did not, so every caller read a 403 as "this league has nothing on". */
 describe('telling an empty league apart from a refused one', () => {
 	it('names the leagues that were refused', async () => {
 		const fetchMock = jest.fn().mockImplementation(async (url: string) => (
@@ -3025,11 +2863,6 @@ describe('telling an empty league apart from a refused one', () => {
 	});
 });
 
-/* ESPN stopped answering for a span of dates. All 31 leagues return
-   `{"code":400,"message":"Failed to get events endpoint."}` for `dates=20260914-20260915` at any
-   width — including a one-day `20260915-20260915` — while a single `dates=20260915` still answers 200
-   in all 31, on both `site.api` and `site.web.api`. So a window is a list of days and costs a
-   request each, and these pin what falls out of that. */
 describe('a window asked for one day at a time', () => {
 	const answerWith = (forDay: (dates: string) => Record<string, unknown>) => {
 		const fetchMock = jest.fn().mockImplementation(async (url: string) => (
@@ -3056,12 +2889,9 @@ describe('a window asked for one day at a time', () => {
 		const asked = fetchMock.mock.calls.map(([url]) => dateOf(String(url)));
 		expect(asked.length).toBeGreaterThan(1);
 		expect(new Set(asked).size).toBe(asked.length);
-		// A single date, never a range: a range is what ESPN refuses.
 		expect(asked.every(dates => /^\d{8}$/.test(dates))).toBe(true);
 	});
 
-	// Measured: an MLB month answered 100 events without this and 369 with it, and a dated college
-	// football Saturday is 80 events against the undated curated week's 22.
 	it('lifts ESPN\'s default event cap on every one of them', async () => {
 		const fetchMock = answerWith(() => ({ events: [] }));
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
@@ -3072,9 +2902,6 @@ describe('a window asked for one day at a time', () => {
 		)).toBe(true);
 	});
 
-	/* A day whose every game is final cannot change again, so it stops being asked for. This is what
-	   pays for the window costing a request per day rather than one for the whole span: the reach-back
-	   a late kickoff needs is free for all but the first poll of a session. */
 	it('stops re-asking for a past day once everything on it is final', async () => {
 		jest.useFakeTimers().setSystemTime(new Date('2026-09-15T18:00:00.000Z'));
 		try {
@@ -3088,17 +2915,12 @@ describe('a window asked for one day at a time', () => {
 
 			fetchMock.mockClear();
 			await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
-			// Today is never served from the cache — it is the one the live poll exists for.
 			expect(datesAsked(fetchMock)).toEqual(['20260915']);
 		} finally {
 			jest.useRealTimers();
 		}
 	});
 
-	/* A shed day used to be indistinguishable from a day with nothing on it. The last good answer for
-	   it stands in now, because the callers rebuild a window only at startup and on a preference
-	   change — so one 403 on day five would otherwise cost a league its whole week until the next time
-	   the user changed a setting. */
 	it('serves the last good answer for a day ESPN later refuses', async () => {
 		jest.useFakeTimers().setSystemTime(new Date('2026-09-15T18:00:00.000Z'));
 		try {
@@ -3112,7 +2934,6 @@ describe('a window asked for one day at a time', () => {
 			const first = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: true, upcomingDays: 7 });
 			expect(first.games.map(game => game.id)).toContain('friday');
 
-			// That one day starts refusing, past its ten-minute freshness, while the rest still answer.
 			fetchMock.mockImplementation(async (url: string) => (
 				dateOf(url) === '20260918'
 					? createResponse({ code: 400, message: 'Failed to get events endpoint.' }, { ok: false, status: 400 })
@@ -3128,9 +2949,6 @@ describe('a window asked for one day at a time', () => {
 		}
 	});
 
-	/* Today is the exception and has to be. `tickLeague` reads a successful tick with nothing live as
-	   a quiet league and walks it towards dormant, so a frozen copy of today standing in for a real
-	   answer would let a league fall asleep while its games were being played. */
 	it('does not paper over a failure on today', async () => {
 		jest.useFakeTimers().setSystemTime(new Date('2026-09-15T18:00:00.000Z'));
 		try {
@@ -3141,18 +2959,12 @@ describe('a window asked for one day at a time', () => {
 			fetchMock.mockResolvedValue(createResponse({ message: 'Forbidden' }, { ok: false, status: 403 }));
 			const shed = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false });
 
-			// Every other day of that window had a cached answer to fall back on, and the league is
-			// still reported as unanswered.
 			expect(shed.shedLeagues).toEqual(['mlb']);
 		} finally {
 			jest.useRealTimers();
 		}
 	});
 
-	/* Nothing is latched by a refusal any more. The version this replaced dropped a refused league
-	   onto ESPN's undated board, which in college football is an editorially curated week rather than
-	   a day — 22 events against a dated Saturday's 80 — and cost every league its finals, because the
-	   undated board carries only the current Eastern day. */
 	it('keeps naming the days after a refusal rather than giving the window up', async () => {
 		const fetchMock = jest.fn().mockResolvedValue(
 			createResponse({ code: 400, message: 'Failed to get events endpoint.' }, { ok: false, status: 400 }),
@@ -3169,11 +2981,6 @@ describe('a window asked for one day at a time', () => {
 		expect(fetchMock.mock.calls.every(([url]) => dateOf(String(url)) !== '')).toBe(true);
 	});
 
-	/* A calendar day moves future → today → past underneath a cached entry, and the entry's own TTL
-	   cannot see that happen. A day fetched as tomorrow carries ten minutes of freshness, so ten
-	   minutes later it is today and still fresh by its own clock — and today must never be served
-	   from the cache. Eastern is UTC-4 here and the suite runs in UTC, so 03:55Z is 23:55 on the
-	   15th and 04:02Z is 00:02 on the 16th. */
 	it('does not serve a day cached as tomorrow once it has become today', async () => {
 		jest.useFakeTimers().setSystemTime(new Date('2026-09-16T03:55:00.000Z'));
 		try {
@@ -3190,11 +2997,9 @@ describe('a window asked for one day at a time', () => {
 			(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
 			const { fetchGamesWithLeagueLogos } = loadApiClient();
 
-			// 23:55 on the 15th: the wide window reaches the 16th, which is still tomorrow.
 			const before = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: true, upcomingDays: 7 });
 			expect(before.games.find(game => game.id === 'tipoff')?.status).toBe('pre');
 
-			// Seven minutes later it is the 16th and the game has tipped off.
 			live = true;
 			jest.setSystemTime(new Date('2026-09-16T04:02:00.000Z'));
 			const after = await fetchGamesWithLeagueLogos(['nba'], { includeUpcoming: false });
@@ -3206,11 +3011,6 @@ describe('a window asked for one day at a time', () => {
 		}
 	});
 
-	/* Three classifications for a past day rather than two. One with a game in progress never caches,
-	   because that is the kickoff from before Eastern midnight. One whose games are all final cannot
-	   change again. And one holding a game ESPN still calls scheduled is either the postponed game
-	   that will never start or the rain delay that has not started yet, so it takes the shorter
-	   freshness instead of either extreme. */
 	describe('how long a past day stays good for', () => {
 		const pinned = '2026-09-16T18:00:00.000Z';
 		const onYesterday = (state: string, id: string) => makeEvent({
@@ -3236,7 +3036,6 @@ describe('a window asked for one day at a time', () => {
 			return asked;
 		};
 
-		// Today is always asked for; what these are reading is whether the 15th joins it.
 		it('re-asks immediately while a game on it is in progress', async () => {
 			expect(await askTwice('in', 60_000)).toEqual(['20260915', '20260916']);
 		});
@@ -3251,10 +3050,6 @@ describe('a window asked for one day at a time', () => {
 		});
 	});
 
-	/* The days run chronologically, so the copy from the earliest day would otherwise win — including
-	   one served out of a settled day's half-hour cache, beating today's fresh answer. The case that
-	   puts one event on several days is exactly the one where ESPN has stopped applying the `dates`
-	   filter and every day comes back with the same board. */
 	it('prefers today\'s copy of an event that arrives on more than one day', async () => {
 		jest.useFakeTimers().setSystemTime(new Date('2026-09-16T18:00:00.000Z'));
 		try {
@@ -3278,8 +3073,6 @@ describe('a window asked for one day at a time', () => {
 		}
 	});
 
-	// Two surfaces asking for the same league and day at once is one request, not two: a worker start
-	// runs the slate while a guide open or a lookahead can be in flight for the same day.
 	it('makes one request when two callers want the same day at once', async () => {
 		const fetchMock = jest.fn().mockImplementation(async () => createResponse({ events: [], leagues: [{ logos: [] }] }));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
@@ -3295,15 +3088,12 @@ describe('a window asked for one day at a time', () => {
 	});
 });
 
-// ESPN's due-up entry: the athlete, the lineup slot and the line for the day.
 const dueUpHitter = (name: string, batOrder: number) => ({
 	athlete: { displayName: name, jersey: 10 + batOrder, position: 'LF', headshot: `https://a.espncdn.com/${batOrder}.png` },
 	batOrder,
 	summary: '0-1, BB',
 });
 
-// Three fields that ride the scoreboard poll we already make, and one — the rank — that every
-// league sends whether it has a poll or not.
 describe('rank, timeouts and the last play', () => {
 	const parseOne = async (
 		league: 'nfl' | 'mlb' | 'ncaab' | 'epl',
@@ -3336,8 +3126,6 @@ describe('rank, timeouts and the last play', () => {
 			expect(game?.awayTeam.rank).toBe(25);
 		});
 
-		// ESPN sends the block on every professional game with `current` pinned at 99, so keying on
-		// the field being present would put "#99" beside every NFL team in the league.
 		test('drops 99, which is ESPN\'s code for unranked', async () => {
 			const game = await parseOne('nfl', { homeExtra: { curatedRank: { current: 99 } } });
 			expect(game?.homeTeam.rank).toBeUndefined();
@@ -3349,8 +3137,6 @@ describe('rank, timeouts and the last play', () => {
 			expect(game?.awayTeam.rank).toBeUndefined();
 		});
 
-		// Unlike the two live-only fields below, a ranked matchup is ranked before and after it is
-		// played, so this one is not gated on the game being in progress.
 		test('survives on a finished game', async () => {
 			const game = await parseOne('ncaab', { state: 'post', homeExtra: { curatedRank: { current: 7 } } });
 			expect(game?.homeTeam.rank).toBe(7);
@@ -3381,8 +3167,6 @@ describe('rank, timeouts and the last play', () => {
 			expect(game?.lastPlay).toBe('(Shotgun) T.Lawrence pass incomplete deep left.');
 		});
 
-		// A penalty arrives as two sentences joined by a newline. Both are worth reading, so the
-		// break survives and only the whitespace around it is cleaned up.
 		test('keeps the line break inside a penalty and trims around it', async () => {
 			const game = await parseOne('nfl', {
 				situation: { lastPlay: { text: ' A.Jeanty up the middle for 1 yard. \n PENALTY on LV-S.Burford, Offensive Holding. ' } },
@@ -3401,15 +3185,12 @@ describe('rank, timeouts and the last play', () => {
 			expect((await parseOne('epl', {}))?.lastPlay).toBeUndefined();
 		});
 
-		// Colours the play's accent bar, so naming the wrong side is worse than naming none.
 		test('attributes the play to whichever side ESPN names', async () => {
 			const game = await parseOne('nfl', { situation: { lastPlay: { text: 'Sack.', team: { id: 'home-x1' } } } });
 			expect(game?.lastPlayTeamId).toBe('home-x1');
 			expect(game?.lastPlayTeamId).toBe(game?.homeTeam.id);
 		});
 
-		// parsePossession falls back through `possession` to answer "who has the ball now". This
-		// answers "who just did something", and goes quiet rather than guessing at a dead ball.
 		test('stays quiet when ESPN names a team that is not playing', async () => {
 			const game = await parseOne('nfl', { situation: { lastPlay: { text: 'Sack.', team: { id: '99999' } } } });
 			expect(game?.lastPlayTeamId).toBeUndefined();
@@ -3449,14 +3230,12 @@ describe('rank, timeouts and the last play', () => {
 			expect(game?.atBat?.batter.headshot).toBeUndefined();
 		});
 
-		// A new id with the same half still going is a pitching change, which is a commercial on TV.
 		test('keeps each player\'s id', async () => {
 			const game = await parseOne('mlb', { situation: { pitcher: { ...pair.pitcher, playerId: 4991171 }, batter: { ...pair.batter, playerId: '5194333' } } });
 			expect(game?.atBat?.pitcher.id).toBe('4991171');
 			expect(game?.atBat?.batter.id).toBe('5194333');
 		});
 
-		// ESPN drops the pair between innings. Half a panel reads as a fault rather than a gap.
 		test('is undefined unless both sides arrived', async () => {
 			expect((await parseOne('mlb', { situation: { pitcher: pair.pitcher } }))?.atBat).toBeUndefined();
 			expect((await parseOne('mlb', { situation: { batter: pair.batter } }))?.atBat).toBeUndefined();
@@ -3467,9 +3246,6 @@ describe('rank, timeouts and the last play', () => {
 			expect((await parseOne('mlb', { state: 'post', situation: pair }))?.atBat).toBeUndefined();
 		});
 
-		// The pitcher's `position` is a bare string where the same key inside `leaders` is an
-		// object. Declaring one schema for both would empty every leaders block through its
-		// `.catch([])` rather than failing loudly, so this is the guard for that.
 		test('does not disturb the leaders block on the same payload', async () => {
 			const leaders = [{
 				name: 'battingAverage',
@@ -3491,7 +3267,6 @@ describe('rank, timeouts and the last play', () => {
 			});
 		});
 
-		// The lineup wraps, and the ninth hitter really does come up ahead of the leadoff man.
 		test('keeps a wrapped lineup in the order it comes up', async () => {
 			const game = await parseOne('mlb', { situation: { dueUp: [dueUpHitter('Ninth', 9), dueUpHitter('Leadoff', 1), dueUpHitter('Second', 2)] } });
 			expect(game?.dueUp?.map(h => h.name)).toEqual(['Ninth', 'Leadoff', 'Second']);
@@ -3523,7 +3298,6 @@ describe('rank, timeouts and the last play', () => {
 			expect(game?.dueUp?.map(h => h.name)).toEqual(['Hitter 1', 'Hitter 2', 'Hitter 3']);
 		});
 
-		// A list ESPN shapes wrongly must cost the block alone, never the situation beside it.
 		test('a malformed list leaves the rest of the situation intact', async () => {
 			const game = await parseOne('mlb', { situation: { balls: 2, strikes: 1, outs: 1, dueUp: 'nobody' } });
 			expect(game?.dueUp).toBeUndefined();

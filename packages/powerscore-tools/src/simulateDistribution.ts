@@ -1,21 +1,9 @@
-// Drives MockGameSimulator through many simulated polls and prints the resulting distributions,
-// including the best-vs-active switch gap that sensitivityThresholds is calibrated from.
-//
-// Mirrors the background loop: the score is computed against history that does NOT yet include the
-// current poll, so decay ages match runtime, and only then is the snapshot appended. Win
-// probability is synthesized logistically from margin × progress in place of ESPN's real line.
-//
-// Run: npm run powerscore:simulate -- [ticks]
-//      npm run powerscore:simulate -- --ticks=25000
-//      npm run powerscore:simulate -- --early-game    (stress test only)
 import { MockGameSimulator, historyWindowMs as defaultHistoryWindowMs } from '@arenaswap/core';
 import { computePowerScore, sportTypeConfigMap, leagueConfigMap, type Game, type ScoreSnapshot } from 'powerscore';
 
 const earlyGameMode = process.argv.includes('--early-game');
 const pollIntervalMs = 15_000;
 
-// The npm script supplies a default tick count of its own, so anything the user passes arrives after
-// it. Last value wins, which is what makes `-- 5000` override the default instead of being ignored.
 const parseTicks = (args: string[]): number => {
 	const flag = args.find(arg => arg.startsWith('--ticks='));
 	if (flag) {
@@ -32,7 +20,6 @@ const historyWindowMsFor = (game: Game): number => (
 	sportTypeConfigMap[game.sportType]?.historyWindowMs ?? defaultHistoryWindowMs
 );
 
-// Maps a typical winning margin to a logit of ~1-2, so a 10-point NBA lead reads ~70-75% late.
 const winProbScaleBySport: Record<string, number> = {
 	basketball: 11,
 	football: 7,
@@ -42,8 +29,6 @@ const winProbScaleBySport: Record<string, number> = {
 	soccer: 1.2,
 };
 
-// Certainty amplifies with progress, so a mid-game margin is less decisive than the same margin
-// late on.
 const deriveWinProb = (game: Game): number => {
 	const diff = game.homeTeam.score - game.awayTeam.score;
 	const scale = winProbScaleBySport[game.sportType] ?? 8;
@@ -97,7 +82,6 @@ for (let tick = 0; tick < ticks; tick++) {
 	const now = tick * pollIntervalMs;
 	const games = simulator.tick().filter(game => game.status === 'in');
 
-	// Scored before this poll's snapshot is appended, matching runtime decay timing.
 	const tickTotals: number[] = [];
 	for (const game of games) {
 		const gameHistory = history.get(game.id) ?? [];
@@ -116,7 +100,6 @@ for (let tick = 0; tick < ticks; tick++) {
 		tickTotals.push(result.total);
 	}
 
-	// How far the best live game leads the runner-up — the delta a switch has to clear.
 	if (tickTotals.length >= 2) {
 		const sortedTickTotals = tickTotals.toSorted((a, b) => b - a);
 		switchGaps.push(sortedTickTotals[0]! - sortedTickTotals[1]!);
@@ -131,14 +114,12 @@ for (let tick = 0; tick < ticks; tick++) {
 
 		const probs = winProbHistory.get(game.id) ?? [];
 		probs.push(deriveWinProb(game));
-		// Same number of data points as score snapshots, to stay consistent.
 		while (probs.length > snapshots.length) probs.shift();
 		winProbHistory.set(game.id, probs);
 	}
 }
 
 const sortedGaps = switchGaps.toSorted((a, b) => a - b);
-// Sensitivity levels map to gap percentiles: 7 is the most eager, 1 the least.
 const levelToPercentile: Record<number, number> = { 1: 97, 2: 88, 3: 72, 4: 52, 5: 34, 6: 18, 7: 2 };
 const suggestedThresholds: Record<number, number> = {};
 for (let level = 1; level <= 7; level++) {
@@ -184,8 +165,6 @@ if (ticks > 0) {
 	console.log('};\n');
 }
 
-// Catches ceiling regressions the main simulation masks: by the time it measures distributions
-// every game already has rich history.
 const makeSnapshotHistory = (count: number, homeScore: number, awayScore: number): ScoreSnapshot[] => (
 	Array.from({ length: count }, (_, i) => ({
 		gameId: 'stress', timestamp: i * pollIntervalMs, homeScore, awayScore,

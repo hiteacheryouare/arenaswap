@@ -48,8 +48,6 @@ export interface TeamRecords {
 	away: string | null;
 }
 
-// The monochrome marks ESPN draws for each team, the ones broadcast uses over a photo. Null for a
-// team ESPN has drawn none for, which is every club outside North America.
 export interface MonoLogos {
 	home: TeamMonoMarks | null;
 	away: TeamMonoMarks | null;
@@ -61,20 +59,11 @@ interface summaryDataResult {
 	records: TeamRecords;
 	monoLogos: MonoLogos;
 	boxScore: BoxScore;
-	// Empty for the leagues ESPN publishes no table for — college hockey, college baseball and
-	// softball, Olympic basketball — and for a knockout tie whose two sides came out of different
-	// groups. The tab is absent rather than empty in all of those.
 	standings: StandingsGroup[];
-	// Wall-clock length of a finished game, in whole minutes. The one thing that makes an actual
-	// finish time knowable: ESPN publishes no completion timestamp anywhere, so the wrap screen
-	// adds this to the start rather than printing an estimate.
 	gameDurationMins: number | null;
-	// Pre-game only. Once a game starts the `boxscore` block holds that game's numbers rather than
-	// the season's, and recent form and the injury report are context for a game not yet begun.
 	matchup: Matchup;
 	tickets: TicketLink | null;
 	venue: VenueDetails | null;
-	// Soccer only. Empty until about an hour before kickoff, when the teams name their XIs.
 	lineups: Lineups;
 }
 
@@ -98,8 +87,6 @@ interface HeaderCompetitor {
 export const emptyTeamRecords: TeamRecords = { home: null, away: null };
 export const emptyMonoLogos: MonoLogos = { home: null, away: null };
 
-// The same two `rel` names and the same combiner rewrite the guide's `/teams` fetch uses, read here
-// off the `/summary` header instead. One copy, in core, so a renamed `rel` is one edit.
 const monoMarksOf = (competitor: HeaderCompetitor | undefined): TeamMonoMarks | null => (
 	monoMarksFromLogos(competitor?.team?.logos)
 );
@@ -109,8 +96,6 @@ const monoMarksOf = (competitor: HeaderCompetitor | undefined): TeamMonoMarks | 
 const totalRecord = (competitor: HeaderCompetitor | undefined): string | null => {
 	const total = competitor?.record?.find(entry => entry.type === 'total');
 	const value = (total?.summary ?? total?.displayValue ?? '').trim();
-	// ESPN sends `record: []` in the offseason and an empty summary for teams that haven't
-	// played; both should read as "no record".
 	return value.length > 0 ? value : null;
 };
 
@@ -124,8 +109,6 @@ const headerCompetitors = (data: unknown): HeaderCompetitor[] | null => {
 	return Array.isArray(competitors) ? competitors : null;
 };
 
-// Resolved by id where ESPN gives one and by side where it does not — the same pairing the box
-// score needs, because college hockey ids are synthesized and never match.
 const sidesOf = (data: unknown, homeTeamId: string, awayTeamId: string) => {
 	const competitors = headerCompetitors(data);
 	if (!competitors) return null;
@@ -154,7 +137,6 @@ type SummaryGameArg = Pick<Game, 'id' | 'league' | 'status' | 'sportType'> & {
 	awayTeam: Pick<Game['awayTeam'], 'id' | 'score' | 'record' | 'abbreviation'>;
 };
 
-// Deterministic so mock charts do not change between renders.
 const lcgNext = (s: number): number => (s * 1664525 + 1013904223) & 0x7fffffff;
 
 const seedFromStr = (str: string): number => {
@@ -210,8 +192,6 @@ const mockSeriesMap: Record<string, MockSeriesEntry> = {
 	},
 };
 
-// The one finished demo game, so the wrap's finish time is reachable without a live slate. 3h22m
-// on a ten-inning game, which is what one actually runs to.
 const mockGameDurationMins: Record<string, number> = {
 	'mock-20': 202,
 };
@@ -219,7 +199,6 @@ const mockGameDurationMins: Record<string, number> = {
 const mockRecordsMap: Record<string, TeamRecords> = {
 	'mock-1': { home: '18-9', away: '15-12' },
 	'mock-2': { home: '41-30', away: '33-38' },
-	// Widest a real record gets (8 chars); the column-width test measures against this entry.
 	'mock-3': { home: '28-28-10', away: '30-28-9' },
 	'mock-4': { home: '59-53', away: '55-58' },
 	'mock-5': { home: '11-4', away: '8-7' },
@@ -262,16 +241,10 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 	const [tickets, setTickets] = useState<TicketLink | null>(null);
 	const [venue, setVenue] = useState<VenueDetails | null>(null);
 	const [lineups, setLineups] = useState<Lineups>(emptyLineups);
-	// The scoreboard's records win when it has them; the summary is the fallback for the leagues
-	// and dates where it does not.
 	const resolvedRecords: TeamRecords = {
 		home: game.homeTeam.record ?? records.home,
 		away: game.awayTeam.record ?? records.away,
 	};
-	// Snapshotted, not tracked: depending on these directly would refetch whenever the caller
-	// hands us a fresh team object, and depending on a live score would refetch ESPN on every
-	// made basket. This effect is declared before the fetch below so the refs are already
-	// current by the time it runs.
 	const teamIdsRef = useRef({ home: game.homeTeam.id, away: game.awayTeam.id });
 	const abbreviationsRef = useRef({ home: game.homeTeam.abbreviation, away: game.awayTeam.abbreviation });
 	const scoreRef = useRef({ home: game.homeTeam.score, away: game.awayTeam.score });
@@ -288,10 +261,6 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		const sameGame = lastGameIdRef.current === gameId;
 		lastGameIdRef.current = gameId;
 
-		// A detail view reused for a different game must not keep the previous game's line. The same
-		// game changing status keeps what it has until the refetch replaces it: clearing there took
-		// the Box and Standings tabs away at tip-off and at the final, dropping the reader back on
-		// Overview, and turned a crest settled on its monochrome mark back into a tinted plate.
 		if (!sameGame) {
 			// oxlint-disable-next-line react/set-state-in-effect
 			setWinProbability([]);
@@ -311,10 +280,6 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 			// oxlint-disable-next-line react/set-state-in-effect
 			setRecords(mockRecordsMap[gameId] ?? emptyTeamRecords);
 			setGameDurationMins(mockGameDurationMins[gameId] ?? null);
-			// Unlike the rest of the demo state, a table is worth showing before a start: it is
-			// the context for a game that has not begun. The fixtures are shaped like whichever
-			// endpoint the league really answers from, so the demo runs the same parser the live
-			// screen does rather than a simplified stand-in.
 			const canned = mockStandingsPayloads[gameId];
 			setStandings(usesFullLeagueStandings(league)
 				? standingsForMatchup(parseLeagueStandings(canned, gameRef.current.sportType), league, teamIdsRef.current.home, teamIdsRef.current.away)
@@ -331,8 +296,6 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 			}
 			setWinProbability(generateMockWinProbs(gameId, scoreRef.current.home, scoreRef.current.away));
 			setSeriesInfo(mockSeriesMap[gameId] ?? null);
-			// The fixtures are ~22KB no real game can reach, so they stay out of the popup chunk.
-			// Every other piece of demo state is already set above; only the box score waits.
 			let cancelled = false;
 			import('@arenaswap/sideline/mockBoxScores').then(({ mockBoxScorePayloads }) => {
 				if (cancelled) return;
@@ -350,10 +313,6 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 		const config = leagueConfigMap[league as LeagueId];
 		if (!config) return;
 
-		// Asked once per game and status, not per score change: the line only moves on the scale of
-		// possessions, and the switcher reads volatility from the background scorer, not from here.
-		// Shared with the card's hover prefetch, which has usually started this already. A live game
-		// is asked again on the background's own pace so the screen keeps up with it.
 		let cancelled = false;
 		let latestRequest = 0;
 		const applySummary = (data: Record<string, unknown>) => {
@@ -370,11 +329,8 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 			setVenue(parseVenueDetails(data, gameRef.current.sportType));
 			if (gameRef.current.sportType === 'soccer') {
 				const nextLineups = parseLineups(data, teamIdsRef.current);
-				// Same as the box score: a thin answer mid-game must not take the tab away from its reader.
 				setLineups(previous => (nextLineups.away || nextLineups.home ? nextLineups : previous));
 			}
-			// Only where the whole-league fetch below is not running. Both would otherwise
-			// write this state, and whichever landed second would win.
 			if (!usesFullLeagueStandings(league)) {
 				const nextStandings = parseStandings(
 					data,
@@ -391,8 +347,6 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 				abbreviationsRef.current.home,
 				abbreviationsRef.current.away,
 			);
-			// A thin answer must not take the Box tab away from a reader who is on it: the strip is
-			// built from this state, and a vanished tab sends them back to Overview.
 			setBoxScore(previous => (
 				hasBoxScoreContent(gameRef.current.sportType, nextBoxScore) || !hasBoxScoreContent(gameRef.current.sportType, previous)
 					? nextBoxScore
@@ -419,11 +373,6 @@ const useSummaryData = (game: SummaryGameArg): summaryDataResult => {
 			if (!document.hidden) loadSummary();
 		}, pollWinProbabilityMs) : undefined;
 
-		// The whole league, alongside the summary rather than when the Standings tab is opened.
-		// It is 4-15KB gzipped and identical for every game in the league, so a second game in the
-		// same league opened soon after reuses the first one's request — and the tab only exists if
-		// this answers, so waiting for a click would mean never offering it for the leagues whose
-		// summary carries no table at all (college hockey, college baseball and softball).
 		if (usesFullLeagueStandings(league)) {
 			fetchSharedLeagueStandings(config.espnPath)
 				.then(data => {

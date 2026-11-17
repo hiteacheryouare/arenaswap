@@ -1,11 +1,3 @@
-// English fallbacks for every label the shared components render, plus the labels the website
-// reuses when it shows a piece of the extension.
-//
-// A plain module rather than part of i18nContext so build-time code — Astro frontmatter on the
-// site, for one — can read a label without pulling React in to do it. The extension never uses
-// these: it wraps the tree in a TranslationContext backed by its own locale files, and every key
-// here exists there too.
-
 export const defaultStrings: Record<string, string> = {
 	'gameCard.live': 'LIVE',
 	'gameCard.staleMinutes': 'Last updated 1 minute ago | Last updated $1 minutes ago',
@@ -120,7 +112,6 @@ export const defaultStrings: Record<string, string> = {
 
 type Substitutions = Record<string, string | number>;
 
-// The extension's i18n.t: a number picks a plural form and fills $1, an object fills {names}.
 export type Translator = (key: string, countOrSubs?: number | Substitutions, subs?: Substitutions) => string;
 
 // Plural strings outside the extension are written "one | other", the shape WXT compiles them to.

@@ -5,9 +5,6 @@ import type { Game } from '@arenaswap/core/types';
 import type { MonoLogos } from '../../../entrypoints/popup/components/useSummaryData';
 import type { GameStatus } from '../../../entrypoints/popup/components/gameSituation';
 
-// Baltimore and Indianapolis: a purple and a navy, the pair that used to come out of the resolver as
-// black against white. Both are dark, which is what makes them the right fixture for a hero whose
-// whole job is now to carry white type over team colour.
 const awayColor = '#29126F';
 const homeColor = '#003B75';
 
@@ -65,9 +62,6 @@ const luminance = (value: string): number => {
 	return (0.2126 * linear[0]!) + (0.7152 * linear[1]!) + (0.0722 * linear[2]!);
 };
 
-// The hero paints a gradient with a scrim over it, so there is no single background colour to read
-// off the element. The darkest the scrimmed team colour can be is what the ink has to clear, and the
-// two teams here are the darkest pair in the product.
 const darkestHeroBackground = 0.0121;
 const contrastOnHero = (ink: string): number => (
 	(luminance(ink) + 0.05) / (darkestHeroBackground + 0.05)
@@ -80,7 +74,6 @@ describe('the detail hero surface', () => {
 			const image = getComputedStyle($hero[0]!).backgroundImage;
 			expect(image, 'the two team colours').to.include('rgb(41, 18, 111)').and.to.include('rgb(0, 59, 117)');
 			expect(image, 'the scrim over them').to.include('rgba(3, 7, 12, 0.18)');
-			// The white plate the live hero used to be.
 			expect(getComputedStyle($hero[0]!).backgroundColor).to.not.equal('rgb(255, 255, 255)');
 		});
 	});
@@ -98,8 +91,6 @@ describe('the detail hero surface', () => {
 		readable('.game-detail-period', 'the clock');
 	});
 
-	// The card's own rule for these is a light-surface grey, and it has to lose to the hero's here.
-	// A default written at the same specificity would put `#4b5563` on the scrim without a word.
 	it('re-tones the balls/strikes/outs count for the scrim', () => {
 		mountLive({ ...liveGame, league: 'mlb', sportType: 'baseball', period: 7, bso: { balls: 1, strikes: 1, outs: 1 } });
 		cy.get('.gd-hero-live .bso-dot.is-empty').should('have.length', 4).each($dot => {
@@ -110,9 +101,6 @@ describe('the detail hero surface', () => {
 		});
 	});
 
-	// A crest is drawn in the team's own colours with nothing behind it. Which of the three
-	// treatments it ends up with depends on measuring its own pixels against the surface, so an
-	// unmeasured crest is the colour artwork, bare. `teamCrest.cy.tsx` drives all three.
 	it('draws the crests bare rather than plating them by default', () => {
 		mountLive(liveGame);
 		cy.get('.game-detail-team-logo-shell').should('have.length', 2).each($shell => {
@@ -122,7 +110,6 @@ describe('the detail hero surface', () => {
 		});
 	});
 
-	// A delay used to dim the hero to 40% opacity, which on a dark surface is a disappearance.
 	it('marks a delay without draining the hero', () => {
 		mountLive(liveGame, mono, true);
 		cy.get('.gd-hero-live.is-delayed').should('exist').then($hero => {
@@ -181,7 +168,6 @@ describe('the detail hero surface', () => {
 
 const fontFace = ($el: JQuery<HTMLElement>) => getComputedStyle($el[0]!).fontFamily.split(',')[0]!.replace(/["']/g, '');
 
-// Lekton holds a counting clock's digits still. The period beside it never moves, so it keeps the body face.
 describe('the sticky bar status', () => {
 	const mountBar = (game: Game, status: GameStatus) => cy.mount(
 		<div style={{ width: '320px', background: '#0d1117' }}>
@@ -201,9 +187,6 @@ describe('the sticky bar status', () => {
 	});
 });
 
-// The sticky bar draws an 18px crest with three letters beside it and nothing else to go on, on the
-// shell's own background rather than on team colour. A navy monogram there is a blank box, so it
-// takes the same three treatments the hero below it does.
 describe('the sticky bar crests', () => {
 	it('draws them through the same rule as the hero', () => {
 		cy.mount(
@@ -218,15 +201,11 @@ describe('the sticky bar crests', () => {
 			</div>,
 		);
 		cy.get('.gd-bar-logo-shell').should('have.length', 2);
-		// Bare until something measures otherwise, the same as everywhere else.
 		cy.get('.gd-bar-logo-shell.is-bare').should('have.length', 2);
 		cy.get('.gd-bar-logo').should('have.length', 2);
 	});
 });
 
-
-// A white mark is how a navy crest reads on the dark bar, and it is exactly what vanishes on the light
-// one: the bar is judged against the page it actually sits on. Solid PNGs so the measurement runs.
 describe('the sticky bar crests follow the theme', () => {
 	const navy = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFUlEQVR4nGPkUXb4z4AHMOGTHD4KAH25AX7gsIqPAAAAAElFTkSuQmCC';
 	const whiteMark = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAFklEQVR4nGP8////fwY8gAmf5PBRAAAbbgQMid1tCwAAAABJRU5ErkJggg==';
@@ -258,8 +237,6 @@ describe('the sticky bar crests follow the theme', () => {
 	});
 });
 
-// The at-bat panel is the one thing on the hero drawn on a plate of its own rather than straight
-// onto the scrim, so its ink has to clear the plate, not the gradient underneath it.
 describe('detail hero at-bat panel on the scrim', () => {
 	const withAtBat = {
 		...liveGame,
@@ -272,8 +249,6 @@ describe('detail hero at-bat panel on the scrim', () => {
 		},
 	};
 
-	// The panel's plate is translucent over the scrim, so the ink still has to clear the darkest
-	// the scrimmed gradient gets — which is exactly what contrastOnHero already models.
 	const readableOnPanel = (selector: string, label: string, floor: number) => {
 		cy.get(selector).first().then($el => {
 			expect(contrastOnHero(getComputedStyle($el[0]!).color), label).to.be.greaterThan(floor);
@@ -284,8 +259,6 @@ describe('detail hero at-bat panel on the scrim', () => {
 		mountLive(withAtBat);
 		readableOnPanel('.gd-atbat-name', 'the player name', 4.5);
 		readableOnPanel('.gd-atbat-line', "ESPN's line", 4.5);
-		// A 0.5rem uppercase label is large text for nobody, but it is a caption for the name
-		// beside it rather than the reading itself, so it takes the 3:1 bar.
 		readableOnPanel('.gd-atbat-role', 'the role label', 3);
 	});
 

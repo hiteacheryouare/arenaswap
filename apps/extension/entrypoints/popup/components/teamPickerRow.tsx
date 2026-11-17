@@ -8,7 +8,6 @@ interface teamPickerRowProps {
 	team: EspnTeamEntry;
 	list?: teamList;
 	isSelected: boolean;
-	// On the other list. Picking it here moves it over.
 	isOnOtherList?: boolean;
 	sublabel?: string;
 	onToggle: () => void;
@@ -24,7 +23,6 @@ const labelFor = (list: teamList, isSelected: boolean, team: string): string => 
 	return isSelected ? i18n.t('teamPicker.removeFavorite', { team }) : i18n.t('teamPicker.addFavorite', { team });
 };
 
-// The whole row is the toggle, not just the 16px mark at its end.
 const teamPickerRow = ({ team, list = 'favorites', isSelected, isOnOtherList = false, sublabel, onToggle }: teamPickerRowProps) => {
 	const mark = isOnOtherList && !isSelected ? marks[list === 'favorites' ? 'rivals' : 'favorites'] : marks[list];
 	return (

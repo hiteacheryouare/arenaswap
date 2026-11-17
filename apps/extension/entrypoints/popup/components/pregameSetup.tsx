@@ -14,13 +14,9 @@ interface pregameSetupProps {
 	onRegistryChange: (updated: TabRegistration[]) => void;
 	formatTabLabel: (tab: Browser.tabs.Tab) => string;
 	standbyStreamTabId?: number | null;
-	// Off where there is no tab registry to write to, which leaves the picker with nothing to list.
 	tabAssignEnabled?: boolean;
 }
 
-// Before a game starts there is nothing to report on it, so the screen offers the two things
-// you would actually want to decide in advance: which tab it lands in, and how much it should
-// outrank everything else. Favourites live on the poster, next to the team they apply to.
 const pregameSetup = ({
 	game,
 	currentBoost,

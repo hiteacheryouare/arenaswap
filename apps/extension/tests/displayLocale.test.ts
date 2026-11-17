@@ -12,7 +12,6 @@ describe('resolveDisplayLocale', () => {
 		expect(resolveDisplayLocale(ui)).toBe(expected);
 	});
 
-	// No folder for the language, so the strings are English and the dates should be too.
 	test.each([
 		['nl-NL'],
 		['sv'],

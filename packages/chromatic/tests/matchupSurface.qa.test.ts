@@ -1,6 +1,5 @@
 import { matchupSurface } from '../src/colorUtils';
 
-// Colours as our sources publish them.
 const steelersGold = '#FFB612';
 const rangersNavy = '#003278';
 const lightBlue = '#8FBCE6';
@@ -25,8 +24,6 @@ describe('the live card painted in both teams\' colours', () => {
 		expect(left).toBe(right);
 	});
 
-	// The delay shade is darker and browner, enough that white beats the dark ink across a gold
-	// side's whole height. Pinned as the current choice so a refactor of the shade is a decision.
 	test('switches every side to white under the delay shade, gold included', () => {
 		expect(matchupSurface(steelersGold, rangersNavy, true).inks).toEqual({ left: '#ffffff', right: '#ffffff', center: '#ffffff' });
 		expect(matchupSurface(steelersGold, rangersNavy, true).backgroundImage).not.toBe(matchupSurface(steelersGold, rangersNavy).backgroundImage);

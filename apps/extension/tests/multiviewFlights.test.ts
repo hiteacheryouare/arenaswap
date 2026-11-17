@@ -3,7 +3,6 @@ import planFlight, { angularPath, crossing, marginRun, openBands, type flightAre
 const seeded = (seed: number) => () => (seed = (seed * 16807) % 2147483647) / 2147483647;
 
 const page: flightArea = { x: 0, y: 0, width: 1440, height: 900 };
-// Where the grid sits at 1440×900 for two boxes, four boxes, and five (which fills the height).
 const twoBoxes: flightArea = { x: 0, y: 228, width: 1440, height: 444 };
 const fourBoxes: flightArea = { x: 0, y: 85, width: 1440, height: 730 };
 const fiveBoxes: flightArea = { x: 30, y: 0, width: 1380, height: 900 };

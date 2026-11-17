@@ -11,11 +11,7 @@ interface detailPosterHeroProps {
 	game: Game;
 	seriesInfo: SeriesInfo | null;
 	records: TeamRecords;
-	// Empty for a normal pre-game game; a postponement or delay is the one thing that has
-	// something to say before the start time, so it is not dropped with the rest of the row.
 	statusText: string;
-	// The scrimmed band of the two team colours, built once in the view and handed to whichever
-	// hero renders — a live game gets the same surface a pre-game one does.
 	heroStyle: CSSProperties;
 	awayColor: string;
 	homeColor: string;
@@ -33,8 +29,6 @@ const PosterTeam = ({
 }: {
 	team: Team;
 	color: string;
-	// ESPN's monochrome marks. Reached for only when the colour artwork stops reading against this
-	// team's own half of the poster, which is the hardest surface it faces: a navy crest on navy.
 	record: string | null;
 	leagueId: LeagueId;
 	isFavorited: boolean;
@@ -81,7 +75,6 @@ const detailPosterHero = ({ game, seriesInfo, records, statusText, heroStyle, aw
 
 			{statusText && <div className='gd-poster-status'>{statusText}</div>}
 
-			{/* A postponed or delayed game has nobody holding to the old start, the sticky bar's rule too. */}
 			{!statusText && <StartCountdownDisplay startTime={game.startTime} sportType={game.sportType} />}
 
 			{seriesInfo && <SeriesDots info={seriesInfo} game={game} />}

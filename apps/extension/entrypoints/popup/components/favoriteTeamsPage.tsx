@@ -29,8 +29,6 @@ const favoriteTeamsPage = ({
 	const [hasError, setHasError] = useState(false);
 	const [attempt, setAttempt] = useState(0);
 
-	// Fixed when the page opens. Recomputing it as teams are starred would refetch every league's
-	// roster on each click, and the answer only changes when the leagues themselves do.
 	const [leagues] = useState(() => leaguesForFavoritePicker(enabledLeagues, [...favoriteTeamIds, ...rivalTeamIds]));
 
 	useEffect(() => {
@@ -54,9 +52,6 @@ const favoriteTeamsPage = ({
 	const trackedLeagues = new Set(enabledLeagues);
 	const trackedTeams = teams.filter(team => trackedLeagues.has(team.leagueId));
 
-	// Searching hides this section rather than filtering it. Filtered, it moved the league groups
-	// up and down on every keystroke, and a starred team answering the search twice — once here and
-	// once in its league — read as a duplicate rather than as a shortcut.
 	const pinnedRows = query.trim() ? [] : favoriteTeamRows(teams, selected, enabledLeagues);
 
 	const pinned = pinnedRows.length > 0 ? (
@@ -77,9 +72,6 @@ const favoriteTeamsPage = ({
 		</div>
 	) : null;
 
-	// A column rather than a fragment, so the list below the search box is what scrolls. The roster
-	// runs to a few hundred rows once a college league is on, and a search box that scrolls away
-	// with them is the one thing that makes a list that long unusable.
 	return (
 		<div className='d-flex flex-column min-h-0 flex-grow-1'>
 			<TeamListTabs list={list} panelId={panelId} onChange={setList} />

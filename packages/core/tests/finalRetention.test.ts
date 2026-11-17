@@ -43,8 +43,6 @@ describe('estimating when a game wrapped', () => {
 });
 
 describe('the 24 hour retention window', () => {
-	// A 16:10Z first pitch plus baseball's 3h15m allowance wraps at 19:25Z, so the window closes
-	// at 19:25Z the following day. Both edges are written out rather than recomputed.
 	const start = '2026-09-06T16:10:00.000Z';
 	const game = finished('baseball', start);
 
@@ -69,8 +67,6 @@ describe('the 24 hour retention window', () => {
 	});
 
 	test('a game that has not reached its estimated wrap yet is kept', () => {
-		// ESPN can report a blowout final well before the allowance is up. A negative age must not
-		// read as "older than a day".
 		expect(isWithinFinalRetention(game, at('2026-09-06T17:00:00.000Z'))).toBe(true);
 	});
 
@@ -96,7 +92,6 @@ const scheduled = (startTime: string | undefined): Pick<Game, 'status' | 'sportT
 });
 
 describe('a scheduled game that never started', () => {
-	// The game from the bug report: a 7 PM Eastern Tuesday tip-off still read as scheduled on Thursday.
 	const start = '2026-11-04T00:00:00.000Z';
 
 	test('two days later it has missed its window', () => {

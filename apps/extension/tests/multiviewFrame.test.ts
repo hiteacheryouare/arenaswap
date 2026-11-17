@@ -1,6 +1,5 @@
 type listener = () => void;
 
-// Node reports a null origin for chrome-extension:// URLs, so the fake extension lives on an https origin.
 const extensionOrigin = 'https://extension.test';
 
 interface fakeVideo {

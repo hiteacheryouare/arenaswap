@@ -1,10 +1,6 @@
 import { broadcastTotal, expectHealthyBackground, openPopup, play, startExtension, world } from '../../support/liveExtension';
 import { gameIds, slate, storedPrefs } from '../../support/liveGames';
 
-// The shipped worker deciding where the user should be, off two recorded games: Liberty at Dream
-// with 3:53 left and Hurricanes at Flyers tied in the third. Each score change is one the game
-// could really have made, played through the scoreboard the worker polls.
-
 const news = 1;
 const wnbaTab = 2;
 const nhlTab = 3;
@@ -52,7 +48,6 @@ describe('switching to the best game', () => {
 		play(30_000);
 		watching(nhlTab);
 
-		// The Liberty come all the way back and tie it.
 		world().then(live => { live.events = slate({ wnba: { home: 79, away: 79 }, nhl: {} }); });
 		play(60_000);
 		world().should(live => expect(broadcastTotal(live, gameIds.wnba)).to.be.greaterThan(broadcastTotal(live, gameIds.nhl)!));
@@ -75,7 +70,6 @@ describe('switching to the best game', () => {
 		play(60_000);
 		watching(wnbaTab);
 
-		// Still tied in Philadelphia, a couple of minutes further on.
 		world().then(live => { live.events = slate({ wnba: { home: 79, away: 50 }, nhl: { clock: 210 } }); });
 		play(cooldownSeconds * 1000);
 		watching(nhlTab);

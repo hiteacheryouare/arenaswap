@@ -1,12 +1,9 @@
-// The steps are mock popups, so they are mounted with the real stylesheets: unstyled, the mock
-// crests fall back to their intrinsic 500px and the cards no longer fit the screen they describe.
 import WalkthroughView from '../../../entrypoints/popup/components/walkthroughView';
 import de from '../../../locales/de.json';
 import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
 import fil from '../../../locales/fil.json';
 import fr from '../../../locales/fr.json';
-// Not `it` — that would shadow Mocha's global it() and break every test in this file.
 import itLocale from '../../../locales/it.json';
 import ja from '../../../locales/ja.json';
 import ko from '../../../locales/ko.json';
@@ -33,17 +30,15 @@ describe('walkthroughView step navigation', () => {
 
 	it('goes back to step 1 from step 2', () => {
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
-		cy.contains('button', 'Back').click(); // 2 -> 1
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Back').click();
 		cy.contains('Step 1 of 9').should('exist');
 	});
 
 	it('navigates through step 2 PowerScore sub-steps and progress dots', () => {
-		// Signal sub-steps raise a full-bleed bloom on a 150ms + 450ms timer, and it covers Back as
-		// well as the dots, so tapping it is the only way on. The clock is held so no click races it.
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		cy.contains('See What Counts').should('exist');
 
 		cy.get('.powerscore-progress-dot').eq(1).click();
@@ -65,7 +60,7 @@ describe('walkthroughView step navigation', () => {
 
 	it('advances to step 3 (tab-assign) after completing step 2', () => {
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
 			cy.get('button.btn-solid.theme-primary').last().click();
 		}
@@ -75,11 +70,11 @@ describe('walkthroughView step navigation', () => {
 
 	it('goes back to step 2 from step 3', () => {
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
-			cy.get('button.btn-solid.theme-primary').last().click(); // 2 -> 3
+			cy.get('button.btn-solid.theme-primary').last().click();
 		}
-		cy.contains('button', 'Back').click(); // 3 -> 2 (should land on last sub-step of step 2)
+		cy.contains('button', 'Back').click();
 		cy.contains('Step 2 of 9').should('exist');
 		cy.contains('Postseason Boost').should('exist');
 	});
@@ -87,11 +82,11 @@ describe('walkthroughView step navigation', () => {
 	it('advances to step 4 (auto-switch demo)', () => {
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
-			cy.get('button.btn-solid.theme-primary').last().click(); // 2 -> 3
+			cy.get('button.btn-solid.theme-primary').last().click();
 		}
-		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.contains('button', 'Next').click();
 		cy.contains('Step 4 of 9').should('exist');
 		cy.contains('Watch It Work').should('exist');
 	});
@@ -99,23 +94,23 @@ describe('walkthroughView step navigation', () => {
 	it('goes back to step 3 from step 4', () => {
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
-			cy.get('button.btn-solid.theme-primary').last().click(); // 2 -> 3
+			cy.get('button.btn-solid.theme-primary').last().click();
 		}
-		cy.contains('button', 'Next').click(); // 3 -> 4
-		cy.contains('button', 'Back').click(); // 4 -> 3
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Back').click();
 		cy.contains('Step 3 of 9').should('exist');
 	});
 
 	it('step 4 Next button is disabled until animation completes', () => {
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
-			cy.get('button.btn-solid.theme-primary').last().click(); // 2 -> 3
+			cy.get('button.btn-solid.theme-primary').last().click();
 		}
-		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.contains('button', 'Next').click();
 		cy.get('button.btn-solid.theme-primary').last().should('be.disabled');
 		cy.tick(2500);
 		cy.contains('KC').should('exist');
@@ -127,13 +122,13 @@ describe('walkthroughView step navigation', () => {
 	it('advances to step 5 after step 4 animation', () => {
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
-			cy.get('button.btn-solid.theme-primary').last().click(); // 2 -> 3
+			cy.get('button.btn-solid.theme-primary').last().click();
 		}
-		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.contains('button', 'Next').click();
 		cy.tick(2500);
-		cy.get('button.btn-solid.theme-primary').last().click(); // 4 -> 5
+		cy.get('button.btn-solid.theme-primary').last().click();
 		cy.contains('Step 5 of 9').should('exist');
 		cy.contains('Going Full Screen').should('exist');
 	});
@@ -141,13 +136,13 @@ describe('walkthroughView step navigation', () => {
 	it('step 5 switches the game while the screen stays filled', () => {
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
-			cy.get('button.btn-solid.theme-primary').last().click(); // 2 -> 3
+			cy.get('button.btn-solid.theme-primary').last().click();
 		}
-		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.contains('button', 'Next').click();
 		cy.tick(2500);
-		cy.get('button.btn-solid.theme-primary').last().click(); // 4 -> 5
+		cy.get('button.btn-solid.theme-primary').last().click();
 		cy.contains('NYG').should('exist');
 		cy.tick(1600);
 		cy.contains('BUF').should('exist');
@@ -157,14 +152,14 @@ describe('walkthroughView step navigation', () => {
 	it('advances to step 6 (settings)', () => {
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
-			cy.get('button.btn-solid.theme-primary').last().click(); // 2 -> 3
+			cy.get('button.btn-solid.theme-primary').last().click();
 		}
-		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.contains('button', 'Next').click();
 		cy.tick(2500);
-		cy.get('button.btn-solid.theme-primary').last().click(); // 4 -> 5
-		cy.contains('button', 'Next').click(); // 5 -> 6
+		cy.get('button.btn-solid.theme-primary').last().click();
+		cy.contains('button', 'Next').click();
 		cy.contains('Step 6 of 9').should('exist');
 		cy.contains('Tune It Your Way').should('exist');
 	});
@@ -172,29 +167,29 @@ describe('walkthroughView step navigation', () => {
 	it('goes back to step 4 from step 5', () => {
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
-			cy.get('button.btn-solid.theme-primary').last().click(); // 2 -> 3
+			cy.get('button.btn-solid.theme-primary').last().click();
 		}
-		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.contains('button', 'Next').click();
 		cy.tick(2500);
-		cy.get('button.btn-solid.theme-primary').last().click(); // 4 -> 5
-		cy.contains('button', 'Back').click(); // 5 -> 4
+		cy.get('button.btn-solid.theme-primary').last().click();
+		cy.contains('button', 'Back').click();
 		cy.contains('Step 4 of 9').should('exist');
 	});
 
 	it('advances to step 7 (game detail)', () => {
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
-			cy.get('button.btn-solid.theme-primary').last().click(); // 2 -> 3
+			cy.get('button.btn-solid.theme-primary').last().click();
 		}
-		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.contains('button', 'Next').click();
 		cy.tick(2500);
-		cy.get('button.btn-solid.theme-primary').last().click(); // 4 -> 5
-		cy.contains('button', 'Next').click(); // 5 -> 6
-		cy.contains('button', 'Next').click(); // 6 -> 7
+		cy.get('button.btn-solid.theme-primary').last().click();
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Next').click();
 		cy.contains('Step 7 of 9').should('exist');
 		cy.contains(en.stepGameDetail.title).should('exist');
 	});
@@ -202,49 +197,49 @@ describe('walkthroughView step navigation', () => {
 	it('goes back to step 6 from step 7', () => {
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
-			cy.get('button.btn-solid.theme-primary').last().click(); // 2 -> 3
+			cy.get('button.btn-solid.theme-primary').last().click();
 		}
-		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.contains('button', 'Next').click();
 		cy.tick(2500);
-		cy.get('button.btn-solid.theme-primary').last().click(); // 4 -> 5
-		cy.contains('button', 'Next').click(); // 5 -> 6
-		cy.contains('button', 'Next').click(); // 6 -> 7
-		cy.contains('button', 'Back').click(); // 6 -> 5
+		cy.get('button.btn-solid.theme-primary').last().click();
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Back').click();
 		cy.contains('Step 6 of 9').should('exist');
 	});
 
 	it('step 7 tap reveals PowerScore breakdown preview', () => {
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
-			cy.get('button.btn-solid.theme-primary').last().click(); // 2 -> 3
+			cy.get('button.btn-solid.theme-primary').last().click();
 		}
-		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.contains('button', 'Next').click();
 		cy.tick(2500);
-		cy.get('button.btn-solid.theme-primary').last().click(); // 4 -> 5
-		cy.contains('button', 'Next').click(); // 5 -> 6
-		cy.contains('button', 'Next').click(); // 6 -> 7
+		cy.get('button.btn-solid.theme-primary').last().click();
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Next').click();
 		cy.contains('PowerScore Breakdown').should('not.exist');
-		cy.get('[role="button"]').first().click(); // tap mock game card
+		cy.get('[role="button"]').first().click();
 		cy.contains('PowerScore Breakdown').should('exist');
 	});
 
 	it('advances to step 8 (leagues & favorites)', () => {
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
-			cy.get('button.btn-solid.theme-primary').last().click(); // 2 -> 3
+			cy.get('button.btn-solid.theme-primary').last().click();
 		}
-		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.contains('button', 'Next').click();
 		cy.tick(2500);
-		cy.get('button.btn-solid.theme-primary').last().click(); // 4 -> 5
-		cy.contains('button', 'Next').click(); // 5 -> 6
-		cy.contains('button', 'Next').click(); // 6 -> 7
-		cy.contains('button', 'Next').click(); // 7 -> 8
+		cy.get('button.btn-solid.theme-primary').last().click();
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Next').click();
 		cy.contains('Step 8 of 9').should('exist');
 		cy.contains('Leagues & Favorites').should('exist');
 	});
@@ -252,16 +247,16 @@ describe('walkthroughView step navigation', () => {
 	it('step 8 tab switcher shows leagues and favorites content', () => {
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
-			cy.get('button.btn-solid.theme-primary').last().click(); // 2 -> 3
+			cy.get('button.btn-solid.theme-primary').last().click();
 		}
-		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.contains('button', 'Next').click();
 		cy.tick(2500);
-		cy.get('button.btn-solid.theme-primary').last().click(); // 4 -> 5
-		cy.contains('button', 'Next').click(); // 5 -> 6
-		cy.contains('button', 'Next').click(); // 6 -> 7
-		cy.contains('button', 'Next').click(); // 7 -> 8
+		cy.get('button.btn-solid.theme-primary').last().click();
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Next').click();
 		cy.contains('Leagues').should('exist');
 		cy.contains('Favorites').should('exist');
 		cy.contains('button', 'Favorites').click();
@@ -271,62 +266,59 @@ describe('walkthroughView step navigation', () => {
 	it('advances to step 9 (re-access tour)', () => {
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
-			cy.get('button.btn-solid.theme-primary').last().click(); // 2 -> 3
+			cy.get('button.btn-solid.theme-primary').last().click();
 		}
-		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.contains('button', 'Next').click();
 		cy.tick(2500);
-		cy.get('button.btn-solid.theme-primary').last().click(); // 4 -> 5
-		cy.contains('button', 'Next').click(); // 5 -> 6
-		cy.contains('button', 'Next').click(); // 6 -> 7
-		cy.contains('button', 'Next').click(); // 7 -> 8
-		cy.contains('button', 'Next').click(); // 8 -> 9
+		cy.get('button.btn-solid.theme-primary').last().click();
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Next').click();
 		cy.contains('Step 9 of 9').should('exist');
 		cy.contains('Coming Back Here').should('exist');
 	});
 
-	// Onboarding has just said "You're all set", so the tour finishes on its own last step.
 	it('finishes the tour from step 9 without a second finish screen', () => {
 		cy.clock();
 		const spy = cy.spy().as('onComplete');
 		cy.mount(<WalkthroughView onComplete={spy} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
-			cy.get('button.btn-solid.theme-primary').last().click(); // 2 -> 3
+			cy.get('button.btn-solid.theme-primary').last().click();
 		}
-		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.contains('button', 'Next').click();
 		cy.tick(2500);
-		cy.get('button.btn-solid.theme-primary').last().click(); // 4 -> 5
-		cy.contains('button', 'Next').click(); // 5 -> 6
-		cy.contains('button', 'Next').click(); // 6 -> 7
-		cy.contains('button', 'Next').click(); // 7 -> 8
-		cy.contains('button', 'Next').click(); // 8 -> 9
+		cy.get('button.btn-solid.theme-primary').last().click();
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Next').click();
+		cy.contains('button', 'Next').click();
 		cy.contains('button', 'Done').click();
 		cy.get('@onComplete').should('have.been.calledOnce');
 	});
 });
 
 describe('walkthroughView settings preview', () => {
-	// It showed NFL, NBA, NHL and MLB to someone who had just picked only soccer.
 	it('previews the leagues picked in onboarding', () => {
 		cy.clock();
 		cy.mount(<WalkthroughView onComplete={() => {}} leagues={['epl', 'mls']} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		for (let i = 0; i < 12; i++) {
-			cy.get('button.btn-solid.theme-primary').last().click(); // 2 -> 3
+			cy.get('button.btn-solid.theme-primary').last().click();
 		}
-		cy.contains('button', 'Next').click(); // 3 -> 4
+		cy.contains('button', 'Next').click();
 		cy.tick(2500);
-		cy.get('button.btn-solid.theme-primary').last().click(); // 4 -> 5
-		cy.contains('button', 'Next').click(); // 5 -> 6
+		cy.get('button.btn-solid.theme-primary').last().click();
+		cy.contains('button', 'Next').click();
 		cy.get('.badge.theme-primary').then(badges => [...badges].map(badge => badge.textContent))
 			.should('deep.equal', ['EPL', 'MLS']);
 	});
 });
 
 describe('walkthroughView skip', () => {
-	// The clicked Next unmounts with its step, so focus would otherwise fall to <body>.
 	it('hands focus to each new step\'s title', () => {
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
 		cy.contains('button', 'Next').click();
@@ -337,13 +329,12 @@ describe('walkthroughView skip', () => {
 	it('leaves the tour from any step', () => {
 		const spy = cy.spy().as('onComplete');
 		cy.mount(<WalkthroughView onComplete={spy} />);
-		cy.contains('button', 'Next').click(); // 1 -> 2
+		cy.contains('button', 'Next').click();
 		cy.contains('Step 2 of 9').should('exist');
 		cy.contains('button', 'Skip tour').click();
 		cy.get('@onComplete').should('have.been.calledOnce');
 	});
 
-	// The link shares a line with the stepper, so every locale's link is measured against it.
 	it('keeps clear of the stepper in every locale', () => {
 		cy.viewport(320, 560);
 		cy.mount(<WalkthroughView onComplete={() => {}} />);
@@ -394,7 +385,6 @@ describe('walkthroughView step 1 interactive demo', () => {
 	});
 });
 
-// Angle and distance of each signal dot from the ring's centre, read off the rendered boxes.
 const ringGeometry = () => cy.get('.powerscore-orbit-ring').then(([ring]: JQuery<HTMLElement>) => {
 	const box = ring.getBoundingClientRect();
 	const centreX = box.left + box.width / 2;

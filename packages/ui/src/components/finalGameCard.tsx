@@ -5,9 +5,6 @@ import { buildCardShellProps, CardDetailsButton, CardStatusRow, ConferenceMark, 
 import { formatDisruption } from './gameFormat';
 import { useDisplayLocale, useT } from './i18nContext';
 
-// A finished game offers nothing to act on, so this card is the live one with every affordance
-// taken away: no tab dropdown, no PowerScore bar, no clock, no broadcast line. What is left is the
-// result, and the result is what the card is styled around.
 const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, leagueSlot, interactive = true }: GameCardDisplayProps) => {
 	const t = useT();
 	const locale = useDisplayLocale();
@@ -21,26 +18,16 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 	const [leftTeam, rightTeam] = homeFirst ? [game.homeTeam, game.awayTeam] : [game.awayTeam, game.homeTeam];
 	const leftScore = leftTeam.score;
 	const rightScore = rightTeam.score;
-	// A shootout leaves the match level, so neither side wins the scoreline and the penalties line
-	// below decides it instead.
 	const shootout = leftTeam.shootoutScore !== undefined && rightTeam.shootoutScore !== undefined
 		? t('gameCard.shootout', { away: leftTeam.shootoutScore, home: rightTeam.shootoutScore })
 		: null;
 
-	// Team colour on the scores was tried and rejected: on a plate this light it reads as two
-	// unrelated inks rather than as one scoreline, and the winner's emphasis has to fight the
-	// hue instead of being the only thing the eye picks up. The result is carried by weight and a
-	// receded grey, which is what every scoreboard prints.
-	// A suspension has no result yet, and a forfeit's result can go against the scoreline.
 	const decidedByScore = !shootout && game.disruption !== 'suspended' && game.disruption !== 'forfeit';
 	const lost = (score: number, other: number) => (game.disruption === 'forfeit' || (decidedByScore && score < other));
 	const scoreClass = (score: number, other: number) => (
 		`lh-1 game-score-value ${lost(score, other) ? 'is-loser fw-semibold' : 'fw-bold'}`
 	);
 
-	// ESPN's own label, so a triple overtime reads Final/3OT and a shootout reads Final/SO — both
-	// broadcast conventions, and the second one is not derivable from the period at all. The suffix
-	// is a token rather than a word, so it needs no translating and the word before it already is.
 	const finalLabel = game.finalPeriodSuffix
 		? `${t('gameCard.final')}/${game.finalPeriodSuffix}`
 		: t('gameCard.final');
@@ -88,9 +75,6 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 				{homeFirst ? awayColumn : homeColumn}
 			</div>
 
-			{/* The broadcast and the line are gone: a game you cannot watch any more has no channel
-			    worth naming, and a decided game has nothing left to bet on. The venue stays, because
-			    where it was played is still true. */}
 			<GameMeta game={game} hideBroadcasts interactive={interactive} />
 		</div>
 	);
