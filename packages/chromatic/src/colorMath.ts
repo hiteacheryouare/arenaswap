@@ -51,6 +51,8 @@ export interface Lab {
 	b: number;
 }
 
+const d65White = { x: 0.95047, z: 1.08883 };
+
 const labPivot = (value: number): number => (value > 216 / 24389 ? Math.cbrt(value) : ((24389 / 27) * value + 16) / 116);
 
 export const hexToLab = (hex: string): Lab | null => {
@@ -59,9 +61,9 @@ export const hexToLab = (hex: string): Lab | null => {
 	const red = channelLuminance(rgb.red);
 	const green = channelLuminance(rgb.green);
 	const blue = channelLuminance(rgb.blue);
-	const x = labPivot(((0.4124564 * red) + (0.3575761 * green) + (0.1804375 * blue)) / 0.95047);
+	const x = labPivot(((0.4124564 * red) + (0.3575761 * green) + (0.1804375 * blue)) / d65White.x);
 	const y = labPivot((0.2126729 * red) + (0.7151522 * green) + (0.0721750 * blue));
-	const z = labPivot(((0.0193339 * red) + (0.1191920 * green) + (0.9503041 * blue)) / 1.08883);
+	const z = labPivot(((0.0193339 * red) + (0.1191920 * green) + (0.9503041 * blue)) / d65White.z);
 	return { lightness: (116 * y) - 16, a: 500 * (x - y), b: 200 * (y - z) };
 };
 

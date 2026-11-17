@@ -10,7 +10,7 @@ import '../../../assets/guide.scss';
 const now = Date.parse('2026-10-11T20:45:40Z');
 const hour = 60 * 60_000;
 const guidePage = '.guide-page';
-const containment = { scrollers: ['.guide-scroller'] };
+const containment = { sidewaysScrollers: ['.guide-scroller'] };
 
 const at = (ms: number) => new Date(ms).toISOString();
 

@@ -6,7 +6,7 @@ const lengthOf = (seconds: number, sampleRate: number): number => Math.ceil(seco
 
 const tenorSteps = [0, 1, 2, 3, 2, 1];
 
-export const renderDot = (step: number, sampleRate: number, random: Random): Float32Array => renderTenor(tenorSteps[step % tenorSteps.length]!, 1, sampleRate, random);
+export const renderDot = (rung: number, sampleRate: number, random: Random): Float32Array => renderTenor(tenorSteps[rung % tenorSteps.length]!, 1, sampleRate, random);
 
 export const renderSwap = (sampleRate: number, random: Random): Stereo => {
 	const output = createStereo(lengthOf(0.9, sampleRate));

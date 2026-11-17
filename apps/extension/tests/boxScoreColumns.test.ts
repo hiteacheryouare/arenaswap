@@ -435,7 +435,7 @@ describe('buildSections totals and caps', () => {
 		]));
 		expect(sections.map(section => [section.name, section.rowCap])).toEqual([
 			['defensive', 6],
-			['interceptions', 0],
+			['interceptions', Number.POSITIVE_INFINITY],
 		]);
 	});
 

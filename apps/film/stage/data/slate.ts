@@ -1,8 +1,6 @@
+import { getHistoryWindowMsForGame } from '@arenaswap/core';
 import type { BackgroundState, Game, GuideSlate, LiveScore, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import type { FilmSlate, PregameData, ScoreEntry, ScoreTotal } from './slateTypes';
-
-const historyWindowMs: Record<string, number> = { basketball: 5 * 60_000, hockey: 16 * 60_000, soccer: 20 * 60_000 };
-const windowFor = (game: Game) => historyWindowMs[game.sportType] ?? 12 * 60_000;
 
 export type Profile = 'plain' | 'fan';
 
@@ -111,7 +109,7 @@ const createSlate = (raw: FilmSlate, pregame: PregameData): Slate => {
 
 	const powerScoreHistory = (profile: Profile, game: Game, ts: number): PowerScoreSnapshot[] => {
 		const entries = entriesFor(profile, game.id);
-		const cutoff = ts - windowFor(game);
+		const cutoff = ts - getHistoryWindowMsForGame(game);
 		const snapshots: PowerScoreSnapshot[] = [];
 		let latest: LiveScore | undefined;
 		const end = lastAtOrBefore(entries, ts);
@@ -125,7 +123,7 @@ const createSlate = (raw: FilmSlate, pregame: PregameData): Slate => {
 
 	const scoreHistory = (game: Game, ts: number): ScoreSnapshot[] => {
 		const applied = states.get(game.id) ?? [];
-		const cutoff = ts - windowFor(game);
+		const cutoff = ts - getHistoryWindowMsForGame(game);
 		const end = lastAtOrBefore(applied, ts);
 		const snapshots: ScoreSnapshot[] = [];
 		for (let index = 0; index <= end; index++) {

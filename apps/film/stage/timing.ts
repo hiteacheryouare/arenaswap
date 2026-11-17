@@ -6,7 +6,8 @@ export const fps = 60;
 export const bar = (number: number) => (number - 1) * barSeconds;
 export const beats = (count: number) => count * beatSeconds;
 
-export const musicBpm = 96;
+export const musicBeatsPerBar = 3;
+export const musicBpm = (bpm / 4) * musicBeatsPerBar;
 export const musicBeats = (count: number) => count * 60 / musicBpm;
 
 export const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));

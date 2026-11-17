@@ -35,6 +35,12 @@ the harness can pass on a layout the popup never has.
 against each other, which is circular. This is the same JS/SCSS coupling footgun already recorded
 in [[review-popup-failure-map]], now at its largest instance in the repo.
 
+The 1px stage bleed is the same kind of pair: `revealStageBleedPx` in `cardReveal.ts` (the seam
+lean is measured across it) and `$reveal-stage-bleed` in `global.scss` (named 2026-11-17 in the
+comment-purge refactor; until then a comment was the only thing linking the two).
+`packages/ui/tests/motionParity.test.ts` is the in-repo pattern for a regex parity test between
+SCSS and TS, so suggest copying it whenever a diff touches one of these pairs.
+
 **The reveal's own arithmetic, for future diffs:** `revealSettleMs = revealDelayMs(6, mode) +
 revealDurationMs(mode)` = 3880ms full / 3104ms quick, and the per-card `done` timer is
 `delay + revealDurationMs(mode)`, so the two agree *only* if every card mounts at the same moment

@@ -3,6 +3,8 @@
 @use 'crest';
 @use 'motion' as m;
 
+$crest-plate-share: 75%;
+
 @mixin scoreboard-figures {
 	font-family: 'Geist', 'DM Sans', system-ui, sans-serif;
 	font-variant-numeric: tabular-nums;
@@ -758,7 +760,7 @@
 	}
 
 	.ff-endzone-crest:not(.is-bare) .ff-endzone-crest-art {
-		--as-avatar-size: 75%;
+		--as-avatar-size: #{$crest-plate-share};
 	}
 
 	.ff-endzone-crest.is-bare .ff-endzone-crest-art {
@@ -807,7 +809,7 @@
 	}
 
 	.ff-logo-art {
-		--as-avatar-size: 75%;
+		--as-avatar-size: #{$crest-plate-share};
 	}
 
 	.ff-logo-shell.is-bare .ff-logo-art {

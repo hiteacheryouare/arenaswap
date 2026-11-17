@@ -19,7 +19,7 @@ interface Props {
 	image?: string;
 	imageAlt?: string;
 	noindex?: boolean;
-	localized?: boolean;
+	hasLocalizedUrls?: boolean;
 	translated?: boolean;
 }
 
@@ -32,7 +32,7 @@ const {
 	image,
 	imageAlt,
 	noindex = false,
-	localized = true,
+	hasLocalizedUrls = true,
 	translated = true,
 } = Astro.props;
 
@@ -45,7 +45,7 @@ const socialImagePath = image ?? `${import.meta.env.BASE_URL}images/social-card.
 const socialImage = new URL(socialImagePath, site);
 const socialImageSize = socialImagePath.startsWith('http') ? undefined : publicImageSize(socialImagePath);
 
-const alternates = localized && translated
+const alternates = hasLocalizedUrls && translated
 	? locales.map(entry => ({
 			hreflang: entry.code,
 			href: new URL(localePath(entry.code, path), site).href,
@@ -129,7 +129,7 @@ const alternates = localized && translated
 </head>
 <body>
 	<a class='visually-hidden-focusable skip-link' href='#main'>{t('nav.skipToContent')}</a>
-	<Nav localized={localized} />
+	<Nav hasLocalizedUrls={hasLocalizedUrls} />
 	<main id='main' tabindex='-1'>
 		<slot />
 	</main>

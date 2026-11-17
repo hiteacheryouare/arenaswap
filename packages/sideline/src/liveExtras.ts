@@ -3,7 +3,7 @@ import { computeFantasyPoints, fantasySportOf } from 'powerscore';
 import type { FantasyPlayerState, PregameLine, ScoringContext, Side, TeamStakes } from 'powerscore';
 import { getHistoryWindowMsForGame, rosterInGame } from '@arenaswap/core';
 import type { FantasyRosterEntry, FantasyScoringOverrides, Game, LeagueId } from '@arenaswap/core';
-import { readFantasyBoxScore } from './fantasyBoxScore';
+import { boxScoreLineId, readFantasyBoxScore } from './fantasyBoxScore';
 
 const espnNumber = z.union([z.number(), z.string()]);
 
@@ -147,6 +147,10 @@ const tablesOf = (node: StandingsNode): StandingsEntry[][] => {
 	return own.length > 0 && children.length === 0 ? [own] : children;
 };
 
+const leaguesWithNoRegularSeasonTitle: ReadonlySet<LeagueId> = new Set<LeagueId>(['ligamx']);
+
+const emptyNetConfirmPolls = 2;
+
 const seasonLength: Partial<Record<LeagueId, number>> = {
 	mlb: 162, nfl: 17, epl: 38, laliga: 38, seriea: 38, bundesliga: 34, mls: 34, nwsl: 30, ligamx: 17,
 };
@@ -208,7 +212,7 @@ export const readStandingsStakes = (standings: unknown, league: LeagueId, sportT
 	const root = standings as StandingsNode;
 	if (sportType === 'soccer') {
 		const tables = tablesOf(root);
-		const hasTitleLine = tables.length === 1 && league !== 'ligamx';
+		const hasTitleLine = tables.length === 1 && !leaguesWithNoRegularSeasonTitle.has(league);
 		for (const table of tables) soccerStakes(table, stakes, league, hasTitleLine);
 		return stakes;
 	}
@@ -243,13 +247,14 @@ interface GameExtras {
 const recentLeadChanges = (game: Game, state: GameExtras, now: number): ScoringContext['recentLeadChanges'] => {
 	const samples = state.boxLeadChanges;
 	const latest = samples[samples.length - 1];
-	if (!latest || latest.ts < now - getHistoryWindowMsForGame(game)) return undefined;
 	const cutoff = now - getHistoryWindowMsForGame(game);
+	if (!latest || latest.ts < cutoff) return undefined;
 	const baseline = samples.findLast(sample => sample.ts < cutoff) ?? samples[0]!;
 	if (latest.count <= baseline.count) return undefined;
-	const firstAtLatest = samples.findIndex(sample => sample.count === latest.count);
-	const before = samples[firstAtLatest - 1] ?? samples[firstAtLatest]!;
-	return { count: latest.count - baseline.count, lastAt: Math.round((before.ts + samples[firstAtLatest]!.ts) / 2) };
+	const firstShowingIndex = samples.findIndex(sample => sample.count === latest.count);
+	const firstShowing = samples[firstShowingIndex]!;
+	const lastPollBefore = samples[firstShowingIndex - 1] ?? firstShowing;
+	return { count: latest.count - baseline.count, lastAt: Math.round((lastPollBefore.ts + firstShowing.ts) / 2) };
 };
 
 export const createLiveExtras = () => {
@@ -288,7 +293,7 @@ export const createLiveExtras = () => {
 		));
 		state.fantasyInactive = new Set([...box.inactive, ...absent.map(player => player.athleteId)]);
 		for (const player of players) {
-			const id = player.position === 'DST' ? `dst:${player.teamId}` : player.athleteId;
+			const id = boxScoreLineId(player);
 			const line = box.lines.get(id);
 			if (!line) continue;
 			const previousLine = state.fantasyLines.get(id);
@@ -343,7 +348,7 @@ export const createLiveExtras = () => {
 	};
 
 	const fantasyFor = (game: Game, state: GameExtras | undefined): FantasyPlayerState[] => rosterInGame(roster, game).map(player => {
-		const id = player.position === 'DST' ? `dst:${player.teamId}` : player.athleteId;
+		const id = boxScoreLineId(player);
 		const side: Side = player.teamId === game.homeTeam.id ? 'home' : 'away';
 		const batter = game.atBat?.batter?.name;
 		const pitcher = game.atBat?.pitcher?.name;
@@ -371,7 +376,7 @@ export const createLiveExtras = () => {
 			...(state?.pregameLine ? { pregameLine: state.pregameLine } : {}),
 			...(homeStakes || awayStakes ? { stakes: { ...(homeStakes ? { home: homeStakes } : {}), ...(awayStakes ? { away: awayStakes } : {}) } } : {}),
 			...(state?.powerPlay ? { powerPlay: true } : {}),
-			...(state && state.emptyNetPolls >= 2 ? { emptyNet: true } : {}),
+			...(state && state.emptyNetPolls >= emptyNetConfirmPolls ? { emptyNet: true } : {}),
 			...(leadChanges ? { recentLeadChanges: leadChanges } : {}),
 			...(fantasy.length > 0 ? { fantasy } : {}),
 		};

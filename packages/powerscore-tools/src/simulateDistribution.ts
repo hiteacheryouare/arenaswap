@@ -4,23 +4,25 @@ import { computePowerScore, sportTypeConfigMap, leagueConfigMap, type Game, type
 const earlyGameMode = process.argv.includes('--early-game');
 const pollIntervalMs = 15_000;
 
-const parseTicks = (args: string[]): number => {
+const fallbackTicks = 40_000;
+
+const ticksFromArgs = (args: string[]): number => {
 	const flag = args.find(arg => arg.startsWith('--ticks='));
 	if (flag) {
 		const flagged = Number(flag.slice('--ticks='.length));
 		if (Number.isFinite(flagged)) return flagged;
 	}
-	const numeric = args.filter(arg => arg.trim() !== '' && Number.isFinite(Number(arg)));
-	return numeric.length > 0 ? Number(numeric[numeric.length - 1]) : 40_000;
+	const lastNumericArg = args.filter(arg => arg.trim() !== '' && Number.isFinite(Number(arg))).at(-1);
+	return lastNumericArg === undefined ? fallbackTicks : Number(lastNumericArg);
 };
 
-const ticks = earlyGameMode ? 0 : Math.max(1_000, parseTicks(process.argv.slice(2)) || 40_000);
+const ticks = earlyGameMode ? 0 : Math.max(1_000, ticksFromArgs(process.argv.slice(2)) || fallbackTicks);
 
 const historyWindowMsFor = (game: Game): number => (
 	sportTypeConfigMap[game.sportType]?.historyWindowMs ?? defaultHistoryWindowMs
 );
 
-const winProbScaleBySport: Record<string, number> = {
+const pointsPerLogitBySport: Record<string, number> = {
 	basketball: 11,
 	football: 7,
 	baseball: 2,
@@ -31,7 +33,7 @@ const winProbScaleBySport: Record<string, number> = {
 
 const deriveWinProb = (game: Game): number => {
 	const diff = game.homeTeam.score - game.awayTeam.score;
-	const scale = winProbScaleBySport[game.sportType] ?? 8;
+	const pointsPerLogit = pointsPerLogitBySport[game.sportType] ?? 8;
 	const league = leagueConfigMap[game.league];
 	const config = sportTypeConfigMap[game.sportType];
 	if (!league || !config) return 0.5;
@@ -39,7 +41,7 @@ const deriveWinProb = (game: Game): number => {
 	const period = game.period ?? 1;
 	const progress = period > regularPeriods ? 1 : Math.min((period - 0.5) / regularPeriods, 1);
 	const certainty = 0.5 + progress * 2.0;
-	const x = (diff / scale) * certainty;
+	const x = (diff / pointsPerLogit) * certainty;
 	return 1 / (1 + Math.exp(-x));
 };
 
@@ -120,10 +122,10 @@ for (let tick = 0; tick < ticks; tick++) {
 }
 
 const sortedGaps = switchGaps.toSorted((a, b) => a - b);
-const levelToPercentile: Record<number, number> = { 1: 97, 2: 88, 3: 72, 4: 52, 5: 34, 6: 18, 7: 2 };
+const switchGapPercentileBySensitivity: Record<number, number> = { 1: 97, 2: 88, 3: 72, 4: 52, 5: 34, 6: 18, 7: 2 };
 const suggestedThresholds: Record<number, number> = {};
 for (let level = 1; level <= 7; level++) {
-	const value = percentile(sortedGaps, levelToPercentile[level]!);
+	const value = percentile(sortedGaps, switchGapPercentileBySensitivity[level]!);
 	suggestedThresholds[level] = Math.max(1, value);
 }
 
@@ -160,7 +162,7 @@ if (ticks > 0) {
 	console.log('export const sensitivityThresholds: Record<number, number> = {');
 	for (let level = 1; level <= 7; level++) {
 		const label = { 1: 'Barely Active', 2: 'Passive', 3: 'Conservative', 4: 'Balanced (default)', 5: 'Eager', 6: 'Trigger Happy', 7: 'Overkill' }[level];
-		console.log(`\t${level}: ${suggestedThresholds[level]},`.padEnd(10) + `// ${label} — ~p${levelToPercentile[level]} of switch gaps`);
+		console.log(`\t${level}: ${suggestedThresholds[level]},`.padEnd(10) + `// ${label} — ~p${switchGapPercentileBySensitivity[level]} of switch gaps`);
 	}
 	console.log('};\n');
 }

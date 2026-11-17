@@ -34,6 +34,10 @@ const mount = (logo: string, monoMarks?: { white?: string; black?: string }, bac
 };
 
 describe('TeamCrest keeps a team in its own colours until they stop reading', () => {
+	it('keeps every fixture a distinct image', () => {
+		expect(new Set([navy, gold, whiteMark, blackMark, stripedOnRed]).size).to.equal(5);
+	});
+
 	it('draws a crest that reads in its own colours, with nothing behind it', () => {
 		mount(gold, { white: whiteMark, black: blackMark });
 		cy.get('.tc-crest img').should('have.attr', 'src', gold);

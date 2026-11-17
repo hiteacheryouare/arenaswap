@@ -42,6 +42,8 @@ export const pollIntervalMs = 15_000;
 
 export const finalRetentionMs = 24 * 60 * 60 * 1000;
 
+// The feed's scoreboard publishes no completion timestamp, so a final game's wrap is estimated from
+// its start plus how long the sport takes on TV.
 export const sportWrapAllowanceMs: Record<SportType, number> = {
 	football:   3.5  * 60 * 60 * 1000,
 	baseball:   3.25 * 60 * 60 * 1000,

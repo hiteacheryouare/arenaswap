@@ -81,6 +81,12 @@ const scrubTo = (ms: number) => {
 
 const spineMs = (ms: number) => revealOpenMs('full') + ms * revealFullRate;
 
+const halvesRetreatStart = revealBaseDurationMs * 0.78;
+const handoffStart = revealBaseDurationMs * 0.93;
+const trailingBarParkedMs = 1760 + 1120;
+const lettersOvershootMs = 620 + 420 * 0.7;
+const minTricodeGapPx = 4;
+
 const openMs = (ms: number) => ms * revealFullRate;
 
 const rectOf = (selector: string) => cy.get(selector).then($el => $el[0].getBoundingClientRect());
@@ -240,7 +246,7 @@ describe('the popup open reveal', () => {
 
 	it('is gone before the colour retreats off the card', () => {
 		cy.mount(<Harness mode='full' />);
-		scrubTo(spineMs(revealBaseDurationMs * 0.78));
+		scrubTo(spineMs(halvesRetreatStart));
 		cy.get('.game-card-reveal-opening').should('have.css', 'opacity', '0');
 	});
 
@@ -315,7 +321,7 @@ describe('the popup open reveal', () => {
 	it('parks every bar clear of the card, corners and all', () => {
 		cy.mount(<Harness mode='full' />);
 		rectOf('.game-card').then(card => {
-			([0, 2950] as const).forEach(spine => {
+			([0, trailingBarParkedMs + 70] as const).forEach(spine => {
 				const ms = spineMs(spine);
 				scrubTo(ms);
 				cy.get('.game-card-reveal-sweep').should($bars => {
@@ -471,10 +477,10 @@ describe('the popup open reveal', () => {
 	it('keeps two long tricodes clear of each other over the seam', () => {
 		([['ARMY', 'NAVY'], ['UCONN', 'UMASS']] as const).forEach(([away, home]) => {
 			cy.mount(<Harness mode='full' away={away} home={home} />);
-			scrubTo(spineMs(620 + 420 * 0.7));
+			scrubTo(spineMs(lettersOvershootMs));
 			inkOf('.game-card-reveal-mask.is-away .game-card-reveal-abbr-edge').then(awayInk => {
 				inkOf('.game-card-reveal-mask.is-home .game-card-reveal-abbr-edge').then(homeInk => {
-					expect(homeInk.left - awayInk.right, `${away} v ${home}`).to.be.greaterThan(4);
+					expect(homeInk.left - awayInk.right, `${away} v ${home}`).to.be.greaterThan(minTricodeGapPx);
 				});
 			});
 		});
@@ -546,15 +552,14 @@ describe('the popup open reveal', () => {
 
 	it('brings the card\'s own crest up in one step rather than fading it into the overlay', () => {
 		cy.mount(<Harness mode='full' />);
-		scrubTo(spineMs(revealBaseDurationMs * 0.93) - 20);
+		scrubTo(spineMs(handoffStart) - 20);
 		cy.get('.game-card .team-crest').first().should('have.css', 'opacity', '0');
-		scrubTo(spineMs(revealBaseDurationMs * 0.93) + 20);
+		scrubTo(spineMs(handoffStart) + 20);
 		cy.get('.game-card .team-crest').first().should('have.css', 'opacity', '1');
 	});
 
 	it('has stopped moving before the card\'s own crest fades up under it', () => {
 		cy.mount(<Harness mode='full' />);
-		const handoffStart = revealBaseDurationMs * 0.93;
 		scrubTo(spineMs(handoffStart));
 		rectOf('.game-card-reveal-wipe.is-away .game-card-reveal-crest').then(atHandoff => {
 			scrubTo(spineMs(revealBaseDurationMs));

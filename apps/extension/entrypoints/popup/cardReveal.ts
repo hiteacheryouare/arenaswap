@@ -52,7 +52,8 @@ export const revealSettleMs = (mode: revealMode, cut: revealCut = 'poster') => (
 
 export const revealSkipOutMs = 140;
 
-export const revealOpenCrestShare = 1.34;
+export const revealOpenCrestOverhangPerEdge = 0.17;
+export const revealOpenCrestShare = 1 + revealOpenCrestOverhangPerEdge * 2;
 
 export const revealSweepAngleDeg = 20.5;
 export const revealLeanRatio = Math.tan((revealSweepAngleDeg * Math.PI) / 180);
@@ -92,10 +93,13 @@ export const revealNameMaxPx = 72;
 export const revealNameInsetPx = 12;
 export const revealNameHeightShare = 0.86;
 
-export const revealNameInkTopEm = 0.385;
-export const revealNameInkBottomEm = 0.572;
+const dmSansBoldEm = { fontAscent: 0.99, fontDescent: 0.31, inkAscent: 0.725, inkDescent: 0.232, space: 0.2355, averageCapAdvance: 0.68 };
+const baselineDropEm = (dmSansBoldEm.fontAscent - dmSansBoldEm.fontDescent) / 2;
 
-export const revealNameSpaceEm = 0.2355;
+export const revealNameInkTopEm = dmSansBoldEm.inkAscent - baselineDropEm;
+export const revealNameInkBottomEm = dmSansBoldEm.inkDescent + baselineDropEm;
+
+export const revealNameSpaceEm = dmSansBoldEm.space;
 
 export const revealNameJoinedRatio = (ratios: number[]) => (
 	ratios.reduce((total, ratio) => total + ratio, 0) + revealNameSpaceEm * Math.max(0, ratios.length - 1)
@@ -167,6 +171,7 @@ export const pickRevealMode = (
 	return lastDay === today ? 'quick' : 'full';
 };
 
+// Memoised rather than guarded: StrictMode runs every `useState` initializer twice.
 let resolved: revealMode | null = null;
 
 export const resolveOpenRevealMode = (now = new Date()): revealMode => {
@@ -190,7 +195,7 @@ export const revealCutMs: Record<Exclude<revealCut, 'poster'>, number> = {
 };
 
 export const revealSlamTypePx = (abbreviation: string, width: number, height: number) => (
-	Math.min(height, width / (0.68 * Math.max(2, abbreviation.length)))
+	Math.min(height, width / (dmSansBoldEm.averageCapAdvance * Math.max(2, abbreviation.length)))
 );
 
 export const lastRevealCutKey = 'arenaswap.lastOpenRevealCut';

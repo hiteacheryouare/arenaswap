@@ -2,10 +2,11 @@ import type { EspnLastPlay } from './espnSchemas';
 
 export type CourtSide = 'home' | 'away';
 
-const silentPlay = /\b(technical|double foul|jump ball|timeout|substitution|challenge|review|replay|end period|end of|end game|ejection|delay)/i;
+const saysNothingAboutPossession = /\b(technical|double foul|jump ball|timeout|substitution|challenge|review|replay|end period|end of|end game|ejection|delay)/i;
 const freeThrow = /free throw\D*?(\d+) of (\d+)/i;
 const freeThrowsPlusBall = /flagrant|clear path/i;
 
+// The feed sends no possession for basketball, so it is read off the last play.
 export const deriveBasketballPossession = (lastPlay: EspnLastPlay | undefined, homeId: string, awayId: string): CourtSide | undefined => {
 	const teamId = lastPlay?.team?.id;
 	if (teamId !== homeId && teamId !== awayId) return undefined;
@@ -14,7 +15,7 @@ export const deriveBasketballPossession = (lastPlay: EspnLastPlay | undefined, h
 	const description = `${lastPlay?.type?.text ?? ''} ${lastPlay?.text ?? ''}`;
 	const made = (lastPlay?.scoreValue ?? 0) > 0;
 
-	if (silentPlay.test(description)) return undefined;
+	if (saysNothingAboutPossession.test(description)) return undefined;
 	if (/rebound/i.test(description)) return team;
 
 	const shot = freeThrow.exec(description);

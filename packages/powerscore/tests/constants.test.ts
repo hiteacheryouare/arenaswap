@@ -229,3 +229,9 @@ describe('sportTypeConfigs late-game config', () => {
 		}
 	});
 });
+
+describe('history windows', () => {
+	test.each(sportTypeConfigs.map(config => [config.id, config] as const))('%s holds at least four of its longest half-lives', (_id, config) => {
+		expect(config.historyWindowMs).toBeGreaterThanOrEqual(4 * Math.max(...Object.values(config.decayHalfLifeMs)));
+	});
+});

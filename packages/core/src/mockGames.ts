@@ -24,6 +24,7 @@ const streakEndChance = 0.2;
 const streakStartChance = 0.12;
 const streakHomeChance = 0.5;
 const rareScoreChance = 0.3;
+const footballPlayChance = 0.35;
 const lateGameThresholdSeconds = 300;
 const lateGameComebackChance = 0.4;
 
@@ -40,24 +41,27 @@ const footballDrivePatterns = [
 
 const footballDriveStartYardLine = 25;
 
-const sportParams: Record<Game['sportType'], {
+interface SportSimParams {
 	normalScoreProb: number;
 	streakScoreProb: number;
 	offScoreProb: number;
-	scoreValues: [number, number];
-}> = {
-	basketball: { normalScoreProb: 0.25, streakScoreProb: 0.55, offScoreProb: 0.1, scoreValues: [2, 3] },
-	football: { normalScoreProb: 0.02, streakScoreProb: 0.1, offScoreProb: 0.01, scoreValues: [7, 3] },
-	baseball: { normalScoreProb: 0.06, streakScoreProb: 0.22, offScoreProb: 0.03, scoreValues: [1, 2] },
-	softball: { normalScoreProb: 0.07, streakScoreProb: 0.25, offScoreProb: 0.03, scoreValues: [1, 2] },
-	hockey: { normalScoreProb: 0.014, streakScoreProb: 0.05, offScoreProb: 0.006, scoreValues: [1, 1] },
-	soccer: { normalScoreProb: 0.006, streakScoreProb: 0.022, offScoreProb: 0.003, scoreValues: [1, 1] },
+	commonPoints: number;
+	rarePoints: number;
+}
+
+const sportParams: Record<Game['sportType'], SportSimParams> = {
+	basketball: { normalScoreProb: 0.25, streakScoreProb: 0.55, offScoreProb: 0.1, commonPoints: 2, rarePoints: 3 },
+	football: { normalScoreProb: 0.02, streakScoreProb: 0.1, offScoreProb: 0.01, commonPoints: 7, rarePoints: 3 },
+	baseball: { normalScoreProb: 0.06, streakScoreProb: 0.22, offScoreProb: 0.03, commonPoints: 1, rarePoints: 2 },
+	softball: { normalScoreProb: 0.07, streakScoreProb: 0.25, offScoreProb: 0.03, commonPoints: 1, rarePoints: 2 },
+	hockey: { normalScoreProb: 0.014, streakScoreProb: 0.05, offScoreProb: 0.006, commonPoints: 1, rarePoints: 1 },
+	soccer: { normalScoreProb: 0.006, streakScoreProb: 0.022, offScoreProb: 0.003, commonPoints: 1, rarePoints: 1 },
 };
 
 const getStreakAdjustedProb = (
 	streak: SimState['streak'],
 	side: 'home' | 'away',
-	params: (typeof sportParams)[Game['sportType']],
+	params: SportSimParams,
 ): number => {
 	if (streak === side) return params.streakScoreProb;
 	if (streak) return params.offScoreProb;
@@ -465,7 +469,7 @@ export class MockGameSimulator {
 		}
 
 		if (game.sportType === 'football' && game.downDistance !== undefined) {
-			if (Math.random() < 0.35) {
+			if (Math.random() < footballPlayChance) {
 				simState.driveIndex = (simState.driveIndex + 1) % footballDrivePatterns.length;
 				const next = footballDrivePatterns[simState.driveIndex]!;
 				game.downDistance = next.downDistance;
@@ -512,7 +516,7 @@ export class MockGameSimulator {
 		const homeProb = getStreakAdjustedProb(simState.streak, 'home', params);
 		const awayProb = getStreakAdjustedProb(simState.streak, 'away', params);
 		const pointsForScore = (): number => (
-			Math.random() < rareScoreChance ? params.scoreValues[1] : params.scoreValues[0]
+			Math.random() < rareScoreChance ? params.rarePoints : params.commonPoints
 		);
 
 		if (Math.random() < homeProb) game.homeTeam.score += pointsForScore();

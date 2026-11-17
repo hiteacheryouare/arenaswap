@@ -46,10 +46,15 @@ const scoreHistory: ScoreSnapshot[] = [
 
 const winProbability = [0.1, 0.07, 0.12, 0.2, 0.33, 0.44, 0.6, 0.5];
 
+const gameClockSecondsPerPoll = 3 * 60;
+const quarterSeconds = 12 * 60;
+const firstChartedQuarter = 3;
+const lastQuarter = 4;
+
 const clockAt = (index: number) => {
-	const elapsed = index * 3 * 60;
-	const period = Math.min(4, Math.floor(elapsed / 720) + 3);
-	return { period, clockSeconds: Math.max(0, 720 - (elapsed % 720)) };
+	const elapsed = index * gameClockSecondsPerPoll;
+	const period = Math.min(lastQuarter, Math.floor(elapsed / quarterSeconds) + firstChartedQuarter);
+	return { period, clockSeconds: Math.max(0, quarterSeconds - (elapsed % quarterSeconds)) };
 };
 
 const powerHistory: PowerScoreSnapshot[] = scoreHistory.map((point, index) => {

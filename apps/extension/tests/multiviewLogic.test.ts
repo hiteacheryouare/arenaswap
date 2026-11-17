@@ -1,5 +1,9 @@
 import { chooseFeatured, isFrameableUrl, isOvertaken, planMultiview } from '../utils/multiviewLogic';
 import type { multiviewPlanInput } from '../utils/multiviewLogic';
+import { sensitivityThresholds } from '@arenaswap/core/constants';
+
+const sensitivity = 4;
+const margin = sensitivityThresholds[sensitivity]!;
 
 const candidate = (gameId: string, tabId: number, url = `https://stream.example/${gameId}`) => ({ gameId, tabId, url });
 
@@ -11,7 +15,7 @@ const base: multiviewPlanInput = {
 	threshold: 65,
 	games: 'hot',
 	maxBoxes: 4,
-	sensitivity: 4,
+	sensitivity,
 };
 
 describe('planMultiview', () => {
@@ -58,9 +62,9 @@ describe('planMultiview', () => {
 	});
 
 	test('keeps a boxed game until it sinks a Sensitivity margin under the threshold', () => {
-		const sagging = { ...base, boxedGameIds: ['a', 'b'], scores: [{ gameId: 'a', total: 80 }, { gameId: 'b', total: 55 }] };
+		const sagging = { ...base, boxedGameIds: ['a', 'b'], scores: [{ gameId: 'a', total: 80 }, { gameId: 'b', total: base.threshold - margin + 1 }] };
 		expect(planMultiview(sagging).gameIds).toEqual(['a', 'b']);
-		const gone = { ...sagging, scores: [{ gameId: 'a', total: 80 }, { gameId: 'b', total: 53 }] };
+		const gone = { ...sagging, scores: [{ gameId: 'a', total: 80 }, { gameId: 'b', total: base.threshold - margin - 1 }] };
 		expect(planMultiview(gone).open).toBe(false);
 	});
 
@@ -116,8 +120,8 @@ describe('isFrameableUrl', () => {
 });
 
 describe('chooseFeatured', () => {
-	const scores = [{ gameId: 'a', total: 70 }, { gameId: 'b', total: 79 }];
-	const input = { gameIds: ['a', 'b'], scores, current: 'a', sensitivity: 4 as const, canChange: true };
+	const scores = [{ gameId: 'a', total: 70 }, { gameId: 'b', total: 70 + margin - 2 }];
+	const input = { gameIds: ['a', 'b'], scores, current: 'a', sensitivity, canChange: true };
 
 	test('starts on the best game', () => {
 		expect(chooseFeatured({ ...input, current: null })).toBe('b');
@@ -125,7 +129,7 @@ describe('chooseFeatured', () => {
 
 	test('holds the big box until a rival leads by the Sensitivity margin', () => {
 		expect(chooseFeatured(input)).toBe('a');
-		expect(chooseFeatured({ ...input, scores: [{ gameId: 'a', total: 70 }, { gameId: 'b', total: 81 }] })).toBe('b');
+		expect(chooseFeatured({ ...input, scores: [{ gameId: 'a', total: 70 }, { gameId: 'b', total: 70 + margin }] })).toBe('b');
 	});
 
 	test('holds through the cooldown even when the margin is met', () => {
@@ -142,11 +146,11 @@ describe('chooseFeatured', () => {
 });
 
 describe('isOvertaken', () => {
-	const overtakenBase = { soloGameId: 'a', boxedGameIds: ['a', 'b'], candidateGameIds: ['a', 'b', 'c'], sensitivity: 4 as const };
+	const overtakenBase = { soloGameId: 'a', boxedGameIds: ['a', 'b'], candidateGameIds: ['a', 'b', 'c'], sensitivity };
 
 	test('a game outside Multiview past the solo game by the Sensitivity margin overtakes it', () => {
-		expect(isOvertaken({ ...overtakenBase, scores: [{ gameId: 'a', total: 66 }, { gameId: 'c', total: 77 }] })).toBe(true);
-		expect(isOvertaken({ ...overtakenBase, scores: [{ gameId: 'a', total: 66 }, { gameId: 'c', total: 76 }] })).toBe(false);
+		expect(isOvertaken({ ...overtakenBase, scores: [{ gameId: 'a', total: 66 }, { gameId: 'c', total: 66 + margin }] })).toBe(true);
+		expect(isOvertaken({ ...overtakenBase, scores: [{ gameId: 'a', total: 66 }, { gameId: 'c', total: 66 + margin - 1 }] })).toBe(false);
 	});
 
 	test('a boxed game never does, since it takes the big box instead', () => {

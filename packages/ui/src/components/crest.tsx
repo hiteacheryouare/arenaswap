@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
-import { isHex, readableOnBlack } from '@arenaswap/chromatic';
+import { isHex, readableInkOn } from '@arenaswap/chromatic';
 
 type crestState = 'pending' | 'loaded' | 'failed' | 'missing';
 
@@ -39,7 +39,7 @@ export const resolveCrestState = (logo: string | undefined, outcome: crestOutcom
 export const crestFill = (teamColor: string | undefined, fallback: crestProps['fallback'] = 'abbreviation'): CSSProperties | undefined => {
 	if (fallback === 'none') return { '--as-avatar-bg': 'transparent' } as CSSProperties;
 	return isHex(teamColor)
-		? { '--as-avatar-bg': teamColor, '--as-avatar-color': readableOnBlack(teamColor) } as CSSProperties
+		? { '--as-avatar-bg': teamColor, '--as-avatar-color': readableInkOn(teamColor) } as CSSProperties
 		: undefined;
 };
 

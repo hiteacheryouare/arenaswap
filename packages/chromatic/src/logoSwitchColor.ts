@@ -64,9 +64,7 @@ const persist = (): void => {
 		persistHandle = undefined;
 		try {
 			globalThis.localStorage?.setItem(storageKey, JSON.stringify({ calibration: switchColorCalibration, colors: Object.fromEntries(cache) }));
-		} catch {
-			// Storage full or unavailable. The cache still works for this document.
-		}
+		} catch {}
 	}, persistDelayMs);
 };
 

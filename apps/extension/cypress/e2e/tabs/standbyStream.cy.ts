@@ -65,7 +65,7 @@ describe('Standby Stream', () => {
 		openPopup();
 		standbyBanner().should('be.visible');
 
-		world().then(live => { live.events = slate({ wnba: blowouts.wnba, nhl: { home: 6, away: 6, clock: 210 } }); });
+		world().then(live => { live.events = slate({ wnba: blowouts.wnba, nhl: { home: 6, away: 6, clockSeconds: 210 } }); });
 		play(30_000);
 		watching(nhlTab);
 		world().then(live => live.notifications.at(-1)).its('title').should('equal', 'Switched → CAR 6–6 PHI');

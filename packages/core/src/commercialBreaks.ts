@@ -35,6 +35,7 @@ type Rule = (game: Game, previous: CommercialBreakEntry, next: CommercialBreakEn
 
 const clockStallPolls = 8;
 const lateClockSeconds = 120;
+const basketballCloseFinishMargin = 6;
 const nhlTvMarkMinutes = [14, 10, 6];
 // An NHL stoppage often ends before our sources even post it, so one only counts as the TV timeout
 // once it has stayed on screen this long.
@@ -61,6 +62,8 @@ const isTwoMinuteDrill = (game: Game): boolean => {
 	return (game.period === 2 || game.period >= 4) && clockSeconds <= lateClockSeconds;
 };
 
+export const isBallInPlay = (type: string): boolean => type === 'play result';
+
 export const pitchTypes = /^(ball|strike|foul|bunted|play result|automatic|stolen base|pickoff|caught stealing|balk|wild pitch|passed ball)/;
 
 const baseballRule: Rule = (game, previous, next) => {
@@ -76,7 +79,7 @@ const baseballRule: Rule = (game, previous, next) => {
 	if (pitcherId !== undefined) next.pitcherId = pitcherId;
 	// The new half opens still showing the last one's three outs for a poll, so three don't count.
 	const outs = game.bso?.outs ?? 0;
-	next.pitchedThisHalf = (sameHalf && previous.pitchedThisHalf === true) || (pitched && playType(game) !== 'play result') || (outs > 0 && outs < 3);
+	next.pitchedThisHalf = (sameHalf && previous.pitchedThisHalf === true) || (pitched && !isBallInPlay(playType(game))) || (outs > 0 && outs < 3);
 
 	// The half flips to Top or Bot before the new half's pitcher is filled in, so a new name only
 	// means a pitching change once somebody has already pitched this half.
@@ -144,7 +147,7 @@ const basketballDeadBallTypes = /^(substitution|full timeout|reset timeout|(shor
 const basketballRule: Rule = (game, previous) => {
 	const type = playType(game);
 	const marker = basketballTvTypes[type];
-	if (marker) return marker === 'teamTimeout' && isCloseFinish(game, 6) ? undefined : marker;
+	if (marker) return marker === 'teamTimeout' && isCloseFinish(game, basketballCloseFinishMargin) ? undefined : marker;
 	if (previous.kind && basketballDeadBallTypes.test(type)) return previous.kind;
 	return undefined;
 };

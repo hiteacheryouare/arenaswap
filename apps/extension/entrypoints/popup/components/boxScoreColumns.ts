@@ -14,6 +14,12 @@ interface categorySpec {
 	showTotals: boolean;
 }
 
+const everyRow = Number.POSITIVE_INFINITY;
+const unnamedFeedCategory = '';
+const lineupSpots = 9;
+
+const lineupRank = (athlete: BoxScoreAthlete) => (athlete.batOrder > 0 ? athlete.batOrder : lineupSpots + 1);
+
 const baseballCategories = [
 	{
 		name: 'batting',
@@ -26,7 +32,7 @@ const baseballCategories = [
 			{ statKey: 'walks', labelKey: 'box.walks' },
 			{ statKey: 'strikeouts', labelKey: 'box.strikeouts' },
 		],
-		rowCap: 0,
+		rowCap: everyRow,
 		showTotals: true,
 	},
 	{
@@ -40,7 +46,7 @@ const baseballCategories = [
 			{ statKey: 'walks', labelKey: 'box.walks' },
 			{ statKey: 'strikeouts', labelKey: 'box.strikeouts' },
 		],
-		rowCap: 0,
+		rowCap: everyRow,
 		showTotals: true,
 	},
 ] as const;
@@ -109,7 +115,7 @@ const footballCategories = [
 			{ statKey: 'interceptionYards', labelKey: 'box.yards' },
 			{ statKey: 'interceptionTouchdowns', labelKey: 'box.touchdowns' },
 		],
-		rowCap: 0,
+		rowCap: everyRow,
 		showTotals: false,
 	},
 ] as const;
@@ -127,15 +133,16 @@ const skaterColumns = [
 	{ statKey: 'goals', labelKey: 'box.goals' },
 	{ statKey: 'assists', labelKey: 'box.hockeyAssists' },
 	{ statKey: 'plusMinus', labelKey: 'box.plusMinus' },
+	// The feed's `SOG` column is shootout goals, so shots on goal arrive as `S`.
 	{ statKey: 'shotsTotal', labelKey: 'box.shots' },
 	{ statKey: 'penaltyMinutes', labelKey: 'box.penaltyMinutes' },
 	{ statKey: 'timeOnIce', labelKey: 'box.timeOnIce' },
 ] as const;
 
 const hockeyCategories = [
-	{ name: 'forwards', headingKey: 'box.forwards', columns: skaterColumns, rowCap: 0, showTotals: false },
-	{ name: 'defenses', headingKey: 'box.defensemen', columns: skaterColumns, rowCap: 0, showTotals: false },
-	{ name: 'skaters', headingKey: 'box.skaters', columns: skaterColumns, rowCap: 0, showTotals: false },
+	{ name: 'forwards', headingKey: 'box.forwards', columns: skaterColumns, rowCap: everyRow, showTotals: false },
+	{ name: 'defenses', headingKey: 'box.defensemen', columns: skaterColumns, rowCap: everyRow, showTotals: false },
+	{ name: 'skaters', headingKey: 'box.skaters', columns: skaterColumns, rowCap: everyRow, showTotals: false },
 	{
 		name: 'goalies',
 		headingKey: 'box.goaltending',
@@ -146,7 +153,7 @@ const hockeyCategories = [
 			{ statKey: 'savePct', labelKey: 'box.savePct' },
 			{ statKey: 'timeOnIce', labelKey: 'box.timeOnIce' },
 		],
-		rowCap: 0,
+		rowCap: everyRow,
 		showTotals: false,
 	},
 ] as const;
@@ -156,10 +163,10 @@ const boxSpecs = {
 	softball: baseballCategories,
 	football: footballCategories,
 	basketball: [{
-		name: '',
+		name: unnamedFeedCategory,
 		headingKey: 'box.players',
 		columns: basketballColumns,
-		rowCap: 0,
+		rowCap: everyRow,
 		showTotals: true,
 	}],
 	hockey: hockeyCategories,
@@ -283,7 +290,7 @@ const orderAthletes = (
 	if (sportType === 'football') return athletes;
 
 	if (category.name === 'batting') {
-		return athletes.toSorted((a, b) => (a.batOrder || 10) - (b.batOrder || 10));
+		return athletes.toSorted((a, b) => lineupRank(a) - lineupRank(b));
 	}
 
 	if (sportType === 'basketball') {

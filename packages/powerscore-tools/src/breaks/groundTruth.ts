@@ -18,14 +18,14 @@ export interface Play {
 	text: string;
 	summaryType?: string;
 	period?: number;
-	clock?: number;
+	clockSeconds?: number;
 }
 
 export interface DeadInterval {
 	start: number;
 	end: number;
 	kind: DeadIntervalKind;
-	after: Play;
+	precedingPlay: Play;
 }
 
 export const minimumGapMs = 90_000;
@@ -49,7 +49,7 @@ interface RawSummary {
 export const playByPlayPath = (directory: string, league: LeagueId, gameId: string): string => join(directory, `${league}-${gameId}.json`);
 
 // "11:08", or "17.7" under a minute.
-const clockSeconds = (display: string | undefined): number | undefined => {
+const parseClockSeconds = (display: string | undefined): number | undefined => {
 	if (!display) return undefined;
 	const [minutes, seconds] = display.includes(':') ? display.split(':') : ['0', display];
 	const value = (Number(minutes) * 60) + Number(seconds);
@@ -72,7 +72,7 @@ export const readPlays = (file: string): Play[] => {
 			text: play.text ?? '',
 			summaryType: play.summaryType,
 			period: play.period?.number,
-			clock: clockSeconds(play.clock?.displayValue),
+			clockSeconds: parseClockSeconds(play.clock?.displayValue),
 			sequence: Number(play.sequenceNumber ?? 0),
 		}))
 		.toSorted((a, b) => a.at - b.at || a.sequence - b.sequence)
@@ -98,10 +98,10 @@ const backfillGameSeconds = 60;
 const backfilledStamps = (plays: Play[]): Set<number> => {
 	const clocks = new Map<string, { at: number; clocks: number[] }>();
 	for (const play of plays) {
-		if (play.clock === undefined) continue;
+		if (play.clockSeconds === undefined) continue;
 		const key = `${play.at}/${play.period}`;
 		const group = clocks.get(key) ?? { at: play.at, clocks: [] };
-		group.clocks.push(play.clock);
+		group.clocks.push(play.clockSeconds);
 		clocks.set(key, group);
 	}
 	return new Set([...clocks.values()]
@@ -120,7 +120,7 @@ const labelBaseball = (inner: Play[]): DeadIntervalKind => {
 	return 'gap';
 };
 
-const labelClockSport = (sport: string, after: Play, inner: Play[], durationMs: number): DeadIntervalKind => {
+const labelClockSport = (sport: string, precedingPlay: Play, inner: Play[], durationMs: number): DeadIntervalKind => {
 	const text = describe(inner);
 	if (/end of half|end quarter 2|end of 2nd quarter|halftime/.test(text) || durationMs >= 8 * 60_000) return 'intermission';
 	if (sport === 'hockey' && text.includes('period end')) return 'intermission';
@@ -130,7 +130,7 @@ const labelClockSport = (sport: string, after: Play, inner: Play[], durationMs: 
 	if (/official timeout|tv timeout|official tv/.test(text)) return 'tvTimeout';
 	if (text.includes('timeout')) return 'teamTimeout';
 	if (/challenge|review/.test(text)) return 'review';
-	const before = after.type.toLowerCase();
+	const before = precedingPlay.type.toLowerCase();
 	if (sport === 'football') {
 		if (/touchdown|field goal good|extra point|two point|safety/.test(before)) return 'afterScore';
 		if (before.includes('kickoff')) return 'afterKickoff';
@@ -148,13 +148,13 @@ export const deadIntervals = (sport: string, plays: Play[]): { intervals: DeadIn
 		const after = action[index]!;
 		const durationMs = next.at - after.at;
 		if (durationMs < minimumGapMs) return [];
-		if (backfilled.has(next.at)) return [{ start: after.at, end: next.at, kind: 'unrecorded', after }];
+		if (backfilled.has(next.at)) return [{ start: after.at, end: next.at, kind: 'unrecorded', precedingPlay: after }];
 		// Inning markers are logged at the third out's own timestamp, so baseball takes ties.
 		const inner = baseball
 			? plays.filter(play => play !== after && play !== next && play.at >= after.at && play.at <= next.at)
 			: plays.filter(play => play.at >= after.at && play.at <= next.at && !isAction(sport, play));
 		const kind = baseball ? labelBaseball(inner) : labelClockSport(sport, after, inner, durationMs);
-		return [{ start: after.at, end: next.at, kind, after }];
+		return [{ start: after.at, end: next.at, kind, precedingPlay: after }];
 	});
 	return { intervals, action };
 };

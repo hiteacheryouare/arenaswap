@@ -33,7 +33,7 @@ const drumSpan = (hit: DrumHit): number => {
 		case 'crash': return 3;
 		case 'choke': return 0.27;
 		case 'tap': return 0.29;
-		case 'sizzle': return hit.length + 0.02;
+		case 'sizzle': return hit.sizzleSeconds + 0.02;
 		case 'boom': return 0.9;
 	}
 };

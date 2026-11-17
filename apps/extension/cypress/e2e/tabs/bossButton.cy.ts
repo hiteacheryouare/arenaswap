@@ -43,7 +43,7 @@ describe('the boss button', () => {
 		gameTabsMuted(true);
 		storedEnabled().should('equal', false);
 
-		world().then(live => { live.events = slate({ wnba: { home: 79, away: 79 }, nhl: { clock: 210 } }); });
+		world().then(live => { live.events = slate({ wnba: { home: 79, away: 79 }, nhl: { clockSeconds: 210 } }); });
 		play(60_000);
 		watching(900);
 		gameTabsMuted(true);

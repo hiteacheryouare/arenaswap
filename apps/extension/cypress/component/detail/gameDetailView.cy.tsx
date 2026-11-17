@@ -1,4 +1,5 @@
 import GameDetailView from '../../../entrypoints/popup/components/gameDetailView';
+import { seriesGameId } from '../../support/cannedGames';
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
 import type { Game, LiveScore, PowerScoreResult, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 import { countdownParts, formatCompactCountdown } from '../../../entrypoints/popup/components/startCountdown';
@@ -97,8 +98,27 @@ const detailView = (game: Game, overrides: MountOverrides = {}) => (
 const mountDetail = (game: Game, overrides: MountOverrides = {}) => cy.mount(detailView(game, overrides));
 
 const liveGameId = 'mock-7';
-const seriesGameId = 'mock-14';
 const recordsGameId = 'mock-2';
+
+const heroBudgetPx = 190;
+const breakdownTopBudgetPx = 206;
+const atBatHeroBudgetPx = 240;
+const atBatBreakdownTopBudgetPx = 280;
+
+const expectHeroHeightAtMost = (budgetPx: number, label = 'hero height') => {
+	cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
+		cy.get('.gd-hero').then(([hero]: JQuery<HTMLElement>) => {
+			const height = hero.getBoundingClientRect().bottom - header.getBoundingClientRect().top;
+			expect(height, label).to.be.at.most(budgetPx);
+		});
+	});
+};
+
+const expectBreakdownTopAtMost = (budgetPx: number, label: string) => {
+	cy.get('.powerscore-breakdown').then(([el]: JQuery<HTMLElement>) => {
+		expect(el.getBoundingClientRect().top, label).to.be.at.most(budgetPx);
+	});
+};
 
 const excitement: PowerScoreResult = {
 	gameId: liveGameId,
@@ -419,15 +439,8 @@ describe('gameDetailView hero', () => {
 	it('keeps the hero and the breakdown inside their pixel budgets with records shown', () => {
 		mountDetail(makeLiveGame({ id: recordsGameId }), { excitementResult: excitement });
 		cy.get('.game-detail-team-record').should('have.length', 2);
-		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
-			cy.get('.gd-hero').then(([hero]: JQuery<HTMLElement>) => {
-				const height = hero.getBoundingClientRect().bottom - header.getBoundingClientRect().top;
-				expect(height, 'hero height').to.be.at.most(190);
-			});
-		});
-		cy.get('.powerscore-breakdown').then(([el]: JQuery<HTMLElement>) => {
-			expect(el.getBoundingClientRect().top, 'breakdown starts high').to.be.at.most(206);
-		});
+		expectHeroHeightAtMost(heroBudgetPx);
+		expectBreakdownTopAtMost(breakdownTopBudgetPx, 'breakdown starts high');
 	});
 
 	it('keeps the gridiron hero inside the plain budget once timeouts are on it', () => {
@@ -441,12 +454,7 @@ describe('gameDetailView hero', () => {
 		}), { excitementResult: excitement });
 
 		cy.get('.gd-hero-live .timeout-dots').should('have.length', 2);
-		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
-			cy.get('.gd-hero').then(([hero]: JQuery<HTMLElement>) => {
-				const height = hero.getBoundingClientRect().bottom - header.getBoundingClientRect().top;
-				expect(height, 'hero height').to.be.at.most(190);
-			});
-		});
+		expectHeroHeightAtMost(heroBudgetPx);
 	});
 
 	it('holds the at-bat hero to its own, larger budget', () => {
@@ -460,32 +468,18 @@ describe('gameDetailView hero', () => {
 		}, { excitementResult: excitement });
 
 		cy.get('.gd-atbat-panel').should('exist');
-		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
-			cy.get('.gd-hero').then(([hero]: JQuery<HTMLElement>) => {
-				const height = hero.getBoundingClientRect().bottom - header.getBoundingClientRect().top;
-				expect(height, 'hero height with the at-bat pair').to.be.at.most(240);
-			});
-		});
-		cy.get('.powerscore-breakdown').then(([el]: JQuery<HTMLElement>) => {
-			expect(el.getBoundingClientRect().top, 'breakdown still on the first screen').to.be.at.most(280);
-		});
+		expectHeroHeightAtMost(atBatHeroBudgetPx, 'hero height with the at-bat pair');
+		expectBreakdownTopAtMost(atBatBreakdownTopBudgetPx, 'breakdown still on the first screen');
 	});
 
 	it('keeps the hero inside its pixel budget', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
-		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
-			cy.get('.gd-hero').then(([hero]: JQuery<HTMLElement>) => {
-				const height = hero.getBoundingClientRect().bottom - header.getBoundingClientRect().top;
-				expect(height, 'hero height').to.be.at.most(190);
-			});
-		});
+		expectHeroHeightAtMost(heroBudgetPx);
 	});
 
 	it('starts the PowerScore breakdown above the fold', () => {
 		mountDetail(makeLiveGame(), { excitementResult: excitement });
-		cy.get('.powerscore-breakdown').then(([el]: JQuery<HTMLElement>) => {
-			expect(el.getBoundingClientRect().top, 'breakdown starts high').to.be.at.most(200);
-		});
+		expectBreakdownTopAtMost(200, 'breakdown starts high');
 	});
 
 	it('fits the score row and base diamond inside the centre column', () => {
@@ -1241,15 +1235,8 @@ describe('gameDetailView basketball situation', () => {
 		answer(basketballSituations.homeInBonus.raw);
 		mountDetail(liveBasketball(), { excitementResult: excitement });
 		cy.get('.gd-bonus:not(.invisible)').should('exist');
-		cy.get('.game-detail-header').then(([header]: JQuery<HTMLElement>) => {
-			cy.get('.gd-hero').then(([hero]: JQuery<HTMLElement>) => {
-				const height = hero.getBoundingClientRect().bottom - header.getBoundingClientRect().top;
-				expect(height, 'hero height').to.be.at.most(196);
-			});
-		});
-		cy.get('.powerscore-breakdown').then(([el]: JQuery<HTMLElement>) => {
-			expect(el.getBoundingClientRect().top, 'breakdown still on the first screen').to.be.at.most(206);
-		});
+		expectHeroHeightAtMost(196);
+		expectBreakdownTopAtMost(breakdownTopBudgetPx, 'breakdown still on the first screen');
 	});
 
 	it('never writes out the fouls', () => {

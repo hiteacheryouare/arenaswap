@@ -18,7 +18,7 @@ import { fullLogoSrc, useTheme } from '../../utils/theme';
 import { bandLabel } from './guideFormat';
 import GuideGrid from './guideGrid';
 import { buildBar, buildHeatCurve } from './guideHeat';
-import { msToPx, axisBounds, defaultDayKey, gutterPx } from './guideLayout';
+import { msToPx, axisBounds, defaultDayKey, gutterPx, plotWidthOf, nowLinePlotShare } from './guideLayout';
 import { displayLocale } from '../../utils/displayLocale';
 
 const setGameBoost = (gameId: string, boost: number) => {
@@ -217,14 +217,14 @@ const App = () => {
 		const scroller = scrollerRef.current;
 		if (!bounds || !scroller) return;
 		hasScrolledToNow.current = true;
-		scroller.scrollLeft = Math.max(msToPx(now, bounds.fromMs) - (scroller.clientWidth - gutterPx) / 3, 0);
+		scroller.scrollLeft = Math.max(msToPx(now, bounds.fromMs) - plotWidthOf(scroller.clientWidth) * nowLinePlotShare, 0);
 	}, [bars, now, showingToday]);
 
 	const hasBars = bars.length > 0;
 	useEffect(() => {
 		const scroller = scrollerRef.current;
 		if (!hasBars || !scroller) return;
-		const observer = new ResizeObserver(() => setPlotWidthPx(scroller.clientWidth - gutterPx));
+		const observer = new ResizeObserver(() => setPlotWidthPx(plotWidthOf(scroller.clientWidth)));
 		observer.observe(scroller);
 		return () => observer.disconnect();
 	}, [hasBars]);

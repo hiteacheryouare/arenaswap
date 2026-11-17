@@ -70,7 +70,7 @@ describe('switching to the best game', () => {
 		play(60_000);
 		watching(wnbaTab);
 
-		world().then(live => { live.events = slate({ wnba: { home: 79, away: 50 }, nhl: { clock: 210 } }); });
+		world().then(live => { live.events = slate({ wnba: { home: 79, away: 50 }, nhl: { clockSeconds: 210 } }); });
 		play(cooldownSeconds * 1000);
 		watching(nhlTab);
 	});

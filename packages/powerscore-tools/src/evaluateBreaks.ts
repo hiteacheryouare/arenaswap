@@ -13,14 +13,14 @@ const option = (name: string): string | undefined => {
 	const index = args.indexOf(`--${name}`);
 	return index >= 0 ? args[index + 1] : undefined;
 };
-const pathOption = (name: string): string | undefined => {
+const pathFromLaunchDir = (name: string): string | undefined => {
 	const value = option(name);
 	return value === undefined ? undefined : resolve(process.env.INIT_CWD ?? process.cwd(), value);
 };
 const flag = (name: string): boolean => args.includes(`--${name}`);
 
-const recordingPath = pathOption('recording') ?? join(__dirname, '..', '..', '..', 'scripts', 'powerscore', 'recordings');
-const playByPlayDir = pathOption('play-by-play') ?? join(recordingPath, 'playByPlay');
+const recordingPath = pathFromLaunchDir('recording') ?? join(__dirname, '..', '..', '..', 'scripts', 'powerscore', 'recordings');
+const playByPlayDir = pathFromLaunchDir('play-by-play') ?? join(recordingPath, 'playByPlay');
 const maxFalseShare = Number(option('max-false') ?? 0.05);
 const leagues = option('leagues') ? new Set(option('leagues')!.split(',') as LeagueId[]) : undefined;
 

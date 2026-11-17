@@ -5,9 +5,10 @@ import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 import { heroGameAt, heroGames } from './heroGames';
 
 export const switchThreshold = sensitivityThresholds[defaultSensitivity];
+export const reducedMotionTick = 18;
 export const cooldownTicks = Math.round((defaultCooldownSecs * 1000) / pollIntervalMs);
 
-const heroEpoch = 1_767_225_600_000;
+const fixedSnapshotEpochMs = 1_767_225_600_000;
 
 export interface ScoredGame {
 	id: string;
@@ -23,8 +24,10 @@ export interface HeroSwitch {
 	gap: number;
 }
 
-const winProbability = (game: Game): number => (
-	Math.min(0.97, Math.max(0.03, 0.5 + (game.homeTeam.score - game.awayTeam.score) * 0.045))
+const winProbabilityPerPoint = 0.045;
+
+const winProbabilityFromMargin = (game: Game): number => (
+	Math.min(0.97, Math.max(0.03, 0.5 + (game.homeTeam.score - game.awayTeam.score) * winProbabilityPerPoint))
 );
 
 export const scoreBoardAt = (tick: number): ScoredGame[] => heroGames.map((script, index) => {
@@ -35,11 +38,11 @@ export const scoreBoardAt = (tick: number): ScoredGame[] => heroGames.map((scrip
 		const at = heroGameAt(script, past);
 		snapshots.push({
 			gameId: script.base.id,
-			timestamp: heroEpoch + past * pollIntervalMs,
+			timestamp: fixedSnapshotEpochMs + past * pollIntervalMs,
 			homeScore: at.homeTeam.score,
 			awayScore: at.awayTeam.score,
 		});
-		probabilities.push(winProbability(at));
+		probabilities.push(winProbabilityFromMargin(at));
 	}
 
 	const game = heroGameAt(script, tick);

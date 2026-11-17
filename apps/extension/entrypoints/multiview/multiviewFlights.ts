@@ -21,8 +21,8 @@ export interface flight {
 	dashed: boolean;
 	orange: boolean;
 	strength: number;
-	speed: number;
-	retract: number;
+	speedPxPerSecond: number;
+	retractShare: number;
 }
 
 type random = () => number;
@@ -141,7 +141,7 @@ export default (id: number, page: flightArea, grid: flightArea | null, random: r
 		dashed: random() < 0.5,
 		orange: random() < 0.2,
 		strength: between(random, 0.2, 0.35),
-		speed: between(random, 520, 760),
-		retract: between(random, 0.6, 0.8),
+		speedPxPerSecond: between(random, 520, 760),
+		retractShare: between(random, 0.6, 0.8),
 	};
 };

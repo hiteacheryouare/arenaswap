@@ -9,12 +9,14 @@ interface timeoutDotsProps {
 }
 
 const gridironTimeouts = 3;
+const ncaafOvertimeTimeouts = 1;
+const nflRegularSeasonOvertimeTimeouts = 2;
 
 export const gridironTimeoutAllotment = (game: Pick<Game, 'league' | 'period' | 'isPostseason'>): number => {
 	const regular = leagueConfigMap[game.league]?.regularPeriods;
 	if (regular === undefined || game.period <= regular) return gridironTimeouts;
-	if (game.league === 'ncaaf') return 1;
-	if (game.league === 'nfl' && !game.isPostseason) return 2;
+	if (game.league === 'ncaaf') return ncaafOvertimeTimeouts;
+	if (game.league === 'nfl' && !game.isPostseason) return nflRegularSeasonOvertimeTimeouts;
 	return gridironTimeouts;
 };
 

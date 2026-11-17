@@ -11,12 +11,14 @@ export interface SummaryNeeds {
 	hasRosteredPlayer: boolean;
 }
 
+const summaryCarriesLeadChanges = (game: Pick<Game, 'sportType'>): boolean => game.sportType === 'basketball';
+
 export const summaryStillNeeded = (game: Pick<Game, 'league' | 'sportType'>, needs: SummaryNeeds): boolean => (
 	!scoreboardWinProbabilityLeagues.has(game.league)
 	|| !needs.hasScoreboardReadings
 	|| !needs.hasSummaryLine
 	|| needs.hasRosteredPlayer
-	|| game.sportType === 'basketball'
+	|| summaryCarriesLeadChanges(game)
 );
 
 export const createWinProbabilityTracker = () => {

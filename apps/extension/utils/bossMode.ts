@@ -1,4 +1,5 @@
 export const bossCommandName = 'boss-button';
+export const bossSuggestedKey = 'Alt+Shift+X';
 export const bossHushedKey = 'bossHushed';
 
 const schemePattern = /^[a-z][a-z\d+.-]*:\/\//i;

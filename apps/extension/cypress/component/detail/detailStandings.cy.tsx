@@ -33,6 +33,8 @@ const demoGame = (id: string): Game => {
 };
 
 const football = demoGame('mock-5');
+const fetchedFootball: Game = { ...football, id: '401000005' };
+const fetchedSummaryUrl = /\/summary\?event=401000005/;
 const basketball = demoGame('mock-2');
 const soccer = demoGame('mock-12');
 const noTable = demoGame('mock-10');
@@ -137,10 +139,9 @@ describe('detail screen tab strip', () => {
 	});
 
 	it('keeps the overview mounted when the strip arrives', () => {
-		const live = { ...football, id: '401000005' };
-		cy.intercept({ url: /\/summary\?event=401000005/ }, { body: mockBoxScorePayloads['mock-5'], delay: 300 });
+		cy.intercept({ url: fetchedSummaryUrl }, { body: mockBoxScorePayloads['mock-5'], delay: 300 });
 		cy.intercept({ url: /\/standings\?level=3/ }, { body: mockStandingsPayloads['mock-5'], delay: 300 });
-		mount(live);
+		mount(fetchedFootball);
 		cy.get('.gd-tabs').should('not.exist');
 		cy.get('.powerscore-breakdown').then($breakdown => { $breakdown[0]!.dataset.probe = 'kept'; });
 		cy.get('.gd-tabs [role="tab"]').should('have.length', 3);
@@ -148,37 +149,34 @@ describe('detail screen tab strip', () => {
 	});
 
 	it('opens on the requests a hover already finished', () => {
-		const live = { ...football, id: '401000005' };
-		cy.intercept({ url: /\/summary\?event=401000005/ }, { body: mockBoxScorePayloads['mock-5'] }).as('summary');
+		cy.intercept({ url: fetchedSummaryUrl }, { body: mockBoxScorePayloads['mock-5'] }).as('summary');
 		cy.intercept({ url: /\/standings\?level=3/ }, { body: mockStandingsPayloads['mock-5'] }).as('standings');
-		cy.then(() => prefetchGameDetail(live));
+		cy.then(() => prefetchGameDetail(fetchedFootball));
 		cy.wait(['@summary', '@standings']);
-		mount(live);
+		mount(fetchedFootball);
 		cy.get('.gd-tabs [role="tab"]').should('have.length', 3);
 		cy.get('@summary.all').should('have.length', 1);
 		cy.get('@standings.all').should('have.length', 1);
 	});
 
 	it('asks again at tip-off, since the pre-game answer has no box score in it', () => {
-		const live = { ...football, id: '401000005' };
-		cy.intercept({ url: /\/summary\?event=401000005/ }, { body: mockBoxScorePayloads['mock-5'] }).as('summary');
+		cy.intercept({ url: fetchedSummaryUrl }, { body: mockBoxScorePayloads['mock-5'] }).as('summary');
 		cy.intercept({ url: /\/standings\?level=3/ }, { body: mockStandingsPayloads['mock-5'] });
-		mount({ ...live, status: 'pre' }).then(({ rerender }) => {
+		mount({ ...fetchedFootball, status: 'pre' }).then(({ rerender }) => {
 			cy.wait('@summary');
-			cy.then(() => rerender(detail(live)));
+			cy.then(() => rerender(detail(fetchedFootball)));
 		});
-		cy.get(`#gd-tab-${live.id}-box`).should('exist');
+		cy.get(`#gd-tab-${fetchedFootball.id}-box`).should('exist');
 		cy.get('@summary.all').should('have.length', 2);
 	});
 
 	it('reopens on the same requests when the screen is left and opened again', () => {
-		const live = { ...football, id: '401000005' };
-		cy.intercept({ url: /\/summary\?event=401000005/ }, { body: mockBoxScorePayloads['mock-5'] }).as('summary');
+		cy.intercept({ url: fetchedSummaryUrl }, { body: mockBoxScorePayloads['mock-5'] }).as('summary');
 		cy.intercept({ url: /\/standings\?level=3/ }, { body: mockStandingsPayloads['mock-5'] }).as('standings');
-		mount(live);
+		mount(fetchedFootball);
 		cy.get('.gd-tabs [role="tab"]').should('have.length', 3);
 		cy.mount(<div />);
-		mount(live);
+		mount(fetchedFootball);
 		cy.get('.gd-tabs [role="tab"]').should('have.length', 3);
 		cy.get('@summary.all').should('have.length', 1);
 		cy.get('@standings.all').should('have.length', 1);

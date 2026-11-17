@@ -1,5 +1,6 @@
 import DetailHero from '../../../entrypoints/popup/components/detailHero';
 import type { Game } from '@arenaswap/core/types';
+import { captionContrast, contrastRatio } from '../../support/contrast';
 import type { SeriesEvent, SeriesInfo } from '../../../entrypoints/popup/components/useSummaryData';
 
 const awayColor = '#000000';
@@ -52,15 +53,7 @@ const channels = (value: string): [number, number, number] => {
 	return [Number(matched[1]), Number(matched[2]), Number(matched[3])];
 };
 
-const luminance = (value: string): number => {
-	const [red, green, blue] = channels(value).map(channel => {
-		const scaled = channel / 255;
-		return scaled <= 0.04045 ? scaled / 12.92 : ((scaled + 0.055) / 1.055) ** 2.4;
-	});
-	return (0.2126 * red!) + (0.7152 * green!) + (0.0722 * blue!);
-};
-
-const contrastOnHero = (value: string): number => (luminance(value) + 0.05) / (luminance('rgb(13, 17, 23)') + 0.05);
+const darkestScrimmedHero = 'rgb(13, 17, 23)';
 
 describe('series dots', () => {
 	it('lifts a navy or black win until it shows on the dark hero, keeping its hue', () => {
@@ -72,7 +65,7 @@ describe('series dots', () => {
 		});
 		cy.get('.series-dot').should('have.length', 5);
 		cy.get('.series-dot.bi-circle-fill').should('have.length', 3).each(([dot]) => {
-			expect(contrastOnHero(getComputedStyle(dot!).color)).to.be.at.least(3);
+			expect(contrastRatio(getComputedStyle(dot!).color, darkestScrimmedHero)).to.be.at.least(captionContrast);
 		});
 		cy.get('.series-dot.bi-circle-fill').eq(0).should(([dot]) => {
 			const [red, green, blue] = channels(getComputedStyle(dot!).color);

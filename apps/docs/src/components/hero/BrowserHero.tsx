@@ -9,10 +9,8 @@ import { useT } from '@arenaswap/ui/src/components/i18nContext';
 import useReorderGlide from '@arenaswap/ui/src/components/useReorderGlide';
 import { TranslationContext, islandTranslator, tokenize } from '../../i18n/islandStrings';
 import { heroGames, heroTickCount, heroTickMs } from './heroGames';
-import { cooldownTicks, openingIndex, replayThrough, scoreBoardAt, shouldSwitch } from './heroTimeline';
+import { cooldownTicks, openingIndex, reducedMotionTick, replayThrough, scoreBoardAt, shouldSwitch } from './heroTimeline';
 import type { HeroSwitch } from './heroTimeline';
-
-const restingTick = 18;
 
 const base = import.meta.env.BASE_URL;
 const emptyLeagueLogos = {} as Record<LeagueId, string>;
@@ -81,12 +79,12 @@ const HeroWindow = ({ copy }: { copy: HeroStrings }) => {
 			setReduced(query.matches);
 			if (!query.matches) return;
 			setRunning(false);
-			const resting = replayThrough(restingTick);
+			const resting = replayThrough(reducedMotionTick);
 			lastSwitchTickRef.current = resting.lastSwitch?.tick ?? -cooldownTicks;
 			onScreenRef.current = resting.onScreenIndex;
 			setOnScreenIndex(resting.onScreenIndex);
 			setLastSwitch(resting.lastSwitch);
-			setTick(restingTick);
+			setTick(reducedMotionTick);
 		};
 		apply();
 		query.addEventListener('change', apply);

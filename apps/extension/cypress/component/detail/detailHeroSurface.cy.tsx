@@ -2,6 +2,7 @@ import DetailHero from '../../../entrypoints/popup/components/detailHero';
 import DetailPosterHero from '../../../entrypoints/popup/components/detailPosterHero';
 import DetailStickyBar from '../../../entrypoints/popup/components/detailStickyBar';
 import type { Game } from '@arenaswap/core/types';
+import { bodyTextContrast, captionContrast } from '../../support/contrast';
 import type { MonoLogos } from '../../../entrypoints/popup/components/useSummaryData';
 import type { GameStatus } from '../../../entrypoints/popup/components/gameSituation';
 
@@ -62,9 +63,9 @@ const luminance = (value: string): number => {
 	return (0.2126 * linear[0]!) + (0.7152 * linear[1]!) + (0.0722 * linear[2]!);
 };
 
-const darkestHeroBackground = 0.0121;
+const darkestHeroPairLuminance = 0.0121;
 const contrastOnHero = (ink: string): number => (
-	(luminance(ink) + 0.05) / (darkestHeroBackground + 0.05)
+	(luminance(ink) + 0.05) / (darkestHeroPairLuminance + 0.05)
 );
 
 describe('the detail hero surface', () => {
@@ -257,9 +258,9 @@ describe('detail hero at-bat panel on the scrim', () => {
 
 	it('keeps the name and the line readable against the scrim beneath its plate', () => {
 		mountLive(withAtBat);
-		readableOnPanel('.gd-atbat-name', 'the player name', 4.5);
-		readableOnPanel('.gd-atbat-line', "ESPN's line", 4.5);
-		readableOnPanel('.gd-atbat-role', 'the role label', 3);
+		readableOnPanel('.gd-atbat-name', 'the player name', bodyTextContrast);
+		readableOnPanel('.gd-atbat-line', "ESPN's line", bodyTextContrast);
+		readableOnPanel('.gd-atbat-role', 'the role label', captionContrast);
 	});
 
 	it('is absent on a sport that never has one', () => {

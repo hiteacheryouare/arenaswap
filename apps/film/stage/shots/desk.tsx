@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 import BrowserWindow, { type TabView } from '../components/browserWindow';
-import type { Cut, Format } from '../cuts/cutTypes';
+import type { Cut, Format, TabSwitch } from '../cuts/cutTypes';
 import { slateTimeAt } from '../popup/popupHost';
 import { easeSignature, lerp, progress } from '../timing';
 import type { ShotContext } from './shotTypes';
@@ -38,21 +38,23 @@ export const soloLayouts: Record<Format, { window: Rect; windowZoom: number }> =
 
 const wipeSeconds = 0.42;
 
+const arenaSwapMoves = new Set<TabSwitch['via']>(['swap', 'back', 'standby']);
+
 export const tabViewAt = (cut: Cut, t: number): TabView => {
 	const happened = cut.tabs.filter(change => change.at <= t);
 	const current = happened[happened.length - 1] ?? cut.tabs[0]!;
 	const previous = happened[happened.length - 2];
-	const managed = t >= cut.managedFrom;
-	if ((current.via === 'swap' || current.via === 'back' || current.via === 'standby') && previous) {
+	const registered = t >= cut.tabsRegisteredFrom;
+	if (arenaSwapMoves.has(current.via) && previous) {
 		return {
 			activeTabId: current.tabId,
 			previousTabId: previous.tabId,
 			wipe: easeSignature(progress(t, current.at, current.at + wipeSeconds)),
 			wipeFrom: current.via === 'back' ? 'right' : 'left',
-			managed,
+			managed: registered,
 		};
 	}
-	return { activeTabId: current.tabId, managed };
+	return { activeTabId: current.tabId, managed: registered };
 };
 
 export const browserSlateTime = (ctx: ShotContext, popupId = 'main') => {

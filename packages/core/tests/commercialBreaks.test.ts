@@ -409,12 +409,12 @@ describe('college football, from the plays a break follows', () => {
 		expect(flagged(replay(polls(drive(false), college)))).toEqual([]);
 	});
 
-	const playsFrom = (pattern: string): TextPoll[] => {
+	const playsFrom = (clockMovedPattern: string): TextPoll[] => {
 		let clock = 900;
-		const rows = [...pattern].map((moved, index): TextPoll => {
+		const rows = [...clockMovedPattern].map((moved, index): TextPoll => {
 			if (moved === '1') clock -= 30;
 			const display = `${Math.floor(clock / 60)}:${String(clock % 60).padStart(2, '0')}`;
-			const last = index === pattern.length - 1;
+			const last = index === clockMovedPattern.length - 1;
 			return [index * 30, display, last ? 'pat' : `play-${index}`, last ? 'Extra Point Good' : 'Rush', last ? '(KICK)' : 'rush for 4 yards'];
 		});
 		const [seconds, ...rest] = rows.at(-1)!;
@@ -432,9 +432,9 @@ describe('college football, from the plays a break follows', () => {
 		['100000000001', false],
 		['1000000000111', true],
 		['1010101010101', true],
-	])('plays %s: the extra point is timed as a break: %s', (pattern, timed) => {
-		const verdicts = replay(polls(playsFrom(pattern), college));
-		const pat = (pattern.length - 1) * 30;
+	])('plays %s: the extra point is timed as a break: %s', (clockMovedPattern, timed) => {
+		const verdicts = replay(polls(playsFrom(clockMovedPattern), college));
+		const pat = (clockMovedPattern.length - 1) * 30;
 		expect(flagged(verdicts, 'scoreBreak')).toEqual(timed ? [pat, pat + 30] : []);
 	});
 });

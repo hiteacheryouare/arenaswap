@@ -121,7 +121,7 @@ export default () => {
 	const [allLeagueLogoCache, setAllLeagueLogoCache] = useState<LeagueLogoMap>(seededLeagueLogos);
 	const [leagueSchedules, setLeagueSchedules] = useState<LeagueScheduleMap>({});
 	const settledRef = useRef(false);
-	const prefsSyncRef = useRef<Promise<void>>(Promise.resolve());
+	const saveQueueRef = useRef<Promise<unknown>>(Promise.resolve());
 	const { toasts, showToast, dismissToast, pauseToast, resumeToast } = useToast();
 	const bossShortcut = useBossShortcut();
 
@@ -317,16 +317,23 @@ export default () => {
 		setView('main');
 	}, [games, selectedGameId, view]);
 
+	const afterPendingSaves = () => saveQueueRef.current.catch(() => {});
+
+	const queueSave = <T,>(task: () => Promise<T>) => {
+		const queued = afterPendingSaves().then(task);
+		saveQueueRef.current = queued;
+		return queued;
+	};
+
 	const persistPrefs = (nextPrefs: UserPreferences | ((currentPrefs: UserPreferences) => UserPreferences)) => {
 		const rawNextPrefs = typeof nextPrefs === 'function' ? nextPrefs(prefsRef.current) : nextPrefs;
 		const normalized = normalizeUserPreferences(rawNextPrefs);
 		prefsRef.current = normalized;
 		setPrefs(normalized);
-		const syncPromise = prefsSyncRef.current.catch(() => {}).then(async () => {
+		const syncPromise = queueSave(async () => {
 			await persistStoredUserPreferences(normalized);
 			await browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: normalized } satisfies ExtensionMessage);
 		});
-		prefsSyncRef.current = syncPromise;
 		void syncPromise.catch(() => {});
 	};
 
@@ -339,7 +346,7 @@ export default () => {
 		const paused = { ...prefsRef.current, enabled: false };
 		prefsRef.current = paused;
 		setPrefs(paused);
-		prefsSyncRef.current.catch(() => {})
+		afterPendingSaves()
 			.then(() => browser.runtime.sendMessage({ type: 'BOSS_BUTTON' } satisfies ExtensionMessage))
 			.catch(() => {})
 			.finally(() => window.close());
@@ -353,7 +360,7 @@ export default () => {
 		setSettled(false);
 		setOnboardingDone(true);
 		void (async () => {
-			await prefsSyncRef.current.catch(() => {});
+			await afterPendingSaves();
 			const refreshed = await fetchState(true);
 			mutate(refreshed, { revalidate: false });
 			if (!settledRef.current) { settledRef.current = true; setSettled(true); }
@@ -371,13 +378,12 @@ export default () => {
 
 	const runProfileChange = (change: () => Promise<profileList>, toast?: (list: profileList) => string) => {
 		setProfilesBusy(true);
-		const done = prefsSyncRef.current.catch(() => {}).then(async () => {
+		const done = queueSave(async () => {
 			const list = await change();
 			setProfiles(list);
 			await adoptLiveSetup();
 			if (toast) showToast(toast(list), 'success');
 		});
-		prefsSyncRef.current = done;
 		void done.catch(() => showToast(i18n.t('profiles.changeFailed'), 'error')).finally(() => setProfilesBusy(false));
 		return done;
 	};
@@ -478,7 +484,7 @@ export default () => {
 		const next = update(fantasyRosterRef.current);
 		fantasyRosterRef.current = next;
 		setFantasyRoster(next);
-		prefsSyncRef.current = prefsSyncRef.current.catch(() => {}).then(() => saveFantasyRoster(next));
+		queueSave(() => saveFantasyRoster(next));
 	};
 
 	const onRegistryChange = (updated: TabRegistration[]) => {
@@ -552,7 +558,7 @@ export default () => {
 		setView('main');
 		if (settingsSnapshot() !== settingsOnOpenRef.current) showToast(i18n.t('app.settingsSavedToast'), 'success');
 		void (async () => {
-			await prefsSyncRef.current.catch(() => {});
+			await afterPendingSaves();
 			const refreshed = await fetchState(true);
 			mutate(refreshed, { revalidate: false });
 		})();

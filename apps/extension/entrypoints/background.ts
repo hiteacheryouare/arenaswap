@@ -70,6 +70,7 @@ import type {
 	PowerScoreHistoryMap,
 	ScoreSnapshot,
 	ScoreHistoryMap,
+	SportType,
 	TabRegistration,
 	UserPreferences,
 } from '@arenaswap/core/types';
@@ -95,6 +96,15 @@ const multiviewLeftNotificationId = 'arenaswap-multiview-left';
 const standingsRefreshMs = 30 * 60 * 1000;
 const blowoutSummaryIntervalMs = 180_000;
 const situationWaitMs = 2_000;
+const pollJitterAtSlowestBeatMs = 2_000;
+const retryJitterMs = 2_000;
+
+const jitteredBeatMs = (beatMs: number, feedCacheMs: number) => {
+	const jitterMs = Math.round((beatMs / pollMaxEagerMs) * pollJitterAtSlowestBeatMs);
+	return Math.max(feedCacheMs, beatMs + randomInRange(-jitterMs, jitterMs));
+};
+
+const routMargin = (sportType: SportType) => sportTypeConfigMap[sportType]?.closenessMargins[2];
 
 const getOpenTabIds = async (): Promise<Set<number>> => {
 	const allTabs = await browser.tabs.query({});
@@ -1224,8 +1234,7 @@ export default defineBackground(() => {
 			} else {
 				const refreshMs = scoreboardRefreshMs(leagueId);
 				const base = computeLeagueIntervalMs(liveLeagueGames, currentScores, refreshMs);
-				const jitterMax = Math.round((base / pollMaxEagerMs) * 2_000);
-				nextInterval = Math.max(refreshMs, base + randomInRange(-jitterMax, jitterMax));
+				nextInterval = jitteredBeatMs(base, refreshMs);
 			}
 			if (fetchSucceeded) {
 				leagueFailureCounts.delete(leagueId);
@@ -1233,8 +1242,8 @@ export default defineBackground(() => {
 			} else {
 				const failures = (leagueFailureCounts.get(leagueId) ?? 0) + 1;
 				leagueFailureCounts.set(leagueId, failures);
-				const ceiling = liveInHand ? nextInterval : Math.max(nextInterval, leagueHealthyIntervalMs.get(leagueId) ?? 0);
-				nextInterval = computeRetryDelayMs(failures, ceiling, randomInRange(-2_000, 2_000));
+				const retryCeilingMs = liveInHand ? nextInterval : Math.max(nextInterval, leagueHealthyIntervalMs.get(leagueId) ?? 0);
+				nextInterval = computeRetryDelayMs(failures, retryCeilingMs, randomInRange(-retryJitterMs, retryJitterMs));
 			}
 			if (fetchSucceeded && mode !== 'eager') {
 				const kickoff = kickoffDelayMs(games.filter(g => g.league === leagueId), Date.now());
@@ -1289,7 +1298,7 @@ export default defineBackground(() => {
 
 	const refreshSituations = async (leagueGames: Game[]): Promise<void> => {
 		if (demoMode) return;
-		const blowoutMargin = sportTypeConfigMap.hockey?.closenessMargins[2] ?? 3;
+		const blowoutMargin = routMargin('hockey') ?? 3;
 		const wanted = leagueGames.filter(game => !isPlayFrozen(game) && (
 			(game.sportType === 'basketball' && (game.lastPlayId === undefined || situationPlayIds.get(game.id) !== game.lastPlayId))
 			|| (game.league === 'nhl' && Math.abs(game.homeTeam.score - game.awayTeam.score) <= blowoutMargin)));
@@ -1318,7 +1327,7 @@ export default defineBackground(() => {
 	};
 
 	const summaryDue = (game: Game, now: number): boolean => {
-		const blowout = Math.abs(game.homeTeam.score - game.awayTeam.score) > (sportTypeConfigMap[game.sportType]?.closenessMargins[2] ?? Infinity);
+		const blowout = Math.abs(game.homeTeam.score - game.awayTeam.score) > (routMargin(game.sportType) ?? Infinity);
 		return !blowout || liveExtras.hasRosteredPlayer(game) || now - (summaryFetchedAt.get(game.id) ?? 0) >= blowoutSummaryIntervalMs;
 	};
 

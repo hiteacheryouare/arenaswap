@@ -2,7 +2,7 @@ import type { Game, LeagueId } from '@arenaswap/core/types';
 import { leagueConfigs } from '@arenaswap/core/constants';
 import { buildBar, type guideBar } from '../entrypoints/guide/guideHeat';
 import { groupByDate } from '../entrypoints/popup/popupHelpers';
-import { axisBounds, defaultDayKey, fillAxis, groupByLeague, hourMarks, minutesToPx, msToPx, pxPerMinute } from '../entrypoints/guide/guideLayout';
+import { axisBounds, defaultDayKey, fillAxis, groupByLeague, gutterPx, hourMarks, minutesToPx, msToPx, nowLinePlotShare, plotWidthOf, pxPerMinute } from '../entrypoints/guide/guideLayout';
 
 const at = (iso: string) => new Date(iso).getTime();
 const now = at('2026-09-13T12:00:00Z');
@@ -154,5 +154,12 @@ describe('the day the guide opens on', () => {
 
 	test('is nothing at all on an empty slate, rather than throwing', () => {
 		expect(defaultDayKey([], nowMs)).toBeNull();
+	});
+});
+
+describe('the opening scroll', () => {
+	test('measures the plot without the team gutter, and parks now a third of the way in', () => {
+		expect(plotWidthOf(gutterPx + 900)).toBe(900);
+		expect(plotWidthOf(gutterPx + 900) * nowLinePlotShare).toBeCloseTo(300, 9);
 	});
 });

@@ -132,7 +132,7 @@ describe('standings containment', () => {
 		inEveryLocale(`keeps the ${label} rows inside the table`, locale => {
 			const group = standingsGroup([game.awayTeam, game.homeTeam, worstTeams.longIsland, worstTeams.stonehill]);
 			mountInPopup(<StandingsTable game={game} standings={[group]} />, locale);
-			cy.get(popupSurface).assertContained({ scrollers: ['.table-responsive'] });
+			cy.get(popupSurface).assertContained({ sidewaysScrollers: ['.table-responsive'] });
 		});
 	}
 });

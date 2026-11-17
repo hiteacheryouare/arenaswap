@@ -4,12 +4,12 @@ import { parseScoreboardEvents } from '@arenaswap/sideline';
 import { leagueConfigMap } from 'powerscore';
 import type { Game, LeagueId } from '@arenaswap/core/types';
 
-const defaultGameId = '401872990';
+const bearsAtPackersGameId = '401872990';
 
 const args = process.argv.slice(2);
 const leagueIndex = args.indexOf('--league');
 const league = (leagueIndex >= 0 ? args[leagueIndex + 1] : 'nfl') as LeagueId;
-const gameId = args.find(arg => /^\d+$/.test(arg)) ?? defaultGameId;
+const gameId = args.find(arg => /^\d+$/.test(arg)) ?? bearsAtPackersGameId;
 
 const root = join(__dirname, '..', '..', '..');
 const outFile = join(root, 'apps', 'film', 'data', 'pregame.json');

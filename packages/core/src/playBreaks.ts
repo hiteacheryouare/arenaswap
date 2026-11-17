@@ -1,5 +1,5 @@
 import { baseMask, leagueConfigMap, runnersOn, sportTypeConfigMap } from 'powerscore';
-import { hockeyFlowTypes, pitchTypes, type CommercialBreakEntry } from './commercialBreaks';
+import { hockeyFlowTypes, isBallInPlay, pitchTypes, type CommercialBreakEntry } from './commercialBreaks';
 import type { Game, LeagueId } from './types';
 
 export type PlayBreakSport = 'baseball' | 'football' | 'basketball' | 'hockey';
@@ -110,7 +110,7 @@ export const reachedPlayBreak = (game: Game, mark: PlayMark, clockPolls: number)
 		if (current.pitcherId !== undefined && mark.pitcherId !== undefined && current.pitcherId !== mark.pitcherId) return true;
 		const freshCount = (game.bso?.balls ?? 0) + (game.bso?.strikes ?? 0) === 0;
 		if (current.batterId !== undefined && mark.batterId !== undefined && current.batterId !== mark.batterId && freshCount) return true;
-		return newPlay && (type === 'play result' || !pitchTypes.test(type));
+		return newPlay && (isBallInPlay(type) || !pitchTypes.test(type));
 	}
 	if (sport === 'football') return newPlay;
 	if (clockPolls >= clockStoppedPolls) return true;

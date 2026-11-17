@@ -2,6 +2,9 @@ import { revealFullRate, revealOpenMs, revealSettleMs } from '../../../entrypoin
 import { liveState, onboardedPrefs, openTabs, sixersThunder } from '../../support/fixtures';
 
 const revealClear = revealSettleMs('full') + 2000;
+const barsEnterMs = 1500;
+const barsRunMs = 1000;
+const midPassMs = revealOpenMs('full') + (barsEnterMs + barsRunMs / 2) * revealFullRate;
 
 describe('popup boots', () => {
 	it('serves the built bundle with styles, fonts and translations', () => {
@@ -38,7 +41,7 @@ describe('popup boots', () => {
 			expect(doc.documentElement.scrollWidth, 'scroll width at the first frame')
 				.to.be.at.most(doc.documentElement.clientWidth);
 		});
-		cy.wait(revealOpenMs('full') + (1500 + 500) * revealFullRate);
+		cy.wait(midPassMs);
 		cy.document().should(doc => {
 			expect(doc.documentElement.scrollWidth, 'scroll width mid-sweep')
 				.to.be.at.most(doc.documentElement.clientWidth);

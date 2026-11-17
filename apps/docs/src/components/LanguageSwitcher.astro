@@ -4,14 +4,14 @@ import { currentLocale, useTranslations } from '../i18n/ui';
 
 interface Props {
 	variant?: 'dropdown' | 'list';
-	localized?: boolean;
+	hasLocalizedUrls?: boolean;
 }
 
-const { variant = 'dropdown', localized = true } = Astro.props;
+const { variant = 'dropdown', hasLocalizedUrls = true } = Astro.props;
 
 const locale = currentLocale(Astro.currentLocale);
 const t = useTranslations(locale);
-const path = localized ? stripLocale(Astro.url.pathname) : '';
+const path = hasLocalizedUrls ? stripLocale(Astro.url.pathname) : '';
 const current = findLocale(locale);
 
 const entries = locales.map(entry => ({
@@ -38,7 +38,7 @@ const entries = locales.map(entry => ({
 			<i class='bi bi-chevron-down lang-switch-caret' aria-hidden='true'></i>
 		</button>
 		<div class='menu lang-switch-menu'>
-			{!localized && (
+			{!hasLocalizedUrls && (
 				<>
 					<p class='lang-switch-note'>{t('nav.englishOnly')}</p>
 					<hr class='menu-divider' />
@@ -70,6 +70,6 @@ const entries = locales.map(entry => ({
 				</li>
 			))}
 		</ul>
-		{!localized && <p class='lang-switch-note'>{t('nav.englishOnly')}</p>}
+		{!hasLocalizedUrls && <p class='lang-switch-note'>{t('nav.englishOnly')}</p>}
 	</div>
 )}

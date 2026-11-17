@@ -6,14 +6,14 @@ import { dbToGain, integratedLoudness } from './loudness';
 import { masterSoundtrack } from './master';
 import { renderCueLayer, renderReturns, type Sends } from './mixer';
 import type { Cue, RenderedAudio } from './score';
-import { soundtrack, stretch } from './soundtrack';
+import { sourceToFilmSeconds, soundtrack } from './soundtrack';
 
 export const soundtrackPath = (filmDir: string) => join(filmDir, 'music', soundtrack.file);
 
 const musicLufs = -19;
 
-const decode = (path: string, ffmpegPath: string, sampleRate: number): { audio: Stereo; stretch: number } => {
-	const fastRate = Math.round(sampleRate / stretch);
+const decode = (path: string, ffmpegPath: string, sampleRate: number): { audio: Stereo; sourceToFilmSeconds: number } => {
+	const fastRate = Math.round(sampleRate / sourceToFilmSeconds);
 	const speed = `aresample=${sampleRate},asetrate=${fastRate},aresample=${sampleRate}`;
 	const { stdout, stderr, status } = spawnSync(ffmpegPath, ['-v', 'error', '-i', path, '-af', speed, '-ac', '2', '-f', 'f32le', '-'], { maxBuffer: 1 << 30 });
 	if (status !== 0) throw new Error(`ffmpeg could not read ${path}: ${stderr.toString()}`);
@@ -23,7 +23,7 @@ const decode = (path: string, ffmpegPath: string, sampleRate: number): { audio: 
 		audio.left[i] = samples[i * 2]!;
 		audio.right[i] = samples[i * 2 + 1]!;
 	}
-	return { audio, stretch: sampleRate / fastRate };
+	return { audio, sourceToFilmSeconds: sampleRate / fastRate };
 };
 
 const fade = (audio: Stereo, from: number, to: number, rising: boolean): void => {
@@ -43,8 +43,8 @@ interface Scored {
 
 const renderSoundtrackMix = (cut: Scored, path: string, ffmpegPath: string, sampleRate = 48000): RenderedAudio => {
 	const length = Math.round(cut.duration * sampleRate);
-	const { audio: recording, stretch: shrink } = decode(path, ffmpegPath, sampleRate);
-	const start = Math.round((soundtrack.finalHit * shrink - cut.landsAt) * sampleRate);
+	const { audio: recording, sourceToFilmSeconds: roundedSourceToFilmSeconds } = decode(path, ffmpegPath, sampleRate);
+	const start = Math.round((soundtrack.finalHitSeconds * roundedSourceToFilmSeconds - cut.landsAt) * sampleRate);
 	if (start < 0) throw new Error(`The soundtrack is too short to land its last hit at ${cut.landsAt.toFixed(2)} s.`);
 	const music = createStereo(length);
 	const ends = Math.min(length, recording.left.length - start);
@@ -59,7 +59,7 @@ const renderSoundtrackMix = (cut: Scored, path: string, ffmpegPath: string, samp
 	const cues = cut.cues
 		.filter(cue => cue.at >= 0 && cue.at < cut.duration)
 		.toSorted((a, b) => a.at - b.at)
-		.map(cue => ({ ...cue, step: cue.step ?? 0 }));
+		.map(cue => ({ ...cue, rung: cue.rung ?? 0 }));
 	renderCueLayer(cues, effects, sends, sampleRate, 3, musicBeats(1));
 	const returns = renderReturns(sends, musicBeats(1), sampleRate);
 	const { left, right } = masterSoundtrack(sumStereo([music, effects, returns.delay, returns.reverb], length), sampleRate);

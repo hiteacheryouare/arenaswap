@@ -1,5 +1,11 @@
 import * as z from 'zod/mini';
-import type { Game } from '@arenaswap/core';
+import type { FantasyRosterEntry, Game } from '@arenaswap/core';
+
+export const teamDefenseId = (teamId: string): string => `dst:${teamId}`;
+
+export const boxScoreLineId = (entry: Pick<FantasyRosterEntry, 'position' | 'teamId' | 'athleteId'>): string => (
+	entry.position === 'DST' ? teamDefenseId(entry.teamId) : entry.athleteId
+);
 
 const InjuriesSchema = z.object({
 	injuries: z.catch(z.optional(z.array(z.object({
@@ -171,7 +177,7 @@ export const readFantasyBoxScore = (summary: unknown, game: Pick<Game, 'homeTeam
 			const opponent = teamId === game.homeTeam.id ? game.awayTeam : game.homeTeam;
 			const { offenseFumblesLost: _ownFumbles, ...stats } = defense;
 			const recovered = defenses.get(opponentId)?.offenseFumblesLost ?? 0;
-			lines.set(`dst:${teamId}`, { ...stats, ...(recovered ? { takeaways: (stats.takeaways ?? 0) + recovered } : {}), pointsAllowed: opponent.score });
+			lines.set(teamDefenseId(teamId), { ...stats, ...(recovered ? { takeaways: (stats.takeaways ?? 0) + recovered } : {}), pointsAllowed: opponent.score });
 		}
 	}
 	return { lines, inactive, teamsWithLineups };

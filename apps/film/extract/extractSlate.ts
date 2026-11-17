@@ -1,55 +1,28 @@
-import { createReadStream, mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
-import { createInterface } from 'node:readline';
-import { constants as zlibConstants, createGunzip } from 'node:zlib';
 import { createLiveExtras, parseScoreboardEvents, parseWinProbability } from '@arenaswap/sideline';
 import { getHistoryWindowMsForGame, nextCommercialBreak, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot, type CommercialBreakEntry } from '@arenaswap/core';
 import { leagueConfigMap, sportTypeConfigMap, type ScoreSnapshot } from 'powerscore';
 import { createFavoriteTeamKey, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { Game, LeagueId, LeagueLogoMap } from '@arenaswap/core/types';
-import { listRecordingFiles } from '@arenaswap/powerscore-tools/recording';
+import { listRecordingFiles, readRecordedLines, type RawEvent } from '@arenaswap/powerscore-tools/recording';
 import { detailGameIds, guideAt, kentuckyKey, profiles, slateFrom, slateTo, summaryMoments, viewerLeagues, wallAt, type ProfileName } from './slateConfig';
 import trimSummary from './trimSummary';
 import type { FilmSlate, GameTrack, ScoreEntry, WallGame } from '../stage/data/slateTypes';
-
-interface RawEvent {
-	id?: string;
-	status?: { type?: { state?: string } };
-}
-
-type RecordedLine =
-	| { t: 'meta'; ts: number; gitSha?: string }
-	| { t: 'scoreboard'; ts: number; league: LeagueId; events: RawEvent[]; unchanged: string[] }
-	| { t: 'summary'; ts: number; league: LeagueId; gameId: string; raw: Record<string, unknown> }
-	| { t: 'situation'; ts: number; league: LeagueId; gameId: string; raw: Record<string, unknown> }
-	| { t: 'standings'; ts: number; league: LeagueId; raw: unknown };
 
 const args = process.argv.slice(2);
 const option = (name: string) => {
 	const index = args.indexOf(`--${name}`);
 	return index >= 0 ? args[index + 1] : undefined;
 };
-const pathOption = (name: string) => {
+const pathFromLaunchDir = (name: string) => {
 	const value = option(name);
 	return value === undefined ? undefined : resolve(process.env.INIT_CWD ?? process.cwd(), value);
 };
 
 const root = join(__dirname, '..', '..', '..');
-const recordingPath = pathOption('recording') ?? join(root, 'packages', 'powerscore-tools', 'recordings', '2026-10-03');
-const outFile = pathOption('out') ?? join(root, 'apps', 'film', 'data', 'saturday.json');
-
-const readLines = async function* (file: string): AsyncGenerator<RecordedLine> {
-	const gunzip = createGunzip({ finishFlush: zlibConstants.Z_SYNC_FLUSH });
-	const lines = createInterface({ input: createReadStream(file).pipe(gunzip), crlfDelay: Infinity });
-	for await (const line of lines) {
-		if (!line) continue;
-		try {
-			yield JSON.parse(line) as RecordedLine;
-		} catch {
-			// A recording still being written ends mid-line.
-		}
-	}
-};
+const recordingPath = pathFromLaunchDir('recording') ?? join(root, 'packages', 'powerscore-tools', 'recordings', '2026-10-03');
+const outFile = pathFromLaunchDir('out') ?? join(root, 'apps', 'film', 'data', 'saturday.json');
 
 const withoutSourceNames = (game: Game): Game => {
 	if (!game.broadcasts) return game;
@@ -97,7 +70,7 @@ const main = async () => {
 	let recorderSha: string | undefined;
 
 	for (const file of files) {
-		for await (const line of readLines(file)) {
+		for await (const line of readRecordedLines(file)) {
 			if (line.ts > slateTo) break;
 			if (line.t === 'meta') {
 				recorderSha ??= line.gitSha;

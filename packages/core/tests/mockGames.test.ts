@@ -25,6 +25,7 @@ const getInternals = (simulator: MockGameSimulator): SimulatorInternals => (
 	simulator as unknown as SimulatorInternals
 );
 
+const advancesTheDriveWithoutScoring = 0.1;
 const yardsFromOwnGoal = (fieldPosition: string): number => {
 	const [side, yardLine] = fieldPosition.split(' ');
 	return side === 'PHI' ? Number(yardLine) : 100 - Number(yardLine);
@@ -471,7 +472,7 @@ describe('MockGameSimulator', () => {
 			const game = internals.games.find(g => g.id === 'mock-5')!;
 			game.downDistance = '1st & 10';
 
-			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.1);
+			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(advancesTheDriveWithoutScoring);
 			const updated = getGameById(simulator.tick(), 'mock-5');
 			expect(updated.downDistance).not.toBe('1st & 10');
 
@@ -492,7 +493,7 @@ describe('MockGameSimulator', () => {
 		});
 
 		test('walks the whole drive table without losing yards inside a drive', () => {
-			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0.1);
+			const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(advancesTheDriveWithoutScoring);
 			const simulator = new MockGameSimulator();
 
 			const walk = Array.from({ length: 9 }, () => {

@@ -3,9 +3,13 @@ import { finalHitLag } from '../../audio/soundtrack';
 import { musicBeats } from '../timing';
 import type { CardOrigin, Ending, PopupAction } from './cutTypes';
 
-export const sat = (clock: string) => {
+const recordedSaturdayUtc = { year: 2026, monthIndex: 9, day: 3 };
+const pmHours = 12;
+const edtUtcOffsetHours = 4;
+
+export const saturdayEveningEastern = (clock: string) => {
 	const [hours = 0, minutes = 0, seconds = 0] = clock.split(':').map(Number);
-	const utc = Date.UTC(2026, 9, 3, hours + 12 + 4, minutes, seconds);
+	const utc = Date.UTC(recordedSaturdayUtc.year, recordedSaturdayUtc.monthIndex, recordedSaturdayUtc.day, hours + pmHours + edtUtcOffsetHours, minutes, seconds);
 	return new Date(utc).toISOString();
 };
 
@@ -44,17 +48,17 @@ export const endingFor = (filmEnd: number): Ending => ({
 	balls: [8.5, 7.5, 6.5, 5.5, 4.5].map(count => before(filmEnd, count)),
 	plainAgain: before(filmEnd, 3.5),
 	landsAt: before(filmEnd, 2.5) + finalHitLag,
-	pace: 1,
+	beatScale: 1,
 });
 
 export const shortEndingFor = (filmEnd: number): Ending => ({
 	balls: [4.5, 4, 3.5, 3, 2.5].map(count => before(filmEnd, count)),
 	plainAgain: before(filmEnd, 2),
 	landsAt: before(filmEnd, 1.5) + finalHitLag,
-	pace: shortEndingBeats / endingBeats,
+	beatScale: shortEndingBeats / endingBeats,
 });
 
 export const endingCues = (schedule: Ending): Cue[] => [
-	...schedule.balls.map((at, index) => ({ at, kind: 'dot' as const, step: index })),
+	...schedule.balls.map((at, index) => ({ at, kind: 'dot' as const, rung: index })),
 	{ at: schedule.landsAt, kind: 'impact' },
 ];

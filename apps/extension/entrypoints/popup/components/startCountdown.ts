@@ -8,6 +8,7 @@ export interface CountdownParts {
 	remainingMs: number;
 }
 
+const lateWakePadMs = 50;
 const secondMs = 1_000;
 const minuteMs = 60_000;
 const hourMs = 60 * minuteMs;
@@ -58,7 +59,7 @@ export const useStartCountdown = (iso: string | undefined): CountdownParts | nul
 				const now = Date.now();
 				setNowMs(now);
 				scheduleNextTick(targetMs - now);
-			}, (remainingMs % stepMs) + 50);
+			}, (remainingMs % stepMs) + lateWakePadMs);
 		};
 		scheduleNextTick(targetMs - Date.now());
 		return () => clearTimeout(timer);

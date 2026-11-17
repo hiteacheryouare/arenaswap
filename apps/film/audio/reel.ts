@@ -14,8 +14,8 @@ const beat = musicBeats(1);
 
 const reelGain = 0.33;
 
-const hop = (at: number, step: number, pan = 0): ResolvedCue => ({ at, kind: 'dot', step, pan });
-const at = (time: number, kind: Kind, extra: Partial<Cue> = {}): ResolvedCue => ({ at: time, kind, step: 0, ...extra });
+const hop = (at: number, rung: number, pan = 0): ResolvedCue => ({ at, kind: 'dot', rung, pan });
+const at = (time: number, kind: Kind, extra: Partial<Cue> = {}): ResolvedCue => ({ at: time, kind, rung: 0, ...extra });
 
 const reels: Record<Kind, ResolvedCue[]> = {
 	dot: [0, 1, 2, 3, 4, 5].map(step => hop(0.3 + step * beat, step, (step - 2.5) * 0.12)),

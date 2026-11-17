@@ -53,12 +53,14 @@ const positionDepth = (position: string): number => {
 	return 5.5;
 };
 
+const pitchLane = { leftWide: -2, insideLeft: -1, center: 0, insideRight: 1, rightWide: 2 } as const;
+
 const positionSide = (position: string): number => {
-	if (/^L(B|WB|M|W|F)$/.test(position)) return -2;
-	if (/^R(B|WB|M|W|F)$/.test(position)) return 2;
-	if (/-L$|^LC/.test(position)) return -1;
-	if (/-R$|^RC/.test(position)) return 1;
-	return 0;
+	if (/^L(B|WB|M|W|F)$/.test(position)) return pitchLane.leftWide;
+	if (/^R(B|WB|M|W|F)$/.test(position)) return pitchLane.rightWide;
+	if (/-L$|^LC/.test(position)) return pitchLane.insideLeft;
+	if (/-R$|^RC/.test(position)) return pitchLane.insideRight;
+	return pitchLane.center;
 };
 
 const toHex = (value: string | undefined): string | undefined => (

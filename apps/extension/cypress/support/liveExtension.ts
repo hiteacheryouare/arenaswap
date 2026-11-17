@@ -1,5 +1,7 @@
-import { leagueConfigMap } from '@arenaswap/core/constants';
+import { leagueConfigMap, pollIntervalMs } from '@arenaswap/core/constants';
 import type { ExtensionMessage, LeagueId } from '@arenaswap/core/types';
+
+const randomAtTop = 0.999;
 
 export interface liveTab {
 	id: number;
@@ -438,7 +440,7 @@ const startBackground = (world: internalWorld, source: string) => {
 		clearInterval: (id?: number) => { if (id !== undefined && !virtual.delete(id)) realClearInterval(id); },
 	});
 	world.scheduledDelays = () => [...virtual.values()].map(timer => timer.delay);
-	win.Math.random = () => 0.999;
+	win.Math.random = () => randomAtTop;
 	world.fireDueTimers = () => {
 		for (let fired = 0; fired < 1000; fired++) {
 			const due = [...virtual].filter(([, timer]) => timer.due <= now()).toSorted(([, a], [, b]) => a.due - b.due)[0];
@@ -501,7 +503,7 @@ export const startExtension = (options: liveExtensionOptions) => {
 				cy.then(() => startBackground(world, source));
 				cy.wrap(world, { log: false, timeout: 15_000 }).should(live => {
 					expect(live.state, 'first broadcast').to.not.equal(null);
-					if (followsLeagues) expect(live.scheduledDelays().some(delay => delay >= 14_000 && delay <= 15_000), 'league polls queued').to.equal(true);
+					if (followsLeagues) expect(live.scheduledDelays().some(delay => delay >= pollIntervalMs - 1_000 && delay <= pollIntervalMs), 'league polls queued').to.equal(true);
 				});
 				cy.then(() => { running = world; });
 				cy.wrap(world as liveWorld, { log: false }).as('world');

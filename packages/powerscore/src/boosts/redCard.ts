@@ -15,8 +15,8 @@ export const shorthandedSide = (game: Game<string>): Side | undefined => {
 const cardMagnitude = (game: Game<string>, card: RedCard): number => {
 	const lead = leadOf(game, card.side);
 	const margin = Math.abs(lead);
-	if (margin === 0) return 10;
-	if (margin === 1) return lead > 0 ? 10 : 7;
+	if (margin === 0) return redCardTunables.tiedMagnitude;
+	if (margin === 1) return lead > 0 ? redCardTunables.tiedMagnitude : 7;
 	if (margin === 2 && lead > 0) return 5;
 	return 0;
 };

@@ -26,10 +26,12 @@ const noFavorites = new Set<string>();
 const noop = () => {};
 const allTabs = heroGames.map((_, game) => ({ game }));
 
+const firstGameMenuChild = 2;
+
 const spotSelectors: Record<Exclude<CursorSpot, 'rest'>, string> = {
 	newTab: '[data-step-spot="newTab"]',
 	toggle: '.game-card-tab-assign .form-control',
-	option: `.select-dropdown-menu .menu-item:nth-child(${assignGameIndex + 2})`,
+	option: `.select-dropdown-menu .menu-item:nth-child(${firstGameMenuChild + assignGameIndex})`,
 };
 const restPoint = { x: 56, y: 330 };
 

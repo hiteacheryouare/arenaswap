@@ -267,6 +267,13 @@ describe('how a club name is set on two lines', () => {
 	});
 });
 
+describe('revealNameInk', () => {
+	it('keeps the measured ink edges', () => {
+		expect(revealNameInkTopEm).toBeCloseTo(0.385, 9);
+		expect(revealNameInkBottomEm).toBeCloseTo(0.572, 9);
+	});
+});
+
 const inkHeight = (sizes: number[]) => {
 	const boxes = sizes.reduce((total, size) => total + size * revealNameLineHeight, 0);
 	const gap = (revealNameLineHeight / 2 - revealNameInkTopEm) * sizes[0]!;

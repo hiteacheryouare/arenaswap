@@ -8,6 +8,8 @@ export const rowHeight = 30;
 export const barHeight = 22;
 
 export const gutterPx = 168;
+export const plotWidthOf = (scrollerWidthPx: number) => scrollerWidthPx - gutterPx;
+export const nowLinePlotShare = 1 / 3;
 
 const hourMs = 60 * 60_000;
 

@@ -119,7 +119,7 @@ describe('Multiview', () => {
 		openMultiview();
 		cy.get('.multiview-box').should('have.length', 3);
 
-		world().then(live => { live.events = slate({ wnba: { home: 79, away: 79, clock: 150 }, nhl: { home: 6, away: 1 }, epl: { home: 5, away: 1 } }); });
+		world().then(live => { live.events = slate({ wnba: { home: 79, away: 79, clockSeconds: 150 }, nhl: { home: 6, away: 1 }, epl: { home: 5, away: 1 } }); });
 		play(60_000);
 		world().should(live => {
 			expect(live.tab(multiviewTabId(live)!), 'Multiview tab').to.equal(undefined);

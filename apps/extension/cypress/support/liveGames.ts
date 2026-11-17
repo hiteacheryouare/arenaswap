@@ -29,7 +29,7 @@ export const gameIds: Record<capturedLeague, string> = {
 export interface eventPatch {
 	home?: number;
 	away?: number;
-	clock?: number;
+	clockSeconds?: number;
 }
 
 export const liveEvent = (league: capturedLeague, patch: eventPatch = {}): unknown => {
@@ -39,11 +39,11 @@ export const liveEvent = (league: capturedLeague, patch: eventPatch = {}): unkno
 		if (score !== undefined) competitor.score = String(score);
 	}
 	const { status } = event.competitions[0]!;
-	if (patch.clock !== undefined) {
-		const shown = `${Math.floor(patch.clock / 60)}:${String(patch.clock % 60).padStart(2, '0')}`;
+	if (patch.clockSeconds !== undefined) {
+		const shown = `${Math.floor(patch.clockSeconds / 60)}:${String(patch.clockSeconds % 60).padStart(2, '0')}`;
 		status.type.detail = status.type.detail.replace(status.displayClock, shown);
 		status.type.shortDetail = status.type.shortDetail.replace(status.displayClock, shown);
-		status.clock = patch.clock;
+		status.clock = patch.clockSeconds;
 		status.displayClock = shown;
 	}
 	return event;

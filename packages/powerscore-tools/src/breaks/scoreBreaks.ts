@@ -72,6 +72,8 @@ interface Prepared {
 	excluded: DeadInterval[];
 }
 
+const excludedMarginMs = 60_000;
+
 const prepare = (trace: GameTrace, options: ScoreOptions): Prepared | undefined => {
 	const shift = options.shiftMs ?? 0;
 	const shifted = trace.intervals.map(interval => ({ ...interval, start: interval.start + shift, end: interval.end + shift }));
@@ -82,7 +84,7 @@ const prepare = (trace: GameTrace, options: ScoreOptions): Prepared | undefined 
 	const last = trace.action[trace.action.length - 1];
 	if (!first || !last) return undefined;
 	const polls = trace.polls.filter(poll => poll.at >= first.at + shift && poll.at <= last.at + shift
-		&& !excluded.some(interval => poll.at >= interval.start - 60_000 && poll.at <= interval.end + 60_000));
+		&& !excluded.some(interval => poll.at >= interval.start - excludedMarginMs && poll.at <= interval.end + excludedMarginMs));
 	return polls.length > 0 ? { polls, intervals, excluded } : undefined;
 };
 

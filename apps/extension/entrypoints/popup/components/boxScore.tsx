@@ -94,7 +94,7 @@ const PlayerRow = ({ athlete, columns, indent }: {
 
 const SectionTable = ({ section, isBatting }: { section: BoxScoreSection; isBatting: boolean }) => {
 	const [expanded, setExpanded] = useState(false);
-	const capped = section.rowCap > 0 && !expanded && section.athletes.length > section.rowCap;
+	const capped = !expanded && section.athletes.length > section.rowCap;
 	const rows = capped ? section.athletes.slice(0, section.rowCap) : section.athletes;
 
 	return (
@@ -131,7 +131,7 @@ const SectionTable = ({ section, isBatting }: { section: BoxScoreSection; isBatt
 					</tfoot>
 				)}
 			</table>
-			{section.rowCap > 0 && section.athletes.length > section.rowCap && (
+			{section.athletes.length > section.rowCap && (
 				<button
 					type='button'
 					className='btn btn-link btn-sm gd-box-more'

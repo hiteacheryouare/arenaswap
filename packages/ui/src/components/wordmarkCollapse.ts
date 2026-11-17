@@ -3,6 +3,7 @@ import applyWordmarkProgress from './wordmarkPose';
 const collapseAt = 40;
 const expandAt = 16;
 const collapseMs = 450;
+const shortestTripShare = 0.35;
 
 interface collapsingBar {
 	svg: SVGSVGElement;
@@ -47,7 +48,7 @@ const driveWordmarkCollapse = ({ svg, bar, scroller, onScroll }: collapsingBar) 
 	const step = (now: number) => {
 		if (!startedAt) startedAt = now;
 		const target = collapsed ? 1 : 0;
-		const span = Math.max(0.35, Math.abs(target - from)) * collapseMs;
+		const span = Math.max(shortestTripShare, Math.abs(target - from)) * collapseMs;
 		const done = Math.min(1, (now - startedAt) / span);
 		pose(from + (target - from) * done);
 		frame = done < 1 ? requestAnimationFrame(step) : 0;

@@ -7,7 +7,7 @@ const at = (minutes: number) => minutes * minute;
 const play = (minutes: number, id = `p${minutes}`): Play => ({ at: at(minutes), id, type: 'Rush', typeKey: 'rush', text: '' });
 
 const dead = (fromMinute: number, toMinute: number, kind: DeadInterval['kind'] = 'tvTimeout'): DeadInterval => (
-	{ start: at(fromMinute), end: at(toMinute), kind, after: play(fromMinute) }
+	{ start: at(fromMinute), end: at(toMinute), kind, precedingPlay: play(fromMinute) }
 );
 
 const polls = (from: number, to: number, flagged: (minute: number) => string | undefined = () => undefined): PollFlag[] => {

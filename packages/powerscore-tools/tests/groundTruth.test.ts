@@ -21,7 +21,7 @@ test('finds halftime as the one intermission, and it lasts a halftime', () => {
 
 	expect(others).toEqual([]);
 	expect(minutes(halftime!.end - halftime!.start)).toBeGreaterThan(12);
-	expect(halftime!.after.type).toBe('Field Goal Good');
+	expect(halftime!.precedingPlay.type).toBe('Field Goal Good');
 });
 
 test('finds both two-minute warnings and both quarter breaks', () => {
@@ -38,8 +38,8 @@ test('every official timeout that stopped play for long enough is a TV timeout',
 });
 
 test('a lull after a touchdown and after a kickoff is labelled by the play before it', () => {
-	expect(ofKind('afterScore').map(interval => interval.after.type)).toEqual(['Rushing Touchdown']);
-	expect(ofKind('afterKickoff').every(interval => interval.after.type === 'Kickoff')).toBe(true);
+	expect(ofKind('afterScore').map(interval => interval.precedingPlay.type)).toEqual(['Rushing Touchdown']);
+	expect(ofKind('afterKickoff').every(interval => interval.precedingPlay.type === 'Kickoff')).toBe(true);
 });
 
 test('no dead interval is shorter than the minimum gap', () => {
@@ -56,7 +56,7 @@ describe('a quarter the feed backfilled', () => {
 
 	test('the stretch before it is unrecorded, not an intermission', () => {
 		expect(unrecorded).toHaveLength(1);
-		expect(unrecorded[0]!.after.type).toBe('Lost Ball Turnover');
+		expect(unrecorded[0]!.precedingPlay.type).toBe('Lost Ball Turnover');
 		expect(Math.round(minutes(unrecorded[0]!.end - unrecorded[0]!.start))).toBe(14);
 		expect(backfilled.some(interval => interval.kind === 'intermission' && interval.start === unrecorded[0]!.start)).toBe(false);
 	});

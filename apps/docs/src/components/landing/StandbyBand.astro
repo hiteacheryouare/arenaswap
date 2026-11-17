@@ -1,14 +1,16 @@
 ---
 import { createDefaultUserPreferences } from '@arenaswap/core/constants';
 import Crest from '@arenaswap/ui/src/components/crest';
+import { scoreMaxTotal } from 'powerscore';
 import { currentLocale, useTranslations } from '../../i18n/ui';
 
 const t = useTranslations(currentLocale(Astro.currentLocale));
 const base = import.meta.env.BASE_URL;
 const threshold = createDefaultUserPreferences().standbyStreamThreshold;
 
-const height = 300;
-const y = (score: number) => height - (score / 100) * height;
+const chartWidth = 1000;
+const chartHeight = 300;
+const y = (score: number) => chartHeight - (score / scoreMaxTotal) * chartHeight;
 const thresholdY = y(threshold);
 const games = [
 	{ title: 'Bournemouth vs Aston Villa', league: 'epl', path: 'M0,90 C120,80 210,120 300,190 S420,268 520,275 S640,270 700,250 S820,120 1000,96' },
@@ -24,7 +26,7 @@ const standbyTo = 707;
 			<h2 class='display-md'>{t('home.standby.title')}</h2>
 			<p class='band-copy'>{t('home.standby.copy')}</p>
 		</div>
-		<div class='standby-demo' data-standby-demo data-from={standbyFrom} data-to={standbyTo} data-height={height}>
+		<div class='standby-demo' data-standby-demo data-from={standbyFrom} data-to={standbyTo} data-height={chartHeight} data-width={chartWidth}>
 			<div class='standby-tabs' aria-hidden='true' data-bs-theme='dark'>
 				<div class='browser-titlebar'>
 					<span class='browser-lights'><i /><i /><i /></span>
@@ -47,18 +49,18 @@ const standbyTo = 707;
 				</div>
 				<div class='standby-tabs-toolbar' />
 			</div>
-			<figure class='standby-chart' role='img' aria-label={t('home.standby.label')} style={`--threshold:${thresholdY / height}`}>
-				<svg viewBox={`0 0 1000 ${height}`} preserveAspectRatio='none' aria-hidden='true'>
+			<figure class='standby-chart' role='img' aria-label={t('home.standby.label')} style={`--threshold:${thresholdY / chartHeight}`}>
+				<svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} preserveAspectRatio='none' aria-hidden='true'>
 					<clipPath id='standby-chart-reveal'>
-						<rect x='0' y='-10' width='1000' height={height + 20} data-standby-reveal />
+						<rect x='0' y='-10' width={chartWidth} height={chartHeight + 20} data-standby-reveal />
 					</clipPath>
-					<line class='standby-chart-line' x1='0' x2='1000' y1={thresholdY} y2={thresholdY} />
+					<line class='standby-chart-line' x1='0' x2={chartWidth} y1={thresholdY} y2={thresholdY} />
 					<g class='standby-chart-played'>
 						<g clip-path='url(#standby-chart-reveal)'>
-							<rect class='standby-chart-band' x={standbyFrom} y='0' width={standbyTo - standbyFrom} height={height} />
+							<rect class='standby-chart-band' x={standbyFrom} y='0' width={standbyTo - standbyFrom} height={chartHeight} />
 							{games.map((game, index) => <path class={`standby-chart-game is-game-${index}`} d={game.path} data-standby-game />)}
 						</g>
-						<line class='standby-chart-now' x1='0' x2='0' y1='0' y2={height} data-standby-now />
+						<line class='standby-chart-now' x1='0' x2='0' y1='0' y2={chartHeight} data-standby-now />
 					</g>
 				</svg>
 				<div class='standby-chart-played standby-chart-dots' aria-hidden='true'>
@@ -96,6 +98,7 @@ const standbyTo = 707;
 		const from = Number(demo.dataset.from);
 		const to = Number(demo.dataset.to);
 		const height = Number(demo.dataset.height);
+		const width = Number(demo.dataset.width);
 		const reveal = demo.querySelector<SVGRectElement>('[data-standby-reveal]')!;
 		const now = demo.querySelector<SVGLineElement>('[data-standby-now]')!;
 		const dots = [...demo.querySelectorAll<HTMLElement>('[data-standby-dot]')];
@@ -115,12 +118,12 @@ const standbyTo = 707;
 
 		const draw = (time: number) => {
 			const elapsed = (time - startedAt) % loopMs;
-			const x = Math.min(1, elapsed / sweepMs) * 1000;
+			const x = Math.min(1, elapsed / sweepMs) * width;
 
 			reveal.setAttribute('width', String(x));
 			now.setAttribute('transform', `translate(${x} 0)`);
 			dots.forEach((dot, index) => {
-				dot.style.setProperty('--x', String(x / 1000));
+				dot.style.setProperty('--x', String(x / width));
 				dot.style.setProperty('--y', String(heightAt(curves[index], x) / height));
 			});
 

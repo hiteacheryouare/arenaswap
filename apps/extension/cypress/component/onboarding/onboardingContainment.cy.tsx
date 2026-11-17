@@ -54,12 +54,13 @@ describe('onboarding containment', () => {
 	inEveryLocale('keeps every walkthrough step inside the popup', locale => {
 		const onComplete = cy.stub().as('onComplete');
 		mountView(locale, <WalkthroughView onComplete={onComplete} leagues={['nba', 'nfl', 'nhl', 'mlb']} scoringMode='classic' />);
+		const pressNextUnderBloom = () => cy.get(primaryButton).last().click({ force: true });
 		const walk = (remaining: number): void => {
 			cy.get(popupSurface).assertContained();
 			if (remaining === 0) return;
 			cy.get('body').then(() => {
 				if (onComplete.called) return;
-				cy.get(primaryButton).last().click({ force: true });
+				pressNextUnderBloom();
 				cy.wait(150);
 				walk(remaining - 1);
 			});

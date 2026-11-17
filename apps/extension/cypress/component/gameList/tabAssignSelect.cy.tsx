@@ -8,13 +8,23 @@ const tabs = [
 	{ id: 13, title: 'Settings', url: 'chrome://settings/', favIconUrl: '/no-such-favicon.png' },
 ] as any[];
 
-const mountPicker = (registry: { tabId: number; gameId: string }[] = []) => cy.mount(
+const mountPicker = (registry: { tabId: number; gameId: string }[] = [], onChange: (updated: any[]) => void = () => {}) => cy.mount(
 	<div className='game-card-tab-assign' style={{ width: 240 }}>
-		<TabAssignSelect gameId='g1' openTabs={tabs} registry={registry as any} onChange={() => {}} formatTabLabel={tab => tab.title ?? ''} />
+		<TabAssignSelect gameId='g1' openTabs={tabs} registry={registry as any} onChange={onChange} formatTabLabel={tab => tab.title ?? ''} />
 	</div>,
 );
 
 const menuItem = (label: string) => cy.contains('.menu-item', label);
+
+describe('tabAssignSelect unassigning', () => {
+	it('drops the game from the registry when the placeholder is picked', () => {
+		const onChange = cy.stub().as('onChange');
+		mountPicker([{ tabId: 11, gameId: 'g1' }, { tabId: 12, gameId: 'g2' }], onChange);
+		cy.get('.form-control-caret').click();
+		cy.get('.menu-item').first().click();
+		cy.get('@onChange').should('have.been.calledOnceWith', [{ tabId: 12, gameId: 'g2' }]);
+	});
+});
 
 describe('tabAssignSelect favicons', () => {
 	it('shows each tab with the icon its browser tab shows, and a globe where there is none', () => {

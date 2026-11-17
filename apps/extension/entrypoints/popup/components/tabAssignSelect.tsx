@@ -14,14 +14,15 @@ interface tabAssignSelectProps {
 	standbyStreamTabId?: number | null;
 }
 
+const unassignedValue = '';
+
 const tabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel, standbyStreamTabId = null }: tabAssignSelectProps) => {
 	const currentTabId = registry.find(r => r.gameId === gameId)?.tabId;
 
 	const onSelect = (tabIdStr: string) => {
-		const tabId = Number(tabIdStr);
-		onChange(tabId
-			? assignTabToGame(registry, tabId, gameId)
-			: registry.filter(r => r.gameId !== gameId));
+		onChange(tabIdStr === unassignedValue
+			? registry.filter(r => r.gameId !== gameId)
+			: assignTabToGame(registry, Number(tabIdStr), gameId));
 	};
 
 	const assignedTabIds = new Set(
@@ -31,11 +32,11 @@ const tabAssignSelect = ({ gameId, openTabs, registry, onChange, formatTabLabel,
 	return (
 		<div className='game-card-tab-assign' data-card-control='true'>
 			<SelectDropdown
-				value={currentTabId === undefined ? '' : String(currentTabId)}
+				value={currentTabId === undefined ? unassignedValue : String(currentTabId)}
 				onChange={onSelect}
 				ariaLabel={i18n.t('tabAssign.placeholder')}
 				options={[
-					{ value: '', label: i18n.t('tabAssign.placeholder') },
+					{ value: unassignedValue, label: i18n.t('tabAssign.placeholder') },
 					...openTabs.filter(tab => tab.id !== undefined).map(tab => {
 						const inUse = assignedTabIds.has(tab.id!);
 						const isStandby = tab.id === standbyStreamTabId;

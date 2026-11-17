@@ -3,6 +3,7 @@ import {
 	boostBucketCaps,
 	breakPenalty,
 	goAheadRunTunables,
+	redCardTunables,
 	redZoneDownMultipliers,
 	scoreWinProbVarianceMax,
 	scoringOpportunityBaseRunnerBoosts,
@@ -23,7 +24,7 @@ interface Group {
 const moment = boostBucketCaps.moment;
 const redZoneMax = Math.round(scoringOpportunityRedZoneBoost * redZoneDownMultipliers.fourthDownGoalToGo);
 const runnersMax = scoringOpportunityBaseRunnerBoosts.at(-1)!;
-const redCardMax = 15;
+const redCardMax = redCardTunables.tiedMagnitude * redCardTunables.secondCardFactor;
 const goAheadRunMax = goAheadRunTunables.goAhead * goAheadRunTunables.lastChanceFactor;
 const maximums = [
 	[twoMinuteDrillTunables.max, redZoneMax],

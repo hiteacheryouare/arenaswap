@@ -5,8 +5,9 @@ import type { FantasyPlayerState, Game, ReasonFragment, SignalDefinition, Signal
 
 const none: SignalOutput = { points: 0 };
 
-const fieldGoalRange: Record<string, number> = { ncaaf: 30 };
-const proFieldGoalRange = 37;
+const kickYardsBeyondLineOfScrimmage = 17;
+const longestFieldGoalTry: Record<string, number> = { ncaaf: 47 };
+const proLongestFieldGoalTry = 54;
 
 const redZoneWeight: Record<string, number> = { QB: 1, RB: 0.8, WR: 1, TE: 0.9 };
 const goalLineWeight: Record<string, number> = { QB: 0.9, RB: 1, WR: 0.7, TE: 0.8 };
@@ -32,7 +33,7 @@ const footballSituation = (player: FantasyPlayerState, input: SignalInput): Situ
 	}
 	if (!hasBall) return { value: 0 };
 	if (player.position === 'K') {
-		const range = fieldGoalRange[game.league] ?? proFieldGoalRange;
+		const range = (longestFieldGoalTry[game.league] ?? proLongestFieldGoalTry) - kickYardsBeyondLineOfScrimmage;
 		if (yards > range) return { value: 8 };
 		const secsLeft = secondsLeftInPeriod(game, sport, league);
 		const endOfHalf = secsLeft !== null && secsLeft <= 30 && (game.period === 2 || (game.period ?? 0) >= league.regularPeriods);

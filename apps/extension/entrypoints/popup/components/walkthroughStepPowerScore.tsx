@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { BuiltInModeId } from '@arenaswap/core/types';
 import { i18n } from '#i18n';
 import { boostPresentation, modeSignalIds, penaltyPresentation, signalPresentation, type ModeSignalId } from '@arenaswap/ui/src/components/scoringModeMeta';
@@ -192,18 +192,19 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0, modeId 
 	const [bloomPhase, setBloomPhase] = useState<'blooming' | 'visible' | 'shrinking' | null>(null);
 	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-	const clearTimer = () => {
+	const clearTimer = useCallback(() => {
 		if (timerRef.current) {
 			clearTimeout(timerRef.current);
 			timerRef.current = null;
 		}
-	};
+	}, []);
 
 	useEffect(() => {
 		clearTimer();
 		setBloomPhase(null);
 
-		if (!isSignalSubStep(subStep)) return;
+		const onSignal = subStep >= 1 && subStep <= signalCount;
+		if (!onSignal) return;
 
 		timerRef.current = setTimeout(() => {
 			setBloomPhase('blooming');
@@ -214,10 +215,9 @@ const walkthroughStepPowerScore = ({ onNext, onBack, initialSubStep = 0, modeId 
 		}, 150);
 
 		return clearTimer;
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [subStep]);
+	}, [subStep, signalCount, clearTimer]);
 
-	useEffect(() => () => clearTimer(), []);
+	useEffect(() => () => clearTimer(), [clearTimer]);
 
 	const advanceTo = (nextSubStep: number) => {
 		clearTimer();

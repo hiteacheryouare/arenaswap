@@ -14,10 +14,10 @@ const barLength = barJoint - barStart;
 
 const scheduleOf = (ctx: ShotContext) => ctx.shot.ending!;
 const lift = (ctx: ShotContext, from: number, to: number) => {
-	const { pace } = scheduleOf(ctx);
-	return progress(ctx.t, ctx.shot.from + beats(from * pace), ctx.shot.from + beats(to * pace));
+	const { beatScale } = scheduleOf(ctx);
+	return progress(ctx.t, ctx.shot.from + beats(from * beatScale), ctx.shot.from + beats(to * beatScale));
 };
-const afterLanding = (ctx: ShotContext, beatsAfter: number) => scheduleOf(ctx).landsAt + beats(beatsAfter * scheduleOf(ctx).pace);
+const afterLanding = (ctx: ShotContext, beatsAfter: number) => scheduleOf(ctx).landsAt + beats(beatsAfter * scheduleOf(ctx).beatScale);
 
 type Face = BallKind | 'plain';
 const faces: Face[] = ['plain', ...ballOrder, 'plain'];
@@ -31,9 +31,9 @@ const layoutFor = (ctx: ShotContext) => (ctx.format === 'portrait'
 	? { markWidth: 900, markY: 720, taglineY: 1010, ctaY: 1130, finePrintY: 1800, liveSize: 150, ballRadius: 136 }
 	: { markWidth: 860, markY: 330, taglineY: 610, ctaY: 720, finePrintY: 1010, liveSize: 132, ballRadius: 116 });
 
-const badgeDot = 0.58;
-const badgeGap = 0.38;
-const badgeTracking = 0.08;
+const badgeDotEm = 0.58;
+const badgeGapEm = 0.38;
+const badgeTrackingEm = 0.08;
 
 const channels = (hex: string) => [1, 3, 5].map(index => Number.parseInt(hex.slice(index, index + 2), 16));
 
@@ -46,7 +46,7 @@ const measureCanvas = new OffscreenCanvas(1, 1).getContext('2d')!;
 
 const textWidth = (text: string, size: number) => {
 	measureCanvas.font = `700 ${size}px "DM Sans"`;
-	return measureCanvas.measureText(text).width + text.length * badgeTracking * size;
+	return measureCanvas.measureText(text).width + text.length * badgeTrackingEm * size;
 };
 
 interface Badge {
@@ -73,9 +73,9 @@ const EndCard = ({ ctx }: { ctx: ShotContext }) => {
 	const badge = badges.get(ctx.shot.from);
 
 	const size = layout.liveSize;
-	const dotNatural = badgeDot * size;
+	const dotNatural = badgeDotEm * size;
 	const label = badge?.label ?? 'LIVE';
-	const groupWidth = dotNatural + badgeGap * size + textWidth(label, size);
+	const groupWidth = dotNatural + badgeGapEm * size + textWidth(label, size);
 	const travel = easeInOut(lift(ctx, 0.1, 1.1));
 	const startScale = badge ? badge.diameter / dotNatural : 1;
 	const badgeScale = lerp(startScale, 1, travel);
@@ -89,7 +89,7 @@ const EndCard = ({ ctx }: { ctx: ShotContext }) => {
 	const schedule = scheduleOf(ctx);
 	const changes = [...schedule.balls, schedule.plainAgain];
 	const passed = changes.filter(change => t >= change).length;
-	const change = passed > 0 ? progress(t - changes[passed - 1]!, 0, changeSeconds * schedule.pace) : 1;
+	const change = passed > 0 ? progress(t - changes[passed - 1]!, 0, changeSeconds * schedule.beatScale) : 1;
 	const markingsOut = easeInOut(progress(change, 0, 0.4));
 	const shapeSwap = easeInOut(progress(change, 0.3, 0.6));
 	const markingsIn = easeInOut(progress(change, 0.55, 1));
@@ -117,7 +117,7 @@ const EndCard = ({ ctx }: { ctx: ShotContext }) => {
 			{fall < 1 && <Desk ctx={ctx} rect={desk.window} zoom={desk.windowZoom} style={{ opacity: 1 - fall, transform: `translateY(${(fall * 260) / desk.windowZoom}px)` }} />}
 			{badge && takeCentre === 0 && (
 				<div className='end-live' style={{ left: groupX, top: groupY, fontSize: size, transform: `scale(${badgeScale})` }}>
-					<span className='end-live-dot' style={{ width: dotNatural, height: dotNatural, marginRight: badgeGap * size, background: mixHex('#ffffff', dotOrange, turnOrange) }} />
+					<span className='end-live-dot' style={{ width: dotNatural, height: dotNatural, marginRight: badgeGapEm * size, background: mixHex('#ffffff', dotOrange, turnOrange) }} />
 					<span className='end-live-word' style={{ opacity: 1 - stepAside, transform: `translateX(${stepAside * 0.3}em)` }}>{label}</span>
 				</div>
 			)}

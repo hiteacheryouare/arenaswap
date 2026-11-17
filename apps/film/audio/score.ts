@@ -8,7 +8,7 @@ export interface Cue {
 	gain?: number;
 	pan?: number;
 	length?: number;
-	step?: number;
+	rung?: number;
 }
 
 export interface ScoreSection {

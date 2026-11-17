@@ -63,7 +63,7 @@
 		},
 		"test:component:detail": {
 			"dependsOn": ["^build"],
-			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/support/safetyNet/**", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/detail/**", "entrypoints/popup/**", "utils/**", "locales/**"]
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/support/cannedGames.ts", "cypress/support/contrast.ts", "cypress/support/safetyNet/**", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/detail/**", "entrypoints/popup/**", "utils/**", "locales/**"]
 		},
 		"test:component:gameList": {
 			"dependsOn": ["^build"],

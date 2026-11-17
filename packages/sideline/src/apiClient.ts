@@ -793,10 +793,12 @@ const scoreboardParams = (groups?: string): URLSearchParams => {
 };
 
 const settledDayTtlMs = 30 * 60 * 1000;
-const futureDayTtlMs = 10 * 60 * 1000;
+const scheduleDayTtlMs = 10 * 60 * 1000;
 
-const dayCachePastDays = 3;
-const dayCacheFutureDays = upcomingGamesDaysMax + 1;
+const finalsLookbackDays = 2;
+const easternDateStraddleDays = 1;
+const dayCachePastDays = finalsLookbackDays + easternDateStraddleDays;
+const dayCacheFutureDays = upcomingGamesDaysMax + easternDateStraddleDays;
 
 export const espnDayPoolSize = 3;
 
@@ -813,9 +815,9 @@ const dayRequests = new Map<string, Promise<CachedDay>>();
 
 const dayTtlMs = (dayKey: string, todayKey: string, games: Game[]): number => {
 	if (dayKey === todayKey) return 0;
-	if (dayKey > todayKey) return futureDayTtlMs;
+	if (dayKey > todayKey) return scheduleDayTtlMs;
 	if (games.some(game => game.status === 'in')) return 0;
-	return games.every(game => game.status === 'post') ? settledDayTtlMs : futureDayTtlMs;
+	return games.every(game => game.status === 'post') ? settledDayTtlMs : scheduleDayTtlMs;
 };
 
 const pruneDayCache = (todayKey: string): void => {
@@ -930,7 +932,7 @@ const fetchLeagueGames = async (config: LeagueConfig, options: LeagueFetchOption
 	const dayKeys = buildDayWindowKeys(
 		includeUpcoming ? upcomingDays : 0,
 		now,
-		includeUpcoming && includeFinal ? 2 : 1,
+		includeUpcoming && includeFinal ? finalsLookbackDays : 1,
 	);
 
 	const results = await settledInPool(
@@ -938,7 +940,8 @@ const fetchLeagueGames = async (config: LeagueConfig, options: LeagueFetchOption
 		dayKey => fetchDayAcrossGroups(config, dayKey, todayKey, groups),
 		espnDayPoolSize,
 	);
-	if (!includeUpcoming) {
+	const isLiveWindow = !includeUpcoming;
+	if (isLiveWindow) {
 		const todayResult = results[dayKeys.indexOf(todayKey)];
 		if (todayResult?.status !== 'fulfilled') {
 			throw todayResult?.reason ?? new LeagueFetchError(config.id);

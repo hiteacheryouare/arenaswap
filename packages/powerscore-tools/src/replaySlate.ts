@@ -7,11 +7,13 @@ import { describeGame } from './replay/describe';
 import { getHistoryWindowMsForGame, normalizeFantasyRoster } from '@arenaswap/core';
 import type { BuiltInModeId } from 'powerscore';
 
+type FanInterest = 0 | 1 | 2 | 3;
+
 interface LabelledMoment {
 	ts: string | number;
 	flipTo: string;
 	acceptable?: string[];
-	level?: number;
+	level?: FanInterest;
 	note?: string;
 }
 
@@ -26,7 +28,7 @@ const option = (name: string): string | undefined => {
 	const index = args.indexOf(`--${name}`);
 	return index >= 0 ? args[index + 1] : undefined;
 };
-const pathOption = (name: string): string | undefined => {
+const pathFromLaunchDir = (name: string): string | undefined => {
 	const value = option(name);
 	return value === undefined ? undefined : resolve(process.env.INIT_CWD ?? process.cwd(), value);
 };
@@ -38,14 +40,18 @@ const toTime = (value: string | number | undefined): number | undefined => {
 	return time;
 };
 
-const recordingPath = pathOption('recording') ?? join(__dirname, '..', 'recordings');
+const packageRoot = join(__dirname, '..');
+const recordingPath = pathFromLaunchDir('recording') ?? join(packageRoot, 'recordings');
 const from = toTime(option('from'));
 const to = toTime(option('to'));
 const modes = (option('modes') ?? 'classic').split(',') as BuiltInModeId[];
-const labelsDir = join(__dirname, '..', 'fixtures', 'labels');
+const labelsDir = join(packageRoot, 'fixtures', 'labels');
+
+const maxCountedGapMs = 5 * 60_000;
+const maxLabelLagMs = 90_000;
 
 const readLabels = (): LabelFile[] => {
-	const explicit = pathOption('labels');
+	const explicit = pathFromLaunchDir('labels');
 	const files = explicit ? [explicit] : existsSync(labelsDir) ? readdirSync(labelsDir).filter(name => name.endsWith('.json')).map(name => join(labelsDir, name)) : [];
 	return files.map(file => JSON.parse(readFileSync(file, 'utf8')) as LabelFile);
 };
@@ -58,7 +64,7 @@ const formatTime = (ts: number): string => new Date(ts).toLocaleTimeString('en-U
 
 const main = async () => {
 	const files = listRecordingFiles(recordingPath);
-	const rosterPath = pathOption('roster');
+	const rosterPath = pathFromLaunchDir('roster');
 	const roster = rosterPath ? normalizeFantasyRoster(JSON.parse(readFileSync(rosterPath, 'utf8'))) : [];
 	const session = createReplaySession(scorers, replayPrefs, roster);
 	const frames: Frame[] = [];
@@ -75,7 +81,7 @@ const main = async () => {
 		return;
 	}
 
-	const polledMs = frames.slice(1).reduce((total, frame, i) => total + Math.min(frame.ts - frames[i]!.ts, 5 * 60_000), 0);
+	const polledMs = frames.slice(1).reduce((total, frame, i) => total + Math.min(frame.ts - frames[i]!.ts, maxCountedGapMs), 0);
 	const hours = Math.max(1 / 60, polledMs / 3_600_000);
 	const labels = readLabels().flatMap(file => file.moments.map(moment => ({ ...moment, ts: toTime(moment.ts)! })))
 		.filter(moment => moment.ts >= frames[0]!.ts && moment.ts <= frames[frames.length - 1]!.ts);
@@ -86,7 +92,7 @@ const main = async () => {
 			if (frame.ts > ts) break;
 			found = frame;
 		}
-		return found && ts - found.ts <= 90_000 ? found : undefined;
+		return found && ts - found.ts <= maxLabelLagMs ? found : undefined;
 	};
 
 	const isCold = (moment: { ts: number; flipTo: string }, frame: Frame) => {
@@ -179,7 +185,7 @@ const main = async () => {
 		flush();
 	}
 
-	const timelinePath = pathOption('timeline');
+	const timelinePath = pathFromLaunchDir('timeline');
 	if (timelinePath) {
 		const lines: string[] = [];
 		let lastMinute = -1;
@@ -207,7 +213,7 @@ const main = async () => {
 		console.log(`\nTimeline written to ${timelinePath}`);
 	}
 
-	const jsonPath = pathOption('json');
+	const jsonPath = pathFromLaunchDir('json');
 	if (jsonPath) {
 		mkdirSync(dirname(jsonPath), { recursive: true });
 		writeFileSync(jsonPath, JSON.stringify(scorecard, null, '\t'));

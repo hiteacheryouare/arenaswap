@@ -7,6 +7,7 @@ export const worstTeams = {
 	longIsland: { id: '110133', name: 'Long Island University Long Island University', nickname: 'Long Island University', shortName: 'Long Island University', abbreviation: 'LIU' },
 	minnesotaDuluth: { id: '134', name: 'Minnesota Duluth Bulldogs', nickname: 'Bulldogs', shortName: 'Minnesota Duluth', abbreviation: 'UMD' },
 	stonehill: { id: '284', name: 'Stonehill Stonehill', nickname: 'Stonehill', shortName: 'Stonehill', abbreviation: 'STONEHILL' },
+	// Its nickname really arrives with the trailing space.
 	colgate: { id: '2142', name: 'Colgate Raiders', nickname: 'Raiders ', shortName: 'Colgate', abbreviation: 'COLG' },
 	americanInternational: { id: '2022', name: 'American International Yellow Jackets', nickname: 'Yellow Jackets', shortName: 'American Int\'l', abbreviation: 'AIC', color: '#000000' },
 	centralConnecticut: { id: '2115', name: 'Central Connecticut Blue Devils', nickname: 'Blue Devils', shortName: 'C Connecticut', abbreviation: 'CCSU', color: '#1B49A2', alternateColor: '#D1D5D8' },

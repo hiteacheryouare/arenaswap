@@ -1,4 +1,5 @@
 import type { Game } from '@arenaswap/core/types';
+import { widestRecordGameId } from '../../support/cannedGames';
 import { inEveryLocale } from '../../support/safetyNet/locales';
 import { detailBleeds, detailView, mountDetailView, powerScoreHistoryOf, scoreHistoryOf } from '../../support/safetyNet/detailView';
 import { popupSurface } from '../../support/safetyNet/mountInPopup';
@@ -6,7 +7,7 @@ import { worstBroadcasts, worstCaseGames } from '../../support/safetyNet/worstCa
 
 const mockedGame = (game: Game): Game => ({
 	...game,
-	id: 'mock-3',
+	id: widestRecordGameId,
 	broadcasts: worstBroadcasts,
 	odds: { details: `${game.homeTeam.abbreviation} -12.5`, overUnder: 231.5, provider: { name: 'DraftKings' } },
 });

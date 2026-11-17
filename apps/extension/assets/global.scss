@@ -2,6 +2,9 @@
 @use '@arenaswap/ui/src/motion' as m;
 @use 'sass:math';
 @use 'openingCuts';
+
+$reveal-stage-bleed: 1px;
+
 // Element resets sit in Bootstrap's reboot layer, under its components: a class rule has to keep
 // beating `button { color: inherit }`, as it did when nothing was layered.
 @layer reboot {
@@ -1078,10 +1081,12 @@
 	.game-card-reveal-stage,
 	.game-card-reveal-sweeps {
 		position:             absolute;
-		inset:                -1px 0;
+		inset:                -#{$reveal-stage-bleed} 0;
+		// A clip path clips painting, not scrollable overflow. Without overflow: clip the bars parked
+		// off the right edge still widened the page, and the popup scrolled sideways during the animation.
 		overflow:             clip;
-		overflow-clip-margin: 1px;
-		clip-path:            inset(0 -1px round calc(0.5rem + 1px));
+		overflow-clip-margin: $reveal-stage-bleed;
+		clip-path:            inset(0 -#{$reveal-stage-bleed} round calc(0.5rem + #{$reveal-stage-bleed}));
 		pointer-events:       none;
 	}
 
@@ -1095,7 +1100,7 @@
 
 	.game-card-reveal-base {
 		position:       absolute;
-		inset:          -1px;
+		inset:          -#{$reveal-stage-bleed};
 		z-index:        1;
 		background:     var(--as-bg-body);
 		pointer-events: none;
@@ -1145,11 +1150,13 @@
 
 	.game-card-reveal-opening {
 		position:             absolute;
-		inset:                -1px 0;
+		inset:                -#{$reveal-stage-bleed} 0;
 		z-index:              2;
+		// A clip path clips painting, not scrollable overflow. Without overflow: clip the bars parked
+		// off the right edge still widened the page, and the popup scrolled sideways during the animation.
 		overflow:             clip;
-		overflow-clip-margin: 1px;
-		clip-path:            inset(0 -1px round calc(0.5rem + 1px));
+		overflow-clip-margin: $reveal-stage-bleed;
+		clip-path:            inset(0 -#{$reveal-stage-bleed} round calc(0.5rem + #{$reveal-stage-bleed}));
 		pointer-events:       none;
 		animation:            cardRevealOpeningIn calc((700ms + 1750ms + 1050ms) * var(--reveal-rate)) linear var(--reveal-delay) both;
 	}

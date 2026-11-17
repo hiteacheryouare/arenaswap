@@ -116,7 +116,7 @@ out/*.mp4
 | The night | `extract/slateConfig.ts`, then `npm run film:extract` (needs the recording) |
 | The pre-game game | `npm run film:pregame -- <game id>` (only before kickoff) |
 
-A popup's clock keys are `{ at: film seconds, slate: sat('7:33:16') }`. Between two keys the night
+A popup's clock keys are `{ at: film seconds, slate: saturdayEveningEastern('7:33:16') }`. Between two keys the night
 runs linearly; two keys at the same film time are a cut; outside its keys a clock runs at real
 speed. Real events worth landing on a beat (all Eastern, all from the recording):
 

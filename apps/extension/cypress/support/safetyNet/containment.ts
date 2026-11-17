@@ -5,8 +5,8 @@
 export interface containmentOptions {
 	exempt?: readonly string[];
 	bleeds?: readonly string[];
-	scrollers?: readonly string[];
-	tolerance?: number;
+	sidewaysScrollers?: readonly string[];
+	tolerancePx?: number;
 }
 
 export type containmentRule = 'escapes' | 'cutWithoutFullText' | 'rootScrollsSideways';
@@ -27,7 +27,7 @@ interface span {
 	right: number;
 }
 
-const defaultTolerance = 0.5;
+const defaultTolerancePx = 0.5;
 
 const isElement = (node: Node): node is Element => node.nodeType === Node.ELEMENT_NODE;
 const styleOf = (element: Element) => element.ownerDocument.defaultView!.getComputedStyle(element);
@@ -57,7 +57,7 @@ const matchesAny = (element: Element, selectors: readonly string[]) => selectors
 // The first ancestor that actually clips `start`, honouring the CSS rule that an absolutely
 // positioned box escapes the overflow of every static ancestor below its containing block, and a
 // fixed one escapes all of them.
-const findBoundary = (start: Element | null, position: string, root: Element, scrollers: readonly string[]): boundary | null => {
+const findBoundary = (start: Element | null, position: string, root: Element, sidewaysScrollers: readonly string[]): boundary | null => {
 	let mode = position === 'absolute' || position === 'fixed' ? position : 'static';
 	for (let ancestor = start; ancestor && ancestor !== root; ancestor = ancestor.parentElement) {
 		const style = styleOf(ancestor);
@@ -67,7 +67,7 @@ const findBoundary = (start: Element | null, position: string, root: Element, sc
 		if (!contains) continue;
 		if (scrollsSideways(style)) {
 			const sidewaysOnly = style.overflowY === 'hidden' || style.overflowY === 'clip';
-			return { kind: sidewaysOnly || matchesAny(ancestor, scrollers) ? 'scroller' : 'clip', element: ancestor };
+			return { kind: sidewaysOnly || matchesAny(ancestor, sidewaysScrollers) ? 'scroller' : 'clip', element: ancestor };
 		}
 		if (clipsSideways(style)) return { kind: 'clip', element: ancestor };
 		mode = style.position === 'absolute' || style.position === 'fixed' ? style.position : 'static';
@@ -114,8 +114,8 @@ const exposesFullText = (element: Element) => {
 export const findContainmentViolations = (root: Element, options: containmentOptions = {}): containmentViolation[] => {
 	const exempt = options.exempt ?? [];
 	const bleeds = options.bleeds ?? [];
-	const scrollers = options.scrollers ?? [];
-	const tolerance = options.tolerance ?? defaultTolerance;
+	const sidewaysScrollers = options.sidewaysScrollers ?? [];
+	const tolerancePx = options.tolerancePx ?? defaultTolerancePx;
 	const violations: containmentViolation[] = [];
 	const rootSpan = paddingSpan(root);
 	const rootName = `the surface root ${describeElement(root)}`;
@@ -129,7 +129,7 @@ export const findContainmentViolations = (root: Element, options: containmentOpt
 	}
 
 	const checkEscape = (node: Node, position: string, inBleed: boolean): boolean => {
-		const found = findBoundary(node.parentElement, position, root, scrollers);
+		const found = findBoundary(node.parentElement, position, root, sidewaysScrollers);
 		if (found?.kind === 'scroller') return false;
 		const bound = !found ? rootSpan : inBleed ? paddingSpan(found.element) : contentSpan(found.element);
 		const boundName = !found ? rootName : `${inBleed ? 'the edge' : 'the content edge'} of ${describeElement(found.element)}`;
@@ -137,9 +137,9 @@ export const findContainmentViolations = (root: Element, options: containmentOpt
 			if (rect.width === 0) continue;
 			const overLeft = bound.left - rect.left;
 			const overRight = rect.right - bound.right;
-			if (overLeft > tolerance || overRight > tolerance) {
+			if (overLeft > tolerancePx || overRight > tolerancePx) {
 				const what = isElement(node) ? describeElement(node) : `text "${normalize(node.textContent).slice(0, 40)}"`;
-				const side = overRight > tolerance ? `${overRight.toFixed(1)}px past the right of` : `${overLeft.toFixed(1)}px past the left of`;
+				const side = overRight > tolerancePx ? `${overRight.toFixed(1)}px past the right of` : `${overLeft.toFixed(1)}px past the left of`;
 				violations.push({ rule: 'escapes', node, message: `${what} runs ${side} ${boundName}` });
 				return true;
 			}

@@ -14,9 +14,9 @@ const MultiviewFlight = ({ flight, onLanded }: { flight: flight; onLanded: (id: 
 		if (!line || !head) return;
 		const length = line.getTotalLength();
 		line.style.strokeDasharray = `${length} ${length}`;
-		const draw = length / flight.speed * 1000;
-		const timing = { duration: draw * (1 + flight.retract), fill: 'both' } as const;
-		const arrives = 1 / (1 + flight.retract);
+		const draw = length / flight.speedPxPerSecond * 1000;
+		const timing = { duration: draw * (1 + flight.retractShare), fill: 'both' } as const;
+		const arrives = 1 / (1 + flight.retractShare);
 
 		const lineMotion = line.animate([
 			{ strokeDashoffset: length, easing },

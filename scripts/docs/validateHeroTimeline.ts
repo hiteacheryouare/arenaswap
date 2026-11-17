@@ -15,6 +15,7 @@ import { heroGameAt, heroGames, heroTickCount } from '../../apps/docs/src/compon
 import {
 	cooldownTicks,
 	openingIndex,
+	reducedMotionTick,
 	replayThrough,
 	scoreBoardAt,
 	switchThreshold,
@@ -66,6 +67,10 @@ for (const change of final.switches) {
 
 if (final.switches.length < heroGames.length - 1) {
 	failures.push(`only ${final.switches.length} switch(es) for ${heroGames.length} games; every clip needs a turn`);
+}
+
+if (replayThrough(reducedMotionTick).switches.length !== final.switches.length) {
+	failures.push(`reduced-motion tick ${reducedMotionTick} is too early: ${replayThrough(reducedMotionTick).switches.length} of ${final.switches.length} switches have happened`);
 }
 
 // A game clock that jumps forward means a beat's clock is not a whole number of ticks from its

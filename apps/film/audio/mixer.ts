@@ -106,19 +106,19 @@ const placeDrum = (hit: DrumHit, bus: Stereo, sends: Sends, sampleRate: number, 
 			return;
 		case 'buzz': return add(renderSnare({ velocity: hit.velocity, rim: false, press: true, tune: 0.97 + 0.06 * random() }, sampleRate, random), 0.3 * bipolar(random));
 		case 'click': return add(renderClick(hit.velocity, sampleRate, random), 0.1);
-		case 'tenor': return add(renderTenor(hit.drum, hit.velocity, sampleRate, random), tenorPans[hit.drum]);
-		case 'bass': return add(renderBassDrum(hit.drum, hit.velocity, sampleRate, random), bassPans[hit.drum]);
-		case 'crash': return add(renderCymbal(hit.velocity, false, sampleRate, random), cymbalPans[hit.drum]);
-		case 'choke': return add(renderCymbal(hit.velocity, true, sampleRate, random), cymbalPans[hit.drum]);
-		case 'tap': return add(renderTap(hit.velocity, sampleRate, random), cymbalPans[hit.drum] * 0.6);
-		case 'sizzle': return add(renderSizzle(hit.length, hit.velocity, sampleRate, random), 0);
+		case 'tenor': return add(renderTenor(hit.player, hit.velocity, sampleRate, random), tenorPans[hit.player]);
+		case 'bass': return add(renderBassDrum(hit.player, hit.velocity, sampleRate, random), bassPans[hit.player]);
+		case 'crash': return add(renderCymbal(hit.velocity, false, sampleRate, random), cymbalPans[hit.player]);
+		case 'choke': return add(renderCymbal(hit.velocity, true, sampleRate, random), cymbalPans[hit.player]);
+		case 'tap': return add(renderTap(hit.velocity, sampleRate, random), cymbalPans[hit.player] * 0.6);
+		case 'sizzle': return add(renderSizzle(hit.sizzleSeconds, hit.velocity, sampleRate, random), 0);
 		case 'boom': return add(renderBoom(hit.velocity, sampleRate), 0);
 	}
 };
 
 const renderCueSound = (cue: ResolvedCue, sampleRate: number, random: Random, beat: number): Sound => {
 	switch (cue.kind) {
-		case 'dot': return renderDot(cue.step, sampleRate, random);
+		case 'dot': return renderDot(cue.rung, sampleRate, random);
 		case 'swap': return renderSwap(sampleRate, random);
 		case 'whoosh': return renderWhoosh(cue.length ?? beat, sampleRate, random);
 		case 'tick': return renderTick(sampleRate, random);

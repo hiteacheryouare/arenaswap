@@ -3,6 +3,7 @@ import { fadeIn, fadeOut, smoothStep } from './envelopes';
 import { createTunedSvf, tickSvf, tuneSvf, type Svf } from './filters';
 import { createMetalBank, tickMetalBank, twoPi, type MetalBank } from './oscillators';
 import { bipolar, type Random } from './random';
+import { midiToFrequency } from './theory';
 
 interface Mode {
 	ratio: number;
@@ -105,7 +106,7 @@ export const renderClick = (velocity: number, sampleRate: number, random: Random
 	return output;
 };
 
-const tenorPitches = [349.2, 293.7, 233.1, 174.6];
+const tenorPitches = [65, 62, 58, 53].map(midiToFrequency);
 
 const tenorModes: Mode[] = [
 	{ ratio: 1, level: 1, decay: 1 },
@@ -147,7 +148,7 @@ export const renderTenor = (drum: number, velocity: number, sampleRate: number, 
 	return output;
 };
 
-const bassPitches = [116.5, 87.3, 73.4, 58.3, 43.7];
+const bassPitches = [46, 41, 38, 34, 29].map(midiToFrequency);
 
 const bassModes: Mode[] = [
 	{ ratio: 1, level: 1, decay: 1 },

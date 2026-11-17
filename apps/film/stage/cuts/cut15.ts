@@ -1,6 +1,6 @@
 import { bar, beats, barSeconds, musicBeats } from '../timing';
 import type { Cut } from './cutTypes';
-import { cardSuperWindow, cardUnder, endActions, endCardHold, endingCues, liveDotOrigin, sat, shortEndingFor } from './shared';
+import { cardSuperWindow, cardUnder, endActions, endCardHold, endingCues, liveDotOrigin, saturdayEveningEastern, shortEndingFor } from './shared';
 
 const b = bar;
 const flickTabs = [103, 104, 105, 101];
@@ -50,15 +50,15 @@ const cut15: Cut = {
 			reveal: 'off',
 			registered: true,
 			clock: [
-				{ at: b(3), slate: sat('7:32:40') },
-				{ at: cardUnder(b(4)), slate: sat('7:32:42') },
-				{ at: cardUnder(b(4)), slate: sat('7:33:15') },
-				{ at: toCal, slate: sat('7:33:16') },
-				{ at: payoffAt, slate: sat('7:33:18') },
-				{ at: payoffAt, slate: sat('8:02:48') },
-				{ at: b(6) + beats(3), slate: sat('8:02:53') },
-				{ at: b(7), slate: sat('8:02:56') },
-				{ at: endAt, slate: sat('8:03:00') },
+				{ at: b(3), slate: saturdayEveningEastern('7:32:40') },
+				{ at: cardUnder(b(4)), slate: saturdayEveningEastern('7:32:42') },
+				{ at: cardUnder(b(4)), slate: saturdayEveningEastern('7:33:15') },
+				{ at: toCal, slate: saturdayEveningEastern('7:33:16') },
+				{ at: payoffAt, slate: saturdayEveningEastern('7:33:18') },
+				{ at: payoffAt, slate: saturdayEveningEastern('8:02:48') },
+				{ at: b(6) + beats(3), slate: saturdayEveningEastern('8:02:53') },
+				{ at: b(7), slate: saturdayEveningEastern('8:02:56') },
+				{ at: endAt, slate: saturdayEveningEastern('8:03:00') },
 			],
 			actions: [
 				{ at: payoffAt + 0.05, kind: 'click', selector: 'button[data-team-star="true"][aria-label="Add UK to favorites"]' },
@@ -73,22 +73,22 @@ const cut15: Cut = {
 		{ at: toCal, tabId: 103, via: 'swap' },
 		{ at: payoffAt, tabId: 101, via: 'cut' },
 	],
-	managedFrom: b(3),
+	tabsRegisteredFrom: b(3),
 	landsAt: ending.landsAt,
 	cues: [
-		{ at: musicBeats(0.25), kind: 'dot', step: 0 },
+		{ at: musicBeats(0.25), kind: 'dot', rung: 0 },
 		{ at: musicBeats(1), kind: 'whoosh', length: musicBeats(1), gain: 0.5 },
 		{ at: b(2) - musicBeats(1), kind: 'whoosh', length: musicBeats(1) },
 		...flickTimes.map(at => ({ at, kind: 'tick' as const, gain: 0.8 })),
 		{ at: b(3) - musicBeats(1), kind: 'whoosh', length: musicBeats(1), pan: 0.4 },
-		{ at: b(4), kind: 'dot', step: 1 },
+		{ at: b(4), kind: 'dot', rung: 1 },
 		{ at: b(4), kind: 'whoosh', length: musicBeats(1) },
 		{ at: b(4) + musicBeats(1), kind: 'impact', gain: 0.8 },
 		{ at: toCal - musicBeats(1), kind: 'whoosh', length: musicBeats(1), gain: 0.6, pan: 0.3 },
 		{ at: toCal, kind: 'swap' },
 		{ at: b(6) + musicBeats(1.5), kind: 'swell', length: musicBeats(0.75) },
 		{ at: b(6) + musicBeats(2.25), kind: 'confetti', gain: 1.2 },
-		{ at: b(7), kind: 'dot', step: 4 },
+		{ at: b(7), kind: 'dot', rung: 4 },
 		...endingCues(ending),
 	],
 };

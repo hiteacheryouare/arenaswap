@@ -4,6 +4,7 @@ import { parseBoxScore } from '@arenaswap/sideline';
 import type { BoxScore as ParsedBoxScore } from '@arenaswap/sideline';
 import { MockGameSimulator } from '@arenaswap/core';
 import type { Game } from '@arenaswap/core/types';
+import { bodyTextContrast, contrastRatio } from '../../support/contrast';
 import de from '../../../locales/de.json';
 import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';
@@ -106,16 +107,7 @@ const hockeyShootout = () => mountPeriodLine({ ...games.hockey, finalPeriodSuffi
 
 const inheritedCardInk = 'rgb(17, 24, 39)';
 
-const srgbChannel = (value: number): number => {
-	const c = value / 255;
-	return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-};
-
-const contrastOnCard = (rgb: string): number => {
-	const [red, green, blue] = rgb.match(/\d+/g)!.map(Number);
-	const luminance = 0.2126 * srgbChannel(red!) + 0.7152 * srgbChannel(green!) + 0.0722 * srgbChannel(blue!);
-	return (0.9536 + 0.05) / (luminance + 0.05);
-};
+const setupCardColor = '#f8fafc';
 
 const cells = () => cy.get('.gd-box-table td, .gd-box-table th');
 
@@ -634,7 +626,7 @@ describe('box score', () => {
 				expect(color, 'the raw gold is gone').to.not.equal('rgb(207, 196, 147)');
 				expect(color, 'and a team colour did arrive, rather than nothing').to.not.equal(inheritedCardInk);
 				expect(color, 'clamped to a dark bronze').to.equal('rgb(114, 108, 80)');
-				expect(contrastOnCard(color)).to.be.at.least(4.5);
+				expect(contrastRatio(color, setupCardColor)).to.be.at.least(bodyTextContrast);
 			});
 			cy.get('.gd-box-line-table tbody tr').eq(1).find('.gd-box-line-abbr')
 				.should('have.css', 'color', 'rgb(182, 54, 2)');
@@ -646,7 +638,7 @@ describe('box score', () => {
 				cy.get('.gd-box-line-abbr, .gd-box-compare-team').each($el => {
 					const color = getComputedStyle($el[0]).color;
 					expect(color, `${sport} ${$el.text()} carries a team colour`).to.not.equal(inheritedCardInk);
-					expect(contrastOnCard(color), `${sport} ${$el.text()}`).to.be.at.least(4.5);
+					expect(contrastRatio(color, setupCardColor), `${sport} ${$el.text()}`).to.be.at.least(bodyTextContrast);
 				});
 			}
 		});

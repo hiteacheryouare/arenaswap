@@ -1,11 +1,17 @@
 import Crest from '@arenaswap/ui/src/components/crest';
 
-const frames: [string, string, boolean][] = [
-	['gd-bar-logo-shell', 'gd-bar-logo', true],
-	['gd-poster-crest', 'gd-poster-crest-logo', false],
-	['game-detail-team-logo-shell', 'game-detail-team-logo', false],
-	['ff-endzone-crest', 'ff-endzone-crest-art', true],
-	['ff-logo-shell', 'ff-logo-art', true],
+interface crestFrame {
+	plateClass: string;
+	crestClass: string;
+	canPlate: boolean;
+}
+
+const frames: crestFrame[] = [
+	{ plateClass: 'gd-bar-logo-shell', crestClass: 'gd-bar-logo', canPlate: true },
+	{ plateClass: 'gd-poster-crest', crestClass: 'gd-poster-crest-logo', canPlate: false },
+	{ plateClass: 'game-detail-team-logo-shell', crestClass: 'game-detail-team-logo', canPlate: false },
+	{ plateClass: 'ff-endzone-crest', crestClass: 'ff-endzone-crest-art', canPlate: true },
+	{ plateClass: 'ff-logo-shell', crestClass: 'ff-logo-art', canPlate: true },
 ];
 
 const mountFrame = (plate: string, art: string, bare: boolean) => {
@@ -20,7 +26,7 @@ const mountFrame = (plate: string, art: string, bare: boolean) => {
 };
 
 describe('a round crest frame', () => {
-	frames.forEach(([plate, art, plates]) => {
+	frames.forEach(({ plateClass: plate, crestClass: art, canPlate: plates }) => {
 		it(`${plate} draws a bare crest whole`, () => {
 			mountFrame(plate, art, true);
 			cy.get(`.${plate}`).should('have.css', 'overflow', 'visible');

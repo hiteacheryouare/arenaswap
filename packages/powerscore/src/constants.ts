@@ -520,7 +520,7 @@ export const noHitterTunables = {
 	softballFactor: 0.6,
 } as const;
 
-export const redCardTunables = { fullMinutes: 2, fadeMinutes: 10, secondCardFactor: 1.5, siegeClosenessBump: 4 } as const;
+export const redCardTunables = { fullMinutes: 2, fadeMinutes: 10, secondCardFactor: 1.5, siegeClosenessBump: 4, tiedMagnitude: 10 } as const;
 
 export const upsetTunables = { max: 12 } as const;
 

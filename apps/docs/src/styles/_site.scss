@@ -2,6 +2,9 @@
 @use '@arenaswap/ui/src/motion' as m;
 @use '@arenaswap/ui/src/airbrush';
 
+$nav-mark-height: 28px;
+$nav-mark-collapsed-height: 25px;
+
 html:root {
 	@include airbrush.tokens;
 }
@@ -179,7 +182,7 @@ html:root[data-bs-theme='light'] {
 		flex-shrink: 0;
 
 		svg {
-			height: calc(28px - var(--collapse, 0) * 3px);
+			height: calc(#{$nav-mark-height} - var(--collapse, 0) * #{$nav-mark-height - $nav-mark-collapsed-height});
 			width: auto;
 			display: block;
 		}

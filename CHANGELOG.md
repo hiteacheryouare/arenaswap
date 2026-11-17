@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Named what the comments used to explain — 2026-11-17
+
+The surprises the comment purge flagged became names instead of prose: extracted constants and helpers, renames that say what a value is, and a few feed and browser quirks restored as one-line comments. Chromatic's contrast cutoffs are now derived from the background colours and WCAG ratios, the film's drum pitches come from MIDI notes, and `powerscore` gains `redCardTunables.tiedMagnitude`, which the PowerScore page uses for the red card's maximum.
+
 ## Comments only where the code can't speak — 2026-11-17
 
 About 10,700 comment lines came out of every package and app, following the Comment Sicko rules from pstack: what stays is license headers, quirks of the browser, the feed or a vendor we can't change, functional comments (`/// <reference>`, JSDoc `@type` in JS configs, lint suppressions), public API docs in `powerscore` and `@arenaswap/core`, and spec citations. Comments that explained a surprise in our own code were flagged for a rename or refactor instead of being kept.

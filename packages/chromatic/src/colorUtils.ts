@@ -17,28 +17,51 @@ const brighten = (value: string, factor: number): string => {
 	return rgbToHex(rgb.red * factor, rgb.green * factor, rgb.blue * factor);
 };
 
+const minChannelForHue = 12;
+
 const hasHue = (value: string): boolean => {
 	const rgb = hexToRgb(value);
-	return rgb !== null && Math.max(rgb.red, rgb.green, rgb.blue) >= 12;
+	return rgb !== null && Math.max(rgb.red, rgb.green, rgb.blue) >= minChannelForHue;
 };
 
-const seriesLuminanceFloor = 0.1164;
+const darkChartBackground = '#0d1117';
+const lightCardBackground = '#f8fafc';
+const lightChartBackground = '#ffffff';
+const nonTextContrast = 3;
+const smallTextContrast = 4.5;
+
+const seriesLuminanceFloor = nonTextContrast * (luminance(darkChartBackground) + 0.05) - 0.05;
+const smallCardTextLuminanceCeiling = (luminance(lightCardBackground) + 0.05) / smallTextContrast - 0.05;
+const seriesOnLightLuminanceCeiling = (luminance(lightChartBackground) + 0.05) / nonTextContrast - 0.05;
+
+const maxColorSteps = 24;
+const liftScale = 1.18;
+const liftWhiteMix = 0.12;
+const greyLiftMix = 0.48;
+const darkenScale = 0.86;
+
+const liftByScaling = (color: string): string => {
+	let lifted = color;
+	for (let step = 0; step < maxColorSteps && luminance(lifted) < seriesLuminanceFloor; step++) {
+		lifted = brighten(lifted, liftScale);
+	}
+	return lifted;
+};
+
+const liftByWhiteMix = (color: string): string => {
+	let lifted = color;
+	for (let step = 0; step < maxColorSteps && luminance(lifted) < seriesLuminanceFloor; step++) {
+		lifted = mixTowardWhite(lifted, liftWhiteMix);
+	}
+	return lifted;
+};
 
 const resolveReadableSeriesColor = (value: string | undefined, fallback: string): string => {
 	if (!value || !hexToRgb(value)) return fallback;
 	if (luminance(value) >= seriesLuminanceFloor) return value;
-	if (!hasHue(value)) return mixTowardWhite(value, 0.48);
-	let brightened = value;
-	for (let step = 0; step < 24 && luminance(brightened) < seriesLuminanceFloor; step++) {
-		brightened = brighten(brightened, 1.18);
-	}
-	for (let step = 0; step < 24 && luminance(brightened) < seriesLuminanceFloor; step++) {
-		brightened = mixTowardWhite(brightened, 0.12);
-	}
-	return brightened;
+	if (!hasHue(value)) return mixTowardWhite(value, greyLiftMix);
+	return liftByWhiteMix(liftByScaling(value));
 };
-
-const smallCardTextLuminanceCeiling = 0.173;
 
 const resolveReadableCardTextColor = (
 	value: string | undefined,
@@ -47,13 +70,11 @@ const resolveReadableCardTextColor = (
 ): string => {
 	if (!value || !hexToRgb(value)) return fallback;
 	let darkened = value;
-	for (let step = 0; step < 24 && luminance(darkened) > ceiling; step++) {
-		darkened = brighten(darkened, 0.86);
+	for (let step = 0; step < maxColorSteps && luminance(darkened) > ceiling; step++) {
+		darkened = brighten(darkened, darkenScale);
 	}
 	return darkened;
 };
-
-const seriesOnLightLuminanceCeiling = 0.3;
 
 const clashDifference = 11;
 const blackSwitchBelow = 17;
@@ -112,7 +133,7 @@ const pickPair = (away: matchupTeam, home: matchupTeam, awayPrimary: string, hom
 	return [awayPrimary, homePrimary];
 };
 
-export const readableOnBlack = (background: string, light = '#ffffff', dark = '#111827'): string => {
+export const readableInkOn = (background: string, light = '#ffffff', dark = '#111827'): string => {
 	if (!isHex(background)) return light;
 	const backdrop = luminance(background);
 	return contrastBetween(backdrop, luminance(dark)) > contrastBetween(backdrop, luminance(light))
@@ -135,15 +156,17 @@ export const teamDisplayInk = (
 	return isHex(other) && contrastBetween(luminance(other), backdrop) >= displayInkContrast ? other : dark;
 };
 
+const teamWashAlpha = '28';
+
 export const crestBacking = (color: string | null | undefined): string => (
 	isHex(color)
-		? `linear-gradient(160deg, ${color}14, ${color}28), #ffffff`
+		? `linear-gradient(160deg, ${color}14, ${color}${teamWashAlpha}), #ffffff`
 		: '#ffffff'
 );
 
 export const teamRowWash = (color: string | null | undefined): string | undefined => (
 	isHex(color)
-		? `linear-gradient(90deg, ${color}28, ${color}00 72%)`
+		? `linear-gradient(90deg, ${color}${teamWashAlpha}, ${color}00 72%)`
 		: undefined
 );
 
@@ -210,8 +233,10 @@ const mixHex = (from: string, to: Rgb, amount: number): string => {
 	return rgbToHex(toward(rgb.red, to.red), toward(rgb.green, to.green), toward(rgb.blue, to.blue));
 };
 
+const textBandDepth = 0.85;
+
 const inkSurfaces = (color: string, other: string, scrim: matchupScrim, blend: number): string[] => {
-	const lower = scrim.top + ((scrim.bottom - scrim.top) * 0.85);
+	const lower = scrim.top + ((scrim.bottom - scrim.top) * textBandDepth);
 	const surface = mixHex(color, hexToRgb(other) ?? scrim.rgb, blend);
 	return [scrim.top, lower].map(alpha => mixHex(surface, scrim.rgb, alpha));
 };

@@ -1,5 +1,5 @@
 import type { BrassNote, BrassSection, BrassShape } from './brass';
-import cadences, { rollOut, type Cadence } from './cadences';
+import cadences, { bassDrums, bassUnison, cymbalSymbols, rollOut, snareSymbols, tenorDrums, type Cadence } from './cadences';
 import { lerp } from './envelopes';
 import createRandom, { bipolar, hashSeed, type Random } from './random';
 import type { Cue, ScorePlan, ScoreSection } from './score';
@@ -49,8 +49,8 @@ export interface DrumHit {
 	time: number;
 	kind: DrumKind;
 	velocity: number;
-	drum: number;
-	length: number;
+	player: number;
+	sizzleSeconds: number;
 }
 
 export interface HarmonyChange {
@@ -59,7 +59,7 @@ export interface HarmonyChange {
 }
 
 export interface ResolvedCue extends Cue {
-	step: number;
+	rung: number;
 }
 
 export interface Arrangement {
@@ -184,14 +184,14 @@ interface Stroke {
 }
 
 const snareStrokes: Record<string, Stroke[]> = {
-	R: [{ at: 0, velocity: 1, kind: 'rimshot' }],
-	A: [{ at: 0, velocity: 0.9, kind: 'snare' }],
-	f: [{ at: -0.24, velocity: 0.3, kind: 'snare' }, { at: 0, velocity: 0.92, kind: 'snare' }],
-	t: [{ at: 0, velocity: 0.46, kind: 'snare' }],
-	g: [{ at: 0, velocity: 0.24, kind: 'snare' }],
-	d: [{ at: 0, velocity: 0.5, kind: 'snare' }, { at: 0.5, velocity: 0.42, kind: 'snare' }],
-	D: [{ at: 0, velocity: 0.88, kind: 'snare' }, { at: 0.5, velocity: 0.55, kind: 'snare' }],
-	x: [{ at: 0, velocity: 0.6, kind: 'click' }],
+	[snareSymbols.rimshot]: [{ at: 0, velocity: 1, kind: 'rimshot' }],
+	[snareSymbols.accent]: [{ at: 0, velocity: 0.9, kind: 'snare' }],
+	[snareSymbols.flam]: [{ at: -0.24, velocity: 0.3, kind: 'snare' }, { at: 0, velocity: 0.92, kind: 'snare' }],
+	[snareSymbols.tap]: [{ at: 0, velocity: 0.46, kind: 'snare' }],
+	[snareSymbols.ghost]: [{ at: 0, velocity: 0.24, kind: 'snare' }],
+	[snareSymbols.diddle]: [{ at: 0, velocity: 0.5, kind: 'snare' }, { at: 0.5, velocity: 0.42, kind: 'snare' }],
+	[snareSymbols.accentedDiddle]: [{ at: 0, velocity: 0.88, kind: 'snare' }, { at: 0.5, velocity: 0.55, kind: 'snare' }],
+	[snareSymbols.rimClick]: [{ at: 0, velocity: 0.6, kind: 'click' }],
 };
 
 const stepsOf = (pattern: string): string[] => [...pattern.replaceAll(' ', '')];
@@ -249,14 +249,16 @@ const runsOf = (line: string[], symbol: string): [number, number][] => {
 	return runs;
 };
 
+const pressBounceSeconds = 0.017;
+
 const voiceRoll = ({ bar, sixteenth, random }: Voicing, [from, to]: [number, number], level: number, drums: DrumHit[]): void => {
 	const start = bar.start + from * sixteenth;
 	const end = bar.start + to * sixteenth;
 	const swelling = to - from >= 4;
-	for (let time = start; time < end - 0.008; time += 0.017 * (0.75 + 0.5 * random())) {
+	for (let time = start; time < end - 0.008; time += pressBounceSeconds * (0.75 + 0.5 * random())) {
 		const progress = (time - start) / (end - start);
 		const velocity = swelling ? 0.28 + 0.67 * progress ** 1.6 : 0.5;
-		drums.push({ time, kind: 'buzz', velocity: velocity * level * (0.85 + 0.3 * random()), drum: 0, length: 0 });
+		drums.push({ time, kind: 'buzz', velocity: velocity * level * (0.85 + 0.3 * random()), player: 0, sizzleSeconds: 0 });
 	}
 };
 
@@ -265,32 +267,32 @@ const voiceDrums = (voicing: Voicing, drums: DrumHit[]): void => {
 	const lines = linesOf(bar);
 	if (!lines) return;
 	const level = drumLevel(bar);
-	const hit = (kind: DrumKind, step: number, velocity: number, drum = 0, length = 0): void => {
+	const hit = (kind: DrumKind, step: number, velocity: number, player = 0, sizzleSeconds = 0): void => {
 		const time = Math.max(0, bar.start + step * sixteenth + 0.0008 * bipolar(random));
-		drums.push({ time, kind, velocity: velocity * level * (1 + 0.04 * bipolar(random)), drum, length });
+		drums.push({ time, kind, velocity: velocity * level * (1 + 0.04 * bipolar(random)), player, sizzleSeconds });
 	};
 	lines.snare.forEach((symbol, step) => {
 		for (const stroke of snareStrokes[symbol] ?? []) hit(stroke.kind, step + stroke.at, stroke.velocity);
 	});
-	for (const span of runsOf(lines.snare, 'z')) voiceRoll(voicing, span, level, drums);
+	for (const span of runsOf(lines.snare, snareSymbols.buzzRoll)) voiceRoll(voicing, span, level, drums);
 	lines.tenors.forEach((symbol, step) => {
-		const drum = 'abcd'.indexOf(symbol.toLowerCase());
+		const drum = tenorDrums.indexOf(symbol.toLowerCase());
 		if (drum >= 0) hit('tenor', step, symbol === symbol.toUpperCase() ? 0.95 : 0.55, drum);
 	});
 	lines.basses.forEach((symbol, step) => {
-		if (symbol === 'U') for (let drum = 0; drum < 5; drum++) hit('bass', step, 1, drum);
-		const drum = '12345'.indexOf(symbol);
+		if (symbol === bassUnison) for (let drum = 0; drum < bassDrums.length; drum++) hit('bass', step, 1, drum);
+		const drum = bassDrums.indexOf(symbol);
 		if (drum >= 0) hit('bass', step, 0.85, drum);
 	});
 	let player = bar.index % 2;
 	lines.cymbals.forEach((symbol, step) => {
-		if (symbol === 'C') {
+		if (symbol === cymbalSymbols.crash) {
 			hit('crash', step, 0.9, 0);
 			hit('crash', step, 0.9, 1);
 		}
-		if (symbol === 'k') hit('choke', step, 0.85, player++ % 2);
-		if (symbol === 's') hit('tap', step, 0.4, player++ % 2);
-		if (symbol === 'S') {
+		if (symbol === cymbalSymbols.choke) hit('choke', step, 0.85, player++ % 2);
+		if (symbol === cymbalSymbols.tap) hit('tap', step, 0.4, player++ % 2);
+		if (symbol === cymbalSymbols.sizzle) {
 			const next = lines.cymbals.findIndex((other, index) => index > step && other !== '.');
 			hit('sizzle', step, 0.7, 0, ((next < 0 ? 16 : next) - step) * sixteenth);
 		}
@@ -298,7 +300,7 @@ const voiceDrums = (voicing: Voicing, drums: DrumHit[]): void => {
 	const arrival = bar.sectionStart && (bar.part === 'drop' || bar.part === 'peak' || bar.part === 'outro');
 	if (arrival) {
 		hit('boom', 0, 1);
-		if (lines.cymbals[0] !== 'C') {
+		if (lines.cymbals[0] !== cymbalSymbols.crash) {
 			hit('crash', 0, 0.9, 0);
 			hit('crash', 0, 0.9, 1);
 		}
@@ -488,14 +490,14 @@ const resolveCues = (plan: ScorePlan, bars: Bar[], harmony: HarmonyChange[], bea
 	let lastPitch = -Infinity;
 	let lastDot = -Infinity;
 	return withImpact.map(cue => {
-		if (cue.kind !== 'dot') return { ...cue, step: 0 };
+		if (cue.kind !== 'dot') return { ...cue, rung: 0 };
 		const ladder = chordAt(harmony, cue.at).bell;
 		if (cue.at - lastDot > barLength + 1e-6) lastPitch = -Infinity;
 		const above = ladder.findIndex(midi => midi > lastPitch);
-		const step = cue.step === undefined ? Math.max(0, above) : Math.max(0, Math.round(cue.step)) % ladder.length;
-		lastPitch = ladder[step];
+		const rung = cue.rung === undefined ? Math.max(0, above) : Math.max(0, Math.round(cue.rung)) % ladder.length;
+		lastPitch = ladder[rung];
 		lastDot = cue.at;
-		return { ...cue, step };
+		return { ...cue, rung };
 	});
 };
 
@@ -544,8 +546,8 @@ const sectionsOf = (layout: [number, number, Part][]): ScoreSection[] => layout.
 const flick = (from: number, count: number): Cue[] => Array.from({ length: count }, (_, index) => ({ at: from + beats(index * 0.5), kind: 'tick', gain: 0.8 }));
 
 const signOff = (endAt: number, squeeze = 1): Cue[] => [
-	...[9.4, 8.4, 7.4, 6.4, 5.4].map((count, step): Cue => ({ at: endAt - beats(count * squeeze), kind: 'dot', step })),
-	{ at: endAt - beats(3.6 * squeeze), kind: 'dot', step: 0, gain: 1.2 },
+	...[9.4, 8.4, 7.4, 6.4, 5.4].map((count, rung): Cue => ({ at: endAt - beats(count * squeeze), kind: 'dot', rung })),
+	{ at: endAt - beats(3.6 * squeeze), kind: 'dot', rung: 0, gain: 1.2 },
 ];
 
 export const demoPlans: Record<'15' | '30' | '60', ScorePlan> = {
@@ -555,18 +557,18 @@ export const demoPlans: Record<'15' | '30' | '60', ScorePlan> = {
 		seed: 15,
 		sections: sectionsOf([[1, 3, 'intro'], [4, 4, 'drop'], [5, 5, 'groove'], [6, 6, 'peak'], [7, 8, 'outro']]),
 		cues: [
-			{ at: 0.15, kind: 'dot', step: 0 },
+			{ at: 0.15, kind: 'dot', rung: 0 },
 			{ at: 0.7, kind: 'whoosh', length: 0.5, gain: 0.5 },
 			{ at: atBar(2) - 0.2, kind: 'whoosh', length: 0.6 },
 			...flick(atBar(2) + beats(2), 4),
 			{ at: atBar(3), kind: 'whoosh', length: 0.5, pan: 0.4 },
-			{ at: atBar(4), kind: 'dot', step: 1 },
+			{ at: atBar(4), kind: 'dot', rung: 1 },
 			{ at: atBar(4) + 0.2, kind: 'whoosh', length: 0.5 },
 			{ at: atBar(5) - 0.6, kind: 'whoosh', length: 0.4, gain: 0.6, pan: 0.3 },
 			{ at: atBar(5), kind: 'swap' },
 			{ at: atBar(6) + beats(1.8), kind: 'swell', length: 1.8 },
 			{ at: atBar(6) + beats(2), kind: 'confetti', gain: 1.2 },
-			{ at: atBar(7), kind: 'dot', step: 4 },
+			{ at: atBar(7), kind: 'dot', rung: 4 },
 			...signOff(atBar(9), 8 / 12),
 		],
 	},
@@ -576,22 +578,22 @@ export const demoPlans: Record<'15' | '30' | '60', ScorePlan> = {
 		seed: 30,
 		sections: sectionsOf([[1, 3, 'intro'], [4, 7, 'build'], [8, 8, 'drop'], [9, 11, 'groove'], [12, 12, 'break'], [13, 13, 'peak'], [14, 16, 'outro']]),
 		cues: [
-			{ at: 0.2, kind: 'dot', step: 0 },
+			{ at: 0.2, kind: 'dot', rung: 0 },
 			{ at: 1, kind: 'whoosh', length: 0.6, gain: 0.5 },
 			{ at: atBar(3) - 0.25, kind: 'whoosh', length: 0.7 },
 			...flick(atBar(4), 8),
 			{ at: atBar(5), kind: 'whoosh', length: 0.5, pan: 0.4 },
 			{ at: atBar(7) + beats(0.5), kind: 'tick' },
 			{ at: atBar(7) + beats(2.5), kind: 'tick' },
-			{ at: atBar(8), kind: 'dot', step: 1 },
+			{ at: atBar(8), kind: 'dot', rung: 1 },
 			{ at: atBar(8) + 0.2, kind: 'whoosh', length: 0.5 },
 			{ at: atBar(9) + beats(3) - 0.6, kind: 'whoosh', length: 0.4, gain: 0.6, pan: 0.3 },
 			{ at: atBar(9) + beats(3), kind: 'swap' },
 			{ at: atBar(11) - 0.15, kind: 'whoosh', length: 0.35, gain: 0.55 },
-			{ at: atBar(12), kind: 'dot', step: 5 },
+			{ at: atBar(12), kind: 'dot', rung: 5 },
 			{ at: atBar(13) + beats(1.8), kind: 'swell', length: 2 },
 			{ at: atBar(13) + beats(2), kind: 'confetti', gain: 1.2 },
-			{ at: atBar(14), kind: 'dot', step: 4 },
+			{ at: atBar(14), kind: 'dot', rung: 4 },
 			{ at: atBar(14) + beats(0.4), kind: 'whoosh', length: 0.7 },
 			...signOff(atBar(17)),
 		],
@@ -611,14 +613,14 @@ export const demoPlans: Record<'15' | '30' | '60', ScorePlan> = {
 			[33, 37, 'tail'],
 		]),
 		cues: [
-			{ at: 0.2, kind: 'dot', step: 0 },
+			{ at: 0.2, kind: 'dot', rung: 0 },
 			{ at: 1, kind: 'whoosh', length: 0.6, gain: 0.5 },
 			{ at: atBar(2) - 0.25, kind: 'whoosh', length: 0.7 },
 			...flick(atBar(2) + beats(0.5), 7),
 			{ at: atBar(3), kind: 'whoosh', length: 0.5, pan: 0.4 },
 			{ at: atBar(6) + beats(0.5), kind: 'tick' },
 			{ at: atBar(6) + beats(2.5), kind: 'tick' },
-			{ at: atBar(8), kind: 'dot', step: 1 },
+			{ at: atBar(8), kind: 'dot', rung: 1 },
 			{ at: atBar(8) + 0.2, kind: 'whoosh', length: 0.5 },
 			{ at: atBar(9) + beats(1) - 0.6, kind: 'whoosh', length: 0.4, gain: 0.6, pan: 0.3 },
 			...[atBar(9) + beats(1), atBar(10) + beats(3), atBar(12) + beats(1), atBar(13) + beats(3)].map((at): Cue => ({ at, kind: 'swap' })),
@@ -626,14 +628,14 @@ export const demoPlans: Record<'15' | '30' | '60', ScorePlan> = {
 			...[15, 16, 17, 18, 20, 21, 23, 24].map((number): Cue => ({ at: atBar(number) - 0.15, kind: 'whoosh', length: 0.35, gain: 0.55 })),
 			{ at: atBar(21) + beats(0.5), kind: 'tick' },
 			{ at: atBar(21) + beats(2.5), kind: 'swap' },
-			{ at: atBar(24) + 1, kind: 'dot', step: 2 },
-			{ at: atBar(25), kind: 'dot', step: 3 },
+			{ at: atBar(24) + 1, kind: 'dot', rung: 2 },
+			{ at: atBar(25), kind: 'dot', rung: 3 },
 			{ at: atBar(25) + 0.2, kind: 'whoosh', length: 0.5 },
-			{ at: atBar(26) + beats(1.5), kind: 'dot', step: 5 },
+			{ at: atBar(26) + beats(1.5), kind: 'dot', rung: 5 },
 			{ at: atBar(28) + beats(1), kind: 'confetti' },
 			{ at: atBar(29) + beats(0.3), kind: 'swell', length: 2 },
 			{ at: atBar(29) + beats(0.5), kind: 'confetti', gain: 1.2 },
-			{ at: atBar(30), kind: 'dot', step: 4 },
+			{ at: atBar(30), kind: 'dot', rung: 4 },
 			{ at: atBar(30) + beats(0.5), kind: 'whoosh', length: 0.7 },
 			...signOff(atBar(33)),
 		],

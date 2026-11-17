@@ -1,6 +1,6 @@
 import { scoreGame, signalPoints, boostPoints, sportTypeConfigMap } from 'powerscore';
 import type { Game as ScoringGame, PowerScore, PowerScoreResult, ScoreOptions, ScoringContext, ScoreSnapshot, Side } from 'powerscore';
-import { createFavoriteTeamKey, historyWindowMs, sensitivityThresholds } from './constants';
+import { createFavoriteTeamKey, sensitivityThresholds } from './constants';
 import { resolveModeForGame } from './scoringMode';
 import type { Game, LiveScore, Team, UserPreferences } from './types';
 
@@ -73,7 +73,7 @@ export const toScoringGame = (game: Game): ScoringGame => {
 };
 
 export const getHistoryWindowMsForGame = (game: Pick<Game, 'sportType'>): number => (
-	(sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball).historyWindowMs ?? historyWindowMs
+	(sportTypeConfigMap[game.sportType] ?? sportTypeConfigMap.basketball).historyWindowMs
 );
 
 export const maxSnapshotsPerGame = 400;
@@ -248,8 +248,9 @@ export const chooseSwitchTarget = ({ registry, scores, activeTabId, sensitivity,
 	if (bestReg.tabId === activeTabId) return null;
 
 	const threshold = sensitivityThresholds[sensitivity] ?? 0;
-	const notWatchingAGame = !activeReg && best.total > 0;
-	if (!notWatchingAGame && best.total < activeScore + threshold) return null;
+	const bestScoresAnything = best.total > 0;
+	const winsByDefault = !activeReg && bestScoresAnything;
+	if (!winsByDefault && best.total < activeScore + threshold) return null;
 	if (cooldownSeconds > 0 && now - lastSwitchTime <= cooldownSeconds * 1000) return null;
 
 	return { tabId: bestReg.tabId, gameId: best.gameId, ...(best.reason !== undefined ? { reason: best.reason } : {}) };

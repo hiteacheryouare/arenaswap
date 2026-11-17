@@ -1,7 +1,7 @@
 import { defineConfig } from 'wxt';
 import pkg from './package.json';
 import bootstrapTokenPrefix from '@arenaswap/ui/src/bootstrapTokenPrefix';
-import { bossCommandName } from './utils/bossMode';
+import { bossCommandName, bossSuggestedKey } from './utils/bossMode';
 
 // Multiview strips the headers that stop a site being framed, inside its own tab. AMO's policy
 // forbids relaxing them at all, so the Firefox build has no Multiview.
@@ -114,7 +114,7 @@ export default defineConfig({
 		// or macOS. `commands` needs no entry in `permissions`.
 		commands: {
 			[bossCommandName]: {
-				suggested_key: { default: 'Alt+Shift+X' },
+				suggested_key: { default: bossSuggestedKey },
 				description: '__MSG_bossCommandDescription__',
 			},
 		},

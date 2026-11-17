@@ -1,5 +1,6 @@
 import type { Game } from '@arenaswap/core/types';
 import { buildPowerScoreOption } from '@arenaswap/ui/src/components/gameDetailChartOptions';
+import { seriesGameId, widestRecordGameId } from '../../support/cannedGames';
 import { detailBleeds, detailView, mountDetailView, powerScoreHistoryOf, scoreHistoryOf } from '../../support/safetyNet/detailView';
 import { inEveryLocale } from '../../support/safetyNet/locales';
 import { popupSurface } from '../../support/safetyNet/mountInPopup';
@@ -15,26 +16,26 @@ const rankedSeries = (game: Game, id: string): Game => ({
 describe('detail hero edge containment', () => {
 	for (const { label, game } of worstCaseGames.filter(entry => ['basketball', 'hockey'].includes(entry.game.sportType))) {
 		inEveryLocale(`keeps a ranked ${label} with a series and timeouts inside the hero`, locale => {
-			mountDetailView(detailView(rankedSeries(game, 'mock-14')), locale);
+			mountDetailView(detailView(rankedSeries(game, seriesGameId)), locale);
 			cy.get(popupSurface).assertContained({ bleeds: detailBleeds });
 		});
 	}
 
 	inEveryLocale('keeps a delayed game with no description inside the hero and the bar', locale => {
-		const delayed: Game = { ...worstCaseGames[0].game, id: 'mock-3', delayed: true };
+		const delayed: Game = { ...worstCaseGames[0].game, id: widestRecordGameId, delayed: true };
 		mountDetailView(detailView(delayed), locale);
 		cy.get(popupSurface).assertContained({ bleeds: detailBleeds });
 	});
 
 	inEveryLocale('keeps a postponed game\'s reason and makeup day inside the poster and the bar', locale => {
-		const postponed: Game = { ...worstCaseGames[0].game, id: 'mock-3', status: 'post', disruption: 'postponed', postponedReason: 'airQuality', makeupDate: '2026-09-30' };
+		const postponed: Game = { ...worstCaseGames[0].game, id: widestRecordGameId, status: 'post', disruption: 'postponed', postponedReason: 'airQuality', makeupDate: '2026-09-30' };
 		mountDetailView(detailView(postponed), locale);
 		cy.get('.gd-poster-status').should('be.visible');
 		cy.get(popupSurface).assertContained({ bleeds: detailBleeds });
 	});
 
 	it('keeps a long delay description inside the hero', () => {
-		const delayed: Game = { ...worstCaseGames[4].game, id: 'mock-3', delayed: true, delayDescription: 'Delayed: Lightning in the Area' };
+		const delayed: Game = { ...worstCaseGames[4].game, id: widestRecordGameId, delayed: true, delayDescription: 'Delayed: Lightning in the Area' };
 		mountDetailView(detailView(delayed));
 		cy.get(popupSurface).assertContained({ bleeds: detailBleeds });
 	});
@@ -45,7 +46,7 @@ describe('detail view beside the macOS scrollbar', () => {
 
 	for (const { label, game } of worstCaseGames) {
 		it(`keeps a live game with the ${label} inside the popup at 305px`, () => {
-			mountDetailView(detailView({ ...game, id: 'mock-3' }, { powerScoreHistory: powerScoreHistoryOf('mock-3'), scoreHistory: scoreHistoryOf({ ...game, id: 'mock-3' }) }));
+			mountDetailView(detailView({ ...game, id: widestRecordGameId }, { powerScoreHistory: powerScoreHistoryOf(widestRecordGameId), scoreHistory: scoreHistoryOf({ ...game, id: widestRecordGameId }) }));
 			cy.viewport(narrow.width, narrow.height);
 			cy.get(popupSurface).assertContained({ bleeds: detailBleeds });
 		});
@@ -54,9 +55,9 @@ describe('detail view beside the macOS scrollbar', () => {
 
 describe('detail chart edges', () => {
 	it('keeps a single reading and an all-zero history inside the card', () => {
-		const game: Game = { ...worstCaseGames[0].game, id: 'mock-3', status: 'in' };
+		const game: Game = { ...worstCaseGames[0].game, id: widestRecordGameId, status: 'in' };
 		const zero = { ...game, awayTeam: { ...game.awayTeam, score: 0 }, homeTeam: { ...game.homeTeam, score: 0 } };
-		mountDetailView(detailView(zero, { powerScoreHistory: powerScoreHistoryOf('mock-3', [0]), scoreHistory: scoreHistoryOf(zero, 1), excitementResult: undefined }));
+		mountDetailView(detailView(zero, { powerScoreHistory: powerScoreHistoryOf(widestRecordGameId, [0]), scoreHistory: scoreHistoryOf(zero, 1), excitementResult: undefined }));
 		cy.get(popupSurface).assertContained({ bleeds: detailBleeds });
 		cy.get('[data-testid="game-detail-chart"]').should('have.length.greaterThan', 0);
 	});

@@ -1,3 +1,26 @@
+export const snareSymbols = {
+	rimshot: 'R',
+	accent: 'A',
+	flam: 'f',
+	tap: 't',
+	ghost: 'g',
+	diddle: 'd',
+	accentedDiddle: 'D',
+	rimClick: 'x',
+	buzzRoll: 'z',
+} as const;
+
+export const tenorDrums = 'abcd';
+export const bassDrums = '12345';
+export const bassUnison = 'U';
+
+export const cymbalSymbols = {
+	crash: 'C',
+	choke: 'k',
+	tap: 's',
+	sizzle: 'S',
+} as const;
+
 export interface Cadence {
 	snare: string;
 	tenors: string;

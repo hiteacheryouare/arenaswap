@@ -241,7 +241,8 @@ export const computeComeback = ({ game, context, sport, progress, now, margin }:
 	if (deficit === 0) return none;
 	const homeTrailed = first.homeScore < first.awayScore;
 	const trailerLead = homeTrailed ? game.homeTeam.score - game.awayTeam.score : game.awayTeam.score - game.homeTeam.score;
-	const shrinkage = trailerLead > sport.closenessMargins[1] ? deficit - trailerLead : deficit + trailerLead;
+	const trailerPulledAway = trailerLead > sport.closenessMargins[1];
+	const shrinkage = trailerPulledAway ? deficit - trailerLead : deficit + trailerLead;
 
 	let tier: number;
 	if (shrinkage >= sport.comebackThresholdBig) tier = scores.comeback.big;

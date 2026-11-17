@@ -8,7 +8,8 @@ import { collegeDivisions } from '@arenaswap/core';
 const siteBase = 'https://site.api.espn.com/apis/site/v2/sports';
 const standingsBase = 'https://site.api.espn.com/apis/v2/sports';
 const coreBase = 'https://sports.core.api.espn.com/v2/sports';
-const recordingsDir = join(__dirname, '..', 'recordings');
+const packageRoot = join(__dirname, '..');
+const recordingsDir = join(packageRoot, 'recordings');
 const pidFile = join(recordingsDir, 'recorder.pid');
 const logFile = join(recordingsDir, 'recorder.log');
 
@@ -88,12 +89,15 @@ const dateKey = (date: Date): string => easternParts(date).day.replaceAll('-', '
 let currentFileKey = '';
 let gzip: Gzip | null = null;
 let fileStream: WriteStream | null = null;
-let gitSha = 'unknown';
-try {
-	gitSha = execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim();
-} catch {
-	// Not fatal: the recording is still usable without it.
-}
+const readGitSha = (): string => {
+	try {
+		return execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim();
+	} catch {
+		return 'unknown';
+	}
+};
+
+const gitSha = readGitSha();
 
 const closeFile = () => new Promise<void>(resolve => {
 	if (!gzip || !fileStream) return resolve();

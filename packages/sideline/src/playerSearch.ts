@@ -4,6 +4,7 @@ import type { FantasyRosterEntry, LeagueId } from '@arenaswap/core';
 import type { FantasyPosition } from 'powerscore';
 import { takeRequestSlot } from './apiClient';
 import { coreApiBase, requestSignal } from './endpoints';
+import { teamDefenseId } from './fantasyBoxScore';
 
 // Fantasy's leagues, by the numeric league id our sources put in a player's uid (`s:20~l:28~a:…`).
 const fantasyLeagueByUid: Record<string, LeagueId> = { 28: 'nfl', 46: 'nba', 10: 'mlb', 90: 'nhl', 59: 'wnba' };
@@ -126,7 +127,7 @@ export const resolveRosterEntry = async (result: PlayerSearchResult): Promise<Fa
 
 export const defenseRosterEntry = (league: LeagueId, team: { id: string; name: string }): FantasyRosterEntry => ({
 	league,
-	athleteId: `dst:${team.id}`,
+	athleteId: teamDefenseId(team.id),
 	name: team.name,
 	teamId: team.id,
 	position: 'DST',

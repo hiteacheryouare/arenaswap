@@ -5,13 +5,13 @@ import { constants as zlibConstants, createGunzip } from 'node:zlib';
 import type { Game, LeagueId } from '@arenaswap/core';
 import { parseScoreboardEvents, parseWinProbability } from '@arenaswap/sideline';
 
-interface RawEvent {
+export interface RawEvent {
 	id?: string;
 	status?: { type?: { state?: string } };
 }
 
-type RecordedLine =
-	| { t: 'meta'; ts: number }
+export type RecordedLine =
+	| { t: 'meta'; ts: number; gitSha?: string }
 	| { t: 'scoreboard'; ts: number; league: LeagueId; events: RawEvent[]; unchanged: string[] }
 	| { t: 'summary'; ts: number; league: LeagueId; gameId: string; raw: Record<string, unknown> }
 	| { t: 'situation'; ts: number; league: LeagueId; gameId: string; raw: Record<string, unknown> }
@@ -35,7 +35,7 @@ export const listRecordingFiles = (path: string): string[] => {
 // decompressor is told to stop quietly there and the torn line is skipped.
 export const unreadableLines = new Map<string, number>();
 
-const readLines = async function* (file: string): AsyncGenerator<RecordedLine> {
+export const readRecordedLines = async function* (file: string): AsyncGenerator<RecordedLine> {
 	const gunzip = createGunzip({ finishFlush: zlibConstants.Z_SYNC_FLUSH });
 	const lines = createInterface({ input: createReadStream(file).pipe(gunzip), crlfDelay: Infinity });
 	for await (const line of lines) {
@@ -52,7 +52,7 @@ export const readRecording = async function* (files: string[], until?: number, l
 	const lastRawById = new Map<string, { raw: RawEvent; parsed: Game | null }>();
 	let lastTs = 0;
 	for (const file of files) {
-		for await (const line of readLines(file)) {
+		for await (const line of readRecordedLines(file)) {
 			if (until !== undefined && line.ts > until) return;
 			if (line.ts < lastTs - 5_000) throw new Error(`${file} goes back in time at ${new Date(line.ts).toISOString()}: were two recorders running?`);
 			lastTs = Math.max(lastTs, line.ts);

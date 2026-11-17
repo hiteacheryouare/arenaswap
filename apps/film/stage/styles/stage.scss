@@ -228,6 +228,7 @@
 
 	.stream-crest {
 		width: 30%;
+		// height: auto over the avatar's own, or aspect-ratio has nothing to set.
 		height: auto;
 		aspect-ratio: 1;
 		object-fit: contain;

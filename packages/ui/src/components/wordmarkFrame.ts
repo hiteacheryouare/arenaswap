@@ -33,12 +33,12 @@ export const collapsedBox = {
 	height: iconContent.height + collapsedMargin * 2,
 };
 
-const leadEnd = 0.72;
-const followFrom = 0.1;
-const followEnd = 0.85;
+const marksEndAt = 0.72;
+const boxStartAt = 0.1;
+const boxEndAt = 0.85;
 
 export const fadeWidth = 30;
-const arenLead = 14;
+const arenMaskLead = 14;
 const wapEdgeRest = 1725;
 const wapEdgeEnd = 384;
 
@@ -93,50 +93,50 @@ const boxPose = (from: typeof aBox, to: typeof aEnd, k: number): pose => {
 };
 
 const wordmarkFrameAt = (t: number): wordmarkFrame => {
-	const lead = easeInOut(seg(t, 0, leadEnd));
-	const follow = easeInOut(seg(t, followFrom, followEnd));
+	const marksProgress = easeInOut(seg(t, 0, marksEndAt));
+	const boxProgress = easeInOut(seg(t, boxStartAt, boxEndAt));
 
-	const a = boxPose(aBox, aEnd, lead);
-	const s = boxPose(sBox, sEnd, lead);
-	const wap = boxPose(wapBox, { ...wapBox, x: wapBox.x + (sEnd.x - sBox.x), y: wapBox.y + (sEnd.y - sBox.y) }, lead);
+	const a = boxPose(aBox, aEnd, marksProgress);
+	const s = boxPose(sBox, sEnd, marksProgress);
+	const wap = boxPose(wapBox, { ...wapBox, x: wapBox.x + (sEnd.x - sBox.x), y: wapBox.y + (sEnd.y - sBox.y) }, marksProgress);
 
-	const aRight = mix(aBox.x, aEnd.x, lead) + mix(aBox.w, aEnd.w, lead);
-	const barStroke = mix(barStrokeRest, barEnd.stroke, lead);
-	const barLeft = aRight + mix(barRest - (aBox.x + aBox.w), barEnd.left - (aEnd.x + aEnd.w), lead);
+	const aRight = mix(aBox.x, aEnd.x, marksProgress) + mix(aBox.w, aEnd.w, marksProgress);
+	const barStroke = mix(barStrokeRest, barEnd.stroke, marksProgress);
+	const barLeft = aRight + mix(barRest - (aBox.x + aBox.w), barEnd.left - (aEnd.x + aEnd.w), marksProgress);
 
 	const closing = easeInOut(seg(t, dotCloseFrom, dotCloseTo));
-	const arenEdge = mix(aBox.x, aEnd.x, lead) - arenLead;
-	const wapEdge = mix(wapEdgeRest, wapEdgeEnd, lead);
+	const arenEdge = mix(aBox.x, aEnd.x, marksProgress) - arenMaskLead;
+	const wapEdge = mix(wapEdgeRest, wapEdgeEnd, marksProgress);
 
 	return {
 		box: {
-			x: mix(restBox.x, collapsedBox.x, follow),
-			y: mix(restBox.y, collapsedBox.y, follow),
-			width: mix(restBox.width, collapsedBox.width, follow),
-			height: mix(restBox.height, collapsedBox.height, follow),
+			x: mix(restBox.x, collapsedBox.x, boxProgress),
+			y: mix(restBox.y, collapsedBox.y, boxProgress),
+			width: mix(restBox.width, collapsedBox.width, boxProgress),
+			height: mix(restBox.height, collapsedBox.height, boxProgress),
 		},
-		closed: follow,
+		closed: boxProgress,
 		a,
 		s,
 		wap,
 		dot: {
-			cx: mix(dotRest.cx, dotEnd.cx, lead),
-			cy: mix(dotRest.cy, dotEnd.cy, lead),
+			cx: mix(dotRest.cx, dotEnd.cx, marksProgress),
+			cy: mix(dotRest.cy, dotEnd.cy, marksProgress),
 			rx: mix(dotRest.rx, dotEnd.rx, closing),
 			ry: mix(dotRest.ry, dotEnd.ry, closing),
 			stroke: mix(dotRest.stroke, dotEnd.stroke, closing),
 		},
-		chevronMorph: lead,
-		headMorph: lead,
+		chevronMorph: marksProgress,
+		headMorph: marksProgress,
 		barX1: barLeft + barStroke / 2,
-		barX2: mix(barJoint, barEnd.joint, lead),
+		barX2: mix(barJoint, barEnd.joint, marksProgress),
 		barStroke,
-		barCentre: mix(barCentreRest, barEnd.centre, lead),
-		dashX1: mix(dashFirstCapRest, dashEnd.firstCap, lead),
-		dashX2: mix(dashLastCapRest, dashEnd.lastCap, lead),
-		dashStroke: mix(dashStrokeRest, dashEnd.stroke, lead),
-		dashCentre: mix(dashCentreRest, dashEnd.centre, lead),
-		dashPattern: `${mix(dashSegRest, dashEnd.seg, lead)} ${mix(dashGapRest, dashEnd.gap, lead)}`,
+		barCentre: mix(barCentreRest, barEnd.centre, marksProgress),
+		dashX1: mix(dashFirstCapRest, dashEnd.firstCap, marksProgress),
+		dashX2: mix(dashLastCapRest, dashEnd.lastCap, marksProgress),
+		dashStroke: mix(dashStrokeRest, dashEnd.stroke, marksProgress),
+		dashCentre: mix(dashCentreRest, dashEnd.centre, marksProgress),
+		dashPattern: `${mix(dashSegRest, dashEnd.seg, marksProgress)} ${mix(dashGapRest, dashEnd.gap, marksProgress)}`,
 		arenFade: { from: arenEdge, to: arenEdge + fadeWidth },
 		wapFade: { from: wapEdge, to: wapEdge + fadeWidth },
 	};

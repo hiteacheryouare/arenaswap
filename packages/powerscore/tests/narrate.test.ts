@@ -11,7 +11,7 @@ const game = (sportType: Game<string>['sportType'], league: string, [away, awayS
 	...extra,
 });
 
-const window = (...scores: [number, number][]): ScoreSnapshot[] => scores.map(([awayScore, homeScore], i) => ({
+const pollsAwayThenHome = (...scores: [awayScore: number, homeScore: number][]): ScoreSnapshot[] => scores.map(([awayScore, homeScore], i) => ({
 	gameId: 'g', timestamp: 1_790_000_000_000 + i * 60_000, homeScore, awayScore,
 }));
 
@@ -55,32 +55,32 @@ describe('the score sentence', () => {
 describe('what just happened', () => {
 	test('a comeback that takes the lead is one sentence, and the score that follows does not repeat the team', () => {
 		const late = game('basketball', 'nba', ['Lakers', 102], ['Celtics', 95], { period: 4, clockSeconds: 130 });
-		expect(reasonFor(late, { history: window([90, 93], [96, 95], [102, 95]) })).toBe('Lakers came back from 3 down to lead. Up 7 with 2:10 left');
+		expect(reasonFor(late, { history: pollsAwayThenHome([90, 93], [96, 95], [102, 95]) })).toBe('Lakers came back from 3 down to lead. Up 7 with 2:10 left');
 	});
 
 	test('a run that takes the lead in a game that started level is one sentence', () => {
 		const late = game('basketball', 'nba', ['Lakers', 102], ['Celtics', 90], { period: 4, clockSeconds: 130 });
-		expect(reasonFor(late, { history: window([90, 90], [92, 96], [102, 90]) })).toBe('Lakers on a 12–0 run to take the lead. Up 12 with 2:10 left');
+		expect(reasonFor(late, { history: pollsAwayThenHome([90, 90], [92, 96], [102, 90]) })).toBe('Lakers on a 12–0 run to take the lead. Up 12 with 2:10 left');
 	});
 
 	test('two teams trading baskets is not a run', () => {
 		const late = game('basketball', 'nba', ['Lakers', 110], ['Celtics', 100], { period: 3, clockSeconds: 300 });
-		expect(reasonFor(late, { history: window([100, 94], [105, 97], [110, 100]) })).toBe('Lakers outscoring Celtics 10–6 in the last 2 minutes. Up 10 in the 3rd quarter');
+		expect(reasonFor(late, { history: pollsAwayThenHome([100, 94], [105, 97], [110, 100]) })).toBe('Lakers outscoring Celtics 10–6 in the last 2 minutes. Up 10 in the 3rd quarter');
 	});
 
 	test('one goal is the score, not a streak', () => {
 		const rink = game('hockey', 'nhl', ['Bruins', 1], ['Rangers', 0], { period: 2, clockSeconds: 600 });
-		expect(reasonFor(rink, { history: window([0, 0], [0, 0], [1, 0]) })).toBe('Bruins up 1 in the 2nd period');
+		expect(reasonFor(rink, { history: pollsAwayThenHome([0, 0], [0, 0], [1, 0]) })).toBe('Bruins up 1 in the 2nd period');
 	});
 
 	test('an equalizer takes the time instead of a second sentence saying "Tied"', () => {
 		const rink = game('hockey', 'nhl', ['Sharks', 2], ['Blues', 2], { period: 3, clockSeconds: 371 });
-		expect(reasonFor(rink, { history: window([1, 2], [1, 2], [2, 2]) })).toBe('Sharks just tied it with 6:11 left');
+		expect(reasonFor(rink, { history: pollsAwayThenHome([1, 2], [1, 2], [2, 2]) })).toBe('Sharks just tied it with 6:11 left');
 	});
 
 	test('a deficit cut but not erased names both margins', () => {
 		const late = game('basketball', 'nba', ['Rockets', 34], ['Mavericks', 39], { period: 2, clockSeconds: 382 });
-		expect(reasonFor(late, { history: window([24, 32], [30, 36], [34, 39]) })).toMatch(/^Rockets cut the deficit from 8 to 5\. Mavericks up 5 in the 2nd quarter$/);
+		expect(reasonFor(late, { history: pollsAwayThenHome([24, 32], [30, 36], [34, 39]) })).toMatch(/^Rockets cut the deficit from 8 to 5\. Mavericks up 5 in the 2nd quarter$/);
 	});
 });
 
@@ -109,7 +109,7 @@ describe('what is at stake', () => {
 			period: 9, topOfInning: false, outs: 1, baseRunners: { first: false, second: true, third: false },
 			seasonType: 'postseason', series: { homeWins: 2, awayWins: 0, bestOf: 5 },
 		});
-		const lines = scoreGame(series, { history: window([3, 0], [3, 0], [3, 2]) }).reasons.map(reason => reason.key);
+		const lines = scoreGame(series, { history: pollsAwayThenHome([3, 0], [3, 0], [3, 2]) }).reasons.map(reason => reason.key);
 		expect(lines).toEqual(['tyingRun', 'cutDeficit', 'state']);
 	});
 });

@@ -23,8 +23,10 @@ const paintedPixels = (canvas: HTMLCanvasElement): number => {
 const canvas = () => cy.get<HTMLCanvasElement>('canvas.popup-confetti-canvas');
 const expectConfetti = () => canvas().should($canvas => expect(paintedPixels($canvas[0]!), 'painted pixels').to.be.greaterThan(0));
 
+const afterTwoFrames = (win: Window) => new Cypress.Promise<void>(resolve => win.requestAnimationFrame(() => win.requestAnimationFrame(() => resolve())));
+
 const expectNoConfetti = () => {
-	cy.window().then(win => new Cypress.Promise<void>(resolve => win.requestAnimationFrame(() => win.requestAnimationFrame(() => resolve()))));
+	cy.window().then(afterTwoFrames);
 	cy.get('@confettiChunk.all').should('have.length', 0);
 	canvas().should($canvas => expect(paintedPixels($canvas[0]!), 'painted pixels').to.equal(0));
 };
@@ -38,7 +40,7 @@ const watchFirstPaint = () => {
 	canvas().then($canvas => {
 		const element = $canvas[0]!;
 		const view = element.ownerDocument.defaultView!;
-		const requestAnimationFrame = view.requestAnimationFrame.bind(view);
+		const requestPopupFrame = view.requestAnimationFrame.bind(view);
 		firstPaint = new Promise<paintedCenter>(resolve => {
 			const look = () => {
 				const { width, height } = element;
@@ -51,11 +53,11 @@ const watchFirstPaint = () => {
 					sumY += Math.floor(pixel / width);
 					painted++;
 				}
-				if (painted === 0) return requestAnimationFrame(look);
+				if (painted === 0) return requestPopupFrame(look);
 				const scale = element.getBoundingClientRect().width / width;
 				resolve({ x: (sumX / painted) * scale, y: (sumY / painted) * scale });
 			};
-			requestAnimationFrame(look);
+			requestPopupFrame(look);
 		});
 	});
 	return () => cy.then(() => firstPaint);

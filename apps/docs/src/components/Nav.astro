@@ -7,10 +7,10 @@ import { localePath, stripLocale } from '../i18n/locales';
 import { currentLocale, useTranslations } from '../i18n/ui';
 
 interface Props {
-	localized?: boolean;
+	hasLocalizedUrls?: boolean;
 }
 
-const { localized = true } = Astro.props;
+const { hasLocalizedUrls = true } = Astro.props;
 
 const locale = currentLocale(Astro.currentLocale);
 const t = useTranslations(locale);
@@ -44,7 +44,7 @@ const currentFor = (path: string) => {
 
 				<div class="nav-end">
 					<ThemeToggle />
-					<LanguageSwitcher localized={localized} />
+					<LanguageSwitcher hasLocalizedUrls={hasLocalizedUrls} />
 					<InstallCta class="nav-cta-desktop" />
 					<button type="button" class="nav-hamburger" id="nav-toggle" aria-label={t('nav.openMenu')} aria-controls="nav-drawer" aria-expanded="false" data-bs-toggle="drawer" data-bs-target="#nav-drawer">
 						<span class="ham-bar"></span>
@@ -65,7 +65,7 @@ const currentFor = (path: string) => {
 			<div class="nav-drawer-cta">
 				<InstallCta class="d-block text-center" />
 			</div>
-			<LanguageSwitcher variant='list' localized={localized} />
+			<LanguageSwitcher variant='list' hasLocalizedUrls={hasLocalizedUrls} />
 		</div>
 	</dialog>
 </header>

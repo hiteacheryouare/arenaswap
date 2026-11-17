@@ -96,6 +96,7 @@ const MultiviewBox = ({ box, game, placement, hidden, onAir, played, audible, st
 		>
 			{game ? <CrestBar game={game} audible={audible} /> : <header className='multiview-bar' />}
 			<div className='multiview-picture'>
+				{/* The user's own logged-in stream has to play the way it does in its own tab. Its DRM and sign-in were only ever tried unsandboxed. */}
 				{/* oxlint-disable-next-line react/iframe-missing-sandbox */}
 				{started && <iframe
 					key={reloaded ? 'reloaded' : 'first'}

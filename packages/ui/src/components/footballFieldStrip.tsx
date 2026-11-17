@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import type { Game, TeamMonoMarks } from '@arenaswap/core/types';
-import { readableOnBlack, resolveTeamColorPair } from '@arenaswap/chromatic';
+import { readableInkOn, resolveTeamColorPair } from '@arenaswap/chromatic';
 import TeamCrest from './teamCrest';
 import {
 	awayEndZoneX,
@@ -149,7 +149,7 @@ const footballFieldStrip = ({ game, monoMarks }: footballFieldStripProps) => {
 				<div
 					key={side}
 					className={`ff-endzone-mark ff-endzone-${side}`}
-					style={{ color: readableOnBlack(color) }}
+					style={{ color: readableInkOn(color) }}
 					aria-hidden='true'
 				>
 					{team.logo && (

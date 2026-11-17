@@ -37,7 +37,7 @@ export interface Ending {
 	balls: number[];
 	plainAgain: number;
 	landsAt: number;
-	pace: number;
+	beatScale: number;
 }
 
 export interface Shot {
@@ -102,7 +102,7 @@ export interface Cut {
 	supers: Super[];
 	popups: PopupPlan[];
 	tabs: TabSwitch[];
-	managedFrom: number;
+	tabsRegisteredFrom: number;
 	landsAt: number;
 	cues: Cue[];
 }

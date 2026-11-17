@@ -44,8 +44,10 @@ export const collegeLeaguesWithOtherConferences: readonly CollegeLeagueId[] = ['
 
 const leaguesWithoutScoreboardConferences: readonly CollegeLeagueId[] = ['ncaamh', 'cbase', 'csoft'];
 
+const defaultDivisionOf = (leagueId: CollegeLeagueId): CollegeDivision => collegeDivisions[leagueId][0]!;
+
 export const defaultCollegeFilter = (leagueId: CollegeLeagueId): CollegeFilter => ({
-	divisions: [collegeDivisions[leagueId][0]!.key],
+	divisions: [defaultDivisionOf(leagueId).key],
 	conferences: [],
 	ranked: false,
 	titleRounds: true,
@@ -119,11 +121,11 @@ export const collegeFetchGroups = (
 ): string[] => {
 	if (!isCollegeLeagueId(leagueId)) return [];
 	const divisions = collegeDivisions[leagueId];
-	const [defaultDivision] = divisions;
-	if (divisions.length === 1 || !filter) return defaultDivision?.groups ? [defaultDivision.groups] : [];
+	const defaultDivision = defaultDivisionOf(leagueId);
+	if (divisions.length === 1 || !filter) return defaultDivision.groups ? [defaultDivision.groups] : [];
 
 	const wanted = new Set(filter.divisions);
-	if (filter.ranked || filter.titleRounds) wanted.add(defaultDivision!.key);
+	if (filter.ranked || filter.titleRounds) wanted.add(defaultDivision.key);
 	for (const conferenceId of filter.conferences) {
 		const entry = directory?.conferences.find(conference => conference.id === conferenceId);
 		if (entry) {
@@ -136,7 +138,7 @@ export const collegeFetchGroups = (
 		const divisionKey = directory?.teamDivision[teamId];
 		if (divisionKey) wanted.add(divisionKey);
 	}
-	if (wanted.size === 0) wanted.add(defaultDivision!.key);
+	if (wanted.size === 0) wanted.add(defaultDivision.key);
 
 	return divisions
 		.filter(division => wanted.has(division.key) && division.groups)
