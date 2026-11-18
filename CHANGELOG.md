@@ -9,6 +9,10 @@
 
 The docs site now builds to the gitignored `apps/docs/dist`, and the Deploy Docs workflow ships it to GitHub Pages with `upload-pages-artifact` and `deploy-pages` instead of committing `docs/` back to `mega`, so local test and typecheck runs no longer rewrite tracked files. PR screenshots go to the hidden `refs/assets/pr` ref through `scripts/prAssets.sh`, which clones never download. Pages' source setting must be "GitHub Actions" for the deploy to succeed.
 
+## Rare games get a test set, and lopsided scores stay centred — 2026-11-18
+
+`cypress/support/safetyNet/rareGames.ts` holds 26 games that almost never happen (152-148, a 5OT final, `Final/Pens`, Olympic 2OT, 90+7', canceled, abandoned, TBD, a 1 v 16 seed) and `rareGames.cy.tsx` checks them in every locale at popup width. It caught the score separator sitting 3.1px off centre on 152-8, so `.game-score-row` is now a `1fr auto 1fr` grid that gives both scores the same width.
+
 ## Games the feed leaves on "live" stop being switch targets — 2026-11-18
 
 `trackProgress` remembers when each live game's score, period, clock or count last moved, and a game past its expected end that has sat unchanged for 30 minutes (`stuckQuietMs`), and isn't delayed, is left out of switching and the Standby Stream check. The background sends those games as `stuckSince`, and their cards show the same "Last updated N minutes ago" line as a league that stopped answering; the timer lives in memory, so a worker restart starts it over.

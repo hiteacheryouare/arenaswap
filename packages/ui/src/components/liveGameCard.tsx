@@ -79,7 +79,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
 				{homeFirst ? homeColumn : awayColumn}
 				<div className='d-flex flex-column align-items-center game-card-center'>
-					<div className='d-flex align-items-center game-score-row'>
+					<div className='game-score-row'>
 						<FlipScore value={leftTeam.score} className='fw-bold lh-1 game-score-value' />
 						{isInningSport
 							? <BaseDiamond

@@ -74,7 +74,7 @@ const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, 
 					<span className='fw-bold text-center text-nowrap team-abbreviation'>{abbr1}</span>
 				</div>
 				<div className='d-flex flex-column align-items-center game-card-center'>
-					<div className='d-flex align-items-center game-score-row'>
+					<div className='game-score-row'>
 						<span className='fw-bold lh-1 game-score-value'>{score1}</span>
 						<span className='game-score-sep' aria-hidden='true' />
 						<span className='fw-bold lh-1 game-score-value'>{score2}</span>

@@ -64,7 +64,7 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 				</div>
 
 				<div className='d-flex flex-column align-items-center game-card-center'>
-					<div className='d-flex align-items-center game-score-row'>
+					<div className='game-score-row'>
 						<span className='fw-bold lh-1 game-score-value'>14</span>
 						<span className='game-score-sep' aria-hidden='true' />
 						<span className='fw-bold lh-1 game-score-value'>10</span>

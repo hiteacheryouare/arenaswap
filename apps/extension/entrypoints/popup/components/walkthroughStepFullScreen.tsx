@@ -61,7 +61,7 @@ const walkthroughStepFullScreen = ({ onNext, onBack }: walkthroughStepFullScreen
 							<Crest logo={teamLogoOnColor(game.away.logo)} abbreviation={game.away.abbr} className='team-crest-32' teamColor={game.away.color} />
 							<span className='fw-bold text-center text-nowrap team-abbreviation'>{game.away.abbr}</span>
 						</div>
-						<div className='d-flex align-items-center game-score-row game-card-center'>
+						<div className='game-score-row game-card-center'>
 							<span className='fw-bold lh-1 game-score-value'>{game.away.score}</span>
 							<span className='game-score-sep' />
 							<span className='fw-bold lh-1 game-score-value'>{game.home.score}</span>

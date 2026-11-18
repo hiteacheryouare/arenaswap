@@ -62,7 +62,7 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 							)}
 						</>
 					) : (
-						<div className='d-flex align-items-center game-score-row'>
+						<div className='game-score-row'>
 							<FlipScore value={leftScore} className={scoreClass(leftScore, rightScore)} />
 							<span className='game-score-sep' aria-hidden='true' />
 							<FlipScore value={rightScore} className={scoreClass(rightScore, leftScore)} />
