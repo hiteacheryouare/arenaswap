@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Games the feed leaves on "live" stop being switch targets — 2026-11-18
+
+`trackProgress` remembers when each live game's score, period, clock or count last moved, and a game past its expected end that has sat unchanged for 30 minutes (`stuckQuietMs`), and isn't delayed, is left out of switching and the Standby Stream check. The background sends those games as `stuckSince`, and their cards show the same "Last updated N minutes ago" line as a league that stopped answering; the timer lives in memory, so a worker restart starts it over.
+
 ## The offseason empty state says when your leagues come back — 2026-11-18
 
 When every league you follow is between seasons, the random empty-state title stays but its subtitle becomes "Back soon: NFL Sep 9 · NHL Oct 7 · NBA Oct 20", soonest first, from the same league schedules Settings already uses. If any league is still in season, or none has a date yet, the usual random line stays.

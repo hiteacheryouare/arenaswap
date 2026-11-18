@@ -17,6 +17,10 @@ export const staleLeagueMinutes = (shedLeagues: LeagueId[], lastGoodAt: LeagueLa
 	return minutes;
 };
 
+export const stuckGameMinutes = (stuckSince: Record<string, number>, nowMs: number): Record<string, number> => Object.fromEntries(
+	Object.entries(stuckSince).map(([gameId, since]) => [gameId, Math.max(0, Math.floor((nowMs - since) / minuteMs))]),
+);
+
 export const formatStaleNote = (minutes: number, t: Translator): string => (
 	minutes < 60 ? t('gameCard.staleMinutes', minutes) : t('gameCard.staleHours', Math.floor(minutes / 60))
 );

@@ -11,6 +11,7 @@ const empty = {
 	standbyStreamTabId: null,
 	slateShedLeagues: [],
 	leagueLastGoodAt: {},
+	stuckSince: {},
 	heldSwitch: null,
 };
 
@@ -34,6 +35,11 @@ describe('BackgroundStateSchema', () => {
 			slateShedLeagues: ['nba', 3, 'nfl'],
 			heldSwitch: { gameId: 'g1', sport: 'soccer' },
 		})).toEqual({ ...empty, slateShedLeagues: ['nba', 'nfl'] });
+	});
+
+	it('keeps only the stuck games that carry a real timestamp', () => {
+		expect(BackgroundStateSchema.parse({ stuckSince: { g1: 1_000, g2: 'soon', g3: null } }).stuckSince).toEqual({ g1: 1_000 });
+		expect(BackgroundStateSchema.parse({ stuckSince: ['g1'] }).stuckSince).toEqual({});
 	});
 
 	it('keeps a held switch the popup can name', () => {

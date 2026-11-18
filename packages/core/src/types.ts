@@ -371,6 +371,7 @@ export interface BackgroundState {
 	standbyStreamTabId: number | null;
 	slateShedLeagues: LeagueId[];
 	leagueLastGoodAt: LeagueLastGoodAt;
+	stuckSince: Record<string, number>;
 	heldSwitch: { gameId: string; sport: PlayBreakSport } | null;
 }
 

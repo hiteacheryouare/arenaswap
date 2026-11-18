@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
-import { createWinProbabilityTracker, summaryStillNeeded, hasMissedItsWindow, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, computeRetryDelayMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, getHistoryWindowMsForGame, maxSnapshotsPerGame, nextCommercialBreak, checkHeldSwitch, holdSwitch, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
+import { createWinProbabilityTracker, summaryStillNeeded, hasMissedItsWindow, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, computeRetryDelayMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, getHistoryWindowMsForGame, stuckSinceOf, trackProgress, maxSnapshotsPerGame, nextCommercialBreak, checkHeldSwitch, holdSwitch, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
 import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, fetchNextScheduledStart, scoreboardRefreshMs, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces } from '@arenaswap/sideline';
 import type { CommercialBreakEntry, HeldSwitch, PlayBreakSport } from '@arenaswap/core';
 import { computeStandbyStreamDecision, usableStandbyTabId } from '../utils/standbyStreamLogic';
@@ -54,6 +54,7 @@ import {
 	sportTypeConfigMap,
 	leagueConfigMap,
 } from '@arenaswap/core/constants';
+import type { GameProgressMap } from '@arenaswap/core';
 import type {
 	CollegeLeagueId,
 	ConferenceDirectory,
@@ -186,6 +187,9 @@ export default defineBackground(() => {
 	let guideSlateRequest: Promise<GuideSlate> | null = null;
 	let slateShedLeagues: LeagueId[] = [];
 	const leagueLastGoodAt: LeagueLastGoodAt = {};
+	let gameProgress: GameProgressMap = {};
+	let stuckSince: Record<string, number> = {};
+	const switchableScores = (list: LiveScore[]): LiveScore[] => list.filter(score => stuckSince[score.gameId] === undefined);
 	let endRecords: gameEndRecords = {};
 	const durationRequested = new Set<string>();
 	let currentScores: LiveScore[] = [];
@@ -428,6 +432,7 @@ export default defineBackground(() => {
 		standbyStreamTabId,
 		slateShedLeagues,
 		leagueLastGoodAt,
+		stuckSince,
 		heldSwitch: heldSwitch && { gameId: heldSwitch.gameId, sport: heldSwitch.sport },
 	});
 
@@ -766,7 +771,7 @@ export default defineBackground(() => {
 
 	const resolveSwitchTarget = (openTabIds: Set<number>, activeTabId: number) => chooseSwitchTarget({
 		registry: tabRegistry.filter(reg => openTabIds.has(reg.tabId)),
-		scores: currentScores,
+		scores: switchableScores(currentScores),
 		activeTabId,
 		sensitivity: prefs.sensitivity,
 		cooldownSeconds: prefs.cooldownSeconds,
@@ -789,7 +794,7 @@ export default defineBackground(() => {
 			const registeredGameIds = new Set(
 				tabRegistry.filter(reg => openTabIds.has(reg.tabId)).map(reg => reg.gameId)
 			);
-			const registeredScores = currentScores.filter(s => registeredGameIds.has(s.gameId));
+			const registeredScores = switchableScores(currentScores).filter(s => registeredGameIds.has(s.gameId));
 			if (registeredScores.length > 0 && registeredScores.every(s => s.total < prefs.standbyStreamThreshold)) return;
 		}
 
@@ -1033,13 +1038,15 @@ export default defineBackground(() => {
 			favoriteTeamIds,
 		)));
 		currentScores = scores;
+		gameProgress = trackProgress(gameProgress, liveGames, now);
+		stuckSince = stuckSinceOf(liveGames, gameProgress, now);
 		updateHistory(freshGames);
 		updatePowerScoreHistory(liveGames, scores, changedLeagueId);
 		const pruned = pruneStaleHistory(now);
 
 		const tabs = getManagedTabIds().length > 0 || mutedTabIds.size > 0 ? await readTabs() : undefined;
 		if (tabs) await settleFinishedTabs(finishedGames, tabs);
-		const switched = await evaluateSwitch({ liveGames, scores, freshGames, now, allowTabSwitch, tabs });
+		const switched = await evaluateSwitch({ liveGames, scores: switchableScores(scores), freshGames, now, allowTabSwitch, tabs });
 
 		if (changedLeagueId === null || freshGames.length > 0 || pruned) persistHistoryToSession();
 		broadcastScoresUpdated();

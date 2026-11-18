@@ -2,20 +2,26 @@ import { createContext, useCallback, useContext, useMemo, useSyncExternalStore }
 import type { ReactNode } from 'react';
 import type { LeagueId, LeagueLastGoodAt } from '@arenaswap/core/types';
 import { useT } from './i18nContext';
-import { formatStaleNote, staleLeagueMinutes } from './staleLeagues';
+import { formatStaleNote, staleLeagueMinutes, stuckGameMinutes } from './staleLeagues';
 import type { StaleLeagueMinutes } from './staleLeagues';
 
 const staleClockMs = 15_000;
 const secondMs = 1_000;
 
-const StaleLeaguesContext = createContext<StaleLeagueMinutes>({});
+interface staleMinutes {
+	leagues: StaleLeagueMinutes;
+	games: Record<string, number>;
+}
 
-export const StaleLeaguesProvider = ({ shedLeagues, lastGoodAt, children }: {
+const StaleLeaguesContext = createContext<staleMinutes>({ leagues: {}, games: {} });
+
+export const StaleLeaguesProvider = ({ shedLeagues, lastGoodAt, stuckSince, children }: {
 	shedLeagues: LeagueId[] | undefined;
 	lastGoodAt: LeagueLastGoodAt | undefined;
+	stuckSince?: Record<string, number>;
 	children: ReactNode;
 }) => {
-	const stale = (shedLeagues?.length ?? 0) > 0;
+	const stale = (shedLeagues?.length ?? 0) > 0 || Object.keys(stuckSince ?? {}).length > 0;
 	const subscribe = useCallback((onTick: () => void) => {
 		if (!stale) return () => {};
 		const timer = setInterval(onTick, staleClockMs);
@@ -25,16 +31,17 @@ export const StaleLeaguesProvider = ({ shedLeagues, lastGoodAt, children }: {
 	const nowMs = useSyncExternalStore(subscribe, () => Math.floor(Date.now() / secondMs) * secondMs);
 
 	const minutes = useMemo(
-		() => staleLeagueMinutes(shedLeagues ?? [], lastGoodAt ?? {}, nowMs),
-		[shedLeagues, lastGoodAt, nowMs]
+		() => ({ leagues: staleLeagueMinutes(shedLeagues ?? [], lastGoodAt ?? {}, nowMs), games: stuckGameMinutes(stuckSince ?? {}, nowMs) }),
+		[shedLeagues, lastGoodAt, stuckSince, nowMs]
 	);
 
 	return <StaleLeaguesContext.Provider value={minutes}>{children}</StaleLeaguesContext.Provider>;
 };
 
-export const StaleLeagueNote = ({ league }: { league: LeagueId }) => {
+export const StaleLeagueNote = ({ league, gameId }: { league: LeagueId; gameId?: string }) => {
 	const t = useT();
-	const minutes = useContext(StaleLeaguesContext)[league];
+	const stale = useContext(StaleLeaguesContext);
+	const minutes = stale.leagues[league] ?? (gameId === undefined ? undefined : stale.games[gameId]);
 	if (minutes === undefined) return null;
 
 	return (

@@ -102,6 +102,11 @@ export const normalizeLeagueLastGoodAt = (value: unknown): LeagueLastGoodAt => {
 	return result;
 };
 
+export const normalizeStuckSince = (value: unknown): Record<string, number> => {
+	if (!isObjectRecord(value)) return {};
+	return Object.fromEntries(Object.entries(value).filter((entry): entry is [string, number] => isFiniteNumber(entry[1])));
+};
+
 export const isGameArray = (value: unknown): value is Game[] => Array.isArray(value);
 
 export const isLeagueLogoMap = (value: unknown): value is LeagueLogoMap => isObjectRecord(value);

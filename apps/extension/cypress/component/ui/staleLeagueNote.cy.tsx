@@ -179,3 +179,28 @@ describe('a live card whose league stopped answering', () => {
 		});
 	});
 });
+
+describe('a live card whose game has stopped moving in the feed', () => {
+	const mountStuck = (stuckSince: Record<string, number>) => {
+		cy.viewport(popupWidth, 520);
+		cy.mount(
+			<TranslationContext.Provider value={translatorFor(en)}>
+				<StaleLeaguesProvider shedLeagues={[]} lastGoodAt={{}} stuckSince={stuckSince}>
+					<div style={{ width: `${cardWidth}px` }}>
+						<LiveGameCard {...cardProps} />
+					</div>
+				</StaleLeaguesProvider>
+			</TranslationContext.Provider>,
+		);
+	};
+
+	it('says when the score last changed, in the same words as a league that stopped answering', () => {
+		mountStuck({ g1: Date.now() - (48 * minute) - past });
+		staleLine().should('have.text', 'Last updated 48 minutes ago');
+	});
+
+	it('says nothing about a different game that is stuck', () => {
+		mountStuck({ other: Date.now() - (48 * minute) });
+		cy.get('.bi-clock-history').should('not.exist');
+	});
+});

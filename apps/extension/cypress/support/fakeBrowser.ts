@@ -36,6 +36,7 @@ const emptyState = (): BackgroundState => ({
 	standbyStreamTabId: null,
 	slateShedLeagues: [],
 	leagueLastGoodAt: {},
+	stuckSince: {},
 	heldSwitch: null,
 });
 

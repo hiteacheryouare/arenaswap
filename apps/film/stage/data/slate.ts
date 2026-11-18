@@ -149,6 +149,7 @@ const createSlate = (raw: FilmSlate, pregame: PregameData): Slate => {
 			standbyStreamTabId: null,
 			slateShedLeagues: [],
 			leagueLastGoodAt: {},
+			stuckSince: {},
 			heldSwitch: null,
 		};
 	};
@@ -164,6 +165,7 @@ const createSlate = (raw: FilmSlate, pregame: PregameData): Slate => {
 		standbyStreamTabId: null,
 		slateShedLeagues: [],
 		leagueLastGoodAt: {},
+		stuckSince: {},
 		heldSwitch: null,
 	});
 

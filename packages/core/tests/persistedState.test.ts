@@ -57,6 +57,7 @@ describe('a worker restart with everything intact', () => {
 			standbyStreamTabId: 41,
 			slateShedLeagues: ['nba', 'nhl'],
 			leagueLastGoodAt: { nba: 1_760_000_000_000, nhl: 1_760_000_060_000 },
+			stuckSince: { 'game-1': 1_760_000_000_000 },
 			heldSwitch: { gameId: 'game-1', sport: 'basketball' },
 		};
 
@@ -136,7 +137,7 @@ describe('storage that came back corrupt', () => {
 
 		expect(parsed).toEqual({
 			games: [], scores: [], leagueLogos: {}, scoreHistory: {}, powerScoreHistory: {},
-			gameBoosts: {}, onStandbyStream: false, standbyStreamTabId: null, slateShedLeagues: [], leagueLastGoodAt: {}, heldSwitch: null,
+			gameBoosts: {}, onStandbyStream: false, standbyStreamTabId: null, slateShedLeagues: [], leagueLastGoodAt: {}, stuckSince: {}, heldSwitch: null,
 		});
 	});
 

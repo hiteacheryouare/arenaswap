@@ -2645,6 +2645,59 @@ describe('a scoreboard ESPN refused', () => {
 	});
 });
 
+describe('a live game the feed has left behind', () => {
+	const nbaOnly: Partial<UserPreferences> = { enabledLeagues: ['nba' as LeagueId], enabled: false };
+	const startedAt = Date.UTC(2026, 10, 17, 0, 0);
+	const pastItsEnd = startedAt + (5 * 60 * 60_000);
+
+	const lingering = (over: Partial<Game> = {}): Game => ({
+		id: 'lingering', league: 'nba' as LeagueId, sportType: 'basketball', status: 'in',
+		period: 4, clockSeconds: 0, startTime: new Date(startedAt).toISOString(),
+		homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 101 },
+		awayTeam: { id: 'a', name: 'Away', abbreviation: 'AWY', score: 99 },
+		...over,
+	});
+
+	const stuckSince = async () => (await sendMessage({ type: 'GET_STATE' }) as { stuckSince: Record<string, number> }).stuckSince;
+
+	const pollOnce = async () => {
+		fetchMock.mockClear();
+		for (let waited = 0; waited < 120_000 && fetchMock.mock.calls.length === 0; waited += 1_000) {
+			jest.advanceTimersByTime(1_000);
+			await drain();
+		}
+	};
+
+	const quietFor = async (quietGame: Game, minutes: number) => {
+		await loadBackground({ prefs: nbaOnly, initialSystemTime: pastItsEnd, fetchReturnValue: { games: [quietGame], leagueLogos: {}, shedLeagues: [] } });
+		await pollOnce();
+		jest.setSystemTime(Date.now() + (minutes * 60_000));
+		await pollOnce();
+	};
+
+	test('is reported once it has sat unchanged for half an hour past its expected end', async () => {
+		await quietFor(lingering(), 31);
+		expect(Object.keys(await stuckSince())).toEqual(['lingering']);
+	});
+
+	test('is not reported after a shorter quiet spell', async () => {
+		await quietFor(lingering(), 20);
+		expect(await stuckSince()).toEqual({});
+	});
+
+	test('is never reported while it is in a delay', async () => {
+		await quietFor(lingering({ delayed: true, delayDescription: 'Rain Delay' }), 90);
+		expect(await stuckSince()).toEqual({});
+	});
+
+	test('stops being reported the moment the score moves again', async () => {
+		await quietFor(lingering(), 31);
+		fetchMock.mockResolvedValue({ games: [lingering({ homeTeam: { id: 'h', name: 'Home', abbreviation: 'HOM', score: 103 } })], leagueLogos: {}, shedLeagues: [] });
+		await pollOnce();
+		expect(await stuckSince()).toEqual({});
+	});
+});
+
 describe('the team marks the guide draws', () => {
 	const nbaOnly: Partial<UserPreferences> = { enabledLeagues: ['nba' as LeagueId], enabled: false };
 	const marks = { dark: 'dark.png', scoreboard: 'scoreboard.png' };

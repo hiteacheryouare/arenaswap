@@ -112,7 +112,7 @@ const liveGameCard = ({ game, excitementResult, favoriteTeamIds, onToggleFavorit
 			</div>
 
 			<GameMeta game={game} bettingPrefs={bettingPrefs} dark interactive={interactive} />
-			<StaleLeagueNote league={game.league} />
+			<StaleLeagueNote league={game.league} gameId={game.id} />
 
 			{excitementResult && (
 				<div className='d-flex align-items-center gap-3 game-card-ps-bar-row'>

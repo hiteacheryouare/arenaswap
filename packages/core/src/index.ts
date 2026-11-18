@@ -8,6 +8,8 @@ export { fantasyRosterLimit, fantasyRosterStorageKey, normalizeFantasyRoster, ro
 export type { FantasyRosterEntry, FantasyScoringOverrides } from './fantasy';
 export { chooseSwitchTarget, getFavoriteTeamCount, getHistoryWindowMsForGame, maxSnapshotsPerGame, rivalSidesOf, nextClockStall, recentSnapshots, retainSnapshots, scoreLiveGame, scoreOptionsFor, scoringContextFor, toLegacyPowerScoreResult, toLiveScore, toScoreSnapshot, toScoringGame } from './scoring';
 export { hasCommercialBreaks, nextCommercialBreak } from './commercialBreaks';
+export { isStuckLive, stuckQuietMs, stuckSinceOf, trackProgress } from './stuckGames';
+export type { GameProgress, GameProgressMap } from './stuckGames';
 export type { CommercialBreakEntry, CommercialBreakInput, CommercialBreakKind } from './commercialBreaks';
 export { checkHeldSwitch, holdSwitch, isDecisiveMoment, isPlayStopped, markPlay, playBreakCapMs, playBreakSport, reachedPlayBreak } from './playBreaks';
 export type { HeldSwitch, HoldCheck, HoldTarget, HoldVerdict, PlayBreakSport, PlayMark } from './playBreaks';

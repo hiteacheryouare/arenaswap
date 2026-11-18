@@ -62,6 +62,7 @@ export const liveState = (): BackgroundState => ({
 	standbyStreamTabId: null,
 	slateShedLeagues: [],
 	leagueLastGoodAt: {},
+	stuckSince: {},
 	heldSwitch: null,
 });
 

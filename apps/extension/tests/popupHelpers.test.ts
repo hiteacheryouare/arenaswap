@@ -443,6 +443,7 @@ describe('normalizeBackgroundState', () => {
 			standbyStreamTabId: null,
 			slateShedLeagues: [],
 			leagueLastGoodAt: {},
+			stuckSince: {},
 			heldSwitch: null,
 		};
 		expect(normalizeBackgroundState(null)).toEqual(emptyState);

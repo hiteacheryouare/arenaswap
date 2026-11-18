@@ -630,7 +630,7 @@ export default () => {
 
 	return (
 		<TranslationContext.Provider value={i18n.t}>
-		<StaleLeaguesProvider shedLeagues={data?.slateShedLeagues} lastGoodAt={data?.leagueLastGoodAt}>
+		<StaleLeaguesProvider shedLeagues={data?.slateShedLeagues} lastGoodAt={data?.leagueLastGoodAt} stuckSince={data?.stuckSince}>
 		<div className='popup-root'>
 			<canvas ref={confettiCanvasRef} className='popup-confetti-canvas' aria-hidden='true' />
 			<ToastContainer toasts={toasts} onDismiss={dismissToast} onPause={pauseToast} onResume={resumeToast} />

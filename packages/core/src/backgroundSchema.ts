@@ -9,6 +9,7 @@ import {
 	normalizePowerScoreHistory,
 	normalizeScoreHistory,
 	normalizeScores,
+	normalizeStuckSince,
 } from './typeGuards';
 import type { PlayBreakSport } from './playBreaks';
 import type { BackgroundState, LeagueId } from './types';
@@ -24,6 +25,7 @@ const defaultState = (): BackgroundState => ({
 	standbyStreamTabId: null,
 	slateShedLeagues: [],
 	leagueLastGoodAt: {},
+	stuckSince: {},
 	heldSwitch: null,
 });
 
@@ -51,5 +53,6 @@ export const BackgroundStateSchema = z.catch(z.object({
 	standbyStreamTabId: normalized(null, v => typeof v === 'number' ? v : null),
 	slateShedLeagues:   normalized([], v => Array.isArray(v) ? v.filter((id): id is LeagueId => typeof id === 'string') : []),
 	leagueLastGoodAt:   normalized({}, normalizeLeagueLastGoodAt),
+	stuckSince:         normalized({}, normalizeStuckSince),
 	heldSwitch:         normalized(null, normalizeHeldSwitch),
 }), defaultState);
