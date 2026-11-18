@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Upcoming cards show a delay — 2026-11-17
+
+A weather delay before the start used to show only in game detail; the upcoming card kept showing the original start time and nothing else. It now gets the same pause icon, delay reason and amber outline as a delayed live card, with the start time left in place.
+
 ## Olympic medal games play overtime to a goal — 2026-11-17
 
 Medal games have no shootout, but only NHL and men's college hockey were treated as playing overtime until someone scores, so an Olympic gold or bronze medal game in a second overtime read "SO". `playsOvertimeUntilAGoal` in `gameFormat.ts` now decides this for both the card and the box score, and it spots medal games by their postseason label.

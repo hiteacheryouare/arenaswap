@@ -44,12 +44,12 @@ describe('timeout allotment by sport', () => {
 	});
 });
 
-test('a delayed game that has not started takes the league-mark ink of its normal card', () => {
+test('a delayed game that has not started takes the league-mark ink of the delayed card it shows', () => {
 	const colors = ['#13274F', '#FDB927', '#7BAFD4', '#FF6B00', '#E31837', '#00843D', '#FFFFFF', '#000000', '#C4CED4', '#4B92DB'];
 	for (const away of colors) {
 		for (const home of colors) {
 			const scheduled = makeGame('mlb', { status: 'pre', sportType: 'baseball', awayTeam: { id: 'a', name: 'A', abbreviation: 'A', score: 0, color: away }, homeTeam: { id: 'h', name: 'H', abbreviation: 'H', score: 0, color: home } });
-			expect(leagueMarkOnColor({ ...scheduled, delayed: true })).toBe(leagueMarkOnColor(scheduled));
+			expect(leagueMarkOnColor({ ...scheduled, delayed: true })).toBe(leagueMarkOnColor({ ...scheduled, status: 'in', delayed: true }));
 		}
 	}
 });

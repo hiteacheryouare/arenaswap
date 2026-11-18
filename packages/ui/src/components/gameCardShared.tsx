@@ -102,7 +102,7 @@ export const buildGameCardSurface = (game: Game, delayed = false): gameCardSurfa
 export const leagueMarkOnColor = (game: Game): boolean => {
 	if (game.status === 'post') return false;
 	const { leftColor, rightColor } = buildGameCardSurface(game);
-	return matchupSurface(leftColor, rightColor, game.status === 'in' && game.delayed === true).inks.left === '#ffffff';
+	return matchupSurface(leftColor, rightColor, game.delayed === true).inks.left === '#ffffff';
 };
 
 export const buildCardShellProps = (game: Game, t: Translator, onOpenGameDetail: (gameId: string) => void, interactive: boolean) => ({

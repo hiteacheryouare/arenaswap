@@ -15,8 +15,9 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 	const homeFavoriteTeamKey = createFavoriteTeamKey(game.league, game.homeTeam.id);
 	const awayFavorited = favoriteTeamIds.has(awayFavoriteTeamKey);
 	const homeFavorited = favoriteTeamIds.has(homeFavoriteTeamKey);
+	const isDelayed = game.delayed === true;
 	const shellProps = buildCardShellProps(game, t, onOpenGameDetail, interactive);
-	const surface = buildGameCardSurface(game);
+	const surface = buildGameCardSurface(game, isDelayed);
 	const homeFirst = isHomeFirst(game);
 
 	const awayColumn = <TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' surface={surface.awayColor} interactive={interactive} />;
@@ -24,13 +25,24 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 
 	return (
 		<div
-			className={`game-card${interactive ? ' game-card-clickable' : ' game-card-lift'} is-team-colored`}
+			className={`game-card${interactive ? ' game-card-clickable' : ' game-card-lift'} is-team-colored${isDelayed ? ' is-delayed' : ''}`}
 			style={surface.style}
 			{...shellProps}
 		>
 			{interactive && <CardDetailsButton game={game} onOpenGameDetail={onOpenGameDetail} />}
-			{(leagueSlot || game.postseasonLabel || game.isPreseason || game.conference) && (
-				<CardStatusRow league={leagueSlot} conference={<ConferenceMark game={game} />}><SeasonLabel game={game} /></CardStatusRow>
+			{(leagueSlot || game.postseasonLabel || game.isPreseason || game.conference || isDelayed) && (
+				<CardStatusRow
+					league={leagueSlot}
+					conference={<ConferenceMark game={game} />}
+					status={isDelayed ? (
+						<span className='d-flex align-items-center gap-1 fw-bold text-uppercase delay-status-label'>
+							<i className='bi bi-pause-fill' />
+							{game.delayDescription ?? t('gameCard.delay')}
+						</span>
+					) : undefined}
+				>
+					<SeasonLabel game={game} />
+				</CardStatusRow>
 			)}
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
