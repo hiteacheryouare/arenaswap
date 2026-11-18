@@ -10,8 +10,12 @@ interface CompetitorName {
 
 export const isCanceledStatus = (statusName?: string): boolean => /CANCEL/i.test(statusName ?? '');
 
+export const isAbandonedStatus = (statusName?: string): boolean => /ABANDON/i.test(statusName ?? '');
+
 export const readDisruption = (statusName: string | undefined, state: Game['status']): Disruption | undefined => {
 	const name = statusName ?? '';
+	if (isCanceledStatus(name)) return 'canceled';
+	if (isAbandonedStatus(name)) return 'abandoned';
 	if (/POSTPONED/i.test(name)) return 'postponed';
 	if (/FORFEIT/i.test(name)) return 'forfeit';
 	if (/SUSPEND/i.test(name) && state === 'post') return 'suspended';

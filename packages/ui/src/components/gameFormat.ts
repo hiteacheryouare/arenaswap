@@ -63,6 +63,8 @@ export const formatDisruption = (game: Pick<Game, 'disruption' | 'postponedReaso
 	}
 	if (game.disruption === 'suspended') return t('gameCard.suspended');
 	if (game.disruption === 'forfeit') return t('gameCard.forfeit');
+	if (game.disruption === 'canceled') return t('gameCard.canceled');
+	if (game.disruption === 'abandoned') return t('gameCard.abandoned');
 	return undefined;
 };
 

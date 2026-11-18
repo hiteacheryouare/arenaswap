@@ -5,7 +5,7 @@ import { readCollegeBracket } from './collegeBracket';
 import { parseClockTenths, parseClockToSeconds, parseStoppageMinutes } from './gameClock';
 import { toLeagueSchedule } from './leagueCalendar';
 import { collegeBaseballLeagues, gradePostseason, readEventHeadline } from './postseasonRound';
-import { isCanceledStatus, readDelayKind, readDisruption, readDoubleheader, readForfeitWinner, readMakeupDate, readPostponedReason } from './disruption';
+import { isAbandonedStatus, isCanceledStatus, readDelayKind, readDisruption, readDoubleheader, readForfeitWinner, readMakeupDate, readPostponedReason } from './disruption';
 import { detailClock, parseBroadcastLogos, parseConference, parseGoalEvents } from './scoreboardExtras';
 import {
 	EspnSummarySchema,
@@ -618,7 +618,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 	const away = comp.competitors.find(c => c.homeAway === 'away');
 	if (!home || !away) return null;
 	const status = comp.status;
-	if (isCanceledStatus(status.type?.name)) return null;
+	if (isCanceledStatus(status.type?.name) && comp.series?.completed === true) return null;
 	const isDelayed = /delay|suspend/i.test(status.type?.name ?? '');
 	const delayDescription = isDelayed ? (status.type?.description?.trim() || undefined) : undefined;
 	const leagueConfig = leagueConfigMap[league];
@@ -629,7 +629,8 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 	const parsedState = parseStatus(status);
 	if (!parsedState) return null;
 	const isSuspendedMidGame = parsedState === 'post' && status.type?.completed === false && isDelayed && !isInningSport;
-	const state = isSuspendedMidGame ? 'in' : parsedState;
+	const calledOff = isCanceledStatus(status.type?.name) || isAbandonedStatus(status.type?.name);
+	const state = calledOff ? 'post' : isSuspendedMidGame ? 'in' : parsedState;
 	const disruption = readDisruption(status.type?.name, state);
 	const headline = readEventHeadline(comp.notes);
 	const situation = comp.situation;

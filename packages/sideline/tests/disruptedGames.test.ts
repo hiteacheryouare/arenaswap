@@ -9,6 +9,16 @@ const parseFixture = (name: string) => {
 	return parseScoreboardEvents({ events: [event] }, league);
 };
 
+interface fixtureEvent {
+	competitions: { status: { type: Record<string, unknown> }; series?: unknown }[];
+}
+
+const withStatus = (name: string, edit: (event: fixtureEvent) => void) => {
+	const { league, event } = JSON.parse(readFileSync(resolve(__dirname, 'fixtures/scoreboards', `${name}.json`), 'utf8')) as { league: LeagueId; event: fixtureEvent };
+	edit(event);
+	return parseScoreboardEvents({ events: [event] }, league);
+};
+
 describe('games that are not played as scheduled', () => {
 	test('a rainout is postponed with its reason and makeup day, not a 0-0 final', () => {
 		const [game] = parseFixture('mlbPostponedRain');
@@ -26,8 +36,23 @@ describe('games that are not played as scheduled', () => {
 		expect(game!.isMakeup).toBe(true);
 	});
 
-	test('a canceled game is dropped', () => {
+	test('a canceled game the series no longer needs is dropped', () => {
 		expect(parseFixture('mlsCanceledGame3')).toEqual([]);
+	});
+
+	test('any other canceled game stays on the slate as finished and canceled', () => {
+		const [game] = withStatus('mlsCanceledGame3', event => { delete event.competitions[0]!.series; });
+		expect(game!.status).toBe('post');
+		expect(game!.disruption).toBe('canceled');
+	});
+
+	test('an abandoned match is finished, abandoned and keeps its score', () => {
+		const [game] = withStatus('mlsCanceledGame3', event => {
+			delete event.competitions[0]!.series;
+			event.competitions[0]!.status.type = { id: '30', name: 'STATUS_ABANDONED', state: 'in', completed: false, description: 'Abandoned', detail: 'Abandoned', shortDetail: 'Abd' };
+		});
+		expect(game!.status).toBe('post');
+		expect(game!.disruption).toBe('abandoned');
 	});
 
 	test('a forfeit goes to the team the note names, even when the other side outscored it', () => {

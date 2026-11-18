@@ -836,6 +836,8 @@
 		"postponedTravel": "行程",
 		"makeupDate": "補賽 {date}",
 		"suspended": "保留比賽",
+		"canceled": "取消",
+		"abandoned": "中止",
 		"forfeit": "沒收比賽",
 		"forfeitWinner": "{team}因對手棄權獲勝",
 		"doubleheaderGame": "第{game}場，共2場",

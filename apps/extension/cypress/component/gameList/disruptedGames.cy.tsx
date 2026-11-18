@@ -31,6 +31,18 @@ const forfeit: Game = {
 	homeTeam: { id: 'stmn', name: 'St. Thomas Tommies', abbreviation: 'STMN', score: 69, color: '#510c76' },
 	awayTeam: { id: 'kc', name: 'Kansas City Roos', abbreviation: 'KC', score: 76, color: '#0055a4' },
 };
+const canceled: Game = { ...baseball, id: 'canceled', disruption: 'canceled' };
+const abandoned: Game = {
+	...baseball,
+	id: 'abandoned',
+	league: 'mls',
+	sportType: 'soccer',
+	disruption: 'abandoned',
+	period: 2,
+	clockSeconds: 67 * 60,
+	homeTeam: { id: 'phi', name: 'Philadelphia Union', abbreviation: 'PHI', score: 2, color: '#071b2c' },
+	awayTeam: { id: 'chi', name: 'Chicago Fire FC', abbreviation: 'CHI', score: 1, color: '#7ccdef' },
+};
 const doubleheader: Game = { ...baseball, id: 'dh', homeTeam: { ...baseball.homeTeam, score: 5 }, awayTeam: { ...baseball.awayTeam, score: 4 }, doubleheaderGame: 1, isMakeup: true };
 
 const cardProps = {
@@ -89,6 +101,21 @@ describe('games that are over for today without an ordinary result', () => {
 		cy.get('.final-status-label').should('have.text', en.gameCard.forfeit);
 		cy.get('.game-score-value').each(score => expect(score).to.have.class('is-loser'));
 		cy.get('.game-shootout-score').should('have.text', 'STMN wins by forfeit');
+	});
+
+	it('a canceled game says so, with no score', () => {
+		mountCard(canceled);
+		cy.get('.final-status-label').should('have.text', en.gameCard.canceled);
+		cy.get('.game-score-value').should('not.exist');
+		cy.get('.pre-game-vs').should('be.visible');
+	});
+
+	it('an abandoned match keeps its score and the minute it stopped, with no loser', () => {
+		mountCard(abandoned);
+		cy.get('.final-status-label').should('have.text', en.gameCard.abandoned);
+		cy.get('.game-score-value').should('have.length', 2);
+		cy.get('.game-score-value.is-loser').should('not.exist');
+		cy.contains('.game-period', "67'").should('be.visible');
 	});
 
 	it('a doubleheader makeup says which game it is', () => {

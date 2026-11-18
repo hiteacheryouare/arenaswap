@@ -3,6 +3,7 @@ import { isHomeFirst, leagueConfigMap, resolveLeagueLogoUrl } from '@arenaswap/c
 import type { Game, LeagueLogoMap, Team, TeamMonoLogoMap, TeamMonoMarks } from '@arenaswap/core/types';
 import { resolveTeamColorPair } from '@arenaswap/chromatic';
 import CrestDisc from '@arenaswap/ui/src/components/crestDisc';
+import { formatDisruption } from '@arenaswap/ui/src/components/gameFormat';
 import InningHalfIcon from '@arenaswap/ui/src/components/inningHalfIcon';
 import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
 import { leagueLabels } from '@arenaswap/ui/src/components/popupChrome';
@@ -58,7 +59,8 @@ const BarStatus = ({ game, startMs }: { game: Game; startMs: number }) => {
 	if (game.status === 'pre') return <span className='guide-bar-time'>{formatTime(startMs)}</span>;
 	if (game.status === 'post') {
 		const final = i18n.t('gameCard.final');
-		return <span className='guide-bar-status'>{game.finalPeriodSuffix ? `${final}/${game.finalPeriodSuffix}` : final}</span>;
+		const label = formatDisruption(game, i18n.t) ?? (game.finalPeriodSuffix ? `${final}/${game.finalPeriodSuffix}` : final);
+		return <span className='guide-bar-status'>{label}</span>;
 	}
 	const isInningSport = leagueConfigMap[game.league]?.periodFormat === 'innings';
 	const status = resolveStatus(game, isInningSport, i18n.t);
@@ -85,7 +87,7 @@ const GuideBar = ({ bar, fromMs, selected, onOpen, mono, theme }: guideBarProps)
 	const left = msToPx(bar.startMs, fromMs);
 	const width = Math.max(msToPx(bar.endMs, fromMs) - left, 24);
 	const { awayTeam: away, homeTeam: home } = game;
-	const scored = game.status !== 'pre' && game.disruption !== 'postponed';
+	const scored = game.status !== 'pre' && game.disruption !== 'postponed' && game.disruption !== 'canceled';
 	const decided = game.status === 'post' && !game.disruption && away.score !== home.score;
 	const network = game.status === 'pre' ? game.broadcasts?.[0] : undefined;
 	const homeFirst = isHomeFirst(game);

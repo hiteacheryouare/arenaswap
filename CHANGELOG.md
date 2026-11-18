@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Canceled and abandoned games get their own cards — 2026-11-18
+
+A canceled game used to vanish from the slate; it now shows "Canceled" with no score, like a postponed game, unless it's a series game the series no longer needs. An abandoned match (matched on `ABANDON` in the status name, which no recorded match has confirmed yet) keeps its score and the minute it stopped with nobody dimmed, and the Guide now names postponed, canceled and abandoned games instead of calling them Final.
+
 ## A delayed clock goes quiet by weight — 2026-11-18
 
 During a delay the frozen clock on a live card drops from bold to regular instead of fading, because the delayed backdrop leaves the worst team-colour pairing at 3.08:1 and any fade pushed some matchups under the 3:1 floor. Mercy-rule and rain-shortened finals already arrive as `Final/5` and now have a test that says so.

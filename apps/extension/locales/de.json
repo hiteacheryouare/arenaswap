@@ -836,6 +836,8 @@
 		"postponedTravel": "Anreise",
 		"makeupDate": "Nachholspiel {date}",
 		"suspended": "Unterbrochen",
+		"canceled": "Abgesagt",
+		"abandoned": "Abgebrochen",
 		"forfeit": "Kampflos",
 		"forfeitWinner": "{team} gewinnt kampflos",
 		"doubleheaderGame": "Spiel {game} von 2",

@@ -836,6 +836,8 @@
 		"postponedTravel": "이동",
 		"makeupDate": "재편성 {date}",
 		"suspended": "서스펜디드",
+		"canceled": "취소",
+		"abandoned": "중단",
 		"forfeit": "몰수게임",
 		"forfeitWinner": "{team} 몰수승",
 		"doubleheaderGame": "더블헤더 {game}차전",

@@ -836,6 +836,8 @@
 		"postponedTravel": "Viaje",
 		"makeupDate": "Reposición {date}",
 		"suspended": "Suspendido",
+		"canceled": "Cancelado",
+		"abandoned": "Abandonado",
 		"forfeit": "Forfeit",
 		"forfeitWinner": "{team} gana por forfeit",
 		"doubleheaderGame": "Juego {game} de 2",

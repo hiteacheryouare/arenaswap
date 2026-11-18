@@ -836,6 +836,8 @@
 		"postponedTravel": "Trasferta",
 		"makeupDate": "Recupero {date}",
 		"suspended": "Sospesa",
+		"canceled": "Annullata",
+		"abandoned": "Interrotta",
 		"forfeit": "A tavolino",
 		"forfeitWinner": "{team} vince a tavolino",
 		"doubleheaderGame": "Gara {game} di 2",

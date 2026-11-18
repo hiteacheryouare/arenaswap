@@ -836,6 +836,8 @@
 		"postponedTravel": "Biyahe",
 		"makeupDate": "Makeup {date}",
 		"suspended": "Suspended",
+		"canceled": "Na-cancel",
+		"abandoned": "Itinigil",
 		"forfeit": "Forfeit",
 		"forfeitWinner": "Panalo ang {team} sa forfeit",
 		"doubleheaderGame": "Game {game} ng 2",

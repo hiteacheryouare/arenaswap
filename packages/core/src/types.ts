@@ -196,7 +196,7 @@ export interface Game {
 	delayed?: boolean;
 	delayDescription?: string;
 	delayKind?: 'rain' | 'weather' | 'other';
-	disruption?: 'postponed' | 'suspended' | 'forfeit';
+	disruption?: 'postponed' | 'suspended' | 'forfeit' | 'canceled' | 'abandoned';
 	postponedReason?: 'rain' | 'weather' | 'airQuality' | 'travel';
 	makeupDate?: string;
 	forfeitWinnerId?: string;

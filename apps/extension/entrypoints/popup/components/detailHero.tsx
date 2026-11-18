@@ -53,7 +53,7 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 	const homeTeam = withTimeouts(game.homeTeam, situation?.home.timeoutsLeft);
 
 	const scoreClass = (score: number, other: number): string => (
-		game.status === 'post' && score < other
+		game.status === 'post' && !game.disruption && score < other
 			? 'lh-1 game-detail-score-value is-loser fw-semibold'
 			: 'lh-1 game-detail-score-value fw-bold'
 	);

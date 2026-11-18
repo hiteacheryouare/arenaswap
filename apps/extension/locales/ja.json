@@ -836,6 +836,8 @@
 		"postponedTravel": "移動",
 		"makeupDate": "振替 {date}",
 		"suspended": "サスペンデッド",
+		"canceled": "中止",
+		"abandoned": "打ち切り",
 		"forfeit": "没収試合",
 		"forfeitWinner": "{team}が没収試合で勝利",
 		"doubleheaderGame": "第{game}試合/全2試合",

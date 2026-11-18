@@ -2,7 +2,7 @@ import { createFavoriteTeamKey, isHomeFirst } from '@arenaswap/core/constants';
 import FlipScore from './flipScore';
 import type { GameCardDisplayProps } from './gameCardTypes';
 import { buildCardShellProps, CardDetailsButton, CardStatusRow, ConferenceMark, formatCalendarDay, formatPeriod, GameMeta, SeasonLabel, TeamColumn } from './gameCardShared';
-import { formatDisruption } from './gameFormat';
+import { formatDisruption, formatGameClock } from './gameFormat';
 import { useDisplayLocale, useT } from './i18nContext';
 
 const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDetail, leagueSlot, interactive = true }: GameCardDisplayProps) => {
@@ -22,7 +22,9 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 		? t('gameCard.shootout', { away: leftTeam.shootoutScore, home: rightTeam.shootoutScore })
 		: null;
 
-	const decidedByScore = !shootout && game.disruption !== 'suspended' && game.disruption !== 'forfeit';
+	const stoppedEarly = game.disruption === 'suspended' || game.disruption === 'abandoned';
+	const notPlayed = game.disruption === 'postponed' || game.disruption === 'canceled';
+	const decidedByScore = !shootout && !stoppedEarly && game.disruption !== 'forfeit';
 	const lost = (score: number, other: number) => (game.disruption === 'forfeit' || (decidedByScore && score < other));
 	const scoreClass = (score: number, other: number) => (
 		`lh-1 game-score-value ${lost(score, other) ? 'is-loser fw-semibold' : 'fw-bold'}`
@@ -52,7 +54,7 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
 				{homeFirst ? homeColumn : awayColumn}
 				<div className='d-flex flex-column align-items-center game-card-center'>
-					{game.disruption === 'postponed' ? (
+					{notPlayed ? (
 						<>
 							<span className='pre-game-vs'>{t('gameCard.vs')}</span>
 							{game.makeupDate && (
@@ -67,7 +69,7 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 						</div>
 					)}
 					{shootout && <span className='game-shootout-score'>{shootout}</span>}
-					{game.disruption === 'suspended' && <span className='game-period'>{formatPeriod(game, t)}</span>}
+					{stoppedEarly && <span className='game-period'>{game.sportType === 'soccer' ? formatGameClock(game) : formatPeriod(game, t)}</span>}
 					{forfeitWinner && (
 						<span className='text-center game-shootout-score'>{t('gameCard.forfeitWinner', { team: forfeitWinner.abbreviation })}</span>
 					)}

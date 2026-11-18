@@ -212,7 +212,7 @@ const gameDetailView = ({
 	const isDelayed = game.delayed === true;
 	const isPreGame = game.status === 'pre';
 	const isFinal = game.status === 'post';
-	const showsPoster = isPreGame || game.disruption === 'postponed';
+	const showsPoster = isPreGame || game.disruption === 'postponed' || game.disruption === 'canceled';
 	const chartsCoverGame = !isFinal
 		|| (coversWholeGame(orderedPowerScoreHistory, game) && coversWholeGame(orderedScoreHistory, game));
 	const [awayAccent, homeAccent] = resolveTeamColorPair(game.awayTeam, game.homeTeam, '#2274A5', '#F75C03');

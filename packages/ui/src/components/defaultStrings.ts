@@ -10,6 +10,8 @@ export const defaultStrings: Record<string, string> = {
 	'gameCard.postponedTravel': 'Travel',
 	'gameCard.makeupDate': 'Makeup {date}',
 	'gameCard.suspended': 'Suspended',
+	'gameCard.canceled': 'Canceled',
+	'gameCard.abandoned': 'Abandoned',
 	'gameCard.forfeit': 'Forfeit',
 	'gameCard.forfeitWinner': '{team} wins by forfeit',
 	'gameCard.doubleheaderGame': 'Game {game} of 2',

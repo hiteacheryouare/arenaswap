@@ -110,6 +110,7 @@ const EspnCompetitorSchema = z.object({
 const EspnSeriesSchema = z.object({
 	type: z.optional(z.string()),
 	totalCompetitions: z.optional(z.number()),
+	completed: z.optional(z.boolean()),
 	competitors: z.optional(z.array(z.object({ id: espnNumericText, wins: z.optional(z.number()) }))),
 });
 
