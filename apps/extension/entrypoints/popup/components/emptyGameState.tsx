@@ -6,9 +6,10 @@ interface emptyGameStateProps {
 	noGames: boolean;
 	onOpenSetup: () => void;
 	onRefresh: () => unknown;
+	offseasonLine?: string | null;
 }
 
-const emptyGameState = ({ noLeaguesSelected, noGames, onOpenSetup, onRefresh }: emptyGameStateProps) => {
+const emptyGameState = ({ noLeaguesSelected, noGames, onOpenSetup, onRefresh, offseasonLine }: emptyGameStateProps) => {
 	if (noLeaguesSelected) {
 		return (
 			<div className='text-center rounded mt-3 mb-5 p-5 popup-empty-leagues'>
@@ -21,7 +22,7 @@ const emptyGameState = ({ noLeaguesSelected, noGames, onOpenSetup, onRefresh }: 
 		);
 	}
 
-	if (noGames) return <NoGamesMessage onOpenSetup={onOpenSetup} onRefresh={onRefresh} />;
+	if (noGames) return <NoGamesMessage onOpenSetup={onOpenSetup} onRefresh={onRefresh} offseasonLine={offseasonLine} />;
 
 	return null;
 };

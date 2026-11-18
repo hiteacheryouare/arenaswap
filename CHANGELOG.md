@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The offseason empty state says when your leagues come back — 2026-11-18
+
+When every league you follow is between seasons, the random empty-state title stays but its subtitle becomes "Back soon: NFL Sep 9 · NHL Oct 7 · NBA Oct 20", soonest first, from the same league schedules Settings already uses. If any league is still in season, or none has a date yet, the usual random line stays.
+
 ## Bracket placeholders and tournament seeds — 2026-11-18
 
 Teams the feed hasn't filled in yet arrive as "TBD" with negative ids, so `isPlaceholderTeam` gives them a blank crest and an invisible, inert star (favoriting id `-1` would have favorited every TBD at once). In seeded tournament games, where the rank field carries the seed, cards and the detail hero show "16" with a "No. 16 seed" tooltip instead of an AP-style "#16".

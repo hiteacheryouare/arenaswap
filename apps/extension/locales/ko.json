@@ -1313,7 +1313,9 @@
 		"leaguesCopy": "리그를 하나 이상 고르면 ArenaSwap이 경기를 찾아 나서요.",
 		"selectLeagues": "설정에서 리그 선택",
 		"refresh": "새로고침",
-		"settings": "설정 →"
+		"settings": "설정 →",
+		"offseasonReturns": "곧 돌아와요: {leagues}",
+		"offseasonLeague": "{league} {date}"
 	},
 	"gameListHeader": {
 		"loading": "불러오는 중…",

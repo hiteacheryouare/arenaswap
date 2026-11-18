@@ -731,6 +731,7 @@ export default () => {
 						games={games}
 						scores={scores}
 						leagueLogos={leagueLogos}
+						leagueSchedules={leagueSchedules}
 						registry={registry}
 						favoriteTeamIds={favoriteTeamIds}
 						gameBoosts={gameBoosts}

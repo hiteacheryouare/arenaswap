@@ -1313,7 +1313,9 @@
 		"leaguesCopy": "Pumili ng kahit isang liga at magsisimulang maghanap ng laro ang ArenaSwap.",
 		"selectLeagues": "Pumili ng liga sa Mga Setting",
 		"refresh": "I-refresh",
-		"settings": "Mga Setting →"
+		"settings": "Mga Setting →",
+		"offseasonReturns": "Babalik na: {leagues}",
+		"offseasonLeague": "{league} {date}"
 	},
 	"gameListHeader": {
 		"loading": "Nilo-load…",

@@ -114,3 +114,19 @@ describe('empty game state in both themes', () => {
 		});
 	}
 });
+
+describe('empty game state in the offseason', () => {
+	it('keeps the joke title and says when your leagues come back underneath it', () => {
+		cy.viewport(popupWidth, 600);
+		cy.mount(
+			<div style={{ width: `${popupWidth}px` }}>
+				<EmptyGameState noLeaguesSelected={false} noGames onOpenSetup={() => {}} onRefresh={() => {}} offseasonLine={'Back soon: NFL\u00a0Sep\u00a09 · NHL\u00a0Oct\u00a07 · NBA\u00a0Oct\u00a020'} />
+			</div>,
+		);
+		title().invoke('text').should(text => expect(noGamesTitles).to.include(text));
+		cy.get('.popup-no-games-sub').invoke('text').should('match', /^Back soon: NFL.Sep.9 · NHL.Oct.7 · NBA.Oct.20$/);
+		cy.get('.popup-no-games-sub').should($sub => {
+			expect($sub[0].scrollWidth).to.be.at.most($sub[0].clientWidth);
+		});
+	});
+});

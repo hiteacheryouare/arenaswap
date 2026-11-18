@@ -1,7 +1,8 @@
 import { i18n } from '#i18n';
 import { resolveOffseason } from '@arenaswap/core';
+import { leagueLabels } from '@arenaswap/core/constants';
 import { displayLocale } from '../../../utils/displayLocale';
-import type { LeagueSchedule } from '@arenaswap/core/types';
+import type { LeagueId, LeagueSchedule, LeagueScheduleMap } from '@arenaswap/core/types';
 
 const dayMs = 24 * 60 * 60 * 1000;
 
@@ -18,6 +19,20 @@ const daysUntil = (ms: number, now: number): number => {
 };
 
 export const keepCountTogether = (text: string): string => text.replace(/ (?![(（])/g, '\u00a0');
+
+export const offseasonReturnLine = (enabledLeagues: LeagueId[], schedules: LeagueScheduleMap, now: number): string | null => {
+	if (enabledLeagues.length === 0) return null;
+	const offseasons = enabledLeagues.map(league => ({ league, offseason: resolveOffseason(schedules[league], now) }));
+	if (offseasons.some(({ offseason }) => offseason === null)) return null;
+	const returning = offseasons
+		.flatMap(({ league, offseason }) => offseason?.returnsAt === undefined ? [] : [{ league, returnsAt: offseason.returnsAt }])
+		.toSorted((a, b) => a.returnsAt - b.returnsAt);
+	if (returning.length === 0) return null;
+	const leagues = returning
+		.map(({ league, returnsAt }) => keepCountTogether(i18n.t('empty.offseasonLeague', { league: leagueLabels[league] ?? league.toUpperCase(), date: formatReturnDay(returnsAt) })))
+		.join(' · ');
+	return i18n.t('empty.offseasonReturns', { leagues });
+};
 
 export default (schedule: LeagueSchedule | undefined, now: number): string | null => {
 	const offseason = resolveOffseason(schedule, now);

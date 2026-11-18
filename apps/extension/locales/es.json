@@ -1313,7 +1313,9 @@
 		"leaguesCopy": "Elige al menos una liga y ArenaSwap empezará a buscar partidos.",
 		"selectLeagues": "Elegir ligas en Ajustes",
 		"refresh": "Actualizar",
-		"settings": "Ajustes →"
+		"settings": "Ajustes →",
+		"offseasonReturns": "Vuelven pronto: {leagues}",
+		"offseasonLeague": "{league} {date}"
 	},
 	"gameListHeader": {
 		"loading": "Cargando…",

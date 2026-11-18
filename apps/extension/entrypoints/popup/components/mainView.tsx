@@ -7,6 +7,7 @@ import type {
 	Game,
 	LeagueId,
 	LeagueLogoMap,
+	LeagueScheduleMap,
 	PowerScoreResult,
 	TabRegistration,
 	UserPreferences,
@@ -25,6 +26,7 @@ import ReviewPromptBanner from './reviewPromptBanner';
 import SuggestBanner from './suggestBanner';
 import UpcomingDayPager from './upcomingDayPager';
 import UpcomingSearchTitle from './upcomingSearchTitle';
+import { offseasonReturnLine } from './leagueOffseasonLabel';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
 import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
@@ -107,6 +109,7 @@ interface mainViewProps {
 	revealMode?: revealMode;
 	revealCut?: revealCut;
 	revealSkipping?: boolean;
+	leagueSchedules?: LeagueScheduleMap;
 }
 
 const gameSection = ({
@@ -229,6 +232,7 @@ const mainView = ({
 	onSelectDay,
 	upcomingQuery = null,
 	onUpcomingQueryChange = () => {},
+	leagueSchedules,
 	revealMode = 'none',
 	revealCut = 'poster',
 	revealSkipping = false,
@@ -348,6 +352,10 @@ const mainView = ({
 	const showNoGames = !isLoading && !hasError && !noLeaguesSelected && liveGames.length === 0
 		&& finalGames.length === 0
 		&& (!prefs.showUpcomingGames || upcomingGames.length === 0);
+	const offseasonLine = useMemo(
+		() => (showNoGames && leagueSchedules ? offseasonReturnLine(prefs.enabledLeagues, leagueSchedules, Date.now()) : null),
+		[showNoGames, leagueSchedules, prefs.enabledLeagues],
+	);
 
 	const bettingPrefs: BettingDisplayPrefs = {
 		bettingEnabled: prefs.bettingEnabled,
@@ -409,6 +417,7 @@ const mainView = ({
 				noGames={showNoGames}
 				onOpenSetup={onOpenSetup}
 				onRefresh={onRefresh}
+				offseasonLine={offseasonLine}
 			/>
 
 			{!isLoading && !noLeaguesSelected && prefs.proTipsEnabled && <ProTip context='main' />}

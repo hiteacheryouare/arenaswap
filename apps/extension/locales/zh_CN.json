@@ -1313,7 +1313,9 @@
 		"leaguesCopy": "至少选择一个联赛，ArenaSwap 就会开始搜寻比赛。",
 		"selectLeagues": "在设置中选择联赛",
 		"refresh": "刷新",
-		"settings": "设置 →"
+		"settings": "设置 →",
+		"offseasonReturns": "即将回归：{leagues}",
+		"offseasonLeague": "{league} {date}"
 	},
 	"gameListHeader": {
 		"loading": "加载中……",

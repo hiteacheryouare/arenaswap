@@ -6,15 +6,16 @@ import RefreshButton from './refreshButton';
 interface noGamesMessageProps {
 	onOpenSetup?: () => void;
 	onRefresh: () => unknown;
+	offseasonLine?: string | null;
 }
 
-const noGamesMessage = ({ onOpenSetup, onRefresh }: noGamesMessageProps) => {
+const noGamesMessage = ({ onOpenSetup, onRefresh, offseasonLine }: noGamesMessageProps) => {
 	const [msg] = useState(getRandomNoGamesMessage);
 
 	return (
 		<div className='mt-5 text-center popup-no-games-wrap'>
 			<div className='fw-bold fg-body mb-1 popup-no-games-title'>{msg.title}</div>
-			<div className='popup-no-games-sub mb-3'>{msg.sub}</div>
+			<div className='popup-no-games-sub mb-3'>{offseasonLine ?? msg.sub}</div>
 			<div className='d-flex justify-content-center gap-5'>
 				<RefreshButton label={i18n.t('empty.refresh')} className='btn btn-link btn-sm p-0 popup-settings-link' onRefresh={onRefresh} />
 				{onOpenSetup && <button className='btn btn-link btn-sm p-0 popup-settings-link' onClick={onOpenSetup}>{i18n.t('empty.settings')}</button>}

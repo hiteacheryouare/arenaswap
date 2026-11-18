@@ -1313,7 +1313,9 @@
 		"leaguesCopy": "至少選擇一個聯賽，ArenaSwap 就會開始搜尋比賽。",
 		"selectLeagues": "在設定中選擇聯賽",
 		"refresh": "重新整理",
-		"settings": "設定 →"
+		"settings": "設定 →",
+		"offseasonReturns": "即將回歸：{leagues}",
+		"offseasonLeague": "{league} {date}"
 	},
 	"gameListHeader": {
 		"loading": "載入中……",
