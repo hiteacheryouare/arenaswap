@@ -66,9 +66,13 @@ export const isWithinFinalRetention = (
 ): boolean => now - estimatedWrapMs(game, now) <= finalRetentionMs;
 
 export const hasMissedItsWindow = (
-	game: Pick<Game, 'status' | 'sportType' | 'startTime'>,
+	game: Pick<Game, 'status' | 'sportType' | 'startTime' | 'delayed'>,
 	now: number = Date.now(),
-): boolean => game.status === 'pre' && now > estimatedWrapMs(game, now);
+): boolean => {
+	if (game.status !== 'pre') return false;
+	const delayAllowance = game.delayed ? (sportWrapAllowanceMs[game.sportType] ?? sportWrapAllowanceMs.basketball) : 0;
+	return now > estimatedWrapMs(game, now) + delayAllowance;
+};
 export const historyWindowMs = 300_000;
 
 export const pollDormantThresholdPolls = 2;

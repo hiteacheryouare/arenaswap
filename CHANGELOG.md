@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## A rain delay before the start keeps the game listed — 2026-11-17
+
+`hasMissedItsWindow` dropped any game still scheduled once start time plus the sport's wrap allowance had passed, so a 3h+ storm before first pitch hid the game from the popup and the Guide until it started. A game flagged `delayed` now gets a second allowance before it's treated as never played.
+
 ## Box Score Roll lands without a snap — 2026-11-17
 
 The rolling digits used to rest on a fractional-pixel `translateY` held by `fill: both`, so the browser resampled them and the real score swapped in a hair sharper and up to a pixel off. Each strip now hangs from the column's bottom and animates from its offset to no transform at all, and the landing spec asserts every strip ends at `transform: none`.

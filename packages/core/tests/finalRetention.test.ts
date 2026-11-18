@@ -112,6 +112,21 @@ describe('a scheduled game that never started', () => {
 		expect(hasMissedItsWindow(scheduled(undefined), at('2026-11-05T18:00:00.000Z'))).toBe(false);
 	});
 
+	test('a delay before the start buys it a second allowance', () => {
+		const wrap = at(start) + sportWrapAllowanceMs.basketball;
+		const delayed = { ...scheduled(start), delayed: true };
+		expect(hasMissedItsWindow(delayed, wrap + 1)).toBe(false);
+		expect(hasMissedItsWindow(delayed, wrap + sportWrapAllowanceMs.basketball)).toBe(false);
+		expect(hasMissedItsWindow(delayed, wrap + sportWrapAllowanceMs.basketball + 1)).toBe(true);
+	});
+
+	test('a rain delay past first pitch keeps a baseball game listed', () => {
+		const threeHoursFortyIn = at(start) + (3 * 60 + 40) * 60_000;
+		const baseball = { ...scheduled(start), sportType: 'baseball' as const };
+		expect(hasMissedItsWindow(baseball, threeHoursFortyIn)).toBe(true);
+		expect(hasMissedItsWindow({ ...baseball, delayed: true }, threeHoursFortyIn)).toBe(false);
+	});
+
 	test('only scheduled games are ever called off', () => {
 		const now = at('2026-11-05T18:00:00.000Z');
 		expect(hasMissedItsWindow({ ...scheduled(start), status: 'in' }, now)).toBe(false);
