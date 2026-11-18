@@ -211,6 +211,7 @@ const boxScore = ({ game, boxScore: box }: boxScoreProps) => {
 										finalPeriodSuffix: game.finalPeriodSuffix,
 										league: game.league,
 										isPostseason: game.isPostseason,
+										postseasonLabel: game.postseasonLabel,
 									}).map((label, index) => <th scope='col' key={index}>{periodHeading(label)}</th>)}
 									<th scope='col' className='gd-box-line-total'>
 										{showHitsErrors ? i18n.t('box.runs') : i18n.t('box.lineTotal')}

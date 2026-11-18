@@ -29,6 +29,14 @@ describe('formatPeriod', () => {
 		expect(formatPeriod(makeGame('nhl', { period: 4 }))).toBe('OT');
 	});
 
+	test('an Olympic medal game keeps playing overtime, where earlier rounds go to a shootout', () => {
+		const olympic = (postseasonLabel: string) => formatPeriod(makeGame('olymih', { sportType: 'hockey', period: 5, isPostseason: true, postseasonLabel }));
+		expect(olympic('Gold Medal Game')).toBe('2OT');
+		expect(olympic('Bronze Medal Game')).toBe('2OT');
+		expect(olympic('Semifinal')).toBe('SO');
+		expect(formatPeriod(makeGame('olywih', { sportType: 'hockey', period: 6, isPostseason: true, postseasonLabel: 'Gold Medal Game' }))).toBe('3OT');
+	});
+
 	// ESPN encodes the shootout as period 5 — verified against the 2016 UCL and 2022 WC finals.
 	describe('soccer extra time and penalties', () => {
 		const soccer = (period: number) => formatPeriod(makeGame('ucl', { sportType: 'soccer', period }));

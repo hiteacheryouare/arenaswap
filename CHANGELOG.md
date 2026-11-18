@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Olympic medal games play overtime to a goal — 2026-11-17
+
+Medal games have no shootout, but only NHL and men's college hockey were treated as playing overtime until someone scores, so an Olympic gold or bronze medal game in a second overtime read "SO". `playsOvertimeUntilAGoal` in `gameFormat.ts` now decides this for both the card and the box score, and it spots medal games by their postseason label.
+
 ## Soccer finals say AET and Pens — 2026-11-17
 
 The final suffix was split off `shortDetail` at a slash, and soccer's `AET` and `FT-Pens` don't have one, so knockout matches settled after extra time or on penalties read plain "Final". The parser now maps `STATUS_FINAL_AET` and `STATUS_FINAL_PEN` (checked against the 2026 World Cup knockout feed) to `Final/AET` and `Final/Pens`.

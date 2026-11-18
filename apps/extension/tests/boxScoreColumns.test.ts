@@ -73,6 +73,13 @@ describe('periodLabels', () => {
 			.toEqual({ kind: 'named', labelKey: 'box.periodSo' });
 	});
 
+	test('an Olympic gold medal game\'s second overtime stays 2OT', () => {
+		expect(periodLabels({ periodCount: 5, regularPeriods: 3, periodFormat: 'periods', sportType: 'hockey', league: 'olymih', isPostseason: true, postseasonLabel: 'Gold Medal Game' })[4])
+			.toEqual({ kind: 'overtime', index: 2 });
+		expect(periodLabels({ periodCount: 5, regularPeriods: 3, periodFormat: 'periods', sportType: 'hockey', league: 'olymih', isPostseason: true, postseasonLabel: 'Quarterfinal' })[4])
+			.toEqual({ kind: 'named', labelKey: 'box.periodSo' });
+	});
+
 	test('a live playoff second overtime stays 2OT', () => {
 		expect(periodLabels({ periodCount: 5, regularPeriods: 3, periodFormat: 'periods', sportType: 'hockey', league: 'nhl', isPostseason: true })[4])
 			.toEqual({ kind: 'overtime', index: 2 });

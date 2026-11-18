@@ -1,4 +1,5 @@
 import type { LeagueId, SportType } from '@arenaswap/core/types';
+import { playsOvertimeUntilAGoal } from '@arenaswap/ui/src/components/gameFormat';
 import type { BoxScore, BoxScoreAthlete, BoxScoreCategory, BoxScoreTeam, TeamComparisonRow } from '@arenaswap/sideline';
 
 interface columnSpec {
@@ -217,14 +218,13 @@ export interface PeriodLabelInput {
 	finalPeriodSuffix?: string;
 	league?: LeagueId;
 	isPostseason?: boolean;
+	postseasonLabel?: string;
 }
 
-const unlimitedOvertimeHockey = new Set<LeagueId>(['nhl', 'ncaamh']);
-
-const isLiveShootout = ({ periodCount, regularPeriods, finalPeriodSuffix, league, isPostseason }: PeriodLabelInput): boolean => (
+const isLiveShootout = ({ periodCount, regularPeriods, finalPeriodSuffix, league, isPostseason, postseasonLabel }: PeriodLabelInput): boolean => (
 	finalPeriodSuffix === undefined
 	&& periodCount === regularPeriods + 2
-	&& !(isPostseason && league !== undefined && unlimitedOvertimeHockey.has(league))
+	&& !(league !== undefined && playsOvertimeUntilAGoal({ league, isPostseason, postseasonLabel }))
 );
 
 export const periodLabels = (input: PeriodLabelInput): PeriodLabel[] => {

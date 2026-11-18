@@ -8,9 +8,17 @@ interface PeriodSource {
 	period?: number;
 	sportType: SportType;
 	isPostseason?: boolean;
+	postseasonLabel?: string;
 }
 
-const unlimitedOvertimeHockey = new Set<LeagueId>(['nhl', 'ncaamh']);
+const playoffOvertimeHockey = new Set<LeagueId>(['nhl', 'ncaamh']);
+const olympicHockey = new Set<LeagueId>(['olymih', 'olywih']);
+const medalGame = /\bmedal\b/i;
+
+export const playsOvertimeUntilAGoal = (game: Pick<PeriodSource, 'league' | 'isPostseason' | 'postseasonLabel'>): boolean => (
+	(game.isPostseason === true && playoffOvertimeHockey.has(game.league))
+	|| (olympicHockey.has(game.league) && medalGame.test(game.postseasonLabel ?? ''))
+);
 
 export const formatPeriod = (game: PeriodSource, t: Translator = defaultTranslate): string => {
 	const period = game.period ?? 1;
@@ -20,7 +28,7 @@ export const formatPeriod = (game: PeriodSource, t: Translator = defaultTranslat
 	if (period > regular) {
 		if (config.periodFormat === 'periods') {
 			const overtime = period - regular;
-			if (game.isPostseason && unlimitedOvertimeHockey.has(game.league)) {
+			if (playsOvertimeUntilAGoal(game)) {
 				return overtime === 1 ? t('gameCard.periodOvertime') : t('gameCard.periodOvertimeNumbered', { count: overtime });
 			}
 			return overtime === 1 ? t('gameCard.periodOvertime') : t('gameCard.periodHockeyShootout');
