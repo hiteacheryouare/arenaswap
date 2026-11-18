@@ -364,6 +364,24 @@ describe('a finished game', () => {
 			cy.get('.final-status-label').should('have.text', `${en.gameCard.final}/SO`);
 		});
 
+		it('marks a soccer final decided after extra time or on penalties', () => {
+			const penaltyFinal = {
+				...finalGame,
+				league: 'mls',
+				sportType: 'soccer',
+				finalPeriodSuffix: 'Pens',
+				awayTeam: { ...finalGame.awayTeam, score: 1, shootoutScore: 4 },
+				homeTeam: { ...finalGame.homeTeam, score: 1, shootoutScore: 3 },
+			} as Game;
+			mountCard(penaltyFinal);
+			cy.get('.final-status-label').should('have.text', `${en.gameCard.final}/Pens`);
+			cy.get('.final-status-label').should($label => {
+				expect($label[0].scrollWidth).to.be.at.most($label[0].clientWidth);
+			});
+			mountCard({ ...penaltyFinal, finalPeriodSuffix: 'AET', awayTeam: { ...penaltyFinal.awayTeam, score: 2, shootoutScore: undefined }, homeTeam: { ...penaltyFinal.homeTeam, shootoutScore: undefined } } as Game);
+			cy.get('.final-status-label').should('have.text', `${en.gameCard.final}/AET`);
+		});
+
 		it('says just Final on a game that ended in regulation', () => {
 			mountCard(finalGame);
 			cy.get('.final-status-label').should('have.text', en.gameCard.final);

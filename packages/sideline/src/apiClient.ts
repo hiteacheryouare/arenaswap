@@ -569,8 +569,16 @@ const resolvePostseason = (event: EspnEvent, comp: EspnCompetition, league: Leag
 // regular season is 14024), so a number could collide where the slug cannot.
 const resolvePreseason = (event: EspnEvent): boolean => event.season?.slug?.trim().toLowerCase() === 'preseason';
 
-const parseFinalPeriodSuffix = (state: Game['status'], shortDetail?: string): string | undefined => {
-	if (state !== 'post' || !shortDetail) return undefined;
+const soccerFinishSuffixes: Record<string, string> = {
+	STATUS_FINAL_AET: 'AET',
+	STATUS_FINAL_PEN: 'Pens',
+};
+
+const parseFinalPeriodSuffix = (state: Game['status'], statusName?: string, shortDetail?: string): string | undefined => {
+	if (state !== 'post') return undefined;
+	const soccerSuffix = statusName ? soccerFinishSuffixes[statusName] : undefined;
+	if (soccerSuffix) return soccerSuffix;
+	if (!shortDetail) return undefined;
 	const suffix = shortDetail.split('/')[1]?.trim();
 	return suffix ? suffix : undefined;
 };
@@ -669,7 +677,7 @@ const parseEvent = (event: EspnEvent, league: LeagueId): Game | null => {
 		// 0 on every scheduled and in-progress game, so a falsy figure is "not announced yet"
 		// rather than an empty stadium.
 		attendance: comp.attendance && comp.attendance > 0 ? comp.attendance : undefined,
-		finalPeriodSuffix: parseFinalPeriodSuffix(state, status.type?.shortDetail),
+		finalPeriodSuffix: parseFinalPeriodSuffix(state, status.type?.name, status.type?.shortDetail),
 		period: status.period ?? 1,
 		clockSeconds: parseClockToSeconds(status.displayClock ?? '0:00'),
 		clockStoppageMinutes: leagueConfig.sportType === 'soccer' ? parseStoppageMinutes(status.displayClock ?? '') : undefined,

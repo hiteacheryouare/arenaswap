@@ -2515,6 +2515,28 @@ describe("ESPN's own Final designation", () => {
 		expect(result.games[0]?.finalPeriodSuffix).toBe(expected);
 	});
 
+	test.each([
+		['extra time', 'STATUS_FINAL_AET', 'AET', 'AET'],
+		['a penalty shootout', 'STATUS_FINAL_PEN', 'FT-Pens', 'Pens'],
+	])('reads a soccer finish after %s off the status name', async (_label, statusName, shortDetail, expected) => {
+		const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+			id: 'soccer-finish', state: 'post', statusName, shortDetail, period: 4, clock: "120'", homeScore: '1', awayScore: '1',
+			date: new Date().toISOString(),
+		}));
+		const result = await fetchGamesWithLeagueLogos(['mls'], { includeUpcoming: false, includeFinal: true });
+		expect(result.games[0]?.finalPeriodSuffix).toBe(expected);
+	});
+
+	test('a soccer match that ended at full time has no suffix', async () => {
+		const { fetchGamesWithLeagueLogos } = mockSingleEvent(makeEvent({
+			id: 'soccer-ft', state: 'post', statusName: 'STATUS_FULL_TIME', shortDetail: 'FT', period: 2, clock: "90'", homeScore: '2', awayScore: '0',
+			date: new Date().toISOString(),
+		}));
+		const result = await fetchGamesWithLeagueLogos(['mls'], { includeUpcoming: false, includeFinal: true });
+		expect(result.games[0]).toBeDefined();
+		expect(result.games[0]?.finalPeriodSuffix).toBeUndefined();
+	});
+
 	test('a game that ended in regulation has no suffix', async () => {
 		const { fetchGamesWithLeagueLogos } = mockSingleEvent(withShortDetail('post', 'Final'));
 		const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });

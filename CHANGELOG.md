@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Soccer finals say AET and Pens — 2026-11-17
+
+The final suffix was split off `shortDetail` at a slash, and soccer's `AET` and `FT-Pens` don't have one, so knockout matches settled after extra time or on penalties read plain "Final". The parser now maps `STATUS_FINAL_AET` and `STATUS_FINAL_PEN` (checked against the 2026 World Cup knockout feed) to `Final/AET` and `Final/Pens`.
+
 ## A rain delay before the start keeps the game listed — 2026-11-17
 
 `hasMissedItsWindow` dropped any game still scheduled once start time plus the sport's wrap allowance had passed, so a 3h+ storm before first pitch hid the game from the popup and the Guide until it started. A game flagged `delayed` now gets a second allowance before it's treated as never played.
