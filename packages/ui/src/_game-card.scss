@@ -646,6 +646,8 @@ $crest-plate-share: 75%;
 		&.is-delayed {
 			.game-score-value,
 			.game-clock { opacity: 1; }
+
+			.game-clock { font-weight: 400; }
 		}
 	}
 

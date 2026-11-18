@@ -398,6 +398,14 @@ describe('liveGameCard delay', () => {
 		cy.mount(<LiveGameCard {...defaultProps} game={{ ...baseGame, delayed: true }} />);
 		cy.get('.delay-status-label').should('contain.text', 'DELAY');
 	});
+
+	it('quiets the frozen clock by weight, never by fading it, while play is stopped', () => {
+		cy.mount(<LiveGameCard {...defaultProps} game={{ ...baseGame, delayed: true, delayDescription: 'Rain Delay' }} />);
+		cy.get('.game-clock').should('have.css', 'font-weight', '400').and('have.css', 'opacity', '1');
+		cy.get('.game-score-value').first().should('have.css', 'opacity', '1');
+		cy.mount(<LiveGameCard {...defaultProps} game={baseGame} />);
+		cy.get('.game-clock').should('have.css', 'font-weight', '700');
+	});
 });
 
 describe('liveGameCard breaks', () => {

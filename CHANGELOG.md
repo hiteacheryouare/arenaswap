@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## A delayed clock goes quiet by weight — 2026-11-18
+
+During a delay the frozen clock on a live card drops from bold to regular instead of fading, because the delayed backdrop leaves the worst team-colour pairing at 3.08:1 and any fade pushed some matchups under the 3:1 floor. Mercy-rule and rain-shortened finals already arrive as `Final/5` and now have a test that says so.
+
 ## "Last updated" waits five minutes — 2026-11-17
 
 The note on a live card whose league stopped answering appeared after a single quiet minute, which is only two to four missed checks. It now waits five minutes (`staleNoteAfterMinutes`), so it only shows when the score has genuinely stopped coming in.

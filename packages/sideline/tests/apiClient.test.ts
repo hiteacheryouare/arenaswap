@@ -2509,6 +2509,7 @@ describe("ESPN's own Final designation", () => {
 		['a single overtime', 'Final/OT', 'OT'],
 		['a triple overtime', 'Final/3OT', '3OT'],
 		['a shootout', 'Final/SO', 'SO'],
+		['a mercy-rule or rain-shortened finish', 'Final/5', '5'],
 	])('reads the suffix off %s', async (_label, shortDetail, expected) => {
 		const { fetchGamesWithLeagueLogos } = mockSingleEvent(withShortDetail('post', shortDetail));
 		const result = await fetchGamesWithLeagueLogos(['mlb'], { includeUpcoming: false, includeFinal: true });

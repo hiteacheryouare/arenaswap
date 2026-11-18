@@ -362,6 +362,8 @@ describe('a finished game', () => {
 			cy.get('.final-status-label').should('have.text', `${en.gameCard.final}/10`);
 			mountCard({ ...finalGame, finalPeriodSuffix: 'SO' });
 			cy.get('.final-status-label').should('have.text', `${en.gameCard.final}/SO`);
+			mountCard({ ...finalGame, finalPeriodSuffix: '5' });
+			cy.get('.final-status-label').should('have.text', `${en.gameCard.final}/5`);
 		});
 
 		it('marks a soccer final decided after extra time or on penalties', () => {
