@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## "Last updated" waits five minutes — 2026-11-17
+
+The note on a live card whose league stopped answering appeared after a single quiet minute, which is only two to four missed checks. It now waits five minutes (`staleNoteAfterMinutes`), so it only shows when the score has genuinely stopped coming in.
+
 ## Upcoming cards show a delay — 2026-11-17
 
 A weather delay before the start used to show only in game detail; the upcoming card kept showing the original start time and nothing else. It now gets the same pause icon, delay reason and amber outline as a delayed live card, with the start time left in place.

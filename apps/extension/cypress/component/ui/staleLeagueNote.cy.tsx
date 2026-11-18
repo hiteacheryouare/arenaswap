@@ -84,9 +84,9 @@ describe('a live card whose league stopped answering', () => {
 		staleLine().should('have.text', 'Last updated 7 minutes ago');
 	});
 
-	it('uses the singular for one minute and counts in hours from the sixtieth', () => {
-		mountCard({ lastGoodAt: { nba: Date.now() - minute - past } });
-		staleLine().should('have.text', 'Last updated 1 minute ago');
+	it('counts in minutes from the fifth and in hours from the sixtieth', () => {
+		mountCard({ lastGoodAt: { nba: Date.now() - (5 * minute) - past } });
+		staleLine().should('have.text', 'Last updated 5 minutes ago');
 		mountCard({ lastGoodAt: { nba: Date.now() - (59 * minute) - past } });
 		staleLine().should('have.text', 'Last updated 59 minutes ago');
 		mountCard({ lastGoodAt: { nba: Date.now() - (60 * minute) - past } });
@@ -95,8 +95,8 @@ describe('a live card whose league stopped answering', () => {
 		staleLine().should('have.text', 'Last updated 2 hours ago');
 	});
 
-	it('says nothing until the league has been quiet for a full minute', () => {
-		mountCard({ lastGoodAt: { nba: Date.now() - 40_000 } });
+	it('says nothing until the league has been quiet for five minutes', () => {
+		mountCard({ lastGoodAt: { nba: Date.now() - (4 * minute) - 40_000 } });
 		cy.get('.bi-clock-history').should('not.exist');
 	});
 
@@ -140,12 +140,12 @@ describe('a live card whose league stopped answering', () => {
 
 	it('keeps counting while the popup stays open', () => {
 		cy.clock(Date.now());
-		mountCard({ lastGoodAt: { nba: Date.now() - (59 * 1_000) } });
+		mountCard({ lastGoodAt: { nba: Date.now() - (4 * minute) - (59 * 1_000) } });
 		cy.get('.bi-clock-history').should('not.exist');
 		cy.tick(minute);
-		staleLine().should('have.text', 'Last updated 1 minute ago');
-		cy.tick(4 * minute);
 		staleLine().should('have.text', 'Last updated 5 minutes ago');
+		cy.tick(4 * minute);
+		staleLine().should('have.text', 'Last updated 9 minutes ago');
 	});
 
 	it('keeps the rest of the card as it was', () => {
@@ -158,7 +158,7 @@ describe('a live card whose league stopped answering', () => {
 	describe('in every locale', () => {
 		it('fits on one line inside the popup', () => {
 			for (const [code, bundle] of Object.entries(locales)) {
-				for (const age of [1, 12, 135, 1_500]) {
+				for (const age of [5, 12, 135, 1_500]) {
 					mountCard({ bundle, lastGoodAt: { nba: Date.now() - (age * minute) - past } });
 					cy.get('.game-card').then(([card]) => {
 						const innerRight = card.getBoundingClientRect().right - parseFloat(getComputedStyle(card).paddingRight);

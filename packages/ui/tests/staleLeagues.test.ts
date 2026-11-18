@@ -11,16 +11,16 @@ describe('staleLeagueMinutes', () => {
 	});
 
 	test('says nothing about a league that is answering, even one with an old timestamp', () => {
-		expect(staleLeagueMinutes(['nba'], { nba: now - minute, nhl: now - (30 * minute) }, now)).toEqual({ nba: 1 });
+		expect(staleLeagueMinutes(['nba'], { nba: now - (6 * minute), nhl: now - (30 * minute) }, now)).toEqual({ nba: 6 });
 	});
 
 	test('leaves out a refused league that has never answered', () => {
 		expect(staleLeagueMinutes(['mlb'], { nba: now }, now)).toEqual({});
 	});
 
-	test('waits for a full minute, so a refusal moments after a good poll says nothing', () => {
-		expect(staleLeagueMinutes(['nba', 'nhl', 'mlb'], { nba: now - 59_999, nhl: now - minute, mlb: now - 20_000 }, now))
-			.toEqual({ nhl: 1 });
+	test('waits five minutes, so a few missed polls say nothing', () => {
+		expect(staleLeagueMinutes(['nba', 'nhl', 'mlb'], { nba: now - (5 * minute) + 1, nhl: now - (5 * minute), mlb: now - minute }, now))
+			.toEqual({ nhl: 5 });
 	});
 
 	test('says nothing for a clock that stepped back', () => {

@@ -4,6 +4,7 @@ import type { Translator } from './defaultStrings';
 export type StaleLeagueMinutes = Partial<Record<LeagueId, number>>;
 
 const minuteMs = 60_000;
+export const staleNoteAfterMinutes = 5;
 
 export const staleLeagueMinutes = (shedLeagues: LeagueId[], lastGoodAt: LeagueLastGoodAt, nowMs: number): StaleLeagueMinutes => {
 	const minutes: StaleLeagueMinutes = {};
@@ -11,7 +12,7 @@ export const staleLeagueMinutes = (shedLeagues: LeagueId[], lastGoodAt: LeagueLa
 		const answeredAt = lastGoodAt[leagueId];
 		if (answeredAt === undefined) continue;
 		const quietMinutes = Math.floor((nowMs - answeredAt) / minuteMs);
-		if (quietMinutes >= 1) minutes[leagueId] = quietMinutes;
+		if (quietMinutes >= staleNoteAfterMinutes) minutes[leagueId] = quietMinutes;
 	}
 	return minutes;
 };
