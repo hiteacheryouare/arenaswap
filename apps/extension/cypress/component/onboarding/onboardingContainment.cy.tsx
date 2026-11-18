@@ -1,5 +1,4 @@
 import OnboardingView from '../../../entrypoints/popup/components/onboardingView';
-import WalkthroughView from '../../../entrypoints/popup/components/walkthroughView';
 import { inEveryLocale, withLocale, type shippedLocale } from '../../support/safetyNet/locales';
 import { popupSurface, popupViewport } from '../../support/safetyNet/mountInPopup';
 import { worstTeams } from '../../support/safetyNet/worstCase';
@@ -49,23 +48,5 @@ describe('onboarding containment', () => {
 		cy.get(primaryButton).click();
 		cy.get('.onb-content-wrap').should('exist');
 		cy.get(popupSurface).assertContained();
-	});
-
-	inEveryLocale('keeps every walkthrough step inside the popup', locale => {
-		const onComplete = cy.stub().as('onComplete');
-		mountView(locale, <WalkthroughView onComplete={onComplete} leagues={['nba', 'nfl', 'nhl', 'mlb']} scoringMode='classic' />);
-		const pressNextUnderBloom = () => cy.get(primaryButton).last().click({ force: true });
-		const walk = (remaining: number): void => {
-			cy.get(popupSurface).assertContained();
-			if (remaining === 0) return;
-			cy.get('body').then(() => {
-				if (onComplete.called) return;
-				pressNextUnderBloom();
-				cy.wait(150);
-				walk(remaining - 1);
-			});
-		};
-		walk(40);
-		cy.get('@onComplete').should('have.been.called');
 	});
 });

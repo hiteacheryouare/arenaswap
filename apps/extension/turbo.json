@@ -57,7 +57,12 @@
 				"test:component:guide",
 				"test:component:multiview",
 				"test:component:onboarding",
+				"test:component:walkthroughFirstHalf",
+				"test:component:walkthroughSecondHalf",
 				"test:component:settings",
+				"test:component:settingsPages",
+				"test:component:settingsControls",
+				"test:component:settingsSubpages",
 				"test:component:ui"
 			]
 		},
@@ -81,9 +86,29 @@
 			"dependsOn": ["^build"],
 			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/support/safetyNet/**", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/onboarding/**", "entrypoints/popup/**", "utils/**", "locales/**"]
 		},
+		"test:component:walkthroughFirstHalf": {
+			"dependsOn": ["^build"],
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/support/safetyNet/**", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/walkthroughFirstHalf/**", "entrypoints/popup/**", "utils/**", "locales/**"]
+		},
+		"test:component:walkthroughSecondHalf": {
+			"dependsOn": ["^build"],
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/support/safetyNet/**", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/walkthroughSecondHalf/**", "entrypoints/popup/**", "utils/**", "locales/**"]
+		},
 		"test:component:settings": {
 			"dependsOn": ["^build"],
 			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/support/safetyNet/**", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/settings/**", "entrypoints/popup/**", "entrypoints/settingsBackup/**", "utils/**", "locales/**"]
+		},
+		"test:component:settingsPages": {
+			"dependsOn": ["^build"],
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/support/safetyNet/**", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/settingsPages/**", "entrypoints/popup/**", "entrypoints/settingsBackup/**", "utils/**", "locales/**"]
+		},
+		"test:component:settingsControls": {
+			"dependsOn": ["^build"],
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/support/safetyNet/**", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/settingsControls/**", "entrypoints/popup/**", "entrypoints/settingsBackup/**", "utils/**", "locales/**"]
+		},
+		"test:component:settingsSubpages": {
+			"dependsOn": ["^build"],
+			"inputs": ["package.json", "tsconfig.json", "cypress.config.ts", "cypress/componentResolve.ts", "cypress/staticServer.ts", "cypress/support/component.ts", "cypress/support/component-index.html", "cypress/support/commands.ts", "cypress/support/fixtures.ts", "cypress/support/safetyNet/**", "cypress/stubs/**", "tests/stubs/**", "assets/**", "public/**", "cypress/component/settingsSubpages/**", "entrypoints/popup/**", "entrypoints/settingsBackup/**", "utils/**", "locales/**"]
 		},
 		// Shared @arenaswap/ui components only: no extension source, so popup edits never rerun it.
 		"test:component:ui": {
