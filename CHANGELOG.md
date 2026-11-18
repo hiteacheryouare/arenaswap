@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Box Score Roll lands without a snap — 2026-11-17
+
+The rolling digits used to rest on a fractional-pixel `translateY` held by `fill: both`, so the browser resampled them and the real score swapped in a hair sharper and up to a pixel off. Each strip now hangs from the column's bottom and animates from its offset to no transform at all, and the landing spec asserts every strip ends at `transform: none`.
+
 ## Named what the comments used to explain — 2026-11-17
 
 The surprises the comment purge flagged became names instead of prose: extracted constants and helpers, renames that say what a value is, and a few feed and browser quirks restored as one-line comments. Chromatic's contrast cutoffs are now derived from the background colours and WCAG ratios, the film's drum pitches come from MIDI notes, and `powerscore` gains `redCardTunables.tiedMagnitude`, which the PowerScore page uses for the red card's maximum.

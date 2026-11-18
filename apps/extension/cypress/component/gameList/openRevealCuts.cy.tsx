@@ -160,6 +160,9 @@ describe('the short opening cuts', () => {
 				});
 			});
 		});
+		cy.get('.game-card-reveal-roll-strip').each($strip => {
+			expect(getComputedStyle($strip[0]).transform, 'landed strip transform').to.equal('none');
+		});
 		cy.get('.game-card-reveal', { timeout: revealCutMs.boxScore + 2000 }).should('not.have.attr', 'data-reveal-cut');
 		cy.get('.game-card .game-score-value').first().should('have.css', 'visibility', 'visible');
 	});

@@ -223,11 +223,11 @@ $ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
 
 	.game-card-reveal-roll-strip {
 		position:   absolute;
-		top:        0;
+		bottom:     0;
 		left:       0;
 		right:      0;
 		text-align: center;
-		animation:  revealRoll 980ms $ease-roll calc(var(--reveal-delay) + var(--reveal-roll-at)) both;
+		animation:  revealRoll 980ms $ease-roll calc(var(--reveal-delay) + var(--reveal-roll-at)) backwards;
 
 		> span {
 			display: block;
@@ -334,7 +334,6 @@ $ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
 	}
 
 	@keyframes revealRoll {
-		from { transform: translateY(0); }
-		to   { transform: translateY(calc(var(--reveal-roll-steps) * var(--reveal-roll-line) * -1)); }
+		from { transform: translateY(calc(var(--reveal-roll-steps) * var(--reveal-roll-line))); }
 	}
 }
