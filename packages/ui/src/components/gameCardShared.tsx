@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 import type { CSSProperties, MouseEvent } from 'react';
-import { isHomeFirst, leagueConfigMap, resolveConferenceCrest } from '@arenaswap/core/constants';
+import { isHomeFirst, isPlaceholderTeam, leagueConfigMap, resolveConferenceCrest } from '@arenaswap/core/constants';
 import Crest from './crest';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import type { BettingDisplayPrefs } from './gameCardTypes';
@@ -136,6 +136,7 @@ export const TeamColumn = ({
 	surface,
 	timeoutsMax,
 	interactive = true,
+	seeded = false,
 }: {
 	team: Team;
 	leagueId: LeagueId;
@@ -145,15 +146,17 @@ export const TeamColumn = ({
 	surface?: string;
 	timeoutsMax?: number;
 	interactive?: boolean;
+	seeded?: boolean;
 }) => {
 	const t = useT();
+	const placeholder = isPlaceholderTeam(team);
 	return (
 		<div className={`d-flex flex-column align-items-center gap-1 team-column is-${side}`}>
-			<OnColorCrest team={team} surface={surface} className='team-crest' />
+			<OnColorCrest team={team} surface={surface} className='team-crest' fallback={placeholder ? 'blank' : undefined} />
 			<span className='fw-bold text-center text-nowrap team-abbreviation'>
 				{team.rank !== undefined && (
-					<span className='team-rank' title={t('gameCard.teamRank', { rank: team.rank })}>
-						#{team.rank}
+					<span className='team-rank' title={seeded ? t('gameCard.teamSeed', { seed: team.rank }) : t('gameCard.teamRank', { rank: team.rank })}>
+						{seeded ? team.rank : `#${team.rank}`}
 					</span>
 				)}
 				{team.abbreviation}
@@ -163,12 +166,12 @@ export const TeamColumn = ({
 			)}
 			<button
 				type='button'
-				className='btn btn-link p-0 border-0 lh-1'
+				className={`btn btn-link p-0 border-0 lh-1${placeholder ? ' invisible' : ''}`}
 				data-favorited={isFavorited}
 				data-team-star='true'
 				aria-label={isFavorited ? t('gameCard.removeFromFavorites', { team: team.abbreviation }) : t('gameCard.addToFavorites', { team: team.abbreviation })}
 				title={isFavorited ? t('gameCard.favorited') : t('gameCard.addToFavoritesShort')}
-				inert={!interactive}
+				inert={!interactive || placeholder}
 				onClick={() => onToggleFavoriteTeam(leagueId, team.id)}
 			>
 				<i className={`bi ${isFavorited ? 'bi-star-fill' : 'bi-star'}`} />

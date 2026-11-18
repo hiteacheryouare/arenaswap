@@ -1,6 +1,6 @@
 import { normalizeCollegeFilters } from './college';
 export * from './college';
-import type { BuiltInModeId, FinishedTabAction, Game, LeagueId, ScoringModeChoice, SignalName, SportType, ResolvedTheme, ThemePreference, UserPreferences } from './types';
+import type { BuiltInModeId, FinishedTabAction, Game, LeagueId, ScoringModeChoice, SignalName, SportType, ResolvedTheme, Team, ThemePreference, UserPreferences } from './types';
 import type { FantasyRule, FantasySport } from 'powerscore';
 import {
 	allLeagueIds,
@@ -64,6 +64,8 @@ export const isWithinFinalRetention = (
 	game: Pick<Game, 'sportType' | 'startTime'>,
 	now: number = Date.now(),
 ): boolean => now - estimatedWrapMs(game, now) <= finalRetentionMs;
+
+export const isPlaceholderTeam = (team: Pick<Team, 'id'>): boolean => team.id.startsWith('-');
 
 export const hasMissedItsWindow = (
 	game: Pick<Game, 'status' | 'sportType' | 'startTime' | 'delayed'>,

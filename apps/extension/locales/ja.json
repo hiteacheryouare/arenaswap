@@ -807,6 +807,7 @@
 		"shootout": "PK {away}–{home}",
 		"downDistanceAt": "{fieldPosition}で{downDistance}",
 		"teamRank": "ランキング{rank}位",
+		"teamSeed": "第{seed}シード",
 		"timeoutsRemaining": {
 			"1": "{team}：タイムアウト残り1回",
 			"n": "{team}：タイムアウト残り$1回"

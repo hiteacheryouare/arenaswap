@@ -807,6 +807,7 @@
 		"shootout": "GP {away}–{home}",
 		"downDistanceAt": "{downDistance} na {fieldPosition}",
 		"teamRank": "N.º {rank} no ranking",
+		"teamSeed": "Cabeça de série n.º {seed}",
 		"timeoutsRemaining": {
 			"1": "{team}: resta 1 tempo morto",
 			"n": "{team}: restam $1 tempos mortos"

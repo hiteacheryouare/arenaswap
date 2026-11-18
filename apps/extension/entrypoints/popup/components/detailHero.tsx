@@ -60,8 +60,8 @@ const detailHero = ({ game, seriesInfo, records = emptyTeamRecords, monoLogos, i
 
 	const homeFirst = isHomeFirst(game);
 	const [awayAt, homeAt] = homeFirst ? ['right', 'left'] as const : ['left', 'right'] as const;
-	const awayPill = <DetailTeamPill team={awayTeam} position={awayAt} record={records.away} color={awayColor} timeoutMax={timeoutMax} bonus={bonusOf('away')} bonusSlot={Boolean(situation)} />;
-	const homePill = <DetailTeamPill team={homeTeam} position={homeAt} record={records.home} color={homeColor} timeoutMax={timeoutMax} bonus={bonusOf('home')} bonusSlot={Boolean(situation)} />;
+	const awayPill = <DetailTeamPill seeded={game.collegeSeeded} team={awayTeam} position={awayAt} record={records.away} color={awayColor} timeoutMax={timeoutMax} bonus={bonusOf('away')} bonusSlot={Boolean(situation)} />;
+	const homePill = <DetailTeamPill seeded={game.collegeSeeded} team={homeTeam} position={homeAt} record={records.home} color={homeColor} timeoutMax={timeoutMax} bonus={bonusOf('home')} bonusSlot={Boolean(situation)} />;
 	const awayScore = <FlipScore value={game.awayTeam.score} className={scoreClass(game.awayTeam.score, game.homeTeam.score)} />;
 	const homeScore = <FlipScore value={game.homeTeam.score} className={scoreClass(game.homeTeam.score, game.awayTeam.score)} />;
 	const awayArrow = liveBasketball && <PossessionArrow side='away' position={awayAt} possession={possession} team={game.awayTeam} />;

@@ -807,6 +807,7 @@
 		"shootout": "PEN {away}–{home}",
 		"downDistanceAt": "{downDistance} na {fieldPosition}",
 		"teamRank": "Nº {rank} no ranking",
+		"teamSeed": "Cabeça de chave nº {seed}",
 		"timeoutsRemaining": {
 			"1": "{team}: resta 1 tempo técnico",
 			"n": "{team}: restam $1 tempos técnicos"

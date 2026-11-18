@@ -807,6 +807,7 @@
 		"shootout": "点球 {away}–{home}",
 		"downDistanceAt": "{fieldPosition} {downDistance}",
 		"teamRank": "排名第{rank}",
+		"teamSeed": "{seed}号种子",
 		"timeoutsRemaining": {
 			"1": "{team}：还剩 1 次暂停",
 			"n": "{team}：还剩 $1 次暂停"

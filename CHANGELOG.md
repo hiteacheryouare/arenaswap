@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Bracket placeholders and tournament seeds — 2026-11-18
+
+Teams the feed hasn't filled in yet arrive as "TBD" with negative ids, so `isPlaceholderTeam` gives them a blank crest and an invisible, inert star (favoriting id `-1` would have favorited every TBD at once). In seeded tournament games, where the rank field carries the seed, cards and the detail hero show "16" with a "No. 16 seed" tooltip instead of an AP-style "#16".
+
 ## Canceled and abandoned games get their own cards — 2026-11-18
 
 A canceled game used to vanish from the slate; it now shows "Canceled" with no score, like a postponed game, unless it's a series game the series no longer needs. An abandoned match (matched on `ABANDON` in the status name, which no recorded match has confirmed yet) keeps its score and the minute it stopped with nobody dimmed, and the Guide now names postponed, canceled and abandoned games instead of calling them Final.

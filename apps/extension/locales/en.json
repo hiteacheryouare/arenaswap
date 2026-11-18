@@ -807,6 +807,7 @@
 		"shootout": "PENS {away}–{home}",
 		"downDistanceAt": "{downDistance} at {fieldPosition}",
 		"teamRank": "Ranked #{rank}",
+		"teamSeed": "No. {seed} seed",
 		"timeoutsRemaining": {
 			"1": "{team}: 1 timeout left",
 			"n": "{team}: $1 timeouts left"

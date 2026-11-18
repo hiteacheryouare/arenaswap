@@ -38,8 +38,8 @@ const finalGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGame
 		? undefined
 		: [game.awayTeam, game.homeTeam].find(team => team.id === game.forfeitWinnerId);
 
-	const awayColumn = <TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' interactive={interactive} />;
-	const homeColumn = <TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' interactive={interactive} />;
+	const awayColumn = <TeamColumn leagueId={game.league} seeded={game.collegeSeeded} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' interactive={interactive} />;
+	const homeColumn = <TeamColumn leagueId={game.league} seeded={game.collegeSeeded} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' interactive={interactive} />;
 
 	return (
 		<div

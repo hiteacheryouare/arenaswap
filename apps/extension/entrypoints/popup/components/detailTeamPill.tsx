@@ -12,17 +12,18 @@ interface detailTeamPillProps {
 	timeoutMax?: number;
 	bonus?: 'bonus' | 'double';
 	bonusSlot?: boolean;
+	seeded?: boolean;
 }
 
-const detailTeamPill = ({ team, position, record, color, timeoutMax, bonus, bonusSlot = false }: detailTeamPillProps) => (
+const detailTeamPill = ({ team, position, record, color, timeoutMax, bonus, bonusSlot = false, seeded = false }: detailTeamPillProps) => (
 	<div className={`game-detail-team-wrap is-${position}`}>
 		<span className={`game-detail-team-logo-shell is-bare gd-area-${position}-crest`}>
 			<OnColorCrest team={team} surface={color} className='game-detail-team-logo' fallback='blank' />
 		</span>
 		<div className={`game-detail-team-name gd-area-${position}-label`}>
 			{team.rank !== undefined && (
-				<span className='game-detail-team-rank' title={i18n.t('gameCard.teamRank', { rank: team.rank })}>
-					#{team.rank}
+				<span className='game-detail-team-rank' title={seeded ? i18n.t('gameCard.teamSeed', { seed: team.rank }) : i18n.t('gameCard.teamRank', { rank: team.rank })}>
+					{seeded ? team.rank : `#${team.rank}`}
 				</span>
 			)}
 			{team.name || team.abbreviation}

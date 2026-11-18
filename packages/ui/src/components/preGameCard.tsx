@@ -20,8 +20,8 @@ const preGameCard = ({ game, favoriteTeamIds, onToggleFavoriteTeam, onOpenGameDe
 	const surface = buildGameCardSurface(game, isDelayed);
 	const homeFirst = isHomeFirst(game);
 
-	const awayColumn = <TeamColumn leagueId={game.league} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' surface={surface.awayColor} interactive={interactive} />;
-	const homeColumn = <TeamColumn leagueId={game.league} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' surface={surface.homeColor} interactive={interactive} />;
+	const awayColumn = <TeamColumn leagueId={game.league} seeded={game.collegeSeeded} team={game.awayTeam} isFavorited={awayFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='away' surface={surface.awayColor} interactive={interactive} />;
+	const homeColumn = <TeamColumn leagueId={game.league} seeded={game.collegeSeeded} team={game.homeTeam} isFavorited={homeFavorited} onToggleFavoriteTeam={onToggleFavoriteTeam} side='home' surface={surface.homeColor} interactive={interactive} />;
 
 	return (
 		<div

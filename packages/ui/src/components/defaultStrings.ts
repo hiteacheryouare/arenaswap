@@ -35,6 +35,7 @@ export const defaultStrings: Record<string, string> = {
 	'gameCard.shootout': 'PENS {away}–{home}',
 	'gameCard.downDistanceAt': '{downDistance} at {fieldPosition}',
 	'gameCard.teamRank': 'Ranked #{rank}',
+	'gameCard.teamSeed': 'No. {seed} seed',
 	'gameCard.timeoutsRemaining': '{team}: 1 timeout left | {team}: $1 timeouts left',
 	'gameCard.timeoutsShort': '{count} TO',
 	'gameCard.periodQuarter': 'Q{count}',
