@@ -57,6 +57,7 @@
 	}
 
 	.band-hero.about-hero {
+		--intro: 2600ms;
 		display: flex;
 		align-items: center;
 		min-height: 100svh;
@@ -70,6 +71,7 @@
 			--glow-height: 22rem;
 			--glow-spill: 4rem;
 			--glow-lift: 4rem;
+			animation-delay: var(--intro);
 		}
 
 		.display-xl {
@@ -89,7 +91,7 @@
 			margin: 2rem auto 0;
 			font-size: clamp(1.125rem, 1.5vw, 1.375rem);
 			animation: about-fade-in m.$motion-deliberate m.$motion-ease both;
-			animation-delay: calc(250ms + var(--words, 6) * 90ms);
+			animation-delay: calc(var(--intro) + 250ms + var(--words, 6) * 90ms);
 		}
 	}
 
@@ -101,7 +103,7 @@
 	.about-word {
 		display: inline-block;
 		animation: about-word-rise 900ms m.$motion-ease both;
-		animation-delay: calc(150ms + var(--i) * 90ms);
+		animation-delay: calc(var(--intro) + 150ms + var(--i) * 90ms);
 	}
 
 	.about-mosaic {
@@ -130,6 +132,7 @@
 			z-index: -1;
 			border-radius: 50%;
 			background: radial-gradient(closest-side, var(--as-airbrush-stops));
+			mask-image: radial-gradient(closest-side, #000 30%, transparent 72%);
 			opacity: 0;
 			transition: opacity m.$motion-deliberate m.$motion-ease;
 		}
@@ -157,7 +160,11 @@
 			color-mix(in srgb, var(--home) var(--tint), var(--as-bg-2)) 75%);
 		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--as-fg-body) 7%, transparent);
 		opacity: calc(0.45 * var(--fade, 0));
-		transition: opacity m.$motion-slow m.$motion-ease, box-shadow m.$motion-slow m.$motion-ease;
+		transition: opacity m.$motion-deliberate m.$motion-ease, box-shadow m.$motion-slow m.$motion-ease;
+
+		.about-mosaic.is-zooming .about-tile:not(.is-picked) > & {
+			opacity: 0.45;
+		}
 
 		.about-mosaic.is-dealt & {
 			animation: about-tile-deal m.$motion-deliberate m.$motion-ease backwards;
@@ -230,6 +237,7 @@
 		z-index: -1;
 		border-radius: 50%;
 		background: radial-gradient(closest-side, var(--as-airbrush-stops));
+		mask-image: radial-gradient(closest-side, #000 30%, transparent 72%);
 		filter: blur(6px);
 		animation: about-roar 1s m.$motion-ease-in-out both;
 	}
@@ -428,12 +436,20 @@
 	}
 
 	@media (scripting: none) {
+		.band-hero.about-hero {
+			--intro: 0ms;
+		}
+
 		.about-mosaic {
 			display: none;
 		}
 	}
 
 	@include m.reduced-motion {
+		.band-hero.about-hero {
+			--intro: 0ms;
+		}
+
 		.about-word,
 		.band-hero.about-hero .band-lede,
 		.about-tile-card,

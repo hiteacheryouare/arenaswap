@@ -50,9 +50,12 @@ const games = mosaicGames(150);
 	if (mosaic && hero) {
 		const tiles = [...mosaic.querySelectorAll<HTMLElement>('.about-tile')];
 		const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		const firstPickMs = 1600;
+		const holdMs = 900;
+		const pullBackMs = 2400;
 		const pickEveryMs = 2600;
 		const scoreAfterMs = 900;
+		const intro = !still && window.scrollY < 10;
+		const introEndsAt = performance.now() + (intro ? holdMs + pullBackMs : 0);
 		let picked: HTMLElement | null = null;
 		let timer = 0;
 		let onScreen = true;
@@ -73,15 +76,22 @@ const games = mosaicGames(150);
 			};
 		};
 
+		const placed = (tile: HTMLElement) => {
+			const frame = hero.getBoundingClientRect();
+			const left = frame.left + tile.offsetLeft;
+			const top = frame.top + tile.offsetTop;
+			return { left, top, right: left + tile.offsetWidth, bottom: top + tile.offsetHeight, width: tile.offsetWidth, height: tile.offsetHeight };
+		};
+
 		const fade = () => {
 			const copy = copyBox();
-			const frame = mosaic.getBoundingClientRect();
+			const frame = hero.getBoundingClientRect();
 			const reach = tiles[0]?.offsetWidth ?? 100;
 			const grow = reach * (parseFloat(getComputedStyle(mosaic).getPropertyValue('--pick-scale')) - 1) / 2;
 			const topLimit = frame.top + 64 + grow;
 			const bottomLimit = frame.top + frame.height * 0.72;
 			tiles.forEach(tile => {
-				const box = tile.getBoundingClientRect();
+				const box = placed(tile);
 				const across = Math.max(copy.left - box.right, box.left - copy.right, 0);
 				const down = Math.max(copy.top - box.bottom, box.top - copy.bottom, 0);
 				const clear = Math.min(1, Math.hypot(across, down) / (reach * 0.6));
@@ -91,27 +101,47 @@ const games = mosaicGames(150);
 			});
 		};
 
-		const deal = () => {
-			const frame = mosaic.getBoundingClientRect();
-			const copy = copyBox();
-			const centreX = (copy.left + copy.right) / 2 - frame.left;
-			const centreY = (copy.top + copy.bottom) / 2 - frame.top;
-			tiles.forEach(tile => {
-				const box = tile.getBoundingClientRect();
-				const distance = Math.hypot(box.left + box.width / 2 - frame.left - centreX, box.top + box.height / 2 - frame.top - centreY);
-				tile.style.setProperty('--deal', `${Math.round(120 + distance * 0.75)}ms`);
-			});
-			mosaic.classList.add('is-dealt');
+		const crown = (tile: HTMLElement, scoreAfter: number) => {
+			picked?.classList.remove('is-picked');
+			tile.classList.add('is-picked');
+			picked = tile;
+			if (!still) window.setTimeout(() => score(tile), scoreAfter);
 		};
 
 		const pick = () => {
 			const pool = tiles.filter(tile => tile !== picked && tile.hasAttribute('data-pickable'));
 			const next = pool[Math.floor(Math.random() * pool.length)];
-			if (!next) return;
-			picked?.classList.remove('is-picked');
-			next.classList.add('is-picked');
-			picked = next;
-			if (!still) window.setTimeout(() => score(next), scoreAfterMs);
+			if (next) crown(next, scoreAfterMs);
+		};
+
+		const pullBack = (start: HTMLElement) => {
+			const frame = hero.getBoundingClientRect();
+			const box = placed(start);
+			const centreX = box.left + box.width / 2;
+			const centreY = box.top + box.height / 2;
+			const pickScale = parseFloat(getComputedStyle(mosaic).getPropertyValue('--pick-scale'));
+			const zoom = Math.max(1.5, Math.min(window.innerHeight * 0.42, window.innerWidth * 0.55) / (box.width * pickScale));
+			const shiftX = window.innerWidth / 2 - centreX;
+			const shiftY = window.innerHeight / 2 - centreY;
+			const steps = 24;
+			const frames = Array.from({ length: steps + 1 }, (_, step) => {
+				const scale = zoom ** (1 - step / steps);
+				const along = (scale - 1) / (zoom - 1);
+				return { offset: step / steps, transform: `translate(${shiftX * along}px, ${shiftY * along}px) scale(${scale})` };
+			});
+			const far = Math.hypot(frame.width, frame.height) / 2;
+			tiles.forEach(tile => {
+				const other = placed(tile);
+				const distance = Math.hypot(other.left - box.left, other.top - box.top);
+				const deal = tile === start ? 0 : holdMs * 0.7 + (distance / far) * pullBackMs * 0.5;
+				tile.style.setProperty('--deal', `${Math.round(deal)}ms`);
+			});
+			mosaic.style.transformOrigin = `${centreX - frame.left}px ${centreY - frame.top}px`;
+			mosaic.animate(frames, { duration: pullBackMs, delay: holdMs, easing: 'cubic-bezier(0.6, 0, 0.25, 1)', fill: 'backwards' });
+
+			mosaic.classList.add('is-dealt', 'is-zooming');
+			crown(start, holdMs * 0.45);
+			window.setTimeout(() => mosaic.classList.remove('is-zooming'), holdMs + pullBackMs * 0.7);
 		};
 
 		const run = (delay: number) => {
@@ -120,20 +150,26 @@ const games = mosaicGames(150);
 				if (!onScreen || document.hidden) return;
 				pick();
 				run(pickEveryMs);
-			}, delay);
+			}, Math.max(delay, introEndsAt - performance.now() + pickEveryMs * 0.6));
 		};
 
 		fade();
 		new ResizeObserver(fade).observe(hero);
 		document.fonts.ready.then(fade);
 
+		if (!intro) hero.style.setProperty('--intro', '0ms');
+
+		const opener = tiles.filter(tile => tile.hasAttribute('data-pickable'));
+		const start = opener[Math.floor(Math.random() * opener.length)];
+
 		if (still) {
 			pick();
 		} else {
-			deal();
+			if (intro && start) pullBack(start);
+			else pick();
 			new IntersectionObserver(([entry]) => {
 				onScreen = Boolean(entry?.isIntersecting);
-				if (onScreen) run(picked ? pickEveryMs / 2 : firstPickMs);
+				if (onScreen) run(pickEveryMs / 2);
 			}).observe(hero);
 			document.addEventListener('visibilitychange', () => {
 				if (!document.hidden) run(pickEveryMs / 2);

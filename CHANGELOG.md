@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The About hero opens on one game and pulls back — 2026-11-19
+
+The About hero now starts zoomed in on a single game as it scores, then the camera pulls back while more and more games fill in around it, after the "There is Only One Disney" DVD promo; the headline lands as the wall clears around it, and then the usual highlight loop takes over. Every matchup in the wall is now drawn from one league's pool, since NBA, WNBA and college teams used to share a sport pool and produced games like Lakers vs. Valkyries.
+
 ## The About page gets moving demos — 2026-11-19
 
 The About hero now fills the screen, with the headline landing word by word over a mosaic of mini scoreboards that keeps lifting one game out in orange; tiles fade by their measured distance from the headline rather than a fixed mask, so the text stays clear in every language and width. The problem section gets a browser where the sound hops between four tabs and the cursor always arrives late, the fun demo is the popup's real loading screen (moved into `packages/ui` as `loadingMessage`), and the static charts gave way to a Multiview grid that rotates the best game into the big box and then goes solo.
