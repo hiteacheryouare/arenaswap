@@ -1,4 +1,5 @@
 import { i18n } from '#i18n';
+import LoadingMessage from '@arenaswap/ui/src/components/loadingMessage';
 import RefreshButton from './refreshButton';
 
 interface gameListHeaderProps {
@@ -10,14 +11,7 @@ interface gameListHeaderProps {
 
 const gameListHeader = ({ isLoading, hasError, loadingMessage, onRefresh }: gameListHeaderProps) => {
 	if (isLoading) {
-		return (
-			<div className='d-flex flex-column justify-content-center align-items-center mt-7 popup-loading-wrap'>
-				<div className='spinner-border popup-loading-spinner' role='status'>
-					<span className='visually-hidden'>{i18n.t('gameListHeader.loading')}</span>
-				</div>
-				<div className='mt-3 text-center popup-loading-text'>{loadingMessage}</div>
-			</div>
-		);
+		return <LoadingMessage message={loadingMessage} label={i18n.t('gameListHeader.loading')} />;
 	}
 
 	if (hasError) {

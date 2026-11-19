@@ -280,6 +280,7 @@
 			"title": "Hindi dapat trabaho ang manood ng higit sa isang laro.",
 			"copy1": "Sa napakatagal na panahon, ang big night ng sports online ay ikaw mismo ang lilipat-lipat. Apat na tab ang bukas, isa lang ang may tunog, nasa mouse ang kamay mo, laging isang click na huli sa buzzer. May mga fan pa nga na gumawa ng multi-screen setup na mukhang security command center.",
 			"copy2": "Matagal nang may sariling channel para dito ang Linggo ng American football, ang NFL. Wala pang ganito ang web para sa bawat sport, gabi-gabi.",
+			"demoLabel": "Isang browser na may apat na laro sa apat na tab. Lumilipat-lipat ang tunog sa mga tab, at laging huli nang kaunti ang cursor.",
 			"kicker": "Kaya gumawa kami."
 		},
 		"values": {
@@ -288,9 +289,10 @@
 			"smallStuffCopy": "Ginawa ang ArenaSwap ng mga sports fan na obsessed sa maliliit na bagay na nagpapasaya sa laro. Nag-score ang team mo? May confetti sa kulay nila. May laro sa Pasko? Dala namin ang mga dekorasyon. Umuulan ng snow sa stadium? Umuulan din ng snow sa ArenaSwap. At sa kung saan sa Settings, may temperature scale na mas matanda pa sa Fahrenheit, para lang masaya.",
 			"smallStuffDemo": "Ang game screen ng final sa Araw ng Pasko, {away} {awayScore}, {home} {homeScore}, na may medyas na nakasabit para sa bawat team sa ilalim ng garland. Puno ng regalo ang medyas ng nanalo. Uling ang laman ng sa natalo.",
 			"funTitle": "Dapat masaya ang sports.",
-			"funCopy": "Hindi kami nagliligtas ng buhay dito. Naghahanap kami ng mas magandang laro para sa'yo, kaya nag-e-enjoy kami habang ginagawa 'yon. Sinusuhulan ng ArenaSwap ang mga ref habang naglo-load, at kapag walang laro, sinasabi nitong umalis na ang nagtitinda ng hot dog. Ang tanging hindi namin binibiro ay ang mismong paglipat.",
-			"funDemo": "Ito ang ipinapakita ng ArenaSwap kapag walang live na laro sa mga liga mo. Pindutin ang I-refresh para sa isa pa.",
-			"watchTitle": "Gamit namin 'to sa panonood.",
+			"funCopy": "Hindi kami nagliligtas ng buhay dito. Naghahanap kami ng mas magandang laro para sa'yo, kaya nag-e-enjoy kami habang ginagawa 'yon.",
+			"funDemo": "Ito ang ipinapakita ng popup habang naglo-load. May {count} nito, i-click para sa isa pa.",
+			"funAnother": "Magpakita ng isa pang linya sa pag-load",
+			"watchTitle": "Ginagamit din namin 'to.",
 			"watchCopy": "Ginagamit namin ang ArenaSwap tuwing nanonood kami ng sports. Kapag hindi sapat ang isang bagay sa sofa namin, hindi rin sapat 'yon sa sofa mo.",
 			"freeTitle": "Libre, at walang tinatago.",
 			"freeCopy": "Sapat na ang mahal ng cable at streaming. Ang huling kailangan mo ay subscription para lang makalipat-lipat sa mga subscription mo. Libre ang ArenaSwap, walang account, walang ads. At sa totoo lang, ayaw naming malaman kung anong mga laro ang pinapanood mo. Kahit ang susunod na NFC Championship Game ng Cowboys, kailan man iyon dumating. Nasa browser mo lang ang settings mo, at bukas ang bawat linya ng code {link}.",
@@ -300,13 +302,15 @@
 			"title": "Saan kami papunta.",
 			"bestTitle": "Ang pinakamagandang paraan para manood ng sports sa web.",
 			"bestCopy": "Simula pa lang ang Multiview, Standby Stream at ang Guide. Gusto naming ArenaSwap na lang ang kailangan mong buksan tuwing game night.",
+			"bestDemo": "Ibinibigay ng Multiview ang malaking box at ang tunog sa pinakamagandang laro, at ang buong screen kapag iyon lang ang sulit panoorin.",
 			"sportsTitle": "Bawat sport, gabi-gabi.",
 			"sportsCopy": "{leagues} liga ngayon. Patuloy kaming magdadagdag hanggang laging may mapapanood na sulit, anuman ang oras diyan sa inyo.",
 			"everyoneTitle": "Para sa lahat.",
-			"everyoneCopy": "{languages} wika na ang sinasalita ng ArenaSwap ngayon, at magdadagdag pa kami para sa mga sports fan sa buong mundo. Kasi para sa lahat ang sports.",
+			"everyoneCopy": "Isinalin na ang ArenaSwap sa {languages} wika ngayon, at magdadagdag pa kami para sa mga sports fan sa buong mundo. Kasi para sa lahat ang sports.",
 			"stakesTitle": "Alam kung ano ang nakataya.",
 			"stakesCopy": "Alam na ng PowerScore ang pagkakaiba ng Game 7 sa Game 2, at na mas sulit ang no-hitter sa eighth inning kaysa sa karamihan ng tabla. Gusto naming maintindihan nito ang lahat ng dahilan kung bakit mahalaga ang isang laro."
-		}
+		},
+		"closingTitle": "Kasi sulit panoorin ang sports."
 	},
 	"notFound": {
 		"title": "Wala ito sa schedule.",

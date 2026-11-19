@@ -1,0 +1,143 @@
+---
+import Crest from '@arenaswap/ui/src/components/crest';
+import CrestSettle from '../CrestSettle.astro';
+import { mosaicGames } from './mosaicGames';
+
+const scoringPlays: Record<string, string> = {
+	football: '7,3',
+	basketball: '2,3',
+	baseball: '1',
+	hockey: '1',
+	soccer: '1',
+};
+
+const games = mosaicGames(150);
+---
+<div class='about-mosaic' aria-hidden='true' data-about-mosaic data-crest-settle>
+	{games.map(game => (
+		<div class='about-tile' data-plays={scoringPlays[game.sport]}>
+			<div class='about-tile-card' style={`--away:${game.away.color};--home:${game.home.color}`}>
+				<span class='about-tile-team'>
+					<Crest logo={game.away.logo} abbreviation={game.away.abbreviation} teamColor={game.away.color} loading='lazy' />
+					<b>{game.awayScore}</b>
+				</span>
+				<span class='about-tile-team'>
+					<Crest logo={game.home.logo} abbreviation={game.home.abbreviation} teamColor={game.home.color} loading='lazy' />
+					<b>{game.homeScore}</b>
+				</span>
+			</div>
+		</div>
+	))}
+</div>
+
+<CrestSettle />
+
+<script>
+	const score = (tile: HTMLElement) => {
+		const plays = (tile.dataset.plays ?? '1').split(',').map(Number);
+		const sides = tile.querySelectorAll<HTMLElement>('b');
+		const side = sides[Math.floor(Math.random() * sides.length)];
+		if (!side) return;
+		side.textContent = String(Number(side.textContent) + plays[Math.floor(Math.random() * plays.length)]!);
+		side.classList.remove('is-scored');
+		void side.offsetWidth;
+		side.classList.add('is-scored');
+	};
+
+	const mosaic = document.querySelector<HTMLElement>('[data-about-mosaic]');
+	const hero = mosaic?.closest('section');
+
+	if (mosaic && hero) {
+		const tiles = [...mosaic.querySelectorAll<HTMLElement>('.about-tile')];
+		const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const firstPickMs = 1600;
+		const pickEveryMs = 2600;
+		const scoreAfterMs = 900;
+		let picked: HTMLElement | null = null;
+		let timer = 0;
+		let onScreen = true;
+
+		const copyBox = () => {
+			const boxes = [...hero.querySelectorAll('.about-word')].map(word => word.getBoundingClientRect());
+			const lede = hero.querySelector('.band-lede');
+			if (lede) {
+				const range = document.createRange();
+				range.selectNodeContents(lede);
+				boxes.push(range.getBoundingClientRect());
+			}
+			return {
+				left: Math.min(...boxes.map(box => box.left)),
+				right: Math.max(...boxes.map(box => box.right)),
+				top: Math.min(...boxes.map(box => box.top)),
+				bottom: Math.max(...boxes.map(box => box.bottom)),
+			};
+		};
+
+		const fade = () => {
+			const copy = copyBox();
+			const frame = mosaic.getBoundingClientRect();
+			const reach = tiles[0]?.offsetWidth ?? 100;
+			const grow = reach * (parseFloat(getComputedStyle(mosaic).getPropertyValue('--pick-scale')) - 1) / 2;
+			const topLimit = frame.top + 64 + grow;
+			const bottomLimit = frame.top + frame.height * 0.72;
+			tiles.forEach(tile => {
+				const box = tile.getBoundingClientRect();
+				const across = Math.max(copy.left - box.right, box.left - copy.right, 0);
+				const down = Math.max(copy.top - box.bottom, box.top - copy.bottom, 0);
+				const clear = Math.min(1, Math.hypot(across, down) / (reach * 0.6));
+				tile.style.setProperty('--fade', clear.toFixed(2));
+				const roomy = box.left - grow >= frame.left + 4 && box.right + grow <= frame.right - 4 && box.top >= topLimit && box.bottom <= bottomLimit;
+				tile.toggleAttribute('data-pickable', clear === 1 && roomy);
+			});
+		};
+
+		const deal = () => {
+			const frame = mosaic.getBoundingClientRect();
+			const copy = copyBox();
+			const centreX = (copy.left + copy.right) / 2 - frame.left;
+			const centreY = (copy.top + copy.bottom) / 2 - frame.top;
+			tiles.forEach(tile => {
+				const box = tile.getBoundingClientRect();
+				const distance = Math.hypot(box.left + box.width / 2 - frame.left - centreX, box.top + box.height / 2 - frame.top - centreY);
+				tile.style.setProperty('--deal', `${Math.round(120 + distance * 0.75)}ms`);
+			});
+			mosaic.classList.add('is-dealt');
+		};
+
+		const pick = () => {
+			const pool = tiles.filter(tile => tile !== picked && tile.hasAttribute('data-pickable'));
+			const next = pool[Math.floor(Math.random() * pool.length)];
+			if (!next) return;
+			picked?.classList.remove('is-picked');
+			next.classList.add('is-picked');
+			picked = next;
+			if (!still) window.setTimeout(() => score(next), scoreAfterMs);
+		};
+
+		const run = (delay: number) => {
+			window.clearTimeout(timer);
+			timer = window.setTimeout(() => {
+				if (!onScreen || document.hidden) return;
+				pick();
+				run(pickEveryMs);
+			}, delay);
+		};
+
+		fade();
+		new ResizeObserver(fade).observe(hero);
+		document.fonts.ready.then(fade);
+
+		if (still) {
+			pick();
+		} else {
+			deal();
+			new IntersectionObserver(([entry]) => {
+				onScreen = Boolean(entry?.isIntersecting);
+				if (onScreen) run(picked ? pickEveryMs / 2 : firstPickMs);
+			}).observe(hero);
+			document.addEventListener('visibilitychange', () => {
+				if (!document.hidden) run(pickEveryMs / 2);
+			});
+		}
+	}
+</script>

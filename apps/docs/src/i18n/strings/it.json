@@ -280,6 +280,7 @@
 			"title": "Seguire più partite non dovrebbe essere un lavoro.",
 			"copy1": "Per troppo tempo, una grande serata di sport online ha voluto dire fare lo zapping da soli. Quattro schede aperte, una con l'audio, la mano sul mouse, sempre un clic in ritardo sulla sirena. Qualcuno si è spinto oltre e si è montato postazioni multischermo che sembrano una centrale di sicurezza.",
 			"copy2": "Per il football americano della domenica c'è un canale dedicato da anni. Per il web, per ogni sport e ogni sera, non è mai esistito.",
+			"demoLabel": "Un browser con quattro partite aperte in quattro schede. L'audio salta da una scheda all'altra, e il cursore arriva sempre un attimo in ritardo.",
 			"kicker": "Così ne abbiamo fatto uno."
 		},
 		"values": {
@@ -288,8 +289,9 @@
 			"smallStuffCopy": "ArenaSwap è fatto da tifosi che si fissano sui piccoli dettagli che rendono bella una partita. La tua squadra segna? Coriandoli nei suoi colori. Si gioca a Natale? Abbiamo portato le decorazioni. Nevica allo stadio? Nevica anche in ArenaSwap. E da qualche parte nelle Impostazioni c'è una scala di temperatura più vecchia di Fahrenheit, giusto per divertimento.",
 			"smallStuffDemo": "La schermata di una finale di Natale, {away} {awayScore}, {home} {homeScore}, con una calza appesa per ogni squadra sotto una ghirlanda. Quella del vincitore trabocca di dolcetti. Quella dello sconfitto contiene carbone.",
 			"funTitle": "Lo sport deve essere divertente.",
-			"funCopy": "Qui non salviamo vite. Ti troviamo una partita migliore, quindi tanto vale divertirsi. ArenaSwap corrompe gli arbitri mentre carica e, quando non c'è niente in diretta, ti dice che il venditore di hot dog se n'è andato. L'unica cosa su cui non scherziamo mai è il cambio di partita.",
-			"funDemo": "Cosa mostra ArenaSwap quando nei tuoi campionati non c'è nulla in diretta. Premi Aggiorna per vederne un'altra.",
+			"funCopy": "Qui non salviamo vite. Ti troviamo una partita migliore, quindi tanto vale divertirsi.",
+			"funDemo": "Cosa mostra il popup durante il caricamento. Ce ne sono {count}, clicca per vederne un'altra.",
+			"funAnother": "Mostra un'altra frase di caricamento",
 			"watchTitle": "Lo usiamo anche noi.",
 			"watchCopy": "Usiamo ArenaSwap ogni volta che guardiamo sport. Se sul nostro divano non è abbastanza buono, non lo è nemmeno sul tuo.",
 			"freeTitle": "Gratis, senza niente da nascondere.",
@@ -300,13 +302,15 @@
 			"title": "Dove stiamo andando.",
 			"bestTitle": "Il modo migliore di guardare lo sport sul web.",
 			"bestCopy": "Multiview, Standby Stream e la Guida sono un inizio. Vogliamo che ArenaSwap sia l'unica cosa da tenere aperta nelle sere di partita.",
+			"bestDemo": "Multiview dà il riquadro grande e l'audio alla partita migliore, e tutto lo schermo quando è l'unica che vale la pena guardare.",
 			"sportsTitle": "Ogni sport, ogni sera.",
 			"sportsCopy": "Oggi {leagues} campionati. Continueremo ad aggiungerne finché ci sarà sempre qualcosa da guardare, a qualunque ora da te.",
 			"everyoneTitle": "Per tutti.",
-			"everyoneCopy": "Oggi ArenaSwap parla {languages} lingue e ne aggiungeremo altre per i tifosi di tutto il mondo. Perché lo sport è di tutti.",
+			"everyoneCopy": "Oggi ArenaSwap è tradotto in {languages} lingue e ne aggiungeremo altre per i tifosi di tutto il mondo. Perché lo sport è di tutti.",
 			"stakesTitle": "Capire cosa c'è in gioco.",
 			"stakesCopy": "PowerScore sa già distinguere una Gara 7 da una Gara 2 e sa che un no-hitter all'ottavo inning batte la maggior parte delle partite in parità. Vogliamo che capisca ogni motivo per cui una partita conta."
-		}
+		},
+		"closingTitle": "Perché lo sport merita di essere guardato."
 	},
 	"notFound": {
 		"title": "Questa non è in calendario.",

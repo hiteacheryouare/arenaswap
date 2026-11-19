@@ -877,15 +877,6 @@
 		color: var(--as-fg-body);
 	}
 
-	.popup-loading-wrap {
-		min-height: 100px;
-	}
-
-	.popup-loading-text {
-		font-size: 0.78rem;
-		color: var(--as-fg-body);
-	}
-
 	// The notice's margin moves onto the wrapper so it folds away with the height.
 	.notice-reveal {
 		display:            grid;
@@ -956,13 +947,6 @@
 	.popup-empty-leagues-title {
 		font-size: 1.2rem;
 		letter-spacing: -0.015em;
-	}
-
-	.popup-loading-spinner {
-		color: #F75C03;
-		width: 1.5rem;
-		height: 1.5rem;
-		border-width: 0.2em;
 	}
 
 

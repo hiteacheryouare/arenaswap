@@ -2,23 +2,26 @@
 import { leagueConfigs } from '@arenaswap/core/constants';
 import Shell from '../../layouts/Shell.astro';
 import ClosingBand from '../../components/landing/ClosingBand.astro';
-import DetailCharts from '../../components/landing/DetailCharts';
 import DocDemo from '../../components/docs/DocDemo.astro';
 import ChristmasDemo from '../../components/about/ChristmasDemo';
-import EmptyStateDemo from '../../components/about/EmptyStateDemo';
+import HeroMosaic from '../../components/about/HeroMosaic.astro';
+import LoadingDemo from '../../components/about/LoadingDemo';
+import MultiviewSolo from '../../components/about/MultiviewSolo';
+import TabShuffle from '../../components/about/TabShuffle';
 import { christmasFinal } from '../../components/docs/demoGames';
 import { demoUiStrings } from '../../components/docs/demoStrings';
 import { localeRoutes, locales } from '../../i18n/locales';
-import { tokenize, uiStrings, useTranslations } from '../../i18n/ui';
+import { tokenize, useTranslations } from '../../i18n/ui';
 
 export const getStaticPaths = localeRoutes;
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 const strings = demoUiStrings(locale);
-const emptyStateStrings = Object.fromEntries(
-	Object.entries(strings).filter(([key]) => key.startsWith('noGames.') || key.startsWith('empty.')),
-);
+const loadingLines = Object.entries(strings)
+	.filter(([key]) => /^loading\.m\d+$/.test(key))
+	.map(([, line]) => line);
+const heroWords = t('about.hero.title').split(' ');
 
 const repository = 'https://github.com/hiteacheryouare/arenaswap';
 const freeCopy = tokenize(t('about.values.freeCopy'));
@@ -43,20 +46,33 @@ const goals = [
 >
 	<section class='band band-hero band-centred about-hero'>
 		<div class='glow' aria-hidden='true'></div>
-		<div class='container'>
-			<h1 class='display-xl'>{t('about.hero.title')}</h1>
+		<HeroMosaic />
+		<div class='container about-hero-copy'>
+			<h1 class='display-xl' style={`--words:${heroWords.length}`}>
+				{heroWords.map((word, index) => (
+					<Fragment>
+						<span class='about-word' style={`--i:${index}`}>{word}</span>{index < heroWords.length - 1 && ' '}
+					</Fragment>
+				))}
+			</h1>
 			<p class='band-lede'>{t('about.hero.lede')}</p>
 		</div>
 	</section>
 
 	<section class='band about-problem'>
 		<div class='container'>
-			<div class='band-head'>
-				<h2 class='display-md'>{t('about.problem.title')}</h2>
-				<p class='band-copy'>{t('about.problem.copy1')}</p>
-				<p class='band-copy'>{t('about.problem.copy2')}</p>
-				<p class='band-lede about-kicker'>{t('about.problem.kicker')}</p>
+			<div class='band-split-grid about-problem-grid'>
+				<div>
+					<h2 class='display-md'>{t('about.problem.title')}</h2>
+					<p class='band-copy'>{t('about.problem.copy1')}</p>
+					<p class='band-copy'>{t('about.problem.copy2')}</p>
+				</div>
+				<TabShuffle client:visible label={t('about.problem.demoLabel')} />
 			</div>
+		</div>
+		<div class='about-kicker-wrap'>
+			<div class='glow' aria-hidden='true'></div>
+			<p class='about-kicker'>{t('about.problem.kicker')}</p>
 		</div>
 	</section>
 
@@ -84,10 +100,15 @@ const goals = [
 					<figure class='doc-demo'>
 						<div class='doc-demo-body'>
 							<div class='doc-demo-stage'>
-								<EmptyStateDemo client:only='react' strings={emptyStateStrings} />
+								<LoadingDemo
+									client:only='react'
+									lines={loadingLines}
+									label={strings['gameListHeader.loading'] ?? ''}
+									another={t('about.values.funAnother')}
+								/>
 							</div>
 						</div>
-						<figcaption class='doc-demo-caption'>{t('about.values.funDemo')}</figcaption>
+						<figcaption class='doc-demo-caption'>{t('about.values.funDemo', { count: loadingLines.length })}</figcaption>
 					</figure>
 				</div>
 
@@ -120,7 +141,10 @@ const goals = [
 						<h3>{t('about.goals.bestTitle')}</h3>
 						<p class='band-copy'>{t('about.goals.bestCopy')}</p>
 					</div>
-					<DetailCharts client:visible strings={uiStrings(locale)} />
+					<figure class='about-figure'>
+						<MultiviewSolo client:visible />
+						<figcaption class='doc-demo-caption'>{t('about.goals.bestDemo')}</figcaption>
+					</figure>
 				</div>
 
 				<ul class='free-list'>
@@ -135,5 +159,5 @@ const goals = [
 		</div>
 	</section>
 
-	<ClosingBand />
+	<ClosingBand title={t('about.closingTitle')} />
 </Shell>

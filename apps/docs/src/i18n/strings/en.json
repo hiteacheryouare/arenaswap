@@ -280,6 +280,7 @@
 			"title": "Watching More Than One Game Shouldn't Be a Job.",
 			"copy1": "For too long, a big night of sports online meant doing the switching yourself. Four tabs open, one unmuted, your hand on the mouse, always a click behind the buzzer. Some fans went further and built multi-screen setups that look like a security command center.",
 			"copy2": "Football Sundays have had a channel for this for years. The web never got one for every sport, every night.",
+			"demoLabel": "A browser with four games open in four tabs. The sound jumps from tab to tab, and the cursor always gets there a moment too late.",
 			"kicker": "So we built one."
 		},
 		"values": {
@@ -288,9 +289,10 @@
 			"smallStuffCopy": "ArenaSwap is built by sports fans who obsess over the little things that make a game fun. Your team scores? Confetti goes up in its colors. Playing on Christmas Day? We brought the decorations. Snowing at the stadium? It's snowing in ArenaSwap too. And somewhere in Settings there's a temperature scale older than Fahrenheit, just for fun.",
 			"smallStuffDemo": "The game screen for a Christmas Day final, {away} {awayScore}, {home} {homeScore}, with a stocking hung for each team under a garland. The winner's stocking is full of treats. The loser's has coal.",
 			"funTitle": "Sports are supposed to be fun.",
-			"funCopy": "We aren't saving lives here. We're finding you a better game, so we have fun doing it. ArenaSwap bribes the refs while it loads, and when nothing's on, it tells you the hot dog guy left. The one thing we never joke about is the switch itself.",
-			"funDemo": "What ArenaSwap shows when nothing is live in your leagues. Press Refresh for another one.",
-			"watchTitle": "We watch with it.",
+			"funCopy": "We aren't saving lives here. We're finding you a better game, so we have fun doing it.",
+			"funDemo": "What the popup shows while it loads. There are {count} of these, so click for another.",
+			"funAnother": "Show another loading line",
+			"watchTitle": "We use it too.",
 			"watchCopy": "We use ArenaSwap every time we watch sports. If something isn't good enough on our couch, it isn't good enough for yours.",
 			"freeTitle": "Free, with nothing to hide.",
 			"freeCopy": "Cable and streaming are expensive enough. The last thing you need is a subscription for switching between your subscriptions. ArenaSwap is free, with no account and no ads. And frankly, we don't want to know which games you watch. Not even the Cowboys' next NFC Championship Game, whenever that turns up. Your settings stay in your browser, and every line of code is public {link}.",
@@ -300,13 +302,15 @@
 			"title": "Where We're Headed.",
 			"bestTitle": "The best way to watch sports on the web.",
 			"bestCopy": "Multiview, Standby Stream and the Guide are a start. We want ArenaSwap to be the only thing you need open on game night.",
+			"bestDemo": "Multiview gives the big box and the sound to the best game, and the whole screen when it's the only one worth watching.",
 			"sportsTitle": "Every sport, every night.",
 			"sportsCopy": "{leagues} leagues today. We'll keep adding them until there's always something worth watching, whatever time it is where you live.",
 			"everyoneTitle": "For everyone.",
-			"everyoneCopy": "ArenaSwap speaks {languages} languages today, and we'll keep adding more for sports fans around the world. Because sports are for everyone.",
+			"everyoneCopy": "ArenaSwap is translated into {languages} languages today, and we'll keep adding more for sports fans around the world. Because sports are for everyone.",
 			"stakesTitle": "Knowing what's at stake.",
 			"stakesCopy": "PowerScore already knows a Game 7 from a Game 2, and that a no-hitter in the eighth beats most tied games. We want it to understand every reason a game matters."
-		}
+		},
+		"closingTitle": "Because Sports Are Worth Watching."
 	},
 	"notFound": {
 		"title": "This One Isn't on the Schedule.",

@@ -438,4 +438,20 @@ $glow-height: 240px;
 			transform: none;
 		}
 	}
+
+	.popup-loading-wrap {
+		min-height: 100px;
+	}
+
+	.popup-loading-text {
+		font-size: 0.78rem;
+		color: var(--as-fg-body);
+	}
+
+	.popup-loading-spinner {
+		color: #F75C03;
+		width: 1.5rem;
+		height: 1.5rem;
+		border-width: 0.2em;
+	}
 }

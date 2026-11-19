@@ -7,6 +7,7 @@ import TeamPickerRow, { type teamList } from './teamPickerRow';
 import { matchesTeamQuery } from '../../../utils/favoriteTeams';
 import { leagueLabels, leagueOrder } from '../popupHelpers';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
+import LoadingMessage from '@arenaswap/ui/src/components/loadingMessage';
 
 interface teamPickerListProps {
 	teams: EspnTeamEntry[];
@@ -57,14 +58,7 @@ const teamPickerList = ({
 			</label>
 
 			<div className='overflow-auto'>
-				{isLoading && (
-					<div className='d-flex flex-column justify-content-center align-items-center mt-7 popup-loading-wrap'>
-						<div className='spinner-border popup-loading-spinner' role='status'>
-							<span className='visually-hidden'>{i18n.t('teamPicker.loading')}</span>
-						</div>
-						<div className='mt-3 text-center popup-loading-text'>{i18n.t('teamPicker.loading')}</div>
-					</div>
-				)}
+				{isLoading && <LoadingMessage message={i18n.t('teamPicker.loading')} label={i18n.t('teamPicker.loading')} />}
 
 				{hasError && !isLoading && (
 					<div className='text-center mt-5'>

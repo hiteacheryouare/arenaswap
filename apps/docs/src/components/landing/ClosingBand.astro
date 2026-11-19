@@ -3,12 +3,17 @@ import InstallAlternates from '../InstallAlternates.astro';
 import InstallCta from '../InstallCta.astro';
 import { currentLocale, useTranslations } from '../../i18n/ui';
 
+interface Props {
+	title?: string;
+}
+
 const t = useTranslations(currentLocale(Astro.currentLocale));
+const { title = t('home.closing.title') } = Astro.props;
 ---
 <section class='band band-closing' id='install'>
 	<div class='glow' aria-hidden='true'></div>
 	<div class='container'>
-		<h2 class='display-lg'>{t('home.closing.title')}</h2>
+		<h2 class='display-lg'>{title}</h2>
 		<p class='band-lede'>{t('home.closing.copy')}</p>
 		<div class='hero-actions'>
 			<InstallCta />

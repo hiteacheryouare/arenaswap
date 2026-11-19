@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The About page gets moving demos — 2026-11-19
+
+The About hero now fills the screen, with the headline landing word by word over a mosaic of mini scoreboards that keeps lifting one game out in orange; tiles fade by their measured distance from the headline rather than a fixed mask, so the text stays clear in every language and width. The problem section gets a browser where the sound hops between four tabs and the cursor always arrives late, the fun demo is the popup's real loading screen (moved into `packages/ui` as `loadingMessage`), and the static charts gave way to a Multiview grid that rotates the best game into the big box and then goes solo.
+
 ## The website deploys from CI instead of committed HTML — 2026-11-19
 
 The docs site now builds to the gitignored `apps/docs/dist`, and the Deploy Docs workflow ships it to GitHub Pages with `upload-pages-artifact` and `deploy-pages` instead of committing `docs/` back to `mega`, so local test and typecheck runs no longer rewrite tracked files. PR screenshots go to the hidden `refs/assets/pr` ref through `scripts/prAssets.sh`, which clones never download. Pages' source setting must be "GitHub Actions" for the deploy to succeed.

@@ -280,6 +280,7 @@
 			"title": "Suivre plusieurs matchs ne devrait pas être un boulot.",
 			"copy1": "Trop longtemps, une grosse soirée de sport en ligne voulait dire faire le zapping soi-même. Quatre onglets ouverts, un seul avec le son, la main sur la souris, toujours un clic de retard sur la sirène. Certains fans sont même allés jusqu'à monter des installations multi-écrans dignes d'un centre de sécurité.",
 			"copy2": "Le football américain du dimanche a sa chaîne dédiée depuis des années. Le web, lui, n'en a jamais eu pour chaque sport, chaque soir.",
+			"demoLabel": "Un navigateur avec quatre matchs ouverts dans quatre onglets. Le son saute d'un onglet à l'autre, et le curseur arrive toujours un instant trop tard.",
 			"kicker": "Alors on en a fait une."
 		},
 		"values": {
@@ -288,9 +289,10 @@
 			"smallStuffCopy": "ArenaSwap est fait par des fans de sport obsédés par les petits détails qui rendent un match plus fun. Ton équipe marque ? Des confettis à ses couleurs. Un match le jour de Noël ? On a sorti les décorations. Il neige au stade ? Il neige aussi dans ArenaSwap. Et quelque part dans les paramètres, il y a une échelle de température plus vieille que Fahrenheit, juste pour le plaisir.",
 			"smallStuffDemo": "L'écran de match d'une finale le jour de Noël, {away} {awayScore}, {home} {homeScore}, avec une chaussette accrochée pour chaque équipe sous une guirlande. Celle du vainqueur déborde de friandises. Celle du perdant, c'est du charbon.",
 			"funTitle": "Le sport, ça doit rester fun.",
-			"funCopy": "On ne sauve pas des vies ici. On te trouve un meilleur match, alors autant s'amuser. ArenaSwap soudoie les arbitres pendant le chargement, et quand rien n'est en direct, il t'annonce que le vendeur de hot-dogs est parti. La seule chose dont on ne plaisante jamais, c'est la bascule elle-même.",
-			"funDemo": "Ce qu'ArenaSwap affiche quand rien n'est en direct dans tes ligues. Appuie sur Actualiser pour en voir une autre.",
-			"watchTitle": "On regarde avec.",
+			"funCopy": "On ne sauve pas des vies ici. On te trouve un meilleur match, alors autant s'amuser.",
+			"funDemo": "Ce que le popup affiche pendant le chargement. Il y en a {count}, clique pour en voir une autre.",
+			"funAnother": "Afficher une autre phrase de chargement",
+			"watchTitle": "On l'utilise aussi.",
 			"watchCopy": "On utilise ArenaSwap chaque fois qu'on regarde du sport. Si ce n'est pas assez bien sur notre canapé, ça ne l'est pas non plus sur le tien.",
 			"freeTitle": "Gratuit, et rien à cacher.",
 			"freeCopy": "Le câble et le streaming coûtent déjà assez cher. La dernière chose qu'il te faut, c'est un abonnement pour passer d'un abonnement à l'autre. ArenaSwap est gratuit, sans compte et sans pub. Et franchement, on ne veut pas savoir quels matchs tu regardes. Pas même la prochaine finale de conférence NFC des Cowboys, quand elle daignera se pointer. Tes réglages restent dans ton navigateur, et chaque ligne de code est publique {link}.",
@@ -300,13 +302,15 @@
 			"title": "Où on va.",
 			"bestTitle": "La meilleure façon de regarder du sport sur le web.",
 			"bestCopy": "Multiview, Standby Stream et le Guide, c'est un début. On veut qu'ArenaSwap soit la seule chose à ouvrir un soir de match.",
+			"bestDemo": "Multiview donne la grande case et le son au meilleur match, et tout l'écran quand c'est le seul qui vaut le coup.",
 			"sportsTitle": "Tous les sports, tous les soirs.",
 			"sportsCopy": "{leagues} ligues aujourd'hui. On continue d'en ajouter jusqu'à ce qu'il y ait toujours quelque chose à regarder, quelle que soit l'heure chez toi.",
 			"everyoneTitle": "Pour tout le monde.",
-			"everyoneCopy": "ArenaSwap parle {languages} langues aujourd'hui, et on en ajoutera d'autres pour les fans de sport du monde entier. Parce que le sport est fait pour tout le monde.",
+			"everyoneCopy": "ArenaSwap est traduit en {languages} langues aujourd'hui, et on en ajoutera d'autres pour les fans de sport du monde entier. Parce que le sport est fait pour tout le monde.",
 			"stakesTitle": "Savoir ce qui se joue.",
 			"stakesCopy": "PowerScore sait déjà distinguer un match 7 d'un match 2, et qu'un no-hitter à la huitième manche vaut mieux que la plupart des matchs à égalité. On veut qu'il comprenne toutes les raisons qui font qu'un match compte."
-		}
+		},
+		"closingTitle": "Parce que le sport vaut le coup d'être regardé."
 	},
 	"notFound": {
 		"title": "Ce match n'est pas au calendrier.",
