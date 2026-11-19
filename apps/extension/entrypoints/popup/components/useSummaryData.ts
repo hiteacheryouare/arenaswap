@@ -22,36 +22,12 @@ import {
 } from '@arenaswap/sideline';
 import type { BoxScore, Lineups, Matchup, StandingsGroup, TicketLink, VenueDetails } from '@arenaswap/sideline';
 import type { Game, LeagueId, TeamMonoMarks } from '@arenaswap/core/types';
+import { emptyTeamRecords, type MonoLogos, type SeriesEvent, type SeriesInfo, type TeamRecords } from '@arenaswap/ui/src/components/detailSummary';
 import { hasBoxScoreContent } from './boxScoreColumns';
 import { mockStandingsPayloads } from '@arenaswap/sideline/mockStandings';
 
-export interface SeriesCompetitor {
-	homeAway: string;
-	winner?: boolean;
-	team: { id: string };
-}
-
-export interface SeriesEvent {
-	statusType?: { completed?: boolean };
-	competitors?: SeriesCompetitor[];
-}
-
-export interface SeriesInfo {
-	type?: string;
-	summary?: string;
-	totalCompetitions?: number;
-	events?: SeriesEvent[];
-}
-
-export interface TeamRecords {
-	home: string | null;
-	away: string | null;
-}
-
-export interface MonoLogos {
-	home: TeamMonoMarks | null;
-	away: TeamMonoMarks | null;
-}
+export { emptyTeamRecords };
+export type { MonoLogos, SeriesCompetitor, SeriesEvent, SeriesInfo, TeamRecords } from '@arenaswap/ui/src/components/detailSummary';
 
 interface summaryDataResult {
 	winProbability: number[];
@@ -84,7 +60,6 @@ interface HeaderCompetitor {
 	record?: RecordEntry[];
 }
 
-export const emptyTeamRecords: TeamRecords = { home: null, away: null };
 export const emptyMonoLogos: MonoLogos = { home: null, away: null };
 
 const monoMarksOf = (competitor: HeaderCompetitor | undefined): TeamMonoMarks | null => (

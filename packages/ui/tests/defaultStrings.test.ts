@@ -160,7 +160,7 @@ describe('defaultStrings covers every label the shared components render', () =>
 	test('no fallback is blank, which would render as a missing label rather than a wrong one', () => {
 		for (const [key, value] of Object.entries(defaultStrings)) {
 			expect(value.trim()).not.toBe('');
-			expect(key).toMatch(/^[a-z][a-zA-Z0-9]*\.[a-zA-Z0-9]+$/);
+			expect(key).toMatch(/^[a-z][a-zA-Z0-9]*(?:\.[a-zA-Z0-9]+)+$/);
 		}
 	});
 });

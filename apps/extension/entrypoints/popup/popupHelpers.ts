@@ -61,16 +61,6 @@ export const getRandomStartsSoonMessage = (sportType: SportType): string => {
 	return i18n.t(key as 'startsSoon.any.m1');
 };
 
-// Must match the number of `noGames.mN` keys in the locale files.
-const NO_GAMES_MESSAGE_COUNT = 7;
-
-export const getRandomNoGamesMessage = (): { title: string; sub: string } => {
-	const index = Math.floor(Math.random() * NO_GAMES_MESSAGE_COUNT) + 1;
-	return {
-		title: i18n.t(`noGames.m${index}.title` as 'noGames.m1.title'),
-		sub: i18n.t(`noGames.m${index}.sub` as 'noGames.m1.sub'),
-	};
-};
 export const leaguesBySportType = leagueConfigs.reduce<Record<SportType, typeof leagueConfigs>>((groups, config) => {
 	if (config.sportType in groups) groups[config.sportType].push(config);
 	return groups;
