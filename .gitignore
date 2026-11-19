@@ -54,3 +54,9 @@ scripts/film/music/
 scripts/film/out/
 # Where the site was built before apps/docs/dist, kept ignored so a checkout still holding it stays clean
 /docs/
+
+.lattice/cache/
+.lattice/toolchains/
+.lattice/bin/
+.lattice/setup/
+.lattice-setup-marker

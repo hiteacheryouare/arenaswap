@@ -1,0 +1,105 @@
+{
+  "$schema": ".lattice/schema.json",
+  "latticeVersion": "2.0.0",
+  "engines": {
+    "node": "^22.9.0 || ^24.0.0 || >=26.0.0",
+    "npm": "12.1.0"
+  },
+  "globalDependencies": ["tsconfig.base.json", ".oxlintrc.json"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"],
+      "ignore": [
+        "tests/**/*.test.ts",
+        "tests/**/*.spec.ts",
+        "cypress/**",
+        "cypress.config.ts",
+        "jest.config.cjs",
+        "jestSetup.ts",
+        "*.md"
+      ]
+    },
+    "build:e2e": {
+      "dependsOn": ["^build"],
+      "ignore": [
+        "tests/**/*.test.ts",
+        "tests/**/*.spec.ts",
+        "cypress/**",
+        "cypress.config.ts",
+        "jest.config.cjs",
+        "jestSetup.ts",
+        "*.md"
+      ]
+    },
+    "build:edge": {
+      "dependsOn": ["^build"],
+      "ignore": [
+        "tests/**/*.test.ts",
+        "tests/**/*.spec.ts",
+        "cypress/**",
+        "cypress.config.ts",
+        "jest.config.cjs",
+        "jestSetup.ts",
+        "*.md"
+      ]
+    },
+    "build:film": {
+      "dependsOn": ["^build"],
+      "ignore": [
+        "tests/**/*.test.ts",
+        "tests/**/*.spec.ts",
+        "cypress/**",
+        "cypress.config.ts",
+        "jest.config.cjs",
+        "jestSetup.ts",
+        "*.md"
+      ]
+    },
+    "build:firefox": {
+      "dependsOn": ["^build"],
+      "ignore": [
+        "tests/**/*.test.ts",
+        "tests/**/*.spec.ts",
+        "cypress/**",
+        "cypress.config.ts",
+        "jest.config.cjs",
+        "jestSetup.ts",
+        "*.md"
+      ]
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "persistent": true,
+      "cache": false
+    },
+    "test": {
+      "dependsOn": ["test:unit", "test:component"]
+    },
+    "test:component": {
+      "dependsOn": ["^build"]
+    },
+    "test:e2e": {
+      "dependsOn": ["^build"]
+    },
+    "test:unit": {
+      "dependsOn": ["^build"],
+      "ignore": ["cypress/**", "cypress.config.ts", "*.md"]
+    },
+    "typecheck": {
+      "dependsOn": ["^build"]
+    },
+    "zip": {
+      "dependsOn": ["^build", "build"],
+      "cache": false
+    },
+    "zip:edge": {
+      "dependsOn": ["^build", "build:edge"],
+      "cache": false
+    },
+    "zip:firefox": {
+      "dependsOn": ["^build", "build:firefox"],
+      "cache": false
+    }
+  }
+}
