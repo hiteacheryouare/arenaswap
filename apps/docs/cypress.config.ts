@@ -7,7 +7,7 @@ import { localeCodes } from './src/i18n/locales';
 
 const siteDir = process.env.ARENASWAP_SITE_DIR
 	? path.resolve(process.env.ARENASWAP_SITE_DIR)
-	: path.resolve(__dirname, '../../docs');
+	: path.resolve(__dirname, 'dist');
 const basePath = '/arenaswap/';
 const e2ePort = 5198;
 
