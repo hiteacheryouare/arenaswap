@@ -9,7 +9,7 @@
 - [Ask before source edits](feedback_source_edits_ask_first.md) — every production-file change, even an export seam, needs Ryan's OK first
 - [Coverage: report, never gate](feedback_coverage_setup.md) — no coverageThreshold; prove source bugs with a failing test, never fix them yourself
 - [packages/core silent failures](project_core_verification_risks.md) — ESPN schema drift is indistinguishable from an off-season
-- [apps/docs build hazard](project_docs_coverage_harness.md) — docs/ is tracked build output; the --outDir, ARENASWAP_SITE_DIR and ARENASWAP_SITE_COVERAGE escape hatches
+- [apps/docs build hazard](project_docs_coverage_harness.md) — site builds to gitignored apps/docs/dist; ARENASWAP_SITE_DIR and ARENASWAP_SITE_COVERAGE for test and coverage runs
 - [apps/docs: the right metric](project_docs_site_metrics.md) — line coverage is a weak signal on a static site; what to measure instead
 - [core package.json inlined into the site](project_core_package_json_inlined.md) — why grepping the docs bundle for "zod" gives a false positive
 - [PowerScore 3 open questions](project_powerscore3_open_questions.md) — its red tests were all green by 2026-10-12; the unbuilt design questions may still stand

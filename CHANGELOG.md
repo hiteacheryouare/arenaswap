@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The website deploys from CI instead of committed HTML — 2026-11-19
+
+The docs site now builds to the gitignored `apps/docs/dist`, and the Deploy Docs workflow ships it to GitHub Pages with `upload-pages-artifact` and `deploy-pages` instead of committing `docs/` back to `mega`, so local test and typecheck runs no longer rewrite tracked files. PR screenshots go to the hidden `refs/assets/pr` ref through `scripts/prAssets.sh`, which clones never download. Pages' source setting must be "GitHub Actions" for the deploy to succeed.
+
 ## Games the feed leaves on "live" stop being switch targets — 2026-11-18
 
 `trackProgress` remembers when each live game's score, period, clock or count last moved, and a game past its expected end that has sat unchanged for 30 minutes (`stuckQuietMs`), and isn't delayed, is left out of switching and the Standby Stream check. The background sends those games as `stuckSince`, and their cards show the same "Last updated N minutes ago" line as a league that stopped answering; the timer lives in memory, so a worker restart starts it over.

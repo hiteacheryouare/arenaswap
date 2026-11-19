@@ -27,14 +27,7 @@ to be done against the working-tree copy of `en.json`, not git history.
 - **A build-time guard now exists**: `cd apps/docs && npm run build` throws on any locale/en.json
   shape mismatch (missing/extra key, array-length mismatch). Use this as the authoritative check,
   not just a hand-rolled structural diff.
-- Running `npm run build` in `apps/docs` **regenerates the tracked `docs/` output directory from
-  the entire working tree**, not just the strings you touched — this is the same hazard
-  [[project-docs-build-output-hazard]] documents for the extension's build. In a shared checkout with
-  other uncommitted work-in-progress, that means the build picks up *everyone's* dirty files. After
-  verifying the build passes, `git checkout -- docs/` to restore tracked files it touched, then
-  `git clean -f -- docs/` to remove new untracked locale route directories (`docs/de/`, `docs/es/`,
-  …) and any new hashed `_astro/*` chunks the build emitted. Leave the shared checkout exactly as
-  found — verifying a build is not the same as shipping one.
+- `npm run build` in `apps/docs` writes to the gitignored `apps/docs/dist` (since 2026-11-19), so a verification build leaves nothing to restore.
 
 ## The `ui.*` / `sport.*` namespaces are copy-only, never translate directly
 Per the task brief, every key under `ui.*` and the top-level `sport.*` must be copied **verbatim**
