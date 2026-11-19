@@ -81,26 +81,18 @@ const buildGame = (random: Random, index: number): Game => {
 	return game;
 };
 
-const buildWinProbability = (random: Random): number[] => {
-	if (random.chance(0.4)) return [];
-	const length = random.int(1, 30);
-	const center = random.next();
-	return Array.from({ length }, () => (random.chance(0.03) ? Number.NaN : Math.min(1, Math.max(0, center + (random.next() - 0.5) * 0.4))));
-};
-
 const classicAsShipped = { ...classicMode, boosts: [scoringOpportunityBoost] };
 
 describe('v3 Classic matches the 2.2.0 pipeline', () => {
 	const random = createRandom(20261003);
 	const cases = 20_000;
 
-	test(`${cases} seeded games agree field by field`, () => {
+	test(`${cases} seeded games agree field by field, apart from the reworked volatility term`, () => {
 		const mismatches: string[] = [];
 		const seen = { highTotal: 0, overflow: 0, disabled: 0, scoringOpportunity: 0, postseason: 0, momentum: 0, leadChanges: 0, comeback: 0, frozen: 0 };
 		for (let i = 0; i < cases; i++) {
 			const game = buildGame(random, i);
 			const history = buildHistory(random, game.id, game.homeTeam.score, game.awayTeam.score);
-			const winProbability = buildWinProbability(random);
 			const disabledSignals = random.chance(0.6) ? [] : signalNames.filter(() => random.chance(0.35));
 			const favoriteTeamCount = random.pick([0, 0, 1, 2]);
 			const favoriteBoostPoints = random.pick([0, 10, 25]);
@@ -109,7 +101,7 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 			const gameBoost = random.pick([0, 0, 0, 15, 40]);
 			game.postseasonRound = postseasonRound;
 
-			const v2 = scoreGameV2(game as V2Game, history, 0, winProbability, {
+			const v2 = scoreGameV2(game as V2Game, history, 0, [], {
 				disabledSignals,
 				favoriteTeamCount,
 				favoriteBonusPoints: favoriteBoostPoints,
@@ -117,7 +109,7 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 				postseasonRound,
 				gameBoost,
 			});
-			const v3 = scoreGame(game, { history, winProbability }, {
+			const v3 = scoreGame(game, { history }, {
 				mode: classicAsShipped,
 				disabledSignals,
 				favoriteTeamCount,
@@ -137,7 +129,6 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 			const fields: [string, unknown, unknown][] = [
 				...signalNames.filter(name => (!overtimeLead || name !== 'lateGame') && (!comebackMoved || name !== 'comeback')).map((name): [string, unknown, unknown] => [name, v2[name], signalPoints(v3, name)]),
 				...(skipsSubtotal ? [] : [['signalsSubtotal', v2.signalsSubtotal ?? 0, v3.scaledSubtotal] as [string, unknown, unknown]]),
-				['winProbabilityVariance', v2.winProbabilityVariance, v3.winProbabilityVariance],
 				['favoriteBonus', v2.favoriteBonus, boostPoints(v3, 'favoriteBoost')],
 				['gameBoost', v2.gameBoost, boostPoints(v3, 'gameBoost')],
 				['scoringOpportunityBoost', v2.scoringOpportunityBoost, boostPoints(v3, 'scoringOpportunity')],

@@ -1,5 +1,5 @@
 ---
-sourceHash: '854afd07d71b'
+sourceHash: '5050e319fc40'
 title: Configuración de deportes y ligas
 description: Cada campo de SportTypeConfig y LeagueConfig, sus valores predeterminados en los seis deportes y las 31 ligas, y cómo se define lo que es "cerrado" para un deporte.
 section: powerscore
@@ -24,6 +24,7 @@ Una entrada por `SportType`, exportada como `sportTypeConfigs` (un arreglo) y `s
 | `zeroZeroAsFullTie` | false | false | true | true | false | false |
 | `zeroZeroPenaltyPeriods` | ninguno | ninguno | 1, 2 | 1 | ninguno | ninguno |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
+| `overtimeDurationSecs` | 300 | 600 | 300 | ninguno | ninguno | ninguno |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -45,6 +46,7 @@ Una entrada por `SportType`, exportada como `sportTypeConfigs` (un arreglo) y `s
 | `zeroZeroAsFullTie` | Un partido 0–0 recibe el crédito completo de empate en la Igualdad. Con `false`, el 0–0 recibe el nivel reducido `zeroZero`. |
 | `zeroZeroPenaltyPeriods` | Periodos donde el 0–0 sigue recibiendo el nivel reducido aunque `zeroZeroAsFullTie` sea `true`. El hockey usa 1 y 2, el futbol el primer tiempo. |
 | `otPreBoostWindowSecs` | Los últimos segundos del último periodo reglamentario en los que un partido empatado sube hacia el pre-impulso de tiempo extra. `0` lo apaga. |
+| `overtimeDurationSecs` | Cuánto dura un periodo de tiempo extra, para que `getTimelineProgress` pueda seguir contando durante él. Sin él, cada periodo de tiempo extra cuenta como 0.05 del partido. |
 | `decayHalfLifeMs` | Qué tan rápido se desvanecen la Racha, los Cambios de ventaja y la Remontada después de la última anotación. Más largo en deportes de pocas anotaciones, para que un gol los mantenga vivos hasta el siguiente. |
 | `historyWindowMs` | Cuánto historial del marcador leen las señales de historial. Ver arriba. |
 | `lateGameCurve` | Solo beisbol y softbol: cuántas entradas tiene el tiempo reglamentario y en qué entrada empieza la subida de la recta final. |

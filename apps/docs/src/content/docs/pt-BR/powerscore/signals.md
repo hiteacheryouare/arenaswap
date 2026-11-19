@@ -1,5 +1,5 @@
 ---
-sourceHash: '1aa0123b3860'
+sourceHash: '2125a74f6361'
 title: Sinais do PowerScore em cada modo
 description: Os sinais por trás do PowerScore Clássico, Atropelos e Fantasy, com o teto de cada um, o que mede e o que ignora. E como desligar sinais.
 section: powerscore
@@ -93,7 +93,7 @@ A **Virada** (teto 20) mede a oscilação do time que estava perdendo na foto ma
 
 ### Dois modificadores que não são sinais
 
-O Clássico também aplica o modificador de probabilidade de vitória (±5) e o desconto por intervalo comercial. Os dois pertencem ao fluxo do Clássico, e os dois estão em [Impulsos e penalidades](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance).
+O Clássico também aplica o modificador de probabilidade de vitória (±5) e o desconto por intervalo comercial. Os dois pertencem ao fluxo do Clássico, e os dois estão em [Impulsos e penalidades](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings).
 
 ## Atropelos
 

@@ -1,5 +1,5 @@
 ---
-sourceHash: 'd23f4e1a7b17'
+sourceHash: '958d2eeea81a'
 title: Calculer le score d'un match à partir de données en direct
 description: Fais correspondre ton propre flux à un objet Game, garde un historique du score entre les interrogations, active les bonus et les modes que tes données permettent, et ajoute des bonus de favori et manuels.
 section: powerscore
@@ -57,7 +57,7 @@ Chaque champ facultatif active la partie du moteur qui en a besoin. Omets-en un 
 | Donne-lui | Dans | Et ceci s'active |
 |---|---|---|
 | Des instantanés du score, du plus ancien au plus récent | `context.history` | Élan, Changements de tête, Remontée. Il faut au moins 3 instantanés. |
-| La probabilité de victoire, de 0 à 1 par interrogation | `context.winProbability` | Le modificateur de probabilité de victoire de ±5. Il faut au moins 5 valeurs. |
+| La probabilité de victoire, de 0 à 1 par action, avec l'avancement du match à chaque action | `context.winProbability` | Le modificateur de probabilité de victoire de ±5. Il faut 3 relevés et un dixième du match joué. |
 | Si le match est en pause pub | `context.onBreak` | La déduction de pause. |
 | `possession`, `yardsToEndZone`, `down`, `distance` et `timeouts` sur l'équipe | `game`, `game.homeTeam` | Le two-minute drill et la situation de football américain de Fantasy. |
 | `isRedZone`, plus `down`, `distance` et `isGoalToGo` | `game` | Le bonus de zone rouge. |
@@ -122,7 +122,7 @@ const score = scoreGame(game, { history, onBreak: isInBreak(game), winProbabilit
 ```
 
 `isInBreak` est à écrire par toi, à partir de ce que dit ton flux sur les pauses entre manches, les changements de lanceur et les temps morts. Tant que `onBreak` vaut `true`, le score perd 15 points fixes.
-`winProbability` est une liste de valeurs récentes de probabilité de victoire de 0 à 1, pour l'une ou l'autre équipe. Seule compte la distance à 50 %. Les deux sont facultatifs, et PowerScore calcule très bien sans. Ce que chacun change est dans [Bonus et pénalités](/arenaswap/docs/powerscore/boosts-and-penalties/).
+`winProbability` est la probabilité de victoire de l'équipe à domicile, un relevé par action, du plus ancien au plus récent. Chaque relevé porte son `progress` dans le match, si bien qu'une oscillation s'estompe avec l'horloge du match plutôt qu'avec la fréquence de tes interrogations. Une simple liste de nombres de 0 à 1 marche aussi, répartie régulièrement sur le match jusqu'ici. Les deux sont facultatifs, et PowerScore calcule très bien sans. Ce que chacun change est dans [Bonus et pénalités](/arenaswap/docs/powerscore/boosts-and-penalties/).
 
 ## Laisser les bonus voir le moment
 

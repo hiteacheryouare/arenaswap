@@ -1,5 +1,5 @@
 ---
-sourceHash: '91a61d4e6782'
+sourceHash: '3d1b823a21ee'
 title: PowerScore API 参考
 navLabel: API 参考
 description: powerscore 导出的每个函数和常量：签名、参数、返回值，以及输入缺失或无效时的行为。包含已弃用的 2.x API。
@@ -145,11 +145,12 @@ function renderReasonsEnglish(fragments: readonly ReasonFragment[]): string
 ```ts
 function resolveSportConfig(sportType: SportType, override?: Partial<SportTypeConfig>): SportTypeConfig
 function resolveLeagueConfig(game: Pick<Game<string>, 'league' | 'sportType'>, override?: Partial<LeagueConfig>): LeagueConfig
-function getGameProgress(game: Game<string>, sport: SportTypeConfig, league: LeagueConfig): number
+function getGameProgress(game: GameClockState, sport: SportTypeConfig, league: LeagueConfig): number
+function getTimelineProgress(game: GameClockState, sport: SportTypeConfig, league: LeagueConfig): number
 function scoreMargin(game: Game<string>): number
 ```
 
-`resolveSportConfig` 和 `resolveLeagueConfig` 做的，就是 `scoreGame` 每次调用开头做的事。未知的 `sportType` 回退到篮球的调校。未知的联赛回退到它所属运动最知名的联赛：篮球是 NBA，冰球是 NHL，棒球是 MLB，橄榄球是 NFL，垒球是 NCAA 垒球，足球是 MLS。`getGameProgress` 在开场为 0，常规时间结束时以及整个加时赛期间为 1。`scoreMargin` 是比分差的绝对值。
+`resolveSportConfig` 和 `resolveLeagueConfig` 做的，就是 `scoreGame` 每次调用开头做的事。未知的 `sportType` 回退到篮球的调校。未知的联赛回退到它所属运动最知名的联赛：篮球是 NBA，冰球是 NHL，棒球是 MLB，橄榄球是 NFL，垒球是 NCAA 垒球，足球是 MLS。`getGameProgress` 在开场为 0，常规时间结束时以及整个加时赛期间为 1。`getTimelineProgress` 在常规时间内与它一致，之后继续往上数，越过 1：一个加时阶段，增加的是 `overtimeDurationSecs` 占常规时间长度的比例；一个加时局，则增加一局的占比。两者都只读取 `period`、`clockSeconds` 和 `topOfInning`（`GameClockState`）。`scoreMargin` 是比分差的绝对值。
 
 ## 梦幻得分
 
@@ -238,7 +239,7 @@ function computePowerScore(
 |---|---|---|
 | `game` | 必填 | 当前的比赛状态。 |
 | `history` | `[]` | 最近的比分快照。在这里至少有 3 项之前，势头、领先权易手和逆转保持为 0。 |
-| `winProbabilityHistory` | `[]` | 最近的胜率值，0 到 1。至少需要 5 个有限值才会有任何贡献。 |
+| `winProbabilityHistory` | `[]` | 主队的胜率值，0 到 1，由旧到新，在到目前为止的比赛中平均铺开。需要 3 个有限值，并且比赛已经进行了十分之一，才会有任何贡献。 |
 
 从不抛出错误。当 `isPlayFrozen(game)` 为真时，立刻返回全零结果。不检查 `game.status`：在其他字段相同的情况下，`'pre'` 或 `'post'` 的比赛和 `'in'` 的比赛得分一样。
 
@@ -253,10 +254,13 @@ function computeScoringOpportunityBoost(game: Game<string>): number
 ### computeWinProbVarianceScore
 
 ```ts
-function computeWinProbVarianceScore(winProbHistory: number[]): number | undefined
+function computeWinProbVarianceScore(
+	line: readonly WinProbabilityReading[] | readonly number[],
+	nowProgress?: number,
+): number | undefined
 ```
 
-把胜率历史映射成 ±5 的修正。先过滤掉非有限的项，如果剩下的有限值少于 5 个，就返回 `undefined`。否则返回一个从 `-scoreWinProbVarianceMax` 到 `scoreWinProbVarianceMax` 的整数。
+把胜率线映射成[加成与扣分](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)里说明的 ±5 的修正。`nowProgress` 是 `getTimelineProgress` 给出的比赛当前位置，默认取最后一个读数的位置。纯 `number[]` 会平均铺开到 `nowProgress`，没有它就铺到 1。先丢掉非有限的读数，剩下不足 3 个，或比赛还没进行到十分之一，就返回 `undefined`。否则返回一个从 `-scoreWinProbVarianceMax` 到 `scoreWinProbVarianceMax` 的整数。
 
 ### isPlayFrozen
 

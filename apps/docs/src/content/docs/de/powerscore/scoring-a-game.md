@@ -1,5 +1,5 @@
 ---
-sourceHash: 'd23f4e1a7b17'
+sourceHash: '958d2eeea81a'
 title: Ein Spiel aus Live-Daten bewerten
 description: Bilde deinen eigenen Feed auf ein Game-Objekt ab, führe über die Abfragen hinweg einen Spielstandverlauf, schalte die Boosts und Modi ein, die deine Daten hergeben, und füge Favoriten- und manuelle Boosts hinzu.
 section: powerscore
@@ -57,7 +57,7 @@ Jedes optionale Feld schaltet den Teil der Engine ein, der es braucht. Lässt du
 | Gib ihm | In | Und das schaltet sich ein |
 |---|---|---|
 | Spielstand-Schnappschüsse, älteste zuerst | `context.history` | Schwung, Führungswechsel, Comeback. Braucht mindestens 3 Schnappschüsse. |
-| Siegwahrscheinlichkeit, 0 bis 1 je Abfrage | `context.winProbability` | Den Modifikator ±5 für die Siegwahrscheinlichkeit. Braucht mindestens 5 Werte. |
+| Siegwahrscheinlichkeit, 0 bis 1 je Spielzug, mit der Angabe, wie weit im Spiel jeder Spielzug fiel | `context.winProbability` | Den Modifikator ±5 für die Siegwahrscheinlichkeit. Braucht 3 Werte und ein Zehntel des gespielten Spiels. |
 | Ob das Spiel in einer Werbepause ist | `context.onBreak` | Den Abzug für die Pause. |
 | `possession`, `yardsToEndZone`, `down`, `distance` und `timeouts` am Team | `game`, `game.homeTeam` | Den Two-Minute-Drill und Fantasys Football-Situation. |
 | `isRedZone`, dazu `down`, `distance` und `isGoalToGo` | `game` | Den Red-Zone-Boost. |
@@ -122,7 +122,7 @@ const score = scoreGame(game, { history, onBreak: isInBreak(game), winProbabilit
 ```
 
 `isInBreak` schreibst du selbst, aus allem, was dein Feed über Inning-Pausen, Pitcherwechsel und Timeouts sagt. Solange `onBreak` `true` ist, verliert der Wert pauschal 15 Punkte.
-`winProbability` ist eine Liste aktueller Siegwahrscheinlichkeiten von 0 bis 1, für ein beliebiges Team. Nur der Abstand zu 50 % zählt. Beides ist optional, und PowerScore bewertet auch ohne. Was jedes davon ändert, steht unter [Boosts und Strafen](/arenaswap/docs/powerscore/boosts-and-penalties/).
+`winProbability` ist die Siegwahrscheinlichkeit des Heimteams, ein Wert pro Spielzug, älteste zuerst. Jeder Wert trägt sein `progress` im Spiel, sodass ein Ausschlag mit der Spieluhr abklingt statt damit, wie oft du abfragst. Eine bloße Liste von Zahlen von 0 bis 1 funktioniert auch, gleichmäßig über das bisherige Spiel verteilt. Beides ist optional, und PowerScore bewertet auch ohne. Was jedes davon ändert, steht unter [Boosts und Strafen](/arenaswap/docs/powerscore/boosts-and-penalties/).
 
 ## Die Boosts den Moment sehen lassen
 

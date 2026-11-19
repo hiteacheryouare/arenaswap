@@ -1,5 +1,5 @@
 ---
-sourceHash: '9c4dba756b81'
+sourceHash: '2348a1aeb67f'
 title: Impulsos e penalizações do PowerScore
 navLabel: Impulsos e penalizações
 description: Todos os impulsos e penalizações que o PowerScore 3 aplica por cima dos sinais de um modo, com a condição que ativa cada um, o seu máximo e os limites que partilham.
@@ -187,23 +187,33 @@ O "Em jogo" é mantido separado por época, para nunca contar a dobrar com o imp
 
 Numa corrida, a equipa com mais em jogo paga por inteiro e a outra a metade, limitado a 6. O ranking e a corrida somam-se e o total é limitado a 10.
 
-## Equilíbrio da probabilidade de vitória
+## Oscilações da probabilidade de vitória
 
-Só Clássico. `computeWinProbVarianceScore(winProbHistory)` devolve um modificador de `-scoreWinProbVarianceMax` a `+scoreWinProbVarianceMax` (±5). Passa `context.winProbability` ao `scoreGame` e o modificador é incorporado no total por si só.
+Só Clássico. `computeWinProbVarianceScore(line, nowProgress?)` devolve um modificador de `-scoreWinProbVarianceMax` a `+scoreWinProbVarianceMax` (±5). Passa `context.winProbability` ao `scoreGame` e o modificador é incorporado no total por si só, medido a partir do ponto atual do jogo em [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
 
-Precisa de pelo menos `minDataPoints` (5) valores finitos. Qualquer outra coisa devolve `undefined`, e o campo `winProbabilityVariance` do resultado é deixado de fora por completo em vez de ser posto a `0`. As entradas não finitas (`NaN`, `Infinity`) são descartadas antes de essa contagem ser verificada.
+A linha é a probabilidade de vitória da equipa da casa, uma leitura por jogada, da mais antiga para a mais recente. Cada leitura é um [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading): `homeWinProbability`, de 0 a 1, e `progress`, quanto do jogo já tinha passado quando aquela jogada aconteceu. Um `number[]` simples continua a funcionar, e as leituras distribuem-se por igual desde o início do jogo até agora.
 
-O modificador é a distância absoluta média dos valores fornecidos a 0.5, mapeada no intervalo ±5:
+Precisa de 3 leituras e de um décimo do jogo disputado. Antes disso devolve `undefined`, e o campo `winProbabilityVariance` do resultado é deixado de fora por completo em vez de ser posto a `0`. As leituras não finitas são descartadas primeiro.
 
-| Distância média a 50% | Modificador |
-|---|---|
-| 0 (moeda ao ar) | +5 |
-| `maxAvgDist` ÷ 2 (0.175) | 0 |
-| ≥ `maxAvgDist` (0.35) | −5 |
+O modificador mistura duas medidas de quanto o resultado se mexeu recentemente. Ambas caem para metade a cada `halfLife`, um décimo do tempo regulamentar: cerca de 4 minutos de basquetebol universitário, 5 da NBA, 6 do futebol americano ou uma entrada de basebol.
 
-Apesar do nome, o modificador mede a distância média a 50%, não a variância. Uma linha de probabilidade de vitória que oscila entre 10% e 90% leva a mesma penalização que uma mantida estável nos 90%. Ambas têm a mesma distância média ao ponto médio.
+| Medida | O que soma | Cheia em | Parte da mistura |
+|---|---|---|---|
+| Movimento | Cada variação da probabilidade de vitória de uma jogada para a seguinte nas últimas quatro meias-vidas, cada uma limitada a 0.5 | `movementFullScale` (1.67) | 70% |
+| Oscilação | A maior distância entre a leitura atual e qualquer leitura das últimas três meias-vidas, reduzida a metade a cada duas meias-vidas | `swingFullScale` (0.26) | `swingWeight` (30%) |
 
-O modificador é somado depois da dedução por pausa, não antes, e o resultado é limitado a 0 a 100 antes de qualquer impulso ser somado.
+Uma leitura que salta mais de 0.15 e volta logo para menos de 0.05 de onde estava é uma jogada corrigida, e é ignorada.
+
+| Mistura | Primeira parte | Segunda parte |
+|---|---|---|
+| Igual ou acima de `neutralBlend` (0.49) | Até +5 | Até +5 |
+| Abaixo de `neutralBlend` | 0 | Até −5 |
+
+O bónus desvanece-se à medida que a probabilidade de vitória de quem está à frente sobe de `openLead` (80%) para `decidedLead` (97%), por isso um soluço num jogo decidido não rende nada. A penalização faz o contrário: nada enquanto o jogo ainda está em aberto, os −5 inteiros quando um jogo calmo chega aos 97%. Começa em `penaltyFromProgress`, a meio do tempo regulamentar.
+
+Um início desequilibrado não custa nada quando o jogo vira. Um jogo que esteve nos 98% quase a noite toda e depois oscila até uma moeda ao ar ganha o bónus assim que as oscilações se acumulam, porque só o troço recente conta.
+
+O `neutralBlend` é a mistura mediana de todos os momentos em direto e ainda por decidir de 417 jogos terminados, por isso um troço típico de um jogo disputado fica perto de 0. As escalas cheias são os percentis 90 dos mesmos momentos.
 
 ## Dedução por pausa publicitária
 

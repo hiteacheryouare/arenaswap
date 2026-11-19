@@ -496,7 +496,7 @@
 			},
 			{
 				"name": "Win probability",
-				"copy": "Up to {max} on when the odds stay near 50/50, up to {max} off when one team is a lock."
+				"copy": "Up to {max} on when the odds have been swinging lately, up to {max} off when the game has gone quiet and one team is a lock."
 			}
 		],
 		"liveHeading": "Live PowerScores.",

@@ -1,5 +1,5 @@
 ---
-sourceHash: '854afd07d71b'
+sourceHash: '5050e319fc40'
 title: Configuration des sports et des ligues
 description: Chaque champ de SportTypeConfig et LeagueConfig, leurs valeurs par défaut pour les six sports et les 31 ligues, et comment se définit l'idée de « serré » d'un sport.
 section: powerscore
@@ -24,6 +24,7 @@ Une entrée par `SportType`, exportée sous `sportTypeConfigs` (un tableau) et `
 | `zeroZeroAsFullTie` | false | false | true | true | false | false |
 | `zeroZeroPenaltyPeriods` | aucune | aucune | 1, 2 | 1 | aucune | aucune |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
+| `overtimeDurationSecs` | 300 | 600 | 300 | aucune | aucune | aucune |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -45,6 +46,7 @@ Une entrée par `SportType`, exportée sous `sportTypeConfigs` (un tableau) et `
 | `zeroZeroAsFullTie` | Un match 0–0 gagne le plein crédit d'égalité dans Serré. À `false`, le 0–0 gagne le palier réduit `zeroZero`. |
 | `zeroZeroPenaltyPeriods` | Les périodes où le 0–0 gagne encore le palier réduit même si `zeroZeroAsFullTie` vaut `true`. Le hockey utilise 1 et 2, le soccer la première mi-temps. |
 | `otPreBoostWindowSecs` | Les dernières secondes de la dernière période réglementaire où un match nul monte vers le pré-bonus de prolongation. `0` le désactive. |
+| `overtimeDurationSecs` | La durée d'une période de prolongation, pour que `getTimelineProgress` puisse continuer à compter pendant celle-ci. Sans lui, chaque période de prolongation compte pour 0.05 du match. |
 | `decayHalfLifeMs` | La vitesse à laquelle l'Élan, les Changements de tête et le Remontée s'estompent après le dernier point. Plus longue dans les sports à faible score, pour qu'un seul but les garde en vie jusqu'au suivant. |
 | `historyWindowMs` | La quantité d'historique du score que lisent les signaux d'historique. Voir plus haut. |
 | `lateGameCurve` | Baseball et softball seulement : combien de manches compte le temps réglementaire et à quelle manche démarre la montée de fin de match. |

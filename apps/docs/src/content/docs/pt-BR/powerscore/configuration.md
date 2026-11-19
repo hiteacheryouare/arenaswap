@@ -1,5 +1,5 @@
 ---
-sourceHash: '854afd07d71b'
+sourceHash: '5050e319fc40'
 title: Configuração de esporte e liga
 description: Todos os campos de SportTypeConfig e LeagueConfig, seus padrões nos seis esportes e nas 31 ligas, e como se define o que é "apertado" em cada esporte.
 section: powerscore
@@ -24,6 +24,7 @@ Uma entrada por `SportType`, exportada como `sportTypeConfigs` (uma lista) e `sp
 | `zeroZeroAsFullTie` | false | false | true | true | false | false |
 | `zeroZeroPenaltyPeriods` | nenhum | nenhum | 1, 2 | 1 | nenhum | nenhum |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
+| `overtimeDurationSecs` | 300 | 600 | 300 | nenhum | nenhum | nenhum |
 | `decayHalfLifeMs.momentum` | 45.000 | 135.000 | 180.000 | 240.000 | 150.000 | 150.000 |
 | `decayHalfLifeMs.leadChange` | 60.000 | 180.000 | 240.000 | 300.000 | 180.000 | 180.000 |
 | `decayHalfLifeMs.comeback` | 60.000 | 180.000 | 240.000 | 300.000 | 180.000 | 180.000 |
@@ -45,6 +46,7 @@ O `historyWindowMs` é o trecho de histórico de placar que cada esporte precisa
 | `zeroZeroAsFullTie` | Um jogo 0 a 0 ganha o crédito cheio de empate no Equilíbrio. Com `false`, o 0 a 0 ganha a faixa reduzida `zeroZero`. |
 | `zeroZeroPenaltyPeriods` | Períodos em que o 0 a 0 ainda ganha a faixa reduzida, mesmo com `zeroZeroAsFullTie` em `true`. O hóquei usa 1 e 2, o futebol o primeiro tempo. |
 | `otPreBoostWindowSecs` | Os últimos segundos do período final do tempo normal em que um jogo empatado sobe rumo ao pré-impulso de prorrogação. `0` desliga. |
+| `overtimeDurationSecs` | Quanto dura um período de prorrogação, para o `getTimelineProgress` poder continuar contando durante ela. Sem isso, cada período de prorrogação conta como 0,05 do jogo. |
 | `decayHalfLifeMs` | A rapidez com que Dinâmica, Mudanças de liderança e Virada esmaecem depois do último ponto. Mais longa nos esportes de pouca pontuação, para um gol manter os sinais vivos até o próximo. |
 | `historyWindowMs` | Quanto histórico de placar os sinais de histórico leem. Veja acima. |
 | `lateGameCurve` | Só beisebol e softbol: quantas entradas tem o tempo normal e em qual entrada a rampa da fase final começa. |

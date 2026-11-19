@@ -1,4 +1,4 @@
-import { computeWinProbVarianceScore } from 'powerscore';
+import { computeWinProbVarianceScore, type WinProbabilityReading } from 'powerscore';
 import { createWinProbabilityTracker, scoreboardWinProbabilityLeagues, summaryStillNeeded } from '../src/scoreboardWinProbability';
 import type { Game, LeagueId } from '../src/types';
 
@@ -18,6 +18,12 @@ const liveGame = (over: Partial<Game> = {}): Game => ({
 
 const roundTrip = <T>(value: T): unknown => JSON.parse(JSON.stringify(value));
 
+const probabilitiesOf = (line: WinProbabilityReading[] | undefined) => line?.map(reading => reading.homeWinProbability);
+
+const readingsAt = (probabilities: number[], until = 0.5): WinProbabilityReading[] => (
+	probabilities.map((homeWinProbability, i) => ({ homeWinProbability, progress: (until * (i + 1)) / probabilities.length }))
+);
+
 describe('building the line from our own polls', () => {
 	test('keeps one reading per play, however many polls land on it', () => {
 		const tracker = createWinProbabilityTracker();
@@ -27,7 +33,16 @@ describe('building the line from our own polls', () => {
 		tracker.record([liveGame({ homeWinProbability: 0.65, lastPlayId: 'play-2' })]);
 		tracker.record([liveGame({ homeWinProbability: 0.65, lastPlayId: 'play-3' })]);
 
-		expect(tracker.historyOf('g1')).toEqual([0.6, 0.65, 0.65]);
+		expect(probabilitiesOf(tracker.historyOf('g1'))).toEqual([0.6, 0.65, 0.65]);
+	});
+
+	test('stamps each reading with how far into the game its play came', () => {
+		const tracker = createWinProbabilityTracker();
+		tracker.record([liveGame({ period: 2, clockSeconds: 450 })]);
+		tracker.record([liveGame({ period: 5, clockSeconds: 300, lastPlayId: 'ot-1' })]);
+		const [secondQuarter, overtime] = tracker.historyOf('g1')!;
+		expect(secondQuarter!.progress).toBeCloseTo(1.5 / 4);
+		expect(overtime!.progress).toBeCloseTo(1 + 300 / 3600);
 	});
 
 	test('a flat stretch at the same value still counts every play in it', () => {
@@ -39,14 +54,14 @@ describe('building the line from our own polls', () => {
 	test('without a play id, a repeated value is taken as the same play', () => {
 		const tracker = createWinProbabilityTracker();
 		[0.5, 0.5, 0.55, 0.55, 0.5].forEach(homeWinProbability => tracker.record([liveGame({ homeWinProbability, lastPlayId: undefined })]));
-		expect(tracker.historyOf('g1')).toEqual([0.5, 0.55, 0.5]);
+		expect(probabilitiesOf(tracker.historyOf('g1'))).toEqual([0.5, 0.55, 0.5]);
 	});
 
 	test('keeps each game on its own line', () => {
 		const tracker = createWinProbabilityTracker();
 		tracker.record([liveGame(), liveGame({ id: 'g2', homeWinProbability: 0.2, lastPlayId: 'x-1' })]);
-		expect(tracker.historyOf('g1')).toEqual([0.6]);
-		expect(tracker.historyOf('g2')).toEqual([0.2]);
+		expect(probabilitiesOf(tracker.historyOf('g1'))).toEqual([0.6]);
+		expect(probabilitiesOf(tracker.historyOf('g2'))).toEqual([0.2]);
 	});
 
 	test('only live games in a league whose scoreboard we trust are read', () => {
@@ -60,9 +75,11 @@ describe('building the line from our own polls', () => {
 		['mlb', 'nba', 'final', 'bare'].forEach(id => expect(tracker.historyOf(id)).toBeUndefined());
 	});
 
-	test('the boost has what it needs after five plays', () => {
+	test('a fourth quarter that swings back and forth earns the volatility bonus', () => {
 		const tracker = createWinProbabilityTracker();
-		[0.5, 0.52, 0.55, 0.51, 0.49].forEach((homeWinProbability, i) => tracker.record([liveGame({ homeWinProbability, lastPlayId: `p${i}` })]));
+		for (let i = 0; i < 24; i++) {
+			tracker.record([liveGame({ period: 4, clockSeconds: 880 - i * 30, homeWinProbability: i % 2 === 0 ? 0.35 : 0.65, lastPlayId: `p${i}` })]);
+		}
 		expect(computeWinProbVarianceScore(tracker.historyOf('g1')!)).toBeGreaterThan(0);
 	});
 
@@ -71,7 +88,7 @@ describe('building the line from our own polls', () => {
 		tracker.record([liveGame(), liveGame({ id: 'g2' })]);
 		tracker.retainOnly(new Set(['g2']));
 		expect(tracker.historyOf('g1')).toBeUndefined();
-		expect(tracker.historyOf('g2')).toEqual([0.6]);
+		expect(probabilitiesOf(tracker.historyOf('g2'))).toEqual([0.6]);
 	});
 
 	test('a game that runs long keeps its most recent plays', () => {
@@ -79,12 +96,12 @@ describe('building the line from our own polls', () => {
 		for (let i = 0; i < 700; i++) tracker.record([liveGame({ homeWinProbability: i / 1000, lastPlayId: `p${i}` })]);
 		const line = tracker.historyOf('g1')!;
 		expect(line).toHaveLength(600);
-		expect(line[line.length - 1]).toBe(0.699);
+		expect(line[line.length - 1]!.homeWinProbability).toBe(0.699);
 	});
 });
 
 describe('picking up a game after its first play', () => {
-	const fullLine = Array.from({ length: 20 }, (_, i) => 0.5 + (i % 3) / 100);
+	const fullLine = readingsAt(Array.from({ length: 20 }, (_, i) => 0.5 + (i % 3) / 100));
 
 	test('the summary\'s longer line replaces what the tracker has seen, and polls carry on from it', () => {
 		const tracker = createWinProbabilityTracker();
@@ -94,7 +111,7 @@ describe('picking up a game after its first play', () => {
 
 		tracker.record([liveGame({ homeWinProbability: 0.7, lastPlayId: 'p20' })]);
 		tracker.record([liveGame({ homeWinProbability: 0.72, lastPlayId: 'p21' })]);
-		expect(tracker.historyOf('g1')).toEqual([...fullLine, 0.72]);
+		expect(probabilitiesOf(tracker.historyOf('g1'))).toEqual([...probabilitiesOf(fullLine)!, 0.72]);
 	});
 
 	test('a game the scoreboard has given nothing for is not started from the summary', () => {
@@ -105,17 +122,17 @@ describe('picking up a game after its first play', () => {
 
 	test('a summary line no longer than the tracker\'s own is ignored', () => {
 		const tracker = createWinProbabilityTracker();
-		fullLine.forEach((homeWinProbability, i) => tracker.record([liveGame({ homeWinProbability, lastPlayId: `p${i}` })]));
-		tracker.adopt('g1', [0.1, 0.2]);
-		expect(tracker.historyOf('g1')).toEqual(fullLine);
+		fullLine.forEach(({ homeWinProbability }, i) => tracker.record([liveGame({ homeWinProbability, lastPlayId: `p${i}` })]));
+		tracker.adopt('g1', readingsAt([0.1, 0.2]));
+		expect(probabilitiesOf(tracker.historyOf('g1'))).toEqual(probabilitiesOf(fullLine));
 	});
 
 	test('an adopted line still respects the cap', () => {
 		const tracker = createWinProbabilityTracker();
 		tracker.record([liveGame()]);
-		tracker.adopt('g1', Array.from({ length: 800 }, (_, i) => i / 1000));
+		tracker.adopt('g1', readingsAt(Array.from({ length: 800 }, (_, i) => i / 1000)));
 		expect(tracker.historyOf('g1')).toHaveLength(600);
-		expect(tracker.historyOf('g1')![599]).toBe(0.799);
+		expect(tracker.historyOf('g1')![599]!.homeWinProbability).toBe(0.799);
 	});
 });
 
@@ -128,22 +145,29 @@ describe('a worker restart in the middle of a game', () => {
 
 		const after = createWinProbabilityTracker();
 		after.hydrate(roundTrip(before.serialize()));
-		expect(after.historyOf('g1')).toEqual([0.5, 0.6, 0.7]);
+		expect(after.historyOf('g1')).toEqual(before.historyOf('g1'));
 
 		after.record([liveGame({ homeWinProbability: 0.7, lastPlayId: 'p3' })]);
 		after.record([liveGame({ homeWinProbability: 0.8, lastPlayId: 'p4' })]);
 		after.record([liveGame({ homeWinProbability: 0.8, lastPlayId: 'p4' })]);
-		expect(after.historyOf('g1')).toEqual([0.5, 0.6, 0.7, 0.8]);
+		expect(probabilitiesOf(after.historyOf('g1'))).toEqual([0.5, 0.6, 0.7, 0.8]);
 	});
 
-	test('whatever is not a list of numbers is dropped on the way back in', () => {
+	test('whatever is not a reading is dropped on the way back in', () => {
 		const tracker = createWinProbabilityTracker();
-		tracker.hydrate({ g1: [0.4, null, 'x', Number.NaN, 0.6], g2: 'nope', g3: [] });
-		expect(tracker.historyOf('g1')).toEqual([0.4, 0.6]);
+		const good = { homeWinProbability: 0.4, progress: 0.2 };
+		tracker.hydrate({ g1: [good, null, 'x', { homeWinProbability: Number.NaN, progress: 0.3 }, { homeWinProbability: 0.6 }], g2: 'nope', g3: [] });
+		expect(tracker.historyOf('g1')).toEqual([good]);
 		expect(tracker.historyOf('g2')).toBeUndefined();
 		expect(tracker.historyOf('g3')).toBeUndefined();
 
 		tracker.hydrate(undefined);
+		expect(tracker.historyOf('g1')).toBeUndefined();
+	});
+
+	test('a line saved before readings carried game time is dropped, to be rebuilt from the summary', () => {
+		const tracker = createWinProbabilityTracker();
+		tracker.hydrate({ g1: [0.4, 0.5, 0.6] });
 		expect(tracker.historyOf('g1')).toBeUndefined();
 	});
 });

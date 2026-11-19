@@ -1,5 +1,5 @@
 ---
-sourceHash: '854afd07d71b'
+sourceHash: '5050e319fc40'
 title: 競技とリーグの設定
 description: SportTypeConfig と LeagueConfig の全フィールド、6競技・31リーグにわたる初期値、そして競技ごとの「接戦」の基準がどう決まるかを説明します。
 section: powerscore
@@ -24,6 +24,7 @@ navLabel: 設定
 | `zeroZeroAsFullTie` | false | false | true | true | false | false |
 | `zeroZeroPenaltyPeriods` | なし | なし | 1, 2 | 1 | なし | なし |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
+| `overtimeDurationSecs` | 300 | 600 | 300 | なし | なし | なし |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -45,6 +46,7 @@ navLabel: 設定
 | `zeroZeroAsFullTie` | 0–0 の試合が、接戦度で満額の同点クレジットを得ます。`false` のときは、0–0 は減額された `zeroZero` ティアになります。 |
 | `zeroZeroPenaltyPeriods` | `zeroZeroAsFullTie` が `true` でも、0–0 が減額ティアのままになるピリオドです。ホッケーは1と2、サッカーは前半です。 |
 | `otPreBoostWindowSecs` | 規定の最終ピリオドの最後の秒数で、同点の試合が延長戦プレブーストに向けて上がっていく区間です。`0` でオフになります。 |
+| `overtimeDurationSecs` | 延長ピリオド1回の長さで、`getTimelineProgress` が延長のあいだも数え続けられるようにします。ないときは、延長ピリオド1回が試合の0.05として数えられます。 |
 | `decayHalfLifeMs` | 最後の得点のあと、勢い、リード交代、追い上げがどれだけ速く薄れるかです。得点の少ない競技ほど長く、1点が次の1点まで効き続けます。 |
 | `historyWindowMs` | 履歴系のシグナルが読むスコア履歴の長さです。上の説明をご覧ください。 |
 | `lateGameCurve` | 野球とソフトボールのみ。規定のイニング数と、終盤の上昇が始まるイニングです。 |

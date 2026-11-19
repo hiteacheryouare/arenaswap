@@ -1095,49 +1095,6 @@ describe('computeScoringOpportunityBoost', () => {
 	});
 });
 
-describe('computeWinProbVarianceScore', () => {
-	test('returns undefined when fewer than minDataPoints values provided', () => {
-		expect(computeWinProbVarianceScore([])).toBeUndefined();
-		expect(computeWinProbVarianceScore([0.5, 0.6, 0.4, 0.5])).toBeUndefined();
-	});
-
-	test('returns the minimum penalty for a one-sided game (avg distance from 50% ≥ maxAvgDist)', () => {
-		const dominated = Array.from({ length: 20 }, () => 0.85);
-		expect(computeWinProbVarianceScore(dominated)).toBe(-scoreWinProbVarianceMax);
-	});
-
-	test('returns positive score for a contested game close to 50/50', () => {
-		const contested = Array.from({ length: 20 }, (_, i) => (i % 2 === 0 ? 0.47 : 0.53));
-		const score = computeWinProbVarianceScore(contested);
-		expect(score).toBeGreaterThan(0);
-		expect(score).toBeLessThanOrEqual(scoreWinProbVarianceMax);
-	});
-
-	test('returns the maximum boost for a perfectly contested game (avg distance from 50% = 0)', () => {
-		const perfectlyContested = Array.from({ length: 30 }, () => 0.5);
-		expect(computeWinProbVarianceScore(perfectlyContested)).toBe(scoreWinProbVarianceMax);
-	});
-
-	test('returns 0 at the neutral midpoint (avg distance from 50% = maxAvgDist / 2)', () => {
-		const neutral = Array.from({ length: 30 }, (_, i) => (i % 2 === 0 ? 0.325 : 0.675));
-		const score = computeWinProbVarianceScore(neutral);
-		expect(score).toBeGreaterThanOrEqual(-1);
-		expect(score).toBeLessThanOrEqual(1);
-	});
-
-	test('clamps the result to the configured five-point range', () => {
-		const score = computeWinProbVarianceScore([0, 0, 0, 1, 1, 1, 0, 1, 0, 1]);
-		expect(score).toBeGreaterThanOrEqual(-scoreWinProbVarianceMax);
-		expect(score).toBeLessThanOrEqual(scoreWinProbVarianceMax);
-	});
-
-	test('close game near 50/50 earns a boost', () => {
-		const close = [0.51, 0.52, 0.50, 0.51, 0.49, 0.50, 0.52, 0.51, 0.50, 0.49];
-		const score = computeWinProbVarianceScore(close);
-		expect(score).toBeGreaterThan(0);
-	});
-});
-
 describe('computePowerScore — win probability volatility boost/penalty integration', () => {
 	const baseGame = makeGame({
 		period: 3,
@@ -1152,24 +1109,23 @@ describe('computePowerScore — win probability volatility boost/penalty integra
 		expect(result.winProbabilityVariance).toBeUndefined();
 	});
 
-	test('omits winProbabilityVariance when history is shorter than minDataPoints', () => {
+	test('omits winProbabilityVariance when there are too few readings to measure a swing', () => {
 		const result = computePowerScore(baseGame, shortHistory, [0.5, 0.6]);
 		expect(result.winProbabilityVariance).toBeUndefined();
 	});
 
-	test('includes winProbabilityVariance when sufficient win prob history is supplied', () => {
+	test('a win chance that keeps swinging earns a bonus', () => {
 		const winProb = Array.from({ length: 20 }, (_, i) => (i % 2 === 0 ? 0.15 : 0.85));
 		const result = computePowerScore(baseGame, shortHistory, winProb);
-		expect(result.winProbabilityVariance).toBeDefined();
-		expect(result.winProbabilityVariance).toBeLessThan(0);
+		expect(result.winProbabilityVariance).toBeGreaterThan(0);
 	});
 
-	test('close-to-50% game has a higher total than a one-sided game (other signals equal)', () => {
-		const contestedProb = Array.from({ length: 30 }, () => 0.5);
-		const dominatedProb = Array.from({ length: 30 }, () => 0.8);
-		const contestedResult = computePowerScore(baseGame, shortHistory, contestedProb);
-		const dominatedResult = computePowerScore(baseGame, shortHistory, dominatedProb);
-		expect(contestedResult.total).toBeGreaterThan(dominatedResult.total);
+	test('a swinging game has a higher total than a quiet, decided one (other signals equal)', () => {
+		const swinging = Array.from({ length: 30 }, (_, i) => (i % 2 === 0 ? 0.35 : 0.65));
+		const decided = Array.from({ length: 30 }, () => 0.98);
+		const swingingResult = computePowerScore(baseGame, shortHistory, swinging);
+		const decidedResult = computePowerScore(baseGame, shortHistory, decided);
+		expect(swingingResult.total).toBeGreaterThan(decidedResult.total);
 	});
 
 	test('signalsSubtotal holds pure signals subtotal, unaffected by variance', () => {
@@ -1407,8 +1363,8 @@ describe('computePowerScore — non-finite win probability input', () => {
 	});
 
 	test('returns undefined once too few finite samples are left', () => {
-		expect(computeWinProbVarianceScore([0.5, 0.5, Number.NaN, 0.5, 0.5])).toBeUndefined();
-		expect(computeWinProbVarianceScore([0.5, Number.POSITIVE_INFINITY, 0.5, 0.5, 0.5])).toBeUndefined();
+		expect(computeWinProbVarianceScore([0.5, Number.NaN, 0.5])).toBeUndefined();
+		expect(computeWinProbVarianceScore([0.5, Number.POSITIVE_INFINITY, Number.NaN, 0.5])).toBeUndefined();
 	});
 
 	test('a non-finite total falls back to the post-penalty subtotal, not the raw signal sum', () => {

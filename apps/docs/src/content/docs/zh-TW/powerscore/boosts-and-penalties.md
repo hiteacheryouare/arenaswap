@@ -1,5 +1,5 @@
 ---
-sourceHash: '9c4dba756b81'
+sourceHash: '2348a1aeb67f'
 title: PowerScore 加成與扣分
 navLabel: 加成與扣分
 description: PowerScore 3 在模式信號之上套用的每一項加成與扣分，包括觸發條件、最大值，以及它們共用的上限。
@@ -187,21 +187,33 @@ order: 4
 
 至於爭奪戰，利害最大的那隊全額給分，另一隊給一半，上限 6。排名和爭奪會相加，總和上限是 10。
 
-## 勝率平衡
+## 勝率擺盪
 
-僅限經典。`computeWinProbVarianceScore(winProbHistory)` 回傳一個介於 `-scoreWinProbVarianceMax` 到 `+scoreWinProbVarianceMax`（±5）的修正。把 `context.winProbability` 傳給 `scoreGame`，這個修正就會自己併入總分。
+僅限經典。`computeWinProbVarianceScore(line, nowProgress?)` 回傳一個介於 `-scoreWinProbVarianceMax` 到 `+scoreWinProbVarianceMax`（±5）的修正。把 `context.winProbability` 傳給 `scoreGame`，這個修正就會自己併入總分，並以比賽目前所在的位置為準，該位置取自 [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress)。
 
-它至少需要 `minDataPoints`（5）個有限的值。不夠的話回傳 `undefined`，結果上的 `winProbabilityVariance` 欄位會整個省略，而不是設成 `0`。不是有限值的項目（`NaN`、`Infinity`）會在檢查數量之前先被丟掉。
+這條線是主隊的勝率，每個回合一個讀數，由舊到新。每個讀數都是一個 [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading)：`homeWinProbability` 介於 0 到 1，以及 `progress`，也就是這個回合發生時比賽進行到哪裡。單純的 `number[]` 依然可用，它的讀數會從比賽開始到現在平均鋪開。
 
-這個修正是所提供的值與 0.5 的平均絕對距離，對應到 ±5 的範圍：
+需要 3 個讀數，而且比賽已經進行了十分之一。在那之前會回傳 `undefined`，結果上的 `winProbabilityVariance` 欄位會整個省略，而不是設成 `0`。不是有限值的讀數會先被丟掉。
 
-| 與 50% 的平均距離 | 修正 |
-|---|---|
-| 0（擲硬幣） | +5 |
-| `maxAvgDist` ÷ 2 (0.175) | 0 |
-| ≥ `maxAvgDist` (0.35) | −5 |
+這個修正混合了兩種衡量結果最近變動多大的指標。兩者每隔一個 `halfLife`（正規時間的十分之一）就衰減一半：大學籃球約 4 分鐘，NBA 5 分鐘，美式足球 6 分鐘，棒球是一局。
 
-儘管名字叫變異，這個修正衡量的是與 50% 的平均距離，不是變異數。一條在 10% 和 90% 之間來回擺盪的勝率線，得到的扣分，和一直穩定停在 90% 的相同。兩者與中點的平均距離一樣。
+| 指標 | 累加的內容 | 滿分對應 | 在混合中的佔比 |
+|---|---|---|---|
+| 變動 | 最近四個半衰期內，相鄰回合之間勝率的每一次變化，每次最多計 0.5 | `movementFullScale`（1.67） | 70% |
+| 擺幅 | 目前讀數與最近三個半衰期內任一讀數之間的最大差距，每兩個半衰期衰減一半 | `swingFullScale`（0.26） | `swingWeight`（30%） |
+
+一個讀數跳動超過 0.15，隨即又回到離原位 0.05 以內，就是一次被更正的回合，會被忽略。
+
+| 混合值 | 上半場 | 下半場 |
+|---|---|---|
+| 達到或高於 `neutralBlend`（0.49） | 最多 +5 | 最多 +5 |
+| 低於 `neutralBlend` | 0 | 最低 −5 |
+
+加成會隨領先方的勝率從 `openLead`（80%）升到 `decidedLead`（97%）而逐漸消失，所以勝負已定的比賽裡偶爾一下波動，拿不到任何加分。扣分則相反：比賽還沒定時不扣，一場沉寂的比賽到了 97% 就扣滿 −5。它從 `penaltyFromProgress` 開始，也就是正規時間過半。
+
+一面倒的開局，等比賽轉向之後就不再有代價。一場大半夜都停在 98% 的比賽，後來擺回勢均力敵，只要擺盪一多就能拿到加成，因為只有最近這一段才算數。
+
+`neutralBlend` 是 417 場已結束比賽中，每一個進行中且勝負未定的時刻的混合值的中位數，所以一場接近的比賽，典型的時段會落在 0 附近。滿分對應的數值是同一批時刻的第 90 百分位數。
 
 這個修正是在廣告時段扣分之後才加，不是之前，而且在任何加成加進來之前，結果會先限制在 0 到 100 之間。
 

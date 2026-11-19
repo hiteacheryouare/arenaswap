@@ -1,5 +1,5 @@
 ---
-sourceHash: '1aa0123b3860'
+sourceHash: '2125a74f6361'
 title: すべてのモードの PowerScore シグナル
 description: クラシック、大差、ファンタジーの PowerScore を支えるシグナルを、それぞれの上限、測るもの、無視するものとともに説明します。シグナルをオフにする方法も載せています。
 section: powerscore
@@ -93,7 +93,7 @@ scoreGame(game, context, { disabledSignals: ['momentum', 'comeback'] });
 
 ### シグナルではない2つの補正
 
-クラシックは、勝利確率の補正（±5）と、コマーシャル中の減点も適用します。どちらもクラシックのパイプラインの一部で、[ブーストとペナルティ](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance)で説明しています。
+クラシックは、勝利確率の補正（±5）と、コマーシャル中の減点も適用します。どちらもクラシックのパイプラインの一部で、[ブーストとペナルティ](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)で説明しています。
 
 ## 大差
 

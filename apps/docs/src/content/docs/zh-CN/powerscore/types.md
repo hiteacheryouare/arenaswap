@@ -1,5 +1,5 @@
 ---
-sourceHash: '40ee38646993'
+sourceHash: 'e5d4af4d0a0e'
 title: PowerScore 的 TypeScript 类型
 description: Game、ScoringContext、ScoreOptions、PowerScore 以及模式和配置类型上的每个字段，哪些是可选的，以及可选字段缺失时会发生什么。
 section: powerscore
@@ -95,13 +95,26 @@ interface RedCard {
 |---|---|---|
 | `history?` | [`ScoreSnapshot[]`](#scoresnapshot) | 在它有 3 项之前，势头、领先权易手和逆转保持为 0。最早的在前。 |
 | `onBreak?` | `boolean` | 调用方已经检测到广告时段。`true` 会从信号小计里扣掉 `breakPenalty`（15）。缺失时不扣广告时段分。 |
-| `winProbability?` | `number[]` | 整场比赛中主队的胜率，0 到 1。需要 5 个有限值才有意义。否则没有修正。 |
+| `winProbability?` | [`WinProbabilityReading[]`](#winprobabilityreading) 或 `number[]` | 主队的胜率，每个回合一个读数，由旧到新。需要 3 个读数，并且比赛已经进行了十分之一。否则没有修正。 |
 | `pregameLine?` | [`PregameLine`](#pregameline) | 冷门预警和冷门溃败给 0 分。 |
 | `stakes?` | `Partial<Record<'home' \| 'away', TeamStakes>>` | 没有争夺的赛事重要程度。见 [`TeamStakes`](#teamstakes)。 |
 | `powerPlay?` | `'home' \| 'away' \| boolean` | 得分机会加成里没有强攻。数据说了是谁就给一方，只说有一方在强攻时给 `true`。 |
 | `emptyNet?` | `'home' \| 'away' \| boolean` | 得分机会加成里没有空门。只有在数据连续两次轮询都报告之后才设置它。 |
 | `recentLeadChanges?` | `{ count: number; lastAt?: number }` | 根据数据源自己的比赛实录统计的领先权易手次数（它能看到两次轮询之间的翻转），连同最近一次的时间。当它数得比 `history` 显示的多时才使用。领先权易手仍然需要那 3 份快照。 |
 | `fantasy?` | [`FantasyPlayerState[]`](#fantasyplayerstate) | 梦幻模式没有球员，比赛按经典打分。 |
+
+### WinProbabilityReading
+
+一个回合的胜率，以及这个回合发生在比赛的哪个位置。
+
+```ts
+interface WinProbabilityReading {
+	homeWinProbability: number; // 0 to 1
+	progress: number; // getTimelineProgress at the play: 0 at the start, 1 at the end of regulation, past 1 in overtime
+}
+```
+
+纯 `number[]` 会被当作从比赛开始到现在平均铺开的读数。当您的数据源给每个胜率都标了对应的回合时，请使用读数，这样修正就能按比赛时间来衡量摆动。
 
 ### ScoreSnapshot
 
@@ -408,7 +421,7 @@ type LateGameCurveConfig = BaseballLateGameCurveConfig;
 | `scores.momentum` | 势头的两个档位值。见[势头](/arenaswap/docs/powerscore/signals/#momentum-lead-changes-and-comeback-factor)。 |
 | `scores.leadChanges` | 领先权易手的两个档位值。 |
 | `scores.comeback` | 逆转的两个档位值和它的固定底分。 |
-| `scores.winProbabilityVariance` | `maxAvgDist` 和 `minDataPoints`，列在[加成与扣分](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance)里。 |
+| `scores.winProbabilityVariance` | `halfLife`、`movementFullScale`、`swingFullScale`、`swingWeight`、`neutralBlend`、`openLead`、`decidedLead` 和 `penaltyFromProgress`，列在[加成与扣分](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)里。 |
 | `reasons` | 只有 `fallback`（"best game available"），即已弃用的扁平结果回退使用的原因。英文措辞在 `renderReasonEnglish` 里。 |
 
 ## FantasyRule 和 FantasySport

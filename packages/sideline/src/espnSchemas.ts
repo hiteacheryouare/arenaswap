@@ -338,10 +338,25 @@ export const parseScoreboard = (raw: unknown): EspnScoreboardResponse => {
 	return { events, leagues: shell.data.leagues ?? [], droppedEvents };
 };
 
+const EspnSummaryPlaySchema = z.catch(z.object({
+	id: z.optional(z.string()),
+	period: z.optional(z.object({ number: z.optional(z.number()), type: z.optional(z.string()) })),
+	clock: z.optional(z.object({ displayValue: z.optional(z.string()) })),
+}), {});
+
+const EspnSummaryDriveSchema = z.catch(z.object({ plays: z.optional(z.array(EspnSummaryPlaySchema)) }), {});
+
+export type EspnSummaryPlay = z.infer<typeof EspnSummaryPlaySchema>;
+
 export const EspnSummarySchema = z.object({
 	winprobability: z.optional(z.array(
-		z.catch(z.object({ homeWinPercentage: z.optional(z.number()) }), {}),
+		z.catch(z.object({ homeWinPercentage: z.optional(z.number()), playId: z.optional(z.string()) }), {}),
 	)),
+	plays: z.optional(z.catch(z.array(EspnSummaryPlaySchema), [])),
+	drives: z.optional(z.catch(z.object({
+		previous: z.optional(z.array(EspnSummaryDriveSchema)),
+		current: z.optional(EspnSummaryDriveSchema),
+	}), {})),
 });
 
 const EspnTeamsShellSchema = z.object({

@@ -496,7 +496,7 @@
 			},
 			{
 				"name": "Win probability",
-				"copy": "Hanggang {max} dagdag kapag nananatiling halos 50/50 ang tsansa, hanggang {max} bawas kapag panalo na ang isang team."
+				"copy": "Hanggang {max} dagdag kapag nag-swing ang tsansa kamakailan, hanggang {max} bawas kapag tumahimik ang laro at panalo na ang isang team."
 			}
 		],
 		"liveHeading": "Live na PowerScore.",

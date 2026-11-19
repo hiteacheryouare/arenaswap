@@ -1,5 +1,5 @@
 ---
-sourceHash: 'd23f4e1a7b17'
+sourceHash: '958d2eeea81a'
 title: Pontue um jogo com dados ao vivo
 description: Mapeie o seu próprio feed num objeto Game, guarde um histórico de placar entre as consultas, ligue os impulsos e os modos que os seus dados sustentam e some impulsos de favorito e manuais.
 section: powerscore
@@ -57,7 +57,7 @@ Cada campo opcional liga a parte do motor que precisa dele. Deixe um de fora e e
 | Entregue | Em | E isto se liga |
 |---|---|---|
 | Fotos do placar, da mais antiga para a mais nova | `context.history` | Dinâmica, Mudanças de liderança, Virada. Precisa de pelo menos 3 fotos. |
-| Probabilidade de vitória, de 0 a 1 por consulta | `context.winProbability` | O modificador de ±5 da probabilidade de vitória. Precisa de pelo menos 5 valores. |
+| Probabilidade de vitória, de 0 a 1 por lance, com o quanto do jogo já tinha passado em cada um | `context.winProbability` | O modificador de ±5 da probabilidade de vitória. Precisa de 3 leituras e de um décimo do jogo disputado. |
 | Se o jogo está num intervalo comercial | `context.onBreak` | O desconto por intervalo. |
 | `possession`, `yardsToEndZone`, `down`, `distance` e `timeouts` no time | `game`, `game.homeTeam` | O two-minute drill e a situação de futebol americano do Fantasy. |
 | `isRedZone`, mais `down`, `distance` e `isGoalToGo` | `game` | O impulso de red zone. |
@@ -122,7 +122,7 @@ const score = scoreGame(game, { history, onBreak: isInBreak(game), winProbabilit
 ```
 
 O `isInBreak` é você que escreve, a partir do que o seu feed diz sobre pausas entre entradas, trocas de arremessador e pedidos de tempo. Enquanto `onBreak` for `true`, a pontuação perde 15 pontos fixos.
-O `winProbability` é uma lista de valores recentes de probabilidade de vitória de 0 a 1, de qualquer um dos times. Só importa a distância até 50%. Os dois são opcionais, e o PowerScore pontua bem sem eles. O que cada um muda está em [Impulsos e penalidades](/arenaswap/docs/powerscore/boosts-and-penalties/).
+O `winProbability` é a probabilidade de vitória do time da casa, uma leitura por lance, da mais antiga para a mais nova. Cada leitura traz o seu `progress` no jogo, então uma oscilação some com o relógio do jogo e não com a frequência das suas consultas. Uma lista simples de números de 0 a 1 também serve, distribuída por igual ao longo do jogo até agora. Os dois são opcionais, e o PowerScore pontua bem sem eles. O que cada um muda está em [Impulsos e penalidades](/arenaswap/docs/powerscore/boosts-and-penalties/).
 
 ## Deixe os impulsos enxergarem o momento
 

@@ -56,7 +56,7 @@ Each optional field turns on the part of the engine that needs it. Leave one out
 | Give it | In | And these switch on |
 |---|---|---|
 | Score snapshots, oldest first | `context.history` | Momentum, Lead Changes, Comeback Factor. Needs at least 3 snapshots. |
-| Win probability, 0 to 1 per poll | `context.winProbability` | The ±5 win probability modifier. Needs at least 5 values. |
+| Win probability, 0 to 1 per play, with how far into the game each play came | `context.winProbability` | The ±5 win probability modifier. Needs 3 readings and a tenth of the game played. |
 | Whether the game is in a commercial break | `context.onBreak` | The break deduction. |
 | `possession`, `yardsToEndZone`, `down`, `distance`, and `timeouts` on the team | `game`, `game.homeTeam` | The two-minute drill and Fantasy's football situation. |
 | `isRedZone`, plus `down`, `distance` and `isGoalToGo` | `game` | The red zone boost. |
@@ -121,7 +121,7 @@ const score = scoreGame(game, { history, onBreak: isInBreak(game), winProbabilit
 ```
 
 `isInBreak` is yours to write, from whatever your feed says about inning breaks, pitching changes and timeouts. While `onBreak` is `true`, the score loses a flat 15 points.
-`winProbability` is a list of recent win-probability values from 0 to 1, for either team. Only the distance from 50% matters. Both are optional, and PowerScore scores fine without them. What each one changes is in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/).
+`winProbability` is the home team's win probability, one reading per play, oldest first. Each reading carries its `progress` through the game, so a swing fades with the game clock rather than with how often you poll. A bare list of numbers from 0 to 1 works too, spread evenly over the game so far. Both are optional, and PowerScore scores fine without them. What each one changes is in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/).
 
 ## Let the boosts see the moment
 

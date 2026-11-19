@@ -1,5 +1,5 @@
 ---
-sourceHash: '1aa0123b3860'
+sourceHash: '2125a74f6361'
 title: 每种模式下的 PowerScore 信号
 description: 经典、一边倒和梦幻 PowerScore 背后的信号：每个信号的上限、衡量什么、忽略什么，以及如何关掉信号。
 section: powerscore
@@ -93,7 +93,7 @@ scoreGame(game, context, { disabledSignals: ['momentum', 'comeback'] });
 
 ### 两个不属于信号的修正项
 
-经典还会应用胜率修正（±5）和广告时段扣分。两者都属于经典的流水线，都在[加成与扣分](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance)里讲到。
+经典还会应用胜率修正（±5）和广告时段扣分。两者都属于经典的流水线，都在[加成与扣分](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)里讲到。
 
 ## 一边倒
 

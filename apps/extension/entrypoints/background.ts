@@ -2,7 +2,7 @@ import { i18n } from '#i18n';
 import { randomInRange } from '@porkyproductions/hat';
 import { createWinProbabilityTracker, summaryStillNeeded, hasMissedItsWindow, isWithinFinalRetention, MockGameSimulator, createPollModeTracker, isObjectRecord, isScoreSnapshotLike, isPowerScoreSnapshotLike, normalizeGameBoosts, computeLeagueIntervalMs, computeHebetudinousIntervalMs, earliestUpcomingStartMs, computeRetryDelayMs, pollWinProbabilityMs as winProbPollIntervalMs, logWarn, logError, isPlayFrozen, chooseSwitchTarget, getHistoryWindowMsForGame, stuckSinceOf, trackProgress, maxSnapshotsPerGame, nextCommercialBreak, checkHeldSwitch, holdSwitch, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot } from '@arenaswap/core';
 import { fetchGamesWithLeagueLogos, fetchGameDurationMins, fetchTeamMonoLogos, fetchWinProbability, fetchNextScheduledStart, scoreboardRefreshMs, createLiveExtras, fetchCompetitionSituation, fetchLeagueStandings, hasStandingsRaces } from '@arenaswap/sideline';
-import type { CommercialBreakEntry, HeldSwitch, PlayBreakSport } from '@arenaswap/core';
+import type { CommercialBreakEntry, HeldSwitch, PlayBreakSport, WinProbabilityReading } from '@arenaswap/core';
 import { computeStandbyStreamDecision, usableStandbyTabId } from '../utils/standbyStreamLogic';
 import { describeDelayLeft, findDelayedGameLeft } from '../utils/delayNotice';
 import kickoffDelayMs from '../utils/kickoffPoll';
@@ -293,7 +293,7 @@ export default defineBackground(() => {
 	const leagueFailureCounts = new Map<LeagueId, number>();
 	const leagueHealthyIntervalMs = new Map<LeagueId, number>();
 	const leagueNextIntervalMs = new Map<string, number>();
-	const winProbHistory = new Map<string, number[]>();
+	const winProbHistory = new Map<string, WinProbabilityReading[]>();
 	const winProbTracker = createWinProbabilityTracker();
 	const liveExtras = createLiveExtras();
 	const summaryFetchedAt = new Map<string, number>();

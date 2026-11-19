@@ -1,5 +1,5 @@
 ---
-sourceHash: '1aa0123b3860'
+sourceHash: '2125a74f6361'
 title: Mga PowerScore signal sa bawat mode
 description: Ang mga signal sa likod ng Classic, Blowouts at Fantasy na PowerScore, kasama ang ceiling ng bawat isa, kung ano ang sinusukat nito at kung ano ang hindi nito nakikita. Pati kung paano i-off ang mga signal.
 section: powerscore
@@ -93,7 +93,7 @@ Sinusukat ng **Comeback Factor** (ceiling 20) ang swing ng team na nahuhuli sa p
 
 ### Dalawang modifier na hindi signal
 
-Naglalapat din ang Classic ng win probability modifier (±5) at ng bawas sa commercial break. Parehong bahagi ng pipeline ng Classic ang dalawa, at sakop ang mga ito sa [Mga boost at penalty](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance).
+Naglalapat din ang Classic ng win probability modifier (±5) at ng bawas sa commercial break. Parehong bahagi ng pipeline ng Classic ang dalawa, at sakop ang mga ito sa [Mga boost at penalty](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings).
 
 ## Blowouts
 

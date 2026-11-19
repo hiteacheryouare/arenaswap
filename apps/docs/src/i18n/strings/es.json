@@ -496,7 +496,7 @@
 			},
 			{
 				"name": "Probabilidad de victoria",
-				"copy": "Hasta {max} más cuando las probabilidades se mantienen cerca del 50/50, hasta {max} menos cuando un equipo ya la tiene asegurada."
+				"copy": "Hasta {max} más cuando las probabilidades han estado oscilando últimamente, hasta {max} menos cuando el partido se ha calmado y un equipo ya la tiene asegurada."
 			}
 		],
 		"liveHeading": "PowerScores en vivo.",

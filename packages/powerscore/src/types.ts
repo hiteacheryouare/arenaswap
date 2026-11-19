@@ -132,8 +132,14 @@ export interface ScorerTunables {
 		};
 		closenessFlatFloor: number;
 		winProbabilityVariance: {
-			maxAvgDist: number;
-			minDataPoints: number;
+			halfLife: number;
+			movementFullScale: number;
+			swingFullScale: number;
+			swingWeight: number;
+			neutralBlend: number;
+			openLead: number;
+			decidedLead: number;
+			penaltyFromProgress: number;
 		};
 	};
 	reasons: {
@@ -160,6 +166,7 @@ export interface SportTypeConfig {
 		comeback: number;
 	};
 	otPreBoostWindowSecs: number;
+	overtimeDurationSecs?: number;
 	historyWindowMs: number;
 }
 
@@ -208,10 +215,17 @@ export interface FantasyPlayerState {
 	pointEvents?: { at: number; points: number }[];
 }
 
+export type GameClockState = Pick<Game<string>, 'period' | 'clockSeconds' | 'topOfInning'>;
+
+export interface WinProbabilityReading {
+	homeWinProbability: number;
+	progress: number;
+}
+
 export interface ScoringContext {
 	history?: ScoreSnapshot[];
 	onBreak?: boolean;
-	winProbability?: number[];
+	winProbability?: readonly WinProbabilityReading[] | readonly number[];
 	pregameLine?: PregameLine;
 	stakes?: Partial<Record<Side, TeamStakes>>;
 	powerPlay?: Side | boolean;

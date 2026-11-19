@@ -144,11 +144,12 @@ Render one reason sentence, or a list of them joined into sentences, as English.
 ```ts
 function resolveSportConfig(sportType: SportType, override?: Partial<SportTypeConfig>): SportTypeConfig
 function resolveLeagueConfig(game: Pick<Game<string>, 'league' | 'sportType'>, override?: Partial<LeagueConfig>): LeagueConfig
-function getGameProgress(game: Game<string>, sport: SportTypeConfig, league: LeagueConfig): number
+function getGameProgress(game: GameClockState, sport: SportTypeConfig, league: LeagueConfig): number
+function getTimelineProgress(game: GameClockState, sport: SportTypeConfig, league: LeagueConfig): number
 function scoreMargin(game: Game<string>): number
 ```
 
-`resolveSportConfig` and `resolveLeagueConfig` do what `scoreGame` does at the top of every call. An unknown `sportType` falls back to basketball's tuning. An unknown league falls back to its sport's best-known league: the NBA for basketball, the NHL for hockey, MLB for baseball, the NFL for football, NCAA softball, and MLS for soccer. `getGameProgress` is 0 at the start, 1 at the end of regulation and through overtime. `scoreMargin` is the absolute score difference.
+`resolveSportConfig` and `resolveLeagueConfig` do what `scoreGame` does at the top of every call. An unknown `sportType` falls back to basketball's tuning. An unknown league falls back to its sport's best-known league: the NBA for basketball, the NHL for hockey, MLB for baseball, the NFL for football, NCAA softball, and MLS for soccer. `getGameProgress` is 0 at the start, 1 at the end of regulation and through overtime. `getTimelineProgress` matches it through regulation, then keeps counting past 1: an overtime period adds `overtimeDurationSecs` over the length of regulation, and an extra inning adds one inning's share. Both read only `period`, `clockSeconds` and `topOfInning` (`GameClockState`). `scoreMargin` is the absolute score difference.
 
 ## Fantasy scoring
 
@@ -237,7 +238,7 @@ Deprecated. Scores Classic's five signals, applies the win probability modifier,
 |---|---|---|
 | `game` | required | The current game state. |
 | `history` | `[]` | Recent score snapshots. Momentum, lead changes, and comeback stay at 0 until this holds at least 3 entries. |
-| `winProbabilityHistory` | `[]` | Recent win-probability values, 0 to 1. Needs at least 5 finite entries to contribute anything. |
+| `winProbabilityHistory` | `[]` | Home win-probability values, 0 to 1, oldest first, spread evenly over the game so far. Needs 3 finite entries and a tenth of the game played to contribute anything. |
 
 Never throws. Returns an all-zero result immediately when `isPlayFrozen(game)` is true. Doesn't check `game.status`: a `'pre'` or `'post'` game scores the same as an `'in'` one, given the same other fields.
 
@@ -252,10 +253,13 @@ Deprecated: the number is in `scoreGame`'s `boosts` list as `scoringOpportunity`
 ### computeWinProbVarianceScore
 
 ```ts
-function computeWinProbVarianceScore(winProbHistory: number[]): number | undefined
+function computeWinProbVarianceScore(
+	line: readonly WinProbabilityReading[] | readonly number[],
+	nowProgress?: number,
+): number | undefined
 ```
 
-Maps a win-probability history to the ±5 modifier. Filters out non-finite entries first, then returns `undefined` if fewer than 5 finite values remain. Otherwise returns an integer from `-scoreWinProbVarianceMax` to `scoreWinProbVarianceMax`.
+Maps a win-probability line to the ±5 modifier described in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). `nowProgress` is the game's current point from `getTimelineProgress`, and defaults to the last reading's. A bare `number[]` is spread evenly up to `nowProgress`, or to 1 without it. Drops non-finite readings first, then returns `undefined` with fewer than 3 left or before a tenth of the game is played. Otherwise returns an integer from `-scoreWinProbVarianceMax` to `scoreWinProbVarianceMax`.
 
 ### isPlayFrozen
 

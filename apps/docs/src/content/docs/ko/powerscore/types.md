@@ -1,5 +1,5 @@
 ---
-sourceHash: '40ee38646993'
+sourceHash: 'e5d4af4d0a0e'
 title: PowerScore TypeScript 타입
 description: Game, ScoringContext, ScoreOptions, PowerScore, 그리고 모드와 설정 타입의 모든 필드, 어떤 것이 선택 사항인지, 선택 필드가 없을 때 어떻게 되는지.
 section: powerscore
@@ -95,13 +95,26 @@ interface RedCard {
 |---|---|---|
 | `history?` | [`ScoreSnapshot[]`](#scoresnapshot) | 3개가 들어 있기 전까지 모멘텀, 리드 변화, 추격은 0이에요. 오래된 것부터예요. |
 | `onBreak?` | `boolean` | 호출하는 쪽이 광고 시간을 감지했어요. `true`이면 시그널 소계에서 `breakPenalty`(15)를 빼요. 없으면 광고 시간 감점이 없어요. |
-| `winProbability?` | `number[]` | 경기 내내의 홈 팀 승리 확률이에요, 0에서 1. 영향을 주려면 유한한 값 5개가 필요해요. 없으면 보정이 없어요. |
+| `winProbability?` | [`WinProbabilityReading[]`](#winprobabilityreading) 또는 `number[]` | 홈 팀의 승리 확률이고, 플레이마다 값이 하나씩, 오래된 것부터예요. 값 3개와 경기의 10분의 1이 지나 있어야 해요. 없으면 보정이 없어요. |
 | `pregameLine?` | [`PregameLine`](#pregameline) | 이변 주시와 이변 대승이 0점이에요. |
 | `stakes?` | `Partial<Record<'home' \| 'away', TeamStakes>>` | 순위 싸움 중요도가 없어요. [`TeamStakes`](#teamstakes)를 보세요. |
 | `powerPlay?` | `'home' \| 'away' \| boolean` | 득점 기회 부스트에 파워플레이가 없어요. 피드가 어느 팀인지 알려주면 그 쪽(side)을, 진행 중이라는 사실만 알려주면 `true`를 넣어요. |
 | `emptyNet?` | `'home' \| 'away' \| boolean` | 득점 기회 부스트에 빈 골대가 없어요. 피드가 연속 두 번의 폴링에서 보고한 뒤에만 설정하세요. |
 | `recentLeadChanges?` | `{ count: number; lastAt?: number }` | 폴링 사이에 뒤집힌 경우도 보는 피드 자체의 플레이 로그에서 센 리드 변화 횟수와 가장 최근 시각이에요. `history`가 보여주는 것보다 많이 세었을 때 써요. 리드 변화는 여전히 스냅샷 3개가 필요해요. |
 | `fantasy?` | [`FantasyPlayerState[]`](#fantasyplayerstate) | 판타지에 선수가 없고, 경기는 클래식으로 점수를 매겨요. |
+
+### WinProbabilityReading
+
+플레이 하나의 승리 확률과, 그 플레이가 경기의 어디쯤이었는지예요.
+
+```ts
+interface WinProbabilityReading {
+	homeWinProbability: number; // 0 to 1
+	progress: number; // getTimelineProgress at the play: 0 at the start, 1 at the end of regulation, past 1 in overtime
+}
+```
+
+그냥 `number[]`는 경기 시작부터 지금까지 고르게 퍼진 값으로 읽어요. 피드가 확률마다 해당 플레이를 붙여 준다면 값(reading)을 쓰세요. 그러면 보정값이 경기 시간 기준으로 요동을 재요.
 
 ### ScoreSnapshot
 
@@ -408,7 +421,7 @@ type LateGameCurveConfig = BaseballLateGameCurveConfig;
 | `scores.momentum` | 모멘텀의 두 단계 값이에요. [모멘텀](/arenaswap/docs/powerscore/signals/#momentum-lead-changes-and-comeback-factor)을 보세요. |
 | `scores.leadChanges` | 리드 변화의 두 단계 값이에요. |
 | `scores.comeback` | 추격의 두 단계 값과 고정 바닥이에요. |
-| `scores.winProbabilityVariance` | `maxAvgDist`와 `minDataPoints`이고, [부스트와 페널티](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance)에 표로 정리돼 있어요. |
+| `scores.winProbabilityVariance` | `halfLife`, `movementFullScale`, `swingFullScale`, `swingWeight`, `neutralBlend`, `openLead`, `decidedLead`, `penaltyFromProgress`이고, [부스트와 페널티](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)에 표로 정리돼 있어요. |
 | `reasons` | 더 이상 권장되지 않는 평평한 결과가 돌아가는 이유인 `fallback`("best game available")뿐이에요. 영어 문구는 `renderReasonEnglish`에 있어요. |
 
 ## FantasyRule과 FantasySport

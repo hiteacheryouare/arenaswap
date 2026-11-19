@@ -1,5 +1,5 @@
 ---
-sourceHash: '1aa0123b3860'
+sourceHash: '2125a74f6361'
 title: Señales de PowerScore en cada modo
 description: Las señales detrás del PowerScore Clásico, de Palizas y de Fantasy, con el tope de cada una, qué mide y qué ignora. Además, cómo apagar señales.
 section: powerscore
@@ -93,7 +93,7 @@ Estas tres leen de `context.history`, la lista de marcadores pasados de un parti
 
 ### Dos modificadores que no son señales
 
-Clásico también aplica el modificador de probabilidad de victoria (±5) y la deducción por corte comercial. Los dos pertenecen al proceso de Clásico, y los dos se explican en [Impulsos y penalizaciones](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance).
+Clásico también aplica el modificador de probabilidad de victoria (±5) y la deducción por corte comercial. Los dos pertenecen al proceso de Clásico, y los dos se explican en [Impulsos y penalizaciones](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings).
 
 ## Palizas
 

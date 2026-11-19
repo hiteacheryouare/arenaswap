@@ -67,8 +67,14 @@ export const scorerTunables: ScorerTunables = {
 			none: 0,
 		},
 		winProbabilityVariance: {
-			maxAvgDist: 0.35,
-			minDataPoints: 5,
+			halfLife: 0.1,
+			movementFullScale: 1.67,
+			swingFullScale: 0.26,
+			swingWeight: 0.3,
+			neutralBlend: 0.49,
+			openLead: 0.8,
+			decidedLead: 0.97,
+			penaltyFromProgress: 0.5,
 		},
 	},
 	reasons: {
@@ -89,6 +95,7 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		comebackThresholdSmall: 3,
 		decayHalfLifeMs: { momentum: 45_000, leadChange: 60_000, comeback: 60_000 },
 		otPreBoostWindowSecs: 60,
+		overtimeDurationSecs: 300,
 		historyWindowMs: 300_000,
 	},
 	{
@@ -104,6 +111,7 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		comebackThresholdSmall: 1,
 		decayHalfLifeMs: { momentum: 180_000, leadChange: 240_000, comeback: 240_000 },
 		otPreBoostWindowSecs: 60,
+		overtimeDurationSecs: 300,
 		historyWindowMs: 960_000,
 	},
 	{
@@ -137,6 +145,7 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		comebackThresholdSmall: 3,
 		decayHalfLifeMs: { momentum: 135_000, leadChange: 180_000, comeback: 180_000 },
 		otPreBoostWindowSecs: 60,
+		overtimeDurationSecs: 600,
 		historyWindowMs: 720_000,
 	},
 	{

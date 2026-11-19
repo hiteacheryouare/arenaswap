@@ -17,7 +17,7 @@ export { postseasonBoostShare } from './postseason';
 export { rankAgainstRivals } from './rivals';
 export { ordinal, renderReasonEnglish, renderReasonsEnglish } from './reasons';
 export { resolveLeagueConfig, resolveSportConfig } from './config';
-export { getGameProgress, scoreMargin } from './progress';
+export { getGameProgress, getTimelineProgress, scoreMargin } from './progress';
 export { computeGameProgress, computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, isPlayFrozen, normalizePowerScoreResult } from './scorer';
 export * from './types';
 export * from './constants';

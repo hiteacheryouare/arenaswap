@@ -1,5 +1,5 @@
 ---
-sourceHash: '854afd07d71b'
+sourceHash: '5050e319fc40'
 title: Sportart- und Liga-Konfiguration
 description: Jedes Feld von SportTypeConfig und LeagueConfig, die Standardwerte für alle sechs Sportarten und 31 Ligen, und wie sich festlegt, was in einer Sportart als eng gilt.
 section: powerscore
@@ -24,6 +24,7 @@ Ein Eintrag pro `SportType`, exportiert als `sportTypeConfigs` (ein Array) und `
 | `zeroZeroAsFullTie` | false | false | true | true | false | false |
 | `zeroZeroPenaltyPeriods` | keine | keine | 1, 2 | 1 | keine | keine |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
+| `overtimeDurationSecs` | 300 | 600 | 300 | keine | keine | keine |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -45,6 +46,7 @@ Ein Eintrag pro `SportType`, exportiert als `sportTypeConfigs` (ein Array) und `
 | `zeroZeroAsFullTie` | Ein 0:0 bekommt in Ausgeglichenheit die volle Gleichstand-Gutschrift. Bei `false` bekommt 0:0 die reduzierte Stufe `zeroZero`. |
 | `zeroZeroPenaltyPeriods` | Abschnitte, in denen 0:0 trotz `zeroZeroAsFullTie` auf `true` nur die reduzierte Stufe bekommt. Hockey nutzt 1 und 2, Fußball die erste Halbzeit. |
 | `otPreBoostWindowSecs` | Die letzten Sekunden des letzten regulären Abschnitts, in denen ein Spiel mit Gleichstand auf den Pre-Boost für die Verlängerung zusteuert. `0` schaltet ihn ab. |
+| `overtimeDurationSecs` | Wie lange ein Verlängerungsabschnitt dauert, damit `getTimelineProgress` durch ihn hindurch weiterzählen kann. Ohne ihn zählt jeder Verlängerungsabschnitt als 0.05 des Spiels. |
 | `decayHalfLifeMs` | Wie schnell Schwung, Führungswechsel und Comeback-Faktor nach dem letzten Treffer abklingen. In torarmen Sportarten länger, damit ein Tor sie bis zum nächsten am Leben hält. |
 | `historyWindowMs` | Wie viel Spielstandverlauf die Verlaufssignale lesen. Siehe oben. |
 | `lateGameCurve` | Nur Baseball und Softball: wie viele Innings die reguläre Spielzeit hat und in welchem Inning der Anstieg gegen Spielende beginnt. |

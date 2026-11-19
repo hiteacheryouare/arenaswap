@@ -1,5 +1,5 @@
 ---
-sourceHash: '1aa0123b3860'
+sourceHash: '2125a74f6361'
 title: Os sinais do PowerScore em cada modo
 description: Os sinais por trás do PowerScore Clássico, Goleadas e Fantasy, com o máximo de cada um, o que mede e o que ignora. E como desligar sinais.
 section: powerscore
@@ -93,7 +93,7 @@ O **Fator de remontada** (máximo 20) mede a oscilação da equipa que perdia no
 
 ### Dois modificadores que não são sinais
 
-O Clássico também aplica o modificador de probabilidade de vitória (±5) e a dedução por pausa publicitária. Ambos pertencem ao pipeline do Clássico, e ambos estão em [Impulsos e penalizações](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance).
+O Clássico também aplica o modificador de probabilidade de vitória (±5) e a dedução por pausa publicitária. Ambos pertencem ao pipeline do Clássico, e ambos estão em [Impulsos e penalizações](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings).
 
 ## Goleadas
 

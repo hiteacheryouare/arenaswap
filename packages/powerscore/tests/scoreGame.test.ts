@@ -67,8 +67,8 @@ const denverRun = (start = pollStart): ScoringContext => ({
 	history: snapshots('den-phx', [[87, 96], [91, 96], [93, 98], [96, 98], [98, 98]], start),
 });
 
-const balancedLine = [0.48, 0.52, 0.5, 0.47, 0.53, 0.5];
-const lopsidedLine = [0.95, 0.96, 0.97, 0.97, 0.98, 0.98];
+const balancedLine = Array.from({ length: 30 }, (_, i) => (i % 2 === 0 ? 0.35 : 0.65));
+const lopsidedLine = Array.from({ length: 30 }, () => 0.98);
 
 describe('a custom mode scores a game with its own signals', () => {
 	test('reports its own id and adds up only its own signals', () => {

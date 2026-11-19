@@ -15,6 +15,7 @@ import type {
 	ScoredSignal,
 	BlendResult,
 	RivalryResult,
+	WinProbabilityReading,
 } from 'powerscore';
 import type { PlayBreakSport } from './playBreaks';
 import type { PollMode } from './pollModeTracker';
@@ -39,6 +40,7 @@ export type {
 	ScoredBoost,
 	ScoredSignal,
 	BlendResult,
+	WinProbabilityReading,
 };
 
 export interface ProbableStarter {

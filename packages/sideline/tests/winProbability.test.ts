@@ -1,4 +1,5 @@
 import type { LeagueId } from '@arenaswap/core';
+import type { WinProbabilityReading } from 'powerscore';
 
 const createResponse = (data: unknown, init: { ok?: boolean; status?: number } = {}): Response => ({
 	ok: init.ok ?? true,
@@ -21,6 +22,8 @@ const mockFetch = (response: Response | (() => Promise<Response>)) => {
 
 const nbaGame = { id: '401584691', league: 'nba' as LeagueId };
 
+const probabilitiesOf = (readings: WinProbabilityReading[]) => readings.map(reading => reading.homeWinProbability);
+
 const winProbabilityLine = (percentages: unknown[]) => ({
 	winprobability: percentages.map(homeWinPercentage => ({
 		homeWinPercentage,
@@ -35,7 +38,7 @@ describe('reading the win probability line off a game', () => {
 	test('hands back the home-win fractions in the order ESPN sent them', async () => {
 		const { fetchMock, api } = mockFetch(createResponse(winProbabilityLine([0.5, 0.62, 0.58, 0.81])));
 
-		await expect(api.fetchWinProbability(nbaGame)).resolves.toEqual([0.5, 0.62, 0.58, 0.81]);
+		expect(probabilitiesOf(await api.fetchWinProbability(nbaGame))).toEqual([0.5, 0.62, 0.58, 0.81]);
 		expect(String(fetchMock.mock.calls[0]?.[0]))
 			.toBe('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401584691');
 	});
@@ -51,7 +54,7 @@ describe('reading the win probability line off a game', () => {
 	test('answers empty without asking ESPN anything for a league we do not ship', async () => {
 		const { fetchMock, api } = mockFetch(createResponse({}));
 
-		await expect(api.fetchWinProbability({ id: '1', league: 'quidditch' as LeagueId })).resolves.toEqual([]);
+		expect(probabilitiesOf(await api.fetchWinProbability({ id: '1', league: 'quidditch' as LeagueId }))).toEqual([]);
 		expect(fetchMock).not.toHaveBeenCalled();
 	});
 
@@ -68,19 +71,19 @@ describe('when ESPN has nothing to say', () => {
 	test('a game ESPN has not started modelling yet is empty rather than an error', async () => {
 		const { api } = mockFetch(createResponse({ winprobability: [] }));
 
-		await expect(api.fetchWinProbability(nbaGame)).resolves.toEqual([]);
+		expect(probabilitiesOf(await api.fetchWinProbability(nbaGame))).toEqual([]);
 	});
 
 	test('a summary with no winprobability block at all is empty', async () => {
 		const { api } = mockFetch(createResponse({ header: {}, boxscore: {} }));
 
-		await expect(api.fetchWinProbability(nbaGame)).resolves.toEqual([]);
+		expect(probabilitiesOf(await api.fetchWinProbability(nbaGame))).toEqual([]);
 	});
 
 	test('a summary that is not an object at all is empty rather than a throw', async () => {
 		const { api } = mockFetch(createResponse('Service Unavailable'));
 
-		await expect(api.fetchWinProbability(nbaGame)).resolves.toEqual([]);
+		expect(probabilitiesOf(await api.fetchWinProbability(nbaGame))).toEqual([]);
 	});
 });
 
@@ -125,19 +128,19 @@ describe('rows inside the line that do not read', () => {
 			],
 		}));
 
-		await expect(api.fetchWinProbability(nbaGame)).resolves.toEqual([0.5, 0.7]);
+		expect(probabilitiesOf(await api.fetchWinProbability(nbaGame))).toEqual([0.5, 0.7]);
 	});
 
 	test('a percentage sent as a quoted string is dropped, not coerced', async () => {
 		const { api } = mockFetch(createResponse(winProbabilityLine(['0.62', 0.58])));
 
-		await expect(api.fetchWinProbability(nbaGame)).resolves.toEqual([0.58]);
+		expect(probabilitiesOf(await api.fetchWinProbability(nbaGame))).toEqual([0.58]);
 	});
 
 	test('a null percentage is dropped rather than read as a certain away win', async () => {
 		const { api } = mockFetch(createResponse(winProbabilityLine([0.5, null, 0.7])));
 
-		await expect(api.fetchWinProbability(nbaGame)).resolves.toEqual([0.5, 0.7]);
+		expect(probabilitiesOf(await api.fetchWinProbability(nbaGame))).toEqual([0.5, 0.7]);
 	});
 
 	test('NaN and Infinity are dropped, so nothing downstream has to defend against them', async () => {
@@ -149,7 +152,7 @@ describe('rows inside the line that do not read', () => {
 			],
 		}));
 
-		await expect(api.fetchWinProbability(nbaGame)).resolves.toEqual([0.33]);
+		expect(probabilitiesOf(await api.fetchWinProbability(nbaGame))).toEqual([0.33]);
 	});
 });
 
@@ -157,13 +160,13 @@ describe('the [0, 1] contract the scorer relies on', () => {
 	test('floating point spilling a hair past the ends is pulled back in', async () => {
 		const { api } = mockFetch(createResponse(winProbabilityLine([-0.0000001, 1.0000001])));
 
-		await expect(api.fetchWinProbability(nbaGame)).resolves.toEqual([0, 1]);
+		expect(probabilitiesOf(await api.fetchWinProbability(nbaGame))).toEqual([0, 1]);
 	});
 
 	test('whole percentages would clamp flat to 1, which is silent rather than loud', async () => {
 		const { api } = mockFetch(createResponse(winProbabilityLine([12, 55, 88])));
 
-		await expect(api.fetchWinProbability(nbaGame)).resolves.toEqual([1, 1, 1]);
+		expect(probabilitiesOf(await api.fetchWinProbability(nbaGame))).toEqual([1, 1, 1]);
 	});
 });
 
@@ -183,5 +186,52 @@ describe('abandoning a request', () => {
 		controller.abort();
 
 		await expect(api.fetchWinProbability(nbaGame, { signal: controller.signal })).rejects.toThrow('aborted');
+	});
+});
+
+const play = (id: string, period: number, clock: string, type?: string) => ({ id, period: { number: period, ...(type ? { type } : {}) }, clock: { displayValue: clock } });
+const reading = (playId: string, homeWinPercentage: number) => ({ homeWinPercentage, playId });
+
+describe('stamping each reading with its point in the game', () => {
+	test('basketball plays sit on the summary, and overtime keeps counting past the end of regulation', async () => {
+		const { api } = mockFetch(createResponse({
+			plays: [play('a', 1, '12:00'), play('b', 4, '6:00'), play('c', 4, '42.5'), play('d', 5, '2:30')],
+			winprobability: [reading('a', 0.5), reading('b', 0.6), reading('c', 0.7), reading('d', 0.4)],
+		}));
+		const progress = (await api.fetchWinProbability(nbaGame)).map(entry => entry.progress);
+		expect(progress[0]).toBeCloseTo(0);
+		expect(progress[1]).toBeCloseTo(3.5 / 4);
+		expect(progress[2]).toBeCloseTo((3 + (720 - 42) / 720) / 4);
+		expect(progress[3]).toBeCloseTo(1 + 150 / 2880);
+	});
+
+	test('football plays are found inside the drives', async () => {
+		const { api } = mockFetch(createResponse({
+			drives: {
+				previous: [{ plays: [play('k', 1, '15:00')] }, { plays: [play('t', 2, '7:30')] }],
+				current: { plays: [play('n', 4, '2:00')] },
+			},
+			winprobability: [reading('k', 0.55), reading('t', 0.4), reading('n', 0.9)],
+		}));
+		const progress = (await api.fetchWinProbability({ id: '1', league: 'nfl' as LeagueId })).map(entry => entry.progress);
+		expect(progress).toEqual([0, 1.5 / 4, (3 + 13 / 15) / 4].map(expect.closeTo));
+	});
+
+	test('baseball reads the half inning', async () => {
+		const { api } = mockFetch(createResponse({
+			plays: [play('t1', 1, '0:00', 'Top'), play('b9', 9, '0:00', 'Bottom'), play('t10', 10, '0:00', 'Top')],
+			winprobability: [reading('t1', 0.5), reading('b9', 0.3), reading('t10', 0.6)],
+		}));
+		const progress = (await api.fetchWinProbability({ id: '1', league: 'mlb' as LeagueId })).map(entry => entry.progress);
+		expect(progress).toEqual([0.25 / 9, 8.75 / 9, 9.25 / 9].map(expect.closeTo));
+	});
+
+	test('a reading whose play is missing borrows the last known point, and never runs backwards', async () => {
+		const { api } = mockFetch(createResponse({
+			plays: [play('b', 3, '6:00'), play('early', 1, '11:00')],
+			winprobability: [reading('b', 0.5), reading('lost', 0.55), reading('early', 0.6)],
+		}));
+		const progress = (await api.fetchWinProbability(nbaGame)).map(entry => entry.progress);
+		expect(progress).toEqual([2.5 / 4, 2.5 / 4, 2.5 / 4].map(expect.closeTo));
 	});
 });

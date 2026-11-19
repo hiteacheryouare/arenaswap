@@ -2,8 +2,8 @@ import { createReadStream, existsSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { createInterface } from 'node:readline';
 import { constants as zlibConstants, createGunzip } from 'node:zlib';
-import type { Game, LeagueId } from '@arenaswap/core';
-import { parseScoreboardEvents, parseWinProbability } from '@arenaswap/sideline';
+import type { Game, LeagueId, WinProbabilityReading } from '@arenaswap/core';
+import { parseScoreboardEvents, parseWinProbabilityReadings } from '@arenaswap/sideline';
 
 export interface RawEvent {
 	id?: string;
@@ -19,7 +19,7 @@ export type RecordedLine =
 
 export type ReplayEvent =
 	| { kind: 'poll'; ts: number; league: LeagueId; live: Game[] }
-	| { kind: 'summary'; ts: number; league: LeagueId; gameId: string; winProbability: number[]; raw: Record<string, unknown> }
+	| { kind: 'summary'; ts: number; league: LeagueId; gameId: string; winProbability: WinProbabilityReading[]; raw: Record<string, unknown> }
 	| { kind: 'situation'; ts: number; league: LeagueId; gameId: string; raw: Record<string, unknown> }
 	| { kind: 'standings'; ts: number; league: LeagueId; raw: unknown };
 
@@ -71,7 +71,7 @@ export const readRecording = async function* (files: string[], until?: number, l
 					.filter((game): game is Game => game != null && game.status === 'in');
 				yield { kind: 'poll', ts: line.ts, league: line.league, live };
 			} else if (line.t === 'summary') {
-				yield { kind: 'summary', ts: line.ts, league: line.league, gameId: line.gameId, winProbability: parseWinProbability(line.raw), raw: line.raw };
+				yield { kind: 'summary', ts: line.ts, league: line.league, gameId: line.gameId, winProbability: parseWinProbabilityReadings(line.raw, line.league), raw: line.raw };
 			} else if (line.t === 'situation') {
 				yield { kind: 'situation', ts: line.ts, league: line.league, gameId: line.gameId, raw: line.raw };
 			} else if (line.t === 'standings') {

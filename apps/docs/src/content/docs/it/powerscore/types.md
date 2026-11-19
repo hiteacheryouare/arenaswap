@@ -1,5 +1,5 @@
 ---
-sourceHash: '40ee38646993'
+sourceHash: 'e5d4af4d0a0e'
 title: I tipi TypeScript di PowerScore
 description: Ogni campo di Game, ScoringContext, ScoreOptions, PowerScore e dei tipi di modalità e configurazione, quali sono facoltativi e cosa succede quando uno facoltativo manca.
 section: powerscore
@@ -95,13 +95,26 @@ Tutto quello che la partita stessa non porta con sé. Ogni campo è facoltativo,
 |---|---|---|
 | `history?` | [`ScoreSnapshot[]`](#scoresnapshot) | Momentum, Sorpassi e Rimonta restano a 0 finché non contiene 3 voci. Dalla più vecchia. |
 | `onBreak?` | `boolean` | Chi chiama ha rilevato una pausa pubblicitaria. `true` toglie `breakPenalty` (15) dal subtotale dei segnali. Nessuna detrazione per la pausa quando manca. |
-| `winProbability?` | `number[]` | Probabilità di vittoria della squadra di casa durante la partita, da 0 a 1. Servono 5 valori finiti perché conti. Nessun modificatore altrimenti. |
+| `winProbability?` | [`WinProbabilityReading[]`](#winprobabilityreading) oppure `number[]` | La probabilità di vittoria della squadra di casa, una lettura per azione, dalla più vecchia. Servono 3 letture e un decimo della partita giocato. Nessun modificatore altrimenti. |
 | `pregameLine?` | [`PregameLine`](#pregameline) | Allarme sorpresa e Sorpresa a senso unico pagano 0. |
 | `stakes?` | `Partial<Record<'home' \| 'away', TeamStakes>>` | Nessuna posta in gioco nella corsa. Vedi [`TeamStakes`](#teamstakes). |
 | `powerPlay?` | `'home' \| 'away' \| boolean` | Nessun power play nel boost opportunità di segnare. Un lato quando il feed dice di chi è, `true` quando dice solo che ce n'è uno. |
 | `emptyNet?` | `'home' \| 'away' \| boolean` | Nessuna porta vuota nel boost opportunità di segnare. Impostalo solo dopo che il feed l'ha riportata in due interrogazioni di fila. |
 | `recentLeadChanges?` | `{ count: number; lastAt?: number }` | Sorpassi contati dal registro delle azioni di un feed, che vede i cambi tra un'interrogazione e l'altra, con l'ora dell'ultimo. Usato quando ne conta più di quelli che mostra `history`. Sorpassi ha comunque bisogno dei 3 snapshot. |
 | `fantasy?` | [`FantasyPlayerState[]`](#fantasyplayerstate) | Fantasy non ha giocatori, e la partita è valutata come Classica. |
+
+### WinProbabilityReading
+
+La probabilità di vittoria di un'azione, e a che punto della partita è arrivata.
+
+```ts
+interface WinProbabilityReading {
+	homeWinProbability: number; // 0 to 1
+	progress: number; // getTimelineProgress at the play: 0 at the start, 1 at the end of regulation, past 1 in overtime
+}
+```
+
+Un semplice `number[]` viene letto come letture distribuite in modo uniforme dall'inizio della partita a ora. Usa le letture quando il tuo feed associa ogni probabilità alla sua azione, così il modificatore può misurare le oscillazioni nel tempo di gioco.
 
 ### ScoreSnapshot
 
@@ -408,7 +421,7 @@ L'unico oggetto esportato che contiene ogni valore di fascia con cui il motore v
 | `scores.momentum` | I due valori di fascia del momentum. Vedi [Momentum](/arenaswap/docs/powerscore/signals/#momentum-lead-changes-and-comeback-factor). |
 | `scores.leadChanges` | I due valori di fascia dei sorpassi. |
 | `scores.comeback` | I due valori di fascia della rimonta e il suo minimo fisso. |
-| `scores.winProbabilityVariance` | `maxAvgDist` e `minDataPoints`, in tabella in [Boost e penalità](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance). |
+| `scores.winProbabilityVariance` | `halfLife`, `movementFullScale`, `swingFullScale`, `swingWeight`, `neutralBlend`, `openLead`, `decidedLead` e `penaltyFromProgress`, in tabella in [Boost e penalità](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). |
 | `reasons` | Solo `fallback` ("best game available"), la ragione su cui ricade il risultato piatto deprecato. La formulazione inglese sta in `renderReasonEnglish`. |
 
 ## FantasyRule e FantasySport

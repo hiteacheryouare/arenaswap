@@ -1,10 +1,10 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
-import { createLiveExtras, parseScoreboardEvents, parseWinProbability } from '@arenaswap/sideline';
+import { createLiveExtras, parseScoreboardEvents, parseWinProbabilityReadings } from '@arenaswap/sideline';
 import { getHistoryWindowMsForGame, nextCommercialBreak, retainSnapshots, scoreLiveGame, toLiveScore, toScoreSnapshot, type CommercialBreakEntry } from '@arenaswap/core';
 import { leagueConfigMap, sportTypeConfigMap, type ScoreSnapshot } from 'powerscore';
 import { createFavoriteTeamKey, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
-import type { Game, LeagueId, LeagueLogoMap } from '@arenaswap/core/types';
+import type { Game, LeagueId, LeagueLogoMap, WinProbabilityReading } from '@arenaswap/core/types';
 import { listRecordingFiles, readRecordedLines, type RawEvent } from '@arenaswap/powerscore-tools/recording';
 import { detailGameIds, guideAt, kentuckyKey, profiles, slateFrom, slateTo, summaryMoments, viewerLeagues, wallAt, type ProfileName } from './slateConfig';
 import trimSummary from './trimSummary';
@@ -53,7 +53,7 @@ const main = async () => {
 	const liveIdsByLeague = new Map<LeagueId, Set<string>>();
 	const history = new Map<string, ScoreSnapshot[]>();
 	const commercialBreaks = new Map<string, CommercialBreakEntry>();
-	const winProbability = new Map<string, number[]>();
+	const winProbability = new Map<string, WinProbabilityReading[]>();
 	const liveExtras = createLiveExtras();
 	const leagueLogos: LeagueLogoMap = Object.fromEntries(viewerLeagues.map(league => [league, resolveLeagueLogoUrl(league)]));
 
@@ -77,14 +77,14 @@ const main = async () => {
 				continue;
 			}
 			if (line.t === 'summary') {
-				const probability = parseWinProbability(line.raw);
+				const probability = parseWinProbabilityReadings(line.raw, line.league);
 				if (probability.length > 0) winProbability.set(line.gameId, probability);
 				const game = gameById.get(line.gameId) ?? { id: line.gameId, sportType: leagueConfigMap[line.league]?.sportType ?? 'basketball' };
 				liveExtras.ingestSummary(game as Game, line.raw, line.ts);
 				if (!detailGameIds.includes(line.gameId) || line.ts < slateFrom) continue;
 				lastSummary.set(line.gameId, [line.ts, line.raw]);
 				const series = (winProbabilities[line.gameId] ??= []);
-				if (probability.length > 0 && (series.length === 0 || line.ts - series[series.length - 1]![0] >= 60_000)) series.push([line.ts, probability]);
+				if (probability.length > 0 && (series.length === 0 || line.ts - series[series.length - 1]![0] >= 60_000)) series.push([line.ts, probability.map(reading => reading.homeWinProbability)]);
 				continue;
 			}
 			if (line.t === 'situation') {

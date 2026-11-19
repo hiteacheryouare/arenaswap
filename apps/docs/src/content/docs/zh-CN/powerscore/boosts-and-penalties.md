@@ -1,5 +1,5 @@
 ---
-sourceHash: '9c4dba756b81'
+sourceHash: '2348a1aeb67f'
 title: PowerScore 的加成与扣分
 navLabel: 加成与扣分
 description: PowerScore 3 在模式的信号之上应用的每一项加成和扣分：触发条件、最大值，以及它们共用的上限。
@@ -187,21 +187,33 @@ order: 4
 
 对于争夺，赌注最大的那支球队全额给分，另一支给一半，上限 6。排名和争夺相加，总数封顶 10。
 
-## 胜率均衡
+## 胜率摆动
 
-仅限经典。`computeWinProbVarianceScore(winProbHistory)` 返回一个从 `-scoreWinProbVarianceMax` 到 `+scoreWinProbVarianceMax`（±5）的修正。把 `context.winProbability` 传给 `scoreGame`，这个修正就会自己并入总分。
+仅限经典。`computeWinProbVarianceScore(line, nowProgress?)` 返回一个从 `-scoreWinProbVarianceMax` 到 `+scoreWinProbVarianceMax`（±5）的修正。把 `context.winProbability` 传给 `scoreGame`，这个修正就会自己并入总分，并以比赛当前所处的位置为准，该位置来自 [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress)。
 
-它至少需要 `minDataPoints`（5）个有限值。其他情况都返回 `undefined`，结果的 `winProbabilityVariance` 字段会整个留空，而不是设成 `0`。非有限的项（`NaN`、`Infinity`）在检查数量之前就被丢掉了。
+这条线是主队的胜率，每个回合一个读数，由旧到新。每个读数都是一个 [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading)：`homeWinProbability`，范围 0 到 1，以及 `progress`，也就是这个回合发生时比赛进行到了哪里。纯 `number[]` 照样能用，它的读数会从比赛开始到现在平均铺开。
 
-这个修正是所提供的值离 0.5 的平均绝对距离，映射到 ±5 的范围上：
+它需要 3 个读数，并且比赛已经进行了十分之一。在那之前返回 `undefined`，结果的 `winProbabilityVariance` 字段会整个留空，而不是设成 `0`。不是有限值的读数会先被丢掉。
 
-| 离 50% 的平均距离 | 修正 |
-|---|---|
-| 0（势均力敌） | +5 |
-| `maxAvgDist` ÷ 2 (0.175) | 0 |
-| ≥ `maxAvgDist` (0.35) | −5 |
+这个修正混合了两种衡量结果最近动得多厉害的指标。两者每隔一个 `halfLife`（常规时间的十分之一）就衰减一半：大学篮球约 4 分钟，NBA 5 分钟，橄榄球 6 分钟，棒球是一局。
 
-不管名字叫什么，这个修正衡量的是离 50% 的平均距离，而不是方差。一条在 10% 和 90% 之间来回摆动的胜率线，和一条稳稳停在 90% 的，得到同样的扣分。两者离中点的平均距离一样。
+| 指标 | 累加的内容 | 满分对应 | 在混合中的占比 |
+|---|---|---|---|
+| 变动 | 最近四个半衰期内，相邻回合之间胜率的每一次变化，每次最多计 0.5 | `movementFullScale`（1.67） | 70% |
+| 摆幅 | 当前读数与最近三个半衰期内任一读数之间的最大差距，每两个半衰期衰减一半 | `swingFullScale`（0.26） | `swingWeight`（30%） |
+
+一个读数跳变超过 0.15，随即又回到离原位 0.05 以内，就是一次被更正的回合，会被忽略。
+
+| 混合值 | 上半场 | 下半场 |
+|---|---|---|
+| 达到或高于 `neutralBlend`（0.49） | 最多 +5 | 最多 +5 |
+| 低于 `neutralBlend` | 0 | 最低 −5 |
+
+加成随领先方的胜率从 `openLead`（80%）升到 `decidedLead`（97%）而逐渐消失，所以胜负已定的比赛里偶然的一下波动，得不到任何加分。扣分则相反：比赛还悬着时不扣，一场沉寂的比赛到了 97% 就扣满 −5。它从 `penaltyFromProgress` 开始，也就是常规时间过半。
+
+开局一边倒，等比赛转向之后就不再有代价。一场大半夜都停在 98% 的比赛，随后摆回势均力敌，只要摆动一多就能拿到加成，因为只有最近这一段才算数。
+
+`neutralBlend` 是 417 场已结束比赛中，每一个进行中且胜负未定的时刻的混合值的中位数，所以一场胶着比赛的典型时段会落在 0 附近。满分对应的数值是同一批时刻的第 90 百分位数。
 
 这个修正是在广告时段扣分之后加的，不是之前，而且在加上任何加成之前，结果就限制在 0 到 100 之间。
 

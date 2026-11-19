@@ -1,5 +1,5 @@
 ---
-sourceHash: '9c4dba756b81'
+sourceHash: '2348a1aeb67f'
 title: Mga boost at penalty ng PowerScore
 navLabel: Mga boost at penalty
 description: Bawat boost at penalty na inilalapat ng PowerScore 3 sa ibabaw ng mga signal ng mode, kasama ang kondisyong nagpapagana sa bawat isa, ang maximum nito, at ang mga cap na pinagsasaluhan nila.
@@ -187,23 +187,33 @@ Pinaghihiwalay ang stakes ayon sa season para hindi nito madoble ang bilang sa p
 
 Sa karera, buo ang bayad sa team na pinakamarami ang nakataya at kalahati sa isa, naka-cap sa 6. Nagsasama ang ranked at karera, at naka-cap sa 10 ang kabuuan.
 
-## Win probability balance
+## Win probability swings
 
-Classic lang. Ibinabalik ng `computeWinProbVarianceScore(winProbHistory)` ang modifier mula `-scoreWinProbVarianceMax` hanggang `+scoreWinProbVarianceMax` (±5). Ipasa ang `context.winProbability` sa `scoreGame`, at isasama sa total ang modifier nang mag-isa.
+Classic lang. Ibinabalik ng `computeWinProbVarianceScore(line, nowProgress?)` ang modifier mula `-scoreWinProbVarianceMax` hanggang `+scoreWinProbVarianceMax` (±5). Ipasa ang `context.winProbability` sa `scoreGame`, at isasama sa total ang modifier nang mag-isa, na sinusukat mula sa kasalukuyang punto ng laro sa [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
 
-Kailangan nito ng hindi bababa sa `minDataPoints` (5) na finite na value. Anupaman ay nagbabalik ng `undefined`, at hindi na isinasama ang field na `winProbabilityVariance` ng resulta sa halip na itakda sa `0`. Tinatanggal ang mga non-finite na entry (`NaN`, `Infinity`) bago i-check ang bilang na iyon.
+Ang line ay ang win probability ng home team, isang reading kada play, pinakamatanda muna. Bawat reading ay isang [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading): ang `homeWinProbability` mula 0 hanggang 1, at ang `progress`, kung gaano na kalayo sa laro nang mangyari ang play na iyon. Gumagana pa rin ang bare na `number[]`, at pantay na ikinakalat ang mga reading mula sa simula ng laro hanggang ngayon.
 
-Ang modifier ay ang mean absolute distance ng mga ibinigay na value mula sa 0.5, na minamapa sa ±5 na range:
+Kailangan nito ng 3 reading at ng ikasampung bahagi ng laro na nalaro na. Bago iyon, nagbabalik ito ng `undefined`, at hindi na isinasama ang field na `winProbabilityVariance` ng resulta sa halip na itakda sa `0`. Inaalis muna ang mga reading na hindi finite.
 
-| Karaniwang layo mula sa 50% | Modifier |
-|---|---|
-| 0 (barya) | +5 |
-| `maxAvgDist` ÷ 2 (0.175) | 0 |
-| ≥ `maxAvgDist` (0.35) | −5 |
+Pinaghahalo ng modifier ang dalawang sukat kung gaano kalaki ang kamakailang galaw ng resulta. Parehong nababawasan ng kalahati kada `halfLife`, ang ikasampung bahagi ng regulation: mga 4 na minuto sa college basketball, 5 sa NBA, 6 sa football, o isang inning sa baseball.
 
-Sa kabila ng pangalan, ang karaniwang layo mula sa 50% ang sinusukat ng modifier, hindi ang variance. Ang win-probability line na pabalik-balik sa pagitan ng 10% at 90% ay nakakakuha ng parehong penalty gaya ng nananatili sa 90%. Parehong pareho ang karaniwang layo mula sa gitna.
+| Sukat | Ano ang idinadagdag | Buo sa | Bahagi sa halo |
+|---|---|---|---|
+| Galaw | Bawat pagbabago ng win probability mula play hanggang play sa nakalipas na apat na half-life, bawat isa naka-cap sa 0.5 | `movementFullScale` (1.67) | 70% |
+| Swing | Ang pinakamalaking agwat ng kasalukuyang reading at alinmang reading sa nakalipas na tatlong half-life, nababawasan ng kalahati kada dalawang half-life | `swingFullScale` (0.26) | `swingWeight` (30%) |
 
-Idinadagdag ang modifier pagkatapos ng bawas sa break, hindi bago nito, at iki-clamp ang resulta sa 0 hanggang 100 bago idagdag ang anumang boost.
+Ang reading na tumalon nang higit sa 0.15 at agad na bumalik sa loob ng 0.05 ng dating halaga ay itinamang play, at binabalewala ito.
+
+| Halo | First half | Second half |
+|---|---|---|
+| Katumbas o higit sa `neutralBlend` (0.49) | Hanggang +5 | Hanggang +5 |
+| Mababa sa `neutralBlend` | 0 | Hanggang −5 |
+
+Humihina ang bonus habang umaakyat ang win probability ng nangunguna mula sa `openLead` (80%) hanggang `decidedLead` (97%), kaya walang makukuha ang isang blip sa laro na decided na. Kabaligtaran ang penalty: wala habang bukas pa ang laro, buong −5 kapag nasa 97% na ang tahimik na laro. Nagsisimula ito sa `penaltyFromProgress`, sa kalagitnaan ng regulation.
+
+Walang kabayaran ang lopsided na simula kapag nag-iba ang takbo ng laro. Ang laro na nasa 98% halos buong gabi at saka nag-swing sa coin flip ay nakakakuha ng bonus sa sandaling dumami ang mga swing, dahil ang kamakailang bahagi lang ang binibilang.
+
+Ang `neutralBlend` ang median na halo ng bawat live at hindi pa decided na sandali sa 417 tapos na laro, kaya ang karaniwang bahagi ng dikit na laro ay malapit sa 0. Ang mga full scale ay ang 90th percentile ng parehong mga sandali.
 
 ## Bawas sa commercial break
 

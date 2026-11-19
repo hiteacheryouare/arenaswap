@@ -1,5 +1,5 @@
 ---
-sourceHash: '91a61d4e6782'
+sourceHash: '3d1b823a21ee'
 title: API reference ng PowerScore
 navLabel: API reference
 description: Bawat function at constant na ine-export ng powerscore, kasama ang signature, mga parameter, ibinabalik na value, at kung ano ang nangyayari kapag nawawala o hindi valid ang isang input. Kasama ang deprecated na 2.x API.
@@ -145,11 +145,12 @@ Nagre-render ng isang pangungusap ng reason, o ng listahan nila na pinagdugtong 
 ```ts
 function resolveSportConfig(sportType: SportType, override?: Partial<SportTypeConfig>): SportTypeConfig
 function resolveLeagueConfig(game: Pick<Game<string>, 'league' | 'sportType'>, override?: Partial<LeagueConfig>): LeagueConfig
-function getGameProgress(game: Game<string>, sport: SportTypeConfig, league: LeagueConfig): number
+function getGameProgress(game: GameClockState, sport: SportTypeConfig, league: LeagueConfig): number
+function getTimelineProgress(game: GameClockState, sport: SportTypeConfig, league: LeagueConfig): number
 function scoreMargin(game: Game<string>): number
 ```
 
-Ginagawa ng `resolveSportConfig` at `resolveLeagueConfig` ang ginagawa ng `scoreGame` sa simula ng bawat tawag. Ang `sportType` na hindi kilala ay bumabagsak sa tuning ng basketball. Ang liga na hindi kilala ay bumabagsak sa pinakakilalang liga ng sport nito: ang NBA para sa basketball, ang NHL para sa hockey, MLB para sa baseball, ang NFL para sa football, NCAA softball, at MLS para sa soccer. Ang `getGameProgress` ay 0 sa simula, 1 sa dulo ng regulation at sa buong overtime. Ang `scoreMargin` ay ang absolute na pagkakaiba ng score.
+Ginagawa ng `resolveSportConfig` at `resolveLeagueConfig` ang ginagawa ng `scoreGame` sa simula ng bawat tawag. Ang `sportType` na hindi kilala ay bumabagsak sa tuning ng basketball. Ang liga na hindi kilala ay bumabagsak sa pinakakilalang liga ng sport nito: ang NBA para sa basketball, ang NHL para sa hockey, MLB para sa baseball, ang NFL para sa football, NCAA softball, at MLS para sa soccer. Ang `getGameProgress` ay 0 sa simula, 1 sa dulo ng regulation at sa buong overtime. Ang `getTimelineProgress` ay kapareho nito sa buong regulation, tapos patuloy na bumibilang lampas sa 1: ang isang overtime period ay nagdaragdag ng `overtimeDurationSecs` sa haba ng regulation, at ang extra inning ay nagdaragdag ng bahagi ng isang inning. Pareho nilang binabasa lang ang `period`, `clockSeconds` at `topOfInning` (`GameClockState`). Ang `scoreMargin` ay ang absolute na pagkakaiba ng score.
 
 ## Fantasy scoring
 
@@ -238,7 +239,7 @@ Deprecated. Ini-score ang limang signal ng Classic, inilalapat ang win probabili
 |---|---|---|
 | `game` | kailangan | Ang kasalukuyang game state. |
 | `history` | `[]` | Mga kamakailang snapshot ng score. Nananatiling 0 ang momentum, lead changes at comeback hanggang may hawak itong hindi bababa sa 3 entry. |
-| `winProbabilityHistory` | `[]` | Mga kamakailang win-probability value, 0 hanggang 1. Kailangan ng hindi bababa sa 5 finite na entry para may maambag. |
+| `winProbabilityHistory` | `[]` | Mga win-probability value ng home, 0 hanggang 1, pinakamatanda muna, pantay na ikinalat sa laro hanggang ngayon. Kailangan ng 3 finite na entry at ng ikasampung bahagi ng laro na nalaro na para may maambag. |
 
 Hindi nagta-throw. Agad na nagbabalik ng resultang puro 0 kapag true ang `isPlayFrozen(game)`. Hindi nito chine-check ang `game.status`: pareho ang score ng `'pre'` o `'post'` na laro sa `'in'`, kung pareho ang iba pang field.
 
@@ -253,10 +254,13 @@ Deprecated: nasa listahan ng `boosts` ng `scoreGame` ang number bilang `scoringO
 ### computeWinProbVarianceScore
 
 ```ts
-function computeWinProbVarianceScore(winProbHistory: number[]): number | undefined
+function computeWinProbVarianceScore(
+	line: readonly WinProbabilityReading[] | readonly number[],
+	nowProgress?: number,
+): number | undefined
 ```
 
-Minamapa ang history ng win probability sa ±5 na modifier. Inaalis muna ang mga non-finite na entry, tapos nagbabalik ng `undefined` kung wala pang 5 finite na value ang natira. Kung hindi, nagbabalik ng integer mula `-scoreWinProbVarianceMax` hanggang `scoreWinProbVarianceMax`.
+Minamapa ang win-probability line sa ±5 na modifier na inilalarawan sa [Mga boost at penalty](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). Ang `nowProgress` ay ang kasalukuyang punto ng laro mula sa `getTimelineProgress`, at ang default nito ay ang sa huling reading. Ang bare na `number[]` ay pantay na ikinakalat hanggang `nowProgress`, o hanggang 1 kapag wala ito. Inaalis muna ang mga reading na hindi finite, tapos nagbabalik ng `undefined` kung wala pang 3 ang natira o bago pa malaro ang ikasampung bahagi ng laro. Kung hindi, nagbabalik ng integer mula `-scoreWinProbVarianceMax` hanggang `scoreWinProbVarianceMax`.
 
 ### isPlayFrozen
 

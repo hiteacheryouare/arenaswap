@@ -1,5 +1,5 @@
 ---
-sourceHash: '1aa0123b3860'
+sourceHash: '2125a74f6361'
 title: PowerScore-Signale in jedem Modus
 description: Die Signale hinter dem PowerScore in Klassisch, Kantersiege und Fantasy, mit Obergrenze, Messgröße und Blindstellen jedes Signals. Dazu, wie du Signale abschaltest.
 section: powerscore
@@ -93,7 +93,7 @@ Alle drei lesen aus `context.history`, der Liste der bisherigen Spielstände ein
 
 ### Zwei Modifikatoren, die keine Signale sind
 
-Klassisch wendet außerdem den Modifikator für die Siegwahrscheinlichkeit (±5) und den Abzug für die Werbepause an. Beide gehören zur Pipeline von Klassisch, und beide stehen in [Boosts und Strafen](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance).
+Klassisch wendet außerdem den Modifikator für die Siegwahrscheinlichkeit (±5) und den Abzug für die Werbepause an. Beide gehören zur Pipeline von Klassisch, und beide stehen in [Boosts und Strafen](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings).
 
 ## Kantersiege
 

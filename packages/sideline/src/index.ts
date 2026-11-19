@@ -2,6 +2,7 @@ export { fetchCompetitionSituation, fetchGameDurationMins, fetchGames, fetchGame
 	fetchTeamMonoLogos, fetchTeamsForLeagues, fetchWinProbability, monoMarksFromLogos, parseGameDurationMins, parseScoreboardEvents, parseWinProbability, scoreboardRefreshMs } from './apiClient';
 export type { EspnTeamEntry } from './apiClient';
 export { parseClockTenths, parseClockToSeconds, parseStoppageMinutes } from './gameClock';
+export { parseWinProbabilityReadings } from './winProbabilityReadings';
 export { createLiveExtras, hasStandingsRaces, readBasketballSituation, readBoxLeadChanges, readHockeySituation, readPregameLine, readStandingsStakes } from './liveExtras';
 export type { BasketballSituation, BasketballTeamSituation, LiveExtras } from './liveExtras';
 export { fantasyRulesRead, readFantasyBoxScore } from './fantasyBoxScore';

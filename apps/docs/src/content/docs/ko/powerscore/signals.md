@@ -1,5 +1,5 @@
 ---
-sourceHash: '1aa0123b3860'
+sourceHash: '2125a74f6361'
 title: 모드별 PowerScore 시그널
 description: 클래식, 압승, 판타지 PowerScore를 이루는 시그널과 각 시그널의 상한, 무엇을 측정하고 무엇을 무시하는지. 시그널을 끄는 방법도 함께 알려드려요.
 section: powerscore
@@ -93,7 +93,7 @@ scoreGame(game, context, { disabledSignals: ['momentum', 'comeback'] });
 
 ### 시그널이 아닌 두 가지 보정
 
-클래식은 승리 확률 보정(±5)과 광고 시간 감점도 적용해요. 둘 다 클래식 파이프라인의 일부이고, [부스트와 페널티](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance)에서 다뤄요.
+클래식은 승리 확률 보정(±5)과 광고 시간 감점도 적용해요. 둘 다 클래식 파이프라인의 일부이고, [부스트와 페널티](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)에서 다뤄요.
 
 ## 압승
 

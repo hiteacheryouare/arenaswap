@@ -1,5 +1,5 @@
 ---
-sourceHash: '1aa0123b3860'
+sourceHash: '2125a74f6361'
 title: I segnali di PowerScore in ogni modalità
 description: I segnali dietro il PowerScore Classica, Senso unico e Fantasy, con il massimo di ciascuno, cosa misura e cosa ignora. Più come disattivare i segnali.
 section: powerscore
@@ -93,7 +93,7 @@ Questi tre leggono tutti da `context.history`, la lista dei punteggi passati di 
 
 ### Due modificatori che non sono segnali
 
-Classica applica anche il modificatore di probabilità di vittoria (±5) e la detrazione per la pausa pubblicitaria. Entrambi appartengono alla pipeline di Classica, ed entrambi sono spiegati in [Boost e penalità](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance).
+Classica applica anche il modificatore di probabilità di vittoria (±5) e la detrazione per la pausa pubblicitaria. Entrambi appartengono alla pipeline di Classica, ed entrambi sono spiegati in [Boost e penalità](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings).
 
 ## Senso unico
 

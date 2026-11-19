@@ -4,7 +4,7 @@ import { clamp, isFiniteNumber, sum, toFiniteNumber } from './math';
 import { classicMode, getMode } from './modes';
 import { postseasonBoostShare, postseasonDetails } from './postseason';
 import { narrate } from './narrate';
-import { getGameProgress, isPlayFrozen, scoreMargin } from './progress';
+import { getGameProgress, getTimelineProgress, isPlayFrozen, scoreMargin } from './progress';
 import { renderReasonsEnglish } from './reasons';
 import { rankAgainstRivals } from './rivals';
 import { computeWinProbVarianceScore } from './winProbability';
@@ -81,7 +81,7 @@ const runMode = (mode: PowerScoreMode, input: SignalInput, disabledSignals?: rea
 	const onBreak = mode.usesBreakPenalty && input.context.onBreak === true;
 	const scaledBreakPenalty = onBreak ? Math.round(breakPenalty * scale) : 0;
 	const winProbabilityVariance = mode.usesWinProbability
-		? computeWinProbVarianceScore(input.context.winProbability ?? [])
+		? computeWinProbVarianceScore(input.context.winProbability ?? [], getTimelineProgress(input.game, input.sport, input.league))
 		: undefined;
 	const baseTotal = clamp(Math.max(0, scaledSubtotal - scaledBreakPenalty) + (winProbabilityVariance ?? 0), 0, scoreMaxTotal);
 

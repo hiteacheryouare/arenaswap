@@ -1,5 +1,5 @@
 ---
-sourceHash: '40ee38646993'
+sourceHash: 'e5d4af4d0a0e'
 title: Les types TypeScript de PowerScore
 description: Chaque champ de Game, ScoringContext, ScoreOptions, PowerScore et des types de mode et de configuration, lesquels sont facultatifs, et ce qui se passe quand un champ facultatif manque.
 section: powerscore
@@ -95,13 +95,26 @@ Tout ce que le match lui-même ne porte pas. Chaque champ est facultatif, et `sc
 |---|---|---|
 | `history?` | [`ScoreSnapshot[]`](#scoresnapshot) | L'Élan, les Changements de tête et la Remontée restent à 0 tant qu'il ne contient pas 3 entrées. Les plus anciennes d'abord. |
 | `onBreak?` | `boolean` | L'appelant a détecté une pause publicitaire. `true` retire `breakPenalty` (15) du sous-total des signaux. Pas de déduction de pause quand il est absent. |
-| `winProbability?` | `number[]` | La probabilité de victoire de l'équipe à domicile au fil du match, de 0 à 1. Demande 5 valeurs finies pour compter. Pas de modificateur sinon. |
+| `winProbability?` | [`WinProbabilityReading[]`](#winprobabilityreading) ou `number[]` | La probabilité de victoire de l'équipe à domicile, un relevé par action, du plus ancien au plus récent. Demande 3 relevés et un dixième du match joué. Pas de modificateur sinon. |
 | `pregameLine?` | [`PregameLine`](#pregameline) | L'alerte surprise et Surprise versent 0. |
 | `stakes?` | `Partial<Record<'home' \| 'away', TeamStakes>>` | Pas d'enjeu de course. Voir [`TeamStakes`](#teamstakes). |
 | `powerPlay?` | `'home' \| 'away' \| boolean` | Pas d'avantage numérique dans le bonus d'occasion de marquer. Une équipe quand le flux dit laquelle, `true` quand il dit seulement qu'il y en a un. |
 | `emptyNet?` | `'home' \| 'away' \| boolean` | Pas de filet désert dans le bonus d'occasion de marquer. Ne le règle que quand le flux l'a signalé sur deux interrogations de suite. |
 | `recentLeadChanges?` | `{ count: number; lastAt?: number }` | Des changements de tête comptés depuis le journal de jeu d'un flux, qui voit les inversions entre deux interrogations, avec l'heure du dernier. Utilisé quand il compte plus que ce que montre `history`. Changements de tête a quand même besoin des 3 instantanés. |
 | `fantasy?` | [`FantasyPlayerState[]`](#fantasyplayerstate) | Fantasy n'a aucun joueur, et le match est noté en Classique. |
+
+### WinProbabilityReading
+
+La probabilité de victoire d'une action, et le moment du match où elle a eu lieu.
+
+```ts
+interface WinProbabilityReading {
+	homeWinProbability: number; // 0 to 1
+	progress: number; // getTimelineProgress at the play: 0 at the start, 1 at the end of regulation, past 1 in overtime
+}
+```
+
+Un simple `number[]` est lu comme des relevés répartis régulièrement du début du match à maintenant. Utilise des relevés quand ton flux associe chaque probabilité à son action, pour que le modificateur mesure les oscillations en temps de jeu.
 
 ### ScoreSnapshot
 
@@ -408,7 +421,7 @@ L'unique objet exporté qui contient chaque valeur de palier avec laquelle le mo
 | `scores.momentum` | Les deux valeurs de palier d'Élan. Voir [Élan](/arenaswap/docs/powerscore/signals/#momentum-lead-changes-and-comeback-factor). |
 | `scores.leadChanges` | Les deux valeurs de palier des changements de tête. |
 | `scores.comeback` | Les deux valeurs de palier de la remontée et son plancher fixe. |
-| `scores.winProbabilityVariance` | `maxAvgDist` et `minDataPoints`, tabulés dans [Bonus et pénalités](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance). |
+| `scores.winProbabilityVariance` | `halfLife`, `movementFullScale`, `swingFullScale`, `swingWeight`, `neutralBlend`, `openLead`, `decidedLead` et `penaltyFromProgress`, tabulés dans [Bonus et pénalités](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). |
 | `reasons` | Seulement `fallback` (« best game available »), la raison sur laquelle se rabat le résultat à plat déprécié. La formulation anglaise vit dans `renderReasonEnglish`. |
 
 ## FantasyRule et FantasySport

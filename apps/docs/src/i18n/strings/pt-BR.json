@@ -496,7 +496,7 @@
 			},
 			{
 				"name": "Probabilidade de vitória",
-				"copy": "Até {max} a mais quando as chances ficam perto de 50/50, até {max} a menos quando um time já está com o jogo no bolso."
+				"copy": "Até {max} a mais quando as chances vêm oscilando ultimamente, até {max} a menos quando o jogo ficou quieto e um time já tem o jogo no bolso."
 			}
 		],
 		"liveHeading": "PowerScores ao vivo.",

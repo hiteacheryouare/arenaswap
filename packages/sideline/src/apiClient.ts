@@ -3,6 +3,8 @@ import type { AtBat, AtBatPlayer, Game, GameCondition, RedCardEvent, SeriesState
 import { deriveBasketballPossession } from './basketballPossession';
 import { readCollegeBracket } from './collegeBracket';
 import { parseClockTenths, parseClockToSeconds, parseStoppageMinutes } from './gameClock';
+import { parseWinProbabilityReadings } from './winProbabilityReadings';
+import type { WinProbabilityReading } from 'powerscore';
 import { toLeagueSchedule } from './leagueCalendar';
 import { collegeBaseballLeagues, gradePostseason, readEventHeadline } from './postseasonRound';
 import { isAbandonedStatus, isCanceledStatus, readDelayKind, readDisruption, readDoubleheader, readForfeitWinner, readMakeupDate, readPostponedReason } from './disruption';
@@ -1052,7 +1054,7 @@ export const fetchLeagueLogos = async (enabledLeagues: LeagueId[], options: { in
 	return leagueLogos;
 };
 
-export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, init?: { signal?: AbortSignal; onSummary?: (summary: unknown) => void }): Promise<number[]> => {
+export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, init?: { signal?: AbortSignal; onSummary?: (summary: unknown) => void }): Promise<WinProbabilityReading[]> => {
 	const config = leagueConfigMap[game.league];
 	if (!config) return [];
 
@@ -1063,7 +1065,7 @@ export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, ini
 
 	const summary: unknown = await res.json();
 	init?.onSummary?.(summary);
-	return parseWinProbability(summary);
+	return parseWinProbabilityReadings(summary, game.league);
 };
 
 // The live situation our sources' core API keeps per competition: hockey's power play and empty net,

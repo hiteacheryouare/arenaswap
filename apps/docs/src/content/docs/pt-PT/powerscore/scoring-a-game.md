@@ -1,5 +1,5 @@
 ---
-sourceHash: 'd23f4e1a7b17'
+sourceHash: '958d2eeea81a'
 title: Pontuar um jogo com dados em direto
 description: Mapeia o teu próprio feed num objeto Game, guarda um histórico de resultados entre consultas, liga os impulsos e os modos que os teus dados suportam e acrescenta impulsos de favorito e manuais.
 section: powerscore
@@ -57,7 +57,7 @@ Cada campo opcional liga a parte do motor que precisa dele. Deixa um de fora e e
 | Dá-lhe | Em | E ligam-se estes |
 |---|---|---|
 | Instantâneos do resultado, do mais antigo para o mais recente | `context.history` | Dinâmica, Mudanças de liderança, Fator de remontada. Precisa de pelo menos 3 instantâneos. |
-| Probabilidade de vitória, de 0 a 1 por consulta | `context.winProbability` | O modificador de probabilidade de vitória de ±5. Precisa de pelo menos 5 valores. |
+| Probabilidade de vitória, de 0 a 1 por jogada, com o quanto do jogo já tinha passado em cada uma | `context.winProbability` | O modificador de probabilidade de vitória de ±5. Precisa de 3 leituras e de um décimo do jogo disputado. |
 | Se o jogo está numa pausa publicitária | `context.onBreak` | A dedução por pausa. |
 | `possession`, `yardsToEndZone`, `down`, `distance` e `timeouts` na equipa | `game`, `game.homeTeam` | O ataque de dois minutos e a situação de futebol americano do Fantasy. |
 | `isRedZone`, mais `down`, `distance` e `isGoalToGo` | `game` | O impulso de red zone. |
@@ -122,7 +122,7 @@ const score = scoreGame(game, { history, onBreak: isInBreak(game), winProbabilit
 ```
 
 O `isInBreak` fica por tua conta, a partir do que o teu feed disser sobre pausas entre entradas, mudanças de lançador e tempos mortos. Enquanto `onBreak` for `true`, a pontuação perde fixos 15 pontos.
-O `winProbability` é uma lista de valores recentes de probabilidade de vitória de 0 a 1, para qualquer uma das equipas. Só importa a distância a 50%. Ambos são opcionais, e o PowerScore pontua bem sem eles. O que cada um muda está em [Impulsos e penalizações](/arenaswap/docs/powerscore/boosts-and-penalties/).
+O `winProbability` é a probabilidade de vitória da equipa da casa, uma leitura por jogada, da mais antiga para a mais recente. Cada leitura traz o seu `progress` no jogo, por isso uma oscilação desvanece-se com o relógio do jogo e não com a frequência das tuas consultas. Uma lista simples de números de 0 a 1 também serve, distribuída por igual ao longo do jogo até agora. Ambos são opcionais, e o PowerScore pontua bem sem eles. O que cada um muda está em [Impulsos e penalizações](/arenaswap/docs/powerscore/boosts-and-penalties/).
 
 ## Deixar os impulsos ver o momento
 

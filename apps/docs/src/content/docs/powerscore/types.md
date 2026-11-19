@@ -94,13 +94,26 @@ Everything the game itself doesn't carry. Every field is optional, and `scoreGam
 |---|---|---|
 | `history?` | [`ScoreSnapshot[]`](#scoresnapshot) | Momentum, Lead Changes, and Comeback Factor stay at 0 until it holds 3 entries. Oldest first. |
 | `onBreak?` | `boolean` | The caller has detected a commercial break. `true` takes `breakPenalty` (15) off the signals subtotal. No break deduction when absent. |
-| `winProbability?` | `number[]` | Home win probability over the game, 0 to 1. Needs 5 finite values to matter. No modifier otherwise. |
+| `winProbability?` | [`WinProbabilityReading[]`](#winprobabilityreading) or `number[]` | The home team's win probability, one reading per play, oldest first. Needs 3 readings and a tenth of the game played. No modifier otherwise. |
 | `pregameLine?` | [`PregameLine`](#pregameline) | Upset watch and Upset Rout pay 0. |
 | `stakes?` | `Partial<Record<'home' \| 'away', TeamStakes>>` | No race stakes. See [`TeamStakes`](#teamstakes). |
 | `powerPlay?` | `'home' \| 'away' \| boolean` | No power play in the scoring opportunity boost. A side when the feed says whose, `true` when it only says one is on. |
 | `emptyNet?` | `'home' \| 'away' \| boolean` | No empty net in the scoring opportunity boost. Set it only once the feed has reported it on two polls in a row. |
 | `recentLeadChanges?` | `{ count: number; lastAt?: number }` | Lead changes counted from a feed's own play log, which sees flips between polls, with the time of the latest. Used when it counts more than `history` shows. Lead Changes still needs the 3 snapshots. |
 | `fantasy?` | [`FantasyPlayerState[]`](#fantasyplayerstate) | Fantasy has no players, and the game is scored as Classic. |
+
+### WinProbabilityReading
+
+One play's win probability, and where in the game the play came.
+
+```ts
+interface WinProbabilityReading {
+	homeWinProbability: number; // 0 to 1
+	progress: number; // getTimelineProgress at the play: 0 at the start, 1 at the end of regulation, past 1 in overtime
+}
+```
+
+A bare `number[]` is read as readings spread evenly from the start of the game to now. Use readings when your feed tags each probability with its play, so the modifier can measure swings in game time.
 
 ### ScoreSnapshot
 
@@ -407,7 +420,7 @@ The single exported object holding every tier value the engine scores with. It's
 | `scores.momentum` | The two momentum tier values. See [Momentum](/arenaswap/docs/powerscore/signals/#momentum-lead-changes-and-comeback-factor). |
 | `scores.leadChanges` | The two lead-change tier values. |
 | `scores.comeback` | The two comeback tier values and its flat floor. |
-| `scores.winProbabilityVariance` | `maxAvgDist` and `minDataPoints`, tabulated in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance). |
+| `scores.winProbabilityVariance` | `halfLife`, `movementFullScale`, `swingFullScale`, `swingWeight`, `neutralBlend`, `openLead`, `decidedLead` and `penaltyFromProgress`, tabulated in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). |
 | `reasons` | Only `fallback` ("best game available"), the reason the deprecated flat result falls back to. The English phrasing lives in `renderReasonEnglish`. |
 
 ## FantasyRule and FantasySport

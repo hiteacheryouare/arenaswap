@@ -1,5 +1,5 @@
 ---
-sourceHash: '40ee38646993'
+sourceHash: 'e5d4af4d0a0e'
 title: Mga TypeScript type ng PowerScore
 description: Bawat field ng Game, ScoringContext, ScoreOptions, PowerScore, at ng mga type ng mode at config, alin ang optional, at ano ang nangyayari kapag wala ang optional na field.
 section: powerscore
@@ -95,13 +95,26 @@ Lahat ng hindi dala ng laro mismo. Optional ang bawat field, at tinatanggap ng `
 |---|---|---|
 | `history?` | [`ScoreSnapshot[]`](#scoresnapshot) | Nananatiling 0 ang Momentum, Lead Changes at Comeback Factor hanggang 3 entry ang hawak nito. Pinakamatanda muna. |
 | `onBreak?` | `boolean` | Na-detect ng caller ang commercial break. Ang `true` ay kumukuha ng `breakPenalty` (15) sa subtotal ng mga signal. Walang bawas sa break kapag wala. |
-| `winProbability?` | `number[]` | Win probability ng home sa buong laro, 0 hanggang 1. Kailangan ng 5 finite na value para may epekto. Walang modifier kung hindi. |
+| `winProbability?` | [`WinProbabilityReading[]`](#winprobabilityreading) o `number[]` | Ang win probability ng home team, isang reading kada play, pinakamatanda muna. Kailangan ng 3 reading at ng ikasampung bahagi ng laro na nalaro na. Walang modifier kung hindi. |
 | `pregameLine?` | [`PregameLine`](#pregameline) | 0 ang bayad ng Upset watch at Upset Rout. |
 | `stakes?` | `Partial<Record<'home' \| 'away', TeamStakes>>` | Walang race stakes. Tingnan ang [`TeamStakes`](#teamstakes). |
 | `powerPlay?` | `'home' \| 'away' \| boolean` | Walang power play sa scoring opportunity boost. Isang panig kapag sinasabi ng feed kung kanino, `true` kapag sinasabi lang nitong may isa. |
 | `emptyNet?` | `'home' \| 'away' \| boolean` | Walang empty net sa scoring opportunity boost. Itakda lang ito kapag naiulat na ito ng feed sa dalawang magkasunod na poll. |
 | `recentLeadChanges?` | `{ count: number; lastAt?: number }` | Mga pagbabago ng lead na binilang mula sa sariling play log ng feed, na nakakakita ng mga palitan sa pagitan ng poll, kasama ang oras ng pinakabago. Ginagamit kapag mas marami ang bilang nito kaysa sa ipinapakita ng `history`. Kailangan pa rin ng Lead Changes ang 3 snapshot. |
 | `fantasy?` | [`FantasyPlayerState[]`](#fantasyplayerstate) | Walang player ang Fantasy, at ini-score ang laro bilang Classic. |
+
+### WinProbabilityReading
+
+Ang win probability ng isang play, at kung nasaan sa laro nangyari ang play.
+
+```ts
+interface WinProbabilityReading {
+	homeWinProbability: number; // 0 to 1
+	progress: number; // getTimelineProgress at the play: 0 at the start, 1 at the end of regulation, past 1 in overtime
+}
+```
+
+Ang bare na `number[]` ay binabasa bilang mga reading na pantay na ikinalat mula sa simula ng laro hanggang ngayon. Gumamit ng mga reading kapag tina-tag ng feed mo ang bawat probability ng play nito, para masukat ng modifier ang mga swing sa oras ng laro.
 
 ### ScoreSnapshot
 
@@ -408,7 +421,7 @@ Ang nag-iisang exported na object na may hawak ng bawat tier value na ginagamit 
 | `scores.momentum` | Ang dalawang tier value ng momentum. Tingnan ang [Momentum](/arenaswap/docs/powerscore/signals/#momentum-lead-changes-and-comeback-factor). |
 | `scores.leadChanges` | Ang dalawang tier value ng lead-change. |
 | `scores.comeback` | Ang dalawang tier value ng comeback at ang flat floor nito. |
-| `scores.winProbabilityVariance` | `maxAvgDist` at `minDataPoints`, nakatable sa [Mga boost at penalty](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance). |
+| `scores.winProbabilityVariance` | `halfLife`, `movementFullScale`, `swingFullScale`, `swingWeight`, `neutralBlend`, `openLead`, `decidedLead` at `penaltyFromProgress`, nakatable sa [Mga boost at penalty](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). |
 | `reasons` | `fallback` lang ("best game available"), ang reason na binabagsakan ng deprecated na flat na resulta. Nasa `renderReasonEnglish` ang English na pananalita. |
 
 ## FantasyRule at FantasySport

@@ -1,5 +1,5 @@
 ---
-sourceHash: '9c4dba756b81'
+sourceHash: '2348a1aeb67f'
 title: PowerScore-Boosts und -Strafen
 navLabel: Boosts und Strafen
 description: Jeder Boost und jede Strafe, die PowerScore 3 auf die Signale eines Modus legt, mit der Bedingung, die sie auslöst, ihrem Maximum und den Obergrenzen, die sie sich teilen.
@@ -187,21 +187,33 @@ Brisanz wird nach Saisonabschnitt getrennt gehalten, damit sie den Postseason-Bo
 
 Bei einem Rennen zahlt das Team mit dem meisten Einsatz voll und das andere zur Hälfte, begrenzt auf 6. Platzierung und Rennen addieren sich, und die Summe wird auf 10 begrenzt.
 
-## Ausgleich der Siegwahrscheinlichkeit
+## Ausschläge der Siegwahrscheinlichkeit
 
-Nur Klassisch. `computeWinProbVarianceScore(winProbHistory)` liefert einen Modifikator von `-scoreWinProbVarianceMax` bis `+scoreWinProbVarianceMax` (±5). Übergib `context.winProbability` an `scoreGame`, und der Modifikator fließt von allein in die Summe ein.
+Nur Klassisch. `computeWinProbVarianceScore(line, nowProgress?)` liefert einen Modifikator von `-scoreWinProbVarianceMax` bis `+scoreWinProbVarianceMax` (±5). Übergib `context.winProbability` an `scoreGame`, und der Modifikator fließt von allein in die Summe ein, gemessen vom aktuellen Punkt des Spiels in [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
 
-Er braucht mindestens `minDataPoints` (5) endliche Werte. Alles andere liefert `undefined`, und das Feld `winProbabilityVariance` des Ergebnisses wird ganz weggelassen, statt auf `0` gesetzt zu werden. Nicht endliche Einträge (`NaN`, `Infinity`) werden vor der Prüfung dieser Zahl verworfen.
+Die Linie ist die Siegwahrscheinlichkeit des Heimteams, ein Wert pro Spielzug, älteste zuerst. Jeder Wert ist eine [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading): `homeWinProbability` von 0 bis 1 und `progress`, wie weit im Spiel sein Spielzug fiel. Eine bloße `number[]` funktioniert weiterhin, ihre Werte verteilen sich gleichmäßig vom Spielbeginn bis jetzt.
 
-Der Modifikator ist der mittlere absolute Abstand der übergebenen Werte von 0,5, abgebildet auf den Bereich ±5:
+Er braucht 3 Werte und ein Zehntel des gespielten Spiels. Davor liefert er `undefined`, und das Feld `winProbabilityVariance` des Ergebnisses wird ganz weggelassen, statt auf `0` gesetzt zu werden. Nicht endliche Werte werden zuerst verworfen.
 
-| Durchschnittlicher Abstand von 50 % | Modifikator |
-|---|---|
-| 0 (ein Münzwurf) | +5 |
-| `maxAvgDist` ÷ 2 (0.175) | 0 |
-| ≥ `maxAvgDist` (0.35) | −5 |
+Der Modifikator mischt zwei Maße dafür, wie stark sich der Ausgang zuletzt bewegt hat. Beide halbieren sich alle `halfLife`, einem Zehntel der regulären Spielzeit: etwa 4 Minuten im College-Basketball, 5 in der NBA, 6 im Football oder ein Inning im Baseball.
 
-Trotz des Namens misst der Modifikator den durchschnittlichen Abstand von 50 %, nicht die Varianz. Eine Siegwahrscheinlichkeitslinie, die zwischen 10 % und 90 % pendelt, bekommt dieselbe Strafe wie eine, die gleichmäßig bei 90 % bleibt. Beide haben im Schnitt denselben Abstand zur Mitte.
+| Maß | Was es aufsummiert | Voll bei | Anteil an der Mischung |
+|---|---|---|---|
+| Bewegung | Jede Änderung der Siegwahrscheinlichkeit von Spielzug zu Spielzug in den letzten vier Halbwertszeiten, jeweils auf 0.5 begrenzt | `movementFullScale` (1.67) | 70 % |
+| Ausschlag | Der größte Abstand zwischen dem aktuellen Wert und einem beliebigen Wert der letzten drei Halbwertszeiten, alle zwei Halbwertszeiten um die Hälfte abgeschwächt | `swingFullScale` (0.26) | `swingWeight` (30 %) |
+
+Ein Wert, der um mehr als 0.15 springt und gleich wieder bis auf 0.05 an den alten Stand zurückkommt, ist ein korrigierter Spielzug und wird ignoriert.
+
+| Mischung | Erste Halbzeit | Zweite Halbzeit |
+|---|---|---|
+| Ab `neutralBlend` (0.49) | Bis zu +5 | Bis zu +5 |
+| Unter `neutralBlend` | 0 | Bis hinab zu −5 |
+
+Der Bonus schwindet, wenn die Siegwahrscheinlichkeit des Führenden von `openLead` (80 %) auf `decidedLead` (97 %) steigt, ein Ausreißer in einem entschiedenen Spiel bringt also nichts. Die Strafe macht das Gegenteil: nichts, solange das Spiel noch offen ist, die vollen −5, sobald ein ruhiges Spiel bei 97 % liegt. Sie beginnt bei `penaltyFromProgress`, der Hälfte der regulären Spielzeit.
+
+Ein einseitiger Start kostet nichts, sobald das Spiel kippt. Ein Spiel, das den größten Teil des Abends bei 98 % stand und dann zum Münzwurf kippt, bekommt den Bonus, sobald sich die Ausschläge häufen, denn nur die jüngste Strecke zählt.
+
+`neutralBlend` ist der Median der Mischung über jeden laufenden, unentschiedenen Moment in 417 beendeten Spielen, ein typischer Abschnitt eines engen Spiels liegt also nahe 0. Die vollen Skalen sind die 90. Perzentile derselben Momente.
 
 Der Modifikator wird nach dem Pausenabzug addiert, nicht davor, und das Ergebnis wird auf 0 bis 100 begrenzt, bevor ein Boost dazukommt.
 

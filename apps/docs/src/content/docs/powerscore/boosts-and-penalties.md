@@ -186,21 +186,33 @@ Stakes is kept apart by season so it never double-counts the postseason boost. I
 
 For a race, the team with the most at stake pays in full and the other team at half, capped at 6. Ranked and race add together, and the total is capped at 10.
 
-## Win probability balance
+## Win probability swings
 
-Classic only. `computeWinProbVarianceScore(winProbHistory)` returns a modifier from `-scoreWinProbVarianceMax` to `+scoreWinProbVarianceMax` (±5). Pass `context.winProbability` to `scoreGame`, and the modifier is folded into the total on its own.
+Classic only. `computeWinProbVarianceScore(line, nowProgress?)` returns a modifier from `-scoreWinProbVarianceMax` to `+scoreWinProbVarianceMax` (±5). Pass `context.winProbability` to `scoreGame`, and the modifier is folded into the total on its own, measured from the game's current point in [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
 
-It needs at least `minDataPoints` (5) finite values. Anything else returns `undefined`, and the result's `winProbabilityVariance` field is left off entirely rather than set to `0`. Non-finite entries (`NaN`, `Infinity`) are dropped before that count is checked.
+The line is the home team's win probability, one reading per play, oldest first. Each reading is a [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading): `homeWinProbability` from 0 to 1, and `progress`, how far into the game its play came. A bare `number[]` still works, and its readings are spread evenly from the start of the game to now.
 
-The modifier is the mean absolute distance of the supplied values from 0.5, mapped onto the ±5 range:
+It needs 3 readings and a tenth of the game played. Before that it returns `undefined`, and the result's `winProbabilityVariance` field is left off entirely rather than set to `0`. Readings that aren't finite are dropped first.
 
-| Average distance from 50% | Modifier |
-|---|---|
-| 0 (a coin flip) | +5 |
-| `maxAvgDist` ÷ 2 (0.175) | 0 |
-| ≥ `maxAvgDist` (0.35) | −5 |
+The modifier blends two measures of how much the outcome has moved lately. Both fade by half every `halfLife`, a tenth of regulation: about 4 minutes of college basketball, 5 of the NBA, 6 of football, or an inning of baseball.
 
-Despite the name, the modifier measures average distance from 50%, not variance. A win-probability line that oscillates between 10% and 90% scores the same penalty as one held steadily at 90%. Both average the same distance from the midpoint.
+| Measure | What it adds up | Full at | Share of the blend |
+|---|---|---|---|
+| Movement | Every play-to-play change in win probability over the last four half-lives, each capped at 0.5 | `movementFullScale` (1.67) | 70% |
+| Swing | The biggest gap between the current reading and any reading in the last three half-lives, faded by half every two half-lives | `swingFullScale` (0.26) | `swingWeight` (30%) |
+
+A reading that jumps more than 0.15 and comes straight back within 0.05 of where it was is a corrected play, and it's ignored.
+
+| Blend | First half | Second half |
+|---|---|---|
+| At or above `neutralBlend` (0.49) | Up to +5 | Up to +5 |
+| Below `neutralBlend` | 0 | Down to −5 |
+
+The bonus fades out as the leader's win probability climbs from `openLead` (80%) to `decidedLead` (97%), so a blip in a decided game earns nothing. The penalty does the opposite: nothing while the game is still open, the full −5 once a quiet game is at 97%. It starts at `penaltyFromProgress`, halfway through regulation.
+
+A lopsided start costs nothing once the game turns. A game that sat at 98% for most of the night and then swings to a coin flip earns the bonus as soon as the swings pile up, because only the recent stretch counts.
+
+`neutralBlend` is the median blend of every live, undecided moment in 417 finished games, so a typical stretch of a close game sits near 0. The full scales are the 90th percentiles of the same moments.
 
 The modifier is added after the break deduction, not before it, and the result is clamped to 0 to 100 before any boost is added.
 

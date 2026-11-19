@@ -1,5 +1,5 @@
 ---
-sourceHash: '9c4dba756b81'
+sourceHash: '2348a1aeb67f'
 title: Les bonus et pénalités de PowerScore
 navLabel: Bonus et pénalités
 description: Chaque bonus et chaque pénalité que PowerScore 3 applique par-dessus les signaux d'un mode, avec la condition qui déclenche chacun, son maximum, et les plafonds qu'ils partagent.
@@ -187,21 +187,33 @@ L'enjeu est séparé par saison pour ne jamais compter deux fois avec le bonus d
 
 Pour une course, l'équipe qui a le plus à jouer verse en plein et l'autre à moitié, plafonné à 6. Classement et course s'additionnent, et le total est plafonné à 10.
 
-## Équilibre de la probabilité de victoire
+## Oscillations de la probabilité de victoire
 
-Classique seulement. `computeWinProbVarianceScore(winProbHistory)` renvoie un modificateur de `-scoreWinProbVarianceMax` à `+scoreWinProbVarianceMax` (±5). Passe `context.winProbability` à `scoreGame`, et le modificateur est intégré tout seul au total.
+Classique seulement. `computeWinProbVarianceScore(line, nowProgress?)` renvoie un modificateur de `-scoreWinProbVarianceMax` à `+scoreWinProbVarianceMax` (±5). Passe `context.winProbability` à `scoreGame`, et le modificateur est intégré tout seul au total, mesuré à partir du point actuel du match dans [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
 
-Il demande au moins `minDataPoints` (5) valeurs finies. Tout le reste renvoie `undefined`, et le champ `winProbabilityVariance` du résultat est carrément omis plutôt que mis à `0`. Les entrées non finies (`NaN`, `Infinity`) sont écartées avant ce comptage.
+La ligne est la probabilité de victoire de l'équipe à domicile, un relevé par action, du plus ancien au plus récent. Chaque relevé est une [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading) : `homeWinProbability` de 0 à 1, et `progress`, l'avancement du match au moment de son action. Un simple `number[]` marche toujours, et ses relevés sont répartis régulièrement du début du match à maintenant.
 
-Le modificateur est la distance absolue moyenne des valeurs fournies par rapport à 0,5, projetée sur la plage ±5 :
+Il faut 3 relevés et un dixième du match joué. Avant cela il renvoie `undefined`, et le champ `winProbabilityVariance` du résultat est carrément omis plutôt que mis à `0`. Les relevés non finis sont écartés d'abord.
 
-| Distance moyenne par rapport à 50 % | Modificateur |
-|---|---|
-| 0 (un pile ou face) | +5 |
-| `maxAvgDist` ÷ 2 (0.175) | 0 |
-| ≥ `maxAvgDist` (0.35) | −5 |
+Le modificateur mélange deux mesures de l'ampleur des mouvements récents de l'issue. Les deux diminuent de moitié à chaque `halfLife`, un dixième du temps réglementaire : environ 4 minutes de basketball universitaire, 5 de NBA, 6 de football américain ou une manche de baseball.
 
-Malgré son nom, le modificateur mesure la distance moyenne à 50 %, pas la variance. Une ligne de probabilité de victoire qui oscille entre 10 % et 90 % reçoit la même pénalité qu'une ligne tenue en continu à 90 %. Les deux s'éloignent en moyenne de la même distance du milieu.
+| Mesure | Ce qu'elle additionne | Pleine à | Part du mélange |
+|---|---|---|---|
+| Mouvement | Chaque variation de la probabilité de victoire d'une action à l'autre sur les quatre dernières demi-vies, plafonnée à 0.5 chacune | `movementFullScale` (1.67) | 70 % |
+| Oscillation | Le plus grand écart entre le relevé actuel et n'importe quel relevé des trois dernières demi-vies, diminué de moitié toutes les deux demi-vies | `swingFullScale` (0.26) | `swingWeight` (30 %) |
+
+Un relevé qui saute de plus de 0.15 et revient aussitôt à moins de 0.05 de sa valeur d'avant est une action corrigée, et il est ignoré.
+
+| Mélange | Première mi-temps | Seconde mi-temps |
+|---|---|---|
+| Égal ou supérieur à `neutralBlend` (0.49) | Jusqu'à +5 | Jusqu'à +5 |
+| Inférieur à `neutralBlend` | 0 | Jusqu'à −5 |
+
+Le bonus s'efface à mesure que la probabilité de victoire du meneur grimpe de `openLead` (80 %) à `decidedLead` (97 %), si bien qu'un soubresaut dans un match décidé ne rapporte rien. La pénalité fait l'inverse : rien tant que le match est ouvert, le −5 complet dès qu'un match calme est à 97 %. Elle commence à `penaltyFromProgress`, la moitié du temps réglementaire.
+
+Un début à sens unique ne coûte rien une fois que le match bascule. Un match resté à 98 % presque toute la soirée puis qui bascule à pile ou face gagne le bonus dès que les oscillations s'accumulent, parce que seule la période récente compte.
+
+`neutralBlend` est le mélange médian de chaque moment en direct et non décidé dans 417 matchs terminés, donc un passage typique d'un match serré se tient près de 0. Les pleines échelles sont les 90e centiles des mêmes moments.
 
 Le modificateur est ajouté après la déduction de pause, pas avant, et le résultat est ramené entre 0 et 100 avant qu'un bonus soit ajouté.
 

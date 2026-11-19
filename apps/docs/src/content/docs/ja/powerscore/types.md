@@ -1,5 +1,5 @@
 ---
-sourceHash: '40ee38646993'
+sourceHash: 'e5d4af4d0a0e'
 title: PowerScore の TypeScript 型
 description: Game、ScoringContext、ScoreOptions、PowerScore、そしてモードと設定の型のすべてのフィールドについて、どれが省略可能か、省略可能なものが欠けているとどうなるかをまとめています。
 section: powerscore
@@ -95,13 +95,26 @@ interface RedCard {
 |---|---|---|
 | `history?` | [`ScoreSnapshot[]`](#scoresnapshot) | 勢い、リード交代、追い上げは、これが3つのエントリを持つまで0のままです。古いものが先です。 |
 | `onBreak?` | `boolean` | 呼び出し側がコマーシャル中だと検知しています。`true` なら、シグナルの小計から `breakPenalty`（15）を引きます。ないときは、休止中の減点はありません。 |
-| `winProbability?` | `number[]` | 試合を通したホームの勝利確率で、0〜1。意味を持つには、有限の値が5つ必要です。それ以外は補正なし。 |
+| `winProbability?` | [`WinProbabilityReading[]`](#winprobabilityreading) または `number[]` | ホームチームの勝利確率で、1プレーにつき1つ、古いものが先です。意味を持つには、3つの値と、試合の10分の1が進んでいることが必要です。それ以外は補正なし。 |
 | `pregameLine?` | [`PregameLine`](#pregameline) | 番狂わせの予感と番狂わせは、0を払います。 |
 | `stakes?` | `Partial<Record<'home' \| 'away', TeamStakes>>` | 争いの重要度なし。[`TeamStakes`](#teamstakes) をご覧ください。 |
 | `powerPlay?` | `'home' \| 'away' \| boolean` | 得点チャンスブーストにパワープレーなし。どちらのチームかをフィードが伝えるときはそのサイド、パワープレー中であることしか伝えないときは `true`。 |
 | `emptyNet?` | `'home' \| 'away' \| boolean` | 得点チャンスブーストにエンプティネットなし。フィードが2回のポーリングで続けて報告してからはじめて設定してください。 |
 | `recentLeadChanges?` | `{ count: number; lastAt?: number }` | フィード自身のプレーログから数えたリード交代で、ポーリングの合間の入れ替わりも拾い、最新の時刻がつきます。`history` が示すより多いときに使われます。リード交代には、それでも3つのスナップショットが必要です。 |
 | `fantasy?` | [`FantasyPlayerState[]`](#fantasyplayerstate) | ファンタジーには選手がおらず、試合はクラシックとしてスコア化されます。 |
+
+### WinProbabilityReading
+
+1プレーぶんの勝利確率と、そのプレーが試合のどこで起きたかです。
+
+```ts
+interface WinProbabilityReading {
+	homeWinProbability: number; // 0 to 1
+	progress: number; // getTimelineProgress at the play: 0 at the start, 1 at the end of regulation, past 1 in overtime
+}
+```
+
+数値だけの `number[]` は、試合の開始から現在まで均等に並べられた値として読まれます。フィードが確率ごとにそのプレーを紐づけているときは、補正が試合の時間で揺れを測れるよう、プレーごとの値として渡してください。
 
 ### ScoreSnapshot
 
@@ -408,7 +421,7 @@ type LateGameCurveConfig = BaseballLateGameCurveConfig;
 | `scores.momentum` | 勢いの2つの段階の値。[勢い](/arenaswap/docs/powerscore/signals/#momentum-lead-changes-and-comeback-factor)をご覧ください。 |
 | `scores.leadChanges` | リード交代の2つの段階の値。 |
 | `scores.comeback` | 追い上げの2つの段階の値と、その一律のフロア。 |
-| `scores.winProbabilityVariance` | `maxAvgDist` と `minDataPoints`。[ブーストとペナルティ](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance)に表があります。 |
+| `scores.winProbabilityVariance` | `halfLife`、`movementFullScale`、`swingFullScale`、`swingWeight`、`neutralBlend`、`openLead`、`decidedLead`、`penaltyFromProgress`。[ブーストとペナルティ](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)に表があります。 |
 | `reasons` | `fallback`（「best game available」）だけで、非推奨の平らな結果が戻る先の理由です。英語の文言は `renderReasonEnglish` にあります。 |
 
 ## FantasyRule と FantasySport

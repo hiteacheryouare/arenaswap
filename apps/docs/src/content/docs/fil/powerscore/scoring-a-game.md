@@ -1,5 +1,5 @@
 ---
-sourceHash: 'd23f4e1a7b17'
+sourceHash: '958d2eeea81a'
 title: Mag-score ng laro mula sa live na data
 description: I-map ang sarili mong feed sa isang Game object, magtabi ng history ng score sa bawat poll, buksan ang mga boost at mode na kayang suportahan ng data mo, at magdagdag ng favorite at manual na boost.
 section: powerscore
@@ -57,7 +57,7 @@ Binubuksan ng bawat optional na field ang bahagi ng engine na nangangailangan ni
 | Ibigay | Saan | At ito ang bubukas |
 |---|---|---|
 | Mga snapshot ng score, pinakamatanda muna | `context.history` | Momentum, Lead Changes, Comeback Factor. Kailangan ng hindi bababa sa 3 snapshot. |
-| Win probability, 0 hanggang 1 kada poll | `context.winProbability` | Ang ±5 win probability modifier. Kailangan ng hindi bababa sa 5 value. |
+| Win probability, 0 hanggang 1 kada play, kasama kung gaano na kalayo sa laro ang bawat play | `context.winProbability` | Ang ±5 win probability modifier. Kailangan ng 3 reading at ng ikasampung bahagi ng laro na nalaro na. |
 | Kung nasa commercial break ang laro | `context.onBreak` | Ang bawas sa break. |
 | `possession`, `yardsToEndZone`, `down`, `distance` at `timeouts` sa team | `game`, `game.homeTeam` | Ang two-minute drill at ang football situation ng Fantasy. |
 | `isRedZone`, kasama ang `down`, `distance` at `isGoalToGo` | `game` | Ang red zone boost. |
@@ -122,7 +122,7 @@ const score = scoreGame(game, { history, onBreak: isInBreak(game), winProbabilit
 ```
 
 Ikaw ang magsusulat ng `isInBreak`, mula sa anumang sinasabi ng feed mo tungkol sa mga break sa inning, pagpapalit ng pitcher at timeout. Habang `true` ang `onBreak`, bumababa ng 15 puntos ang score.
-Ang `winProbability` ay listahan ng mga kamakailang win-probability value mula 0 hanggang 1, para sa alinmang team. Ang layo lang mula sa 50% ang mahalaga. Parehong optional ang dalawa, at nai-score nang maayos ng PowerScore kahit wala sila. Nasa [Mga boost at penalty](/arenaswap/docs/powerscore/boosts-and-penalties/) kung ano ang binabago ng bawat isa.
+Ang `winProbability` ay ang win probability ng home team, isang reading kada play, pinakamatanda muna. Dala ng bawat reading ang `progress` nito sa laro, kaya humihina ang swing ayon sa game clock at hindi ayon sa dalas ng poll mo. Gumagana rin ang bare na listahan ng mga number mula 0 hanggang 1, pantay na ikinalat sa laro hanggang ngayon. Parehong optional ang dalawa, at nai-score nang maayos ng PowerScore kahit wala sila. Nasa [Mga boost at penalty](/arenaswap/docs/powerscore/boosts-and-penalties/) kung ano ang binabago ng bawat isa.
 
 ## Hayaang makita ng mga boost ang sandali
 

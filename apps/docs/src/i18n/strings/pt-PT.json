@@ -496,7 +496,7 @@
 			},
 			{
 				"name": "Probabilidade de vitória",
-				"copy": "Até {max} a mais quando as probabilidades ficam perto dos 50/50, até {max} a menos quando uma equipa já tem o jogo ganho."
+				"copy": "Até {max} a mais quando as probabilidades têm andado a oscilar, até {max} a menos quando o jogo ficou calmo e uma equipa já tem o jogo ganho."
 			}
 		],
 		"liveHeading": "PowerScores em direto.",

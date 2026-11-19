@@ -1,5 +1,5 @@
 ---
-sourceHash: '9c4dba756b81'
+sourceHash: '2348a1aeb67f'
 title: PowerScore 부스트와 페널티
 navLabel: 부스트와 페널티
 description: PowerScore 3가 모드의 시그널 위에 적용하는 모든 부스트와 페널티, 각각을 일으키는 조건과 최대치, 그리고 함께 쓰는 상한까지 정리했어요.
@@ -187,23 +187,33 @@ order: 4
 
 순위 싸움은 걸린 게 가장 많은 팀이 전부, 상대 팀이 절반을 받고 6에서 잘려요. 랭킹과 순위 싸움은 합산되고, 합계는 10에서 잘려요.
 
-## 승리 확률 균형
+## 승리 확률 요동
 
-클래식 전용이에요. `computeWinProbVarianceScore(winProbHistory)`는 `-scoreWinProbVarianceMax`에서 `+scoreWinProbVarianceMax`(±5) 사이의 보정값을 돌려줘요. `scoreGame`에 `context.winProbability`를 넘기면 보정값이 합계에 따로 반영돼요.
+클래식 전용이에요. `computeWinProbVarianceScore(line, nowProgress?)`는 `-scoreWinProbVarianceMax`에서 `+scoreWinProbVarianceMax`(±5) 사이의 보정값을 돌려줘요. `scoreGame`에 `context.winProbability`를 넘기면 보정값이 합계에 따로 반영되고, 경기의 현재 시점은 [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress)로 재요.
 
-유한한 값이 최소 `minDataPoints`(5)개 필요해요. 그렇지 않으면 `undefined`를 돌려주고, 결과의 `winProbabilityVariance` 필드는 `0`으로 설정되지 않고 아예 빠져요. 유한하지 않은 항목(`NaN`, `Infinity`)은 개수를 확인하기 전에 버려져요.
+라인은 홈 팀의 승리 확률이고, 플레이마다 값이 하나씩, 오래된 것부터예요. 각 값은 [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading)이에요. 0에서 1 사이의 `homeWinProbability`와, 그 플레이가 경기의 어디쯤이었는지를 나타내는 `progress`가 들어 있어요. 그냥 `number[]`도 여전히 되고, 값들이 경기 시작부터 지금까지 고르게 퍼져 있다고 봐요.
 
-보정값은 넘긴 값들이 0.5에서 떨어진 평균 절대 거리를 ±5 범위에 대응시킨 거예요.
+값 3개와 경기의 10분의 1이 지나 있어야 해요. 그 전에는 `undefined`를 돌려주고, 결과의 `winProbabilityVariance` 필드는 `0`으로 설정되지 않고 아예 빠져요. 유한하지 않은 값은 먼저 버려져요.
 
-| 50%에서의 평균 거리 | 보정값 |
-|---|---|
-| 0 (동전 던지기) | +5 |
-| `maxAvgDist` ÷ 2 (0.175) | 0 |
-| ≥ `maxAvgDist` (0.35) | −5 |
+보정값은 결과가 최근에 얼마나 움직였는지를 두 가지로 재서 섞어요. 둘 다 `halfLife`마다 절반으로 줄어요. 이 간격은 정규 시간의 10분의 1로, 대학 농구는 약 4분, NBA는 5분, 풋볼은 6분, 야구는 1이닝이에요.
 
-이름과 달리 이 보정값이 측정하는 건 분산이 아니라 50%에서의 평균 거리예요. 10%와 90% 사이를 오가는 승리 확률선은 90%에서 꾸준히 유지되는 선과 같은 페널티를 받아요. 둘 다 중간선에서 같은 평균 거리를 가지니까요.
+| 측정값 | 더하는 것 | 만점 기준 | 섞는 비율 |
+|---|---|---|---|
+| 움직임 | 지난 반감기 네 번 동안 플레이마다 바뀐 승리 확률의 변화량 전부, 각각 0.5에서 잘라요 | `movementFullScale`(1.67) | 70% |
+| 요동 | 현재 값과 지난 반감기 세 번 안의 어느 값 사이의 가장 큰 차이, 반감기 두 번마다 절반으로 줄어요 | `swingFullScale`(0.26) | `swingWeight`(30%) |
 
-보정값은 광고 시간 감점 뒤에 더해지고, 앞이 아니에요. 결과는 부스트가 더해지기 전에 0에서 100으로 제한돼요.
+값이 0.15보다 크게 뛰었다가 바로 원래 값에서 0.05 안으로 돌아오면 정정된 플레이로 보고 무시해요.
+
+| 섞은 값 | 전반 | 후반 |
+|---|---|---|
+| `neutralBlend`(0.49) 이상 | 최대 +5 | 최대 +5 |
+| `neutralBlend` 미만 | 0 | 최저 −5 |
+
+앞선 팀의 승리 확률이 `openLead`(80%)에서 `decidedLead`(97%)로 올라갈수록 보너스는 줄어들어서, 승부가 난 경기의 잠깐 출렁임은 아무것도 받지 못해요. 페널티는 반대예요. 경기가 아직 열려 있는 동안은 없고, 조용한 경기가 97%에 이르면 −5가 전부 적용돼요. 정규 시간 중간인 `penaltyFromProgress`부터 시작해요.
+
+한쪽으로 기운 출발은 경기가 뒤집히면 문제가 되지 않아요. 밤새 98%에 머물다가 동전 던지기 수준으로 요동치는 경기는, 요동이 쌓이는 순간 보너스를 받아요. 최근 구간만 세기 때문이에요.
+
+`neutralBlend`는 끝난 경기 417개에서 실시간이면서 승부가 나지 않은 모든 순간의 섞은 값의 중앙값이라서, 접전 경기의 평범한 구간은 0 근처에 놓여요. 만점 기준은 같은 순간들의 90번째 백분위수예요.
 
 ## 광고 시간 감점
 

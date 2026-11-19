@@ -99,7 +99,7 @@ describe('a feed that publishes more as it matures', () => {
 		const history = ([[3, 3], [4, 3], [3, 4]] as const).map(([homeScore, awayScore], index) => ({
 			gameId: 'feed-1', timestamp: 1_790_000_000_000 + index * 60_000, homeScore, awayScore,
 		}));
-		const winProbability = [0.45, 0.52, 0.48, 0.5, 0.55, 0.47];
+		const winProbability = Array.from({ length: 20 }, (_, i) => (i % 2 === 0 ? 0.35 : 0.65));
 
 		const steps = [
 			scoreGame(scoresOnly),

@@ -1,5 +1,5 @@
 ---
-sourceHash: 'd23f4e1a7b17'
+sourceHash: '958d2eeea81a'
 title: Calcola una partita da dati in diretta
 description: Mappa il tuo feed su un oggetto Game, conserva lo storico dei punteggi tra le interrogazioni, attiva i boost e le modalità che i tuoi dati supportano e aggiungi boost preferita e manuale.
 section: powerscore
@@ -57,7 +57,7 @@ Ogni campo facoltativo attiva la parte del motore che ne ha bisogno. Lasciane fu
 | Dagli | In | E si attivano |
 |---|---|---|
 | Istantanee del punteggio, dalla più vecchia | `context.history` | Momentum, Sorpassi, Rimonta. Servono almeno 3 istantanee. |
-| Probabilità di vittoria, da 0 a 1 a ogni interrogazione | `context.winProbability` | Il modificatore ±5 di probabilità di vittoria. Servono almeno 5 valori. |
+| Probabilità di vittoria, da 0 a 1 per azione, con a che punto della partita è arrivata ogni azione | `context.winProbability` | Il modificatore ±5 di probabilità di vittoria. Servono 3 letture e un decimo della partita giocato. |
 | Se la partita è in pausa pubblicitaria | `context.onBreak` | La detrazione per la pausa. |
 | `possession`, `yardsToEndZone`, `down`, `distance` e `timeouts` sulla squadra | `game`, `game.homeTeam` | Il two-minute drill e la situazione di football di Fantasy. |
 | `isRedZone`, più `down`, `distance` e `isGoalToGo` | `game` | Il boost della red zone. |
@@ -122,7 +122,7 @@ const score = scoreGame(game, { history, onBreak: isInBreak(game), winProbabilit
 ```
 
 `isInBreak` lo scrivi tu, da qualunque cosa il tuo feed dica su pause tra inning, cambi di lanciatore e timeout. Finché `onBreak` è `true`, il punteggio perde 15 punti fissi.
-`winProbability` è una lista di valori recenti di probabilità di vittoria da 0 a 1, per l'una o l'altra squadra. Conta solo la distanza dal 50%. Entrambi sono facoltativi, e PowerScore calcola bene anche senza. Cosa cambia ciascuno è in [Boost e penalità](/arenaswap/docs/powerscore/boosts-and-penalties/).
+`winProbability` è la probabilità di vittoria della squadra di casa, una lettura per azione, dalla più vecchia. Ogni lettura porta con sé il suo `progress` nella partita, così un'oscillazione svanisce con l'orologio di gioco e non con la frequenza con cui interroghi. Anche una semplice lista di numeri da 0 a 1 va bene, distribuita in modo uniforme sulla partita finora. Entrambi sono facoltativi, e PowerScore calcola bene anche senza. Cosa cambia ciascuno è in [Boost e penalità](/arenaswap/docs/powerscore/boosts-and-penalties/).
 
 ## Fai vedere ai boost il momento
 

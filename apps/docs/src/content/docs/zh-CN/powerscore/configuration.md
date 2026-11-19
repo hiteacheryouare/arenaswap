@@ -1,5 +1,5 @@
 ---
-sourceHash: '854afd07d71b'
+sourceHash: '5050e319fc40'
 title: 运动与联赛配置
 description: SportTypeConfig 和 LeagueConfig 的每个字段、它们在六项运动和 31 个联赛上的默认值，以及一项运动的“胶着”标准是怎么定的。
 section: powerscore
@@ -24,6 +24,7 @@ navLabel: 配置
 | `zeroZeroAsFullTie` | false | false | true | true | false | false |
 | `zeroZeroPenaltyPeriods` | 无 | 无 | 1, 2 | 1 | 无 | 无 |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
+| `overtimeDurationSecs` | 300 | 600 | 300 | 无 | 无 | 无 |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -45,6 +46,7 @@ navLabel: 配置
 | `zeroZeroAsFullTie` | 0–0 的比赛在接近度里拿到完整的战平分。为 `false` 时，0–0 只拿到较低的 `zeroZero` 档。 |
 | `zeroZeroPenaltyPeriods` | 即使 `zeroZeroAsFullTie` 为 `true`，0–0 在这些阶段仍然只拿较低的档。冰球用 1 和 2，足球是上半场。 |
 | `otPreBoostWindowSecs` | 常规时间最后一个阶段的最后几秒，战平的比赛在这段时间里朝加时预加成攀升。`0` 表示关闭。 |
+| `overtimeDurationSecs` | 一个加时阶段持续多久，好让 `getTimelineProgress` 在加时期间也能继续往上数。没有它，每个加时阶段按比赛的 0.05 计。 |
 | `decayHalfLifeMs` | 势头、领先权易手和逆转在最后一次得分之后衰减得多快。低得分运动里更长，这样一粒进球能让它们撑到下一粒。 |
 | `historyWindowMs` | 历史类信号读取多少比分历史。见上文。 |
 | `lateGameCurve` | 仅限棒球和垒球：常规比赛有多少局，以及关键时刻的攀升从第几局开始。 |

@@ -1,5 +1,5 @@
 ---
-sourceHash: '9c4dba756b81'
+sourceHash: '2348a1aeb67f'
 title: Boost e penalità di PowerScore
 navLabel: Boost e penalità
 description: Ogni boost e penalità che PowerScore 3 applica sopra i segnali di una modalità, con la condizione che attiva ciascuno, il suo massimo e i limiti che condividono.
@@ -187,21 +187,33 @@ In palio è tenuto separato per stagione, così non conta mai due volte il boost
 
 Per una corsa, la squadra con più in gioco paga per intero e l'altra a metà, con limite 6. Classifica e corsa si sommano, e il totale è limitato a 10.
 
-## Equilibrio della probabilità di vittoria
+## Oscillazioni della probabilità di vittoria
 
-Solo Classica. `computeWinProbVarianceScore(winProbHistory)` restituisce un modificatore da `-scoreWinProbVarianceMax` a `+scoreWinProbVarianceMax` (±5). Passa `context.winProbability` a `scoreGame` e il modificatore viene incorporato nel totale da solo.
+Solo Classica. `computeWinProbVarianceScore(line, nowProgress?)` restituisce un modificatore da `-scoreWinProbVarianceMax` a `+scoreWinProbVarianceMax` (±5). Passa `context.winProbability` a `scoreGame` e il modificatore viene incorporato nel totale da solo, misurato dal punto attuale della partita in [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
 
-Servono almeno `minDataPoints` (5) valori finiti. Qualsiasi altra cosa restituisce `undefined`, e il campo `winProbabilityVariance` del risultato viene lasciato del tutto fuori invece di essere impostato a `0`. Le voci non finite (`NaN`, `Infinity`) vengono scartate prima di controllare quel conteggio.
+La linea è la probabilità di vittoria della squadra di casa, una lettura per azione, dalla più vecchia. Ogni lettura è una [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading): `homeWinProbability` da 0 a 1, e `progress`, a che punto della partita è arrivata la sua azione. Un semplice `number[]` funziona ancora, e le sue letture sono distribuite in modo uniforme dall'inizio della partita a ora.
 
-Il modificatore è la distanza assoluta media dei valori forniti da 0.5, mappata sull'intervallo ±5:
+Servono 3 letture e un decimo della partita giocato. Prima di allora restituisce `undefined`, e il campo `winProbabilityVariance` del risultato viene lasciato del tutto fuori invece di essere impostato a `0`. Le letture non finite vengono scartate per prime.
 
-| Distanza media dal 50% | Modificatore |
-|---|---|
-| 0 (testa o croce) | +5 |
-| `maxAvgDist` ÷ 2 (0.175) | 0 |
-| ≥ `maxAvgDist` (0.35) | −5 |
+Il modificatore mescola due misure di quanto l'esito si è mosso di recente. Entrambe si dimezzano ogni `halfLife`, un decimo dei tempi regolamentari: circa 4 minuti di basket universitario, 5 di NBA, 6 di football o un inning di baseball.
 
-Nonostante il nome, il modificatore misura la distanza media dal 50%, non la varianza. Una linea di probabilità di vittoria che oscilla tra il 10% e il 90% ottiene la stessa penalità di una tenuta stabile al 90%. Entrambe hanno la stessa distanza media dal punto medio.
+| Misura | Cosa somma | Piena a | Quota della miscela |
+|---|---|---|---|
+| Movimento | Ogni variazione della probabilità di vittoria da un'azione all'altra nelle ultime quattro emivite, ciascuna limitata a 0.5 | `movementFullScale` (1.67) | 70% |
+| Oscillazione | Il divario maggiore tra la lettura attuale e una qualsiasi lettura delle ultime tre emivite, dimezzato ogni due emivite | `swingFullScale` (0.26) | `swingWeight` (30%) |
+
+Una lettura che salta di più di 0.15 e torna subito entro 0.05 da dove era è un'azione corretta, e viene ignorata.
+
+| Miscela | Primo tempo | Secondo tempo |
+|---|---|---|
+| Pari o sopra `neutralBlend` (0.49) | Fino a +5 | Fino a +5 |
+| Sotto `neutralBlend` | 0 | Fino a −5 |
+
+Il bonus svanisce man mano che la probabilità di vittoria di chi è avanti sale da `openLead` (80%) a `decidedLead` (97%), quindi un guizzo in una partita decisa non vale nulla. La penalità fa l'opposto: niente finché la partita è ancora aperta, il −5 pieno quando una partita tranquilla è al 97%. Parte da `penaltyFromProgress`, a metà dei tempi regolamentari.
+
+Un inizio a senso unico non costa nulla quando la partita cambia. Una partita rimasta al 98% per gran parte della serata e poi ribaltata a testa o croce ottiene il bonus appena le oscillazioni si accumulano, perché conta solo il tratto recente.
+
+`neutralBlend` è la miscela mediana di ogni momento live e non deciso in 417 partite concluse, quindi un tratto tipico di una partita equilibrata sta vicino a 0. Le scale piene sono i 90° percentili degli stessi momenti.
 
 Il modificatore si aggiunge dopo la detrazione per la pausa, non prima, e il risultato viene limitato da 0 a 100 prima che si aggiunga qualsiasi boost.
 

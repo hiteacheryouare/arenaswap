@@ -14,7 +14,7 @@ import {
 	type UserPreferences,
 } from '@arenaswap/core';
 import { createLiveExtras } from '@arenaswap/sideline';
-import { leagueConfigMap, sportTypeConfigMap, type ScoreSnapshot } from 'powerscore';
+import { leagueConfigMap, sportTypeConfigMap, type ScoreSnapshot, type WinProbabilityReading } from 'powerscore';
 import type { ReplayEvent } from './recording';
 
 export interface ReplayScore {
@@ -60,7 +60,7 @@ export const createReplaySession = (scorers: Scorer[], prefs: Pick<UserPreferenc
 	const stalls = new Map<string, ClockStallEntry>();
 	const commercialBreaks = new Map<string, CommercialBreakEntry>();
 	const firstSeen = new Map<string, number>();
-	const winProbability = new Map<string, number[]>();
+	const winProbability = new Map<string, WinProbabilityReading[]>();
 	const liveExtras = createLiveExtras();
 	liveExtras.setRoster(roster);
 	const viewers = new Map(scorers.map(scorer => [scorer.name, { lastSwitchTime: 0, switches: 0, voluntarySwitches: 0 } as Viewer]));

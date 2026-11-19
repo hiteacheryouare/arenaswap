@@ -23,6 +23,7 @@ One entry per `SportType`, exported as `sportTypeConfigs` (an array) and `sportT
 | `zeroZeroAsFullTie` | false | false | true | true | false | false |
 | `zeroZeroPenaltyPeriods` | none | none | 1, 2 | 1 | none | none |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
+| `overtimeDurationSecs` | 300 | 600 | 300 | none | none | none |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -44,6 +45,7 @@ One entry per `SportType`, exported as `sportTypeConfigs` (an array) and `sportT
 | `zeroZeroAsFullTie` | A 0–0 game earns the full tied credit in Closeness. When `false`, 0–0 earns the reduced `zeroZero` tier. |
 | `zeroZeroPenaltyPeriods` | Periods where 0–0 still earns the reduced tier even though `zeroZeroAsFullTie` is `true`. Hockey uses 1 and 2, soccer the first half. |
 | `otPreBoostWindowSecs` | The last seconds of the final regulation period where a tied game ramps toward the overtime pre-boost. `0` turns it off. |
+| `overtimeDurationSecs` | How long one overtime period runs, so `getTimelineProgress` can keep counting through it. Without it, each overtime period counts as 0.05 of the game. |
 | `decayHalfLifeMs` | How fast Momentum, Lead Changes and Comeback Factor fade after the last score. Longer in low-scoring sports, so one goal keeps them alive until the next. |
 | `historyWindowMs` | How much score history the history signals read. See above. |
 | `lateGameCurve` | Baseball and softball only: how many innings regulation has and which inning the late-game ramp starts in. |

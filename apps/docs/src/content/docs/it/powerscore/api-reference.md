@@ -1,5 +1,5 @@
 ---
-sourceHash: '91a61d4e6782'
+sourceHash: '3d1b823a21ee'
 title: Riferimento API di PowerScore
 navLabel: Riferimento API
 description: Ogni funzione e costante esportata da powerscore, con firma, parametri, valore restituito e comportamento quando un input manca o non è valido. Include l'API 2.x deprecata.
@@ -145,11 +145,12 @@ Rendono in inglese una frase di ragione, o una lista di ragioni unite in frasi. 
 ```ts
 function resolveSportConfig(sportType: SportType, override?: Partial<SportTypeConfig>): SportTypeConfig
 function resolveLeagueConfig(game: Pick<Game<string>, 'league' | 'sportType'>, override?: Partial<LeagueConfig>): LeagueConfig
-function getGameProgress(game: Game<string>, sport: SportTypeConfig, league: LeagueConfig): number
+function getGameProgress(game: GameClockState, sport: SportTypeConfig, league: LeagueConfig): number
+function getTimelineProgress(game: GameClockState, sport: SportTypeConfig, league: LeagueConfig): number
 function scoreMargin(game: Game<string>): number
 ```
 
-`resolveSportConfig` e `resolveLeagueConfig` fanno ciò che `scoreGame` fa all'inizio di ogni chiamata. Un `sportType` sconosciuto ricade sulla taratura del basket. Una lega sconosciuta ricade sulla lega più nota del suo sport: la NBA per il basket, la NHL per l'hockey, la MLB per il baseball, la NFL per il football, la NCAA per il softball e la MLS per il calcio. `getGameProgress` è 0 all'inizio, 1 alla fine dei tempi regolamentari e durante i supplementari. `scoreMargin` è la differenza assoluta di punteggio.
+`resolveSportConfig` e `resolveLeagueConfig` fanno ciò che `scoreGame` fa all'inizio di ogni chiamata. Un `sportType` sconosciuto ricade sulla taratura del basket. Una lega sconosciuta ricade sulla lega più nota del suo sport: la NBA per il basket, la NHL per l'hockey, la MLB per il baseball, la NFL per il football, la NCAA per il softball e la MLS per il calcio. `getGameProgress` è 0 all'inizio, 1 alla fine dei tempi regolamentari e durante i supplementari. `getTimelineProgress` coincide con esso nei tempi regolamentari, poi continua a contare oltre 1: un tempo supplementare aggiunge `overtimeDurationSecs` alla durata dei tempi regolamentari, e un inning extra aggiunge la quota di un inning. Entrambi leggono solo `period`, `clockSeconds` e `topOfInning` (`GameClockState`). `scoreMargin` è la differenza assoluta di punteggio.
 
 ## Punteggio fantasy
 
@@ -238,7 +239,7 @@ Deprecata. Valuta i cinque segnali di Classica, applica il modificatore della pr
 |---|---|---|
 | `game` | obbligatorio | Lo stato attuale della partita. |
 | `history` | `[]` | Snapshot recenti del punteggio. Momentum, sorpassi e rimonta restano a 0 finché non contiene almeno 3 voci. |
-| `winProbabilityHistory` | `[]` | Valori recenti di probabilità di vittoria, da 0 a 1. Servono almeno 5 voci finite perché contribuisca in qualche modo. |
+| `winProbabilityHistory` | `[]` | Valori di probabilità di vittoria della squadra di casa, da 0 a 1, dal più vecchio, distribuiti in modo uniforme sulla partita finora. Servono 3 valori finiti e un decimo della partita giocato perché contribuisca in qualche modo. |
 
 Non lancia mai un errore. Restituisce subito un risultato tutto a zero quando `isPlayFrozen(game)` è vero. Non controlla `game.status`: una partita `'pre'` o `'post'` vale come una `'in'`, a parità degli altri campi.
 
@@ -253,10 +254,13 @@ Deprecata: il numero è nella lista `boosts` di `scoreGame` come `scoringOpportu
 ### computeWinProbVarianceScore
 
 ```ts
-function computeWinProbVarianceScore(winProbHistory: number[]): number | undefined
+function computeWinProbVarianceScore(
+	line: readonly WinProbabilityReading[] | readonly number[],
+	nowProgress?: number,
+): number | undefined
 ```
 
-Trasforma uno storico di probabilità di vittoria nel modificatore di ±5. Prima scarta le voci non finite, poi restituisce `undefined` se restano meno di 5 valori finiti. Altrimenti restituisce un intero da `-scoreWinProbVarianceMax` a `scoreWinProbVarianceMax`.
+Trasforma una linea di probabilità di vittoria nel modificatore di ±5 descritto in [Boost e penalità](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). `nowProgress` è il punto attuale della partita da `getTimelineProgress`, e per default è quello dell'ultima lettura. Un semplice `number[]` viene distribuito in modo uniforme fino a `nowProgress`, o fino a 1 senza. Scarta prima le letture non finite, poi restituisce `undefined` se ne restano meno di 3 o prima che sia giocato un decimo della partita. Altrimenti restituisce un intero da `-scoreWinProbVarianceMax` a `scoreWinProbVarianceMax`.
 
 ### isPlayFrozen
 

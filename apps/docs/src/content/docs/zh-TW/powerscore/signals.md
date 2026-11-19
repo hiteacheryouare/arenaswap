@@ -1,5 +1,5 @@
 ---
-sourceHash: '1aa0123b3860'
+sourceHash: '2125a74f6361'
 title: 每種模式下的 PowerScore 信號
 description: 經典、一面倒和夢幻 PowerScore 背後的信號，包括各自的上限、衡量什麼、忽略什麼，以及怎麼把信號關掉。
 section: powerscore
@@ -93,7 +93,7 @@ scoreGame(game, context, { disabledSignals: ['momentum', 'comeback'] });
 
 ### 兩個不屬於信號的修正
 
-經典還會套用勝率修正（±5）和廣告時段扣分。兩者都屬於經典的流程，都在[加成與扣分](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance)中說明。
+經典還會套用勝率修正（±5）和廣告時段扣分。兩者都屬於經典的流程，都在[加成與扣分](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)中說明。
 
 ## 一面倒
 

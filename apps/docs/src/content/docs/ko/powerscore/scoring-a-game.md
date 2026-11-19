@@ -1,5 +1,5 @@
 ---
-sourceHash: 'd23f4e1a7b17'
+sourceHash: '958d2eeea81a'
 title: 라이브 데이터로 경기 점수 매기기
 description: 내 피드를 Game 객체에 매핑하고, 폴링마다 득점 기록을 유지하고, 데이터가 받쳐주는 부스트와 모드를 켜고, 응원팀 부스트와 수동 부스트를 더해요.
 section: powerscore
@@ -57,7 +57,7 @@ const score = scoreGame(toGame(event));
 | 줄 것 | 위치 | 켜지는 것 |
 |---|---|---|
 | 오래된 것부터 정렬한 득점 스냅샷 | `context.history` | 모멘텀, 리드 변화, 추격. 스냅샷이 최소 3개 필요해요. |
-| 폴링마다 0에서 1 사이의 승리 확률 | `context.winProbability` | ±5 승리 확률 보정. 값이 최소 5개 필요해요. |
+| 플레이마다 0에서 1 사이의 승리 확률, 각 플레이가 경기의 어디쯤이었는지와 함께 | `context.winProbability` | ±5 승리 확률 보정. 값 3개와 경기의 10분의 1이 지나 있어야 해요. |
 | 경기가 광고 시간인지 여부 | `context.onBreak` | 광고 시간 감점. |
 | 팀의 `possession`, `yardsToEndZone`, `down`, `distance`, `timeouts` | `game`, `game.homeTeam` | 투 미닛 드릴과 판타지의 풋볼 상황. |
 | `isRedZone`, 그리고 `down`, `distance`, `isGoalToGo` | `game` | 레드존 부스트. |
@@ -122,7 +122,7 @@ const score = scoreGame(game, { history, onBreak: isInBreak(game), winProbabilit
 ```
 
 `isInBreak`는 직접 작성하는 함수예요. 피드가 알려주는 이닝 교대, 투수 교체, 타임아웃 정보로 만드세요. `onBreak`가 `true`인 동안에는 점수에서 15점이 일괄 감점돼요.
-`winProbability`는 어느 팀이든 0에서 1 사이의 최근 승리 확률 값 목록이에요. 50%에서 얼마나 떨어져 있는지만 중요해요. 둘 다 선택 사항이고, PowerScore는 없어도 잘 점수를 매겨요. 각각이 무엇을 바꾸는지는 [부스트와 페널티](/arenaswap/docs/powerscore/boosts-and-penalties/)에 있어요.
+`winProbability`는 홈 팀의 승리 확률이고, 플레이마다 값이 하나씩, 오래된 것부터예요. 각 값에 경기 안에서의 `progress`가 담겨 있어서, 요동은 폴링 횟수가 아니라 경기 시계에 따라 사라져요. 0에서 1 사이 숫자의 단순한 목록도 되고, 지금까지의 경기에 고르게 퍼져 있다고 봐요. 둘 다 선택 사항이고, PowerScore는 없어도 잘 점수를 매겨요. 각각이 무엇을 바꾸는지는 [부스트와 페널티](/arenaswap/docs/powerscore/boosts-and-penalties/)에 있어요.
 
 ## 부스트가 그 순간을 보게 하기
 

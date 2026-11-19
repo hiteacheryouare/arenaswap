@@ -1,5 +1,5 @@
 ---
-sourceHash: '1aa0123b3860'
+sourceHash: '2125a74f6361'
 title: Les signaux de PowerScore dans chaque mode
 description: Les signaux derrière PowerScore en mode Classique, Raclées et Fantasy, avec le plafond de chacun, ce qu'il mesure et ce qu'il ignore. Et comment désactiver des signaux.
 section: powerscore
@@ -93,7 +93,7 @@ Ces trois-là lisent `context.history`, la liste des scores passés d'un match, 
 
 ### Deux modificateurs qui ne sont pas des signaux
 
-Classique applique aussi le modificateur de probabilité de victoire (±5) et la déduction de pause publicitaire. Les deux appartiennent à la chaîne de Classique, et les deux sont détaillés dans [Bonus et pénalités](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-balance).
+Classique applique aussi le modificateur de probabilité de victoire (±5) et la déduction de pause publicitaire. Les deux appartiennent à la chaîne de Classique, et les deux sont détaillés dans [Bonus et pénalités](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings).
 
 ## Raclées
 

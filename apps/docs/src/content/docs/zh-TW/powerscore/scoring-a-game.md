@@ -1,5 +1,5 @@
 ---
-sourceHash: 'd23f4e1a7b17'
+sourceHash: '958d2eeea81a'
 title: 用即時資料為比賽評分
 description: 把你自己的資料來源對應到 Game 物件，在多次輪詢之間保留比分歷史，開啟你的資料支援的加成和模式，再加上收藏與手動加成。
 section: powerscore
@@ -57,7 +57,7 @@ const score = scoreGame(toGame(event));
 | 提供 | 放在 | 會開啟 |
 |---|---|---|
 | 比分快照，由舊到新 | `context.history` | 氣勢、領先交替、逆轉。至少需要 3 筆快照。 |
-| 勝率，每次輪詢一個 0 到 1 的值 | `context.winProbability` | ±5 的勝率調整。至少需要 5 個值。 |
+| 勝率，每個回合一個 0 到 1 的值，外加每個回合發生在比賽的哪個位置 | `context.winProbability` | ±5 的勝率調整。需要 3 個讀數，而且比賽已經進行了十分之一。 |
 | 比賽是否正處於廣告時段 | `context.onBreak` | 廣告時段扣分。 |
 | 球隊上的 `possession`、`yardsToEndZone`、`down`、`distance` 和 `timeouts` | `game`、`game.homeTeam` | 兩分鐘進攻，以及夢幻模式的美式足球戰局。 |
 | `isRedZone`，加上 `down`、`distance` 和 `isGoalToGo` | `game` | 紅區加成。 |
@@ -122,7 +122,7 @@ const score = scoreGame(game, { history, onBreak: isInBreak(game), winProbabilit
 ```
 
 `isInBreak` 要你自己寫，依據你的資料來源對局間休息、換投手和暫停的說法來判斷。`onBreak` 為 `true` 時，分數會固定扣 15 分。
-`winProbability` 是一份近期的勝率清單，值介於 0 到 1，任一隊的都可以。只有和 50% 的距離才重要。兩者都是選填，沒有它們 PowerScore 也能正常評分。各自會改變什麼，請見[加成與扣分](/arenaswap/docs/powerscore/boosts-and-penalties/)。
+`winProbability` 是主隊的勝率，每個回合一個讀數，由舊到新。每個讀數都帶著它在比賽中的 `progress`，所以一次擺盪是隨比賽時鐘衰減，而不是隨你輪詢的頻率。一份 0 到 1 的純數字清單也行，會在到目前為止的比賽中平均鋪開。兩者都是選填，沒有它們 PowerScore 也能正常評分。各自會改變什麼，請見[加成與扣分](/arenaswap/docs/powerscore/boosts-and-penalties/)。
 
 ## 讓加成看見那一刻
 

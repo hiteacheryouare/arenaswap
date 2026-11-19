@@ -1,5 +1,5 @@
-import { scoreGame, signalPoints, boostPoints, sportTypeConfigMap } from 'powerscore';
-import type { Game as ScoringGame, PowerScore, PowerScoreResult, ScoreOptions, ScoringContext, ScoreSnapshot, Side } from 'powerscore';
+import { scoreGame, signalPoints, boostPoints, getTimelineProgress, resolveLeagueConfig, resolveSportConfig, sportTypeConfigMap } from 'powerscore';
+import type { Game as ScoringGame, PowerScore, PowerScoreResult, ScoreOptions, ScoringContext, ScoreSnapshot, Side, WinProbabilityReading } from 'powerscore';
 import { createFavoriteTeamKey, sensitivityThresholds } from './constants';
 import { resolveModeForGame } from './scoringMode';
 import type { Game, LiveScore, Team, UserPreferences } from './types';
@@ -144,7 +144,7 @@ export interface LiveScoringInput {
 	game: Game;
 	history: readonly ScoreSnapshot[];
 	onBreak: boolean;
-	winProbability: number[];
+	winProbability: readonly WinProbabilityReading[];
 	now: number;
 	extras?: Omit<ScoringContext, 'history' | 'onBreak' | 'winProbability'>;
 }
@@ -172,6 +172,11 @@ export const scoreOptionsFor = (game: Game, prefs: ScoringPrefs, gameBoost: numb
 		gameBoost,
 		...(mode === 'blowouts' && prefs.rivalTeamIds?.length ? { rivalSides: rivalSidesOf(game, prefs.rivalTeamIds) } : {}),
 	};
+};
+
+export const timelineProgressOf = (game: Game): number => {
+	const scoring = toScoringGame(game);
+	return getTimelineProgress(scoring, resolveSportConfig(scoring.sportType), resolveLeagueConfig(scoring));
 };
 
 export const scoreLiveGame = (input: LiveScoringInput, prefs: ScoringPrefs, gameBoost: number, favoriteTeamIds?: Set<string>): PowerScore => (

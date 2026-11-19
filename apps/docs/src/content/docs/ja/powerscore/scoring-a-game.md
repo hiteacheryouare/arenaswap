@@ -1,5 +1,5 @@
 ---
-sourceHash: 'd23f4e1a7b17'
+sourceHash: '958d2eeea81a'
 title: ライブデータから試合をスコア化する
 description: 自分のフィードを Game オブジェクトにマッピングし、ポーリングをまたいでスコア履歴を保ち、データが対応するブーストとモードをオンにし、お気に入りと手動のブーストを加えます。
 section: powerscore
@@ -57,7 +57,7 @@ const score = scoreGame(toGame(event));
 | 渡すもの | 渡す場所 | オンになるもの |
 |---|---|---|
 | 古い順のスコアスナップショット | `context.history` | 勢い、リード交代、追い上げ。スナップショットが3つ以上必要です。 |
-| ポーリングごとの0〜1の勝利確率 | `context.winProbability` | ±5の勝利確率の補正。値が5つ以上必要です。 |
+| 1プレーごとの0〜1の勝利確率と、各プレーが試合のどこで起きたか | `context.winProbability` | ±5の勝利確率の補正。3つの値と、試合の10分の1が進んでいることが必要です。 |
 | 試合がコマーシャル中かどうか | `context.onBreak` | コマーシャル中の減点。 |
 | チームの `possession`、`yardsToEndZone`、`down`、`distance`、`timeouts` | `game`、`game.homeTeam` | 2ミニッツ・ドリルと、ファンタジーのフットボールの状況。 |
 | `isRedZone`、および `down`、`distance`、`isGoalToGo` | `game` | レッドゾーンブースト。 |
@@ -122,7 +122,7 @@ const score = scoreGame(game, { history, onBreak: isInBreak(game), winProbabilit
 ```
 
 `isInBreak` は自分で書くもので、イニング間、投手交代、タイムアウトについてフィードが伝える内容を使います。`onBreak` が `true` の間、スコアは一律15ポイント減ります。
-`winProbability` は、どちらのチームについてでもよい、0〜1の最近の勝利確率の値のリストです。見るのは50%からの距離だけです。どちらも省略可能で、なくても PowerScore は問題なくスコア化します。それぞれが何を変えるかは、[ブーストとペナルティ](/arenaswap/docs/powerscore/boosts-and-penalties/)にあります。
+`winProbability` はホームチームの勝利確率で、1プレーにつき1つ、古いものが先です。各値は試合の中での `progress` を持つので、揺れはポーリングの頻度ではなく試合の時計に合わせて薄れます。0〜1の数値だけのリストも使え、ここまでの試合に均等に並べられます。どちらも省略可能で、なくても PowerScore は問題なくスコア化します。それぞれが何を変えるかは、[ブーストとペナルティ](/arenaswap/docs/powerscore/boosts-and-penalties/)にあります。
 
 ## ブーストに場面を見せる
 
