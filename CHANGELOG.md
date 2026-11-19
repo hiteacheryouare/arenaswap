@@ -13,6 +13,10 @@ The docs site now builds to the gitignored `apps/docs/dist`, and the Deploy Docs
 
 `computeWinProbVarianceScore` now blends how much the win probability has moved lately with the biggest recent swing, both fading every tenth of regulation, so a game that was lopsided for 30 minutes and then turns earns the bonus (CSUF @ UCLA went from −5 all night to +3/+4). Readings carry their game `progress` (`WinProbabilityReading`, overtime-aware via `getTimelineProgress`), the penalty only applies in the second half of a quiet, decided game, and the constants were fit on the per-play lines of 417 finished games.
 
+## The header glow joins the opening reveal and fades out on scroll — 2026-11-19
+
+The top card's glow now blooms out of the top corners over `$motion-epic` when that card lands in the opening reveal (a skip jumps it to full, and an open with no reveal keeps the old fade). It is pinned behind the header and pulls back into the corners over the first 120px of scroll (`useGlowScrollFade`). The header paints its own copy of the glow once it turns solid, so the two layers read the same `--glow-*` values off `.popup-container` and line up exactly.
+
 ## Rare games get a test set, and lopsided scores stay centred — 2026-11-18
 
 `cypress/support/safetyNet/rareGames.ts` holds 26 games that almost never happen (152-148, a 5OT final, `Final/Pens`, Olympic 2OT, 90+7', canceled, abandoned, TBD, a 1 v 16 seed) and `rareGames.cy.tsx` checks them in every locale at popup width. It caught the score separator sitting 3.1px off centre on 152-8, so `.game-score-row` is now a `1fr auto 1fr` grid that gives both scores the same width.

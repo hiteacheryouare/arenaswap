@@ -22,6 +22,28 @@
 	--as-menu-item-active-bg:     var(--as-bg-2);
 }
 
+$glow-height: 240px;
+
+// The top live game's two colours, one from each top corner. `--glow-bloom` brings them in when the
+// top card lands and `--glow-out` takes them away over the first stretch of scroll. Either one
+// shrinks the reach back toward the corners, and the colour holds full strength until the glow is
+// a little over half gone, so it pulls in first and fades last.
+@mixin glow-layers($cover: 1) {
+	--glow-share: 34%;
+	--glow-presence: calc(var(--glow-bloom) * (1 - var(--glow-out, 0)));
+	--glow-reach: calc(0.35 + 0.65 * var(--glow-presence));
+	--glow-alpha: calc(var(--glow-share) * #{$cover} * min(1, var(--glow-presence) * 1.6));
+	background-image:
+		radial-gradient(calc(120% * var(--glow-reach)) calc(100% * var(--glow-reach)) at 0% 0%, color-mix(in srgb, var(--glow-left) var(--glow-alpha), transparent), transparent 70%),
+		radial-gradient(calc(120% * var(--glow-reach)) calc(100% * var(--glow-reach)) at 100% 0%, color-mix(in srgb, var(--glow-right) var(--glow-alpha), transparent), transparent 70%);
+	background-size: 100% $glow-height;
+	background-repeat: no-repeat;
+
+	[data-bs-theme='light'] & {
+		--glow-share: 22%;
+	}
+}
+
 @layer custom {
 	//
 	// These rules used to live only in `apps/extension/assets/bootstrap.scss`, which meant the
@@ -141,6 +163,8 @@
 		// reads as a smudge over them rather than as a surface they go behind.
 		background-color: color-mix(in srgb, var(--as-bg-body) calc(var(--lifted, 0) * 100%), transparent);
 		border-bottom: 1px solid color-mix(in srgb, var(--as-border-color) calc(var(--lifted, 0) * 100%), transparent);
+		// Once the bar is solid it hides `.popup-glow`, so it paints the same glow over its own surface.
+		@include glow-layers(var(--lifted, 0));
 	}
 
 	.popup-container {
@@ -157,35 +181,50 @@
 
 	// Registered so a change of top game, or the first game going live, eases between colours instead
 	// of snapping. An unregistered custom property is a string and cannot be interpolated.
+	// Inherited, so the glow and the header's copy of it read the same colours off `.popup-container`.
 	@property --glow-left {
 		syntax: '<color>';
-		inherits: false;
+		inherits: true;
 		initial-value: transparent;
 	}
 
 	@property --glow-right {
 		syntax: '<color>';
-		inherits: false;
+		inherits: true;
 		initial-value: transparent;
 	}
 
-	// The top live game's two colours, glowing down from the top corners behind the header and fading
-	// into the page. Below the list's own content, and it scrolls away with it.
-	.popup-glow {
-		--glow-share: 34%;
-		position: absolute;
-		inset: 0 0 auto;
-		z-index: -1;
-		height: 240px;
-		background:
-			radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--glow-left) var(--glow-share), transparent), transparent 70%),
-			radial-gradient(120% 100% at 100% 0%, color-mix(in srgb, var(--glow-right) var(--glow-share), transparent), transparent 70%);
-		pointer-events: none;
-		transition: --glow-left m.$motion-deliberate m.$motion-ease, --glow-right m.$motion-deliberate m.$motion-ease;
+	@property --glow-bloom {
+		syntax: '<number>';
+		inherits: false;
+		initial-value: 1;
+	}
 
-		[data-bs-theme='light'] & {
-			--glow-share: 22%;
-		}
+	.popup-container {
+		transition: --glow-left m.$motion-deliberate m.$motion-ease, --glow-right m.$motion-deliberate m.$motion-ease;
+	}
+
+	// Pinned behind the header and the cards, and out of the flow: the negative margins pull it over
+	// the container's padding the way the header's do, and the bottom one hands its height back.
+	.popup-glow {
+		position: sticky;
+		top: -0.75rem;
+		z-index: -1;
+		flex-shrink: 0;
+		height: $glow-height;
+		margin: -0.75rem -0.75rem calc(0.75rem - #{$glow-height});
+		pointer-events: none;
+		@include glow-layers;
+	}
+
+	@keyframes popupGlowBloom {
+		from { --glow-bloom: 0; }
+		to   { --glow-bloom: 1; }
+	}
+
+	// Started on both layers in the same commit, so the header's copy blooms in step with the glow.
+	.popup-container.is-glow-blooming:not(.is-glow-skipping) :is(.popup-glow, .popup-header) {
+		animation: popupGlowBloom m.$motion-epic m.$motion-ease var(--glow-bloom-delay, 0ms) both;
 	}
 
 	.popup-settings-button {

@@ -35,6 +35,7 @@ import useSlideDirection, { slideClassName } from '../useSlideDirection';
 import { buildFinalComparator, buildLeagueRank, buildLiveComparator, buildUpcomingComparator, getRandomLoadingMessage, groupByDate, groupByLeague, isInUpcomingWindow, resolveSelectedDayIndex } from '../popupHelpers';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 import useRestoredScroll from '../useRestoredScroll';
+import useGlowScrollFade from '../useGlowScrollFade';
 import { prefetchOnIntent } from './prefetchIntent';
 import { matchesGameQuery } from '../../../utils/gameSearch';
 import { revealCutTotalMs, revealDelayMs, revealMaxCards, revealModeForIndex, type cardRevealPlan, type revealCut, type revealMode } from '../cardReveal';
@@ -346,6 +347,17 @@ const mainView = ({
 	// Always drawn, and transparent with nothing live, so the glow fades in and out rather than popping.
 	const glowPair = topLiveGame ? resolveTeamColorPair(topLiveGame.awayTeam, topLiveGame.homeTeam, '#dee2e6', '#dee2e6') : ['transparent', 'transparent'];
 	const glow = topLiveGame && isHomeFirst(topLiveGame) ? [glowPair[1], glowPair[0]] : glowPair;
+	// Decided once, on the render the top card first appears in: the glow blooms as that card lands.
+	// The reveal drops to 'none' before the bloom has finished, so reading the mode live would cut it.
+	const glowBloomMsRef = useRef<number | null>(null);
+	if (glowBloomMsRef.current === null && topLiveGame && !isLoading) {
+		const index = reveal.order.get(topLiveGame.id);
+		glowBloomMsRef.current = reveal.mode !== 'none' && !reveal.skipping && index !== undefined && index < revealMaxCards
+			? revealDelayMs(index, reveal.mode) + revealCutTotalMs(reveal.mode, reveal.cut)
+			: -1;
+	}
+	const glowBloomMs = glowBloomMsRef.current ?? -1;
+	useGlowScrollFade(scrollerRef);
 
 	// The error banner already says the slate did not arrive, so the empty state must not add that
 	// it is a quiet night.
@@ -365,8 +377,12 @@ const mainView = ({
 	};
 
 	return (
-		<div ref={scrollerRef} className='popup-container d-flex flex-column'>
-			<div className='popup-glow' style={{ '--glow-left': glow[0], '--glow-right': glow[1] } as CSSProperties} aria-hidden='true' />
+		<div
+			ref={scrollerRef}
+			className={`popup-container d-flex flex-column${glowBloomMs >= 0 ? ' is-glow-blooming' : ''}${revealSkipping ? ' is-glow-skipping' : ''}`}
+			style={{ '--glow-left': glow[0], '--glow-right': glow[1], '--glow-bloom-delay': `${Math.max(0, glowBloomMs)}ms` } as CSSProperties}
+		>
+			<div className='popup-glow' aria-hidden='true' />
 			<PopupHeader
 				scroller={scrollerRef}
 				enabled={prefs.enabled}

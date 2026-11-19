@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import type { ComponentProps } from 'react';
 import MainView from '../../../entrypoints/popup/components/mainView';
+import { revealCutTotalMs } from '../../../entrypoints/popup/cardReveal';
 import type { UserPreferences } from '@arenaswap/core/types';
 
 const defaultPrefs: UserPreferences = {
@@ -341,6 +342,21 @@ const sectionTitleOf = (gameId: string) => cy
 	.closest('.mt-3')
 	.find('.popup-section-title');
 
+const bloomOf = (element: Element) => element.getAnimations().find(animation => (animation as CSSAnimation).animationName === 'popupGlowBloom');
+
+const scrollListTo = (top: number) => cy.get('.popup-container').then(([container]: JQuery<HTMLElement>) => {
+	container.scrollTop = top;
+	expect(container.scrollTop, 'the list is tall enough to scroll').to.equal(top);
+});
+
+const expectGlowOut = (out: string) => cy.get('.popup-container').should(([container]: JQuery<HTMLElement>) => {
+	const glow = container.querySelector<HTMLElement>('.popup-glow')!;
+	const header = container.querySelector<HTMLElement>('.popup-header')!;
+	expect(glow.style.getPropertyValue('--glow-out')).to.equal(out);
+	expect(header.style.getPropertyValue('--glow-out')).to.equal(out);
+	expect(glow.getBoundingClientRect().top).to.be.closeTo(container.getBoundingClientRect().top, 1);
+});
+
 describe('mainView header glow', () => {
 	// The top card lends its colours to the top of the list.
 	it('glows in the colours of the live game with the best PowerScore', () => {
@@ -356,9 +372,12 @@ describe('mainView header glow', () => {
 				scores={[score('cold', 30), score('hot', 91)]}
 			/>,
 		);
+		cy.get('.popup-container').should(([container]: JQuery<HTMLElement>) => {
+			expect(container.style.getPropertyValue('--glow-left').toLowerCase()).to.equal('#00471b');
+			expect(container.style.getPropertyValue('--glow-right').toLowerCase()).to.equal('#860038');
+		});
 		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
-			expect(glow.style.getPropertyValue('--glow-left').toLowerCase()).to.equal('#00471b');
-			expect(glow.style.getPropertyValue('--glow-right').toLowerCase()).to.equal('#860038');
+			expect(getComputedStyle(glow).getPropertyValue('--glow-left')).to.equal('rgb(0, 71, 27)');
 			expect(getComputedStyle(glow).backgroundImage).to.contain('radial-gradient');
 		});
 		// Behind the header and the cards, not over them.
@@ -379,9 +398,9 @@ describe('mainView header glow', () => {
 			homeTeam: { id: 'elv', name: 'Elversberg', abbreviation: 'ELV', score: 3, color: '#000000' },
 		};
 		cy.mount(<MainView {...defaultProps} games={[match]} scores={[score('match', 17)]} />);
-		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
-			expect(glow.style.getPropertyValue('--glow-left').toLowerCase()).to.equal('#000000');
-			expect(glow.style.getPropertyValue('--glow-right').toLowerCase()).to.equal('#c3141e');
+		cy.get('.popup-container').should(([container]: JQuery<HTMLElement>) => {
+			expect(container.style.getPropertyValue('--glow-left').toLowerCase()).to.equal('#000000');
+			expect(container.style.getPropertyValue('--glow-right').toLowerCase()).to.equal('#c3141e');
 		});
 	});
 
@@ -396,8 +415,8 @@ describe('mainView header glow', () => {
 				favoriteTeamIds={new Set(['nba:fav'])}
 			/>,
 		);
-		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
-			expect(glow.style.getPropertyValue('--glow-right').toLowerCase()).to.equal('#041e42');
+		cy.get('.popup-container').should(([container]: JQuery<HTMLElement>) => {
+			expect(container.style.getPropertyValue('--glow-right').toLowerCase()).to.equal('#041e42');
 		});
 	});
 
@@ -422,15 +441,80 @@ describe('mainView header glow', () => {
 			expect(getComputedStyle(glow).getPropertyValue('--glow-left')).to.equal('rgb(0, 0, 255)');
 		});
 		cy.get('[data-testid="fake-next"]').click();
-		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
-			const transition = glow.getAnimations().find(animation => (animation as CSSTransition).transitionProperty === '--glow-left');
+		cy.get('.popup-container').should(([container]: JQuery<HTMLElement>) => {
+			const transition = container.getAnimations().find(animation => (animation as CSSTransition).transitionProperty === '--glow-left');
 			expect(transition, 'a running transition on --glow-left').to.not.equal(undefined);
 			transition!.pause();
 			transition!.currentTime = 350;
-			const midway = getComputedStyle(glow).getPropertyValue('--glow-left');
+			const midway = getComputedStyle(container.querySelector('.popup-glow')!).getPropertyValue('--glow-left');
 			expect(midway).to.not.equal('rgb(0, 0, 255)');
 			expect(midway).to.not.equal('rgb(255, 0, 0)');
 		});
+	});
+
+	it('blooms in as the top card lands, on the glow and the header together', () => {
+		cy.mount(<MainView {...defaultProps} games={[makeGame('top')]} scores={[score('top', 80)]} revealMode='quick' revealCut='headToHead' />);
+		cy.get('.popup-container').should('have.class', 'is-glow-blooming');
+		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
+			const bloom = bloomOf(glow);
+			expect(bloom, 'the bloom').to.not.equal(undefined);
+			expect(bloom!.effect!.getTiming().delay).to.equal(revealCutTotalMs('quick', 'headToHead'));
+			bloom!.pause();
+			bloom!.currentTime = 0;
+			expect(getComputedStyle(glow).getPropertyValue('--glow-bloom')).to.equal('0');
+		});
+		cy.get('.popup-header').should(([header]: JQuery<HTMLElement>) => {
+			expect(bloomOf(header), 'the header copy blooms too').to.not.equal(undefined);
+		});
+	});
+
+	it('fades in without a bloom when there is no reveal', () => {
+		cy.mount(<MainView {...defaultProps} games={[makeGame('top')]} scores={[score('top', 80)]} />);
+		cy.get('.popup-container').should('not.have.class', 'is-glow-blooming');
+		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
+			expect(bloomOf(glow)).to.equal(undefined);
+			expect(getComputedStyle(glow).getPropertyValue('--glow-bloom')).to.equal('1');
+		});
+	});
+
+	const SkippingMainView = () => {
+		const [skipping, setSkipping] = useState(false);
+		return (
+			<>
+				<button type='button' data-testid='fake-skip' onClick={() => setSkipping(true)}>Skip</button>
+				<MainView {...defaultProps} games={[makeGame('top')]} scores={[score('top', 80)]} revealMode='quick' revealCut='headToHead' revealSkipping={skipping} />
+			</>
+		);
+	};
+
+	it('jumps to the full glow when the reveal is skipped', () => {
+		cy.mount(<SkippingMainView />);
+		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
+			expect(bloomOf(glow), 'the bloom before the skip').to.not.equal(undefined);
+		});
+		cy.get('[data-testid="fake-skip"]').click();
+		cy.get('.popup-glow').should(([glow]: JQuery<HTMLElement>) => {
+			expect(bloomOf(glow)).to.equal(undefined);
+			expect(getComputedStyle(glow).getPropertyValue('--glow-bloom')).to.equal('1');
+		});
+	});
+
+	it('stays pinned behind the header and fades out over the first 120px of scroll', () => {
+		cy.mount(<StatefulMainView games={[makeGame('top')]} />);
+		// The stub cards are a line tall, so the list is padded out to something worth scrolling.
+		cy.get('.popup-container').then(([container]: JQuery<HTMLElement>) => {
+			const spacer = document.createElement('div');
+			spacer.style.height = '2000px';
+			spacer.style.flexShrink = '0';
+			container.append(spacer);
+		});
+		expectGlowOut('0');
+		scrollListTo(60);
+		expectGlowOut('0.5');
+		scrollListTo(400);
+		expectGlowOut('1');
+		scrollListTo(0);
+		expectGlowOut('0');
 	});
 });
 
