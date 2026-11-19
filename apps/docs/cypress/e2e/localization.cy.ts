@@ -1,7 +1,7 @@
 const locales = ['de', 'es', 'fil', 'fr', 'it', 'ja', 'ko', 'pt-BR', 'pt-PT', 'zh-CN', 'zh-TW'];
 const everyLocale = ['', ...locales.map(locale => `${locale}/`)];
 
-const navWidths = [992, 1280];
+const navWidths = [1200, 1280];
 
 const pinDarkTheme = (win: Cypress.AUTWindow) => win.localStorage.setItem('arenaswap.theme', 'dark');
 
@@ -15,7 +15,7 @@ const readRow = () =>
 
 describe('the navigation fits every language', () => {
 	everyLocale.forEach(locale => {
-		it(`does not collide at 992 or 1280: /${locale}`, () => {
+		it(`does not collide at 1200 or 1280: /${locale}`, () => {
 			navWidths.forEach(width => {
 				cy.viewport(width, 900);
 				cy.visit(`/${locale}`);
@@ -62,7 +62,7 @@ describe('a visit stays in the language it started in', () => {
 					.to.match(new RegExp(`^/arenaswap/${locale}/`));
 			});
 
-			cy.get('.nav-desktop-links a').eq(2).click();
+			cy.get(`.nav-desktop-links a[href="/arenaswap/${locale}/docs/"]`).click();
 			cy.location('pathname').should('eq', `/arenaswap/${locale}/docs/`);
 			cy.get('html').should('have.attr', 'lang', locale);
 			cy.get('.untranslated-notice').should('not.exist');

@@ -86,6 +86,16 @@ export const arizonaPurdue: DemoEntry = {
 
 export const liveEntries: DemoEntry[] = [celticsKnicks, flyersPenguins, arsenalChelsea];
 
+export const christmasFinal: Game = {
+	...celticsKnicks.game,
+	id: 'demo-nba-christmas',
+	status: 'post',
+	clockSeconds: 0,
+	startTime: '2026-12-25T12:00:00',
+	awayTeam: { ...celticsKnicks.game.awayTeam, score: 114 },
+	homeTeam: { ...celticsKnicks.game.homeTeam, score: 117 },
+};
+
 // A date-time with no offset is read as local time, so the card prints 4:25 PM wherever the site is built.
 export const chiefsBills: Game = {
 	id: 'demo-nfl',

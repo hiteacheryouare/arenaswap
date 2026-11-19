@@ -4,6 +4,7 @@
 @use '@arenaswap/ui/src/icons' with ($font-dir: '/src/fonts');
 @use '@arenaswap/ui/src/game-card';
 @use '@arenaswap/ui/src/popup';
+@use '@arenaswap/ui/src/game-detail';
 @use '@arenaswap/ui/src/fonts' with ($font-base-url: '/src/fonts');
 @use 'site';
 
@@ -14,3 +15,4 @@
 @use 'prose';
 @use 'doc-demos';
 @use 'powerscore';
+@use 'about';

@@ -4,6 +4,8 @@
 		"homeDescription": "O ArenaSwap observa cada jogo em direto em {leagues} ligas e muda o teu separador do browser para o mais emocionante. Gratuito, sem conta, sem rastreio.",
 		"faqTitle": "Perguntas frequentes | ArenaSwap",
 		"faqDescription": "Como o ArenaSwap muda de separador, com que ligas e serviços de streaming funciona, o que o PowerScore mede e o que faz com os teus dados.",
+		"aboutTitle": "Sobre | ArenaSwap",
+		"aboutDescription": "Porque criámos o ArenaSwap, em que acreditamos e para onde vamos. Grátis, sem conta e sem anúncios, feito por adeptos que o usam em todos os jogos.",
 		"powerscoreTitle": "Pacote PowerScore | ArenaSwap",
 		"powerscoreDescription": "O PowerScore transforma qualquer jogo em direto numa pontuação de emoção de 0 a 100. Instala-o a partir do npm, vê como funcionam os cinco sinais e observa-o a pontuar os jogos de logo à noite, em direto.",
 		"legalTitle": "Avisos legais | ArenaSwap",
@@ -22,6 +24,7 @@
 	},
 	"nav": {
 		"home": "Início",
+		"about": "Sobre",
 		"powerscore": "PowerScore",
 		"docs": "Docs",
 		"releases": "Versões",
@@ -267,6 +270,43 @@
 				"a": "Sim, no GitHub, incluindo o algoritmo PowerScore, publicado separadamente no npm para que possas pontuar jogos mesmo sem a extensão."
 			}
 		]
+	},
+	"about": {
+		"hero": {
+			"title": "O melhor jogo encontra-te.",
+			"lede": "O ArenaSwap vigia todos os jogos em direto das tuas ligas e põe o melhor à tua frente."
+		},
+		"problem": {
+			"title": "Ver mais do que um jogo não devia dar trabalho.",
+			"copy1": "Durante demasiado tempo, uma grande noite de desporto online significava fazeres tu as mudanças. Quatro separadores abertos, só um com som, a mão no rato e sempre um clique atrás da buzina. Alguns adeptos foram mais longe e montaram configurações com vários ecrãs que parecem um centro de controlo de segurança.",
+			"copy2": "Os domingos de futebol americano têm um canal para isto há anos. A web nunca teve um para cada desporto, todas as noites.",
+			"kicker": "Por isso fizemos um."
+		},
+		"values": {
+			"title": "Em que acreditamos.",
+			"smallStuffTitle": "Importamo-nos com os pormenores.",
+			"smallStuffCopy": "O ArenaSwap é feito por adeptos de desporto obcecados com os pequenos pormenores que tornam um jogo divertido. A tua equipa marcou? Sobem confetes nas cores dela. Jogo no Natal? Trouxemos a decoração. A nevar no estádio? Também está a nevar no ArenaSwap. E algures nas Definições há uma escala de temperatura mais antiga do que Fahrenheit, só por diversão.",
+			"smallStuffDemo": "O ecrã de um jogo de Natal já terminado, {away} {awayScore}, {home} {homeScore}, com uma meia pendurada para cada equipa debaixo de uma grinalda. A meia do vencedor está cheia de guloseimas. A do vencido tem carvão.",
+			"funTitle": "O desporto é para ser divertido.",
+			"funCopy": "Não estamos a salvar vidas. Estamos a encontrar-te um jogo melhor, por isso divertimo-nos a fazê-lo. O ArenaSwap suborna os árbitros enquanto carrega e, quando não há nada em direto, avisa-te que o senhor dos cachorros-quentes se foi embora. A única coisa com que nunca brincamos é a mudança em si.",
+			"funDemo": "O que o ArenaSwap mostra quando não há nada em direto nas tuas ligas. Carrega em Atualizar para ver outro.",
+			"watchTitle": "Vemos com ele.",
+			"watchCopy": "Usamos o ArenaSwap sempre que vemos desporto. Se algo não é suficientemente bom no nosso sofá, não é suficientemente bom no teu.",
+			"freeTitle": "Grátis e sem nada a esconder.",
+			"freeCopy": "A TV por cabo e o streaming já são caros que chegue. A última coisa de que precisas é de mais uma subscrição para mudares entre as tuas subscrições. O ArenaSwap é grátis, sem conta e sem anúncios. E, para ser sincero, não queremos saber que jogos vês. Nem sequer a próxima final da NFC dos Cowboys, quando se dignar a aparecer. As tuas definições ficam no teu navegador e todo o código é público {link}.",
+			"githubLink": "no GitHub"
+		},
+		"goals": {
+			"title": "Para onde vamos.",
+			"bestTitle": "A melhor forma de ver desporto na web.",
+			"bestCopy": "O Multiview, o Standby Stream e o Guia são um começo. Queremos que o ArenaSwap seja a única coisa de que precisas aberta numa noite de jogos.",
+			"sportsTitle": "Todos os desportos, todas as noites.",
+			"sportsCopy": "Hoje são {leagues} ligas. Vamos continuar a juntar mais até haver sempre algo que valha a pena ver, a que horas for aí onde vives.",
+			"everyoneTitle": "Para todos.",
+			"everyoneCopy": "O ArenaSwap fala {languages} idiomas hoje e vamos continuar a juntar mais, para adeptos de desporto de todo o mundo. Porque o desporto é para todos.",
+			"stakesTitle": "Saber o que está em jogo.",
+			"stakesCopy": "O PowerScore já sabe distinguir um Jogo 7 de um Jogo 2, e que um no-hitter na oitava entrada vale mais do que a maioria dos empates. Queremos que perceba todas as razões pelas quais um jogo importa."
+		}
 	},
 	"notFound": {
 		"title": "Este não está no calendário.",

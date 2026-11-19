@@ -218,7 +218,7 @@ html:root[data-bs-theme='light'] {
 			}
 		}
 
-		@media (max-width: 991px) {
+		@media (max-width: 1199.98px) {
 			display: none;
 		}
 	}
@@ -234,7 +234,7 @@ html:root[data-bs-theme='light'] {
 		font-size: 0.85rem;
 		padding: 0.6rem 1.25rem;
 
-		@media (max-width: 991px) {
+		@media (max-width: 1199.98px) {
 			display: none !important;
 		}
 	}
@@ -253,7 +253,7 @@ html:root[data-bs-theme='light'] {
 		cursor: pointer;
 		flex-shrink: 0;
 
-		@media (max-width: 991px) {
+		@media (max-width: 1199.98px) {
 			display: flex;
 		}
 	}
@@ -350,7 +350,7 @@ html:root[data-bs-theme='light'] {
 	}
 
 	.lang-switch {
-		@media (max-width: 991px) {
+		@media (max-width: 1199.98px) {
 			display: none;
 		}
 	}
@@ -393,12 +393,6 @@ html:root[data-bs-theme='light'] {
 		&:hover {
 			color: var(--color-text);
 			background: color-mix(in srgb, var(--as-fg-body) 6%, transparent);
-		}
-	}
-
-	@media (min-width: 992px) and (max-width: 1199.98px) {
-		.lang-switch-current {
-			display: none;
 		}
 	}
 

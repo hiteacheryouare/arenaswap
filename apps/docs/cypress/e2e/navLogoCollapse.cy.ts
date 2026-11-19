@@ -44,7 +44,7 @@ describe('the site header collapses its mark', () => {
 	});
 
 	it('leaves the links room at the tightest desktop width', () => {
-		cy.viewport(992, 900);
+		cy.viewport(1200, 900);
 		cy.scrollTo(0, 400);
 		mark().should('have.attr', 'viewBox', collapsedBox);
 		cy.get('.nav-row').then($row => {

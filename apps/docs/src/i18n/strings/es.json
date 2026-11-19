@@ -4,6 +4,8 @@
 		"homeDescription": "ArenaSwap vigila cada partido en vivo de {leagues} ligas y cambia tu pestaña del navegador al más emocionante. Gratis, sin cuenta, sin rastreo.",
 		"faqTitle": "Preguntas frecuentes | ArenaSwap",
 		"faqDescription": "Cómo cambia ArenaSwap de pestaña, con qué ligas y servicios de streaming funciona, qué mide PowerScore y qué hace con tus datos.",
+		"aboutTitle": "Acerca de | ArenaSwap",
+		"aboutDescription": "Por qué creamos ArenaSwap, en qué creemos y hacia dónde vamos. Gratis, sin cuenta y sin anuncios, hecho por fans que lo usan en cada partido.",
 		"powerscoreTitle": "Paquete PowerScore | ArenaSwap",
 		"powerscoreDescription": "PowerScore convierte cualquier partido en vivo en una puntuación de emoción de 0 a 100. Instálalo desde npm, descubre cómo funcionan las cinco señales y míralo puntuar los partidos de esta noche en vivo.",
 		"legalTitle": "Avisos legales | ArenaSwap",
@@ -22,6 +24,7 @@
 	},
 	"nav": {
 		"home": "Inicio",
+		"about": "Nosotros",
 		"powerscore": "PowerScore",
 		"docs": "Docs",
 		"releases": "Versiones",
@@ -267,6 +270,43 @@
 				"a": "Sí, en GitHub, incluido el algoritmo de PowerScore, que se publica en npm por separado para que puedas puntuar partidos sin la extensión."
 			}
 		]
+	},
+	"about": {
+		"hero": {
+			"title": "El mejor partido te encuentra.",
+			"lede": "ArenaSwap vigila cada partido en vivo de tus ligas y te pone enfrente el mejor."
+		},
+		"problem": {
+			"title": "Ver más de un partido no debería ser un trabajo.",
+			"copy1": "Durante demasiado tiempo, una noche grande de deporte en línea significaba hacer los cambios tú mismo. Cuatro pestañas abiertas, una sin silenciar, la mano en el mouse y siempre un clic atrás de la chicharra. Algunos fans fueron más lejos y armaron configuraciones de varias pantallas que parecen un centro de control de seguridad.",
+			"copy2": "Los domingos de fútbol americano tienen un canal para esto desde hace años. La web nunca tuvo uno para cada deporte, cada noche.",
+			"kicker": "Así que hicimos uno."
+		},
+		"values": {
+			"title": "En qué creemos.",
+			"smallStuffTitle": "Nos fijamos en los detalles.",
+			"smallStuffCopy": "ArenaSwap lo hacen fans del deporte obsesionados con esas pequeñeces que hacen divertido un partido. ¿Anota tu equipo? Sube confeti con sus colores. ¿Hay partido en Navidad? Trajimos la decoración. ¿Nieva en el estadio? También nieva en ArenaSwap. Y en algún rincón de Ajustes hay una escala de temperatura más vieja que Fahrenheit, nomás por diversión.",
+			"smallStuffDemo": "La pantalla de un partido de Navidad ya terminado, {away} {awayScore}, {home} {homeScore}, con un calcetín colgado para cada equipo bajo una guirnalda. El del ganador está lleno de dulces. El del perdedor trae carbón.",
+			"funTitle": "El deporte es para divertirse.",
+			"funCopy": "No estamos salvando vidas. Te buscamos un mejor partido, así que nos divertimos haciéndolo. ArenaSwap soborna a los árbitros mientras carga y, cuando no hay nada en vivo, te avisa que el señor de los hot dogs se fue. De lo único que nunca bromeamos es del cambio en sí.",
+			"funDemo": "Lo que muestra ArenaSwap cuando no hay nada en vivo en tus ligas. Presiona Actualizar para ver otro.",
+			"watchTitle": "Lo vemos con ArenaSwap.",
+			"watchCopy": "Usamos ArenaSwap cada vez que vemos deporte. Si algo no es lo bastante bueno en nuestro sillón, tampoco lo es para el tuyo.",
+			"freeTitle": "Gratis y sin nada que esconder.",
+			"freeCopy": "La tele de paga y el streaming ya salen bastante caros. Lo último que necesitas es una suscripción más para cambiar entre tus suscripciones. ArenaSwap es gratis, sin cuenta y sin anuncios. Y la neta, no queremos saber qué partidos ves. Ni siquiera el próximo Juego de Campeonato de la NFC de los Cowboys, cuando por fin se aparezca. Tus ajustes se quedan en tu navegador y todo el código es público {link}.",
+			"githubLink": "en GitHub"
+		},
+		"goals": {
+			"title": "Hacia dónde vamos.",
+			"bestTitle": "La mejor forma de ver deporte en la web.",
+			"bestCopy": "Multiview, Standby Stream y la Guía son un comienzo. Queremos que ArenaSwap sea lo único que necesites abierto en la noche de partido.",
+			"sportsTitle": "Todos los deportes, todas las noches.",
+			"sportsCopy": "Hoy son {leagues} ligas. Seguiremos sumando hasta que siempre haya algo que valga la pena ver, sin importar qué hora sea donde vives.",
+			"everyoneTitle": "Para todos.",
+			"everyoneCopy": "Hoy ArenaSwap habla {languages} idiomas y seguiremos sumando más para fans del deporte de todo el mundo. Porque el deporte es de todos.",
+			"stakesTitle": "Saber qué está en juego.",
+			"stakesCopy": "PowerScore ya distingue un Juego 7 de un Juego 2, y sabe que un no-hitter en la octava entrada vale más que la mayoría de los empates. Queremos que entienda cada razón por la que un partido importa."
+		}
 	},
 	"notFound": {
 		"title": "Esta página no está en el calendario.",

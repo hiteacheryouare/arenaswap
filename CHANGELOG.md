@@ -13,6 +13,10 @@ The docs site now builds to the gitignored `apps/docs/dist`, and the Deploy Docs
 
 `computeWinProbVarianceScore` now blends how much the win probability has moved lately with the biggest recent swing, both fading every tenth of regulation, so a game that was lopsided for 30 minutes and then turns earns the bonus (CSUF @ UCLA went from −5 all night to +3/+4). Readings carry their game `progress` (`WinProbabilityReading`, overtime-aware via `getTimelineProgress`), the penalty only applies in the second half of a quiet, decided game, and the constants were fit on the per-play lines of 417 finished games.
 
+## The website gets an About page — 2026-11-19
+
+`/about/` lays out why ArenaSwap exists, what we believe and where it's headed, in all 12 languages, and sits in the top nav and footer; the nav now switches to the menu button below 1200px, since six links didn't fit at 992px in five languages. Its demos are the real components: the detail scoreboard, the Christmas stockings and the no-games empty state moved from the extension into `packages/ui` (the extension keeps one-line shims), so the site renders a Christmas Day final with coal in the loser's stocking and an empty state whose Refresh deals a new line.
+
 ## The header glow joins the opening reveal and fades out on scroll — 2026-11-19
 
 The top card's glow now blooms out of the top corners over `$motion-epic` when that card lands in the opening reveal (a skip jumps it to full, and an open with no reveal keeps the old fade). It is pinned behind the header and pulls back into the corners over the first 120px of scroll (`useGlowScrollFade`). The header paints its own copy of the glow once it turns solid, so the two layers read the same `--glow-*` values off `.popup-container` and line up exactly.

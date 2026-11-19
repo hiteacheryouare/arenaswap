@@ -4,6 +4,8 @@
 		"homeDescription": "ArenaSwap 會監控 {leagues} 個聯盟的所有直播比賽，並自動將你的瀏覽器分頁切換到最精彩的比賽。免費、不需要帳號、沒有追蹤。",
 		"faqTitle": "常見問題 | ArenaSwap",
 		"faqDescription": "了解 ArenaSwap 如何切換分頁、支援哪些聯盟和串流服務、PowerScore 衡量的是什麼，以及它如何處理你的資料。",
+		"aboutTitle": "關於 | ArenaSwap",
+		"aboutDescription": "我們為什麼做 ArenaSwap、我們相信什麼，以及接下來要往哪裡去。免費、不需要帳號、沒有廣告，出自每場比賽都在用它的球迷之手。",
 		"powerscoreTitle": "PowerScore 套件 | ArenaSwap",
 		"powerscoreDescription": "PowerScore 會把任何一場直播比賽轉換成 0 到 100 的精彩度分數。從 npm 安裝它，了解五個訊號的運作方式，並即時看它為今晚的比賽評分。",
 		"legalTitle": "法律聲明 | ArenaSwap",
@@ -22,6 +24,7 @@
 	},
 	"nav": {
 		"home": "首頁",
+		"about": "關於",
 		"powerscore": "PowerScore",
 		"docs": "文件",
 		"releases": "更新紀錄",
@@ -267,6 +270,43 @@
 				"a": "有，公開在 GitHub 上，其中包含 PowerScore 演算法。這個演算法也單獨發布在 npm 上，所以就算不用擴充功能，你也能為比賽評分。"
 			}
 		]
+	},
+	"about": {
+		"hero": {
+			"title": "最好看的比賽，該自己來找你。",
+			"lede": "ArenaSwap 會盯著你所有聯盟的每一場直播比賽，把最精彩的一場送到你面前。"
+		},
+		"problem": {
+			"title": "看多場比賽，不該像在上班。",
+			"copy1": "過去，想在網路上看一整晚的體育賽事，就得自己動手切換。開著四個分頁，只有一個有聲音，手一直放在滑鼠上，永遠比終場哨聲慢一次點擊。有些球迷還更進一步，架起了看起來像安全監控中心的多螢幕裝置。",
+			"copy2": "NFL 的美式足球週日，多年來都有專屬的頻道。網路上卻一直沒有一個，能涵蓋每項運動、每個夜晚。",
+			"kicker": "所以我們自己做了一個。"
+		},
+		"values": {
+			"title": "我們相信什麼。",
+			"smallStuffTitle": "小細節，我們也很計較。",
+			"smallStuffCopy": "ArenaSwap 出自一群體育迷之手，他們對那些讓比賽更好玩的小事特別執著。你的球隊得分了？彩帶會以球隊的顏色升空。碰上聖誕節比賽？我們把裝飾都搬來了。球場下雪了？ArenaSwap 裡也在下。設定裡還藏著一種比華氏溫標更老的溫標，純粹為了好玩。",
+			"smallStuffDemo": "聖誕節決賽的比賽畫面，{away} {awayScore}，{home} {homeScore}，花環底下為兩隊各掛了一隻聖誕襪。贏家的襪子裡塞滿糖果，輸家的襪子裡是煤炭。",
+			"funTitle": "運動本來就該好玩。",
+			"funCopy": "我們不是在救人。我們只是幫你找到更好看的比賽，所以做的時候自己也玩得很開心。ArenaSwap 載入時會賄賂裁判，沒有比賽可看時，會告訴你賣熱狗的大叔下班了。唯一絕不開玩笑的，就是切換本身。",
+			"funDemo": "你的聯盟都沒有直播比賽時，ArenaSwap 顯示的畫面。按下重新整理，換一則看看。",
+			"watchTitle": "我們自己也這樣看。",
+			"watchCopy": "每次看比賽，我們都在用 ArenaSwap。要是在我們家沙發上都不夠好，就不會拿到你的沙發上。",
+			"freeTitle": "免費，毫無隱瞞。",
+			"freeCopy": "有線電視和串流已經夠貴了。你最不需要的，就是再多訂一個專門用來在訂閱之間切換的訂閱。ArenaSwap 免費，不需要帳號，沒有廣告。老實說，我們也不想知道你看了哪些比賽，就算是牛仔隊的下一場 NFC 冠軍賽也一樣，如果它哪天真的出現的話。你的設定只留在你的瀏覽器裡，每一行程式碼都公開{link}。",
+			"githubLink": "在 GitHub 上"
+		},
+		"goals": {
+			"title": "我們要往哪裡去。",
+			"bestTitle": "在網路上看運動賽事的最佳方式。",
+			"bestCopy": "Multiview、Standby Stream 和節目表只是起點。我們希望 ArenaSwap 成為比賽夜你唯一需要開著的東西。",
+			"sportsTitle": "每項運動，每個夜晚。",
+			"sportsCopy": "目前涵蓋 {leagues} 個聯盟。我們會一直加下去，直到不論你人在哪個時區，隨時都有值得看的比賽。",
+			"everyoneTitle": "屬於每一個人。",
+			"everyoneCopy": "ArenaSwap 目前支援 {languages} 種語言，我們會繼續增加，服務世界各地的運動迷。因為運動屬於每一個人。",
+			"stakesTitle": "看得懂什麼才是關鍵。",
+			"stakesCopy": "PowerScore 已經分得出搶七和系列賽第二戰，也知道第八局還沒被打破的無安打比賽，比大多數比分膠著的比賽更好看。我們希望它讀懂一場比賽之所以重要的每一個理由。"
+		}
 	},
 	"notFound": {
 		"title": "這個頁面不在賽程表上。",

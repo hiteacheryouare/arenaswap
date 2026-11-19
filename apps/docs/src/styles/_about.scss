@@ -1,0 +1,67 @@
+@layer custom {
+	.band-hero.about-hero {
+		padding-bottom: clamp(14rem, 22vw, 18rem);
+		text-align: center;
+
+		.glow {
+			--glow-x: 50%;
+			--glow-width: 70%;
+			--glow-height: 22rem;
+			--glow-spill: 7rem;
+			--glow-lift: 7rem;
+		}
+
+		.display-xl {
+			max-width: 11em;
+			margin-inline: auto;
+		}
+
+		.band-lede {
+			margin-inline: auto;
+		}
+	}
+
+	.about-problem .band-head {
+		margin-bottom: 0;
+	}
+
+	.about-kicker {
+		margin-top: 2rem;
+		color: var(--color-text);
+		font-weight: 600;
+	}
+
+	.about-rows {
+		display: grid;
+		gap: clamp(4rem, 8vw, 7rem);
+	}
+
+	.about-row {
+		h3 {
+			font-size: clamp(1.5rem, 2.2vw, 2rem);
+			font-weight: 700;
+			letter-spacing: -0.025em;
+			color: var(--color-text);
+			margin: 0;
+		}
+
+		.doc-demo {
+			margin-block: 0;
+		}
+	}
+
+	.free-list.about-pair {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	@media (max-width: 767.98px) {
+		.free-list.about-pair {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	.about-empty-frame {
+		min-height: 9rem;
+		padding: 0 1.5rem 1.5rem;
+	}
+}

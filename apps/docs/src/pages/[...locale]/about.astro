@@ -1,0 +1,139 @@
+---
+import { leagueConfigs } from '@arenaswap/core/constants';
+import Shell from '../../layouts/Shell.astro';
+import ClosingBand from '../../components/landing/ClosingBand.astro';
+import DetailCharts from '../../components/landing/DetailCharts';
+import DocDemo from '../../components/docs/DocDemo.astro';
+import ChristmasDemo from '../../components/about/ChristmasDemo';
+import EmptyStateDemo from '../../components/about/EmptyStateDemo';
+import { christmasFinal } from '../../components/docs/demoGames';
+import { demoUiStrings } from '../../components/docs/demoStrings';
+import { localeRoutes, locales } from '../../i18n/locales';
+import { tokenize, uiStrings, useTranslations } from '../../i18n/ui';
+
+export const getStaticPaths = localeRoutes;
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const strings = demoUiStrings(locale);
+const emptyStateStrings = Object.fromEntries(
+	Object.entries(strings).filter(([key]) => key.startsWith('noGames.') || key.startsWith('empty.')),
+);
+
+const repository = 'https://github.com/hiteacheryouare/arenaswap';
+const freeCopy = tokenize(t('about.values.freeCopy'));
+
+const christmasDescription = t('about.values.smallStuffDemo', {
+	away: christmasFinal.awayTeam.name,
+	awayScore: christmasFinal.awayTeam.score,
+	home: christmasFinal.homeTeam.name,
+	homeScore: christmasFinal.homeTeam.score,
+});
+
+const goals = [
+	{ title: t('about.goals.sportsTitle'), copy: t('about.goals.sportsCopy', { leagues: leagueConfigs.length }) },
+	{ title: t('about.goals.everyoneTitle'), copy: t('about.goals.everyoneCopy', { languages: locales.length }) },
+	{ title: t('about.goals.stakesTitle'), copy: t('about.goals.stakesCopy') },
+];
+---
+<Shell
+	title={t('meta.aboutTitle')}
+	description={t('meta.aboutDescription')}
+	path='about/'
+>
+	<section class='band band-hero band-centred about-hero'>
+		<div class='glow' aria-hidden='true'></div>
+		<div class='container'>
+			<h1 class='display-xl'>{t('about.hero.title')}</h1>
+			<p class='band-lede'>{t('about.hero.lede')}</p>
+		</div>
+	</section>
+
+	<section class='band about-problem'>
+		<div class='container'>
+			<div class='band-head'>
+				<h2 class='display-md'>{t('about.problem.title')}</h2>
+				<p class='band-copy'>{t('about.problem.copy1')}</p>
+				<p class='band-copy'>{t('about.problem.copy2')}</p>
+				<p class='band-lede about-kicker'>{t('about.problem.kicker')}</p>
+			</div>
+		</div>
+	</section>
+
+	<section class='band'>
+		<div class='container'>
+			<div class='band-head'>
+				<h2 class='display-md'>{t('about.values.title')}</h2>
+			</div>
+			<div class='about-rows'>
+				<div class='band-split-grid about-row'>
+					<div>
+						<h3>{t('about.values.smallStuffTitle')}</h3>
+						<p class='band-copy'>{t('about.values.smallStuffCopy')}</p>
+					</div>
+					<DocDemo description={christmasDescription} closeup>
+						<ChristmasDemo strings={strings} />
+					</DocDemo>
+				</div>
+
+				<div class='band-split-grid about-row'>
+					<div>
+						<h3>{t('about.values.funTitle')}</h3>
+						<p class='band-copy'>{t('about.values.funCopy')}</p>
+					</div>
+					<figure class='doc-demo'>
+						<div class='doc-demo-body'>
+							<div class='doc-demo-stage'>
+								<EmptyStateDemo client:only='react' strings={emptyStateStrings} />
+							</div>
+						</div>
+						<figcaption class='doc-demo-caption'>{t('about.values.funDemo')}</figcaption>
+					</figure>
+				</div>
+
+				<ul class='free-list about-pair'>
+					<li>
+						<h3>{t('about.values.watchTitle')}</h3>
+						<p>{t('about.values.watchCopy')}</p>
+					</li>
+					<li>
+						<h3>{t('about.values.freeTitle')}</h3>
+						<p>
+							{freeCopy.map(part => (
+								typeof part === 'string' ? part : <a href={repository}>{t('about.values.githubLink')}</a>
+							))}
+						</p>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	<section class='band'>
+		<div class='container'>
+			<div class='band-head'>
+				<h2 class='display-md'>{t('about.goals.title')}</h2>
+			</div>
+			<div class='about-rows'>
+				<div class='band-split-grid about-row'>
+					<div>
+						<h3>{t('about.goals.bestTitle')}</h3>
+						<p class='band-copy'>{t('about.goals.bestCopy')}</p>
+					</div>
+					<DetailCharts client:visible strings={uiStrings(locale)} />
+				</div>
+
+				<ul class='free-list'>
+					{goals.map(goal => (
+						<li>
+							<h3>{goal.title}</h3>
+							<p>{goal.copy}</p>
+						</li>
+					))}
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	<ClosingBand />
+</Shell>

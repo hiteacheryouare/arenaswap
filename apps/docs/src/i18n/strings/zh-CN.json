@@ -4,6 +4,8 @@
 		"homeDescription": "ArenaSwap 会监控 {leagues} 个联赛的所有直播比赛，并自动将您的浏览器标签页切换到最精彩的比赛。免费，无需账户，无追踪。",
 		"faqTitle": "常见问题 | ArenaSwap",
 		"faqDescription": "了解 ArenaSwap 如何切换标签页、支持哪些联赛和流媒体服务、PowerScore 衡量什么，以及它如何处理您的数据。",
+		"aboutTitle": "关于 | ArenaSwap",
+		"aboutDescription": "我们为什么做 ArenaSwap、我们相信什么，以及接下来要去哪儿。免费，无需账户，没有广告，出自每场比赛都在用它的球迷之手。",
 		"powerscoreTitle": "PowerScore 包 | ArenaSwap",
 		"powerscoreDescription": "PowerScore 将任何直播比赛转化为 0 到 100 的精彩度评分。从 npm 安装它，了解五个信号的运作方式，并实时观看它为今晚的比赛评分。",
 		"legalTitle": "法律声明 | ArenaSwap",
@@ -22,6 +24,7 @@
 	},
 	"nav": {
 		"home": "首页",
+		"about": "关于",
 		"powerscore": "PowerScore",
 		"docs": "文档",
 		"releases": "更新日志",
@@ -267,6 +270,43 @@
 				"a": "是的，公开在 GitHub 上，其中包括 PowerScore 算法。该算法也单独发布在 npm 上，因此您即使不使用扩展程序，也可以为比赛评分。"
 			}
 		]
+	},
+	"about": {
+		"hero": {
+			"title": "最好看的比赛，该主动找到您。",
+			"lede": "ArenaSwap 会盯着您所有联赛的每一场直播比赛，把最精彩的一场送到您面前。"
+		},
+		"problem": {
+			"title": "看多场比赛，不该像上班。",
+			"copy1": "过去，想在网上看一整晚的体育比赛，就得自己动手切换。四个标签页开着，只有一个有声音，手一直按在鼠标上，永远比终场哨声慢一次点击。有些球迷更进一步，搭出了像安防指挥中心一样的多屏装置。",
+			"copy2": "NFL 的美式橄榄球周日，多年来都有专属的频道。网络上却一直没有一个，能覆盖每项运动、每个夜晚。",
+			"kicker": "所以我们自己做了一个。"
+		},
+		"values": {
+			"title": "我们相信什么。",
+			"smallStuffTitle": "小细节，我们也较真。",
+			"smallStuffCopy": "ArenaSwap 出自一群体育迷之手，他们对那些让比赛更好玩的小事格外执着。您的球队得分了？彩带会以球队的颜色升空。碰上圣诞节比赛？我们把装饰都搬来了。球场下雪了？ArenaSwap 里也在下。设置里还藏着一种比华氏温标更老的温标，纯粹为了好玩。",
+			"smallStuffDemo": "圣诞节决赛的比赛画面，{away} {awayScore}，{home} {homeScore}，花环下为两队各挂了一只圣诞袜。赢家的袜子里塞满糖果，输家的袜子里是煤块。",
+			"funTitle": "体育本该好玩。",
+			"funCopy": "我们不是在拯救生命。我们只是帮您找到更好看的比赛，所以做的时候自己也玩得开心。ArenaSwap 加载时会贿赂裁判，没有比赛时会告诉您卖热狗的大叔下班了。唯一绝不开玩笑的，是切换本身。",
+			"funDemo": "您的联赛里没有直播比赛时，ArenaSwap 显示的画面。点击刷新，换一条看看。",
+			"watchTitle": "我们自己也这样看。",
+			"watchCopy": "每次看比赛，我们都在用 ArenaSwap。要是在我们家沙发上都不够好，就不会拿到您的沙发上。",
+			"freeTitle": "免费，毫无隐瞒。",
+			"freeCopy": "有线电视和流媒体已经够贵了。您最不需要的，就是再订一个专门用来在订阅之间切换的订阅。ArenaSwap 免费，无需账户，没有广告。坦白说，我们也不想知道您看了哪些比赛，哪怕是牛仔队的下一场 NFC 冠军赛，如果它哪天真的出现的话。您的设置只保存在您的浏览器里，每一行代码都公开{link}。",
+			"githubLink": "在 GitHub 上"
+		},
+		"goals": {
+			"title": "我们要去哪儿。",
+			"bestTitle": "在网上看体育比赛的最佳方式。",
+			"bestCopy": "Multiview、Standby Stream 和节目表只是开始。我们希望 ArenaSwap 成为比赛夜您唯一需要开着的东西。",
+			"sportsTitle": "每项运动，每个夜晚。",
+			"sportsCopy": "目前已覆盖 {leagues} 个联赛。我们会一直添加，直到无论您身处哪个时区，随时都有值得看的比赛。",
+			"everyoneTitle": "属于每一个人。",
+			"everyoneCopy": "ArenaSwap 目前支持 {languages} 种语言，我们还会继续添加，服务世界各地的体育迷。因为体育属于每一个人。",
+			"stakesTitle": "懂得什么才是关键。",
+			"stakesCopy": "PowerScore 已经分得清抢七和系列赛第二场，也知道第八局还没被打破的无安打比赛，比大多数比分胶着的比赛更好看。我们希望它读懂一场比赛之所以重要的每一个理由。"
+		}
 	},
 	"notFound": {
 		"title": "该页面不在赛程表上。",
