@@ -15,5 +15,5 @@ As of 2026-10-06, `.github/workflows/ci.yml` runs on PRs: `turbo run lint typech
 - oxlint (`.oxlintrc.json`) enables only the `react`, `typescript`, `jsx-a11y`, and `unicorn` plugins. **`react-hooks` is NOT enabled**, so Rules-of-Hooks and exhaustive-deps violations are invisible to tooling and are always worth reporting. Any `// eslint-disable-next-line react-hooks/...` comment in the tree is inert.
 - `apps/extension` `npm test` = jest unit projects **plus** `cypress run --component`.
 - `docs.yml` uses `npm install`, not `npm ci`, so lockfile drift is not caught there.
-- The docs workflow committing `docs/` back to `mega` is why `docs/**/*.html` shows up in almost every merge conflict — those conflicts are regenerable, not semantic.
+- Since 2026-11-19 the docs workflow deploys a Pages artifact and never commits, and `docs/` is gone from the tree. A branch cut before then can still hit modify/delete conflicts on `docs/**`: resolve them with `git rm -r docs`, never semantically.
 - WXT's Firefox sources zip uses sourcesRoot = apps/extension with `dot: false`, so `.output/<anything>` and anything outside apps/extension never enters it.

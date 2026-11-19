@@ -4,7 +4,7 @@
 		// The licences page reads every workspace's manifest, and none of them are this package's files.
 		"build": {
 			"inputs": ["$TURBO_DEFAULT$", "!cypress/**", "!cypress.config.ts", "$TURBO_ROOT$/package.json", "$TURBO_ROOT$/apps/*/package.json", "$TURBO_ROOT$/packages/*/package.json"],
-			"outputs": ["$TURBO_ROOT$/docs/**"]
+			"outputs": ["dist/**"]
 		},
 		"typecheck": {
 			// `astro sync` and `astro build` both write `.astro/`, and turbo is free to schedule

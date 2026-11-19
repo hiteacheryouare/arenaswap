@@ -11,13 +11,14 @@ concurrency:
   group: docs-deploy
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    # A dispatch from any other branch would rebase that branch's commits onto mega and push them.
     if: (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/mega') || (github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success')
+    outputs:
+      deploy: ${{ steps.current.outputs.deploy }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -25,8 +26,8 @@ jobs:
           # Build the commit CI just passed, not whatever mega has moved on to since.
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
-      # A newer push has its own CI run, which deploys newer docs. Building this one would only put
-      # older docs on the site and race that run's rebase.
+      # A newer push has its own CI run, which deploys newer docs. Building this one would only
+      # put older docs on the site.
       - name: Check mega has not moved on
         id: current
         run: |
@@ -47,18 +48,23 @@ jobs:
         if: steps.current.outputs.deploy == 'true'
         run: npx turbo run build --filter=@arenaswap/docs
 
-      - name: Commit built docs
+      - name: Upload site
         if: steps.current.outputs.deploy == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/
-          git diff --staged --quiet && exit 0
-          git commit -m "chore: rebuild docs site [skip ci]"
-          # Another push can land between the checkout and here; rebase onto it
-          # rather than failing the deploy outright.
-          for attempt in 1 2 3; do
-            git pull --rebase origin mega && git push origin HEAD:mega && exit 0
-            sleep 5
-          done
-          exit 1
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: apps/docs/dist
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

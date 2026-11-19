@@ -66,8 +66,6 @@ PowerScore is the scoring algorithm, published separately on npm and usable outs
 - `.github/README.md` and `packages/powerscore/README.md`
 - `CHANGELOG.md` when the entry is written for humans rather than for the diff
 
-`docs/` at the repo root is build output. Never edit it by hand; edit `apps/docs` and let the build produce it.
-
 ## Voice
 
 **Read `.agents/VOICE.md` before writing anything.** It defines the ArenaSwap voice and the 0 to 10 spectrum it slides along, from loading lines to formal statements: where each surface starts, what slides toward formal, what humor is fair game, and punctuation and emoji rules. Decide where on the spectrum a piece sits before you start, and say where you put it in your report.

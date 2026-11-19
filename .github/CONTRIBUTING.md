@@ -145,8 +145,7 @@ npm run lint typecheck test test:e2e build build:edge build:firefox zip zip:edge
 
 Run it from the root. Running workspace type checks from inside a subfolder can trip path-casing errors.
 
-> [!WARNING]
-> `docs/` at the repository root is tracked build output. `typecheck`, `test:e2e` and `zip` rebuild it from your working tree. Check `git status` before staging and do not commit a rebuild that captured unrelated changes.
+The website builds to `apps/docs/dist`, which is gitignored. The Deploy Docs workflow publishes it to GitHub Pages after CI passes on `mega`.
 
 ## Formatting & Code Standards (Non-Negotiable)
 
@@ -268,7 +267,7 @@ All PRs must:
 - Pass the full verification command
 - Add an entry to `CHANGELOG.md`: two or three sentences under one heading, nothing else
 - Update all 12 locales for any user-facing string
-- Include screenshots for visible UI changes
+- Include screenshots for visible UI changes. `scripts/prAssets.sh <folder> <files…>` uploads them and prints links to paste; never commit them to the branch
 - Remain focused in scope
 - Avoid opportunistic refactors
 

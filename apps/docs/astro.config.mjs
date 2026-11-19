@@ -84,7 +84,6 @@ export default defineConfig({
 		},
 	},
 	site: 'https://hiteacheryouare.github.io',
-	outDir: '../../docs',
 	base: '/arenaswap/',
 	build: {
 		emptyOutDir: true,
