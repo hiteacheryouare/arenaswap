@@ -11,9 +11,9 @@
 		"lint": "oxlint ."
 	},
 	"peerDependencies": {
-		"bootstrap": "^5.3.8",
-		"react": "^19.3.0",
-		"react-dom": "^19.3.0"
+		"bootstrap": "^5.3.9",
+		"react": "^19.3.1",
+		"react-dom": "^19.3.1"
 	},
 	"dependencies": {
 		"@arenaswap/core": "*"
