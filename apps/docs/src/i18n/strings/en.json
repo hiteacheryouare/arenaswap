@@ -58,6 +58,7 @@
 		"releaseVersion": "Version {version}",
 		"backToReleases": "Back to release notes",
 		"inThisRelease": "In this release",
+		"onThisPage": "On this page",
 		"otherReleases": "Other releases",
 		"sections": {
 			"extension": {

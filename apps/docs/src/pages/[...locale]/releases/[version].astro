@@ -2,11 +2,11 @@
 import { render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import Shell from '../../../layouts/Shell.astro';
+import PageToc from '../../../components/PageToc.astro';
 import UntranslatedNotice from '../../../components/UntranslatedNotice.astro';
 import { defaultLocale, localePath, localeRoutesFor, type LocaleCode } from '../../../i18n/locales';
 import { useTranslations } from '../../../i18n/ui';
 import formatReleaseDate from '../../../lib/releaseDate';
-import publicImageSize from '../../../lib/publicImageSize';
 import { getOriginals, localizeEntry } from '../../../lib/localizedContent';
 
 export const getStaticPaths = async () => {
@@ -41,7 +41,7 @@ const sections = headings.filter(heading => heading.depth === 2);
 const t = useTranslations(locale);
 const contentLang = translated ? undefined : 'en';
 const formatted = formatReleaseDate(release.data.date, locale);
-const imageSize = release.data.image ? publicImageSize(release.data.image) : undefined;
+const titleWords = release.data.title.split(' ');
 ---
 <Shell
 	title={`${release.data.title} | ArenaSwap ${release.data.version}`}
@@ -60,21 +60,22 @@ const imageSize = release.data.image ? publicImageSize(release.data.image) : und
 			{!translated && <UntranslatedNotice />}
 		</div>
 
-		<header class='release-masthead'>
+		<header class='release-masthead' style={`--words:${titleWords.length}`}>
+			<div class='glow' aria-hidden='true'></div>
 			<div class='container'>
 				<p class='release-meta'>
 					<time datetime={release.data.date.toISOString()}>{formatted}</time>
 					<span aria-hidden='true'> · </span>
 					{t('reading.releaseVersion', { version: release.data.version })}
 				</p>
-				<h1 class='release-title' lang={contentLang}>{release.data.title}</h1>
-				<p class='release-summary' lang={contentLang}>{release.data.summary}</p>
-
-				{release.data.image && (
-					<figure class='release-figure'>
-						<img src={release.data.image} alt={release.data.imageAlt ?? ''} width={imageSize?.width} height={imageSize?.height} loading='eager' />
-					</figure>
-				)}
+				<h1 class='release-title' lang={contentLang}>
+					{titleWords.map((word, index) => (
+						<Fragment>
+							<span class='rise-word' style={`--i:${index}`}>{word}</span>{index < titleWords.length - 1 && ' '}
+						</Fragment>
+					))}
+				</h1>
+				<p class='release-summary rise-after' lang={contentLang}>{release.data.summary}</p>
 			</div>
 		</header>
 
@@ -85,13 +86,7 @@ const imageSize = release.data.image ? publicImageSize(release.data.image) : und
 				</article>
 
 				{sections.length > 1 && (
-					<aside class='release-toc' aria-label={t('reading.inThisRelease')} lang={contentLang}>
-						<ul>
-							{sections.map(section => (
-								<li><a href={`#${section.slug}`} data-toc-link={section.slug}>{section.text}</a></li>
-							))}
-						</ul>
-					</aside>
+					<PageToc class='release-toc' sections={sections} label={t('reading.inThisRelease')} lang={contentLang} />
 				)}
 			</div>
 
@@ -111,30 +106,4 @@ const imageSize = release.data.image ? publicImageSize(release.data.image) : und
 			)}
 		</div>
 	</div>
-
-	<script>
-		const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
-		const headings = [...links]
-			.map(link => document.getElementById(link.dataset.tocLink ?? ''))
-			.filter((heading): heading is HTMLElement => heading !== null);
-
-		if (headings.length > 0) {
-			const setCurrent = (slug: string) => {
-				links.forEach(link => link.classList.toggle('is-current', link.dataset.tocLink === slug));
-			};
-
-			const observer = new IntersectionObserver(
-				entries => {
-					const visible = entries
-						.filter(entry => entry.isIntersecting)
-						.toSorted((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-
-					if (visible[0]) setCurrent(visible[0].target.id);
-				},
-				{ rootMargin: '-25% 0px -65% 0px' }
-			);
-
-			headings.forEach(heading => observer.observe(heading));
-		}
-	</script>
 </Shell>

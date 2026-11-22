@@ -58,6 +58,7 @@
 		"releaseVersion": "버전 {version}",
 		"backToReleases": "릴리스 노트로 돌아가기",
 		"inThisRelease": "이번 릴리스",
+		"onThisPage": "이 페이지에서",
 		"otherReleases": "다른 릴리스",
 		"sections": {
 			"extension": {

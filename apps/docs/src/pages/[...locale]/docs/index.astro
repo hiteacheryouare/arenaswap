@@ -32,17 +32,24 @@ const fullyTranslated = trees.every(tree => tree.pages.every(page => page.transl
 		<div class='docs-hub'>
 			{trees.map(tree => (
 				<section class='docs-hub-tree' aria-labelledby={`hub-${tree.section}`}>
-					<h2 id={`hub-${tree.section}`}>
-						<a href={localePath(locale, `docs/${tree.section}/`)}>{tree.meta.heading}</a>
-					</h2>
-					<p class='docs-hub-lede'>{tree.meta.description}</p>
+					<div class='docs-hub-intro'>
+						<h2 id={`hub-${tree.section}`}>
+							<a href={localePath(locale, `docs/${tree.section}/`)}>{tree.meta.heading}</a>
+						</h2>
+						<p class='docs-hub-lede'>{tree.meta.description}</p>
+					</div>
 
 					{tree.pages.length === 0 ? (
 						<p class='docs-hub-empty'>{t('reading.docsBeingWritten')}</p>
 					) : (
 						<ul class='docs-hub-list'>
 							{tree.pages.map(({ entry: page, translated }) => (
-								<li lang={translated ? undefined : 'en'}><a href={localePath(locale, docPath(page))}>{page.data.title}</a></li>
+								<li lang={translated ? undefined : 'en'}>
+									<a href={localePath(locale, docPath(page))}>
+										<span class='docs-hub-title'>{page.data.title}</span>
+										<span class='docs-hub-description'>{page.data.description}</span>
+									</a>
+								</li>
 							))}
 						</ul>
 					)}

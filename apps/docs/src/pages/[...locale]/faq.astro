@@ -39,17 +39,17 @@ const structuredData = {
 	path='faq/'
 >
 	<div class='container'>
-		<div class='page-head'>
-			<h1 class='page-title'>{t('faq.title')}</h1>
-			<p class='page-lede'>
-				{lede.map(part => (
-					typeof part === 'string' ? part
-					: <a href='https://github.com/hiteacheryouare/arenaswap/issues'>{t('faq.ledeLink')}</a>
-				))}
-			</p>
-		</div>
+		<div class='faq-layout'>
+			<div class='page-head faq-head'>
+				<h1 class='page-title'>{t('faq.title')}</h1>
+				<p class='page-lede'>
+					{lede.map(part => (
+						typeof part === 'string' ? part
+						: <a href='https://github.com/hiteacheryouare/arenaswap/issues'>{t('faq.ledeLink')}</a>
+					))}
+				</p>
+			</div>
 
-		<div class='reading-shell reading-shell-plain'>
 			<div class='faq-list accordion'>
 				{items.map((item, index) => (
 					<details class='faq-item accordion-item' open={index === 0}>
@@ -60,7 +60,6 @@ const structuredData = {
 						<p class='accordion-body'>{item.a}</p>
 					</details>
 				))}
-
 			</div>
 		</div>
 	</div>

@@ -58,6 +58,7 @@
 		"releaseVersion": "バージョン {version}",
 		"backToReleases": "リリースノートに戻る",
 		"inThisRelease": "このリリースの内容",
+		"onThisPage": "このページの内容",
 		"otherReleases": "ほかのリリース",
 		"sections": {
 			"extension": {

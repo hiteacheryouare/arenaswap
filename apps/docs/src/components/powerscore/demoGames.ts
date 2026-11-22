@@ -70,6 +70,20 @@ export const scoreDemo = (script: DemoScript, mode: DemoMode = 'classic'): Power
 	return scoreGame(demoGame(script), { history, fantasy }, { mode });
 };
 
+export interface ReplayFrame {
+	clockSeconds: number;
+	away: number;
+	home: number;
+	total: number;
+}
+
+export const replayFrames = (script: DemoScript): ReplayFrame[] => eventsSoFar(script).map(([at, away, home], index, events) => {
+	const history = events.slice(0, index + 1).map(([when, awayScore, homeScore]) => ({ gameId: script.id, timestamp: timestampAt(when), awayScore, homeScore }));
+	history.push({ ...history.at(-1)!, timestamp: timestampAt(at) });
+	const game = { ...demoGame(script), clockSeconds: at, awayTeam: { ...script.away, score: away }, homeTeam: { ...script.home, score: home } };
+	return { clockSeconds: at, away, home, total: scoreGame(game, { history }).total };
+});
+
 const reasonTranslator = (locale: LocaleCode) => (key: string, subsOrCount?: unknown) => {
 	const value = extensionString(locale, key);
 	if (value && typeof value === 'object') {

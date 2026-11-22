@@ -9,6 +9,14 @@
 
 The term now pays the larger of a coin-flip bonus (+5 when the win probability has stayed on 50% lately, 0 at an average 17.5 points away) and the swing bonus, and each sport carries its own `winProbabilityScales`, because football logs a third as many plays a minute and never reached basketball's movement scale. NCAA Football and the UFL set `untimedOvertime`, so a college overtime no longer counts as ten minutes played (UCLA @ Michigan read 0 through three tied quarters and overtime; it now reads +4, then +5).
 
+## Hero demos stop letting the glow show through — 2026-11-19
+
+The PowerScore replay card and the homepage browser demo enter with a new `.rise-reveal`, which is opaque after its first sixth and sharpens from blur. With the old opacity fade they were see-through while the airbrush glow rose behind them, so the glow seemed to sit on top and then drop behind. The 2.0 release post no longer shows its banner image now that the masthead has its own glow, though the image stays in the frontmatter as that post's link-preview card.
+
+## The rest of the website gets the About page treatment — 2026-11-19
+
+The homepage and PowerScore heroes now fill the screen: the homepage headline rises word by word before the browser demo arrives, and the PowerScore hero replays the Knicks–Celtics finish on a real game card until it lands on the 92 the next section explains. The homepage charts became one game screen headed by the real `DetailHero` scoreboard, docs articles got an "On this page" rail (`PageToc`, shared with release posts), release notes list as a ledger led by the version number, the FAQ splits title and answers into two columns, and credits show a still of each clip they credit; no copy changed.
+
 ## The About hero opens on one game and pulls back — 2026-11-19
 
 The About hero now starts zoomed in on a single game as it scores, then the camera pulls back while more and more games fill in around it, after the "There is Only One Disney" DVD promo; the headline lands as the wall clears around it, and then the usual highlight loop takes over. Every matchup in the wall is now drawn from one league's pool, since NBA, WNBA and college teams used to share a sport pool and produced games like Lakers vs. Valkyries.

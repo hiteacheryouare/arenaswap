@@ -12,6 +12,9 @@ import {
 	buildTeamScoreOption,
 	buildWinProbabilityOption,
 } from '@arenaswap/ui/src/components/gameDetailChartOptions';
+import DetailHero from '@arenaswap/ui/src/components/detailHero';
+import { buildGameCardSurface } from '@arenaswap/ui/src/components/gameCardShared';
+import { resolveStatus } from '@arenaswap/ui/src/components/gameSituation';
 import { useT } from '@arenaswap/ui/src/components/i18nContext';
 import { TranslationContext, islandTranslator } from '../../i18n/islandStrings';
 
@@ -91,7 +94,9 @@ const options = {
 	components: buildComponentContributionOption(powerHistory),
 };
 
-const Chart = ({ title, option }: { title: string; option: EChartsOption }) => {
+const noMonoLogos = { home: null, away: null };
+
+const Chart = ({ title, option, wide = false }: { title: string; option: EChartsOption; wide?: boolean }) => {
 	const host = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -107,28 +112,46 @@ const Chart = ({ title, option }: { title: string; option: EChartsOption }) => {
 	}, [option]);
 
 	return (
-		<div className='chart-tile'>
+		<div className={wide ? 'chart-tile is-wide' : 'chart-tile'}>
 			<p className='chart-tile-title'>{title}</p>
 			<div ref={host} className='game-detail-chart-canvas' role='img' aria-label={title} />
 		</div>
 	);
 };
 
-const ChartGrid = () => {
+const GameScreen = ({ scoreboard }: { scoreboard: boolean }) => {
 	const t = useT();
+	const { style, awayColor, homeColor } = buildGameCardSurface(game);
 	return (
-		<div className='charts-grid' data-bs-theme='dark'>
-			<Chart title={t('detail.chartPowerScoreTitle')} option={options.powerScore} />
-			<Chart title={t('detail.chartScoreTitle')} option={options.teamScore} />
-			<Chart title={t('detail.chartWinProbTitle')} option={options.winProbability} />
-			<Chart title={t('detail.chartComponentsTitle')} option={options.components} />
+		<div className={scoreboard ? 'game-screen has-scoreboard doc-demo-popup-frame' : 'game-screen'} data-bs-theme='dark'>
+			{scoreboard && (
+				<div className='game-screen-hero game-detail-shell' aria-hidden='true'>
+					<DetailHero
+						game={game}
+						seriesInfo={null}
+						monoLogos={noMonoLogos}
+						isDelayed={false}
+						isInningSport={false}
+						status={resolveStatus(game, false, t)}
+						heroStyle={style}
+						awayColor={awayColor}
+						homeColor={homeColor}
+					/>
+				</div>
+			)}
+			<div className='charts-grid'>
+				<Chart title={t('detail.chartPowerScoreTitle')} option={options.powerScore} wide />
+				<Chart title={t('detail.chartScoreTitle')} option={options.teamScore} />
+				<Chart title={t('detail.chartWinProbTitle')} option={options.winProbability} />
+				<Chart title={t('detail.chartComponentsTitle')} option={options.components} />
+			</div>
 		</div>
 	);
 };
 
-const DetailCharts = ({ strings }: { strings?: Record<string, string> }) => (
+const DetailCharts = ({ strings, scoreboard = false }: { strings?: Record<string, string>; scoreboard?: boolean }) => (
 	<TranslationContext.Provider value={islandTranslator(strings)}>
-		<ChartGrid />
+		<GameScreen scoreboard={scoreboard} />
 	</TranslationContext.Provider>
 );
 

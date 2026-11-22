@@ -9,36 +9,53 @@ import { currentLocale, useTranslations, uiStrings } from '../../i18n/ui';
 const locale = currentLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 const leagues = leagueConfigs.length;
+const titleLines = [t('home.hero.titleLine1'), t('home.hero.titleLine2')].map(line => line.split(' '));
+const wordCount = titleLines.flat().length;
 ---
-<section class='band band-hero' id='hero'>
+<section class='band band-hero home-hero' id='hero' style={`--words:${wordCount}`}>
 	<div class='glow' aria-hidden='true'></div>
 	<div class='container'>
 		<div class='hero-grid'>
 
 			<div class='hero-copy'>
-				<h1 class='display-xl'>{t('home.hero.titleLine1')}<br>{t('home.hero.titleLine2')}</h1>
+				<h1 class='display-xl'>
+					{titleLines.map((words, line) => (
+						<Fragment>
+							{line > 0 && <br />}
+							{words.map((word, index) => (
+								<Fragment>
+									<span class='rise-word' style={`--i:${titleLines.slice(0, line).flat().length + index}`}>{word}</span>{index < words.length - 1 && ' '}
+								</Fragment>
+							))}
+						</Fragment>
+					))}
+				</h1>
 
-				<p class='band-lede'>{t('home.hero.lede', { leagues })}</p>
+				<p class='band-lede rise-after'>{t('home.hero.lede', { leagues })}</p>
 
-				<div class='hero-actions'>
+				<div class='hero-actions rise-after' style='--step:1'>
 					<InstallCta />
 					<InstallAlternates class='hero-actions-alt' />
 				</div>
 
-				<TeamStrip />
+				<div class='rise-after' style='--step:3'>
+					<TeamStrip />
+				</div>
 			</div>
 
-			<BrowserHero
-				client:load
-				strings={uiStrings(locale)}
-				copy={{
-					browserLabel: t('home.hero.browserLabel'),
-					captionSwitched: t('home.hero.captionSwitched'),
-					captionWatching: t('home.hero.captionWatching'),
-					replay: t('home.hero.replay'),
-					tabLabel: t('home.hero.tabLabel'),
-				}}
-			/>
+			<div class='home-hero-demo rise-reveal' style='--step:2'>
+				<BrowserHero
+					client:load
+					strings={uiStrings(locale)}
+					copy={{
+						browserLabel: t('home.hero.browserLabel'),
+						captionSwitched: t('home.hero.captionSwitched'),
+						captionWatching: t('home.hero.captionWatching'),
+						replay: t('home.hero.replay'),
+						tabLabel: t('home.hero.tabLabel'),
+					}}
+				/>
+			</div>
 
 		</div>
 	</div>

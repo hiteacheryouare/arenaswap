@@ -11,6 +11,6 @@ const t = useTranslations(locale);
 			<h2 class='display-md'>{t('home.charts.title')}</h2>
 			<p class='band-copy'>{t('home.charts.copy')}</p>
 		</div>
-		<DetailCharts client:visible strings={uiStrings(locale)} />
+		<DetailCharts client:visible strings={uiStrings(locale)} scoreboard />
 	</div>
 </section>

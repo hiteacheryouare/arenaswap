@@ -6,6 +6,7 @@ import { useTranslations, uiStrings } from '../i18n/ui';
 
 const t = useTranslations(defaultLocale);
 const base = import.meta.env.BASE_URL;
+const titleWords = t('notFound.title').split(' ');
 ---
 <Shell
 	title={t('meta.notFoundTitle')}
@@ -13,7 +14,7 @@ const base = import.meta.env.BASE_URL;
 	noindex
 	hasLocalizedUrls={false}
 >
-	<section class='notfound'>
+	<section class='notfound' style={`--words:${titleWords.length + 3}`}>
 		<div class='glow' aria-hidden='true'></div>
 		<div class='container'>
 			<div class='notfound-inner'>
@@ -22,16 +23,22 @@ const base = import.meta.env.BASE_URL;
 					<NotFoundCard strings={uiStrings(defaultLocale)} />
 				</div>
 
-				<h1 class='notfound-title'>{t('notFound.title')}</h1>
+				<h1 class='notfound-title'>
+					{titleWords.map((word, index) => (
+						<Fragment>
+							<span class='rise-word' style={`--i:${index + 3}`}>{word}</span>{index < titleWords.length - 1 && ' '}
+						</Fragment>
+					))}
+				</h1>
 
-				<p class='notfound-sub'>{t('notFound.sub')}</p>
+				<p class='notfound-sub rise-after'>{t('notFound.sub')}</p>
 
-				<p class='notfound-path' data-no-dots>
+				<p class='notfound-path rise-after' data-no-dots>
 					<span class='notfound-path-key'>{t('notFound.requested')}</span>
 					<code id='notfound-path'>{base}</code>
 				</p>
 
-				<div class='notfound-cta'>
+				<div class='notfound-cta rise-after' style='--step:1'>
 					<a href={localePath(defaultLocale)} class='btn btn-cta'>
 						<i class='bi bi-house-door me-3'></i>{t('notFound.backHome')}
 					</a>
@@ -40,7 +47,7 @@ const base = import.meta.env.BASE_URL;
 					</a>
 				</div>
 
-				<div class='notfound-links'>
+				<div class='notfound-links rise-after' style='--step:2'>
 					<a href={localePath(defaultLocale, 'powerscore/')}>{t('nav.powerscore')}</a>
 					<a href={localePath(defaultLocale, 'docs/')}>{t('nav.docs')}</a>
 					<a href={localePath(defaultLocale, 'faq/')}>{t('nav.faq')}</a>

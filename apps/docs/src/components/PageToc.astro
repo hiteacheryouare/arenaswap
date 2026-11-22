@@ -1,0 +1,48 @@
+---
+interface Section {
+	slug: string;
+	text: string;
+}
+
+interface Props {
+	sections: Section[];
+	label: string;
+	lang?: string;
+	class?: string;
+}
+
+const { sections, label, lang, class: className } = Astro.props;
+---
+<aside class:list={['page-toc', className]} aria-label={label} lang={lang}>
+	<ul>
+		{sections.map(section => (
+			<li><a href={`#${section.slug}`} data-toc-link={section.slug}>{section.text}</a></li>
+		))}
+	</ul>
+</aside>
+
+<script>
+	const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+	const headings = [...links]
+		.map(link => document.getElementById(link.dataset.tocLink ?? ''))
+		.filter((heading): heading is HTMLElement => heading !== null);
+
+	if (headings.length > 0) {
+		const setCurrent = (slug: string) => {
+			links.forEach(link => link.classList.toggle('is-current', link.dataset.tocLink === slug));
+		};
+
+		const observer = new IntersectionObserver(
+			entries => {
+				const visible = entries
+					.filter(entry => entry.isIntersecting)
+					.toSorted((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+				if (visible[0]) setCurrent(visible[0].target.id);
+			},
+			{ rootMargin: '-25% 0px -65% 0px' }
+		);
+
+		headings.forEach(heading => observer.observe(heading));
+	}
+</script>

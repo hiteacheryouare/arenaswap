@@ -58,6 +58,7 @@
 		"releaseVersion": "版本 {version}",
 		"backToReleases": "返回更新日志",
 		"inThisRelease": "本次更新",
+		"onThisPage": "本页内容",
 		"otherReleases": "其他版本",
 		"sections": {
 			"extension": {

@@ -15,7 +15,6 @@ const releases = (await getLocalizedCollection('releases', locale))
 const fullyTranslated = releases.every(release => release.translated);
 const contentLang = (release: { translated: boolean }) => (release.translated ? undefined : 'en');
 
-const [latest, ...earlier] = releases;
 
 const formatDate = (date: Date) => formatReleaseDate(date, locale);
 ---
@@ -36,38 +35,28 @@ const formatDate = (date: Date) => formatReleaseDate(date, locale);
 		{!fullyTranslated && <UntranslatedNotice />}
 
 		<div class='release-index'>
-			{!latest && <p class='page-lede'>{t('reading.releasesEmpty')}</p>}
+			{releases.length === 0 && <p class='page-lede'>{t('reading.releasesEmpty')}</p>}
 
-			{latest && (
-				<article class='release-latest'>
-					<p class='release-meta'>
-						<time datetime={latest.entry.data.date.toISOString()}>{formatDate(latest.entry.data.date)}</time>
-						<span aria-hidden='true'> · </span>
-						{t('reading.releaseVersion', { version: latest.entry.data.version })}
-					</p>
-					<h2 class='release-latest-title' lang={contentLang(latest)}>
-						<a href={localePath(locale, `releases/${latest.entry.data.version}/`)}>{latest.entry.data.title}</a>
-					</h2>
-					<p class='release-latest-summary' lang={contentLang(latest)}>{latest.entry.data.summary}</p>
-				</article>
-			)}
-
-			{earlier.length > 0 && (
-				<ul class='release-list'>
-					{earlier.map(release => (
-						<li>
-							<p class='release-meta'>
-								<time datetime={release.entry.data.date.toISOString()}>{formatDate(release.entry.data.date)}</time>
-								<span aria-hidden='true'> · </span>
-								{t('reading.releaseVersion', { version: release.entry.data.version })}
-							</p>
-							<h3 lang={contentLang(release)}>
-								<a href={localePath(locale, `releases/${release.entry.data.version}/`)}>{release.entry.data.title}</a>
-							</h3>
-							<p class='release-list-summary' lang={contentLang(release)}>{release.entry.data.summary}</p>
+			{releases.length > 0 && (
+				<ol class='release-ledger'>
+					{releases.map((release, index) => (
+						<li class:list={['release-row', { 'is-latest': index === 0 }]}>
+							<div class='release-row-key'>
+								<p class='release-version' aria-hidden='true'>{release.entry.data.version}</p>
+								<p class='release-meta'>
+									<time datetime={release.entry.data.date.toISOString()}>{formatDate(release.entry.data.date)}</time>
+									<span class='visually-hidden'> · {t('reading.releaseVersion', { version: release.entry.data.version })}</span>
+								</p>
+							</div>
+							<div class='release-row-body'>
+								<h2 class='release-row-title' lang={contentLang(release)}>
+									<a href={localePath(locale, `releases/${release.entry.data.version}/`)}>{release.entry.data.title}</a>
+								</h2>
+								<p class='release-row-summary' lang={contentLang(release)}>{release.entry.data.summary}</p>
+							</div>
 						</li>
 					))}
-				</ul>
+				</ol>
 			)}
 		</div>
 	</div>

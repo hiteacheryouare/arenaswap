@@ -58,6 +58,7 @@
 		"releaseVersion": "Version {version}",
 		"backToReleases": "Bumalik sa mga release note",
 		"inThisRelease": "Sa release na ito",
+		"onThisPage": "Sa pahinang ito",
 		"otherReleases": "Iba pang release",
 		"sections": {
 			"extension": {

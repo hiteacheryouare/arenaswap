@@ -4,6 +4,7 @@ import Shell from '../../../../layouts/Shell.astro';
 import DocsNav from '../../../../components/DocsNav.astro';
 import { docPath, docSlug, docsSectionCopy, getSectionDocs, type DocsSection } from '../../../../lib/docs';
 import { getOriginals, localizeEntry } from '../../../../lib/localizedContent';
+import PageToc from '../../../../components/PageToc.astro';
 import UntranslatedNotice from '../../../../components/UntranslatedNotice.astro';
 import { defaultLocale, localePath, localeRoutesFor } from '../../../../i18n/locales';
 import { useTranslations } from '../../../../i18n/ui';
@@ -27,7 +28,8 @@ const sectionMeta = docsSectionCopy(useTranslations(metaLocale), section);
 const contentLang = translated ? undefined : 'en';
 const path = docPath(page);
 
-const { Content } = await render(page);
+const { Content, headings } = await render(page);
+const sections = headings.filter(heading => heading.depth === 2);
 
 const siblings = await getSectionDocs(section, locale);
 const index = siblings.findIndex(sibling => sibling.original.id === original.id);
@@ -86,17 +88,17 @@ if (faq?.length) {
 	ogType='article'
 >
 	<div class='container'>
-		<div class='page-head' lang={contentLang}>
-			<h1 class='page-title docs-title'>{title}</h1>
-			<p class='page-lede'>{description}</p>
-		</div>
+		<div class:list={['reading-shell', 'docs-article', { 'has-toc': sections.length > 1 }]}>
+			<div class='page-head' lang={contentLang}>
+				<h1 class='page-title docs-title'>{title}</h1>
+				<p class='page-lede'>{description}</p>
+			</div>
 
-		{!translated && <UntranslatedNotice />}
-
-		<div class='reading-shell'>
 			<DocsNav current={path} />
 
-			<div>
+			<div class='docs-article-body'>
+				{!translated && <UntranslatedNotice />}
+
 				<article class='prose' lang={contentLang}>
 					<Content />
 				</article>
@@ -132,6 +134,10 @@ if (faq?.length) {
 					</nav>
 				)}
 			</div>
+
+			{sections.length > 1 && (
+				<PageToc class='docs-toc' sections={sections} label={t('reading.onThisPage')} lang={contentLang} />
+			)}
 		</div>
 	</div>
 

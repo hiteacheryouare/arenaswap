@@ -925,3 +925,128 @@
 		}
 	}
 }
+
+@layer custom {
+	.band-hero.home-hero {
+		display: flex;
+		align-items: center;
+		min-height: 100svh;
+		padding: calc(64px + clamp(2rem, 4vw, 3.5rem)) 0 clamp(7rem, 11vw, 9.5rem);
+
+		> .container {
+			width: 100%;
+		}
+
+		.hero-grid {
+			grid-template-columns: minmax(24rem, 34rem) minmax(0, 1fr);
+		}
+
+		.hero-copy .display-xl {
+			font-size: min(clamp(3.25rem, 6.2vw, 6.5rem), 16cqi);
+			letter-spacing: -0.05em;
+			line-height: 0.92;
+		}
+
+		.band-lede {
+			margin-top: 1.75rem;
+		}
+
+		.team-strip {
+			margin-top: 2.25rem;
+			padding-top: 0;
+			border-top: 0;
+		}
+	}
+
+	@media (max-width: 1399.98px) {
+		.band-hero.home-hero .hero-grid {
+			grid-template-columns: minmax(20rem, 26rem) minmax(0, 1fr);
+		}
+	}
+
+	@media (max-width: 1199.98px) {
+		.band-hero.home-hero {
+			.hero-grid {
+				grid-template-columns: minmax(0, 1fr);
+			}
+
+			.hero-copy {
+				max-width: 44rem;
+			}
+		}
+	}
+}
+
+@layer custom {
+	.game-screen.has-scoreboard {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1px;
+		overflow: hidden;
+		border: 1px solid var(--as-border-subtle);
+		border-radius: 1rem;
+		background: var(--as-border-subtle);
+		text-align: left;
+		box-shadow: 0 40px 120px -30px rgb(0 0 0 / 0.85);
+
+		.charts-grid {
+			display: contents;
+		}
+
+		.chart-tile {
+			border: 0;
+			border-radius: 0;
+			padding: 1.1rem 1.25rem 0.8rem;
+		}
+
+		.chart-tile.is-wide {
+			grid-column: span 2;
+
+			.game-detail-chart-canvas {
+				height: clamp(13rem, 19vw, 17rem);
+			}
+		}
+	}
+
+	.game-screen-hero {
+		--gd-inset: 0;
+		display: flex;
+		padding: 0;
+
+		.gd-hero {
+			flex: 1;
+			justify-content: center;
+			margin: 0;
+			padding: 1.5rem 1rem;
+			border-radius: 0;
+		}
+
+		.game-detail-teams-row {
+			zoom: 1.3;
+		}
+	}
+
+	@media (max-width: 991.98px) {
+		.game-screen.has-scoreboard {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+
+			.chart-tile:last-child {
+				grid-column: 1 / -1;
+			}
+		}
+
+		.game-screen-hero {
+			grid-column: 1 / -1;
+		}
+	}
+
+	@media (max-width: 575.98px) {
+		.game-screen.has-scoreboard {
+			grid-template-columns: minmax(0, 1fr);
+
+			.chart-tile.is-wide {
+				grid-column: auto;
+			}
+		}
+	}
+}

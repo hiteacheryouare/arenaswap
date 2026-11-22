@@ -1,8 +1,15 @@
 @use '@arenaswap/ui/src/motion' as m;
 @layer custom {
 	.band-hero.ps-hero {
-		padding-bottom: clamp(14rem, 22vw, 18rem);
+		display: flex;
+		align-items: center;
+		min-height: 100svh;
+		padding: calc(64px + clamp(2.5rem, 5vw, 4rem)) 0 clamp(4rem, 8vw, 6rem);
 		text-align: center;
+
+		> .container {
+			width: 100%;
+		}
 
 		.glow {
 			--glow-x: 50%;
@@ -23,6 +30,18 @@
 
 		.hero-actions {
 			justify-content: center;
+		}
+	}
+
+	.ps-hero-card {
+		width: 340px;
+		max-width: 100%;
+		margin: clamp(3rem, 6vh, 4.5rem) auto 0;
+		text-align: left;
+		filter: drop-shadow(0 24px 64px var(--lift-shadow));
+
+		.game-card {
+			margin-bottom: 0;
 		}
 	}
 

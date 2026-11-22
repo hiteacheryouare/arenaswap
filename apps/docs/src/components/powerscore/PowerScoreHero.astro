@@ -1,7 +1,11 @@
 ---
-import { currentLocale, useTranslations } from '../../i18n/ui';
+import ReplayCard from './ReplayCard';
+import { nailBiter, replayFrames } from './demoGames';
+import { currentLocale, uiStrings, useTranslations } from '../../i18n/ui';
 
-const t = useTranslations(currentLocale(Astro.currentLocale));
+const locale = currentLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const frames = replayFrames(nailBiter);
 
 const supportedLeagues = ['NFL', 'MLB', 'NHL', 'NBA', 'NCAAF', 'NCAAB', 'NCAAW', 'MLS', 'EPL', 'FIFAWC', 'NCAAMH', 'WNBA'];
 
@@ -23,6 +27,9 @@ const taglineSuffix = t('powerscore.heroTaglineSuffix');
 			<a href='https://github.com/hiteacheryouare/arenaswap/tree/dev/packages/powerscore' target='_blank' rel='noreferrer' class='btn btn-outline-secondary-custom'>
 				<i class='bi bi-github me-3'></i>{t('powerscore.sourceOnGithub')}
 			</a>
+		</div>
+		<div class='ps-hero-card rise-reveal' aria-hidden='true' inert>
+			<ReplayCard client:load frames={frames} strings={uiStrings(locale)} />
 		</div>
 	</div>
 </section>
