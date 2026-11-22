@@ -2,6 +2,21 @@ import type { ExtensionMessage, MultiviewFrameStatusMessage } from '@arenaswap/c
 import { browser } from 'wxt/browser';
 
 const reportIntervalMs = 1000;
+const wiggleDelayMs = 1000;
+
+// Some players (Xfinity) keep their controls up until the mouse moves once, then hide them on their
+// own idle timer. A stream that starts by itself never gets that first move, so it is faked.
+const wigglePointer = (video: HTMLVideoElement) => {
+	const bounds = video.getBoundingClientRect();
+	const x = bounds.left + bounds.width / 2;
+	const y = bounds.top + bounds.height / 2;
+	const target = document.elementFromPoint(x, y) ?? video;
+	for (const offset of [0, 1]) {
+		const position = { bubbles: true, cancelable: true, composed: true, view: window, clientX: x + offset, clientY: y + offset };
+		target.dispatchEvent(new PointerEvent('pointermove', { ...position, pointerType: 'mouse', isPrimary: true }));
+		target.dispatchEvent(new MouseEvent('mousemove', position));
+	}
+};
 
 const playingVideo = (): HTMLVideoElement | undefined => {
 	const videos = [...document.querySelectorAll('video')];
@@ -56,6 +71,14 @@ export default defineUnlistedScript({
 			if (!reportedAdvancing && !reporting) void report();
 		};
 
+		let wiggleTimer: ReturnType<typeof setTimeout> | undefined;
+		const scheduleWiggle = (event: Event) => {
+			const video = event.target;
+			if (!(video instanceof HTMLVideoElement)) return;
+			clearTimeout(wiggleTimer);
+			wiggleTimer = setTimeout(() => wigglePointer(video), wiggleDelayMs);
+		};
+
 		let listening = false;
 		const listenForMedia = () => {
 			if (listening) return;
@@ -63,6 +86,7 @@ export default defineUnlistedScript({
 			document.addEventListener('play', enforceMute, true);
 			document.addEventListener('volumechange', enforceMute, true);
 			document.addEventListener('timeupdate', reportProgress, true);
+			document.addEventListener('playing', scheduleWiggle, true);
 		};
 
 		const report = async () => {

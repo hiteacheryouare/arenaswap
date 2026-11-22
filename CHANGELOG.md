@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Multiview boxes tuck their player controls away — 2026-11-22
+
+A second after a box's stream starts playing (and again after every stall or pause), the frame script fakes a mouse move over the player, so players that wait for a first move (Xfinity) start their own idle timer and hide their title bar and progress bar. Hovering a box still brings the controls back.
+
 ## The volatility term pays coin flips again, on each sport's own scale — 2026-11-21
 
 The term now pays the larger of a coin-flip bonus (+5 when the win probability has stayed on 50% lately, 0 at an average 17.5 points away) and the swing bonus, and each sport carries its own `winProbabilityScales`, because football logs a third as many plays a minute and never reached basketball's movement scale. NCAA Football and the UFL set `untimedOvertime`, so a college overtime no longer counts as ten minutes played (UCLA @ Michigan read 0 through three tied quarters and overtime; it now reads +4, then +5).

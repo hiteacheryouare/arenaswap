@@ -1,4 +1,4 @@
-type listener = () => void;
+type listener = (event?: unknown) => void;
 
 const extensionOrigin = 'https://extension.test';
 
@@ -11,9 +11,20 @@ interface fakeVideo {
 	videoHeight: number;
 	currentTime: number;
 	play: jest.Mock;
+	getBoundingClientRect: () => { left: number; top: number; width: number; height: number };
 }
 
-const mkVideo = (): fakeVideo => ({
+class fakeVideoElement {
+	getBoundingClientRect() {
+		return { left: 0, top: 0, width: 640, height: 360 };
+	}
+}
+
+class fakeMouseEvent {
+	constructor(public type: string, public init: { clientX: number; clientY: number }) {}
+}
+
+const mkVideo = (): fakeVideo => Object.assign(Object.create(fakeVideoElement.prototype), {
 	volume: 1,
 	muted: false,
 	paused: true,
@@ -31,7 +42,9 @@ const drain = async () => {
 const setup = (options: { ancestorOrigins: string[]; reply?: { muted?: boolean }; replies?: ({ muted?: boolean } | undefined)[] }) => {
 	const listeners = new Map<string, listener>();
 	const video = mkVideo();
+	const controls = { dispatchEvent: jest.fn() };
 	const topWindow = {};
+	Object.assign(globalThis, { HTMLVideoElement: fakeVideoElement, MouseEvent: fakeMouseEvent, PointerEvent: fakeMouseEvent });
 	(globalThis as Record<string, unknown>).defineUnlistedScript = (definition: unknown) => definition;
 	(globalThis as Record<string, unknown>).window = { top: topWindow, parent: topWindow, name: 'frame' };
 	(globalThis as Record<string, unknown>).location = { ancestorOrigins: options.ancestorOrigins, href: 'https://player.test/' };
@@ -39,6 +52,7 @@ const setup = (options: { ancestorOrigins: string[]; reply?: { muted?: boolean }
 		addEventListener: (type: string, handler: listener) => { listeners.set(type, handler); },
 		removeEventListener: (type: string) => { listeners.delete(type); },
 		querySelectorAll: () => [video],
+		elementFromPoint: () => controls,
 	};
 	const sendMessage = jest.fn().mockResolvedValue(options.reply);
 	for (const reply of options.replies ?? []) sendMessage.mockResolvedValueOnce(reply);
@@ -49,7 +63,7 @@ const setup = (options: { ancestorOrigins: string[]; reply?: { muted?: boolean }
 			onMessage: { addListener: jest.fn() },
 		},
 	};
-	return { listeners, video, sendMessage };
+	return { listeners, video, controls, sendMessage };
 };
 
 const run = async () => {
@@ -65,7 +79,7 @@ beforeEach(() => {
 afterEach(() => {
 	jest.clearAllTimers();
 	jest.useRealTimers();
-	for (const key of ['defineUnlistedScript', 'window', 'location', 'document', 'browser']) {
+	for (const key of ['defineUnlistedScript', 'window', 'location', 'document', 'browser', 'HTMLVideoElement', 'MouseEvent', 'PointerEvent']) {
 		delete (globalThis as Record<string, unknown>)[key];
 	}
 });
@@ -139,5 +153,25 @@ describe('a frame inside the Multiview page', () => {
 
 		expect(video.volume).toBe(1);
 		expect(video.play).toHaveBeenCalledTimes(1);
+	});
+	test('moves the mouse over the player a second after its stream plays, so the controls tuck away', async () => {
+		const { listeners, video, controls } = setup({ ancestorOrigins: [extensionOrigin], reply: { muted: true } });
+		await run();
+		await drain();
+
+		listeners.get('playing')?.({ target: video });
+		jest.advanceTimersByTime(500);
+		listeners.get('playing')?.({ target: video });
+		jest.advanceTimersByTime(999);
+		expect(controls.dispatchEvent).not.toHaveBeenCalled();
+
+		jest.advanceTimersByTime(1);
+		const moves = controls.dispatchEvent.mock.calls.map(([event]) => [event.type, event.init.clientX, event.init.clientY]);
+		expect(moves).toEqual([
+			['pointermove', 320, 180],
+			['mousemove', 320, 180],
+			['pointermove', 321, 181],
+			['mousemove', 321, 181],
+		]);
 	});
 });
