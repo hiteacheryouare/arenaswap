@@ -149,7 +149,7 @@ function getTimelineProgress(game: GameClockState, sport: SportTypeConfig, leagu
 function scoreMargin(game: Game<string>): number
 ```
 
-`resolveSportConfig` and `resolveLeagueConfig` do what `scoreGame` does at the top of every call. An unknown `sportType` falls back to basketball's tuning. An unknown league falls back to its sport's best-known league: the NBA for basketball, the NHL for hockey, MLB for baseball, the NFL for football, NCAA softball, and MLS for soccer. `getGameProgress` is 0 at the start, 1 at the end of regulation and through overtime. `getTimelineProgress` matches it through regulation, then keeps counting past 1: an overtime period adds `overtimeDurationSecs` over the length of regulation, and an extra inning adds one inning's share. Both read only `period`, `clockSeconds` and `topOfInning` (`GameClockState`). `scoreMargin` is the absolute score difference.
+`resolveSportConfig` and `resolveLeagueConfig` do what `scoreGame` does at the top of every call. An unknown `sportType` falls back to basketball's tuning. An unknown league falls back to its sport's best-known league: the NBA for basketball, the NHL for hockey, MLB for baseball, the NFL for football, NCAA softball, and MLS for soccer. `getGameProgress` is 0 at the start, 1 at the end of regulation and through overtime. `getTimelineProgress` matches it through regulation, then keeps counting past 1: an overtime period adds `overtimeDurationSecs` over the length of regulation (0.05 in a league with `untimedOvertime`), and an extra inning adds one inning's share. Both read only `period`, `clockSeconds` and `topOfInning` (`GameClockState`). `scoreMargin` is the absolute score difference.
 
 ## Fantasy scoring
 
@@ -256,10 +256,11 @@ Deprecated: the number is in `scoreGame`'s `boosts` list as `scoringOpportunity`
 function computeWinProbVarianceScore(
 	line: readonly WinProbabilityReading[] | readonly number[],
 	nowProgress?: number,
+	sport?: Pick<SportTypeConfig, 'winProbabilityScales'>,
 ): number | undefined
 ```
 
-Maps a win-probability line to the ±5 modifier described in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). `nowProgress` is the game's current point from `getTimelineProgress`, and defaults to the last reading's. A bare `number[]` is spread evenly up to `nowProgress`, or to 1 without it. Drops non-finite readings first, then returns `undefined` with fewer than 3 left or before a tenth of the game is played. Otherwise returns an integer from `-scoreWinProbVarianceMax` to `scoreWinProbVarianceMax`.
+Maps a win-probability line to the ±5 modifier described in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). `nowProgress` is the game's current point from `getTimelineProgress`, and defaults to the last reading's. A bare `number[]` is spread evenly up to `nowProgress`, or to 1 without it. `sport` picks the swing bonus's scales, basketball's without it. Drops non-finite readings first, then returns `undefined` with fewer than 3 left or before a tenth of the game is played. Otherwise returns an integer from `-scoreWinProbVarianceMax` to `scoreWinProbVarianceMax`.
 
 ### isPlayFrozen
 

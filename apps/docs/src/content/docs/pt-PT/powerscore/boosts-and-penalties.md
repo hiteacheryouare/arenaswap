@@ -1,5 +1,5 @@
 ---
-sourceHash: '2348a1aeb67f'
+sourceHash: 'cdc911cc09f7'
 title: Impulsos e penalizações do PowerScore
 navLabel: Impulsos e penalizações
 description: Todos os impulsos e penalizações que o PowerScore 3 aplica por cima dos sinais de um modo, com a condição que ativa cada um, o seu máximo e os limites que partilham.
@@ -189,31 +189,42 @@ Numa corrida, a equipa com mais em jogo paga por inteiro e a outra a metade, lim
 
 ## Oscilações da probabilidade de vitória
 
-Só Clássico. `computeWinProbVarianceScore(line, nowProgress?)` devolve um modificador de `-scoreWinProbVarianceMax` a `+scoreWinProbVarianceMax` (±5). Passa `context.winProbability` ao `scoreGame` e o modificador é incorporado no total por si só, medido a partir do ponto atual do jogo em [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
+Só Clássico. `computeWinProbVarianceScore(line, nowProgress?, sport?)` devolve um modificador de `-scoreWinProbVarianceMax` a `+scoreWinProbVarianceMax` (±5). Passa `context.winProbability` ao `scoreGame` e o modificador é incorporado no total por si só, medido a partir do ponto atual do jogo em [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
 
 A linha é a probabilidade de vitória da equipa da casa, uma leitura por jogada, da mais antiga para a mais recente. Cada leitura é um [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading): `homeWinProbability`, de 0 a 1, e `progress`, quanto do jogo já tinha passado quando aquela jogada aconteceu. Um `number[]` simples continua a funcionar, e as leituras distribuem-se por igual desde o início do jogo até agora.
 
 Precisa de 3 leituras e de um décimo do jogo disputado. Antes disso devolve `undefined`, e o campo `winProbabilityVariance` do resultado é deixado de fora por completo em vez de ser posto a `0`. As leituras não finitas são descartadas primeiro.
 
-O modificador mistura duas medidas de quanto o resultado se mexeu recentemente. Ambas caem para metade a cada `halfLife`, um décimo do tempo regulamentar: cerca de 4 minutos de basquetebol universitário, 5 da NBA, 6 do futebol americano ou uma entrada de basebol.
+O modificador paga o maior de dois bónus, ambos medidos no troço recente do jogo. Tudo cai para metade a cada `halfLife`, um décimo do tempo regulamentar: cerca de 4 minutos de basquetebol universitário, 5 da NBA, 6 do futebol americano ou uma entrada de basebol.
+
+O **bónus de moeda ao ar** paga por um jogo que se manteve equilibrado. Vale +5 quando a probabilidade de vitória esteve nos 50% nas últimas quatro meias-vidas, e cai para 0 quando a distância média aos 50% chega a `coinFlipZeroDistance` (0.175).
+
+O **bónus de oscilação** paga por um jogo que tem andado a mexer-se. Mistura duas medidas:
 
 | Medida | O que soma | Cheia em | Parte da mistura |
 |---|---|---|---|
-| Movimento | Cada variação da probabilidade de vitória de uma jogada para a seguinte nas últimas quatro meias-vidas, cada uma limitada a 0.5 | `movementFullScale` (1.67) | 70% |
-| Oscilação | A maior distância entre a leitura atual e qualquer leitura das últimas três meias-vidas, reduzida a metade a cada duas meias-vidas | `swingFullScale` (0.26) | `swingWeight` (30%) |
+| Movimento | Cada variação da probabilidade de vitória de uma jogada para a seguinte nas últimas quatro meias-vidas, cada uma limitada a 0.5 | `movementFullScale` | 70% |
+| Oscilação | A maior distância entre a leitura atual e qualquer leitura das últimas três meias-vidas, reduzida a metade a cada duas meias-vidas | `swingFullScale` | `swingWeight` (30%) |
 
-Uma leitura que salta mais de 0.15 e volta logo para menos de 0.05 de onde estava é uma jogada corrigida, e é ignorada.
+Uma mistura em `neutralBlend` paga 0 e uma mistura cheia paga +5. Uma leitura que salta mais de 0.15 e volta logo para menos de 0.05 de onde estava é uma jogada corrigida, e é ignorada.
 
-| Mistura | Primeira parte | Segunda parte |
-|---|---|---|
-| Igual ou acima de `neutralBlend` (0.49) | Até +5 | Até +5 |
-| Abaixo de `neutralBlend` | 0 | Até −5 |
+Cada desporto tem as suas próprias escalas em `winProbabilityScales`, porque um jogo de basquetebol regista cerca de três vezes mais jogadas por minuto do que um de futebol americano, e cada jogada soma movimento:
 
-O bónus desvanece-se à medida que a probabilidade de vitória de quem está à frente sobe de `openLead` (80%) para `decidedLead` (97%), por isso um soluço num jogo decidido não rende nada. A penalização faz o contrário: nada enquanto o jogo ainda está em aberto, os −5 inteiros quando um jogo calmo chega aos 97%. Começa em `penaltyFromProgress`, a meio do tempo regulamentar.
+| Desporto | `movementFullScale` | `swingFullScale` | `neutralBlend` |
+|---|---|---|---|
+| Basquetebol | 1.77 | 0.27 | 0.52 |
+| Futebol americano | 0.77 | 0.23 | 0.54 |
+| Basebol | 0.67 | 0.29 | 0.46 |
+
+Os outros desportos usam as do basquetebol, vindas de `scorerTunables.scores.winProbabilityVariance.scales`.
+
+O bónus de oscilação desvanece-se à medida que a probabilidade de vitória de quem está à frente sobe de `openLead` (80%) para `decidedLead` (97%), por isso um soluço num jogo decidido não rende nada.
+
+Quando nenhum dos bónus paga, o modificador é 0 na primeira parte. A partir de `penaltyFromProgress` (a meio do tempo regulamentar), é uma penalização de até −5 que cresce com o quão decidido e calmo está o jogo: nada enquanto o jogo ainda está em aberto, os −5 inteiros quando um jogo que não se mexeu chega aos 97%.
 
 Um início desequilibrado não custa nada quando o jogo vira. Um jogo que esteve nos 98% quase a noite toda e depois oscila até uma moeda ao ar ganha o bónus assim que as oscilações se acumulam, porque só o troço recente conta.
 
-O `neutralBlend` é a mistura mediana de todos os momentos em direto e ainda por decidir de 417 jogos terminados, por isso um troço típico de um jogo disputado fica perto de 0. As escalas cheias são os percentis 90 dos mesmos momentos.
+O `neutralBlend` de cada desporto é a mistura mediana dos momentos em direto e ainda por decidir em 565 jogos terminados (275 de basquetebol, 193 de futebol americano, 97 de basebol), e as escalas cheias são os percentis 90 dos mesmos momentos.
 
 ## Dedução por pausa publicitária
 

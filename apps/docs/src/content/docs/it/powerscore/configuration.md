@@ -1,5 +1,5 @@
 ---
-sourceHash: '5050e319fc40'
+sourceHash: 'bcc1b14bc611'
 title: Configurazione di sport e leghe
 description: Ogni campo di SportTypeConfig e LeagueConfig, i loro valori predefiniti per tutti e sei gli sport e le 31 leghe, e come si stabilisce cosa significa "tirata" per uno sport.
 section: powerscore
@@ -25,6 +25,7 @@ Una voce per ogni `SportType`, esportata come `sportTypeConfigs` (un array) e `s
 | `zeroZeroPenaltyPeriods` | nessuno | nessuno | 1, 2 | 1 | nessuno | nessuno |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
 | `overtimeDurationSecs` | 300 | 600 | 300 | nessuno | nessuno | nessuno |
+| `winProbabilityScales` | 1.77, 0.27, 0.52 | 0.77, 0.23, 0.54 | nessuno | nessuno | 0.67, 0.29, 0.46 | nessuno |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -47,6 +48,7 @@ Una voce per ogni `SportType`, esportata come `sportTypeConfigs` (un array) e `s
 | `zeroZeroPenaltyPeriods` | I periodi in cui lo 0–0 ottiene comunque il livello ridotto anche se `zeroZeroAsFullTie` è `true`. L'hockey usa 1 e 2, il calcio il primo tempo. |
 | `otPreBoostWindowSecs` | Gli ultimi secondi dell'ultimo periodo regolamentare in cui una partita in parità sale verso il pre-boost dei supplementari. `0` lo disattiva. |
 | `overtimeDurationSecs` | Quanto dura un tempo supplementare, così `getTimelineProgress` può continuare a contare durante i supplementari. Senza, ogni tempo supplementare vale 0.05 della partita. |
+| `winProbabilityScales` | `movementFullScale`, `swingFullScale` e `neutralBlend` per il [bonus oscillazione della probabilità di vittoria](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). Gli sport che non ne hanno usano quelle del basket. |
 | `decayHalfLifeMs` | Quanto in fretta Momentum, Sorpassi e Rimonta svaniscono dopo l'ultimo punto. Più lungo negli sport a punteggio basso, perché un gol li tiene vivi fino al successivo. |
 | `historyWindowMs` | Quanto storico dei punteggi leggono i segnali basati sullo storico. Vedi sopra. |
 | `lateGameCurve` | Solo baseball e softball: quanti inning ha il tempo regolamentare e da quale inning parte la salita di fine gara. |
@@ -89,7 +91,7 @@ Una voce per ogni `LeagueId`, esportata come `leagueConfigs` (un array) e `leagu
 | Olympic Men's Soccer (`olysocm`) | soccer | 2 | 2700s |
 | Olympic Women's Soccer (`olysocw`) | soccer | 2 | 2700s |
 
-In tutto 31 leghe, quanti sono i membri di `LeagueId`.
+In tutto 31 leghe, quanti sono i membri di `LeagueId`. NCAA Football e la UFL impostano anche `untimedOvertime`, perché i loro supplementari non hanno un cronometro: ogni tempo supplementare vale 0.05 della partita invece di `overtimeDurationSecs`.
 
 ## Come si stabilisce cosa significa "tirata" per uno sport
 

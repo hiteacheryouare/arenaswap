@@ -1,5 +1,5 @@
 ---
-sourceHash: '2348a1aeb67f'
+sourceHash: 'cdc911cc09f7'
 title: Impulsos y penalizaciones de PowerScore
 navLabel: Impulsos y penalizaciones
 description: Cada impulso y penalización que PowerScore 3 aplica sobre las señales de un modo, con la condición que activa cada uno, su máximo y los topes que comparten.
@@ -189,31 +189,42 @@ En una carrera, el equipo con más en juego paga completo y el otro a la mitad, 
 
 ## Vaivenes de la probabilidad de victoria
 
-Solo Clásico. `computeWinProbVarianceScore(line, nowProgress?)` devuelve un modificador de `-scoreWinProbVarianceMax` a `+scoreWinProbVarianceMax` (±5). Pasa `context.winProbability` a `scoreGame` y el modificador se suma al total por su cuenta, medido desde el punto actual del partido en [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
+Solo Clásico. `computeWinProbVarianceScore(line, nowProgress?, sport?)` devuelve un modificador de `-scoreWinProbVarianceMax` a `+scoreWinProbVarianceMax` (±5). Pasa `context.winProbability` a `scoreGame` y el modificador se suma al total por su cuenta, medido desde el punto actual del partido en [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
 
 La línea es la probabilidad de victoria del local, una lectura por jugada, la más antigua primero. Cada lectura es una [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading): `homeWinProbability` de 0 a 1, y `progress`, cuánto del partido llevaba su jugada. Un simple `number[]` sigue funcionando, y sus lecturas se reparten de forma uniforme desde el inicio del partido hasta ahora.
 
 Necesita 3 lecturas y una décima parte del partido jugada. Antes de eso devuelve `undefined`, y el campo `winProbabilityVariance` del resultado se omite por completo en lugar de definirse como `0`. Las lecturas no finitas se descartan primero.
 
-El modificador combina dos medidas de cuánto se ha movido el resultado últimamente. Ambas se reducen a la mitad cada `halfLife`, una décima parte del tiempo reglamentario: unos 4 minutos de basquetbol universitario, 5 de la NBA, 6 de fútbol americano o una entrada de béisbol.
+El modificador paga el mayor de dos impulsos, ambos medidos sobre el tramo reciente del partido. Todo se reduce a la mitad cada `halfLife`, una décima parte del tiempo reglamentario: unos 4 minutos de basquetbol universitario, 5 de la NBA, 6 de fútbol americano o una entrada de béisbol.
+
+El **impulso de volado** premia a un partido que se ha mantenido cerrado. Es de +5 cuando la probabilidad de victoria ha estado en 50% durante las últimas cuatro semividas, y baja a 0 conforme la distancia promedio a 50% llega a `coinFlipZeroDistance` (0.175).
+
+El **impulso de vaivén** premia a un partido que se ha estado moviendo. Combina dos medidas:
 
 | Medida | Qué suma | Completa en | Parte de la mezcla |
 |---|---|---|---|
-| Movimiento | Cada cambio de la probabilidad de victoria de una jugada a otra en las últimas cuatro semividas, cada uno limitado a 0.5 | `movementFullScale` (1.67) | 70% |
-| Vaivén | La mayor diferencia entre la lectura actual y cualquier lectura de las últimas tres semividas, reducida a la mitad cada dos semividas | `swingFullScale` (0.26) | `swingWeight` (30%) |
+| Movimiento | Cada cambio de la probabilidad de victoria de una jugada a otra en las últimas cuatro semividas, cada uno limitado a 0.5 | `movementFullScale` | 70% |
+| Vaivén | La mayor diferencia entre la lectura actual y cualquier lectura de las últimas tres semividas, reducida a la mitad cada dos semividas | `swingFullScale` | `swingWeight` (30%) |
 
-Una lectura que salta más de 0.15 y vuelve enseguida a menos de 0.05 de donde estaba es una jugada corregida, y se ignora.
+Una mezcla en `neutralBlend` paga 0 y una mezcla completa paga +5. Una lectura que salta más de 0.15 y vuelve enseguida a menos de 0.05 de donde estaba es una jugada corregida, y se ignora.
 
-| Mezcla | Primera mitad | Segunda mitad |
-|---|---|---|
-| Igual o mayor que `neutralBlend` (0.49) | Hasta +5 | Hasta +5 |
-| Menor que `neutralBlend` | 0 | Hasta −5 |
+Cada deporte tiene sus propias escalas en `winProbabilityScales`, porque un partido de basquetbol registra cerca del triple de jugadas por minuto que uno de fútbol americano, y cada jugada suma movimiento:
 
-El impulso se desvanece conforme la probabilidad de victoria del que va arriba sube de `openLead` (80%) a `decidedLead` (97%), así que un chispazo en un partido decidido no da nada. La penalización hace lo contrario: nada mientras el partido sigue abierto, los −5 completos cuando un partido tranquilo llega a 97%. Empieza en `penaltyFromProgress`, la mitad del tiempo reglamentario.
+| Deporte | `movementFullScale` | `swingFullScale` | `neutralBlend` |
+|---|---|---|---|
+| Basquetbol | 1.77 | 0.27 | 0.52 |
+| Fútbol americano | 0.77 | 0.23 | 0.54 |
+| Béisbol | 0.67 | 0.29 | 0.46 |
+
+Los demás deportes usan las del basquetbol, desde `scorerTunables.scores.winProbabilityVariance.scales`.
+
+El impulso de vaivén se desvanece conforme la probabilidad de victoria del que va arriba sube de `openLead` (80%) a `decidedLead` (97%), así que un chispazo en un partido decidido no da nada.
+
+Cuando ninguno de los dos impulsos paga, el modificador es 0 en la primera mitad. A partir de `penaltyFromProgress` (la mitad del tiempo reglamentario) es una penalización de hasta −5 que crece con lo decidido y lo tranquilo que esté el partido: nada mientras el partido sigue abierto, los −5 completos cuando un partido que no se ha movido llega a 97%.
 
 Un arranque disparejo no cuesta nada cuando el partido cambia. Un partido que estuvo en 98% casi toda la noche y luego se vuelve un volado gana el impulso en cuanto se acumulan los vaivenes, porque solo cuenta el tramo reciente.
 
-`neutralBlend` es la mezcla mediana de cada momento en vivo y sin decidir en 417 partidos terminados, así que un tramo típico de un partido cerrado queda cerca de 0. Las escalas completas son los percentiles 90 de los mismos momentos.
+El `neutralBlend` de cada deporte es la mezcla mediana de sus momentos en vivo y sin decidir en 565 partidos terminados (275 de basquetbol, 193 de fútbol americano, 97 de béisbol), y sus escalas completas son los percentiles 90 de los mismos momentos.
 
 El modificador se suma después de la deducción por corte, no antes, y el resultado se limita de 0 a 100 antes de sumar cualquier impulso.
 

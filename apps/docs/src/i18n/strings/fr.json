@@ -540,7 +540,7 @@
 			},
 			{
 				"name": "Probabilité de victoire",
-				"copy": "Jusqu'à {max} en plus quand les chances ont beaucoup bougé récemment, jusqu'à {max} en moins quand le match s'est calmé et qu'une équipe a course gagnée."
+				"copy": "Jusqu'à {max} en plus quand les chances sont restées proches de 50/50 ou ont bougé récemment, jusqu'à {max} en moins quand le match s'est calmé et qu'une équipe a course gagnée."
 			}
 		],
 		"liveHeading": "PowerScores en direct.",

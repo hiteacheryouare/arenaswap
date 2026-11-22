@@ -1,5 +1,5 @@
 ---
-sourceHash: '5050e319fc40'
+sourceHash: 'bcc1b14bc611'
 title: 종목 및 리그 설정
 description: SportTypeConfig와 LeagueConfig의 모든 필드, 여섯 종목과 31개 리그 전체의 기본값, 그리고 종목별 "접전"의 기준이 정해지는 방식.
 section: powerscore
@@ -25,6 +25,7 @@ navLabel: 설정
 | `zeroZeroPenaltyPeriods` | 없음 | 없음 | 1, 2 | 1 | 없음 | 없음 |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
 | `overtimeDurationSecs` | 300 | 600 | 300 | 없음 | 없음 | 없음 |
+| `winProbabilityScales` | 1.77, 0.27, 0.52 | 0.77, 0.23, 0.54 | 없음 | 없음 | 0.67, 0.29, 0.46 | 없음 |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -47,6 +48,7 @@ navLabel: 설정
 | `zeroZeroPenaltyPeriods` | `zeroZeroAsFullTie`가 `true`여도 0–0이 여전히 낮춘 단계를 받는 피리어드예요. 하키는 1, 2피리어드, 축구는 전반이에요. |
 | `otPreBoostWindowSecs` | 정규 시간 마지막 피리어드의 마지막 몇 초 동안, 동점 경기가 연장전 사전 부스트를 향해 올라가는 구간이에요. `0`이면 꺼져요. |
 | `overtimeDurationSecs` | 연장 피리어드 하나가 얼마나 이어지는지예요. `getTimelineProgress`가 연장 중에도 계속 세려면 필요해요. 없으면 연장 피리어드 하나를 경기의 0.05로 쳐요. |
+| `winProbabilityScales` | [승리 확률 요동 보너스](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)의 `movementFullScale`, `swingFullScale`, `neutralBlend`예요. 없는 종목은 농구 기준을 써요. |
 | `decayHalfLifeMs` | 마지막 득점 이후 모멘텀, 리드 변화, 추격이 얼마나 빨리 사그라드는지예요. 득점이 적은 종목일수록 길어서, 골 하나가 다음 골까지 시그널을 살려둬요. |
 | `historyWindowMs` | 기록 시그널이 읽는 득점 기록의 길이예요. 위를 참고하세요. |
 | `lateGameCurve` | 야구와 소프트볼 전용이에요. 정규 이닝이 몇 개인지, 종반 상승이 몇 회부터 시작되는지예요. |
@@ -89,7 +91,7 @@ navLabel: 설정
 | 올림픽 남자 축구 (`olysocm`) | 축구 | 2 | 2700초 |
 | 올림픽 여자 축구 (`olysocw`) | 축구 | 2 | 2700초 |
 
-리그는 모두 31개이고, `LeagueId`의 31개 멤버와 일치해요.
+리그는 모두 31개이고, `LeagueId`의 31개 멤버와 일치해요. NCAA 풋볼과 UFL은 `untimedOvertime`도 설정해요. 연장전에 시계가 없어서, 연장 피리어드 하나를 `overtimeDurationSecs` 대신 경기의 0.05로 쳐요.
 
 ## 종목별 "접전"의 기준이 정해지는 방식
 

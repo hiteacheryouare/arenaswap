@@ -81,7 +81,7 @@ const runMode = (mode: PowerScoreMode, input: SignalInput, disabledSignals?: rea
 	const onBreak = mode.usesBreakPenalty && input.context.onBreak === true;
 	const scaledBreakPenalty = onBreak ? Math.round(breakPenalty * scale) : 0;
 	const winProbabilityVariance = mode.usesWinProbability
-		? computeWinProbVarianceScore(input.context.winProbability ?? [], getTimelineProgress(input.game, input.sport, input.league))
+		? computeWinProbVarianceScore(input.context.winProbability ?? [], getTimelineProgress(input.game, input.sport, input.league), input.sport)
 		: undefined;
 	const baseTotal = clamp(Math.max(0, scaledSubtotal - scaledBreakPenalty) + (winProbabilityVariance ?? 0), 0, scoreMaxTotal);
 

@@ -1,5 +1,5 @@
 ---
-sourceHash: '2348a1aeb67f'
+sourceHash: 'cdc911cc09f7'
 title: PowerScore-Boosts und -Strafen
 navLabel: Boosts und Strafen
 description: Jeder Boost und jede Strafe, die PowerScore 3 auf die Signale eines Modus legt, mit der Bedingung, die sie auslöst, ihrem Maximum und den Obergrenzen, die sie sich teilen.
@@ -189,31 +189,42 @@ Bei einem Rennen zahlt das Team mit dem meisten Einsatz voll und das andere zur 
 
 ## Ausschläge der Siegwahrscheinlichkeit
 
-Nur Klassisch. `computeWinProbVarianceScore(line, nowProgress?)` liefert einen Modifikator von `-scoreWinProbVarianceMax` bis `+scoreWinProbVarianceMax` (±5). Übergib `context.winProbability` an `scoreGame`, und der Modifikator fließt von allein in die Summe ein, gemessen vom aktuellen Punkt des Spiels in [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
+Nur Klassisch. `computeWinProbVarianceScore(line, nowProgress?, sport?)` liefert einen Modifikator von `-scoreWinProbVarianceMax` bis `+scoreWinProbVarianceMax` (±5). Übergib `context.winProbability` an `scoreGame`, und der Modifikator fließt von allein in die Summe ein, gemessen vom aktuellen Punkt des Spiels in [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
 
 Die Linie ist die Siegwahrscheinlichkeit des Heimteams, ein Wert pro Spielzug, älteste zuerst. Jeder Wert ist eine [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading): `homeWinProbability` von 0 bis 1 und `progress`, wie weit im Spiel sein Spielzug fiel. Eine bloße `number[]` funktioniert weiterhin, ihre Werte verteilen sich gleichmäßig vom Spielbeginn bis jetzt.
 
 Er braucht 3 Werte und ein Zehntel des gespielten Spiels. Davor liefert er `undefined`, und das Feld `winProbabilityVariance` des Ergebnisses wird ganz weggelassen, statt auf `0` gesetzt zu werden. Nicht endliche Werte werden zuerst verworfen.
 
-Der Modifikator mischt zwei Maße dafür, wie stark sich der Ausgang zuletzt bewegt hat. Beide halbieren sich alle `halfLife`, einem Zehntel der regulären Spielzeit: etwa 4 Minuten im College-Basketball, 5 in der NBA, 6 im Football oder ein Inning im Baseball.
+Der Modifikator zahlt den größeren von zwei Boni, beide gemessen über die jüngste Strecke des Spiels. Alles halbiert sich alle `halfLife`, einem Zehntel der regulären Spielzeit: etwa 4 Minuten im College-Basketball, 5 in der NBA, 6 im Football oder ein Inning im Baseball.
+
+Der **Münzwurf-Bonus** zahlt für ein Spiel, das eng geblieben ist. Er beträgt +5, wenn die Siegwahrscheinlichkeit über die letzten vier Halbwertszeiten auf 50 % lag, und fällt auf 0, wenn der durchschnittliche Abstand von 50 % `coinFlipZeroDistance` (0.175) erreicht.
+
+Der **Ausschlag-Bonus** zahlt für ein Spiel, das in Bewegung war. Er mischt zwei Maße:
 
 | Maß | Was es aufsummiert | Voll bei | Anteil an der Mischung |
 |---|---|---|---|
-| Bewegung | Jede Änderung der Siegwahrscheinlichkeit von Spielzug zu Spielzug in den letzten vier Halbwertszeiten, jeweils auf 0.5 begrenzt | `movementFullScale` (1.67) | 70 % |
-| Ausschlag | Der größte Abstand zwischen dem aktuellen Wert und einem beliebigen Wert der letzten drei Halbwertszeiten, alle zwei Halbwertszeiten um die Hälfte abgeschwächt | `swingFullScale` (0.26) | `swingWeight` (30 %) |
+| Bewegung | Jede Änderung der Siegwahrscheinlichkeit von Spielzug zu Spielzug in den letzten vier Halbwertszeiten, jeweils auf 0.5 begrenzt | `movementFullScale` | 70 % |
+| Ausschlag | Der größte Abstand zwischen dem aktuellen Wert und einem beliebigen Wert der letzten drei Halbwertszeiten, alle zwei Halbwertszeiten um die Hälfte abgeschwächt | `swingFullScale` | `swingWeight` (30 %) |
 
-Ein Wert, der um mehr als 0.15 springt und gleich wieder bis auf 0.05 an den alten Stand zurückkommt, ist ein korrigierter Spielzug und wird ignoriert.
+Eine Mischung bei `neutralBlend` zahlt 0, eine volle Mischung zahlt +5. Ein Wert, der um mehr als 0.15 springt und gleich wieder bis auf 0.05 an den alten Stand zurückkommt, ist ein korrigierter Spielzug und wird ignoriert.
 
-| Mischung | Erste Halbzeit | Zweite Halbzeit |
-|---|---|---|
-| Ab `neutralBlend` (0.49) | Bis zu +5 | Bis zu +5 |
-| Unter `neutralBlend` | 0 | Bis hinab zu −5 |
+Jede Sportart hat in `winProbabilityScales` ihre eigenen Skalen, denn ein Basketballspiel protokolliert pro Minute etwa dreimal so viele Spielzüge wie ein Footballspiel, und jeder Spielzug erhöht die Bewegung:
 
-Der Bonus schwindet, wenn die Siegwahrscheinlichkeit des Führenden von `openLead` (80 %) auf `decidedLead` (97 %) steigt, ein Ausreißer in einem entschiedenen Spiel bringt also nichts. Die Strafe macht das Gegenteil: nichts, solange das Spiel noch offen ist, die vollen −5, sobald ein ruhiges Spiel bei 97 % liegt. Sie beginnt bei `penaltyFromProgress`, der Hälfte der regulären Spielzeit.
+| Sportart | `movementFullScale` | `swingFullScale` | `neutralBlend` |
+|---|---|---|---|
+| Basketball | 1.77 | 0.27 | 0.52 |
+| Football | 0.77 | 0.23 | 0.54 |
+| Baseball | 0.67 | 0.29 | 0.46 |
+
+Andere Sportarten nutzen die des Basketballs, aus `scorerTunables.scores.winProbabilityVariance.scales`.
+
+Der Ausschlag-Bonus schwindet, wenn die Siegwahrscheinlichkeit des Führenden von `openLead` (80 %) auf `decidedLead` (97 %) steigt, ein Ausreißer in einem entschiedenen Spiel bringt also nichts.
+
+Zahlt keiner der beiden Boni, ist der Modifikator in der ersten Halbzeit 0. Ab `penaltyFromProgress` (der Hälfte der regulären Spielzeit) ist es eine Strafe von bis zu −5, die mit der Entschiedenheit und Ruhe des Spiels wächst: nichts, solange das Spiel noch offen ist, die vollen −5, sobald ein Spiel, das sich nicht bewegt hat, bei 97 % liegt.
 
 Ein einseitiger Start kostet nichts, sobald das Spiel kippt. Ein Spiel, das den größten Teil des Abends bei 98 % stand und dann zum Münzwurf kippt, bekommt den Bonus, sobald sich die Ausschläge häufen, denn nur die jüngste Strecke zählt.
 
-`neutralBlend` ist der Median der Mischung über jeden laufenden, unentschiedenen Moment in 417 beendeten Spielen, ein typischer Abschnitt eines engen Spiels liegt also nahe 0. Die vollen Skalen sind die 90. Perzentile derselben Momente.
+Das `neutralBlend` jeder Sportart ist der Median der Mischung über ihre laufenden, unentschiedenen Momente in 565 beendeten Spielen (275 Basketball, 193 Football, 97 Baseball), und ihre vollen Skalen sind die 90. Perzentile derselben Momente.
 
 Der Modifikator wird nach dem Pausenabzug addiert, nicht davor, und das Ergebnis wird auf 0 bis 100 begrenzt, bevor ein Boost dazukommt.
 

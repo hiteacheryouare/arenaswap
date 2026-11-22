@@ -420,7 +420,7 @@ The single exported object holding every tier value the engine scores with. It's
 | `scores.momentum` | The two momentum tier values. See [Momentum](/arenaswap/docs/powerscore/signals/#momentum-lead-changes-and-comeback-factor). |
 | `scores.leadChanges` | The two lead-change tier values. |
 | `scores.comeback` | The two comeback tier values and its flat floor. |
-| `scores.winProbabilityVariance` | `halfLife`, `movementFullScale`, `swingFullScale`, `swingWeight`, `neutralBlend`, `openLead`, `decidedLead` and `penaltyFromProgress`, tabulated in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). |
+| `scores.winProbabilityVariance` | `halfLife`, `swingWeight`, `coinFlipZeroDistance`, `openLead`, `decidedLead`, `penaltyFromProgress` and the default `scales`, tabulated in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). |
 | `reasons` | Only `fallback` ("best game available"), the reason the deprecated flat result falls back to. The English phrasing lives in `renderReasonEnglish`. |
 
 ## FantasyRule and FantasySport

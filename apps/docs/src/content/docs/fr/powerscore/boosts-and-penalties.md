@@ -1,5 +1,5 @@
 ---
-sourceHash: '2348a1aeb67f'
+sourceHash: 'cdc911cc09f7'
 title: Les bonus et pénalités de PowerScore
 navLabel: Bonus et pénalités
 description: Chaque bonus et chaque pénalité que PowerScore 3 applique par-dessus les signaux d'un mode, avec la condition qui déclenche chacun, son maximum, et les plafonds qu'ils partagent.
@@ -189,31 +189,42 @@ Pour une course, l'équipe qui a le plus à jouer verse en plein et l'autre à m
 
 ## Oscillations de la probabilité de victoire
 
-Classique seulement. `computeWinProbVarianceScore(line, nowProgress?)` renvoie un modificateur de `-scoreWinProbVarianceMax` à `+scoreWinProbVarianceMax` (±5). Passe `context.winProbability` à `scoreGame`, et le modificateur est intégré tout seul au total, mesuré à partir du point actuel du match dans [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
+Classique seulement. `computeWinProbVarianceScore(line, nowProgress?, sport?)` renvoie un modificateur de `-scoreWinProbVarianceMax` à `+scoreWinProbVarianceMax` (±5). Passe `context.winProbability` à `scoreGame`, et le modificateur est intégré tout seul au total, mesuré à partir du point actuel du match dans [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
 
 La ligne est la probabilité de victoire de l'équipe à domicile, un relevé par action, du plus ancien au plus récent. Chaque relevé est une [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading) : `homeWinProbability` de 0 à 1, et `progress`, l'avancement du match au moment de son action. Un simple `number[]` marche toujours, et ses relevés sont répartis régulièrement du début du match à maintenant.
 
 Il faut 3 relevés et un dixième du match joué. Avant cela il renvoie `undefined`, et le champ `winProbabilityVariance` du résultat est carrément omis plutôt que mis à `0`. Les relevés non finis sont écartés d'abord.
 
-Le modificateur mélange deux mesures de l'ampleur des mouvements récents de l'issue. Les deux diminuent de moitié à chaque `halfLife`, un dixième du temps réglementaire : environ 4 minutes de basketball universitaire, 5 de NBA, 6 de football américain ou une manche de baseball.
+Le modificateur verse le plus grand de deux bonus, tous deux mesurés sur la période récente du match. Tout diminue de moitié à chaque `halfLife`, un dixième du temps réglementaire : environ 4 minutes de basketball universitaire, 5 de NBA, 6 de football américain ou une manche de baseball.
+
+Le **bonus pile ou face** récompense un match resté serré. Il vaut +5 quand la probabilité de victoire est restée à 50 % sur les quatre dernières demi-vies, et tombe à 0 quand l'écart moyen par rapport à 50 % atteint `coinFlipZeroDistance` (0.175).
+
+Le **bonus d'oscillation** récompense un match qui a bougé. Il mélange deux mesures :
 
 | Mesure | Ce qu'elle additionne | Pleine à | Part du mélange |
 |---|---|---|---|
-| Mouvement | Chaque variation de la probabilité de victoire d'une action à l'autre sur les quatre dernières demi-vies, plafonnée à 0.5 chacune | `movementFullScale` (1.67) | 70 % |
-| Oscillation | Le plus grand écart entre le relevé actuel et n'importe quel relevé des trois dernières demi-vies, diminué de moitié toutes les deux demi-vies | `swingFullScale` (0.26) | `swingWeight` (30 %) |
+| Mouvement | Chaque variation de la probabilité de victoire d'une action à l'autre sur les quatre dernières demi-vies, plafonnée à 0.5 chacune | `movementFullScale` | 70 % |
+| Oscillation | Le plus grand écart entre le relevé actuel et n'importe quel relevé des trois dernières demi-vies, diminué de moitié toutes les deux demi-vies | `swingFullScale` | `swingWeight` (30 %) |
 
-Un relevé qui saute de plus de 0.15 et revient aussitôt à moins de 0.05 de sa valeur d'avant est une action corrigée, et il est ignoré.
+Un mélange à `neutralBlend` rapporte 0 et un mélange plein rapporte +5. Un relevé qui saute de plus de 0.15 et revient aussitôt à moins de 0.05 de sa valeur d'avant est une action corrigée, et il est ignoré.
 
-| Mélange | Première mi-temps | Seconde mi-temps |
-|---|---|---|
-| Égal ou supérieur à `neutralBlend` (0.49) | Jusqu'à +5 | Jusqu'à +5 |
-| Inférieur à `neutralBlend` | 0 | Jusqu'à −5 |
+Chaque sport a ses propres échelles dans `winProbabilityScales`, parce qu'un match de basketball enregistre environ trois fois plus d'actions par minute qu'un match de football américain, et que chaque action ajoute du mouvement :
 
-Le bonus s'efface à mesure que la probabilité de victoire du meneur grimpe de `openLead` (80 %) à `decidedLead` (97 %), si bien qu'un soubresaut dans un match décidé ne rapporte rien. La pénalité fait l'inverse : rien tant que le match est ouvert, le −5 complet dès qu'un match calme est à 97 %. Elle commence à `penaltyFromProgress`, la moitié du temps réglementaire.
+| Sport | `movementFullScale` | `swingFullScale` | `neutralBlend` |
+|---|---|---|---|
+| Basketball | 1.77 | 0.27 | 0.52 |
+| Football américain | 0.77 | 0.23 | 0.54 |
+| Baseball | 0.67 | 0.29 | 0.46 |
+
+Les autres sports utilisent celles du basketball, issues de `scorerTunables.scores.winProbabilityVariance.scales`.
+
+Le bonus d'oscillation s'efface à mesure que la probabilité de victoire du meneur grimpe de `openLead` (80 %) à `decidedLead` (97 %), si bien qu'un soubresaut dans un match décidé ne rapporte rien.
+
+Quand aucun des deux bonus ne rapporte, le modificateur vaut 0 en première mi-temps. À partir de `penaltyFromProgress` (la moitié du temps réglementaire), c'est une pénalité pouvant aller jusqu'à −5, qui grandit avec le degré de décision et de calme du match : rien tant que le match est ouvert, le −5 complet dès qu'un match qui n'a pas bougé est à 97 %.
 
 Un début à sens unique ne coûte rien une fois que le match bascule. Un match resté à 98 % presque toute la soirée puis qui bascule à pile ou face gagne le bonus dès que les oscillations s'accumulent, parce que seule la période récente compte.
 
-`neutralBlend` est le mélange médian de chaque moment en direct et non décidé dans 417 matchs terminés, donc un passage typique d'un match serré se tient près de 0. Les pleines échelles sont les 90e centiles des mêmes moments.
+Le `neutralBlend` de chaque sport est le mélange médian de ses moments en direct et non décidés sur 565 matchs terminés (275 de basketball, 193 de football américain, 97 de baseball), et ses pleines échelles sont les 90e centiles des mêmes moments.
 
 Le modificateur est ajouté après la déduction de pause, pas avant, et le résultat est ramené entre 0 et 100 avant qu'un bonus soit ajouté.
 

@@ -1,5 +1,5 @@
 ---
-sourceHash: 'e5d4af4d0a0e'
+sourceHash: '9597d1316266'
 title: PowerScore TypeScript 타입
 description: Game, ScoringContext, ScoreOptions, PowerScore, 그리고 모드와 설정 타입의 모든 필드, 어떤 것이 선택 사항인지, 선택 필드가 없을 때 어떻게 되는지.
 section: powerscore
@@ -421,7 +421,7 @@ type LateGameCurveConfig = BaseballLateGameCurveConfig;
 | `scores.momentum` | 모멘텀의 두 단계 값이에요. [모멘텀](/arenaswap/docs/powerscore/signals/#momentum-lead-changes-and-comeback-factor)을 보세요. |
 | `scores.leadChanges` | 리드 변화의 두 단계 값이에요. |
 | `scores.comeback` | 추격의 두 단계 값과 고정 바닥이에요. |
-| `scores.winProbabilityVariance` | `halfLife`, `movementFullScale`, `swingFullScale`, `swingWeight`, `neutralBlend`, `openLead`, `decidedLead`, `penaltyFromProgress`이고, [부스트와 페널티](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)에 표로 정리돼 있어요. |
+| `scores.winProbabilityVariance` | `halfLife`, `swingWeight`, `coinFlipZeroDistance`, `openLead`, `decidedLead`, `penaltyFromProgress`, 기본 `scales`이고, [부스트와 페널티](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)에 표로 정리돼 있어요. |
 | `reasons` | 더 이상 권장되지 않는 평평한 결과가 돌아가는 이유인 `fallback`("best game available")뿐이에요. 영어 문구는 `renderReasonEnglish`에 있어요. |
 
 ## FantasyRule과 FantasySport

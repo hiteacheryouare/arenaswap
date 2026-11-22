@@ -58,7 +58,7 @@ export const getTimelineProgress = (game: GameClockState, sport: SportTypeConfig
 
 	const overtimeIndex = game.period - regularPeriods - 1;
 	const overtimeSecs = sport.overtimeDurationSecs;
-	if (overtimeSecs === undefined || sport.clockIsFullGameElapsed) return 1 + (overtimeIndex + 0.5) * untimedOvertimeShare;
+	if (overtimeSecs === undefined || sport.clockIsFullGameElapsed || league.untimedOvertime) return 1 + (overtimeIndex + 0.5) * untimedOvertimeShare;
 	const regulationSecs = regularPeriods * Math.max(1, league.periodDurationSecs);
 	const secsRemaining = getClockSecondsRemaining(game, sport, overtimeSecs);
 	const elapsed = secsRemaining === null ? 0 : overtimeSecs - secsRemaining;

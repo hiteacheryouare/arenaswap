@@ -1,5 +1,5 @@
 ---
-sourceHash: '5050e319fc40'
+sourceHash: 'bcc1b14bc611'
 title: Sportart- und Liga-Konfiguration
 description: Jedes Feld von SportTypeConfig und LeagueConfig, die Standardwerte für alle sechs Sportarten und 31 Ligen, und wie sich festlegt, was in einer Sportart als eng gilt.
 section: powerscore
@@ -25,6 +25,7 @@ Ein Eintrag pro `SportType`, exportiert als `sportTypeConfigs` (ein Array) und `
 | `zeroZeroPenaltyPeriods` | keine | keine | 1, 2 | 1 | keine | keine |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
 | `overtimeDurationSecs` | 300 | 600 | 300 | keine | keine | keine |
+| `winProbabilityScales` | 1.77, 0.27, 0.52 | 0.77, 0.23, 0.54 | keine | keine | 0.67, 0.29, 0.46 | keine |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -47,6 +48,7 @@ Ein Eintrag pro `SportType`, exportiert als `sportTypeConfigs` (ein Array) und `
 | `zeroZeroPenaltyPeriods` | Abschnitte, in denen 0:0 trotz `zeroZeroAsFullTie` auf `true` nur die reduzierte Stufe bekommt. Hockey nutzt 1 und 2, Fußball die erste Halbzeit. |
 | `otPreBoostWindowSecs` | Die letzten Sekunden des letzten regulären Abschnitts, in denen ein Spiel mit Gleichstand auf den Pre-Boost für die Verlängerung zusteuert. `0` schaltet ihn ab. |
 | `overtimeDurationSecs` | Wie lange ein Verlängerungsabschnitt dauert, damit `getTimelineProgress` durch ihn hindurch weiterzählen kann. Ohne ihn zählt jeder Verlängerungsabschnitt als 0.05 des Spiels. |
+| `winProbabilityScales` | `movementFullScale`, `swingFullScale` und `neutralBlend` für den [Ausschlag-Bonus der Siegwahrscheinlichkeit](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). Sportarten ohne eigene nutzen die des Basketballs. |
 | `decayHalfLifeMs` | Wie schnell Schwung, Führungswechsel und Comeback-Faktor nach dem letzten Treffer abklingen. In torarmen Sportarten länger, damit ein Tor sie bis zum nächsten am Leben hält. |
 | `historyWindowMs` | Wie viel Spielstandverlauf die Verlaufssignale lesen. Siehe oben. |
 | `lateGameCurve` | Nur Baseball und Softball: wie viele Innings die reguläre Spielzeit hat und in welchem Inning der Anstieg gegen Spielende beginnt. |
@@ -89,7 +91,7 @@ Ein Eintrag pro `LeagueId`, exportiert als `leagueConfigs` (ein Array) und `leag
 | Olympic Men's Soccer (`olysocm`) | Fußball | 2 | 2700s |
 | Olympic Women's Soccer (`olysocw`) | Fußball | 2 | 2700s |
 
-Insgesamt 31 Ligen, passend zu den 31 Mitgliedern von `LeagueId`.
+Insgesamt 31 Ligen, passend zu den 31 Mitgliedern von `LeagueId`. NCAA Football und die UFL setzen außerdem `untimedOvertime`, weil ihre Verlängerung keine Uhr hat: Jeder Verlängerungsabschnitt zählt als 0.05 des Spiels statt als `overtimeDurationSecs`.
 
 ## Wie sich festlegt, was in einer Sportart als eng gilt
 

@@ -133,18 +133,23 @@ export interface ScorerTunables {
 		closenessFlatFloor: number;
 		winProbabilityVariance: {
 			halfLife: number;
-			movementFullScale: number;
-			swingFullScale: number;
 			swingWeight: number;
-			neutralBlend: number;
+			coinFlipZeroDistance: number;
 			openLead: number;
 			decidedLead: number;
 			penaltyFromProgress: number;
+			scales: WinProbabilityScales;
 		};
 	};
 	reasons: {
 		fallback: string;
 	};
+}
+
+export interface WinProbabilityScales {
+	movementFullScale: number;
+	swingFullScale: number;
+	neutralBlend: number;
 }
 
 export interface SportTypeConfig {
@@ -167,6 +172,7 @@ export interface SportTypeConfig {
 	};
 	otPreBoostWindowSecs: number;
 	overtimeDurationSecs?: number;
+	winProbabilityScales?: WinProbabilityScales;
 	historyWindowMs: number;
 }
 
@@ -180,6 +186,7 @@ export interface LeagueConfig {
 	periodFormat: 'quarters' | 'halves' | 'periods' | 'innings';
 	runMinutes: LeagueRunMinutes;
 	knockoutRunMinutes?: LeagueRunMinutes;
+	untimedOvertime?: boolean;
 }
 
 export interface LeagueRunMinutes {

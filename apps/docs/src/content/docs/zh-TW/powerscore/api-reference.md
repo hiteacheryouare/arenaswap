@@ -1,5 +1,5 @@
 ---
-sourceHash: '3d1b823a21ee'
+sourceHash: '647b1df69d7b'
 title: PowerScore API 參考
 navLabel: API 參考
 description: powerscore 匯出的每個函式和常數，附上函式簽名、參數、回傳值，以及輸入缺漏或無效時的行為。也包含已棄用的 2.x API。
@@ -150,7 +150,7 @@ function getTimelineProgress(game: GameClockState, sport: SportTypeConfig, leagu
 function scoreMargin(game: Game<string>): number
 ```
 
-`resolveSportConfig` 和 `resolveLeagueConfig` 做的，就是 `scoreGame` 每次呼叫一開始做的事。無法辨認的 `sportType` 會退回籃球的調校。無法辨認的聯賽會退回它那項運動最具代表性的聯賽：籃球是 NBA，冰球是 NHL，棒球是 MLB，美式足球是 NFL，壘球是 NCAA 壘球，足球是 MLS。`getGameProgress` 開賽是 0，例行賽結束和延長賽中是 1。`getTimelineProgress` 在例行賽內和它一樣，之後會繼續往上數，超過 1：一節延長賽，增加的是 `overtimeDurationSecs` 占例行賽長度的比例；一個延長局，則增加一局的占比。兩者都只讀 `period`、`clockSeconds` 和 `topOfInning`（`GameClockState`）。`scoreMargin` 是比分差的絕對值。
+`resolveSportConfig` 和 `resolveLeagueConfig` 做的，就是 `scoreGame` 每次呼叫一開始做的事。無法辨認的 `sportType` 會退回籃球的調校。無法辨認的聯賽會退回它那項運動最具代表性的聯賽：籃球是 NBA，冰球是 NHL，棒球是 MLB，美式足球是 NFL，壘球是 NCAA 壘球，足球是 MLS。`getGameProgress` 開賽是 0，正規時間結束和延長賽中是 1。`getTimelineProgress` 在正規時間內和它一樣，之後會繼續往上數，超過 1：一節延長賽，增加的是 `overtimeDurationSecs` 占正規時間長度的比例（在設有 `untimedOvertime` 的聯賽是 0.05）；一個延長局，則增加一局的占比。兩者都只讀 `period`、`clockSeconds` 和 `topOfInning`（`GameClockState`）。`scoreMargin` 是比分差的絕對值。
 
 ## 夢幻計分
 
@@ -257,10 +257,11 @@ function computeScoringOpportunityBoost(game: Game<string>): number
 function computeWinProbVarianceScore(
 	line: readonly WinProbabilityReading[] | readonly number[],
 	nowProgress?: number,
+	sport?: Pick<SportTypeConfig, 'winProbabilityScales'>,
 ): number | undefined
 ```
 
-把勝率線對應成[加成與扣分](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)裡說明的 ±5 的修正。`nowProgress` 是 `getTimelineProgress` 給出的比賽目前位置，預設取最後一個讀數的位置。單純的 `number[]` 會平均鋪開到 `nowProgress`，沒有的話就鋪到 1。先濾掉非有限的讀數，剩下不到 3 個，或比賽還沒進行到十分之一，就回傳 `undefined`。否則回傳從 `-scoreWinProbVarianceMax` 到 `scoreWinProbVarianceMax` 的整數。
+把勝率線對應成[加成與扣分](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)裡說明的 ±5 的修正。`nowProgress` 是 `getTimelineProgress` 給出的比賽目前位置，預設取最後一個讀數的位置。單純的 `number[]` 會平均鋪開到 `nowProgress`，沒有的話就鋪到 1。`sport` 決定擺盪加成用的標度，沒有的話就用籃球的。先濾掉非有限的讀數，剩下不到 3 個，或比賽還沒進行到十分之一，就回傳 `undefined`。否則回傳從 `-scoreWinProbVarianceMax` 到 `scoreWinProbVarianceMax` 的整數。
 
 ### isPlayFrozen
 

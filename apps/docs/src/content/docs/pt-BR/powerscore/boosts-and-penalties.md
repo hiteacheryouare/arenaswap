@@ -1,5 +1,5 @@
 ---
-sourceHash: '2348a1aeb67f'
+sourceHash: 'cdc911cc09f7'
 title: Impulsos e penalidades do PowerScore
 navLabel: Impulsos e penalidades
 description: Todo impulso e toda penalidade que o PowerScore 3 aplica por cima dos sinais de um modo, com a condição que dispara cada um, o máximo e os tetos que eles dividem.
@@ -189,31 +189,42 @@ Numa disputa, o time com mais coisa em jogo paga por inteiro e o outro pela meta
 
 ## Oscilações da probabilidade de vitória
 
-Só no Clássico. O `computeWinProbVarianceScore(line, nowProgress?)` devolve um modificador de `-scoreWinProbVarianceMax` a `+scoreWinProbVarianceMax` (±5). Passe `context.winProbability` ao `scoreGame` e o modificador entra sozinho no total, medido a partir do ponto atual do jogo em [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
+Só no Clássico. O `computeWinProbVarianceScore(line, nowProgress?, sport?)` devolve um modificador de `-scoreWinProbVarianceMax` a `+scoreWinProbVarianceMax` (±5). Passe `context.winProbability` ao `scoreGame` e o modificador entra sozinho no total, medido a partir do ponto atual do jogo em [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
 
 A linha é a probabilidade de vitória do time da casa, uma leitura por lance, da mais antiga para a mais nova. Cada leitura é um [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading): `homeWinProbability`, de 0 a 1, e `progress`, quanto do jogo já tinha passado quando aquele lance aconteceu. Um `number[]` simples continua funcionando, e as leituras se distribuem por igual do começo do jogo até agora.
 
 Precisa de 3 leituras e de um décimo do jogo disputado. Antes disso devolve `undefined`, e o campo `winProbabilityVariance` do resultado fica de fora em vez de ser definido como `0`. As leituras não finitas são descartadas primeiro.
 
-O modificador mistura duas medidas de quanto o resultado se mexeu recentemente. As duas caem pela metade a cada `halfLife`, um décimo do tempo normal: cerca de 4 minutos de basquete universitário, 5 da NBA, 6 do futebol americano ou uma entrada de beisebol.
+O modificador paga o maior de dois bônus, ambos medidos no trecho recente do jogo. Tudo cai pela metade a cada `halfLife`, um décimo do tempo normal: cerca de 4 minutos de basquete universitário, 5 da NBA, 6 do futebol americano ou uma entrada de beisebol.
+
+O **bônus de cara ou coroa** paga por um jogo que ficou apertado. Vale +5 quando a probabilidade de vitória ficou em 50% nas últimas quatro meias-vidas, e cai a 0 quando a distância média de 50% chega a `coinFlipZeroDistance` (0,175).
+
+O **bônus de oscilação** paga por um jogo que vem se mexendo. Ele mistura duas medidas:
 
 | Medida | O que soma | Cheia em | Parte da mistura |
 |---|---|---|---|
-| Movimento | Toda variação da probabilidade de vitória de um lance para o outro nas últimas quatro meias-vidas, cada uma limitada a 0,5 | `movementFullScale` (1,67) | 70% |
-| Oscilação | A maior distância entre a leitura atual e qualquer leitura das últimas três meias-vidas, reduzida pela metade a cada duas meias-vidas | `swingFullScale` (0,26) | `swingWeight` (30%) |
+| Movimento | Toda variação da probabilidade de vitória de um lance para o outro nas últimas quatro meias-vidas, cada uma limitada a 0,5 | `movementFullScale` | 70% |
+| Oscilação | A maior distância entre a leitura atual e qualquer leitura das últimas três meias-vidas, reduzida pela metade a cada duas meias-vidas | `swingFullScale` | `swingWeight` (30%) |
 
-Uma leitura que salta mais de 0,15 e volta logo para até 0,05 de onde estava é um lance corrigido, e é ignorada.
+Uma mistura em `neutralBlend` paga 0 e uma mistura cheia paga +5. Uma leitura que salta mais de 0,15 e volta logo para até 0,05 de onde estava é um lance corrigido, e é ignorada.
 
-| Mistura | Primeiro tempo | Segundo tempo |
-|---|---|---|
-| Igual ou acima de `neutralBlend` (0,49) | Até +5 | Até +5 |
-| Abaixo de `neutralBlend` | 0 | Até −5 |
+Cada esporte tem suas próprias escalas em `winProbabilityScales`, porque um jogo de basquete registra cerca de três vezes mais lances por minuto que um de futebol americano, e cada lance soma movimento:
 
-O bônus some aos poucos conforme a probabilidade de vitória de quem está na frente sobe de `openLead` (80%) a `decidedLead` (97%), então um soluço num jogo decidido não rende nada. A penalidade faz o contrário: nada enquanto o jogo ainda está aberto, os −5 inteiros quando um jogo quieto chega a 97%. Ela começa em `penaltyFromProgress`, na metade do tempo normal.
+| Esporte | `movementFullScale` | `swingFullScale` | `neutralBlend` |
+|---|---|---|---|
+| Basquete | 1,77 | 0,27 | 0,52 |
+| Futebol americano | 0,77 | 0,23 | 0,54 |
+| Beisebol | 0,67 | 0,29 | 0,46 |
+
+Os outros esportes usam as do basquete, vindas de `scorerTunables.scores.winProbabilityVariance.scales`.
+
+O bônus de oscilação some aos poucos conforme a probabilidade de vitória de quem está na frente sobe de `openLead` (80%) a `decidedLead` (97%), então um soluço num jogo decidido não rende nada.
+
+Quando nenhum dos bônus paga, o modificador é 0 no primeiro tempo. A partir de `penaltyFromProgress` (a metade do tempo normal), vira uma penalidade de até −5 que cresce conforme o jogo está decidido e quieto: nada enquanto o jogo ainda está aberto, os −5 inteiros quando um jogo que não se mexeu chega a 97%.
 
 Um começo desigual não custa nada quando o jogo vira. Um jogo que ficou em 98% quase a noite toda e depois oscila até um cara ou coroa ganha o bônus assim que as oscilações se acumulam, porque só o trecho recente conta.
 
-O `neutralBlend` é a mistura mediana de todos os momentos ao vivo e ainda indefinidos de 417 jogos encerrados, então um trecho típico de um jogo disputado fica perto de 0. As escalas cheias são os percentis 90 dos mesmos momentos.
+O `neutralBlend` de cada esporte é a mistura mediana dos momentos ao vivo e ainda indefinidos em 565 jogos encerrados (275 de basquete, 193 de futebol americano, 97 de beisebol), e as escalas cheias são os percentis 90 dos mesmos momentos.
 
 ## Desconto por intervalo comercial
 

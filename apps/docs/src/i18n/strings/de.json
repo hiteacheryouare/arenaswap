@@ -540,7 +540,7 @@
 			},
 			{
 				"name": "Siegwahrscheinlichkeit",
-				"copy": "Bis zu {max} Plus, wenn die Siegchancen zuletzt hin und her geschwankt sind, bis zu {max} Abzug, wenn das Spiel ruhig geworden ist und ein Team als sicherer Sieger gilt."
+				"copy": "Bis zu {max} Plus, wenn die Siegchancen zuletzt nahe 50/50 geblieben oder geschwankt sind, bis zu {max} Abzug, wenn das Spiel ruhig geworden ist und ein Team als sicherer Sieger gilt."
 			}
 		],
 		"liveHeading": "Live-PowerScores.",

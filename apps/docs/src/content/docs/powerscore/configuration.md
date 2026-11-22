@@ -24,6 +24,7 @@ One entry per `SportType`, exported as `sportTypeConfigs` (an array) and `sportT
 | `zeroZeroPenaltyPeriods` | none | none | 1, 2 | 1 | none | none |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
 | `overtimeDurationSecs` | 300 | 600 | 300 | none | none | none |
+| `winProbabilityScales` | 1.77, 0.27, 0.52 | 0.77, 0.23, 0.54 | none | none | 0.67, 0.29, 0.46 | none |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -46,6 +47,7 @@ One entry per `SportType`, exported as `sportTypeConfigs` (an array) and `sportT
 | `zeroZeroPenaltyPeriods` | Periods where 0–0 still earns the reduced tier even though `zeroZeroAsFullTie` is `true`. Hockey uses 1 and 2, soccer the first half. |
 | `otPreBoostWindowSecs` | The last seconds of the final regulation period where a tied game ramps toward the overtime pre-boost. `0` turns it off. |
 | `overtimeDurationSecs` | How long one overtime period runs, so `getTimelineProgress` can keep counting through it. Without it, each overtime period counts as 0.05 of the game. |
+| `winProbabilityScales` | `movementFullScale`, `swingFullScale` and `neutralBlend` for the [win probability swing bonus](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). Sports without one use basketball's. |
 | `decayHalfLifeMs` | How fast Momentum, Lead Changes and Comeback Factor fade after the last score. Longer in low-scoring sports, so one goal keeps them alive until the next. |
 | `historyWindowMs` | How much score history the history signals read. See above. |
 | `lateGameCurve` | Baseball and softball only: how many innings regulation has and which inning the late-game ramp starts in. |
@@ -88,7 +90,7 @@ One entry per `LeagueId`, exported as `leagueConfigs` (an array) and `leagueConf
 | Olympic Men's Soccer (`olysocm`) | soccer | 2 | 2700s |
 | Olympic Women's Soccer (`olysocw`) | soccer | 2 | 2700s |
 
-31 leagues in all, matching `LeagueId`'s 31 members.
+31 leagues in all, matching `LeagueId`'s 31 members. NCAA Football and the UFL also set `untimedOvertime`, because their overtime has no clock: each overtime period counts as 0.05 of the game instead of `overtimeDurationSecs`.
 
 ## How a sport's idea of "close" is set
 

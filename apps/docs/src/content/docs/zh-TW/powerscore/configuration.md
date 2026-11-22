@@ -1,5 +1,5 @@
 ---
-sourceHash: '5050e319fc40'
+sourceHash: 'bcc1b14bc611'
 title: 運動與聯賽設定
 description: SportTypeConfig 和 LeagueConfig 的每個欄位、六種運動與 31 個聯賽的預設值，以及一項運動的「接近」是怎麼設定的。
 section: powerscore
@@ -25,6 +25,7 @@ navLabel: 設定
 | `zeroZeroPenaltyPeriods` | 無 | 無 | 1, 2 | 1 | 無 | 無 |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
 | `overtimeDurationSecs` | 300 | 600 | 300 | 無 | 無 | 無 |
+| `winProbabilityScales` | 1.77, 0.27, 0.52 | 0.77, 0.23, 0.54 | 無 | 無 | 0.67, 0.29, 0.46 | 無 |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -47,6 +48,7 @@ navLabel: 設定
 | `zeroZeroPenaltyPeriods` | 即使 `zeroZeroAsFullTie` 為 `true`，0–0 在這些節仍然只拿較低的級別。冰球是第 1、2 節，足球是上半場。 |
 | `otPreBoostWindowSecs` | 例行賽最後一節的最後幾秒，平手的比賽在這段時間會朝延長賽預先加成攀升。`0` 表示關閉。 |
 | `overtimeDurationSecs` | 一節延長賽持續多久，好讓 `getTimelineProgress` 在延長賽期間也能繼續往上數。沒有它的話，每節延長賽按比賽的 0.05 計。 |
+| `winProbabilityScales` | [勝率擺盪加成](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)用的 `movementFullScale`、`swingFullScale` 和 `neutralBlend`。沒有這一項的運動沿用籃球的。 |
 | `decayHalfLifeMs` | 氣勢、領先交替和逆轉在最後一次得分之後衰減得多快。低得分的運動比較長，所以一球就能讓它們撐到下一球。 |
 | `historyWindowMs` | 歷史信號讀取多少比分歷史。見上方說明。 |
 | `lateGameCurve` | 只用於棒球和壘球：例行賽有幾局，以及關鍵時刻的攀升從第幾局開始。 |
@@ -89,7 +91,7 @@ navLabel: 設定
 | 奧運男子足球 (`olysocm`) | soccer | 2 | 2700s |
 | 奧運女子足球 (`olysocw`) | soccer | 2 | 2700s |
 
-一共 31 個聯賽，和 `LeagueId` 的 31 個成員相符。
+一共 31 個聯賽，和 `LeagueId` 的 31 個成員相符。NCAA 美式足球和 UFL 還設了 `untimedOvertime`，因為它們的延長賽沒有比賽時鐘：每節延長賽按比賽的 0.05 計，而不是 `overtimeDurationSecs`。
 
 ## 一項運動的「接近」是怎麼設定的
 

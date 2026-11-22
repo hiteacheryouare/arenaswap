@@ -1,5 +1,5 @@
 ---
-sourceHash: '3d1b823a21ee'
+sourceHash: '647b1df69d7b'
 title: PowerScore API リファレンス
 navLabel: API リファレンス
 description: powerscore がエクスポートするすべての関数と定数について、シグネチャ、パラメータ、戻り値、入力が欠けているときや不正なときの動作をまとめています。非推奨の 2.x API も載せています。
@@ -150,7 +150,7 @@ function getTimelineProgress(game: GameClockState, sport: SportTypeConfig, leagu
 function scoreMargin(game: Game<string>): number
 ```
 
-`resolveSportConfig` と `resolveLeagueConfig` は、`scoreGame` が毎回の呼び出しの冒頭でしていることをします。未知の `sportType` はバスケットボールの調整値になります。未知のリーグは、その競技でいちばんよく知られたリーグになります。バスケットボールは NBA、ホッケーは NHL、野球は MLB、フットボールは NFL、ソフトボールは NCAA ソフトボール、サッカーは MLS です。`getGameProgress` は、開始時は0、レギュレーションの終わりから延長を通して1です。`getTimelineProgress` はレギュレーションの間は同じ値で、その後は1を超えて数え続けます。延長ピリオドは、レギュレーションの長さに対して `overtimeDurationSecs` ぶん、延長のイニングは1イニングぶんの割合を加えます。どちらも読むのは `period`、`clockSeconds`、`topOfInning`（`GameClockState`）だけです。`scoreMargin` は、スコア差の絶対値です。
+`resolveSportConfig` と `resolveLeagueConfig` は、`scoreGame` が毎回の呼び出しの冒頭でしていることをします。未知の `sportType` はバスケットボールの調整値になります。未知のリーグは、その競技でいちばんよく知られたリーグになります。バスケットボールは NBA、ホッケーは NHL、野球は MLB、フットボールは NFL、ソフトボールは NCAA ソフトボール、サッカーは MLS です。`getGameProgress` は、開始時は0、レギュレーションの終わりから延長を通して1です。`getTimelineProgress` はレギュレーションの間は同じ値で、その後は1を超えて数え続けます。延長ピリオドは、レギュレーションの長さに対して `overtimeDurationSecs` ぶん（`untimedOvertime` のリーグでは0.05）、延長のイニングは1イニングぶんの割合を加えます。どちらも読むのは `period`、`clockSeconds`、`topOfInning`（`GameClockState`）だけです。`scoreMargin` は、スコア差の絶対値です。
 
 ## ファンタジースコアリング
 
@@ -257,10 +257,11 @@ function computeScoringOpportunityBoost(game: Game<string>): number
 function computeWinProbVarianceScore(
 	line: readonly WinProbabilityReading[] | readonly number[],
 	nowProgress?: number,
+	sport?: Pick<SportTypeConfig, 'winProbabilityScales'>,
 ): number | undefined
 ```
 
-勝利確率の線を、[ブーストとペナルティ](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)で説明した±5の補正に変換します。`nowProgress` は `getTimelineProgress` が返す試合の現在地点で、省略すると最後の値の地点になります。数値だけの `number[]` は、`nowProgress` まで、省略時は1まで均等に並べられます。まず有限でない値を除き、残りが3つ未満のとき、または試合の10分の1が進む前は `undefined` を返します。そうでなければ、`-scoreWinProbVarianceMax` から `scoreWinProbVarianceMax` までの整数を返します。
+勝利確率の線を、[ブーストとペナルティ](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)で説明した±5の補正に変換します。`nowProgress` は `getTimelineProgress` が返す試合の現在地点で、省略すると最後の値の地点になります。数値だけの `number[]` は、`nowProgress` まで、省略時は1まで均等に並べられます。`sport` は揺れの加点のスケールを選び、省略するとバスケットボールのものになります。まず有限でない値を除き、残りが3つ未満のとき、または試合の10分の1が進む前は `undefined` を返します。そうでなければ、`-scoreWinProbVarianceMax` から `scoreWinProbVarianceMax` までの整数を返します。
 
 ### isPlayFrozen
 

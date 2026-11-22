@@ -12,19 +12,19 @@ interface Arc {
 	readings: Array<[number, number]>;
 }
 
-const arcs: Record<'surge' | 'coinFlip' | 'blowout' | 'wildEarly', Arc> = JSON.parse(
+const arcs: Record<'surge' | 'coinFlip' | 'blowout' | 'wildEarly' | 'footballCoinFlip', Arc> = JSON.parse(
 	readFileSync(join(__dirname, 'fixtures', 'winProbabilityArcs.json'), 'utf8'),
 );
 
 const readingsOf = (arc: Arc): WinProbabilityReading[] => arc.readings.map(([homeWinProbability, progress]) => ({ homeWinProbability, progress }));
 
-const termsThrough = (arc: Arc) => {
+const termsThrough = (arc: Arc, sport = resolveSportConfig('basketball')) => {
 	const readings = readingsOf(arc);
-	return readings.map((reading, i) => ({ progress: reading.progress, term: computeWinProbVarianceScore(readings.slice(0, i + 1)) }));
+	return readings.map((reading, i) => ({ progress: reading.progress, term: computeWinProbVarianceScore(readings.slice(0, i + 1), undefined, sport) }));
 };
 
-const termsBetween = (arc: Arc, from: number, to: number) => (
-	termsThrough(arc).filter(moment => moment.progress >= from && moment.progress < to).map(moment => moment.term!)
+const termsBetween = (arc: Arc, from: number, to: number, sport = resolveSportConfig('basketball')) => (
+	termsThrough(arc, sport).filter(moment => moment.progress >= from && moment.progress < to).map(moment => moment.term!)
 );
 
 const average = (values: number[]) => values.reduce((total, value) => total + value, 0) / values.length;
@@ -48,8 +48,21 @@ describe('computeWinProbVarianceScore on real games', () => {
 	test('CSUF @ UCLA: a lopsided night that swings late climbs from a penalty to a bonus', () => {
 		expect(average(termsBetween(arcs.surge, 0.55, 0.75))).toBeLessThanOrEqual(-3);
 		const run = termsBetween(arcs.surge, 0.887, 0.97);
-		expect(Math.min(...run)).toBeGreaterThanOrEqual(2);
-		expect(Math.max(...run)).toBeGreaterThanOrEqual(4);
+		expect(Math.min(...run)).toBeGreaterThanOrEqual(1);
+		expect(Math.max(...run)).toBeGreaterThanOrEqual(3);
+	});
+
+	test('UCLA @ Michigan: a football game near 50/50 all night earns the bonus before the swings start', () => {
+		const football = resolveSportConfig('football');
+		expect(average(termsBetween(arcs.footballCoinFlip, 0.15, 0.75, football))).toBeGreaterThanOrEqual(3.5);
+		expect(Math.max(...termsBetween(arcs.footballCoinFlip, 1, 1.07, football))).toBe(scoreWinProbVarianceMax);
+	});
+
+	test('UCLA @ Michigan: college overtime has no clock, so the fourth quarter still counts once it starts', () => {
+		const football = resolveSportConfig('football');
+		const firstOvertime = readingsOf(arcs.footballCoinFlip).find(reading => reading.progress > 1)!;
+		expect(firstOvertime.progress).toBeLessThan(1.05);
+		expect(termsBetween(arcs.footballCoinFlip, 1, 1.05, football).every(term => term >= 3)).toBe(true);
 	});
 
 	test('CSUF @ UCLA: the bonus is gone once UCLA puts it away', () => {
@@ -132,8 +145,19 @@ describe('the volatility term inside a full PowerScore', () => {
 		const readings = readingsOf(arcs.surge).filter(reading => reading.progress <= now);
 		const withWinChance = scoreGame(csufUpSix, { winProbability: readings });
 		const without = scoreGame(csufUpSix, {});
-		expect(withWinChance.winProbabilityVariance).toBeGreaterThanOrEqual(2);
+		expect(withWinChance.winProbabilityVariance).toBeGreaterThanOrEqual(1);
 		expect(withWinChance.total).toBeGreaterThan(without.total);
+	});
+
+	test('a football game is measured on football\'s scale', () => {
+		const tiedInTheSecond: Game = { ...csufUpSix, id: '401858528', league: 'ncaaf', sportType: 'football', homeTeam: { abbreviation: 'MICH', score: 3 }, awayTeam: { abbreviation: 'UCLA', score: 3 }, clockSeconds: 300 };
+		const football = resolveSportConfig('football');
+		const now = getTimelineProgress(tiedInTheSecond, football, resolveLeagueConfig(tiedInTheSecond));
+		const readings = readingsOf(arcs.footballCoinFlip).filter(reading => reading.progress <= now);
+		const swingOnly = readings.map(reading => ({ ...reading, homeWinProbability: reading.homeWinProbability > 0.5 ? 0.85 : 0.15 }));
+		expect(scoreGame(tiedInTheSecond, { winProbability: swingOnly }).winProbabilityVariance)
+			.toBe(computeWinProbVarianceScore(swingOnly, now, football));
+		expect(computeWinProbVarianceScore(swingOnly, now, football)).not.toBe(computeWinProbVarianceScore(swingOnly, now));
 	});
 
 	test('the 2.x computePowerScore still takes a bare list', () => {

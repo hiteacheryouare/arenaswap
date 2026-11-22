@@ -1,5 +1,5 @@
 ---
-sourceHash: '2348a1aeb67f'
+sourceHash: 'cdc911cc09f7'
 title: Boost e penalità di PowerScore
 navLabel: Boost e penalità
 description: Ogni boost e penalità che PowerScore 3 applica sopra i segnali di una modalità, con la condizione che attiva ciascuno, il suo massimo e i limiti che condividono.
@@ -189,31 +189,42 @@ Per una corsa, la squadra con più in gioco paga per intero e l'altra a metà, c
 
 ## Oscillazioni della probabilità di vittoria
 
-Solo Classica. `computeWinProbVarianceScore(line, nowProgress?)` restituisce un modificatore da `-scoreWinProbVarianceMax` a `+scoreWinProbVarianceMax` (±5). Passa `context.winProbability` a `scoreGame` e il modificatore viene incorporato nel totale da solo, misurato dal punto attuale della partita in [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
+Solo Classica. `computeWinProbVarianceScore(line, nowProgress?, sport?)` restituisce un modificatore da `-scoreWinProbVarianceMax` a `+scoreWinProbVarianceMax` (±5). Passa `context.winProbability` a `scoreGame` e il modificatore viene incorporato nel totale da solo, misurato dal punto attuale della partita in [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
 
 La linea è la probabilità di vittoria della squadra di casa, una lettura per azione, dalla più vecchia. Ogni lettura è una [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading): `homeWinProbability` da 0 a 1, e `progress`, a che punto della partita è arrivata la sua azione. Un semplice `number[]` funziona ancora, e le sue letture sono distribuite in modo uniforme dall'inizio della partita a ora.
 
 Servono 3 letture e un decimo della partita giocato. Prima di allora restituisce `undefined`, e il campo `winProbabilityVariance` del risultato viene lasciato del tutto fuori invece di essere impostato a `0`. Le letture non finite vengono scartate per prime.
 
-Il modificatore mescola due misure di quanto l'esito si è mosso di recente. Entrambe si dimezzano ogni `halfLife`, un decimo dei tempi regolamentari: circa 4 minuti di basket universitario, 5 di NBA, 6 di football o un inning di baseball.
+Il modificatore paga il maggiore di due bonus, entrambi misurati sul tratto recente della partita. Tutto si dimezza ogni `halfLife`, un decimo dei tempi regolamentari: circa 4 minuti di basket universitario, 5 di NBA, 6 di football o un inning di baseball.
+
+Il **bonus testa o croce** premia una partita rimasta in equilibrio. Vale +5 quando la probabilità di vittoria è rimasta sul 50% nelle ultime quattro emivite, e scende a 0 quando la distanza media dal 50% raggiunge `coinFlipZeroDistance` (0.175).
+
+Il **bonus oscillazione** premia una partita che si è mossa. Mescola due misure:
 
 | Misura | Cosa somma | Piena a | Quota della miscela |
 |---|---|---|---|
-| Movimento | Ogni variazione della probabilità di vittoria da un'azione all'altra nelle ultime quattro emivite, ciascuna limitata a 0.5 | `movementFullScale` (1.67) | 70% |
-| Oscillazione | Il divario maggiore tra la lettura attuale e una qualsiasi lettura delle ultime tre emivite, dimezzato ogni due emivite | `swingFullScale` (0.26) | `swingWeight` (30%) |
+| Movimento | Ogni variazione della probabilità di vittoria da un'azione all'altra nelle ultime quattro emivite, ciascuna limitata a 0.5 | `movementFullScale` | 70% |
+| Oscillazione | Il divario maggiore tra la lettura attuale e una qualsiasi lettura delle ultime tre emivite, dimezzato ogni due emivite | `swingFullScale` | `swingWeight` (30%) |
 
-Una lettura che salta di più di 0.15 e torna subito entro 0.05 da dove era è un'azione corretta, e viene ignorata.
+Una miscela a `neutralBlend` paga 0 e una miscela piena paga +5. Una lettura che salta di più di 0.15 e torna subito entro 0.05 da dove era è un'azione corretta, e viene ignorata.
 
-| Miscela | Primo tempo | Secondo tempo |
-|---|---|---|
-| Pari o sopra `neutralBlend` (0.49) | Fino a +5 | Fino a +5 |
-| Sotto `neutralBlend` | 0 | Fino a −5 |
+Ogni sport ha le proprie scale in `winProbabilityScales`, perché una partita di basket registra circa tre volte più azioni al minuto di una di football, e ogni azione aggiunge movimento:
 
-Il bonus svanisce man mano che la probabilità di vittoria di chi è avanti sale da `openLead` (80%) a `decidedLead` (97%), quindi un guizzo in una partita decisa non vale nulla. La penalità fa l'opposto: niente finché la partita è ancora aperta, il −5 pieno quando una partita tranquilla è al 97%. Parte da `penaltyFromProgress`, a metà dei tempi regolamentari.
+| Sport | `movementFullScale` | `swingFullScale` | `neutralBlend` |
+|---|---|---|---|
+| Basket | 1.77 | 0.27 | 0.52 |
+| Football | 0.77 | 0.23 | 0.54 |
+| Baseball | 0.67 | 0.29 | 0.46 |
+
+Gli altri sport usano quelle del basket, da `scorerTunables.scores.winProbabilityVariance.scales`.
+
+Il bonus oscillazione svanisce man mano che la probabilità di vittoria di chi è avanti sale da `openLead` (80%) a `decidedLead` (97%), quindi un guizzo in una partita decisa non vale nulla.
+
+Quando nessuno dei due bonus paga, il modificatore è 0 nel primo tempo. Da `penaltyFromProgress` (a metà dei tempi regolamentari) è una penalità fino a −5 che cresce con quanto la partita è decisa e quieta: niente finché la partita è ancora aperta, il −5 pieno quando una partita che non si è mossa è al 97%.
 
 Un inizio a senso unico non costa nulla quando la partita cambia. Una partita rimasta al 98% per gran parte della serata e poi ribaltata a testa o croce ottiene il bonus appena le oscillazioni si accumulano, perché conta solo il tratto recente.
 
-`neutralBlend` è la miscela mediana di ogni momento live e non deciso in 417 partite concluse, quindi un tratto tipico di una partita equilibrata sta vicino a 0. Le scale piene sono i 90° percentili degli stessi momenti.
+Il `neutralBlend` di ogni sport è la miscela mediana dei suoi momenti live e non decisi in 565 partite concluse (275 di basket, 193 di football, 97 di baseball), e le sue scale piene sono i 90° percentili degli stessi momenti.
 
 Il modificatore si aggiunge dopo la detrazione per la pausa, non prima, e il risultato viene limitato da 0 a 100 prima che si aggiunga qualsiasi boost.
 

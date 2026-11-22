@@ -1,5 +1,5 @@
 ---
-sourceHash: '5050e319fc40'
+sourceHash: 'bcc1b14bc611'
 title: 競技とリーグの設定
 description: SportTypeConfig と LeagueConfig の全フィールド、6競技・31リーグにわたる初期値、そして競技ごとの「接戦」の基準がどう決まるかを説明します。
 section: powerscore
@@ -25,6 +25,7 @@ navLabel: 設定
 | `zeroZeroPenaltyPeriods` | なし | なし | 1, 2 | 1 | なし | なし |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
 | `overtimeDurationSecs` | 300 | 600 | 300 | なし | なし | なし |
+| `winProbabilityScales` | 1.77, 0.27, 0.52 | 0.77, 0.23, 0.54 | なし | なし | 0.67, 0.29, 0.46 | なし |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -47,6 +48,7 @@ navLabel: 設定
 | `zeroZeroPenaltyPeriods` | `zeroZeroAsFullTie` が `true` でも、0–0 が減額ティアのままになるピリオドです。ホッケーは1と2、サッカーは前半です。 |
 | `otPreBoostWindowSecs` | 規定の最終ピリオドの最後の秒数で、同点の試合が延長戦プレブーストに向けて上がっていく区間です。`0` でオフになります。 |
 | `overtimeDurationSecs` | 延長ピリオド1回の長さで、`getTimelineProgress` が延長のあいだも数え続けられるようにします。ないときは、延長ピリオド1回が試合の0.05として数えられます。 |
+| `winProbabilityScales` | [勝利確率の揺れの加点](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)の `movementFullScale`、`swingFullScale`、`neutralBlend` です。もたない競技はバスケットボールのものを使います。 |
 | `decayHalfLifeMs` | 最後の得点のあと、勢い、リード交代、追い上げがどれだけ速く薄れるかです。得点の少ない競技ほど長く、1点が次の1点まで効き続けます。 |
 | `historyWindowMs` | 履歴系のシグナルが読むスコア履歴の長さです。上の説明をご覧ください。 |
 | `lateGameCurve` | 野球とソフトボールのみ。規定のイニング数と、終盤の上昇が始まるイニングです。 |
@@ -89,7 +91,7 @@ navLabel: 設定
 | オリンピック男子サッカー (`olysocm`) | soccer | 2 | 2700s |
 | オリンピック女子サッカー (`olysocw`) | soccer | 2 | 2700s |
 
-合計31リーグで、`LeagueId` の31のメンバーと一致します。
+合計31リーグで、`LeagueId` の31のメンバーと一致します。NCAAフットボールとUFLは `untimedOvertime` も設定しています。延長に時計がないため、延長ピリオド1回は `overtimeDurationSecs` ではなく試合の0.05として数えられます。
 
 ## 競技ごとの「接戦」の基準がどう決まるか
 

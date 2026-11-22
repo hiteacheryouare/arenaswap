@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The volatility term pays coin flips again, on each sport's own scale — 2026-11-21
+
+The term now pays the larger of a coin-flip bonus (+5 when the win probability has stayed on 50% lately, 0 at an average 17.5 points away) and the swing bonus, and each sport carries its own `winProbabilityScales`, because football logs a third as many plays a minute and never reached basketball's movement scale. NCAA Football and the UFL set `untimedOvertime`, so a college overtime no longer counts as ten minutes played (UCLA @ Michigan read 0 through three tied quarters and overtime; it now reads +4, then +5).
+
 ## The About hero opens on one game and pulls back — 2026-11-19
 
 The About hero now starts zoomed in on a single game as it scores, then the camera pulls back while more and more games fill in around it, after the "There is Only One Disney" DVD promo; the headline lands as the wall clears around it, and then the usual highlight loop takes over. Every matchup in the wall is now drawn from one league's pool, since NBA, WNBA and college teams used to share a sport pool and produced games like Lakers vs. Valkyries.

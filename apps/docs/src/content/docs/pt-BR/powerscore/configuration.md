@@ -1,5 +1,5 @@
 ---
-sourceHash: '5050e319fc40'
+sourceHash: 'bcc1b14bc611'
 title: Configuração de esporte e liga
 description: Todos os campos de SportTypeConfig e LeagueConfig, seus padrões nos seis esportes e nas 31 ligas, e como se define o que é "apertado" em cada esporte.
 section: powerscore
@@ -25,6 +25,7 @@ Uma entrada por `SportType`, exportada como `sportTypeConfigs` (uma lista) e `sp
 | `zeroZeroPenaltyPeriods` | nenhum | nenhum | 1, 2 | 1 | nenhum | nenhum |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
 | `overtimeDurationSecs` | 300 | 600 | 300 | nenhum | nenhum | nenhum |
+| `winProbabilityScales` | 1,77, 0,27, 0,52 | 0,77, 0,23, 0,54 | nenhum | nenhum | 0,67, 0,29, 0,46 | nenhum |
 | `decayHalfLifeMs.momentum` | 45.000 | 135.000 | 180.000 | 240.000 | 150.000 | 150.000 |
 | `decayHalfLifeMs.leadChange` | 60.000 | 180.000 | 240.000 | 300.000 | 180.000 | 180.000 |
 | `decayHalfLifeMs.comeback` | 60.000 | 180.000 | 240.000 | 300.000 | 180.000 | 180.000 |
@@ -47,6 +48,7 @@ O `historyWindowMs` é o trecho de histórico de placar que cada esporte precisa
 | `zeroZeroPenaltyPeriods` | Períodos em que o 0 a 0 ainda ganha a faixa reduzida, mesmo com `zeroZeroAsFullTie` em `true`. O hóquei usa 1 e 2, o futebol o primeiro tempo. |
 | `otPreBoostWindowSecs` | Os últimos segundos do período final do tempo normal em que um jogo empatado sobe rumo ao pré-impulso de prorrogação. `0` desliga. |
 | `overtimeDurationSecs` | Quanto dura um período de prorrogação, para o `getTimelineProgress` poder continuar contando durante ela. Sem isso, cada período de prorrogação conta como 0,05 do jogo. |
+| `winProbabilityScales` | `movementFullScale`, `swingFullScale` e `neutralBlend` do [bônus de oscilação da probabilidade de vitória](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). Os esportes sem uma usam as do basquete. |
 | `decayHalfLifeMs` | A rapidez com que Dinâmica, Mudanças de liderança e Virada esmaecem depois do último ponto. Mais longa nos esportes de pouca pontuação, para um gol manter os sinais vivos até o próximo. |
 | `historyWindowMs` | Quanto histórico de placar os sinais de histórico leem. Veja acima. |
 | `lateGameCurve` | Só beisebol e softbol: quantas entradas tem o tempo normal e em qual entrada a rampa da fase final começa. |
@@ -89,7 +91,7 @@ Uma entrada por `LeagueId`, exportada como `leagueConfigs` (uma lista) e `league
 | Futebol masculino olímpico (`olysocm`) | soccer | 2 | 2700s |
 | Futebol feminino olímpico (`olysocw`) | soccer | 2 | 2700s |
 
-São 31 ligas no total, batendo com os 31 membros de `LeagueId`.
+São 31 ligas no total, batendo com os 31 membros de `LeagueId`. O futebol americano da NCAA e a UFL também definem `untimedOvertime`, porque a prorrogação deles não tem relógio: cada período de prorrogação conta como 0,05 do jogo em vez de `overtimeDurationSecs`.
 
 ## Como se define o que é "apertado" em cada esporte
 

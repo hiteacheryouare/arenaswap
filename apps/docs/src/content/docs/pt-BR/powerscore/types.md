@@ -1,5 +1,5 @@
 ---
-sourceHash: 'e5d4af4d0a0e'
+sourceHash: '9597d1316266'
 title: Tipos TypeScript do PowerScore
 description: Todo campo de Game, ScoringContext, ScoreOptions, PowerScore e dos tipos de modo e de configuração, quais são opcionais e o que acontece quando um opcional falta.
 section: powerscore
@@ -421,7 +421,7 @@ O objeto exportado único que guarda todo valor de faixa com que o motor pontua.
 | `scores.momentum` | Os dois valores de faixa da dinâmica. Veja [Dinâmica](/arenaswap/docs/powerscore/signals/#momentum-lead-changes-and-comeback-factor). |
 | `scores.leadChanges` | Os dois valores de faixa das mudanças de liderança. |
 | `scores.comeback` | Os dois valores de faixa da virada e o piso fixo dela. |
-| `scores.winProbabilityVariance` | `halfLife`, `movementFullScale`, `swingFullScale`, `swingWeight`, `neutralBlend`, `openLead`, `decidedLead` e `penaltyFromProgress`, tabelados em [Impulsos e penalidades](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). |
+| `scores.winProbabilityVariance` | `halfLife`, `swingWeight`, `coinFlipZeroDistance`, `openLead`, `decidedLead`, `penaltyFromProgress` e as `scales` padrão, tabelados em [Impulsos e penalidades](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). |
 | `reasons` | Só `fallback` ("best game available"), o motivo em que o resultado simples obsoleto cai. O texto em inglês mora no `renderReasonEnglish`. |
 
 ## FantasyRule e FantasySport

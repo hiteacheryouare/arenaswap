@@ -188,31 +188,42 @@ For a race, the team with the most at stake pays in full and the other team at h
 
 ## Win probability swings
 
-Classic only. `computeWinProbVarianceScore(line, nowProgress?)` returns a modifier from `-scoreWinProbVarianceMax` to `+scoreWinProbVarianceMax` (±5). Pass `context.winProbability` to `scoreGame`, and the modifier is folded into the total on its own, measured from the game's current point in [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
+Classic only. `computeWinProbVarianceScore(line, nowProgress?, sport?)` returns a modifier from `-scoreWinProbVarianceMax` to `+scoreWinProbVarianceMax` (±5). Pass `context.winProbability` to `scoreGame`, and the modifier is folded into the total on its own, measured from the game's current point in [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
 
 The line is the home team's win probability, one reading per play, oldest first. Each reading is a [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading): `homeWinProbability` from 0 to 1, and `progress`, how far into the game its play came. A bare `number[]` still works, and its readings are spread evenly from the start of the game to now.
 
 It needs 3 readings and a tenth of the game played. Before that it returns `undefined`, and the result's `winProbabilityVariance` field is left off entirely rather than set to `0`. Readings that aren't finite are dropped first.
 
-The modifier blends two measures of how much the outcome has moved lately. Both fade by half every `halfLife`, a tenth of regulation: about 4 minutes of college basketball, 5 of the NBA, 6 of football, or an inning of baseball.
+The modifier pays the larger of two bonuses, both measured over the recent stretch of the game. Everything fades by half every `halfLife`, a tenth of regulation: about 4 minutes of college basketball, 5 of the NBA, 6 of football, or an inning of baseball.
+
+The **coin-flip bonus** pays for a game that has stayed close. It's +5 when the win probability has sat on 50% over the last four half-lives, and falls to 0 as the average distance from 50% reaches `coinFlipZeroDistance` (0.175).
+
+The **swing bonus** pays for a game that's been moving. It blends two measures:
 
 | Measure | What it adds up | Full at | Share of the blend |
 |---|---|---|---|
-| Movement | Every play-to-play change in win probability over the last four half-lives, each capped at 0.5 | `movementFullScale` (1.67) | 70% |
-| Swing | The biggest gap between the current reading and any reading in the last three half-lives, faded by half every two half-lives | `swingFullScale` (0.26) | `swingWeight` (30%) |
+| Movement | Every play-to-play change in win probability over the last four half-lives, each capped at 0.5 | `movementFullScale` | 70% |
+| Swing | The biggest gap between the current reading and any reading in the last three half-lives, faded by half every two half-lives | `swingFullScale` | `swingWeight` (30%) |
 
-A reading that jumps more than 0.15 and comes straight back within 0.05 of where it was is a corrected play, and it's ignored.
+A blend at `neutralBlend` pays 0 and a full blend pays +5. A reading that jumps more than 0.15 and comes straight back within 0.05 of where it was is a corrected play, and it's ignored.
 
-| Blend | First half | Second half |
-|---|---|---|
-| At or above `neutralBlend` (0.49) | Up to +5 | Up to +5 |
-| Below `neutralBlend` | 0 | Down to −5 |
+Each sport has its own scales in `winProbabilityScales`, because a basketball game logs about three times as many plays per minute as a football game, and every play adds movement:
 
-The bonus fades out as the leader's win probability climbs from `openLead` (80%) to `decidedLead` (97%), so a blip in a decided game earns nothing. The penalty does the opposite: nothing while the game is still open, the full −5 once a quiet game is at 97%. It starts at `penaltyFromProgress`, halfway through regulation.
+| Sport | `movementFullScale` | `swingFullScale` | `neutralBlend` |
+|---|---|---|---|
+| Basketball | 1.77 | 0.27 | 0.52 |
+| Football | 0.77 | 0.23 | 0.54 |
+| Baseball | 0.67 | 0.29 | 0.46 |
+
+Other sports use basketball's, from `scorerTunables.scores.winProbabilityVariance.scales`.
+
+The swing bonus fades out as the leader's win probability climbs from `openLead` (80%) to `decidedLead` (97%), so a blip in a decided game earns nothing.
+
+When neither bonus pays, the modifier is 0 in the first half. From `penaltyFromProgress` (halfway through regulation) it's a penalty of up to −5 that grows with how decided and how quiet the game is: nothing while the game is still open, the full −5 once a game that hasn't moved is at 97%.
 
 A lopsided start costs nothing once the game turns. A game that sat at 98% for most of the night and then swings to a coin flip earns the bonus as soon as the swings pile up, because only the recent stretch counts.
 
-`neutralBlend` is the median blend of every live, undecided moment in 417 finished games, so a typical stretch of a close game sits near 0. The full scales are the 90th percentiles of the same moments.
+Each sport's `neutralBlend` is the median blend of its live, undecided moments across 565 finished games (275 basketball, 193 football, 97 baseball), and its full scales are the 90th percentiles of the same moments.
 
 The modifier is added after the break deduction, not before it, and the result is clamped to 0 to 100 before any boost is added.
 

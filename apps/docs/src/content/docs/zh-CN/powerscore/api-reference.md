@@ -1,5 +1,5 @@
 ---
-sourceHash: '3d1b823a21ee'
+sourceHash: '647b1df69d7b'
 title: PowerScore API 参考
 navLabel: API 参考
 description: powerscore 导出的每个函数和常量：签名、参数、返回值，以及输入缺失或无效时的行为。包含已弃用的 2.x API。
@@ -150,7 +150,7 @@ function getTimelineProgress(game: GameClockState, sport: SportTypeConfig, leagu
 function scoreMargin(game: Game<string>): number
 ```
 
-`resolveSportConfig` 和 `resolveLeagueConfig` 做的，就是 `scoreGame` 每次调用开头做的事。未知的 `sportType` 回退到篮球的调校。未知的联赛回退到它所属运动最知名的联赛：篮球是 NBA，冰球是 NHL，棒球是 MLB，橄榄球是 NFL，垒球是 NCAA 垒球，足球是 MLS。`getGameProgress` 在开场为 0，常规时间结束时以及整个加时赛期间为 1。`getTimelineProgress` 在常规时间内与它一致，之后继续往上数，越过 1：一个加时阶段，增加的是 `overtimeDurationSecs` 占常规时间长度的比例；一个加时局，则增加一局的占比。两者都只读取 `period`、`clockSeconds` 和 `topOfInning`（`GameClockState`）。`scoreMargin` 是比分差的绝对值。
+`resolveSportConfig` 和 `resolveLeagueConfig` 做的，就是 `scoreGame` 每次调用开头做的事。未知的 `sportType` 回退到篮球的调校。未知的联赛回退到它所属运动最知名的联赛：篮球是 NBA，冰球是 NHL，棒球是 MLB，橄榄球是 NFL，垒球是 NCAA 垒球，足球是 MLS。`getGameProgress` 在开场为 0，常规时间结束时以及整个加时赛期间为 1。`getTimelineProgress` 在常规时间内与它一致，之后继续往上数，越过 1：一个加时阶段，增加的是 `overtimeDurationSecs` 占常规时间长度的比例（在设有 `untimedOvertime` 的联赛里是 0.05）；一个加时局，则增加一局的占比。两者都只读取 `period`、`clockSeconds` 和 `topOfInning`（`GameClockState`）。`scoreMargin` 是比分差的绝对值。
 
 ## 梦幻得分
 
@@ -257,10 +257,11 @@ function computeScoringOpportunityBoost(game: Game<string>): number
 function computeWinProbVarianceScore(
 	line: readonly WinProbabilityReading[] | readonly number[],
 	nowProgress?: number,
+	sport?: Pick<SportTypeConfig, 'winProbabilityScales'>,
 ): number | undefined
 ```
 
-把胜率线映射成[加成与扣分](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)里说明的 ±5 的修正。`nowProgress` 是 `getTimelineProgress` 给出的比赛当前位置，默认取最后一个读数的位置。纯 `number[]` 会平均铺开到 `nowProgress`，没有它就铺到 1。先丢掉非有限的读数，剩下不足 3 个，或比赛还没进行到十分之一，就返回 `undefined`。否则返回一个从 `-scoreWinProbVarianceMax` 到 `scoreWinProbVarianceMax` 的整数。
+把胜率线映射成[加成与扣分](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)里说明的 ±5 的修正。`nowProgress` 是 `getTimelineProgress` 给出的比赛当前位置，默认取最后一个读数的位置。纯 `number[]` 会平均铺开到 `nowProgress`，没有它就铺到 1。`sport` 决定摆动加成用的标度，没有它就用篮球的。先丢掉非有限的读数，剩下不足 3 个，或比赛还没进行到十分之一，就返回 `undefined`。否则返回一个从 `-scoreWinProbVarianceMax` 到 `scoreWinProbVarianceMax` 的整数。
 
 ### isPlayFrozen
 

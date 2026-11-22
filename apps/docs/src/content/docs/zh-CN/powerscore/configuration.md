@@ -1,5 +1,5 @@
 ---
-sourceHash: '5050e319fc40'
+sourceHash: 'bcc1b14bc611'
 title: 运动与联赛配置
 description: SportTypeConfig 和 LeagueConfig 的每个字段、它们在六项运动和 31 个联赛上的默认值，以及一项运动的“胶着”标准是怎么定的。
 section: powerscore
@@ -25,6 +25,7 @@ navLabel: 配置
 | `zeroZeroPenaltyPeriods` | 无 | 无 | 1, 2 | 1 | 无 | 无 |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
 | `overtimeDurationSecs` | 300 | 600 | 300 | 无 | 无 | 无 |
+| `winProbabilityScales` | 1.77, 0.27, 0.52 | 0.77, 0.23, 0.54 | 无 | 无 | 0.67, 0.29, 0.46 | 无 |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -47,6 +48,7 @@ navLabel: 配置
 | `zeroZeroPenaltyPeriods` | 即使 `zeroZeroAsFullTie` 为 `true`，0–0 在这些阶段仍然只拿较低的档。冰球用 1 和 2，足球是上半场。 |
 | `otPreBoostWindowSecs` | 常规时间最后一个阶段的最后几秒，战平的比赛在这段时间里朝加时预加成攀升。`0` 表示关闭。 |
 | `overtimeDurationSecs` | 一个加时阶段持续多久，好让 `getTimelineProgress` 在加时期间也能继续往上数。没有它，每个加时阶段按比赛的 0.05 计。 |
+| `winProbabilityScales` | [胜率摆动加成](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)用的 `movementFullScale`、`swingFullScale` 和 `neutralBlend`。没有这一项的运动沿用篮球的。 |
 | `decayHalfLifeMs` | 势头、领先权易手和逆转在最后一次得分之后衰减得多快。低得分运动里更长，这样一粒进球能让它们撑到下一粒。 |
 | `historyWindowMs` | 历史类信号读取多少比分历史。见上文。 |
 | `lateGameCurve` | 仅限棒球和垒球：常规比赛有多少局，以及关键时刻的攀升从第几局开始。 |
@@ -89,7 +91,7 @@ navLabel: 配置
 | 奥运男子足球 (`olysocm`) | 足球 | 2 | 2700 秒 |
 | 奥运女子足球 (`olysocw`) | 足球 | 2 | 2700 秒 |
 
-一共 31 个联赛，和 `LeagueId` 的 31 个成员对得上。
+一共 31 个联赛，和 `LeagueId` 的 31 个成员对得上。NCAA 橄榄球和 UFL 还设了 `untimedOvertime`，因为它们的加时没有比赛时钟：每个加时阶段按比赛的 0.05 计，而不是 `overtimeDurationSecs`。
 
 ## 一项运动的“胶着”标准是怎么定的
 

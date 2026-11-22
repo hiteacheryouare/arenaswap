@@ -1351,7 +1351,7 @@ describe('computePowerScore — non-finite win probability input', () => {
 	const history = makeHistory([[94, 93], [97, 96], [100, 99]]);
 
 	test('a single NaN leaves the total where the clean line puts it', () => {
-		const clean = computePowerScore(game, history, []);
+		const clean = computePowerScore(game, history, [0.5, 0.5, 0.5, 0.5]);
 		const poisoned = computePowerScore(game, history, [0.5, 0.5, Number.NaN, 0.5, 0.5]);
 
 		expect(poisoned.total).toBe(clean.total);

@@ -68,13 +68,12 @@ export const scorerTunables: ScorerTunables = {
 		},
 		winProbabilityVariance: {
 			halfLife: 0.1,
-			movementFullScale: 1.67,
-			swingFullScale: 0.26,
 			swingWeight: 0.3,
-			neutralBlend: 0.49,
+			coinFlipZeroDistance: 0.175,
 			openLead: 0.8,
 			decidedLead: 0.97,
 			penaltyFromProgress: 0.5,
+			scales: { movementFullScale: 1.77, swingFullScale: 0.27, neutralBlend: 0.52 },
 		},
 	},
 	reasons: {
@@ -96,6 +95,7 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		decayHalfLifeMs: { momentum: 45_000, leadChange: 60_000, comeback: 60_000 },
 		otPreBoostWindowSecs: 60,
 		overtimeDurationSecs: 300,
+		winProbabilityScales: { movementFullScale: 1.77, swingFullScale: 0.27, neutralBlend: 0.52 },
 		historyWindowMs: 300_000,
 	},
 	{
@@ -131,6 +131,7 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		comebackThresholdSmall: 1,
 		decayHalfLifeMs: { momentum: 150_000, leadChange: 180_000, comeback: 180_000 },
 		otPreBoostWindowSecs: 0,
+		winProbabilityScales: { movementFullScale: 0.67, swingFullScale: 0.29, neutralBlend: 0.46 },
 		historyWindowMs: 720_000,
 	},
 	{
@@ -146,6 +147,7 @@ export const sportTypeConfigs: SportTypeConfig[] = [
 		decayHalfLifeMs: { momentum: 135_000, leadChange: 180_000, comeback: 180_000 },
 		otPreBoostWindowSecs: 60,
 		overtimeDurationSecs: 600,
+		winProbabilityScales: { movementFullScale: 0.77, swingFullScale: 0.23, neutralBlend: 0.54 },
 		historyWindowMs: 720_000,
 	},
 	{
@@ -269,6 +271,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		periodDurationSecs: 900,
 		periodFormat: 'quarters',
 		runMinutes: { bar: 210, p25: 182, p99: 265 },
+		untimedOvertime: true,
 	},
 	{
 		id: 'mls',
@@ -360,6 +363,7 @@ export const leagueConfigs: LeagueConfig[] = [
 		periodDurationSecs: 900,
 		periodFormat: 'quarters',
 		runMinutes: { bar: 178, p25: 160, p99: 210 },
+		untimedOvertime: true,
 	},
 	{
 		id: 'olymih',

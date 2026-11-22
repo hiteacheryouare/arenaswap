@@ -1,5 +1,5 @@
 ---
-sourceHash: 'e5d4af4d0a0e'
+sourceHash: '9597d1316266'
 title: Mga TypeScript type ng PowerScore
 description: Bawat field ng Game, ScoringContext, ScoreOptions, PowerScore, at ng mga type ng mode at config, alin ang optional, at ano ang nangyayari kapag wala ang optional na field.
 section: powerscore
@@ -421,7 +421,7 @@ Ang nag-iisang exported na object na may hawak ng bawat tier value na ginagamit 
 | `scores.momentum` | Ang dalawang tier value ng momentum. Tingnan ang [Momentum](/arenaswap/docs/powerscore/signals/#momentum-lead-changes-and-comeback-factor). |
 | `scores.leadChanges` | Ang dalawang tier value ng lead-change. |
 | `scores.comeback` | Ang dalawang tier value ng comeback at ang flat floor nito. |
-| `scores.winProbabilityVariance` | `halfLife`, `movementFullScale`, `swingFullScale`, `swingWeight`, `neutralBlend`, `openLead`, `decidedLead` at `penaltyFromProgress`, nakatable sa [Mga boost at penalty](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). |
+| `scores.winProbabilityVariance` | `halfLife`, `swingWeight`, `coinFlipZeroDistance`, `openLead`, `decidedLead`, `penaltyFromProgress` at ang default na `scales`, nakatable sa [Mga boost at penalty](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). |
 | `reasons` | `fallback` lang ("best game available"), ang reason na binabagsakan ng deprecated na flat na resulta. Nasa `renderReasonEnglish` ang English na pananalita. |
 
 ## FantasyRule at FantasySport

@@ -1,5 +1,5 @@
 ---
-sourceHash: '3d1b823a21ee'
+sourceHash: '647b1df69d7b'
 title: Référence de l'API de PowerScore
 navLabel: Référence de l'API
 description: Chaque fonction et chaque constante exportées par powerscore, avec sa signature, ses paramètres, sa valeur de retour et son comportement quand une entrée manque ou est invalide. Inclut l'API 2.x dépréciée.
@@ -150,7 +150,7 @@ function getTimelineProgress(game: GameClockState, sport: SportTypeConfig, leagu
 function scoreMargin(game: Game<string>): number
 ```
 
-`resolveSportConfig` et `resolveLeagueConfig` font ce que `scoreGame` fait au début de chaque appel. Un `sportType` inconnu se rabat sur le réglage du basketball. Une ligue inconnue se rabat sur la ligue la plus connue de son sport : la NBA pour le basketball, la NHL pour le hockey, la MLB pour le baseball, la NFL pour le football américain, le softball NCAA et la MLS pour le soccer. `getGameProgress` vaut 0 au début, 1 à la fin du temps réglementaire et pendant les prolongations. `getTimelineProgress` lui est identique pendant le temps réglementaire, puis continue de compter au-delà de 1 : une période de prolongation ajoute `overtimeDurationSecs` à la durée du temps réglementaire, et une manche supplémentaire ajoute la part d'une manche. Les deux ne lisent que `period`, `clockSeconds` et `topOfInning` (`GameClockState`). `scoreMargin` est l'écart absolu au score.
+`resolveSportConfig` et `resolveLeagueConfig` font ce que `scoreGame` fait au début de chaque appel. Un `sportType` inconnu se rabat sur le réglage du basketball. Une ligue inconnue se rabat sur la ligue la plus connue de son sport : la NBA pour le basketball, la NHL pour le hockey, la MLB pour le baseball, la NFL pour le football américain, le softball NCAA et la MLS pour le soccer. `getGameProgress` vaut 0 au début, 1 à la fin du temps réglementaire et pendant les prolongations. `getTimelineProgress` lui est identique pendant le temps réglementaire, puis continue de compter au-delà de 1 : une période de prolongation ajoute `overtimeDurationSecs` à la durée du temps réglementaire (0.05 dans une ligue avec `untimedOvertime`), et une manche supplémentaire ajoute la part d'une manche. Les deux ne lisent que `period`, `clockSeconds` et `topOfInning` (`GameClockState`). `scoreMargin` est l'écart absolu au score.
 
 ## Score fantasy
 
@@ -257,10 +257,11 @@ Dépréciée : le nombre est dans la liste `boosts` de `scoreGame` sous `scoring
 function computeWinProbVarianceScore(
 	line: readonly WinProbabilityReading[] | readonly number[],
 	nowProgress?: number,
+	sport?: Pick<SportTypeConfig, 'winProbabilityScales'>,
 ): number | undefined
 ```
 
-Associe une ligne de probabilité de victoire au modificateur ±5 décrit dans [Bonus et pénalités](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). `nowProgress` est le point actuel du match donné par `getTimelineProgress`, et vaut par défaut celui du dernier relevé. Un simple `number[]` est réparti régulièrement jusqu'à `nowProgress`, ou jusqu'à 1 sans lui. Écarte d'abord les relevés non finis, puis renvoie `undefined` s'il en reste moins de 3 ou avant qu'un dixième du match soit joué. Sinon renvoie un entier de `-scoreWinProbVarianceMax` à `scoreWinProbVarianceMax`.
+Associe une ligne de probabilité de victoire au modificateur ±5 décrit dans [Bonus et pénalités](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). `nowProgress` est le point actuel du match donné par `getTimelineProgress`, et vaut par défaut celui du dernier relevé. Un simple `number[]` est réparti régulièrement jusqu'à `nowProgress`, ou jusqu'à 1 sans lui. `sport` choisit les échelles du bonus d'oscillation, celles du basketball sans lui. Écarte d'abord les relevés non finis, puis renvoie `undefined` s'il en reste moins de 3 ou avant qu'un dixième du match soit joué. Sinon renvoie un entier de `-scoreWinProbVarianceMax` à `scoreWinProbVarianceMax`.
 
 ### isPlayFrozen
 

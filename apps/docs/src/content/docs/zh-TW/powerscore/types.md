@@ -1,5 +1,5 @@
 ---
-sourceHash: 'e5d4af4d0a0e'
+sourceHash: '9597d1316266'
 title: PowerScore TypeScript 型別
 description: Game、ScoringContext、ScoreOptions、PowerScore，以及模式和設定型別的每個欄位，哪些是選填，以及選填欄位缺漏時會發生什麼事。
 section: powerscore
@@ -421,7 +421,7 @@ type LateGameCurveConfig = BaseballLateGameCurveConfig;
 | `scores.momentum` | 氣勢的兩個級別值。見[氣勢](/arenaswap/docs/powerscore/signals/#momentum-lead-changes-and-comeback-factor)。 |
 | `scores.leadChanges` | 領先交替的兩個級別值。 |
 | `scores.comeback` | 逆轉的兩個級別值，以及它的固定下限。 |
-| `scores.winProbabilityVariance` | `halfLife`、`movementFullScale`、`swingFullScale`、`swingWeight`、`neutralBlend`、`openLead`、`decidedLead` 和 `penaltyFromProgress`，列在[加成與扣分](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)。 |
+| `scores.winProbabilityVariance` | `halfLife`、`swingWeight`、`coinFlipZeroDistance`、`openLead`、`decidedLead`、`penaltyFromProgress` 和預設的 `scales`，列在[加成與扣分](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)。 |
 | `reasons` | 只有 `fallback`（"best game available"），也就是已棄用的平面結果退回使用的原因。英文的措辭放在 `renderReasonEnglish`。 |
 
 ## FantasyRule 和 FantasySport

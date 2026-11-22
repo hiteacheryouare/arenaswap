@@ -540,7 +540,7 @@
 			},
 			{
 				"name": "Probabilità di vittoria",
-				"copy": "Fino a {max} in più quando le probabilità hanno oscillato di recente, fino a {max} in meno quando la partita si è calmata e una squadra ha la partita in pugno."
+				"copy": "Fino a {max} in più quando le probabilità sono rimaste vicine al 50/50 o hanno oscillato di recente, fino a {max} in meno quando la partita si è calmata e una squadra ha la partita in pugno."
 			}
 		],
 		"liveHeading": "PowerScore dal vivo.",

@@ -1,5 +1,5 @@
 ---
-sourceHash: '5050e319fc40'
+sourceHash: 'bcc1b14bc611'
 title: Configuración de deportes y ligas
 description: Cada campo de SportTypeConfig y LeagueConfig, sus valores predeterminados en los seis deportes y las 31 ligas, y cómo se define lo que es "cerrado" para un deporte.
 section: powerscore
@@ -25,6 +25,7 @@ Una entrada por `SportType`, exportada como `sportTypeConfigs` (un arreglo) y `s
 | `zeroZeroPenaltyPeriods` | ninguno | ninguno | 1, 2 | 1 | ninguno | ninguno |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
 | `overtimeDurationSecs` | 300 | 600 | 300 | ninguno | ninguno | ninguno |
+| `winProbabilityScales` | 1.77, 0.27, 0.52 | 0.77, 0.23, 0.54 | ninguno | ninguno | 0.67, 0.29, 0.46 | ninguno |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -47,6 +48,7 @@ Una entrada por `SportType`, exportada como `sportTypeConfigs` (un arreglo) y `s
 | `zeroZeroPenaltyPeriods` | Periodos donde el 0–0 sigue recibiendo el nivel reducido aunque `zeroZeroAsFullTie` sea `true`. El hockey usa 1 y 2, el futbol el primer tiempo. |
 | `otPreBoostWindowSecs` | Los últimos segundos del último periodo reglamentario en los que un partido empatado sube hacia el pre-impulso de tiempo extra. `0` lo apaga. |
 | `overtimeDurationSecs` | Cuánto dura un periodo de tiempo extra, para que `getTimelineProgress` pueda seguir contando durante él. Sin él, cada periodo de tiempo extra cuenta como 0.05 del partido. |
+| `winProbabilityScales` | `movementFullScale`, `swingFullScale` y `neutralBlend` para el [impulso de vaivén de la probabilidad de victoria](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). Los deportes sin escalas propias usan las del basquetbol. |
 | `decayHalfLifeMs` | Qué tan rápido se desvanecen la Racha, los Cambios de ventaja y la Remontada después de la última anotación. Más largo en deportes de pocas anotaciones, para que un gol los mantenga vivos hasta el siguiente. |
 | `historyWindowMs` | Cuánto historial del marcador leen las señales de historial. Ver arriba. |
 | `lateGameCurve` | Solo beisbol y softbol: cuántas entradas tiene el tiempo reglamentario y en qué entrada empieza la subida de la recta final. |
@@ -89,7 +91,7 @@ Una entrada por `LeagueId`, exportada como `leagueConfigs` (un arreglo) y `leagu
 | Futbol varonil olímpico (`olysocm`) | soccer | 2 | 2700s |
 | Futbol femenil olímpico (`olysocw`) | soccer | 2 | 2700s |
 
-31 ligas en total, las mismas 31 que tiene `LeagueId`.
+31 ligas en total, las mismas 31 que tiene `LeagueId`. El futbol americano de la NCAA y la UFL también definen `untimedOvertime`, porque su tiempo extra no tiene reloj: cada periodo de tiempo extra cuenta como 0.05 del partido en lugar de `overtimeDurationSecs`.
 
 ## Cómo se define lo que es "cerrado" para un deporte
 

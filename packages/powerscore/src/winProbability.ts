@@ -1,6 +1,6 @@
 import { scorerTunables, scoreWinProbVarianceMax } from './constants';
 import { clamp } from './math';
-import type { WinProbabilityReading } from './types';
+import type { SportTypeConfig, WinProbabilityReading } from './types';
 
 const minReadings = 3;
 const movementReachHalfLives = 4;
@@ -31,8 +31,10 @@ const despike = (probabilities: readonly number[]): number[] => probabilities.ma
 export const computeWinProbVarianceScore = (
 	line: readonly WinProbabilityReading[] | readonly number[],
 	nowProgress?: number,
+	sport?: Pick<SportTypeConfig, 'winProbabilityScales'>,
 ): number | undefined => {
 	const tunables = scorerTunables.scores.winProbabilityVariance;
+	const scales = sport?.winProbabilityScales ?? tunables.scales;
 	const readings = toReadings(line, nowProgress ?? 1);
 	if (readings.length < minReadings) return undefined;
 	const now = Math.max(nowProgress ?? 0, readings[readings.length - 1]!.progress);
@@ -42,23 +44,31 @@ export const computeWinProbVarianceScore = (
 	const current = probabilities[probabilities.length - 1]!;
 	let movement = 0;
 	let swing = 0;
+	let distanceSum = 0;
+	let weightSum = 0;
 	for (let k = probabilities.length - 1; k >= 1; k--) {
 		const age = Math.max(0, now - readings[k]!.progress);
 		if (age > movementReachHalfLives * tunables.halfLife) break;
-		if (k >= 2) movement += 0.5 ** (age / tunables.halfLife) * Math.min(Math.abs(probabilities[k]! - probabilities[k - 1]!), maxStepPerPlay);
+		const weight = 0.5 ** (age / tunables.halfLife);
+		distanceSum += weight * Math.abs(probabilities[k]! - 0.5);
+		weightSum += weight;
+		if (k >= 2) movement += weight * Math.min(Math.abs(probabilities[k]! - probabilities[k - 1]!), maxStepPerPlay);
 		if (age <= swingReachHalfLives * tunables.halfLife) {
 			swing = Math.max(swing, Math.abs(current - probabilities[k]!) * 0.5 ** (age / (swingHalfLifeMultiple * tunables.halfLife)));
 		}
 	}
 
-	const blend = (1 - tunables.swingWeight) * Math.min(1, movement / tunables.movementFullScale)
-		+ tunables.swingWeight * Math.min(1, swing / tunables.swingFullScale);
+	const blend = (1 - tunables.swingWeight) * Math.min(1, movement / scales.movementFullScale)
+		+ tunables.swingWeight * Math.min(1, swing / scales.swingFullScale);
 	const lead = Math.max(current, 1 - current);
 	const stillOpen = clamp((tunables.decidedLead - lead) / (tunables.decidedLead - tunables.openLead), 0, 1);
+	const swingBonus = blend >= scales.neutralBlend
+		? scoreWinProbVarianceMax * ((blend - scales.neutralBlend) / (1 - scales.neutralBlend)) * stillOpen
+		: 0;
+	const averageDistance = weightSum > 0 ? distanceSum / weightSum : 0.5;
+	const coinFlipBonus = scoreWinProbVarianceMax * clamp(1 - averageDistance / tunables.coinFlipZeroDistance, 0, 1);
 
-	if (blend >= tunables.neutralBlend) {
-		return Math.round(scoreWinProbVarianceMax * ((blend - tunables.neutralBlend) / (1 - tunables.neutralBlend)) * stillOpen) + 0;
-	}
+	if (blend >= scales.neutralBlend || coinFlipBonus > 0) return Math.round(Math.max(swingBonus, coinFlipBonus)) + 0;
 	if (now < tunables.penaltyFromProgress) return 0;
-	return Math.round(-scoreWinProbVarianceMax * (1 - blend / tunables.neutralBlend) * (1 - stillOpen)) + 0;
+	return Math.round(-scoreWinProbVarianceMax * (1 - blend / scales.neutralBlend) * (1 - stillOpen)) + 0;
 };

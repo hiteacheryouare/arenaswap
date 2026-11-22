@@ -540,7 +540,7 @@
 			},
 			{
 				"name": "Probabilidad de victoria",
-				"copy": "Hasta {max} más cuando las probabilidades han estado oscilando últimamente, hasta {max} menos cuando el partido se ha calmado y un equipo ya la tiene asegurada."
+				"copy": "Hasta {max} más cuando las probabilidades se han mantenido cerca de 50/50 o han oscilado últimamente, hasta {max} menos cuando el partido se ha calmado y un equipo ya la tiene asegurada."
 			}
 		],
 		"liveHeading": "PowerScores en vivo.",

@@ -1,5 +1,5 @@
 ---
-sourceHash: 'e5d4af4d0a0e'
+sourceHash: '9597d1316266'
 title: PowerScore 的 TypeScript 类型
 description: Game、ScoringContext、ScoreOptions、PowerScore 以及模式和配置类型上的每个字段，哪些是可选的，以及可选字段缺失时会发生什么。
 section: powerscore
@@ -421,7 +421,7 @@ type LateGameCurveConfig = BaseballLateGameCurveConfig;
 | `scores.momentum` | 势头的两个档位值。见[势头](/arenaswap/docs/powerscore/signals/#momentum-lead-changes-and-comeback-factor)。 |
 | `scores.leadChanges` | 领先权易手的两个档位值。 |
 | `scores.comeback` | 逆转的两个档位值和它的固定底分。 |
-| `scores.winProbabilityVariance` | `halfLife`、`movementFullScale`、`swingFullScale`、`swingWeight`、`neutralBlend`、`openLead`、`decidedLead` 和 `penaltyFromProgress`，列在[加成与扣分](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)里。 |
+| `scores.winProbabilityVariance` | `halfLife`、`swingWeight`、`coinFlipZeroDistance`、`openLead`、`decidedLead`、`penaltyFromProgress` 和默认的 `scales`，列在[加成与扣分](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)里。 |
 | `reasons` | 只有 `fallback`（"best game available"），即已弃用的扁平结果回退使用的原因。英文措辞在 `renderReasonEnglish` 里。 |
 
 ## FantasyRule 和 FantasySport

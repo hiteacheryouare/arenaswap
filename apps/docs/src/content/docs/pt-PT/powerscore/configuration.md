@@ -1,5 +1,5 @@
 ---
-sourceHash: '5050e319fc40'
+sourceHash: 'bcc1b14bc611'
 title: Configuração de desportos e ligas
 description: Todos os campos de SportTypeConfig e LeagueConfig, os seus valores predefinidos nos seis desportos e 31 ligas, e como se define o que um desporto entende por "equilibrado".
 section: powerscore
@@ -25,6 +25,7 @@ Uma entrada por `SportType`, exportada como `sportTypeConfigs` (uma lista) e `sp
 | `zeroZeroPenaltyPeriods` | nenhum | nenhum | 1, 2 | 1 | nenhum | nenhum |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
 | `overtimeDurationSecs` | 300 | 600 | 300 | nenhum | nenhum | nenhum |
+| `winProbabilityScales` | 1.77, 0.27, 0.52 | 0.77, 0.23, 0.54 | nenhum | nenhum | 0.67, 0.29, 0.46 | nenhum |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -47,6 +48,7 @@ O `historyWindowMs` é o intervalo de histórico de resultados que cada desporto
 | `zeroZeroPenaltyPeriods` | Períodos em que o 0–0 ainda ganha o escalão reduzido mesmo com `zeroZeroAsFullTie` a `true`. O hóquei usa 1 e 2, o futebol a primeira parte. |
 | `otPreBoostWindowSecs` | Os últimos segundos do último período regulamentar em que um jogo empatado sobe rumo ao pré-impulso de prolongamento. `0` desliga-o. |
 | `overtimeDurationSecs` | Quanto dura um período de prolongamento, para o `getTimelineProgress` poder continuar a contar durante ele. Sem isto, cada período de prolongamento conta como 0.05 do jogo. |
+| `winProbabilityScales` | `movementFullScale`, `swingFullScale` e `neutralBlend` do [bónus de oscilação da probabilidade de vitória](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). Os desportos sem uma usam as do basquetebol. |
 | `decayHalfLifeMs` | A rapidez com que a Dinâmica, as Mudanças de liderança e o Fator de remontada se esbatem depois da última pontuação. Mais longa nos desportos de poucos golos, para um golo os manter vivos até ao seguinte. |
 | `historyWindowMs` | Quanto histórico de resultados os sinais de histórico leem. Vê acima. |
 | `lateGameCurve` | Só basebol e softbol: quantas entradas tem o tempo regulamentar e em que entrada começa a rampa da fase final. |
@@ -89,7 +91,7 @@ Uma entrada por `LeagueId`, exportada como `leagueConfigs` (uma lista) e `league
 | Olympic Men's Soccer (`olysocm`) | futebol | 2 | 2700s |
 | Olympic Women's Soccer (`olysocw`) | futebol | 2 | 2700s |
 
-31 ligas no total, tantas quantos os membros de `LeagueId`.
+31 ligas no total, tantas quantos os membros de `LeagueId`. O futebol americano da NCAA e a UFL também definem `untimedOvertime`, porque o prolongamento não tem relógio: cada período de prolongamento conta como 0.05 do jogo em vez de `overtimeDurationSecs`.
 
 ## Como se define o que um desporto entende por "equilibrado"
 

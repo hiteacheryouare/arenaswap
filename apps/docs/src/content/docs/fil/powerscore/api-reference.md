@@ -1,5 +1,5 @@
 ---
-sourceHash: '3d1b823a21ee'
+sourceHash: '647b1df69d7b'
 title: API reference ng PowerScore
 navLabel: API reference
 description: Bawat function at constant na ine-export ng powerscore, kasama ang signature, mga parameter, ibinabalik na value, at kung ano ang nangyayari kapag nawawala o hindi valid ang isang input. Kasama ang deprecated na 2.x API.
@@ -150,7 +150,7 @@ function getTimelineProgress(game: GameClockState, sport: SportTypeConfig, leagu
 function scoreMargin(game: Game<string>): number
 ```
 
-Ginagawa ng `resolveSportConfig` at `resolveLeagueConfig` ang ginagawa ng `scoreGame` sa simula ng bawat tawag. Ang `sportType` na hindi kilala ay bumabagsak sa tuning ng basketball. Ang liga na hindi kilala ay bumabagsak sa pinakakilalang liga ng sport nito: ang NBA para sa basketball, ang NHL para sa hockey, MLB para sa baseball, ang NFL para sa football, NCAA softball, at MLS para sa soccer. Ang `getGameProgress` ay 0 sa simula, 1 sa dulo ng regulation at sa buong overtime. Ang `getTimelineProgress` ay kapareho nito sa buong regulation, tapos patuloy na bumibilang lampas sa 1: ang isang overtime period ay nagdaragdag ng `overtimeDurationSecs` sa haba ng regulation, at ang extra inning ay nagdaragdag ng bahagi ng isang inning. Pareho nilang binabasa lang ang `period`, `clockSeconds` at `topOfInning` (`GameClockState`). Ang `scoreMargin` ay ang absolute na pagkakaiba ng score.
+Ginagawa ng `resolveSportConfig` at `resolveLeagueConfig` ang ginagawa ng `scoreGame` sa simula ng bawat tawag. Ang `sportType` na hindi kilala ay bumabagsak sa tuning ng basketball. Ang liga na hindi kilala ay bumabagsak sa pinakakilalang liga ng sport nito: ang NBA para sa basketball, ang NHL para sa hockey, MLB para sa baseball, ang NFL para sa football, NCAA softball, at MLS para sa soccer. Ang `getGameProgress` ay 0 sa simula, 1 sa dulo ng regulation at sa buong overtime. Ang `getTimelineProgress` ay kapareho nito sa buong regulation, tapos patuloy na bumibilang lampas sa 1: ang isang overtime period ay nagdaragdag ng `overtimeDurationSecs` sa haba ng regulation (0.05 sa liga na may `untimedOvertime`), at ang extra inning ay nagdaragdag ng bahagi ng isang inning. Pareho nilang binabasa lang ang `period`, `clockSeconds` at `topOfInning` (`GameClockState`). Ang `scoreMargin` ay ang absolute na pagkakaiba ng score.
 
 ## Fantasy scoring
 
@@ -257,10 +257,11 @@ Deprecated: nasa listahan ng `boosts` ng `scoreGame` ang number bilang `scoringO
 function computeWinProbVarianceScore(
 	line: readonly WinProbabilityReading[] | readonly number[],
 	nowProgress?: number,
+	sport?: Pick<SportTypeConfig, 'winProbabilityScales'>,
 ): number | undefined
 ```
 
-Minamapa ang win-probability line sa ±5 na modifier na inilalarawan sa [Mga boost at penalty](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). Ang `nowProgress` ay ang kasalukuyang punto ng laro mula sa `getTimelineProgress`, at ang default nito ay ang sa huling reading. Ang bare na `number[]` ay pantay na ikinakalat hanggang `nowProgress`, o hanggang 1 kapag wala ito. Inaalis muna ang mga reading na hindi finite, tapos nagbabalik ng `undefined` kung wala pang 3 ang natira o bago pa malaro ang ikasampung bahagi ng laro. Kung hindi, nagbabalik ng integer mula `-scoreWinProbVarianceMax` hanggang `scoreWinProbVarianceMax`.
+Minamapa ang win-probability line sa ±5 na modifier na inilalarawan sa [Mga boost at penalty](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). Ang `nowProgress` ay ang kasalukuyang punto ng laro mula sa `getTimelineProgress`, at ang default nito ay ang sa huling reading. Ang bare na `number[]` ay pantay na ikinakalat hanggang `nowProgress`, o hanggang 1 kapag wala ito. Pinipili ng `sport` ang mga scale ng swing bonus, ang sa basketball kapag wala ito. Inaalis muna ang mga reading na hindi finite, tapos nagbabalik ng `undefined` kung wala pang 3 ang natira o bago pa malaro ang ikasampung bahagi ng laro. Kung hindi, nagbabalik ng integer mula `-scoreWinProbVarianceMax` hanggang `scoreWinProbVarianceMax`.
 
 ### isPlayFrozen
 

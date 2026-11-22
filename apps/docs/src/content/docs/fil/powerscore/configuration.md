@@ -1,5 +1,5 @@
 ---
-sourceHash: '5050e319fc40'
+sourceHash: 'bcc1b14bc611'
 title: Configuration ng sport at liga
 description: Bawat field ng SportTypeConfig at LeagueConfig, ang mga default nila sa anim na sport at 31 liga, at kung paano itinatakda ang kahulugan ng "dikit" sa isang sport.
 section: powerscore
@@ -25,6 +25,7 @@ Isang entry kada `SportType`, na ine-export bilang `sportTypeConfigs` (array) at
 | `zeroZeroPenaltyPeriods` | none | none | 1, 2 | 1 | none | none |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
 | `overtimeDurationSecs` | 300 | 600 | 300 | none | none | none |
+| `winProbabilityScales` | 1.77, 0.27, 0.52 | 0.77, 0.23, 0.54 | none | none | 0.67, 0.29, 0.46 | none |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -47,6 +48,7 @@ Ang `historyWindowMs` ang haba ng history ng score na kailangang itabi ng bawat 
 | `zeroZeroPenaltyPeriods` | Mga period kung saan mas mababang tier pa rin ang nakukuha ng 0–0 kahit `true` ang `zeroZeroAsFullTie`. Ang gamit ng hockey ay 1 at 2, ang soccer ay ang unang half. |
 | `otPreBoostWindowSecs` | Ang huling mga segundo ng huling regulation period kung saan umaakyat ang tied na laro papunta sa overtime pre-boost. Pinapatay ito ng `0`. |
 | `overtimeDurationSecs` | Gaano katagal ang isang overtime period, para makapagpatuloy sa pagbibilang ang `getTimelineProgress` sa buong overtime. Kung wala ito, 0.05 ng laro ang bilang sa bawat overtime period. |
+| `winProbabilityScales` | Ang `movementFullScale`, `swingFullScale` at `neutralBlend` para sa [swing bonus ng win probability](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). Ginagamit ng mga sport na walang sarili ang sa basketball. |
 | `decayHalfLifeMs` | Gaano kabilis humina ang Momentum, Lead Changes at Comeback Factor pagkatapos ng huling score. Mas mahaba sa mga sport na kaunti ang score, para buhay pa sila ng isang goal hanggang sa susunod. |
 | `historyWindowMs` | Gaano karaming history ng score ang binabasa ng mga signal na nakabase sa history. Tingnan sa itaas. |
 | `lateGameCurve` | Baseball at softball lang: ilang inning ang regulation at saang inning nagsisimula ang pag-akyat ng huling yugto. |
@@ -89,7 +91,7 @@ Isang entry kada `LeagueId`, na ine-export bilang `leagueConfigs` (array) at `le
 | Olympic Men's Soccer (`olysocm`) | soccer | 2 | 2700s |
 | Olympic Women's Soccer (`olysocw`) | soccer | 2 | 2700s |
 
-31 liga lahat, kapareho ng 31 miyembro ng `LeagueId`.
+31 liga lahat, kapareho ng 31 miyembro ng `LeagueId`. Itinatakda rin ng NCAA Football at ng UFL ang `untimedOvertime`, dahil walang orasan ang overtime nila: 0.05 ng laro ang bilang sa bawat overtime period sa halip na `overtimeDurationSecs`.
 
 ## Paano itinatakda ang kahulugan ng "dikit" sa isang sport
 

@@ -1,5 +1,5 @@
 ---
-sourceHash: 'e5d4af4d0a0e'
+sourceHash: '9597d1316266'
 title: I tipi TypeScript di PowerScore
 description: Ogni campo di Game, ScoringContext, ScoreOptions, PowerScore e dei tipi di modalità e configurazione, quali sono facoltativi e cosa succede quando uno facoltativo manca.
 section: powerscore
@@ -421,7 +421,7 @@ L'unico oggetto esportato che contiene ogni valore di fascia con cui il motore v
 | `scores.momentum` | I due valori di fascia del momentum. Vedi [Momentum](/arenaswap/docs/powerscore/signals/#momentum-lead-changes-and-comeback-factor). |
 | `scores.leadChanges` | I due valori di fascia dei sorpassi. |
 | `scores.comeback` | I due valori di fascia della rimonta e il suo minimo fisso. |
-| `scores.winProbabilityVariance` | `halfLife`, `movementFullScale`, `swingFullScale`, `swingWeight`, `neutralBlend`, `openLead`, `decidedLead` e `penaltyFromProgress`, in tabella in [Boost e penalità](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). |
+| `scores.winProbabilityVariance` | `halfLife`, `swingWeight`, `coinFlipZeroDistance`, `openLead`, `decidedLead`, `penaltyFromProgress` e le `scales` predefinite, in tabella in [Boost e penalità](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). |
 | `reasons` | Solo `fallback` ("best game available"), la ragione su cui ricade il risultato piatto deprecato. La formulazione inglese sta in `renderReasonEnglish`. |
 
 ## FantasyRule e FantasySport

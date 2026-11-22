@@ -1,5 +1,5 @@
 ---
-sourceHash: '5050e319fc40'
+sourceHash: 'bcc1b14bc611'
 title: Configuration des sports et des ligues
 description: Chaque champ de SportTypeConfig et LeagueConfig, leurs valeurs par défaut pour les six sports et les 31 ligues, et comment se définit l'idée de « serré » d'un sport.
 section: powerscore
@@ -25,6 +25,7 @@ Une entrée par `SportType`, exportée sous `sportTypeConfigs` (un tableau) et `
 | `zeroZeroPenaltyPeriods` | aucune | aucune | 1, 2 | 1 | aucune | aucune |
 | `otPreBoostWindowSecs` | 60 | 60 | 60 | 60 | 0 | 0 |
 | `overtimeDurationSecs` | 300 | 600 | 300 | aucune | aucune | aucune |
+| `winProbabilityScales` | 1.77, 0.27, 0.52 | 0.77, 0.23, 0.54 | aucune | aucune | 0.67, 0.29, 0.46 | aucune |
 | `decayHalfLifeMs.momentum` | 45,000 | 135,000 | 180,000 | 240,000 | 150,000 | 150,000 |
 | `decayHalfLifeMs.leadChange` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
 | `decayHalfLifeMs.comeback` | 60,000 | 180,000 | 240,000 | 300,000 | 180,000 | 180,000 |
@@ -47,6 +48,7 @@ Une entrée par `SportType`, exportée sous `sportTypeConfigs` (un tableau) et `
 | `zeroZeroPenaltyPeriods` | Les périodes où le 0–0 gagne encore le palier réduit même si `zeroZeroAsFullTie` vaut `true`. Le hockey utilise 1 et 2, le soccer la première mi-temps. |
 | `otPreBoostWindowSecs` | Les dernières secondes de la dernière période réglementaire où un match nul monte vers le pré-bonus de prolongation. `0` le désactive. |
 | `overtimeDurationSecs` | La durée d'une période de prolongation, pour que `getTimelineProgress` puisse continuer à compter pendant celle-ci. Sans lui, chaque période de prolongation compte pour 0.05 du match. |
+| `winProbabilityScales` | `movementFullScale`, `swingFullScale` et `neutralBlend` pour le [bonus d'oscillation de la probabilité de victoire](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings). Les sports qui n'en ont pas utilisent celles du basketball. |
 | `decayHalfLifeMs` | La vitesse à laquelle l'Élan, les Changements de tête et le Remontée s'estompent après le dernier point. Plus longue dans les sports à faible score, pour qu'un seul but les garde en vie jusqu'au suivant. |
 | `historyWindowMs` | La quantité d'historique du score que lisent les signaux d'historique. Voir plus haut. |
 | `lateGameCurve` | Baseball et softball seulement : combien de manches compte le temps réglementaire et à quelle manche démarre la montée de fin de match. |
@@ -89,7 +91,7 @@ Une entrée par `LeagueId`, exportée sous `leagueConfigs` (un tableau) et `leag
 | Football masculin olympique (`olysocm`) | soccer | 2 | 2700s |
 | Football féminin olympique (`olysocw`) | soccer | 2 | 2700s |
 
-31 ligues au total, soit les 31 membres de `LeagueId`.
+31 ligues au total, soit les 31 membres de `LeagueId`. Le football américain universitaire NCAA et l'UFL définissent aussi `untimedOvertime`, parce que leur prolongation n'a pas de chrono : chaque période de prolongation compte pour 0.05 du match au lieu de `overtimeDurationSecs`.
 
 ## Comment se définit l'idée de « serré » d'un sport
 

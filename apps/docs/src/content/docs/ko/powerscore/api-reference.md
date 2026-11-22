@@ -1,5 +1,5 @@
 ---
-sourceHash: '3d1b823a21ee'
+sourceHash: '647b1df69d7b'
 title: PowerScore API 레퍼런스
 navLabel: API 레퍼런스
 description: powerscore가 내보내는 모든 함수와 상수의 시그니처, 매개변수, 반환값, 그리고 입력이 없거나 잘못됐을 때의 동작. 더 이상 권장되지 않는 2.x API도 포함해요.
@@ -150,7 +150,7 @@ function getTimelineProgress(game: GameClockState, sport: SportTypeConfig, leagu
 function scoreMargin(game: Game<string>): number
 ```
 
-`resolveSportConfig`와 `resolveLeagueConfig`는 `scoreGame`이 호출 맨 처음에 하는 일을 해요. 알 수 없는 `sportType`은 농구 설정으로 대체돼요. 알 수 없는 리그는 그 종목에서 가장 잘 알려진 리그로 대체돼요. 농구는 NBA, 하키는 NHL, 야구는 MLB, 풋볼은 NFL, 소프트볼은 NCAA 소프트볼, 축구는 MLS예요. `getGameProgress`는 시작에서 0이고, 정규 시간 종료와 연장 내내 1이에요. `getTimelineProgress`는 정규 시간 동안은 그것과 같고, 그 뒤에는 1을 넘어서 계속 세어요. 연장 피리어드 하나는 `overtimeDurationSecs`를 정규 시간 길이로 나눈 만큼 더하고, 연장 이닝은 한 이닝의 몫을 더해요. 둘 다 `period`, `clockSeconds`, `topOfInning`(`GameClockState`)만 읽어요. `scoreMargin`은 점수 차의 절댓값이에요.
+`resolveSportConfig`와 `resolveLeagueConfig`는 `scoreGame`이 호출 맨 처음에 하는 일을 해요. 알 수 없는 `sportType`은 농구 설정으로 대체돼요. 알 수 없는 리그는 그 종목에서 가장 잘 알려진 리그로 대체돼요. 농구는 NBA, 하키는 NHL, 야구는 MLB, 풋볼은 NFL, 소프트볼은 NCAA 소프트볼, 축구는 MLS예요. `getGameProgress`는 시작에서 0이고, 정규 시간 종료와 연장 내내 1이에요. `getTimelineProgress`는 정규 시간 동안은 그것과 같고, 그 뒤에는 1을 넘어서 계속 세어요. 연장 피리어드 하나는 `overtimeDurationSecs`를 정규 시간 길이로 나눈 만큼 더하고(`untimedOvertime`이 있는 리그는 0.05), 연장 이닝은 한 이닝의 몫을 더해요. 둘 다 `period`, `clockSeconds`, `topOfInning`(`GameClockState`)만 읽어요. `scoreMargin`은 점수 차의 절댓값이에요.
 
 ## 판타지 점수
 
@@ -257,10 +257,11 @@ function computeScoringOpportunityBoost(game: Game<string>): number
 function computeWinProbVarianceScore(
 	line: readonly WinProbabilityReading[] | readonly number[],
 	nowProgress?: number,
+	sport?: Pick<SportTypeConfig, 'winProbabilityScales'>,
 ): number | undefined
 ```
 
-승리 확률 라인을 [부스트와 페널티](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)에 나온 ±5 보정값에 대응시켜요. `nowProgress`는 `getTimelineProgress`로 잰 경기의 현재 시점이고, 기본값은 마지막 값의 시점이에요. 그냥 `number[]`는 `nowProgress`까지, 없으면 1까지 고르게 펼쳐요. 유한하지 않은 값을 먼저 버리고, 3개 미만이 남거나 경기의 10분의 1이 지나기 전이면 `undefined`를 돌려줘요. 그렇지 않으면 `-scoreWinProbVarianceMax`에서 `scoreWinProbVarianceMax` 사이의 정수를 돌려줘요.
+승리 확률 라인을 [부스트와 페널티](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)에 나온 ±5 보정값에 대응시켜요. `nowProgress`는 `getTimelineProgress`로 잰 경기의 현재 시점이고, 기본값은 마지막 값의 시점이에요. 그냥 `number[]`는 `nowProgress`까지, 없으면 1까지 고르게 펼쳐요. `sport`는 요동 보너스의 기준을 고르고, 없으면 농구 기준이에요. 유한하지 않은 값을 먼저 버리고, 3개 미만이 남거나 경기의 10분의 1이 지나기 전이면 `undefined`를 돌려줘요. 그렇지 않으면 `-scoreWinProbVarianceMax`에서 `scoreWinProbVarianceMax` 사이의 정수를 돌려줘요.
 
 ### isPlayFrozen
 

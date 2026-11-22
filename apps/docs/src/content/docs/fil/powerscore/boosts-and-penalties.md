@@ -1,5 +1,5 @@
 ---
-sourceHash: '2348a1aeb67f'
+sourceHash: 'cdc911cc09f7'
 title: Mga boost at penalty ng PowerScore
 navLabel: Mga boost at penalty
 description: Bawat boost at penalty na inilalapat ng PowerScore 3 sa ibabaw ng mga signal ng mode, kasama ang kondisyong nagpapagana sa bawat isa, ang maximum nito, at ang mga cap na pinagsasaluhan nila.
@@ -189,31 +189,42 @@ Sa karera, buo ang bayad sa team na pinakamarami ang nakataya at kalahati sa isa
 
 ## Win probability swings
 
-Classic lang. Ibinabalik ng `computeWinProbVarianceScore(line, nowProgress?)` ang modifier mula `-scoreWinProbVarianceMax` hanggang `+scoreWinProbVarianceMax` (±5). Ipasa ang `context.winProbability` sa `scoreGame`, at isasama sa total ang modifier nang mag-isa, na sinusukat mula sa kasalukuyang punto ng laro sa [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
+Classic lang. Ibinabalik ng `computeWinProbVarianceScore(line, nowProgress?, sport?)` ang modifier mula `-scoreWinProbVarianceMax` hanggang `+scoreWinProbVarianceMax` (±5). Ipasa ang `context.winProbability` sa `scoreGame`, at isasama sa total ang modifier nang mag-isa, na sinusukat mula sa kasalukuyang punto ng laro sa [`getTimelineProgress`](/arenaswap/docs/powerscore/api-reference/#config-and-progress).
 
 Ang line ay ang win probability ng home team, isang reading kada play, pinakamatanda muna. Bawat reading ay isang [`WinProbabilityReading`](/arenaswap/docs/powerscore/types/#winprobabilityreading): ang `homeWinProbability` mula 0 hanggang 1, at ang `progress`, kung gaano na kalayo sa laro nang mangyari ang play na iyon. Gumagana pa rin ang bare na `number[]`, at pantay na ikinakalat ang mga reading mula sa simula ng laro hanggang ngayon.
 
 Kailangan nito ng 3 reading at ng ikasampung bahagi ng laro na nalaro na. Bago iyon, nagbabalik ito ng `undefined`, at hindi na isinasama ang field na `winProbabilityVariance` ng resulta sa halip na itakda sa `0`. Inaalis muna ang mga reading na hindi finite.
 
-Pinaghahalo ng modifier ang dalawang sukat kung gaano kalaki ang kamakailang galaw ng resulta. Parehong nababawasan ng kalahati kada `halfLife`, ang ikasampung bahagi ng regulation: mga 4 na minuto sa college basketball, 5 sa NBA, 6 sa football, o isang inning sa baseball.
+Ang binabayaran ng modifier ay ang mas malaki sa dalawang bonus, parehong sinusukat sa kamakailang bahagi ng laro. Nababawasan ng kalahati ang lahat kada `halfLife`, ang ikasampung bahagi ng regulation: mga 4 na minuto sa college basketball, 5 sa NBA, 6 sa football, o isang inning sa baseball.
+
+Ang **coin-flip bonus** ay para sa laro na nanatiling dikit. +5 ito kapag nasa 50% ang win probability sa nakalipas na apat na half-life, at bumababa sa 0 habang umaabot sa `coinFlipZeroDistance` (0.175) ang average na layo mula sa 50%.
+
+Ang **swing bonus** ay para sa laro na gumagalaw. Pinaghahalo nito ang dalawang sukat:
 
 | Sukat | Ano ang idinadagdag | Buo sa | Bahagi sa halo |
 |---|---|---|---|
-| Galaw | Bawat pagbabago ng win probability mula play hanggang play sa nakalipas na apat na half-life, bawat isa naka-cap sa 0.5 | `movementFullScale` (1.67) | 70% |
-| Swing | Ang pinakamalaking agwat ng kasalukuyang reading at alinmang reading sa nakalipas na tatlong half-life, nababawasan ng kalahati kada dalawang half-life | `swingFullScale` (0.26) | `swingWeight` (30%) |
+| Galaw | Bawat pagbabago ng win probability mula play hanggang play sa nakalipas na apat na half-life, bawat isa naka-cap sa 0.5 | `movementFullScale` | 70% |
+| Swing | Ang pinakamalaking agwat ng kasalukuyang reading at alinmang reading sa nakalipas na tatlong half-life, nababawasan ng kalahati kada dalawang half-life | `swingFullScale` | `swingWeight` (30%) |
 
-Ang reading na tumalon nang higit sa 0.15 at agad na bumalik sa loob ng 0.05 ng dating halaga ay itinamang play, at binabalewala ito.
+Ang halo na nasa `neutralBlend` ay 0 ang bayad, at +5 naman sa buong halo. Ang reading na tumalon nang higit sa 0.15 at agad na bumalik sa loob ng 0.05 ng dating halaga ay itinamang play, at binabalewala ito.
 
-| Halo | First half | Second half |
-|---|---|---|
-| Katumbas o higit sa `neutralBlend` (0.49) | Hanggang +5 | Hanggang +5 |
-| Mababa sa `neutralBlend` | 0 | Hanggang −5 |
+May sariling mga scale ang bawat sport sa `winProbabilityScales`, dahil mga tatlong beses na mas maraming play kada minuto ang naitatala ng basketball game kaysa sa football game, at bawat play ay nagdaragdag ng galaw:
 
-Humihina ang bonus habang umaakyat ang win probability ng nangunguna mula sa `openLead` (80%) hanggang `decidedLead` (97%), kaya walang makukuha ang isang blip sa laro na decided na. Kabaligtaran ang penalty: wala habang bukas pa ang laro, buong −5 kapag nasa 97% na ang tahimik na laro. Nagsisimula ito sa `penaltyFromProgress`, sa kalagitnaan ng regulation.
+| Sport | `movementFullScale` | `swingFullScale` | `neutralBlend` |
+|---|---|---|---|
+| Basketball | 1.77 | 0.27 | 0.52 |
+| Football | 0.77 | 0.23 | 0.54 |
+| Baseball | 0.67 | 0.29 | 0.46 |
+
+Ginagamit ng ibang sport ang sa basketball, mula sa `scorerTunables.scores.winProbabilityVariance.scales`.
+
+Humihina ang swing bonus habang umaakyat ang win probability ng nangunguna mula sa `openLead` (80%) hanggang `decidedLead` (97%), kaya walang makukuha ang isang blip sa laro na decided na.
+
+Kapag walang nagbabayad na bonus, 0 ang modifier sa first half. Mula sa `penaltyFromProgress` (kalagitnaan ng regulation), penalty ito na hanggang −5 at lumalaki habang mas decided at mas tahimik ang laro: wala habang bukas pa ang laro, buong −5 kapag nasa 97% na ang larong hindi gumalaw.
 
 Walang kabayaran ang lopsided na simula kapag nag-iba ang takbo ng laro. Ang laro na nasa 98% halos buong gabi at saka nag-swing sa coin flip ay nakakakuha ng bonus sa sandaling dumami ang mga swing, dahil ang kamakailang bahagi lang ang binibilang.
 
-Ang `neutralBlend` ang median na halo ng bawat live at hindi pa decided na sandali sa 417 tapos na laro, kaya ang karaniwang bahagi ng dikit na laro ay malapit sa 0. Ang mga full scale ay ang 90th percentile ng parehong mga sandali.
+Ang `neutralBlend` ng bawat sport ang median na halo ng mga live at hindi pa decided na sandali sa 565 tapos na laro (275 basketball, 193 football, 97 baseball), at ang mga full scale ay ang 90th percentile ng parehong mga sandali.
 
 ## Bawas sa commercial break
 

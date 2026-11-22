@@ -1,5 +1,5 @@
 ---
-sourceHash: 'e5d4af4d0a0e'
+sourceHash: '9597d1316266'
 title: PowerScore の TypeScript 型
 description: Game、ScoringContext、ScoreOptions、PowerScore、そしてモードと設定の型のすべてのフィールドについて、どれが省略可能か、省略可能なものが欠けているとどうなるかをまとめています。
 section: powerscore
@@ -421,7 +421,7 @@ type LateGameCurveConfig = BaseballLateGameCurveConfig;
 | `scores.momentum` | 勢いの2つの段階の値。[勢い](/arenaswap/docs/powerscore/signals/#momentum-lead-changes-and-comeback-factor)をご覧ください。 |
 | `scores.leadChanges` | リード交代の2つの段階の値。 |
 | `scores.comeback` | 追い上げの2つの段階の値と、その一律のフロア。 |
-| `scores.winProbabilityVariance` | `halfLife`、`movementFullScale`、`swingFullScale`、`swingWeight`、`neutralBlend`、`openLead`、`decidedLead`、`penaltyFromProgress`。[ブーストとペナルティ](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)に表があります。 |
+| `scores.winProbabilityVariance` | `halfLife`、`swingWeight`、`coinFlipZeroDistance`、`openLead`、`decidedLead`、`penaltyFromProgress`、デフォルトの `scales`。[ブーストとペナルティ](/arenaswap/docs/powerscore/boosts-and-penalties/#win-probability-swings)に表があります。 |
 | `reasons` | `fallback`（「best game available」）だけで、非推奨の平らな結果が戻る先の理由です。英語の文言は `renderReasonEnglish` にあります。 |
 
 ## FantasyRule と FantasySport
