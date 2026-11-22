@@ -1,6 +1,8 @@
-import { useRef } from 'react';
-import type { Game, TeamMonoMarks } from '@arenaswap/core/types';
+import { useRef, useState } from 'react';
+import type { Game, GameConference, TeamMonoMarks } from '@arenaswap/core/types';
+import { resolveConferenceCrest } from '@arenaswap/core/constants';
 import { readableInkOn, resolveTeamColorPair } from '@arenaswap/chromatic';
+import Crest from './crest';
 import TeamCrest from './teamCrest';
 import {
 	awayEndZoneX,
@@ -35,6 +37,39 @@ const firstDownWidth = 0.8;
 const scrimmageWidth = 0.7;
 const driveBarHeight = 2.2;
 const sidelineInset = 0.55;
+const conferenceCrestSize = { width: 7, height: 7 };
+const conferencePanelSize = { width: 8.5, height: 6 };
+const conferenceYardLines = [endZoneYards + 25, homeEndZoneX - 25] as const;
+
+const FieldConferenceCrest = ({ conference, x, y }: { conference: GameConference; x: number; y: number }) => {
+	const crest = resolveConferenceCrest(conference.crestSlug, 'dark');
+	const [failedSrcs, setFailedSrcs] = useState<string[]>([]);
+	const src = [crest.src, crest.fallbackSrc].find(candidate => candidate && !failedSrcs.includes(candidate));
+	if (!src) return null;
+	const onPanel = !crest.drawnForDark || src !== crest.src;
+	const { width, height } = onPanel ? conferencePanelSize : conferenceCrestSize;
+
+	return (
+		<foreignObject
+			className='ff-conference'
+			x={x - width / 2}
+			y={y - height / 2}
+			width={width}
+			height={height}
+		>
+			<span className={`ff-conference-shell${onPanel ? ' is-panel' : ''}`}>
+				<Crest
+					key={src}
+					logo={src}
+					abbreviation=''
+					className='ff-conference-art'
+					fallback='none'
+					onFailed={() => setFailedSrcs(failed => [...failed, src])}
+				/>
+			</span>
+		</foreignObject>
+	);
+};
 
 const footballFieldStrip = ({ game, monoMarks }: footballFieldStripProps) => {
 	const t = useT();
@@ -54,6 +89,7 @@ const footballFieldStrip = ({ game, monoMarks }: footballFieldStripProps) => {
 	] as const;
 
 	const hashRows = resolveHashRows(game.league);
+	const conference = game.conference;
 	const driveStart = diagram.driveStartX;
 	const driveLeft = driveStart === null ? 0 : Math.min(driveStart, diagram.ballX);
 	const driveWidth = driveStart === null ? 0 : Math.abs(driveStart - diagram.ballX);
@@ -106,6 +142,10 @@ const footballFieldStrip = ({ game, monoMarks }: footballFieldStripProps) => {
 						/>
 					</foreignObject>
 				)}
+
+				{conference && conferenceYardLines.map((x, index) => (
+					<FieldConferenceCrest key={x} conference={conference} x={x} y={hashRows[index]!} />
+				))}
 
 				{[endZoneYards, homeEndZoneX].map(x => (
 					<line key={x} className='ff-goal-line' x1={x} x2={x} y1={0} y2={stripHeight} />

@@ -795,8 +795,30 @@ $crest-plate-share: 75%;
 		rotate: 180deg;
 	}
 
-	.ff-logo {
-		opacity: 0.72;
+	.ff-logo,
+	.ff-conference {
+		opacity: 0.8;
+	}
+
+	.ff-conference-shell {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.ff-conference-shell.is-panel {
+		background: #ffffff;
+		border-radius: 0.6px;
+	}
+
+	.ff-conference-art {
+		--as-avatar-size: 100%;
+	}
+
+	.ff-conference-shell.is-panel .ff-conference-art {
+		--as-avatar-size: 86%;
 	}
 
 	.ff-logo-shell {

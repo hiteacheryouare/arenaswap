@@ -35,6 +35,18 @@ const result: PowerScoreResult = {
 
 const stripWidth = 289;
 
+const collegeGame: Game = {
+	...nflGame,
+	league: 'ncaaf',
+	conference: { id: '5', shortName: 'Big Ten', crestSlug: 'big_ten' },
+};
+
+const stubConferenceCrest = '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="8" height="8" fill="#888"/></svg>';
+
+const serveConferenceCrests = () => {
+	cy.intercept('GET', 'https://a.espncdn.com/i/teamlogos/ncaa_conf/**', { statusCode: 200, headers: { 'content-type': 'image/svg+xml' }, body: stubConferenceCrest });
+};
+
 const mountStrip = (game: Game, monoMarks?: { away?: TeamMonoMarks | null; home?: TeamMonoMarks | null }) => {
 	cy.viewport(popupWidth, 600);
 	cy.mount(
@@ -314,6 +326,66 @@ describe('football field', () => {
 		cy.get('.ff-endzone-home .crest').should('not.exist');
 		cy.get('.ff-endzone-home .ff-endzone-name').should('have.text', 'Eagles');
 		cy.get('.ff-endzone-away .crest').should('exist');
+	});
+
+	it('paints the conference crest on both 25s, high on one half and low on the other', () => {
+		serveConferenceCrests();
+		mountStrip(collegeGame);
+		cy.get('.ff-field').should($svg => {
+			const fieldRect = $svg[0].getBoundingClientRect();
+			const crests = [...$svg[0].querySelectorAll('.ff-conference')].map(crest => crest.getBoundingClientRect());
+			expect(crests).to.have.length(2);
+			expect(yardsFromLeftEdge(crests[0]!, fieldRect), 'away 25').to.be.closeTo(35, 0.3);
+			expect(yardsFromLeftEdge(crests[1]!, fieldRect), 'home 25').to.be.closeTo(85, 0.3);
+			const centreY = (rect: DOMRect) => rect.top + rect.height / 2 - fieldRect.top;
+			expect(centreY(crests[0]!), 'away crest above the ball\'s line').to.be.lessThan(fieldRect.height / 2);
+			expect(centreY(crests[0]!) + centreY(crests[1]!), 'mirrored about the middle').to.be.closeTo(fieldRect.height, 1);
+		});
+	});
+
+	it('keeps the conference crests under the ball and the two live lines', () => {
+		serveConferenceCrests();
+		mountStrip(collegeGame);
+		cy.get('.ff-field').should($svg => {
+			const marks = [...$svg[0].querySelectorAll('*')];
+			const crest = marks.indexOf($svg[0].querySelector('.ff-conference')!);
+			expect(crest, 'under the ball').to.be.lessThan(marks.indexOf($svg[0].querySelector('.ff-marker')!));
+			expect(crest, 'under the line to gain').to.be.lessThan(marks.indexOf($svg[0].querySelector('.ff-first-down')!));
+		});
+	});
+
+	it('leaves a conference crest drawn for dark ground bare on the turf', () => {
+		serveConferenceCrests();
+		mountStrip(collegeGame);
+		cy.get('.ff-conference-shell').should('have.length', 2).and('not.have.class', 'is-panel');
+		cy.get('.ff-conference .crest > img').should('have.attr', 'src').and('match', /ncaa_conf\/500-dark\/5\.png$/);
+	});
+
+	it('puts a crest drawn only for light ground on a white panel', () => {
+		serveConferenceCrests();
+		mountStrip({ ...collegeGame, conference: { id: '22', shortName: 'Ivy', crestSlug: 'ivy' } });
+		cy.get('.ff-conference-shell').should('have.length', 2).and('have.class', 'is-panel');
+		cy.get('.ff-conference .crest > img').should('have.attr', 'src').and('match', /ncaa_conf\/500\/22\.png$/);
+	});
+
+	it('moves to the light crest on a panel when the dark one will not load', () => {
+		serveConferenceCrests();
+		cy.intercept('GET', '**/ncaa_conf/500-dark/**', { statusCode: 404 });
+		mountStrip({ ...collegeGame, conference: { id: '1', shortName: 'ACC', crestSlug: 'acc' } });
+		cy.get('.ff-conference-shell').should('have.length', 2).and('have.class', 'is-panel');
+		cy.get('.ff-conference .crest > img').should('have.attr', 'src').and('match', /ncaa_conf\/500\/acc\.png$/);
+	});
+
+	it('paints the conference on its own title game', () => {
+		serveConferenceCrests();
+		mountStrip({ ...collegeGame, postseasonLabel: 'Big Ten Championship' });
+		cy.get('.ff-conference').should('have.length', 2);
+	});
+
+	it('paints no conference on a game that is not a conference game', () => {
+		mountStrip({ ...collegeGame, conference: undefined });
+		cy.get('.ff-field').should('exist');
+		cy.get('.ff-conference').should('not.exist');
 	});
 
 	it('draws nothing at all without a live football situation', () => {
