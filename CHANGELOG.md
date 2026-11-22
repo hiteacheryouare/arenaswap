@@ -9,6 +9,10 @@
 
 The term now pays the larger of a coin-flip bonus (+5 when the win probability has stayed on 50% lately, 0 at an average 17.5 points away) and the swing bonus, and each sport carries its own `winProbabilityScales`, because football logs a third as many plays a minute and never reached basketball's movement scale. NCAA Football and the UFL set `untimedOvertime`, so a college overtime no longer counts as ten minutes played (UCLA @ Michigan read 0 through three tied quarters and overtime; it now reads +4, then +5).
 
+## The About wall shows real games in real card colours — 2026-11-19
+
+The mosaic is now 69 games: the recorded Saturday slate from `apps/film/data/saturday.json` plus real fixture games and a few NBA, NFL, MLB and EPL matchups, with no team appearing twice. Each tile is drawn like a game card, using `buildGameCardSurface` for the surface and inks and the newly exported `onColorLogoFor` for dark-ground crests; only live games can be picked or score. The opening game also skips its fade, so the first frame is no longer hazed over by the glow behind it.
+
 ## Hero demos stop letting the glow show through — 2026-11-19
 
 The PowerScore replay card and the homepage browser demo enter with a new `.rise-reveal`, which is opaque after its first sixth and sharpens from blur. With the old opacity fade they were see-through while the airbrush glow rose behind them, so the glow seemed to sit on top and then drop behind. The 2.0 release post no longer shows its banner image now that the masthead has its own glow, though the image stays in the frontmatter as that post's link-preview card.

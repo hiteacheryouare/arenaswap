@@ -1,5 +1,9 @@
 ---
+import type { CSSProperties } from 'react';
+import type { Team } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
+import { buildGameCardSurface, teamsInOrder } from '@arenaswap/ui/src/components/gameCardShared';
+import { onColorLogoFor } from '@arenaswap/ui/src/components/onColorCrest';
 import CrestSettle from '../CrestSettle.astro';
 import { mosaicGames } from './mosaicGames';
 
@@ -11,20 +15,45 @@ const scoringPlays: Record<string, string> = {
 	soccer: '1',
 };
 
-const games = mosaicGames(150);
+const noDarkVariant = new Set([
+	'https://a.espncdn.com/i/teamlogos/soccer/500-dark/388.png',
+	'https://a.espncdn.com/i/teamlogos/wnba/500-dark/5.png',
+]);
+
+const crestOn = (team: Team, surface: string) => {
+	const variant = onColorLogoFor(team.logo, surface);
+	return variant && !noDarkVariant.has(variant) ? variant : team.logo;
+};
+
+const styleText = (style: CSSProperties) => Object.entries(style)
+	.map(([key, value]) => `${key.startsWith('--') ? key : key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}:${value}`)
+	.join(';');
+
+const tiles = mosaicGames.map(game => {
+	const surface = buildGameCardSurface(game);
+	const [left, right] = teamsInOrder(game);
+	return {
+		id: game.id,
+		live: game.status === 'in',
+		plays: scoringPlays[game.sportType],
+		style: styleText(surface.style),
+		sides: [
+			{ team: left, logo: crestOn(left, surface.leftColor), color: surface.leftColor },
+			{ team: right, logo: crestOn(right, surface.rightColor), color: surface.rightColor },
+		],
+	};
+});
 ---
 <div class='about-mosaic' aria-hidden='true' data-about-mosaic data-crest-settle>
-	{games.map(game => (
-		<div class='about-tile' data-plays={scoringPlays[game.sport]}>
-			<div class='about-tile-card' style={`--away:${game.away.color};--home:${game.home.color}`}>
-				<span class='about-tile-team'>
-					<Crest logo={game.away.logo} abbreviation={game.away.abbreviation} teamColor={game.away.color} loading='lazy' />
-					<b>{game.awayScore}</b>
-				</span>
-				<span class='about-tile-team'>
-					<Crest logo={game.home.logo} abbreviation={game.home.abbreviation} teamColor={game.home.color} loading='lazy' />
-					<b>{game.homeScore}</b>
-				</span>
+	{tiles.map(tile => (
+		<div class='about-tile' data-plays={tile.plays} data-live={tile.live ? '' : undefined}>
+			<div class='about-tile-card' style={tile.style}>
+				{tile.sides.map(side => (
+					<span class='about-tile-team'>
+						<Crest logo={side.logo} abbreviation={side.team.abbreviation.slice(0, 3)} teamColor={side.color} loading='lazy' />
+						<b>{side.team.score}</b>
+					</span>
+				))}
 			</div>
 		</div>
 	))}
@@ -83,6 +112,14 @@ const games = mosaicGames(150);
 			return { left, top, right: left + tile.offsetWidth, bottom: top + tile.offsetHeight, width: tile.offsetWidth, height: tile.offsetHeight };
 		};
 
+		const sizeTiles = () => {
+			const frame = hero.getBoundingClientRect();
+			const gap = parseFloat(getComputedStyle(mosaic).columnGap) || 14;
+			const smallest = window.innerWidth < 768 ? 80 : 100;
+			const side = Math.sqrt((frame.width * frame.height) / tiles.length) - gap;
+			mosaic.style.setProperty('--tile', `${Math.round(Math.min(260, Math.max(smallest, side)))}px`);
+		};
+
 		const fade = () => {
 			const copy = copyBox();
 			const frame = hero.getBoundingClientRect();
@@ -97,7 +134,7 @@ const games = mosaicGames(150);
 				const clear = Math.min(1, Math.hypot(across, down) / (reach * 0.6));
 				tile.style.setProperty('--fade', clear.toFixed(2));
 				const roomy = box.left - grow >= frame.left + 4 && box.right + grow <= frame.right - 4 && box.top >= topLimit && box.bottom <= bottomLimit;
-				tile.toggleAttribute('data-pickable', clear === 1 && roomy);
+				tile.toggleAttribute('data-pickable', clear === 1 && roomy && tile.hasAttribute('data-live'));
 			});
 		};
 
@@ -139,8 +176,10 @@ const games = mosaicGames(150);
 			mosaic.style.transformOrigin = `${centreX - frame.left}px ${centreY - frame.top}px`;
 			mosaic.animate(frames, { duration: pullBackMs, delay: holdMs, easing: 'cubic-bezier(0.6, 0, 0.25, 1)', fill: 'backwards' });
 
+			start.classList.add('is-opening');
 			mosaic.classList.add('is-dealt', 'is-zooming');
 			crown(start, holdMs * 0.45);
+			window.setTimeout(() => start.classList.remove('is-opening'), holdMs);
 			window.setTimeout(() => mosaic.classList.remove('is-zooming'), holdMs + pullBackMs * 0.7);
 		};
 
@@ -153,8 +192,12 @@ const games = mosaicGames(150);
 			}, Math.max(delay, introEndsAt - performance.now() + pickEveryMs * 0.6));
 		};
 
+		sizeTiles();
 		fade();
-		new ResizeObserver(fade).observe(hero);
+		new ResizeObserver(() => {
+			sizeTiles();
+			fade();
+		}).observe(hero);
 		document.fonts.ready.then(fade);
 
 		if (!intro) hero.style.setProperty('--intro', '0ms');

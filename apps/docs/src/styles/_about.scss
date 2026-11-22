@@ -148,16 +148,13 @@
 	}
 
 	.about-tile-card {
-		--tint: 26%;
 		display: grid;
-		align-content: center;
-		gap: 0.5rem;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		align-items: center;
 		height: 100%;
-		padding: 0.75rem 0.85rem;
+		padding: 0.6rem 0.4rem;
 		border-radius: 1.1rem;
-		background: linear-gradient(155deg,
-			color-mix(in srgb, var(--away) var(--tint), var(--as-bg-2)) 25%,
-			color-mix(in srgb, var(--home) var(--tint), var(--as-bg-2)) 75%);
+		background-color: var(--as-bg-2);
 		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--as-fg-body) 7%, transparent);
 		opacity: calc(0.45 * var(--fade, 0));
 		transition: opacity m.$motion-deliberate m.$motion-ease, box-shadow m.$motion-slow m.$motion-ease;
@@ -171,8 +168,12 @@
 			animation-delay: var(--deal, 0ms);
 		}
 
+		.about-tile.is-opening > & {
+			animation: none;
+			transition: none;
+		}
+
 		.is-picked > & {
-			--tint: 55%;
 			opacity: 1;
 			box-shadow:
 				inset 0 0 0 1px color-mix(in srgb, #fff 18%, transparent),
@@ -183,21 +184,31 @@
 
 	.about-tile-team {
 		display: flex;
+		flex-direction: column;
 		align-items: center;
-		justify-content: space-between;
-		gap: 0.5rem;
+		gap: 0.45rem;
+		--side-ink: var(--matchup-ink-left);
+		--side-shadow: var(--matchup-shadow-left);
+
+		& + & {
+			--side-ink: var(--matchup-ink-right);
+			--side-shadow: var(--matchup-shadow-right);
+		}
 
 		.crest {
-			--as-avatar-size: 1.6rem;
+			--as-avatar-size: calc(var(--tile) * 0.3);
+			--as-avatar-bg: transparent;
 		}
 
 		b {
 			display: inline-block;
 			font-family: 'Geist', var(--font-sans);
-			font-size: 1.05rem;
+			font-size: calc(var(--tile) * 0.17);
 			font-weight: 700;
+			line-height: 1;
 			font-variant-numeric: tabular-nums;
-			color: var(--as-fg-body);
+			color: var(--side-ink);
+			text-shadow: var(--side-shadow);
 		}
 
 		.is-scored {

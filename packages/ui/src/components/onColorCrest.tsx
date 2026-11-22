@@ -37,11 +37,15 @@ export const silhouetteFor = (surface: string): crestSilhouette => {
 // Sports puts there for every club: the Red Sox's red B and the Yankees' white NY. The published
 // crest stays on a plain plate and on a side painted near-white, and is the fallback for a crest
 // the CDN has no dark variant of.
-const OnColorCrest = ({ team, surface, className, fallback, loading, onFailed, silhouetteWhenLost }: onColorCrestProps) => {
+export const onColorLogoFor = (logo: string | undefined, surface: string | undefined): string | undefined => {
 	const onDarkGround = surface !== undefined && (hexToLab(surface)?.lightness ?? 0) <= lightGroundLightness;
 	// A logo off any other host comes back from `teamLogoOnColor` unchanged, and is not a variant.
-	const darkVariant = onDarkGround ? teamLogoOnColor(team.logo) : undefined;
-	const onColorLogo = darkVariant !== team.logo ? darkVariant : undefined;
+	const darkVariant = onDarkGround ? teamLogoOnColor(logo) : undefined;
+	return darkVariant !== logo ? darkVariant : undefined;
+};
+
+const OnColorCrest = ({ team, surface, className, fallback, loading, onFailed, silhouetteWhenLost }: onColorCrestProps) => {
+	const onColorLogo = onColorLogoFor(team.logo, surface);
 	const [, setFailedLogo] = useState<string>();
 	const logo = onColorLogo && !missingDarkVariants.has(onColorLogo) ? onColorLogo : team.logo;
 
