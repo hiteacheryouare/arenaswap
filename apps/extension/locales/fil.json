@@ -1008,7 +1008,7 @@
 	"boostDetail": {
 		"joiner": " ",
 		"favoriteOne": "Paborito mo ang {team}.",
-		"favoriteBoth": "Parehong paborito mo ang {team} at {other}. Walang maling sagot ngayong gabi.",
+		"favoriteBoth": "Parehong paborito mo ang {team} at {other}.",
 		"gameBoostSet": "Ikaw mismo ang nagdagdag nito gamit ang control sa ibaba.",
 		"seriesClinch": "Isang panalo na lang, kukunin na ng {team} ang series.",
 		"seriesDecider": "Game {game}. Ang mananalo ang kukuha ng series.",

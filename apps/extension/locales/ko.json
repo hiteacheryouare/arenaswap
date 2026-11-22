@@ -1008,7 +1008,7 @@
 	"boostDetail": {
 		"joiner": " ",
 		"favoriteOne": "{team}, 응원팀이에요.",
-		"favoriteBoth": "{team}, {other} 둘 다 응원팀으로 등록했네요. 오늘 밤은 뭘 봐도 정답이에요.",
+		"favoriteBoth": "{team}, {other} 둘 다 응원팀으로 등록했네요.",
 		"gameBoostSet": "아래 컨트롤로 직접 더한 점수예요.",
 		"seriesClinch": "이기면 {team} 팀이 시리즈를 가져가요.",
 		"seriesDecider": "{game}차전이에요. 이기는 팀이 시리즈를 가져가요.",

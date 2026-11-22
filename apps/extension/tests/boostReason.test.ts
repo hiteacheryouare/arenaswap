@@ -49,7 +49,7 @@ describe('a boost reason in a live playoff game', () => {
 		expect(reasonFor('postseasonBoost')).toBe('A quarterfinal, worth half the full boost.');
 		expect(reasonFor('gameBoost')).toBe('You added these yourself with the control below.');
 		expect(reasonFor('favoriteBoost', ['CLE'])).toBe('CLE is one of your favorites.');
-		expect(reasonFor('favoriteBoost', ['CLE', 'CHW'])).toBe('You\'ve favorited both CLE and CHW. No wrong answers tonight.');
+		expect(reasonFor('favoriteBoost', ['CLE', 'CHW'])).toBe('You\'ve favorited both CLE and CHW.');
 	});
 });
 

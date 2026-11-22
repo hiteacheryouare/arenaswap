@@ -1008,7 +1008,7 @@
 	"boostDetail": {
 		"joiner": " ",
 		"favoriteOne": "{team} ist einer deiner Favoriten.",
-		"favoriteBoth": "Du hast {team} und {other} als Favoriten gespeichert. Heute Abend kann nichts schiefgehen.",
+		"favoriteBoth": "Du hast {team} und {other} als Favoriten gespeichert.",
 		"gameBoostSet": "Die hast du selbst mit dem Regler unten vergeben.",
 		"seriesClinch": "Mit einem Sieg holt sich {team} die Serie.",
 		"seriesDecider": "Spiel {game}. Der Sieger holt sich die Serie.",

@@ -1008,7 +1008,7 @@
 	"boostDetail": {
 		"joiner": "",
 		"favoriteOne": "{team} 是您收藏的球队之一。",
-		"favoriteBoth": "您同时收藏了 {team} 和 {other}。今晚怎么看都不亏。",
+		"favoriteBoth": "您同时收藏了 {team} 和 {other}。",
 		"gameBoostSet": "这些分数是您用下方控件自己加的。",
 		"seriesClinch": "赢下这场，{team} 就拿下系列赛。",
 		"seriesDecider": "第 {game} 场。赢家拿下系列赛。",

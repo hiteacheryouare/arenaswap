@@ -9,6 +9,10 @@
 
 The term now pays the larger of a coin-flip bonus (+5 when the win probability has stayed on 50% lately, 0 at an average 17.5 points away) and the swing bonus, and each sport carries its own `winProbabilityScales`, because football logs a third as many plays a minute and never reached basketball's movement scale. NCAA Football and the UFL set `untimedOvertime`, so a college overtime no longer counts as ten minutes played (UCLA @ Michigan read 0 through three tied quarters and overtime; it now reads +4, then +5).
 
+## The favorite-teams Boost stops saying "tonight" — 2026-11-21
+
+The Boost detail for a game between two of your favorite teams now just says you favorited both, in all 12 locales. Its "No wrong answers tonight" ending showed up for afternoon and morning games too.
+
 ## Conference games paint the conference on the field — 2026-11-21
 
 The detail screen's football field now paints the conference crest on both 25-yard lines for any game carrying `game.conference`, high on the away half and low on the home half like a real college field, and it stays on conference title games even though the card hides its mark there. Crests with no dark-ground art (or whose dark art fails to load) sit on a small white panel; the crests and the midfield logo now both paint at 80%.

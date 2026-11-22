@@ -1008,7 +1008,7 @@
 	"boostDetail": {
 		"joiner": " ",
 		"favoriteOne": "{team} is one of your favorites.",
-		"favoriteBoth": "You've favorited both {team} and {other}. No wrong answers tonight.",
+		"favoriteBoth": "You've favorited both {team} and {other}.",
 		"gameBoostSet": "You added these yourself with the control below.",
 		"seriesClinch": "A win and {team} takes the series.",
 		"seriesDecider": "Game {game}. Winner takes the series.",

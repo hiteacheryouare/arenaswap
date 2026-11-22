@@ -1008,7 +1008,7 @@
 	"boostDetail": {
 		"joiner": " ",
 		"favoriteOne": "{team} é uma das tuas favoritas.",
-		"favoriteBoth": "Marcaste {team} e {other} como favoritas. Esta noite não há resposta errada.",
+		"favoriteBoth": "Marcaste {team} e {other} como favoritas.",
 		"gameBoostSet": "Adicionaste estes pontos tu mesmo com o controlo abaixo.",
 		"seriesClinch": "Com uma vitória, {team} fica com a série.",
 		"seriesDecider": "Jogo {game}. Quem ganhar fica com a série.",

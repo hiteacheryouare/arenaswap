@@ -1008,7 +1008,7 @@
 	"boostDetail": {
 		"joiner": "",
 		"favoriteOne": "{team}はお気に入りのチームです。",
-		"favoriteBoth": "{team}も{other}もお気に入り。今夜はどっちを見ても正解です。",
+		"favoriteBoth": "{team}も{other}もお気に入り。",
 		"gameBoostSet": "下のコントロールで自分で追加したポイントです。",
 		"seriesClinch": "勝てば{team}がシリーズを制します。",
 		"seriesDecider": "第{game}戦。勝った方がシリーズを制します。",
