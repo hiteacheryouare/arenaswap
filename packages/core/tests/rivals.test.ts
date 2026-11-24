@@ -1,6 +1,8 @@
-import { chooseSwitchTarget, scoreLiveGame, scoreOptionsFor, toLiveScore } from '../src/scoring';
+import { scoreLiveGame, scoreOptionsFor, toLiveScore } from '../src/scoring';
+import { chooseSwitchTarget } from '../src/switchPolicy';
 import { createDefaultUserPreferences, normalizeUserPreferences } from '../src/constants';
-import type { ScoringPrefs, SwitchCandidateTab } from '../src/scoring';
+import type { ScoringPrefs } from '../src/scoring';
+import type { SwitchCandidateTab } from '../src/switchPolicy';
 import type { Game, Team } from '../src/types';
 
 const team = (id: string, abbreviation: string, name: string, score: number): Team => ({ id, name, abbreviation, score });

@@ -1,20 +1,23 @@
 import {
-	chooseSwitchTarget,
 	getFavoriteTeamCount,
-	getHistoryWindowMsForGame,
-	maxSnapshotsPerGame,
 	nextClockStall,
-	recentSnapshots,
-	retainSnapshots,
 	scoreLiveGame,
 	toLegacyPowerScoreResult,
-	toScoreSnapshot,
 	toScoringGame,
 } from '../src/scoring';
+import {
+	getHistoryWindowMsForGame,
+	maxSnapshotsPerGame,
+	recentSnapshots,
+	retainSnapshots,
+	toScoreSnapshot,
+} from '../src/snapshotHistory';
+import { chooseSwitchTarget } from '../src/switchPolicy';
 import { sensitivityThresholds } from '../src/constants';
 import { normalizeScores } from '../src/typeGuards';
 import { nextCommercialBreak, type CommercialBreakEntry } from '../src/commercialBreaks';
-import type { ScoringPrefs, SwitchCandidateTab } from '../src/scoring';
+import type { ScoringPrefs } from '../src/scoring';
+import type { SwitchCandidateTab } from '../src/switchPolicy';
 import type { Game, PowerScoreResult, ScoreSnapshot, Team } from '../src/types';
 
 const team = (id: string, abbreviation: string, name: string, score: number, extra: Partial<Team> = {}): Team => ({
