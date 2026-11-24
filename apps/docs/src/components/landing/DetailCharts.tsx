@@ -17,10 +17,10 @@ import { buildGameCardSurface } from '@arenaswap/ui/src/components/gameCardShare
 import { resolveStatus } from '@arenaswap/ui/src/components/gameSituation';
 import { useT } from '@arenaswap/ui/src/components/i18nContext';
 import { TranslationContext, islandTranslator } from '../../i18n/islandStrings';
+import { espnTeamLogo } from '../teamLogo';
 
 echarts.use([LineChart, BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
 
-const espnTeamLogo = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
 const minute = 60_000;
 const start = 1_767_225_600_000;
 

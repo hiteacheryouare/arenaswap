@@ -4,23 +4,22 @@ import Crest from '@arenaswap/ui/src/components/crest';
 import CrestSettle from '../CrestSettle.astro';
 import { localePath } from '../../i18n/locales';
 import { currentLocale, useTranslations } from '../../i18n/ui';
+import { espnTeamLogo } from '../teamLogo';
 
 const locale = currentLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 
-const espnTeam = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
-
 const teams = [
-	{ name: 'Philadelphia Eagles', abbr: 'PHI', logo: espnTeam('nfl/500/phi'), color: '#004C54' },
-	{ name: 'Philadelphia Phillies', abbr: 'PHI', logo: espnTeam('mlb/500/phi'), color: '#E81828' },
-	{ name: 'Philadelphia Flyers', abbr: 'PHI', logo: espnTeam('nhl/500/phi'), color: '#F74902' },
-	{ name: 'Philadelphia 76ers', abbr: 'PHI', logo: espnTeam('nba/500/phi'), color: '#006BB6' },
-	{ name: 'Boston Celtics', abbr: 'BOS', logo: espnTeam('nba/500/bos'), color: '#007A33' },
-	{ name: 'Boston Red Sox', abbr: 'BOS', logo: espnTeam('mlb/500/bos'), color: '#BD3039' },
-	{ name: 'Kansas City Chiefs', abbr: 'KC', logo: espnTeam('nfl/500/kc'), color: '#E31837' },
-	{ name: 'Los Angeles Lakers', abbr: 'LAL', logo: espnTeam('nba/500/lal'), color: '#552583' },
-	{ name: 'Arsenal', abbr: 'ARS', logo: espnTeam('soccer/500/359'), color: '#EF0107' },
-	{ name: 'Manchester City', abbr: 'MCI', logo: espnTeam('soccer/500/382'), color: '#6CABDD' },
+	{ name: 'Philadelphia Eagles', abbr: 'PHI', logo: espnTeamLogo('nfl/500/phi'), color: '#004C54' },
+	{ name: 'Philadelphia Phillies', abbr: 'PHI', logo: espnTeamLogo('mlb/500/phi'), color: '#E81828' },
+	{ name: 'Philadelphia Flyers', abbr: 'PHI', logo: espnTeamLogo('nhl/500/phi'), color: '#F74902' },
+	{ name: 'Philadelphia 76ers', abbr: 'PHI', logo: espnTeamLogo('nba/500/phi'), color: '#006BB6' },
+	{ name: 'Boston Celtics', abbr: 'BOS', logo: espnTeamLogo('nba/500/bos'), color: '#007A33' },
+	{ name: 'Boston Red Sox', abbr: 'BOS', logo: espnTeamLogo('mlb/500/bos'), color: '#BD3039' },
+	{ name: 'Kansas City Chiefs', abbr: 'KC', logo: espnTeamLogo('nfl/500/kc'), color: '#E31837' },
+	{ name: 'Los Angeles Lakers', abbr: 'LAL', logo: espnTeamLogo('nba/500/lal'), color: '#552583' },
+	{ name: 'Arsenal', abbr: 'ARS', logo: espnTeamLogo('soccer/500/359'), color: '#EF0107' },
+	{ name: 'Manchester City', abbr: 'MCI', logo: espnTeamLogo('soccer/500/382'), color: '#6CABDD' },
 ];
 ---
 <a class='team-strip' href={`${localePath(locale)}#leagues`}>

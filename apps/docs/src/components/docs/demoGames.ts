@@ -1,7 +1,6 @@
 import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { Game, LeagueId, PowerScoreResult } from '@arenaswap/core/types';
-
-const espnTeamLogo = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
+import { espnTeamLogo } from '../teamLogo';
 
 export interface DemoEntry {
 	game: Game;

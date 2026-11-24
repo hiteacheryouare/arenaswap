@@ -1,3 +1,5 @@
+import { espnTeamLogo } from '../teamLogo';
+
 export interface MultiviewSide {
 	abbreviation: string;
 	logo: string;
@@ -9,8 +11,6 @@ export interface MultiviewGame {
 	left: MultiviewSide;
 	right: MultiviewSide;
 }
-
-const espnTeamLogo = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
 
 export const multiviewGames: MultiviewGame[] = [
 	{
