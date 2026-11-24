@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The popup's component families get their own folders — 2026-11-24
+
+The walkthrough steps, holiday decorations, card reveal pieces, fantasy pages and onboarding screens moved into `components/walkthrough/`, `holiday/`, `reveal/`, `fantasy/` and `onboarding/`, with every importer and Cypress spec repointed and no Cypress stub key affected. The `ludicrous*` family stays flat for now because it has work in progress elsewhere.
+
 ## The docs site shares its logo, string and theme helpers — 2026-11-24
 
 Seven copies of the team-logo URL builder become one `components/teamLogo.ts`, `ui.ts` and the demo strings share one lookup and flatten in `i18n/bundle.ts`, the theme module reuses core's theme types, and LivePowerScores' scoreboard client moves to `lib/liveScoreboard.ts`. A new extension test fails if `packages/ui`'s English fallback strings drift from `en.json`.
