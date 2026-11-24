@@ -44,10 +44,11 @@ import {
 } from '@arenaswap/ui/src/components/gameDetailChartOptions';
 import { resolveChartLineColors, resolveTeamColorPair } from '@arenaswap/chromatic';
 import { formatCalendarDay, matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared';
-import { isModeSignalId, signalColorOf, signalPresentation } from '@arenaswap/ui/src/components/scoringModeMeta';
+import { signalColorOf } from '@arenaswap/ui/src/components/scoringModeMeta';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import useSwitchCrest from '@arenaswap/ui/src/components/useSwitchCrest';
 import useBasketballPossession from './useBasketballPossession';
+import { signalLabel } from './factorLabels';
 import useBasketballSituation from './useBasketballSituation';
 import useSummaryData from './useSummaryData';
 import { chartHistory, coversWholeGame } from './wrapCoverage';
@@ -89,7 +90,6 @@ const noRoster: readonly FantasyRosterEntry[] = [];
 
 const favoriteFlashMs = 5000;
 
-const signalLabel = (id: string): string => (isModeSignalId(id) ? i18n.t(signalPresentation[id].labelKey) : id);
 const describeLead = (team: string | undefined, margin: number): string => (
 	team === undefined || margin === 0 ? i18n.t('detail.leadTied') : i18n.t('detail.leadBy', { team, margin })
 );

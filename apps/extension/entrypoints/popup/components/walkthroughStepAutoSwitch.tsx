@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import Crest from '@arenaswap/ui/src/components/crest';
-import { teamLogoOnColor } from '@arenaswap/core/constants';
 import { matchupSurfaceStyle, powerScoreColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { i18n } from '#i18n';
 import FlowStepper from './flowStepper';
+import WalkthroughTeamLogo from './walkthroughTeamLogo';
 import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepAutoSwitchProps {
@@ -22,21 +21,6 @@ const LOGO_EAGLES  = 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png';
 const LOGO_GIANTS  = 'https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png';
 const LOGO_CHIEFS = 'https://a.espncdn.com/i/teamlogos/nfl/500/kc.png';
 const LOGO_BILLS  = 'https://a.espncdn.com/i/teamlogos/nfl/500/buf.png';
-
-interface TeamLogoProps {
-	abbr: string;
-	color: string;
-	logoUrl: string;
-}
-
-const TeamLogo = ({ abbr, color, logoUrl }: TeamLogoProps) => (
-	<Crest
-		logo={teamLogoOnColor(logoUrl)}
-		abbreviation={abbr}
-		className='team-crest-32'
-		teamColor={color}
-	/>
-);
 
 interface mockCardProps {
 	abbr1: string; color1: string; logo1: string;
@@ -70,7 +54,7 @@ const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, 
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
 				<div className='d-flex flex-column align-items-center gap-1 team-column is-away'>
-					<TeamLogo abbr={abbr1} color={color1} logoUrl={logo1} />
+					<WalkthroughTeamLogo className='team-crest-32' abbr={abbr1} color={color1} logoUrl={logo1} />
 					<span className='fw-bold text-center text-nowrap team-abbreviation'>{abbr1}</span>
 				</div>
 				<div className='d-flex flex-column align-items-center game-card-center'>
@@ -83,7 +67,7 @@ const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, 
 					<span className='game-period'>{period}</span>
 				</div>
 				<div className='d-flex flex-column align-items-center gap-1 team-column is-home'>
-					<TeamLogo abbr={abbr2} color={color2} logoUrl={logo2} />
+					<WalkthroughTeamLogo className='team-crest-32' abbr={abbr2} color={color2} logoUrl={logo2} />
 					<span className='fw-bold text-center text-nowrap team-abbreviation'>{abbr2}</span>
 				</div>
 			</div>

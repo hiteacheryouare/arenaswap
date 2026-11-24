@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
-import Crest from '@arenaswap/ui/src/components/crest';
-import { teamLogoOnColor } from '@arenaswap/core/constants';
 import { matchupSurfaceStyle, powerScoreColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { signalColors } from '@arenaswap/ui/src/components/signalColors';
 import FlowStepper from './flowStepper';
+import WalkthroughTeamLogo from './walkthroughTeamLogo';
 import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepGameDetailProps {
@@ -20,15 +19,6 @@ const eaglesColor = '#004C54';
 const giantsColor = '#0B2265';
 const LOGO_EAGLES = 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png';
 const LOGO_GIANTS = 'https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png';
-
-const TeamLogo = ({ abbr, color, logoUrl }: { abbr: string; color: string; logoUrl: string }) => (
-	<Crest
-		logo={teamLogoOnColor(logoUrl)}
-		abbreviation={abbr}
-		className='team-crest-28'
-		teamColor={color}
-	/>
-);
 
 const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetailProps) => {
 	const [tapped, setTapped] = useState(false);
@@ -62,7 +52,7 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 
 					<div className='d-flex align-items-center justify-content-center game-card-matchup'>
 						<div className='d-flex flex-column align-items-center gap-1 team-column is-away'>
-							<TeamLogo abbr='PHI' color={eaglesColor} logoUrl={LOGO_EAGLES} />
+							<WalkthroughTeamLogo className='team-crest-28' abbr='PHI' color={eaglesColor} logoUrl={LOGO_EAGLES} />
 							<span className='fw-bold text-center text-nowrap team-abbreviation'>PHI</span>
 						</div>
 						<div className='d-flex flex-column align-items-center game-card-center'>
@@ -75,7 +65,7 @@ const walkthroughStepGameDetail = ({ onNext, onBack }: walkthroughStepGameDetail
 							<span className='game-period'>{i18n.t('gameCard.periodQuarter', { count: '4' })}</span>
 						</div>
 						<div className='d-flex flex-column align-items-center gap-1 team-column is-home'>
-							<TeamLogo abbr='NYG' color={giantsColor} logoUrl={LOGO_GIANTS} />
+							<WalkthroughTeamLogo className='team-crest-28' abbr='NYG' color={giantsColor} logoUrl={LOGO_GIANTS} />
 							<span className='fw-bold text-center text-nowrap team-abbreviation'>NYG</span>
 						</div>
 					</div>

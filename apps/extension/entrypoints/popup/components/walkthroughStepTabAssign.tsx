@@ -1,9 +1,8 @@
-import Crest from '@arenaswap/ui/src/components/crest';
-import { teamLogoOnColor } from '@arenaswap/core/constants';
 import { matchupSurfaceStyle, powerScoreColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { i18n } from '#i18n';
 import SelectDropdown from './selectDropdown';
 import FlowStepper from './flowStepper';
+import WalkthroughTeamLogo from './walkthroughTeamLogo';
 import focusStepTitle from './stepTitleFocus';
 
 interface walkthroughStepTabAssignProps {
@@ -21,21 +20,6 @@ const giantsColor = '#0B2265';
 
 const LOGO_EAGLES = 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png';
 const LOGO_GIANTS = 'https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png';
-
-interface TeamLogoProps {
-	abbr: string;
-	color: string;
-	logoUrl: string;
-}
-
-const TeamLogo = ({ abbr, color, logoUrl }: TeamLogoProps) => (
-	<Crest
-		logo={teamLogoOnColor(logoUrl)}
-		abbreviation={abbr}
-		className='team-crest-32'
-		teamColor={color}
-	/>
-);
 
 const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignProps) => (
 	<div className='popup-container d-flex flex-column'>
@@ -59,7 +43,7 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 
 			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
 				<div className='d-flex flex-column align-items-center gap-1 team-column is-away'>
-					<TeamLogo abbr='PHI' color={eaglesColor} logoUrl={LOGO_EAGLES} />
+					<WalkthroughTeamLogo className='team-crest-32' abbr='PHI' color={eaglesColor} logoUrl={LOGO_EAGLES} />
 					<span className='fw-bold text-center text-nowrap team-abbreviation'>PHI</span>
 				</div>
 
@@ -74,7 +58,7 @@ const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignPr
 				</div>
 
 				<div className='d-flex flex-column align-items-center gap-1 team-column is-home'>
-					<TeamLogo abbr='NYG' color={giantsColor} logoUrl={LOGO_GIANTS} />
+					<WalkthroughTeamLogo className='team-crest-32' abbr='NYG' color={giantsColor} logoUrl={LOGO_GIANTS} />
 					<span className='fw-bold text-center text-nowrap team-abbreviation'>NYG</span>
 				</div>
 			</div>

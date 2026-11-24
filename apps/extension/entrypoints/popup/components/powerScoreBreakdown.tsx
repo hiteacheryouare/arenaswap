@@ -22,6 +22,7 @@ import {
 	unknownFactorColor,
 } from '@arenaswap/ui/src/components/scoringModeMeta';
 import SettingTooltipIcon from './settingTooltipIcon';
+import { boostLabel, signalLabel } from './factorLabels';
 import BreakdownSection from './breakdownSection';
 import { boostReason } from '../../../utils/boostReason';
 import { sportTypeLabels } from '../popupHelpers';
@@ -78,8 +79,6 @@ const isActive = (boost: boostRow): boolean => boost.points > 0;
 const isSportBoost = (id: string): boolean => isBoostId(id) && boostSports[id] !== undefined;
 const paysInSport = (id: string, sportType: SportType): boolean => isBoostId(id) && (boostSports[id]?.includes(sportType) ?? false);
 
-const signalLabel = (id: string): string => (isModeSignalId(id) ? i18n.t(signalPresentation[id].labelKey) : id);
-const boostLabel = (id: string): string => (isBoostId(id) ? i18n.t(boostPresentation[id].labelKey) : id);
 
 const FactorIcon = ({ icon, color }: { icon: string; color: string }) => (
 	<i
