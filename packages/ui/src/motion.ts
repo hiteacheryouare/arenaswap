@@ -21,4 +21,8 @@ export const chartEasing = 'quinticOut';
 
 export const motionEase = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
+export const prefersReducedMotion = (): boolean => (
+	typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches
+);
+
 export default motionDuration;

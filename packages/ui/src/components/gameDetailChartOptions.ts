@@ -4,7 +4,7 @@ import type { Game, PowerScoreSnapshot, ResolvedTheme, ScoreSnapshot, SignalName
 import { resolveChartLineColors } from '@arenaswap/chromatic';
 import { defaultTranslate } from './defaultStrings';
 import { isModeSignalId, modeSignalIds, signalColorOf, signalPresentation } from './scoringModeMeta';
-import { chartEasing, motionDuration } from '../motion';
+import { chartEasing, motionDuration, prefersReducedMotion } from '../motion';
 
 const htmlEscapes: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 const escapeHtml = (text: string) => text.replace(/[&<>"']/g, character => htmlEscapes[character]!);
@@ -41,10 +41,6 @@ export const lightChartPalette: chartPalette = {
 
 const formatTimeLabel = (timestamp: number, locale?: string): string => (
 	new Date(timestamp).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })
-);
-
-const prefersReducedMotion = (): boolean => (
-	typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches
 );
 
 // ECharts animates every later setOption too, at its own 300ms cubicInOut unless told otherwise,

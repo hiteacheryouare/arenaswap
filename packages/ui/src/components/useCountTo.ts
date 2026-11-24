@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { motionDuration } from '../motion';
+import { motionDuration, prefersReducedMotion } from '../motion';
 
 const easeOut = (progress: number) => 1 - (1 - progress) ** 5;
-
-const prefersReducedMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const useCountTo = (target: number, duration: number = motionDuration.slow): number => {
 	const [shown, setShown] = useState(target);

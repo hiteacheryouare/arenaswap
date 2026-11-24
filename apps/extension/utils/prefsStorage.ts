@@ -4,7 +4,7 @@ import type { UserPreferences } from '@arenaswap/core/types';
 
 export const prefsStorageUpdatedAtKey = 'prefsUpdatedAt';
 
-const normalizeTimestamp = (value: unknown): number => (
+export const normalizeTimestamp = (value: unknown): number => (
 	typeof value === 'number' && Number.isFinite(value) ? value : 0
 );
 

@@ -1,5 +1,7 @@
 import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { Game, TabRegistration, Team } from '@arenaswap/core/types';
+import { isSameLocalDay } from './localDay';
+import { foldForSearch } from './searchText';
 
 export interface SuggestionTab {
 	id: number;
@@ -56,7 +58,7 @@ const blockedSchemes = [
 const maxDismissedSuggestions = 500;
 
 const tokenize = (value: string): string[] =>
-	value.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+	foldForSearch(value).split(/[^a-z0-9]+/).filter(Boolean);
 
 const decodeUrl = (url: string): string => {
 	try {
@@ -237,12 +239,6 @@ export const isSuggestableUrl = (url: string): boolean => {
 	if (!url) return false;
 	const lowered = url.toLowerCase();
 	return !blockedSchemes.some(scheme => lowered.startsWith(scheme));
-};
-
-const isSameLocalDay = (ms: number, other: number): boolean => {
-	const a = new Date(ms);
-	const b = new Date(other);
-	return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 };
 
 const isSuggestableGame = (game: Game, now: number): boolean => {
