@@ -20,7 +20,7 @@ import {
 } from '../../utils/settingsBackup';
 import { fullLogoSrc, useTheme } from '../../utils/theme';
 import SelectDropdown from '../popup/components/selectDropdown';
-import { isLeagueLogoCacheFresh, leagueLogoCacheKey, seededLeagueLogos } from '../popup/leagueLogoCache';
+import { isLeagueLogoCacheFresh, leagueLogoCacheKey, seededLeagueLogos } from '../../utils/leagueLogoCache';
 import SetupCard from './setupCard';
 
 type importProblem = settingsFileProblem | 'saveFailed';

@@ -3,7 +3,7 @@ import {
 	isLeagueLogoCacheFresh,
 	leagueLogoCacheTtlMs,
 	seededLeagueLogos,
-} from '../entrypoints/popup/leagueLogoCache';
+} from '../utils/leagueLogoCache';
 
 describe('what the league pickers can draw without asking ESPN', () => {
 	it('has a URL for every league the product ships', () => {

@@ -2,7 +2,7 @@ import { normalizeUserPreferences } from '@arenaswap/core/constants';
 import { fantasyRosterStorageKey, isPlainRecord, logWarn, normalizeFantasyRoster } from '@arenaswap/core';
 import type { FantasyRosterEntry } from '@arenaswap/core';
 import type { ExtensionMessage, UserPreferences } from '@arenaswap/core/types';
-import { writeOpenRevealEnabled } from '../entrypoints/popup/cardReveal';
+import { writeOpenRevealEnabled } from './openReveal';
 import { fantasyRosterUpdatedAtKey, loadFantasyRoster, rosterPayload } from './fantasyRosterStorage';
 import { loadStoredUserPreferences, normalizeTimestamp, prefsPayload, prefsStorageUpdatedAtKey } from './prefsStorage';
 import { themeStorageKey } from './theme';
