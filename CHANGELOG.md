@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Logic the guide and the worker share moves out of the popup folder — 2026-11-24
+
+The open-reveal flag, the league logo cache, and `popupHelpers.ts`'s sorting, grouping, league-order and loading-line helpers now live in `utils/`, so the guide, the backup page and `profiles.ts` stop importing popup internals; `popupHelpers.ts` keeps only the popup's own view type, sport labels and tab label. Saving prefs and telling the worker is one `saveUserPrefs` helper, the three weekly caches share one freshness rule, and the device-only flags read from one `deviceFlagDefaults` object.
+
 ## The domain packages split their god files along their seams — 2026-11-24
 
 Sideline's 1,228-line `apiClient.ts` is now a request pool, day windows, event parsing and team logos, with one home (`endpoints.ts`) for feed hosts and URL builders; core's `constants.ts` and `scoring.ts` and powerscore's `constants.ts` split the same way behind their old entry points. Every package exports exactly the names it did before (checked against the built `dist`), and the basketball situation types live in core so ui no longer reaches into sideline for them.
