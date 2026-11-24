@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The domain packages split their god files along their seams — 2026-11-24
+
+Sideline's 1,228-line `apiClient.ts` is now a request pool, day windows, event parsing and team logos, with one home (`endpoints.ts`) for feed hosts and URL builders; core's `constants.ts` and `scoring.ts` and powerscore's `constants.ts` split the same way behind their old entry points. Every package exports exactly the names it did before (checked against the built `dist`), and the basketball situation types live in core so ui no longer reaches into sideline for them.
+
 ## The popup imports shared components straight from the ui package — 2026-11-24
 
 Twenty one-line popup files that only re-exported `@arenaswap/ui` components are gone, and their importers point at the ui package; `flipScore` and `gameCardShared` stay because a Cypress stub and the uncommitted `popupFooter.jsx` still import through them. Core drops dead exports and the powerscore passthroughs nobody imported, and copy-pasted helpers (`isPlainRecord`, `normalizeTimestamp`, `isSameLocalDay`, `prefersReducedMotion`, the factor labels, the walkthrough crest) each live in one place now.
