@@ -1,5 +1,6 @@
 import { allLeagueIds, resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueLogoMap, LeagueScheduleMap } from '@arenaswap/core/types';
+import { isFreshWithin, weekMs } from './cacheFreshness';
 
 export const seededLeagueLogos = (): LeagueLogoMap => Object.fromEntries(
 	allLeagueIds.map(leagueId => [leagueId, resolveLeagueLogoUrl(leagueId)]),
@@ -7,7 +8,7 @@ export const seededLeagueLogos = (): LeagueLogoMap => Object.fromEntries(
 
 export const leagueLogoCacheKey = 'arenaswap.allLeagueLogos';
 
-export const leagueLogoCacheTtlMs = 7 * 24 * 60 * 60 * 1000;
+export const leagueLogoCacheTtlMs = weekMs;
 
 export interface storedLeagueLogos {
 	fetchedAt: number;
@@ -21,5 +22,5 @@ export const isLeagueLogoCacheFresh = (stored: unknown, now: number): stored is 
 	if (typeof fetchedAt !== 'number' || !Number.isFinite(fetchedAt)) return false;
 	if (typeof logos !== 'object' || logos === null) return false;
 	if (typeof schedules !== 'object' || schedules === null) return false;
-	return now >= fetchedAt && now - fetchedAt < leagueLogoCacheTtlMs;
+	return isFreshWithin(fetchedAt, leagueLogoCacheTtlMs, now);
 };

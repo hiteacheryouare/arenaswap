@@ -1,8 +1,9 @@
 import type { LeagueId, TeamMonoLogoMap } from '@arenaswap/core/types';
+import { isFreshWithin, weekMs } from './cacheFreshness';
 
 export const monoLogoCacheKey = 'arenaswap.teamMonoLogos';
 
-export const monoLogoCacheTtlMs = 7 * 24 * 60 * 60 * 1000;
+export const monoLogoCacheTtlMs = weekMs;
 
 export interface storedMonoLogos {
 	fetchedAt: number;
@@ -14,7 +15,7 @@ export const isMonoLogoCacheFresh = (stored: unknown, now: number): stored is st
 	const { fetchedAt, logos } = stored as Partial<storedMonoLogos>;
 	if (typeof fetchedAt !== 'number' || !Number.isFinite(fetchedAt)) return false;
 	if (typeof logos !== 'object' || logos === null) return false;
-	return now >= fetchedAt && now - fetchedAt < monoLogoCacheTtlMs;
+	return isFreshWithin(fetchedAt, monoLogoCacheTtlMs, now);
 };
 
 export const missingMonoLogoLeagues = (logos: TeamMonoLogoMap, leagueIds: LeagueId[]): LeagueId[] => (
