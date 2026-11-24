@@ -8,7 +8,6 @@ import {
 	emptyStandings,
 	fetchSharedLeagueStandings,
 	fetchSummary,
-	monoMarksFromLogos,
 	parseBoxScore,
 	parseGameDurationMins,
 	parseLeagueStandings,
@@ -21,13 +20,12 @@ import {
 	usesFullLeagueStandings,
 } from '@arenaswap/sideline';
 import type { BoxScore, Lineups, Matchup, StandingsGroup, TicketLink, VenueDetails } from '@arenaswap/sideline';
-import type { Game, LeagueId, TeamMonoMarks } from '@arenaswap/core/types';
-import { emptyTeamRecords, type MonoLogos, type SeriesEvent, type SeriesInfo, type TeamRecords } from '@arenaswap/ui/src/components/detailSummary';
+import type { Game, LeagueId } from '@arenaswap/core/types';
+import { emptyTeamRecords, type MonoLogos, type SeriesInfo, type TeamRecords } from '@arenaswap/ui/src/components/detailSummary';
 import { hasBoxScoreContent } from './boxScoreColumns';
 import { mockStandingsPayloads } from '@arenaswap/sideline/mockStandings';
-
-export { emptyTeamRecords };
-export type { MonoLogos, SeriesCompetitor, SeriesEvent, SeriesInfo, TeamRecords } from '@arenaswap/ui/src/components/detailSummary';
+import { emptyMonoLogos, parseMonoLogos, parseTeamRecords, pickSeriesEntry } from './summaryParsers';
+import { generateMockWinProbs, mockGameDurationMins, mockRecordsMap, mockSeriesMap } from './demoSummary';
 
 interface summaryDataResult {
 	winProbability: number[];
@@ -43,164 +41,9 @@ interface summaryDataResult {
 	lineups: Lineups;
 }
 
-interface RecordEntry {
-	type?: string;
-	summary?: string;
-	displayValue?: string;
-}
-
-interface HeaderLogo {
-	href?: string;
-	rel?: string[];
-}
-
-interface HeaderCompetitor {
-	homeAway?: string;
-	team?: { id?: string; logos?: HeaderLogo[] };
-	record?: RecordEntry[];
-}
-
-export const emptyMonoLogos: MonoLogos = { home: null, away: null };
-
-const monoMarksOf = (competitor: HeaderCompetitor | undefined): TeamMonoMarks | null => (
-	monoMarksFromLogos(competitor?.team?.logos)
-);
-
-// `summary` beats `displayValue` because the NHL appends standings points there —
-// "28-28-10, 66 PTS" — twice the width of the column it has to sit in.
-const totalRecord = (competitor: HeaderCompetitor | undefined): string | null => {
-	const total = competitor?.record?.find(entry => entry.type === 'total');
-	const value = (total?.summary ?? total?.displayValue ?? '').trim();
-	return value.length > 0 ? value : null;
-};
-
-// Team id is the primary key rather than array position: ESPN orders `competitors` by its own
-// `order` field, which is not away-then-home across every sport. `homeAway` is the fallback for
-// leagues where we synthesize team ids (college hockey) and so can never match.
-const headerCompetitors = (data: unknown): HeaderCompetitor[] | null => {
-	const competitors = (data as {
-		header?: { competitions?: { competitors?: HeaderCompetitor[] }[] };
-	})?.header?.competitions?.[0]?.competitors;
-	return Array.isArray(competitors) ? competitors : null;
-};
-
-const sidesOf = (data: unknown, homeTeamId: string, awayTeamId: string) => {
-	const competitors = headerCompetitors(data);
-	if (!competitors) return null;
-	const byId = (id: string) => (id ? competitors.find(c => c.team?.id === id) : undefined);
-	const bySide = (side: string) => competitors.find(c => c.homeAway === side);
-	return {
-		home: byId(homeTeamId) ?? bySide('home'),
-		away: byId(awayTeamId) ?? bySide('away'),
-	};
-};
-
-export const parseTeamRecords = (data: unknown, homeTeamId: string, awayTeamId: string): TeamRecords => {
-	const sides = sidesOf(data, homeTeamId, awayTeamId);
-	if (!sides) return emptyTeamRecords;
-	return { home: totalRecord(sides.home), away: totalRecord(sides.away) };
-};
-
-export const parseMonoLogos = (data: unknown, homeTeamId: string, awayTeamId: string): MonoLogos => {
-	const sides = sidesOf(data, homeTeamId, awayTeamId);
-	if (!sides) return emptyMonoLogos;
-	return { home: monoMarksOf(sides.home), away: monoMarksOf(sides.away) };
-};
-
 type SummaryGameArg = Pick<Game, 'id' | 'league' | 'status' | 'sportType'> & {
 	homeTeam: Pick<Game['homeTeam'], 'id' | 'score' | 'record' | 'abbreviation'>;
 	awayTeam: Pick<Game['awayTeam'], 'id' | 'score' | 'record' | 'abbreviation'>;
-};
-
-const lcgNext = (s: number): number => (s * 1664525 + 1013904223) & 0x7fffffff;
-
-const seedFromStr = (str: string): number => {
-	let seed = 7;
-	for (const c of str) seed = (seed * 31 + c.charCodeAt(0)) & 0x7fffffff;
-	return seed;
-};
-
-const generateMockWinProbs = (gameId: string, homeScore: number, awayScore: number): number[] => {
-	let s = seedFromStr(gameId);
-	const total = homeScore + awayScore;
-	const target = total > 0 ? homeScore / total : 0.5;
-	let v = 0.5;
-	return Array.from({ length: 50 }, (_, i) => {
-		s = lcgNext(s);
-		const noise = (s / 0x7fffffff - 0.5) * 0.12;
-		v += noise + (target - v) * 0.06 * (i / 50);
-		return Math.max(0.05, Math.min(0.95, v));
-	});
-};
-
-const won = (id: string): SeriesEvent => ({
-	statusType: { completed: true },
-	competitors: [{ homeAway: 'home', winner: true, team: { id } }],
-});
-const pending = (): SeriesEvent => ({ statusType: { completed: false } });
-
-interface MockSeriesEntry {
-	type: 'playoff';
-	summary: string;
-	totalCompetitions: number;
-	events: SeriesEvent[];
-}
-
-const mockSeriesMap: Record<string, MockSeriesEntry> = {
-	'mock-4': {
-		type: 'playoff',
-		summary: 'PHI leads series 2-1',
-		totalCompetitions: 7,
-		events: [won('22'), won('21'), won('22'), pending(), pending(), pending(), pending()],
-	},
-	'mock-14': {
-		type: 'playoff',
-		summary: 'BOS leads series 3-2',
-		totalCompetitions: 7,
-		events: [won('1'), won('3'), won('1'), won('1'), won('3'), pending(), pending()],
-	},
-	'mock-16': {
-		type: 'playoff',
-		summary: 'Series tied 2-2',
-		totalCompetitions: 7,
-		events: [won('28'), won('10'), won('28'), won('10'), pending(), pending(), pending()],
-	},
-};
-
-const mockGameDurationMins: Record<string, number> = {
-	'mock-20': 202,
-};
-
-const mockRecordsMap: Record<string, TeamRecords> = {
-	'mock-1': { home: '18-9', away: '15-12' },
-	'mock-2': { home: '41-30', away: '33-38' },
-	'mock-3': { home: '28-28-10', away: '30-28-9' },
-	'mock-4': { home: '59-53', away: '55-58' },
-	'mock-5': { home: '11-4', away: '8-7' },
-	'mock-6': { home: '4-7', away: '9-2' },
-	'mock-9': { home: '12-6-8', away: '10-9-7' },
-	'mock-10': { home: '16-12-4', away: '13-15-3' },
-	'mock-11': { home: '20-8', away: '17-11' },
-	'mock-12': { home: '18-9-5', away: '17-10-5' },
-	'mock-13': { home: '1-1-0', away: '0-1-1' },
-	'mock-14': { home: '38-24-6', away: '36-26-7' },
-	'mock-15': { home: '45-26', away: '40-31' },
-	'mock-16': { home: '90-72', away: '98-64' },
-	'mock-17': { home: '28-16', away: '24-20' },
-	'mock-20': { home: '81-63', away: '74-70' },
-};
-
-// Only the series being played right now. ESPN also ships a 'season' entry holding the whole
-// head-to-head — six meetings spread across the year — and a series opener carries that and
-// nothing else, so falling back to it captions a series that has not started with the record from
-// the last one. It is not reliably index 0 either: a 'preseason' entry can sit in front of it.
-// A playoff series comes first: the NBA and NHL ship no 'current' entry at all, and MLB's shrinks
-// to the games actually played once a side clinches, losing the length of the series.
-export const pickSeriesEntry = (entries: SeriesInfo[] | undefined): SeriesInfo | null => {
-	if (!Array.isArray(entries)) return null;
-	return entries.find(entry => entry.type === 'playoff')
-		?? entries.find(entry => entry.type === 'current')
-		?? null;
 };
 
 const useSummaryData = (game: SummaryGameArg): summaryDataResult => {

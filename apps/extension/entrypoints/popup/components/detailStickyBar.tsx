@@ -5,7 +5,7 @@ import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
 import type { GameStatus } from '@arenaswap/ui/src/components/gameSituation';
 import GameStatusText from '@arenaswap/ui/src/components/gameStatusText';
 import { formatCompactCountdown, useStartCountdown } from './startCountdown';
-import type { MonoLogos } from './useSummaryData';
+import type { MonoLogos } from '@arenaswap/ui/src/components/detailSummary';
 
 const barSurface: Record<ResolvedTheme, string> = { dark: '#0d1117', light: '#ffffff' };
 

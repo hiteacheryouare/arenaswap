@@ -1,4 +1,5 @@
-import { emptyTeamRecords, parseTeamRecords } from '../entrypoints/popup/components/useSummaryData';
+import { emptyTeamRecords } from '@arenaswap/ui/src/components/detailSummary';
+import { parseTeamRecords } from '../entrypoints/popup/components/summaryParsers';
 
 interface CompetitorFixture {
 	homeAway: string;

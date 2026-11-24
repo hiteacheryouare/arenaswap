@@ -1,4 +1,4 @@
-import { pickSeriesEntry } from '../entrypoints/popup/components/useSummaryData';
+import { pickSeriesEntry } from '../entrypoints/popup/components/summaryParsers';
 
 describe('pickSeriesEntry', () => {
 	test('takes the series being played now, over the season and preseason head-to-heads', () => {

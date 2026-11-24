@@ -1,7 +1,7 @@
 import DetailHero from '@arenaswap/ui/src/components/detailHero';
 import type { Game } from '@arenaswap/core/types';
 import { captionContrast, contrastRatio } from '../../support/contrast';
-import type { SeriesEvent, SeriesInfo } from '../../../entrypoints/popup/components/useSummaryData';
+import type { SeriesEvent, SeriesInfo } from '@arenaswap/ui/src/components/detailSummary';
 
 const awayColor = '#000000';
 const homeColor = '#002B5C';

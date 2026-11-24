@@ -5,7 +5,7 @@ import OnColorCrest from '@arenaswap/ui/src/components/onColorCrest';
 import SeriesDots from '@arenaswap/ui/src/components/seriesDots';
 import StartCountdownDisplay from './startCountdownDisplay';
 import type { CSSProperties } from 'react';
-import type { SeriesInfo, TeamRecords } from './useSummaryData';
+import type { SeriesInfo, TeamRecords } from '@arenaswap/ui/src/components/detailSummary';
 
 interface detailPosterHeroProps {
 	game: Game;

@@ -3,7 +3,7 @@ import DetailPosterHero from '../../../entrypoints/popup/components/detailPoster
 import DetailStickyBar from '../../../entrypoints/popup/components/detailStickyBar';
 import type { Game } from '@arenaswap/core/types';
 import { bodyTextContrast, captionContrast } from '../../support/contrast';
-import type { MonoLogos } from '../../../entrypoints/popup/components/useSummaryData';
+import type { MonoLogos } from '@arenaswap/ui/src/components/detailSummary';
 import type { GameStatus } from '@arenaswap/ui/src/components/gameSituation';
 
 const awayColor = '#29126F';
