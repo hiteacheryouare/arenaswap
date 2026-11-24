@@ -37,7 +37,7 @@ import {
 	type TabSuggestion,
 } from '../../utils/tabSuggestions';
 import { finishedTabNoticeKey, normalizeFinishedTabNotice } from '../../utils/finishedTabs';
-import { loadStoredUserPreferencesWithPresence, persistStoredUserPreferences } from '../../utils/prefsStorage';
+import { loadStoredUserPreferencesWithPresence, saveUserPrefs } from '../../utils/prefsStorage';
 import { loadFantasyRoster, saveFantasyRoster } from '../../utils/fantasyRosterStorage';
 import {
 	createProfile,
@@ -333,10 +333,7 @@ export default () => {
 		const normalized = normalizeUserPreferences(rawNextPrefs);
 		prefsRef.current = normalized;
 		setPrefs(normalized);
-		const syncPromise = queueSave(async () => {
-			await persistStoredUserPreferences(normalized);
-			await browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: normalized } satisfies ExtensionMessage);
-		});
+		const syncPromise = queueSave(() => saveUserPrefs(normalized));
 		void syncPromise.catch(() => {});
 	};
 

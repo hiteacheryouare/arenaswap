@@ -17,7 +17,7 @@ import { groupByDate, resolveSelectedDayIndex } from '../../utils/gameGroups';
 import { getRandomLoadingMessage } from '../../utils/loadingMessages';
 import useFavoriteScoreConfetti from '../popup/useFavoriteScoreConfetti';
 import { guideConfettiStage } from './guideConfettiStage';
-import { loadStoredUserPreferences, persistStoredUserPreferences } from '../../utils/prefsStorage';
+import { loadStoredUserPreferences, saveUserPrefs } from '../../utils/prefsStorage';
 import { fullLogoSrc, useTheme } from '../../utils/theme';
 import { bandLabel } from './guideFormat';
 import GuideGrid from './guideGrid';
@@ -167,9 +167,7 @@ const App = () => {
 		const next = normalizeUserPreferences({ ...prefsRef.current, favoriteTeamIds: [...current] });
 		prefsRef.current = next;
 		setPrefs(next);
-		void persistStoredUserPreferences(next)
-			.then(() => browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: next } satisfies ExtensionMessage))
-			.catch(() => {});
+		void saveUserPrefs(next).catch(() => {});
 	};
 
 	const favoriteTeamIds = useMemo(() => new Set(prefs.favoriteTeamIds), [prefs.favoriteTeamIds]);
