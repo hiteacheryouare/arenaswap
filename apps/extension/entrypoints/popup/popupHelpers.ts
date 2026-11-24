@@ -2,10 +2,6 @@ import type { SportType } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import { i18n } from '#i18n';
 
-export { getRandomLoadingMessage } from '../../utils/loadingMessages';
-export { buildFinalComparator, buildLeagueRank, buildLiveComparator, buildUpcomingComparator, isInUpcomingWindow } from '../../utils/gameOrdering';
-export { groupByDate, groupByLeague, resolveSelectedDayIndex } from '../../utils/gameGroups';
-
 export type popupView = 'main' | 'setup' | 'detail' | 'suggest';
 export const sportTypeOrder: Record<SportType, number> = {
 	basketball: 0,
