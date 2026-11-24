@@ -3,6 +3,7 @@ import { isPlainRecord, normalizeFantasyRoster } from '@arenaswap/core';
 import type { FantasyRosterEntry } from '@arenaswap/core';
 import type { ExtensionMessage, UserPreferences } from '@arenaswap/core/types';
 import { breakdownFoldsKey, type breakdownSectionId } from './breakdownFolds';
+import { deviceFlagDefaults } from './deviceFlags';
 import { isDemoSeason, type demoSeason } from './holidayDecorations';
 import {
 	createProfile,
@@ -112,7 +113,7 @@ export const loadSettingsProfile = async (profileId?: string): Promise<settingsP
 	const entry = profiles.find(profile => profile.id === (profileId ?? activeId)) ?? profiles.find(profile => profile.id === activeId);
 	const [setup, local] = await Promise.all([
 		loadProfileSetup(entry?.id ?? activeId),
-		browser.storage.local.get({ onboardingCompleted: null, standbyOnboardingDone: false, multiviewOnboardingDone: false, demoMode: false, demoSeason: 'real' }),
+		browser.storage.local.get(deviceFlagDefaults),
 	]);
 	return {
 		name: entry?.name ?? defaultProfileName,

@@ -37,6 +37,7 @@ import {
 	type TabSuggestion,
 } from '../../utils/tabSuggestions';
 import { finishedTabNoticeKey, normalizeFinishedTabNotice } from '../../utils/finishedTabs';
+import { deviceFlagDefaults } from '../../utils/deviceFlags';
 import { loadStoredUserPreferencesWithPresence, saveUserPrefs } from '../../utils/prefsStorage';
 import { loadFantasyRoster, saveFantasyRoster } from '../../utils/fantasyRosterStorage';
 import {
@@ -226,14 +227,7 @@ export default () => {
 			setProfiles(await followSyncedProfile().catch(() => defaultProfiles));
 			const [{ prefs: normalizedPrefs, hasStored: hasStoredPrefs }, localResult, storedRoster] = await Promise.all([
 				loadStoredUserPreferencesWithPresence(),
-				browser.storage.local.get({
-					demoMode: false,
-					demoSeason: 'real',
-					onboardingCompleted: null,
-					standbyOnboardingDone: false,
-					multiviewOnboardingDone: false,
-					[reviewPromptStorageKey]: null,
-				}),
+				browser.storage.local.get({ ...deviceFlagDefaults, [reviewPromptStorageKey]: null }),
 				loadFantasyRoster().catch(() => []),
 			]);
 			prefsRef.current = normalizedPrefs;
