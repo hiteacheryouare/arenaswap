@@ -8,7 +8,7 @@ import {
 	revealNameLift,
 	revealNameLineHeight,
 	revealNameLines,
-} from '../cardReveal';
+} from '../../cardReveal';
 
 interface namingFit {
 	lines: string[];

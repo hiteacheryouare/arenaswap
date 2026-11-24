@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import type { Game } from '@arenaswap/core/types';
 import RevealCutCrest from './revealCutCrest';
-import { revealSlamTypePx } from '../cardReveal';
+import { revealSlamTypePx } from '../../cardReveal';
 
 interface revealTypeSlamProps {
 	game: Game;
