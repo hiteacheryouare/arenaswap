@@ -3,10 +3,10 @@ import { rosterInGame } from '@arenaswap/core';
 import type { FantasyRosterEntry } from '@arenaswap/core';
 import type { Game } from '@arenaswap/core/types';
 import CrestDisc from '@arenaswap/ui/src/components/crestDisc';
-import PlayerShot from './playerShot';
+import PlayerShot from '../playerShot';
 import type { BoxScore } from '@arenaswap/sideline';
 import { rosterPlayerLines, type playerStatGroup } from './fantasyPlayerLines';
-import { rosterHeadshot } from '../../../utils/fantasyRoster';
+import { rosterHeadshot } from '../../../../utils/fantasyRoster';
 
 interface fantasyPlayersPanelProps {
 	game: Game;

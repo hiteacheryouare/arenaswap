@@ -6,8 +6,8 @@ import type { UserPreferences } from '@arenaswap/core/types';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import FantasyRuleInput from './fantasyRuleInput';
 import { fantasyRuleGroups, fantasySportLabelKeys, fantasySports, ruleStep } from './fantasyScoringLabels';
-import SelectDropdown from './selectDropdown';
-import { fantasyRulePoints } from '../../../utils/scoringPrefs';
+import SelectDropdown from '../selectDropdown';
+import { fantasyRulePoints } from '../../../../utils/scoringPrefs';
 
 interface fantasyScoringPageProps {
 	scoring: UserPreferences['fantasyScoring'];

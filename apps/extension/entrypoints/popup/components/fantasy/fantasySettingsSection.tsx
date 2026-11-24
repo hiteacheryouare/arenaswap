@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
-import FormRange from './formRange';
-import SettingTooltipIcon from './settingTooltipIcon';
+import FormRange from '../formRange';
+import SettingTooltipIcon from '../settingTooltipIcon';
 
 interface fantasySettingsSectionProps {
 	blend: number;

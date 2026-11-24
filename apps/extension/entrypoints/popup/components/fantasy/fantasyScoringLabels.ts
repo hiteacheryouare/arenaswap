@@ -1,5 +1,5 @@
 import type { FantasySport } from 'powerscore';
-import type { plainMessageKey } from './settingsCatalog';
+import type { plainMessageKey } from '../settingsCatalog';
 
 export interface fantasyRuleGroup {
 	headingKey?: plainMessageKey;

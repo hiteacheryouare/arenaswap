@@ -22,8 +22,8 @@ import type { demoSeason } from '../../../utils/holidayDecorations';
 import type { profileList } from '../../../utils/profiles';
 import useSlideDirection, { slideClassName } from '../useSlideDirection';
 
-const FantasyRosterPage = lazy(() => import('./fantasyRosterPage'));
-const FantasyScoringPage = lazy(() => import('./fantasyScoringPage'));
+const FantasyRosterPage = lazy(() => import('./fantasy/fantasyRosterPage'));
+const FantasyScoringPage = lazy(() => import('./fantasy/fantasyScoringPage'));
 
 export type scoringSubPage = 'roster' | 'rules';
 

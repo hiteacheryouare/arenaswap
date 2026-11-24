@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import FavoriteTeamBonusInput from '../favoriteTeamBonusInput';
-import FantasySettingsSection from '../fantasySettingsSection';
+import FantasySettingsSection from '../fantasy/fantasySettingsSection';
 import ModeSignalSwitches from '../modeSignalSwitches';
 import PostseasonBoostInput from '../postseasonBoostInput';
 import ScoringModeSection from '../scoringModeSection';

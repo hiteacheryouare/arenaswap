@@ -9,7 +9,7 @@ import DetailPosterHero from './detailPosterHero';
 import DetailStickyBar from './detailStickyBar';
 import DetailTabs from './detailTabs';
 import DueUpPanel from './dueUpPanel';
-import FantasyPlayersPanel from './fantasyPlayersPanel';
+import FantasyPlayersPanel from './fantasy/fantasyPlayersPanel';
 import type { DetailTab, DetailTabId } from './detailTabs';
 import StandingsTable from './standingsTable';
 import { hasBoxScoreContent } from './boxScoreColumns';

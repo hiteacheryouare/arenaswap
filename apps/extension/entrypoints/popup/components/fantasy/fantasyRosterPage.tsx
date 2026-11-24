@@ -13,11 +13,11 @@ import type { FantasyRosterEntry } from '@arenaswap/core';
 import type { EspnTeamEntry, PlayerSearchResult } from '@arenaswap/sideline';
 import type { FantasyPosition } from 'powerscore';
 import CrestDisc from '@arenaswap/ui/src/components/crestDisc';
-import PlayerShot from './playerShot';
+import PlayerShot from '../playerShot';
 import { leagueLabels } from '@arenaswap/core/constants';
-import { getRandomLoadingMessage } from '../../../utils/loadingMessages';
-import { matchesTeamQuery } from '../../../utils/favoriteTeams';
-import { addToRoster, groupRosterByLeague, isRosterFull, removeFromRoster, rosterHeadshot, rosterKey } from '../../../utils/fantasyRoster';
+import { getRandomLoadingMessage } from '../../../../utils/loadingMessages';
+import { matchesTeamQuery } from '../../../../utils/favoriteTeams';
+import { addToRoster, groupRosterByLeague, isRosterFull, removeFromRoster, rosterHeadshot, rosterKey } from '../../../../utils/fantasyRoster';
 
 export interface fantasyRosterServices {
 	searchPlayers: (query: string, init?: { signal?: AbortSignal }) => Promise<PlayerSearchResult[]>;
