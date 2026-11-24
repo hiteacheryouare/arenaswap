@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The popup imports shared components straight from the ui package — 2026-11-24
+
+Twenty one-line popup files that only re-exported `@arenaswap/ui` components are gone, and their importers point at the ui package; `flipScore` and `gameCardShared` stay because a Cypress stub and the uncommitted `popupFooter.jsx` still import through them. Core drops dead exports and the powerscore passthroughs nobody imported, and copy-pasted helpers (`isPlainRecord`, `normalizeTimestamp`, `isSameLocalDay`, `prefersReducedMotion`, the factor labels, the walkthrough crest) each live in one place now.
+
 ## Dev's CI goes green on Linux — 2026-11-25
 
 The Multiview half-minute test waits for both boxes to start before fast-forwarding, the light-speed sign wraps where Linux has no German hyphenation, component tests ignore the browser's harmless ResizeObserver loop warning, and the containment net prints every violation in full and no longer flags a 1–2px sideways scroll when nothing overhangs the root. Together with the re-sort test fix, every CI check that was red on `dev` passes.
