@@ -1,6 +1,6 @@
 import Crest from '@arenaswap/ui/src/components/crest';
 import { teamLogoOnColor } from '@arenaswap/core/constants';
-import { matchupSurfaceStyle, powerScoreColor } from './gameCardShared';
+import { matchupSurfaceStyle, powerScoreColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { i18n } from '#i18n';
 import SelectDropdown from './selectDropdown';
 import FlowStepper from './flowStepper';

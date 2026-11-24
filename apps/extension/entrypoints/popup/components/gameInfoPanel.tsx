@@ -5,9 +5,9 @@ import HoverTooltip from '@arenaswap/ui/src/components/hoverTooltip';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import NetworkList from '@arenaswap/ui/src/components/networkList';
 import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
-import { OddsProvider, oddsSummary } from './gameCardShared';
+import { OddsProvider, oddsSummary } from '@arenaswap/ui/src/components/gameCardShared';
 import VenuePhoto from './venuePhoto';
-import { conditionIcon, formatTemperature } from './weatherUtils';
+import { conditionIcon, formatTemperature } from '@arenaswap/ui/src/components/weatherUtils';
 import type { TicketLink, VenueDetails } from '@arenaswap/sideline';
 import type { BettingDisplayPrefs, WeatherDisplayPrefs } from './gameCardTypes';
 

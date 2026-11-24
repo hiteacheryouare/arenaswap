@@ -1,5 +1,5 @@
 import { i18n } from '#i18n';
-import NoGamesMessage from './noGamesMessage';
+import NoGamesMessage from '@arenaswap/ui/src/components/noGamesMessage';
 
 interface emptyGameStateProps {
 	noLeaguesSelected: boolean;

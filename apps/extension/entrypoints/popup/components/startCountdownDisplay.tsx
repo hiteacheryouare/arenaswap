@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { SportType } from '@arenaswap/core/types';
 import { i18n } from '#i18n';
 import FlipScore from './flipScore';
-import { formatStartDateTime } from './gameCardShared';
+import { formatStartDateTime } from '@arenaswap/ui/src/components/gameCardShared';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import { countdownShowsSeconds, useStartCountdown } from './startCountdown';
 import { getRandomStartsSoonMessage } from '../popupHelpers';

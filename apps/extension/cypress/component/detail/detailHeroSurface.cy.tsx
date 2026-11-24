@@ -1,10 +1,10 @@
-import DetailHero from '../../../entrypoints/popup/components/detailHero';
+import DetailHero from '@arenaswap/ui/src/components/detailHero';
 import DetailPosterHero from '../../../entrypoints/popup/components/detailPosterHero';
 import DetailStickyBar from '../../../entrypoints/popup/components/detailStickyBar';
 import type { Game } from '@arenaswap/core/types';
 import { bodyTextContrast, captionContrast } from '../../support/contrast';
 import type { MonoLogos } from '../../../entrypoints/popup/components/useSummaryData';
-import type { GameStatus } from '../../../entrypoints/popup/components/gameSituation';
+import type { GameStatus } from '@arenaswap/ui/src/components/gameSituation';
 
 const awayColor = '#29126F';
 const homeColor = '#003B75';

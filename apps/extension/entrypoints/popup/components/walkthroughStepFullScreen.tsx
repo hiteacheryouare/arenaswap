@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 import Crest from '@arenaswap/ui/src/components/crest';
 import { teamLogoOnColor } from '@arenaswap/core/constants';
-import { matchupSurfaceStyle } from './gameCardShared';
+import { matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared';
 import { i18n } from '#i18n';
 import FlowStepper from './flowStepper';
 import focusStepTitle from './stepTitleFocus';

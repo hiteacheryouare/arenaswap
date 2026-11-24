@@ -2,8 +2,8 @@ import { i18n } from '#i18n';
 import { isHomeFirst } from '@arenaswap/core/constants';
 import type { Game, ResolvedTheme, Team, TeamMonoMarks } from '@arenaswap/core/types';
 import TeamCrest from '@arenaswap/ui/src/components/teamCrest';
-import type { GameStatus } from './gameSituation';
-import GameStatusText from './gameStatusText';
+import type { GameStatus } from '@arenaswap/ui/src/components/gameSituation';
+import GameStatusText from '@arenaswap/ui/src/components/gameStatusText';
 import { formatCompactCountdown, useStartCountdown } from './startCountdown';
 import type { MonoLogos } from './useSummaryData';
 

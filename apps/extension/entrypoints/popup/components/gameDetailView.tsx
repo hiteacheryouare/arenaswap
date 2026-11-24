@@ -4,7 +4,7 @@ import type { Browser } from 'wxt/browser';
 import { createFavoriteTeamKey, isHomeFirst, leagueConfigMap, scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, LeagueId, LiveScore, PowerScoreSnapshot, ScoreSnapshot, SignalName, TabRegistration } from '@arenaswap/core/types';
 import { hasCommercialBreaks, type FantasyRosterEntry } from '@arenaswap/core';
-import DetailHero from './detailHero';
+import DetailHero from '@arenaswap/ui/src/components/detailHero';
 import DetailPosterHero from './detailPosterHero';
 import DetailStickyBar from './detailStickyBar';
 import DetailTabs from './detailTabs';
@@ -21,7 +21,7 @@ import HolidayDrift from './holidayDrift';
 import HolidayFall from './holidayFall';
 import HolidayFireworks, { type fireworkVolley } from './holidayFireworks';
 import HolidayLights from './holidayLights';
-import HolidayStockings from './holidayStockings';
+import HolidayStockings from '@arenaswap/ui/src/components/holidayStockings';
 import LatestPlayPanel from './latestPlayPanel';
 import LineupsPanel from './lineupsPanel';
 import MatchupPanel from './matchupPanel';
@@ -31,7 +31,7 @@ import PregameSetup from './pregameSetup';
 import PregameStats from './pregameStats';
 import BoxScore from './boxScore';
 import ProTip from './proTip';
-import { resolveStatus } from './gameSituation';
+import { resolveStatus } from '@arenaswap/ui/src/components/gameSituation';
 import {
 	buildComponentContributionOption,
 	buildLeadTrackerOption,
@@ -41,7 +41,7 @@ import {
 	contributionSignalIds,
 	darkChartPalette,
 	lightChartPalette,
-} from './gameDetailChartOptions';
+} from '@arenaswap/ui/src/components/gameDetailChartOptions';
 import { resolveChartLineColors, resolveTeamColorPair } from '@arenaswap/chromatic';
 import { formatCalendarDay, matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared';
 import { isModeSignalId, signalColorOf, signalPresentation } from '@arenaswap/ui/src/components/scoringModeMeta';

@@ -1,4 +1,4 @@
-import { seriesSlots } from '../entrypoints/popup/components/seriesSlots';
+import { seriesSlots } from '@arenaswap/ui/src/components/seriesSlots';
 import type { SeriesEvent } from '../entrypoints/popup/components/useSummaryData';
 
 const won = (teamId: string): SeriesEvent => ({

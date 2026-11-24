@@ -1,4 +1,4 @@
-import { buildLeadTrackerOption, buildPowerScoreOption, buildTeamScoreOption, buildWinProbabilityOption } from '../entrypoints/popup/components/gameDetailChartOptions';
+import { buildLeadTrackerOption, buildPowerScoreOption, buildTeamScoreOption, buildWinProbabilityOption } from '@arenaswap/ui/src/components/gameDetailChartOptions';
 import type { Game, PowerScoreSnapshot, ScoreSnapshot } from '@arenaswap/core/types';
 
 const makeGame = (homeAbbr = 'HOM', awayAbbr = 'AWY', homeColor = '#FF0000', awayColor = '#0000FF'): Game => ({

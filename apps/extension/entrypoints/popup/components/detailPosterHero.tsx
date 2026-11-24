@@ -2,7 +2,7 @@ import { i18n } from '#i18n';
 import { createFavoriteTeamKey, isHomeFirst } from '@arenaswap/core/constants';
 import type { Game, LeagueId, Team } from '@arenaswap/core/types';
 import OnColorCrest from '@arenaswap/ui/src/components/onColorCrest';
-import SeriesDots from './seriesDots';
+import SeriesDots from '@arenaswap/ui/src/components/seriesDots';
 import StartCountdownDisplay from './startCountdownDisplay';
 import type { CSSProperties } from 'react';
 import type { SeriesInfo, TeamRecords } from './useSummaryData';

@@ -1,4 +1,4 @@
-import GoalScorers from '../../../entrypoints/popup/components/goalScorers';
+import GoalScorers from '@arenaswap/ui/src/components/goalScorers';
 import type { Game, GoalEvent } from '@arenaswap/core/types';
 import { makeGame } from '../../support/fixtures';
 import { inEveryLocale } from '../../support/safetyNet/locales';

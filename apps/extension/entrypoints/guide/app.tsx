@@ -8,7 +8,7 @@ import { browser } from 'wxt/browser';
 import { resolveDecorationDate } from '../../utils/holidayDecorations';
 import GameDetailView from '../popup/components/gameDetailView';
 import GameListHeader from '../popup/components/gameListHeader';
-import NoGamesMessage from '../popup/components/noGamesMessage';
+import NoGamesMessage from '@arenaswap/ui/src/components/noGamesMessage';
 import UpcomingDayPager from '../popup/components/upcomingDayPager';
 import { fetchState, getRandomLoadingMessage, groupByDate, normalizeBackgroundState, resolveSelectedDayIndex } from '../popup/popupHelpers';
 import useFavoriteScoreConfetti from '../popup/useFavoriteScoreConfetti';

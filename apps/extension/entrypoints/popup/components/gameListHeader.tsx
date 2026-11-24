@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import LoadingMessage from '@arenaswap/ui/src/components/loadingMessage';
-import RefreshButton from './refreshButton';
+import RefreshButton from '@arenaswap/ui/src/components/refreshButton';
 
 interface gameListHeaderProps {
 	isLoading: boolean;

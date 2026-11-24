@@ -1,4 +1,4 @@
-import DetailHero from '../../../entrypoints/popup/components/detailHero';
+import DetailHero from '@arenaswap/ui/src/components/detailHero';
 import type { Game } from '@arenaswap/core/types';
 import { captionContrast, contrastRatio } from '../../support/contrast';
 import type { SeriesEvent, SeriesInfo } from '../../../entrypoints/popup/components/useSummaryData';

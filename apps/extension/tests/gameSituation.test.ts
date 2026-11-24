@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import type { Game } from '@arenaswap/core/types';
-import { bonusKind, describeRedCard, describeScorers, formatMatchMinute, resolveStatus } from '../entrypoints/popup/components/gameSituation';
+import { bonusKind, describeRedCard, describeScorers, formatMatchMinute, resolveStatus } from '@arenaswap/ui/src/components/gameSituation';
 
 const t = i18n.t;
 
