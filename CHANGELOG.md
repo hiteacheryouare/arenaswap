@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The popup's three biggest files hand pieces to their own modules — 2026-11-24
+
+`app.tsx` hands its open-reveal state and effects to `useOpenReveal`, its logo cache to `useLeagueLogoCache` and its six league and favorite updaters to `utils/prefsUpdates.ts`, with the hooks called where their effects used to sit so effect order is unchanged. Each settings page in `setupView.tsx` is its own component under `components/settings/` (SetupView's props are unchanged), and `useSummaryData.ts` keeps only the hook, with its parsers in `summaryParsers.ts` and demo tables in `demoSummary.ts`.
+
 ## Logic the guide and the worker share moves out of the popup folder — 2026-11-24
 
 The open-reveal flag, the league logo cache, and `popupHelpers.ts`'s sorting, grouping, league-order and loading-line helpers now live in `utils/`, so the guide, the backup page and `profiles.ts` stop importing popup internals; `popupHelpers.ts` keeps only the popup's own view type, sport labels and tab label. Saving prefs and telling the worker is one `saveUserPrefs` helper, the three weekly caches share one freshness rule, and the device-only flags read from one `deviceFlagDefaults` object.
