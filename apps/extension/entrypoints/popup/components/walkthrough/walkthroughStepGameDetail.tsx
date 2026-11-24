@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { i18n } from '#i18n';
 import { matchupSurfaceStyle, powerScoreColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { signalColors } from '@arenaswap/ui/src/components/signalColors';
-import FlowStepper from './flowStepper';
+import FlowStepper from '../flowStepper';
 import WalkthroughTeamLogo from './walkthroughTeamLogo';
-import focusStepTitle from './stepTitleFocus';
+import focusStepTitle from '../stepTitleFocus';
 
 interface walkthroughStepGameDetailProps {
 	onNext: () => void;

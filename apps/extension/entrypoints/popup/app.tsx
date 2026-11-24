@@ -8,7 +8,7 @@ import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
 import OnboardingView from './components/onboardingView';
 import SetupView from './components/setupView';
-import WalkthroughView from './components/walkthroughView';
+import WalkthroughView from './components/walkthrough/walkthroughView';
 import ToastContainer from './components/toastContainer';
 import { formatTabLabel, popupView } from './popupHelpers';
 import { fetchState, normalizeBackgroundState } from '../../utils/backgroundState';

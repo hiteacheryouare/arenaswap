@@ -4,9 +4,9 @@ import Crest from '@arenaswap/ui/src/components/crest';
 import { teamLogoOnColor } from '@arenaswap/core/constants';
 import { matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared';
 import { i18n } from '#i18n';
-import FlowStepper from './flowStepper';
-import focusStepTitle from './stepTitleFocus';
-import fullScreenShortcut, { fullScreenKeys } from '../../../utils/fullScreenShortcut';
+import FlowStepper from '../flowStepper';
+import focusStepTitle from '../stepTitleFocus';
+import fullScreenShortcut, { fullScreenKeys } from '../../../../utils/fullScreenShortcut';
 
 interface walkthroughStepFullScreenProps {
 	onNext: () => void;

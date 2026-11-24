@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { i18n } from '#i18n';
 import { leagueShortLabels } from '@arenaswap/core/constants';
 import type { LeagueId } from '@arenaswap/core/types';
-import { cooldownSteps, formatCooldownSeconds } from './cooldownSlider';
-import FlowStepper from './flowStepper';
-import FormRange from './formRange';
-import LudicrousSpeedLabel from './ludicrousSpeedLabel';
-import focusStepTitle from './stepTitleFocus';
+import { cooldownSteps, formatCooldownSeconds } from '../cooldownSlider';
+import FlowStepper from '../flowStepper';
+import FormRange from '../formRange';
+import LudicrousSpeedLabel from '../ludicrousSpeedLabel';
+import focusStepTitle from '../stepTitleFocus';
 
 interface walkthroughStepSettingsProps {
 	onNext: () => void;

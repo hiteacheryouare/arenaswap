@@ -1,9 +1,9 @@
 import { matchupSurfaceStyle, powerScoreColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { i18n } from '#i18n';
-import SelectDropdown from './selectDropdown';
-import FlowStepper from './flowStepper';
+import SelectDropdown from '../selectDropdown';
+import FlowStepper from '../flowStepper';
 import WalkthroughTeamLogo from './walkthroughTeamLogo';
-import focusStepTitle from './stepTitleFocus';
+import focusStepTitle from '../stepTitleFocus';
 
 interface walkthroughStepTabAssignProps {
 	onNext: () => void;

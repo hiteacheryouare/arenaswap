@@ -1,9 +1,9 @@
 import { i18n } from '#i18n';
 import ToggleSwitch from '@arenaswap/ui/src/components/toggleSwitch';
 import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
-import { fullLogoSrc } from '../../../utils/theme';
-import FlowStepper from './flowStepper';
-import focusStepTitle from './stepTitleFocus';
+import { fullLogoSrc } from '../../../../utils/theme';
+import FlowStepper from '../flowStepper';
+import focusStepTitle from '../stepTitleFocus';
 
 interface walkthroughStepReAccessProps {
 	onNext: () => void;

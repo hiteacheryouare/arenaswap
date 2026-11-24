@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { i18n } from '#i18n';
 import ToggleSwitch from '@arenaswap/ui/src/components/toggleSwitch';
-import FlowStepper from './flowStepper';
-import focusStepTitle from './stepTitleFocus';
+import FlowStepper from '../flowStepper';
+import focusStepTitle from '../stepTitleFocus';
 
 interface walkthroughStepLeaguesFavoritesProps {
 	onNext: () => void;

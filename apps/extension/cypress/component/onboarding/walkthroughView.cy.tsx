@@ -1,5 +1,5 @@
-import WalkthroughView from '../../../entrypoints/popup/components/walkthroughView';
-import { lastPowerScoreSubStep } from '../../../entrypoints/popup/components/walkthroughStepPowerScore';
+import WalkthroughView from '../../../entrypoints/popup/components/walkthrough/walkthroughView';
+import { lastPowerScoreSubStep } from '../../../entrypoints/popup/components/walkthrough/walkthroughStepPowerScore';
 import de from '../../../locales/de.json';
 import en from '../../../locales/en.json';
 import es from '../../../locales/es.json';

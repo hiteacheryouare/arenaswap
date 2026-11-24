@@ -3,10 +3,10 @@ import type { BuiltInModeId } from '@arenaswap/core/types';
 import { i18n } from '#i18n';
 import { boostPresentation, modeSignalIds, penaltyPresentation, signalPresentation, type ModeSignalId } from '@arenaswap/ui/src/components/scoringModeMeta';
 import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
-import { iconSrc } from '../../../utils/theme';
-import FlowStepper from './flowStepper';
-import { translate, type plainMessageKey } from './settingsCatalog';
-import focusStepTitle from './stepTitleFocus';
+import { iconSrc } from '../../../../utils/theme';
+import FlowStepper from '../flowStepper';
+import { translate, type plainMessageKey } from '../settingsCatalog';
+import focusStepTitle from '../stepTitleFocus';
 
 interface walkthroughStepPowerScoreProps {
 	onNext: () => void;
