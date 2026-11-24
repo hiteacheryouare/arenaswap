@@ -6,7 +6,7 @@ import type { CollegeFilter, CollegeLeagueId, ExtensionMessage, LeagueId, League
 import type { Browser } from 'wxt/browser';
 import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
-import OnboardingView from './components/onboardingView';
+import OnboardingView from './components/onboarding/onboardingView';
 import SetupView from './components/setupView';
 import WalkthroughView from './components/walkthrough/walkthroughView';
 import ToastContainer from './components/toastContainer';

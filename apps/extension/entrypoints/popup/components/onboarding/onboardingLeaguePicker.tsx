@@ -2,11 +2,11 @@ import { i18n } from '#i18n';
 import { resolveLeagueLogoUrl } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap, SportType } from '@arenaswap/core/types';
 import Crest from '@arenaswap/ui/src/components/crest';
-import { toLeagueInitials, type leagueConfig } from './leagueLogo';
-import { sportTypeLabels, sportTypeOrder } from '../popupHelpers';
-import { leaguesBySportType } from '../../../utils/leagueOrder';
-import FlowStepper from './flowStepper';
-import focusStepTitle from './stepTitleFocus';
+import { toLeagueInitials, type leagueConfig } from '../leagueLogo';
+import { sportTypeLabels, sportTypeOrder } from '../../popupHelpers';
+import { leaguesBySportType } from '../../../../utils/leagueOrder';
+import FlowStepper from '../flowStepper';
+import focusStepTitle from '../stepTitleFocus';
 
 interface onboardingLeaguePickerProps {
 	selectedLeagues: Set<LeagueId>;

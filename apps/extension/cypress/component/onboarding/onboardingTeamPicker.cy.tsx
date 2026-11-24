@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { EspnTeamEntry } from '@arenaswap/sideline';
-import OnboardingTeamPicker from '../../../entrypoints/popup/components/onboardingTeamPicker';
+import OnboardingTeamPicker from '../../../entrypoints/popup/components/onboarding/onboardingTeamPicker';
 
 const teams: EspnTeamEntry[] = [
 	{ leagueId: 'nba', id: '20', name: 'Philadelphia 76ers', abbreviation: 'PHI' },

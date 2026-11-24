@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { LeagueId } from '@arenaswap/core/types';
-import OnboardingLeaguePicker from '../../../entrypoints/popup/components/onboardingLeaguePicker';
+import OnboardingLeaguePicker from '../../../entrypoints/popup/components/onboarding/onboardingLeaguePicker';
 import { leaguesBySportType } from '../../../utils/leagueOrder';
 
 const defaultProps = {

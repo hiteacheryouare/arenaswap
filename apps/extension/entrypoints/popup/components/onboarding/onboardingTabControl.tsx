@@ -1,9 +1,9 @@
 import { i18n } from '#i18n';
 import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
-import { openBackupTab } from '../../../utils/settingsBackup';
-import { fullLogoSrc } from '../../../utils/theme';
-import FlowStepper from './flowStepper';
-import focusStepTitle from './stepTitleFocus';
+import { openBackupTab } from '../../../../utils/settingsBackup';
+import { fullLogoSrc } from '../../../../utils/theme';
+import FlowStepper from '../flowStepper';
+import focusStepTitle from '../stepTitleFocus';
 
 interface onboardingTabControlProps {
 	onNext: () => void;

@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { i18n } from '#i18n';
 import type { EspnTeamEntry } from '@arenaswap/sideline';
 import { createFavoriteTeamKey } from '@arenaswap/core/constants';
-import TeamPickerList from './teamPickerList';
-import FlowStepper from './flowStepper';
-import focusStepTitle from './stepTitleFocus';
+import TeamPickerList from '../teamPickerList';
+import FlowStepper from '../flowStepper';
+import focusStepTitle from '../stepTitleFocus';
 
 interface onboardingTeamPickerProps {
 	teams: EspnTeamEntry[];
