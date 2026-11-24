@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type { scoringBurst } from '../../../utils/favoriteScoreFlash';
+import type { scoringBurst } from '../../../../utils/favoriteScoreFlash';
 
 export interface fireworkVolley {
 	id: number;

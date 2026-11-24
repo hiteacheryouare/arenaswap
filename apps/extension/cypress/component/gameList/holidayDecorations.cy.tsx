@@ -1,5 +1,5 @@
 import GameDetailView from '../../../entrypoints/popup/components/gameDetailView';
-import HolidayLights from '../../../entrypoints/popup/components/holidayLights';
+import HolidayLights from '../../../entrypoints/popup/components/holiday/holidayLights';
 import SetupView from '../../../entrypoints/popup/components/setupView';
 import type { Game, PowerScoreSnapshot, UserPreferences } from '@arenaswap/core/types';
 import { resolveDecorationDate } from '../../../utils/holidayDecorations';

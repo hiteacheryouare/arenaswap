@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
-import type { fallingKind } from '../../../utils/holidayDecorations';
+import type { fallingKind } from '../../../../utils/holidayDecorations';
 import type { ResolvedTheme } from '@arenaswap/core/types';
-import { drawLeaf, leafPalette, leafShadow, leafShapeCount, mixColor, type rgbColor } from './leafArt';
+import { drawLeaf, leafPalette, leafShadow, leafShapeCount, mixColor, type rgbColor } from '../leafArt';
 
 interface holidayFallProps {
 	kind: fallingKind;
