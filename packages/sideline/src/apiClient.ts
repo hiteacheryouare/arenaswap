@@ -9,8 +9,7 @@ import { parseScoreboard } from './espnSchemas';
 import type { EspnScoreboardResponse } from './espnSchemas';
 import { parseEvent } from './scoreboardEvent';
 import { settledInPool, takeRequestSlot } from './requestPool';
-import { coreApiBase, espnBase, requestSignal } from './endpoints';
-import { standingsUrl, summaryUrl } from './summaryFetch';
+import { coreApiBase, espnBase, espnGet, standingsUrl, summaryUrl } from './endpoints';
 
 export { requestTimeoutMs } from './endpoints';
 
@@ -72,12 +71,7 @@ interface LeagueGamesResult {
 
 const fetchScoreboard = async (url: string, leagueId: LeagueId, warnKey: string = leagueId, recordMaxAge = false): Promise<EspnScoreboardResponse> => {
 	await takeRequestSlot();
-	const res = await fetch(url, {
-		headers: {
-			'Accept': 'application/json',
-		},
-		signal: requestSignal(),
-	});
+	const res = await espnGet(url);
 	if (!res.ok) throw new LeagueFetchError(leagueId, res.status);
 	if (recordMaxAge) recordScoreboardMaxAge(leagueId, res.headers.get('cache-control'));
 	const parsed = parseScoreboard(await res.json());
@@ -364,7 +358,7 @@ export const fetchWinProbability = async (game: Pick<Game, 'id' | 'league'>, ini
 
 	const url = summaryUrl(config.espnPath, game.id);
 	await takeRequestSlot();
-	const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: init?.signal ?? requestSignal() });
+	const res = await espnGet(url, { signal: init?.signal });
 	if (!res.ok) throw new Error(`Failed to fetch win probability for ${game.id}: HTTP ${res.status}`);
 
 	const summary: unknown = await res.json();
@@ -379,7 +373,7 @@ export const fetchCompetitionSituation = async (game: Pick<Game, 'id' | 'league'
 	const [sport, leaguePath] = config.espnPath.split('/');
 	await takeRequestSlot();
 	// Its replies are cacheable for seconds and stale for hours, so it's always asked afresh.
-	const res = await fetch(`${coreApiBase}/${sport}/leagues/${leaguePath}/events/${game.id}/competitions/${game.id}/situation`, { headers: { Accept: 'application/json' }, cache: 'no-cache', signal: requestSignal() });
+	const res = await espnGet(`${coreApiBase}/${sport}/leagues/${leaguePath}/events/${game.id}/competitions/${game.id}/situation`, { cache: 'no-cache' });
 	if (!res.ok) throw new Error(`Failed to fetch the situation for ${game.id}: HTTP ${res.status}`);
 	return await res.json();
 };
@@ -387,7 +381,7 @@ export const fetchCompetitionSituation = async (game: Pick<Game, 'id' | 'league'
 export const fetchLeagueStandings = async (league: LeagueId): Promise<unknown> => {
 	const config = leagueConfigMap[league];
 	await takeRequestSlot();
-	const res = await fetch(standingsUrl(config.espnPath), { headers: { Accept: 'application/json' }, signal: requestSignal() });
+	const res = await espnGet(standingsUrl(config.espnPath));
 	if (!res.ok) throw new Error(`Failed to fetch ${league} standings: HTTP ${res.status}`);
 	return await res.json();
 };
@@ -410,7 +404,7 @@ export const fetchGameDurationMins = async (game: Pick<Game, 'id' | 'league'>): 
 
 	const url = summaryUrl(config.espnPath, game.id);
 	await takeRequestSlot();
-	const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: requestSignal() });
+	const res = await espnGet(url);
 	if (!res.ok) throw new Error(`Failed to fetch the duration of ${game.id}: HTTP ${res.status}`);
 	return parseGameDurationMins(await res.json());
 };

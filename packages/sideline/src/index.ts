@@ -27,4 +27,5 @@ export type { VenueDetails } from './venueParse';
 export type { FormResult, InjuryEntry, Matchup, Paired, StatComparison, TicketLink } from './matchupParse';
 export { injuryStatusByType, injuryStatusOrder, seasonStatSpecsFor } from './matchupSpecs';
 export type { InjuryStatus, SeasonStatSpec } from './matchupSpecs';
-export { clearSharedRequests, fetchSharedLeagueStandings, fetchSummary, prefetchGameDetail, sharedRequestFreshMs, standingsUrl, summaryUrl } from './summaryFetch';
+export { clearSharedRequests, fetchSharedLeagueStandings, fetchSummary, prefetchGameDetail, sharedRequestFreshMs } from './summaryFetch';
+export { standingsUrl, summaryUrl } from './endpoints';

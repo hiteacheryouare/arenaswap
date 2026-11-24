@@ -2,7 +2,7 @@ import type { LeagueId, TeamMonoLogoMap, TeamMonoMarks } from '@arenaswap/core';
 import { getEnabledLeagueConfigs } from './apiClient';
 import { warnOnDroppedCountChange } from './dropWarnings';
 import { parseTeams } from './espnSchemas';
-import { espnBase, requestSignal } from './endpoints';
+import { espnBase, espnGet } from './endpoints';
 import { settledInPool, takeRequestSlot } from './requestPool';
 
 export interface EspnTeamEntry {
@@ -46,7 +46,7 @@ export const fetchTeamMonoLogos = async (leagueIds: LeagueId[], size = 120): Pro
 	const results = await settledInPool(configs, async (config) => {
 		const url = `${espnBase}/${config.espnPath}/teams?limit=1000`;
 		await takeRequestSlot();
-		const res = await fetch(url, { headers: { Accept: 'application/json' }, signal: requestSignal() });
+		const res = await espnGet(url);
 		if (!res.ok) throw new Error(`Failed to fetch team logos for ${config.id}: HTTP ${res.status}`);
 		const parsed = parseTeams(await res.json());
 		const entries = parsed.teams.reduce<Record<string, TeamMonoMarks>>((acc, { team }) => {
@@ -76,7 +76,7 @@ export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnT
 		// thing that decides whether a school makes the list.
 		const url = `${espnBase}/${config.espnPath}/teams?limit=1000`;
 		await takeRequestSlot();
-		const res = await fetch(url, { headers: { 'Accept': 'application/json' }, signal: requestSignal() });
+		const res = await espnGet(url);
 		if (!res.ok) throw new Error(`Failed to fetch teams for ${config.id}: HTTP ${res.status}`);
 		const parsed = parseTeams(await res.json());
 		warnOnDroppedCountChange(
