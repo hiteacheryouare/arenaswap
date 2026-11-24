@@ -1,6 +1,6 @@
 import { colorDifference, hexToLab, hexToRgb, rgbToHex } from './colorMath';
 import { crestInkGrouping, groupCrestInk } from './crestColor';
-import { samplePixels } from './logoTint';
+import { samplePixels } from './pixelSample';
 
 const sampleSize = 96;
 const minAlpha = 200;
