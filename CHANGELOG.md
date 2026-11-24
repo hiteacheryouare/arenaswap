@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The docs site shares its logo, string and theme helpers — 2026-11-24
+
+Seven copies of the team-logo URL builder become one `components/teamLogo.ts`, `ui.ts` and the demo strings share one lookup and flatten in `i18n/bundle.ts`, the theme module reuses core's theme types, and LivePowerScores' scoreboard client moves to `lib/liveScoreboard.ts`. A new extension test fails if `packages/ui`'s English fallback strings drift from `en.json`.
+
 ## The popup's three biggest files hand pieces to their own modules — 2026-11-24
 
 `app.tsx` hands its open-reveal state and effects to `useOpenReveal`, its logo cache to `useLeagueLogoCache` and its six league and favorite updaters to `utils/prefsUpdates.ts`, with the hooks called where their effects used to sit so effect order is unchanged. Each settings page in `setupView.tsx` is its own component under `components/settings/` (SetupView's props are unchanged), and `useSummaryData.ts` keeps only the hook, with its parsers in `summaryParsers.ts` and demo tables in `demoSummary.ts`.
