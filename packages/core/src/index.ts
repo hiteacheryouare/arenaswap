@@ -6,6 +6,7 @@ export { resolveModeForGame, modesInUse } from './scoringMode';
 export { fantasyRosterLimit, fantasyRosterStorageKey, normalizeFantasyRoster, rosterInGame } from './fantasy';
 export type { FantasyRosterEntry, FantasyScoringOverrides } from './fantasy';
 export { getFavoriteTeamCount, rivalSidesOf, nextClockStall, scoreLiveGame, scoreOptionsFor, scoringContextFor, timelineProgressOf, toLegacyPowerScoreResult, toLiveScore, toScoringGame } from './scoring';
+export type { BasketballSituation, BasketballTeamSituation } from './basketballSituation';
 export { getHistoryWindowMsForGame, maxSnapshotsPerGame, recentSnapshots, retainSnapshots, toScoreSnapshot } from './snapshotHistory';
 export { chooseSwitchTarget } from './switchPolicy';
 export { hasCommercialBreaks, nextCommercialBreak } from './commercialBreaks';

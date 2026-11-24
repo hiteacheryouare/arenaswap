@@ -2,8 +2,10 @@ import * as z from 'zod/mini';
 import { computeFantasyPoints, fantasySportOf } from 'powerscore';
 import type { FantasyPlayerState, PregameLine, ScoringContext, Side, TeamStakes } from 'powerscore';
 import { getHistoryWindowMsForGame, rosterInGame } from '@arenaswap/core';
-import type { FantasyRosterEntry, FantasyScoringOverrides, Game, LeagueId } from '@arenaswap/core';
+import type { BasketballSituation, BasketballTeamSituation, FantasyRosterEntry, FantasyScoringOverrides, Game, LeagueId } from '@arenaswap/core';
 import { boxScoreLineId, readFantasyBoxScore } from './fantasyBoxScore';
+
+export type { BasketballSituation, BasketballTeamSituation };
 
 const espnNumber = z.union([z.number(), z.string()]);
 
@@ -77,18 +79,6 @@ const BasketballSideSchema = z.object({
 		bonusState: z.catch(z.optional(z.string()), undefined),
 	})), undefined),
 });
-
-export interface BasketballTeamSituation {
-	timeoutsLeft?: number;
-	bonus?: 'bonus' | 'double';
-	foulsToGive?: number;
-	periodFouls?: number;
-}
-
-export interface BasketballSituation {
-	home: BasketballTeamSituation;
-	away: BasketballTeamSituation;
-}
 
 const readBasketballSide = (timeouts: unknown, fouls: unknown): BasketballTeamSituation => {
 	const parsed = BasketballSideSchema.safeParse({ timeouts, fouls });
