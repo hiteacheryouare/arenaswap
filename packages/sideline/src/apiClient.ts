@@ -10,7 +10,6 @@ import { collegeBaseballLeagues, gradePostseason, readEventHeadline } from './po
 import { isAbandonedStatus, isCanceledStatus, readDelayKind, readDisruption, readDoubleheader, readForfeitWinner, readMakeupDate, readPostponedReason } from './disruption';
 import { detailClock, parseBroadcastLogos, parseConference, parseGoalEvents } from './scoreboardExtras';
 import {
-	EspnSummarySchema,
 	parseScoreboard,
 	parseTeams,
 } from './espnSchemas';
@@ -1086,15 +1085,6 @@ export const fetchLeagueStandings = async (league: LeagueId): Promise<unknown> =
 	const res = await fetch(standingsUrl(config.espnPath), { headers: { Accept: 'application/json' }, signal: requestSignal() });
 	if (!res.ok) throw new Error(`Failed to fetch ${league} standings: HTTP ${res.status}`);
 	return await res.json();
-};
-
-export const parseWinProbability = (raw: unknown): number[] => {
-	const parsed = EspnSummarySchema.safeParse(raw);
-	if (!parsed.success) return [];
-	return (parsed.data.winprobability ?? [])
-		.map(entry => entry.homeWinPercentage)
-		.filter((p): p is number => typeof p === 'number' && Number.isFinite(p))
-		.map(p => Math.min(Math.max(p, 0), 1));
 };
 
 export const parseScoreboardEvents = (raw: unknown, league: LeagueId): Game[] => (

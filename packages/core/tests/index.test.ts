@@ -1,11 +1,9 @@
 import * as constants from '../src/constants';
-import * as scorer from 'powerscore';
 import * as indexExports from '../src/index';
 import * as mockGames from '../src/mockGames';
 
 describe('index barrel exports', () => {
-	test('re-exports powerscore and mock simulator', () => {
-		expect(indexExports.computePowerScore).toBe(scorer.computePowerScore);
+	test('re-exports the mock simulator', () => {
 		expect(indexExports.MockGameSimulator).toBe(mockGames.MockGameSimulator);
 	});
 

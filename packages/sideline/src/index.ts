@@ -1,5 +1,5 @@
 export { fetchCompetitionSituation, fetchGameDurationMins, fetchGames, fetchGamesWithLeagueLogos, fetchLeagueLogos, fetchLeagueStandings, fetchLiveGames, fetchNextScheduledStart,
-	fetchTeamMonoLogos, fetchTeamsForLeagues, fetchWinProbability, monoMarksFromLogos, parseGameDurationMins, parseScoreboardEvents, parseWinProbability, scoreboardRefreshMs } from './apiClient';
+	fetchTeamMonoLogos, fetchTeamsForLeagues, fetchWinProbability, monoMarksFromLogos, parseGameDurationMins, parseScoreboardEvents, scoreboardRefreshMs } from './apiClient';
 export type { EspnTeamEntry } from './apiClient';
 export { parseClockTenths, parseClockToSeconds, parseStoppageMinutes } from './gameClock';
 export { parseWinProbabilityReadings } from './winProbabilityReadings';

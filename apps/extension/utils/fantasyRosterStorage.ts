@@ -27,5 +27,3 @@ export const saveFantasyRoster = async (roster: FantasyRosterEntry[]): Promise<v
 		browser.storage.local.set(value),
 	]);
 };
-
-export const isFantasyRosterChange = (changes: Record<string, unknown>): boolean => fantasyRosterStorageKey in changes;

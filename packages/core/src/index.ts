@@ -1,9 +1,8 @@
-export { logWarn, logError, setVerboseLogging, isVerboseLogging } from './logger';
+export { logWarn, logError, setVerboseLogging } from './logger';
 export { computeEagerIntervalMs, computeHebetudinousIntervalMs, computeLeagueIntervalMs, earliestUpcomingStartMs, pollWinProbabilityMs } from './pollIntervalComputer';
-export { computeGameProgress, computePowerScore, computeScoringOpportunityBoost, computeWinProbVarianceScore, isPlayFrozen, normalizePowerScoreResult } from 'powerscore';
-export { scoreMaxTotal } from 'powerscore';
+export { computeGameProgress, isPlayFrozen } from 'powerscore';
 export { MockGameSimulator } from './mockGames';
-export { resolveModeForGame, modesInUse, isScoringModeChoice } from './scoringMode';
+export { resolveModeForGame, modesInUse } from './scoringMode';
 export { fantasyRosterLimit, fantasyRosterStorageKey, normalizeFantasyRoster, rosterInGame } from './fantasy';
 export type { FantasyRosterEntry, FantasyScoringOverrides } from './fantasy';
 export { chooseSwitchTarget, getFavoriteTeamCount, getHistoryWindowMsForGame, maxSnapshotsPerGame, rivalSidesOf, nextClockStall, recentSnapshots, retainSnapshots, scoreLiveGame, scoreOptionsFor, scoringContextFor, timelineProgressOf, toLegacyPowerScoreResult, toLiveScore, toScoreSnapshot, toScoringGame } from './scoring';
@@ -16,7 +15,6 @@ export type { HeldSwitch, HoldCheck, HoldTarget, HoldVerdict, PlayBreakSport, Pl
 export type { ClockStallEntry, LiveScoringInput, ScoringPrefs, SwitchCandidateTab, SwitchPolicyInput, SwitchTarget } from './scoring';
 export { offseasonGraceMs, resolveOffseason } from './leagueSchedule';
 export type { LeagueOffseason } from './leagueSchedule';
-export { postseasonBoostShare } from 'powerscore';
 export { createPollModeTracker } from './pollModeTracker';
 export { createWinProbabilityTracker, summaryStillNeeded } from './scoreboardWinProbability';
 export type { SummaryNeeds, WinProbabilityTracker } from './scoreboardWinProbability';

@@ -12,8 +12,6 @@ export const setVerboseLogging = (value: boolean): void => {
 	verbose = value;
 };
 
-export const isVerboseLogging = (): boolean => verbose;
-
 /* eslint-disable no-console -- this module is the one place console is the intended output */
 
 export const logWarn = (message: string, err?: unknown): void => {
