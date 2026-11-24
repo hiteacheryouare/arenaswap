@@ -5,7 +5,7 @@ import FlipScore from './flipScore';
 import { formatStartDateTime } from '@arenaswap/ui/src/components/gameCardShared';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import { countdownShowsSeconds, useStartCountdown } from './startCountdown';
-import { getRandomStartsSoonMessage } from '../popupHelpers';
+import { getRandomStartsSoonMessage } from '../../../utils/loadingMessages';
 
 interface startCountdownDisplayProps {
 	startTime: string | undefined;

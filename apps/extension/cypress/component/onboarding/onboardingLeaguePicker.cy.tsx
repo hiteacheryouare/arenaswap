@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { LeagueId } from '@arenaswap/core/types';
 import OnboardingLeaguePicker from '../../../entrypoints/popup/components/onboardingLeaguePicker';
-import { leaguesBySportType } from '../../../entrypoints/popup/popupHelpers';
+import { leaguesBySportType } from '../../../utils/leagueOrder';
 
 const defaultProps = {
 	selectedLeagues: new Set<LeagueId>(['nba', 'nfl']),

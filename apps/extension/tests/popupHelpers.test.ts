@@ -1,27 +1,12 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import {
-	buildFinalComparator,
-	buildLeagueRank,
-	buildLiveComparator,
-	buildUpcomingComparator,
-	byLeague,
-	fetchState,
-	formatTabLabel,
-	getRandomLoadingMessage,
-	getRandomStartsSoonMessage,
-	groupByLeague,
-	insertLeagueAtDefaultPosition,
-	isFavoriteTeamGame,
-	isInUpcomingWindow,
-	leagueOrder,
-	leaguesBySportType,
-	moveLeague,
-	normalizeBackgroundState,
-	resolveSelectedDayIndex,
-	startsSoonMessageCounts,
-} from '../entrypoints/popup/popupHelpers';
-import { createFavoriteTeamKey, leagueConfigs } from '@arenaswap/core/constants';
+import { formatTabLabel } from '../entrypoints/popup/popupHelpers';
+import { fetchState, normalizeBackgroundState } from '../utils/backgroundState';
+import { groupByLeague, resolveSelectedDayIndex } from '../utils/gameGroups';
+import { buildFinalComparator, buildLeagueRank, buildLiveComparator, buildUpcomingComparator, isInUpcomingWindow } from '../utils/gameOrdering';
+import { insertLeagueAtDefaultPosition, leagueOrder, leaguesBySportType, moveLeague } from '../utils/leagueOrder';
+import { getRandomLoadingMessage, getRandomStartsSoonMessage, startsSoonMessageCounts } from '../utils/loadingMessages';
+import { createFavoriteTeamKey, isFavoriteTeamGame, leagueConfigs } from '@arenaswap/core/constants';
 import type { Game, LeagueId, SportType } from '@arenaswap/core/types';
 
 const mockSendMessage = (returnValue: unknown) => {
@@ -71,7 +56,7 @@ describe('leaguesBySportType', () => {
 					],
 				};
 			});
-			expect(() => require('../entrypoints/popup/popupHelpers')).not.toThrow();
+			expect(() => require('../utils/leagueOrder')).not.toThrow();
 		});
 	});
 });
@@ -118,17 +103,6 @@ describe('getRandomStartsSoonMessage', () => {
 
 	test.each(sportTypes)('a %s game draws from the shared lines and its own sport\'s, and nothing else', sportType => {
 		expect(startsSoonLinesFor(sportType)).toEqual([...Object.values(groups.any!), ...Object.values(groups[sportType]!)]);
-	});
-});
-
-describe('byLeague', () => {
-	test('orders games by their league order index', () => {
-		const games: Game[] = [
-			makeGame({ id: 'nfl-1', league: 'nfl', sportType: 'football' }),
-			makeGame({ id: 'nba-1', league: 'nba' }),
-		];
-		const sorted = games.toSorted(byLeague);
-		expect(sorted[0]!.league).toBe('nba');
 	});
 });
 

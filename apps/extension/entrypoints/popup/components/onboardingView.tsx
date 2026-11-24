@@ -5,7 +5,7 @@ import type { EspnTeamEntry } from '@arenaswap/sideline';
 import { parseFavoriteTeamKey } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap, SportType } from '@arenaswap/core/types';
 import useDocumentTheme from '@arenaswap/ui/src/components/useDocumentTheme';
-import { leagueOrder, leaguesBySportType } from '../popupHelpers';
+import { leagueOrder, leaguesBySportType } from '../../../utils/leagueOrder';
 import { fullLogoSrc } from '../../../utils/theme';
 import OnboardingTabControl from './onboardingTabControl';
 import OnboardingLeaguePicker from './onboardingLeaguePicker';

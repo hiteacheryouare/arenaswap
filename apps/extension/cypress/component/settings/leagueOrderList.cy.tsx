@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import LeagueOrderList from '../../../entrypoints/popup/components/leagueOrderList';
-import { leagueOrder, moveLeague } from '../../../entrypoints/popup/popupHelpers';
+import { leagueOrder, moveLeague } from '../../../utils/leagueOrder';
 import type { LeagueId } from '@arenaswap/core/types';
 
 const defaultOrder: LeagueId[] = ['nba', 'nhl', 'mlb'];

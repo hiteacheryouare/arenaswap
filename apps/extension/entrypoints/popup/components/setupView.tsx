@@ -33,7 +33,8 @@ import TabFavicon from '@arenaswap/ui/src/components/tabFavicon';
 import { searchSettings, settingsGroups, translate, type settingsGroupId } from './settingsCatalog';
 import type { demoSeason } from '../../../utils/holidayDecorations';
 import type { profileList } from '../../../utils/profiles';
-import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
+import { sportTypeLabels, sportTypeOrder } from '../popupHelpers';
+import { leaguesBySportType } from '../../../utils/leagueOrder';
 import { changedFantasyRuleCount } from '../../../utils/scoringPrefs';
 import useSlideDirection, { slideClassName } from '../useSlideDirection';
 

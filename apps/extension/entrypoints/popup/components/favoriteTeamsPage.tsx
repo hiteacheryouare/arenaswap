@@ -7,7 +7,7 @@ import TeamListTabs, { teamListTabId } from './teamListTabs';
 import TeamPickerList from './teamPickerList';
 import TeamPickerRow, { type teamList } from './teamPickerRow';
 import { favoriteTeamRows, leaguesForFavoritePicker } from '../../../utils/favoriteTeams';
-import { leagueLabels } from '../popupHelpers';
+import { leagueLabels } from '@arenaswap/core/constants';
 
 interface favoriteTeamsPageProps {
 	enabledLeagues: readonly LeagueId[];

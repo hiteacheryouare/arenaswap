@@ -1,11 +1,11 @@
 import { useMemo, type ReactNode } from 'react';
 import { i18n } from '#i18n';
 import type { EspnTeamEntry } from '@arenaswap/sideline';
-import { createFavoriteTeamKey } from '@arenaswap/core/constants';
+import { createFavoriteTeamKey, leagueLabels } from '@arenaswap/core/constants';
 import type { LeagueId } from '@arenaswap/core/types';
 import TeamPickerRow, { type teamList } from './teamPickerRow';
 import { matchesTeamQuery } from '../../../utils/favoriteTeams';
-import { leagueLabels, leagueOrder } from '../popupHelpers';
+import { leagueOrder } from '../../../utils/leagueOrder';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import LoadingMessage from '@arenaswap/ui/src/components/loadingMessage';
 
