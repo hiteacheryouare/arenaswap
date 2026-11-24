@@ -2,7 +2,7 @@ import * as z from 'zod/mini';
 import { leagueConfigMap } from '@arenaswap/core';
 import type { FantasyRosterEntry, LeagueId } from '@arenaswap/core';
 import type { FantasyPosition } from 'powerscore';
-import { takeRequestSlot } from './apiClient';
+import { takeRequestSlot } from './requestPool';
 import { coreApiBase, requestSignal } from './endpoints';
 import { teamDefenseId } from './fantasyBoxScore';
 

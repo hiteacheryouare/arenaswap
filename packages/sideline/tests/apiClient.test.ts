@@ -1,5 +1,5 @@
 import { allLeagueIds, leagueLogoFallbacks, pollMinEagerMs } from '@arenaswap/core';
-import { buildCurrentDayKeys } from '../src/apiClient';
+import { buildCurrentDayKeys } from '../src/dayWindow';
 
 interface MockResponseInit {
 	ok?: boolean;
@@ -130,6 +130,10 @@ const loadApiClient = (): typeof import('../src/apiClient') => {
 	return require('../src/apiClient') as typeof import('../src/apiClient');
 };
 
+const loadRequestPool = () => require('../src/requestPool') as typeof import('../src/requestPool');
+
+const loadTeamLogos = () => require('../src/teamLogos') as typeof import('../src/teamLogos');
+
 const isLivePoll = (url: string): boolean => buildCurrentDayKeys().includes(dateOf(url));
 
 const mockSingleEvent = (event: Record<string, unknown>) => {
@@ -214,7 +218,8 @@ describe('apiClient', () => {
 		});
 
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
-		const { fetchTeamsForLeagues } = loadApiClient();
+		loadApiClient();
+		const { fetchTeamsForLeagues } = loadTeamLogos();
 
 		const teams = await fetchTeamsForLeagues(['nba', 'ncaab']);
 
@@ -267,7 +272,8 @@ describe('apiClient', () => {
 		});
 
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
-		const { fetchTeamsForLeagues } = loadApiClient();
+		loadApiClient();
+		const { fetchTeamsForLeagues } = loadTeamLogos();
 
 		await expect(fetchTeamsForLeagues(['nba', 'nfl'])).resolves.toEqual([
 			{
@@ -286,7 +292,8 @@ describe('apiClient', () => {
 			.mockRejectedValueOnce(new Error('network down'));
 
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
-		const { fetchTeamsForLeagues } = loadApiClient();
+		loadApiClient();
+		const { fetchTeamsForLeagues } = loadTeamLogos();
 
 		await expect(fetchTeamsForLeagues(['nba', 'nfl'])).rejects.toThrow('Failed to fetch teams for nba: HTTP 503');
 	});
@@ -2671,7 +2678,8 @@ describe('how wide a fan-out at ESPN is allowed to get', () => {
 
 	test('never has more than both pools multiplied in flight', async () => {
 		const { seen } = trackConcurrency();
-		const { fetchGamesWithLeagueLogos, espnRequestPoolSize, espnDayPoolSize } = loadApiClient();
+		const { fetchGamesWithLeagueLogos, espnDayPoolSize } = loadApiClient();
+		const { espnRequestPoolSize } = loadRequestPool();
 
 		await fetchGamesWithLeagueLogos(severalLeagues, { includeUpcoming: false });
 
@@ -2682,7 +2690,8 @@ describe('how wide a fan-out at ESPN is allowed to get', () => {
 
 	test('a window of more days than the inner pool does not widen it', async () => {
 		const { seen } = trackConcurrency();
-		const { fetchGamesWithLeagueLogos, espnRequestPoolSize, espnDayPoolSize } = loadApiClient();
+		const { fetchGamesWithLeagueLogos, espnDayPoolSize } = loadApiClient();
+		const { espnRequestPoolSize } = loadRequestPool();
 
 		await fetchGamesWithLeagueLogos(severalLeagues, { includeUpcoming: true, upcomingDays: 2 });
 
@@ -2700,7 +2709,9 @@ describe('how wide a fan-out at ESPN is allowed to get', () => {
 
 	test('pools the team fan-out the pickers use as well', async () => {
 		const { seen } = trackConcurrency();
-		const { fetchTeamsForLeagues, espnRequestPoolSize } = loadApiClient();
+		loadApiClient();
+		const { fetchTeamsForLeagues } = loadTeamLogos();
+		const { espnRequestPoolSize } = loadRequestPool();
 
 		await fetchTeamsForLeagues(allLeagueIds);
 

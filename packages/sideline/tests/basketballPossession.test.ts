@@ -1,4 +1,4 @@
-import { parseScoreboardEvents } from '../src/apiClient';
+import { parseScoreboardEvents } from '../src/scoreboardEvent';
 import { deriveBasketballPossession } from '../src/basketballPossession';
 import lastPlays from './fixtures/liveExtras/basketballLastPlays.json';
 

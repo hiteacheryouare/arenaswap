@@ -1,6 +1,6 @@
 import { boostPoints, scoreGame, signalPoints, underdogProbability } from 'powerscore';
 import type { TeamStakes } from 'powerscore';
-import { parseScoreboardEvents } from '../src/apiClient';
+import { parseScoreboardEvents } from '../src/scoreboardEvent';
 import { createLiveExtras, readBasketballSituation, readBoxLeadChanges, readHockeySituation, readPregameLine, readStandingsStakes } from '../src/liveExtras';
 import { scoreLiveGame, toScoringGame } from '@arenaswap/core';
 import type { Game } from '@arenaswap/core';

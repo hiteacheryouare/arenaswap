@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Game, LeagueId } from '@arenaswap/core';
-import { parseScoreboardEvents } from '../src/apiClient';
+import { parseScoreboardEvents } from '../src/scoreboardEvent';
 
 const gameFrom = (name: string): Game => {
 	const capture = JSON.parse(readFileSync(join(__dirname, 'fixtures/scoreboardExtras', `${name}.json`), 'utf8')) as { league: LeagueId; event: unknown };

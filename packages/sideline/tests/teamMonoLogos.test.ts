@@ -7,9 +7,9 @@ const createResponse = (data: unknown, init: { ok?: boolean; status?: number } =
 	json: async () => data,
 } as Response);
 
-const loadApiClient = (): typeof import('../src/apiClient') => {
+const loadTeamLogos = (): typeof import('../src/teamLogos') => {
 	jest.resetModules();
-	return require('../src/apiClient') as typeof import('../src/apiClient');
+	return require('../src/teamLogos') as typeof import('../src/teamLogos');
 };
 
 const espnHref = (name: string) => `https://a.espncdn.com/i/teamlogos/nba/500/${name}.png`;
@@ -20,23 +20,23 @@ const teamRow = (id: string, logos: unknown[]) => ({ team: { id, displayName: `T
 
 describe('resizing a mark through ESPN\'s own combiner', () => {
 	test('rewrites a 4096px source to the size the bar actually draws', () => {
-		expect(loadApiClient().monoLogoUrl(espnHref('det'), 120))
+		expect(loadTeamLogos().monoLogoUrl(espnHref('det'), 120))
 			.toBe('https://a.espncdn.com/combiner/i?img=/i/teamlogos/nba/500/det.png&w=120&h=120');
 	});
 
 	test('refuses a host that is not ESPN\'s image CDN, which is all-or-nothing', () => {
-		expect(loadApiClient().monoLogoUrl('https://cdn.example.com/i/det.png', 120)).toBeUndefined();
-		expect(loadApiClient().monoLogoUrl('https://a.espncdn.com.evil.test/i/det.png', 120)).toBeUndefined();
+		expect(loadTeamLogos().monoLogoUrl('https://cdn.example.com/i/det.png', 120)).toBeUndefined();
+		expect(loadTeamLogos().monoLogoUrl('https://a.espncdn.com.evil.test/i/det.png', 120)).toBeUndefined();
 	});
 
 	test('an absent href is absent rather than a broken URL', () => {
-		expect(loadApiClient().monoLogoUrl(undefined, 120)).toBeUndefined();
+		expect(loadTeamLogos().monoLogoUrl(undefined, 120)).toBeUndefined();
 	});
 });
 
 describe('picking the white and black marks out of a team\'s logo list', () => {
 	test('takes both when ESPN has drawn both', () => {
-		const marks = loadApiClient().monoMarksFromLogos([
+		const marks = loadTeamLogos().monoMarksFromLogos([
 			{ href: espnHref('det'), rel: ['full', 'default'] },
 			{ href: espnHref('det-white'), rel: ['full', 'primary_logo_white'] },
 			{ href: espnHref('det-black'), rel: ['full', 'primary_logo_black'] },
@@ -49,22 +49,22 @@ describe('picking the white and black marks out of a team\'s logo list', () => {
 	});
 
 	test('takes the one it has rather than insisting on the pair', () => {
-		const marks = loadApiClient().monoMarksFromLogos([{ href: espnHref('det-white'), rel: ['primary_logo_white'] }]);
+		const marks = loadTeamLogos().monoMarksFromLogos([{ href: espnHref('det-white'), rel: ['primary_logo_white'] }]);
 
 		expect(Object.keys(marks ?? {})).toEqual(['white']);
 	});
 
 	test('answers null when the team has only its ordinary colour logo', () => {
-		expect(loadApiClient().monoMarksFromLogos([{ href: espnHref('det'), rel: ['default'] }])).toBeNull();
+		expect(loadTeamLogos().monoMarksFromLogos([{ href: espnHref('det'), rel: ['default'] }])).toBeNull();
 	});
 
 	test('answers null for a team with no logos at all rather than an empty object', () => {
-		expect(loadApiClient().monoMarksFromLogos(undefined)).toBeNull();
-		expect(loadApiClient().monoMarksFromLogos([])).toBeNull();
+		expect(loadTeamLogos().monoMarksFromLogos(undefined)).toBeNull();
+		expect(loadTeamLogos().monoMarksFromLogos([])).toBeNull();
 	});
 
 	test('a mark ESPN hosts elsewhere is skipped without taking its sibling with it', () => {
-		const marks = loadApiClient().monoMarksFromLogos([
+		const marks = loadTeamLogos().monoMarksFromLogos([
 			{ href: 'https://elsewhere.test/det-white.png', rel: ['primary_logo_white'] },
 			{ href: espnHref('det-black'), rel: ['primary_logo_black'] },
 		]);
@@ -77,7 +77,7 @@ describe('fetching a whole league\'s marks', () => {
 	const mockFetch = (handler: (url: string) => Response | Promise<Response>) => {
 		const fetchMock = jest.fn(async (input: RequestInfo | URL) => handler(String(input)));
 		(globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
-		return { fetchMock, api: loadApiClient() };
+		return { fetchMock, api: loadTeamLogos() };
 	};
 
 	test('keys the league\'s teams by id', async () => {

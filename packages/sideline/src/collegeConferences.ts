@@ -1,7 +1,7 @@
 import * as z from 'zod/mini';
 import { collegeDivisions, conferenceCrestSlug, leagueConfigMap } from '@arenaswap/core';
 import type { CollegeLeagueId, ConferenceDirectory, ConferenceEntry } from '@arenaswap/core';
-import { settledInPool, takeRequestSlot } from './apiClient';
+import { settledInPool, takeRequestSlot } from './requestPool';
 import { coreApiBase, requestSignal } from './endpoints';
 
 const conferenceParents: Partial<Record<CollegeLeagueId, string[]>> = {

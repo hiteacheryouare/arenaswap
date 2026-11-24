@@ -1,4 +1,4 @@
-import { parseScoreboardEvents } from '../src/apiClient';
+import { parseScoreboardEvents } from '../src/scoreboardEvent';
 import recorded from './fixtures/liveExtras/nflLiveWinProbability.json';
 
 type Json = any;

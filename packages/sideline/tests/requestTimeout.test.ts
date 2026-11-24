@@ -86,8 +86,8 @@ describe('a request that never answers', () => {
 		['standings', (api: typeof import('../src/apiClient')) => api.fetchLeagueStandings('nba')],
 		['situation', (api: typeof import('../src/apiClient')) => api.fetchCompetitionSituation({ id: '1', league: 'nba' })],
 		['duration', (api: typeof import('../src/apiClient')) => api.fetchGameDurationMins({ id: '1', league: 'mlb' })],
-		['team marks', (api: typeof import('../src/apiClient')) => api.fetchTeamMonoLogos(['nba'])],
-		['teams', (api: typeof import('../src/apiClient')) => api.fetchTeamsForLeagues(['nba'])],
+		['team marks', () => (require('../src/teamLogos') as typeof import('../src/teamLogos')).fetchTeamMonoLogos(['nba'])],
+		['teams', () => (require('../src/teamLogos') as typeof import('../src/teamLogos')).fetchTeamsForLeagues(['nba'])],
 	])('gives up on the %s request after ten seconds', async (_name, call) => {
 		setFetch(jest.fn(hangsUntilAborted));
 		let settled = false;
