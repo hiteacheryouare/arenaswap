@@ -170,13 +170,13 @@ const tiles = mosaicGames.map(game => {
 			tiles.forEach(tile => {
 				const other = placed(tile);
 				const distance = Math.hypot(other.left - box.left, other.top - box.top);
-				const deal = tile === start ? 0 : holdMs * 0.7 + (distance / far) * pullBackMs * 0.5;
+				const deal = holdMs * 0.7 + (distance / far) * pullBackMs * 0.5;
 				tile.style.setProperty('--deal', `${Math.round(deal)}ms`);
 			});
 			mosaic.style.transformOrigin = `${centreX - frame.left}px ${centreY - frame.top}px`;
 			mosaic.animate(frames, { duration: pullBackMs, delay: holdMs, easing: 'cubic-bezier(0.6, 0, 0.25, 1)', fill: 'backwards' });
 
-			start.classList.add('is-opening');
+			start.classList.add('is-opener', 'is-opening');
 			mosaic.classList.add('is-dealt', 'is-zooming');
 			crown(start, holdMs * 0.45);
 			window.setTimeout(() => start.classList.remove('is-opening'), holdMs);

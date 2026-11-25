@@ -168,8 +168,11 @@
 			animation-delay: var(--deal, 0ms);
 		}
 
-		.about-tile.is-opening > & {
+		.about-tile.is-opener > & {
 			animation: none;
+		}
+
+		.about-tile.is-opening > & {
 			transition: none;
 		}
 

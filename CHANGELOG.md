@@ -5,6 +5,9 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The About hero's opening card stays on screen through the pull-back — 2026-11-24
+
+When the hold ended, removing `is-opening` handed the opening card back to the mosaic's deal animation, which replayed it from opacity 0 as the other cards dealt in. The opener now carries a permanent `is-opener` class that keeps it out of the deal, and `is-opening` only pauses its transitions during the hold.
 ## The debug panel says when and where the build was made — 2026-11-23
 
 The panel behind the footer heart now shows the build's date, time and time zone, and whether CI or a local machine built it, pinned by `SOURCE_DATE_EPOCH` so a reviewer's rebuild can match ours (`utils/buildStamp.ts`). It also shows the platform, UI language, Multiview and notification permissions, how long the worker has been up, and each league's last good poll and failure count, and a Copy all button puts the whole panel on the clipboard as text.
