@@ -291,7 +291,6 @@
 			"smallStuffDemo": "L'écran de match d'une finale le jour de Noël, {away} {awayScore}, {home} {homeScore}, avec une chaussette accrochée pour chaque équipe sous une guirlande. Celle du vainqueur déborde de friandises. Celle du perdant, c'est du charbon.",
 			"funTitle": "Le sport, ça doit rester fun.",
 			"funCopy": "On ne sauve pas des vies ici. On te trouve un meilleur match, alors autant s'amuser.",
-			"funDemo": "Ce que le popup affiche pendant le chargement. Il y en a {count}, clique pour en voir une autre.",
 			"funAnother": "Afficher une autre phrase de chargement",
 			"watchTitle": "On l'utilise aussi.",
 			"watchCopy": "On utilise ArenaSwap chaque fois qu'on regarde du sport. Si ce n'est pas assez bien sur notre canapé, ça ne l'est pas non plus sur le tien.",

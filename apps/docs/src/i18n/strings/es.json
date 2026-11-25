@@ -291,7 +291,6 @@
 			"smallStuffDemo": "La pantalla de un partido de Navidad ya terminado, {away} {awayScore}, {home} {homeScore}, con un calcetín colgado para cada equipo bajo una guirnalda. El del ganador está lleno de dulces. El del perdedor trae carbón.",
 			"funTitle": "El deporte es para divertirse.",
 			"funCopy": "No estamos salvando vidas. Te buscamos un mejor partido, así que nos divertimos haciéndolo.",
-			"funDemo": "Lo que muestra el popup mientras carga. Hay {count} así, haz clic para ver otra.",
 			"funAnother": "Mostrar otra frase de carga",
 			"watchTitle": "Nosotros también lo usamos.",
 			"watchCopy": "Usamos ArenaSwap cada vez que vemos deporte. Si algo no es lo bastante bueno en nuestro sillón, tampoco lo es para el tuyo.",

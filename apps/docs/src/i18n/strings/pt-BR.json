@@ -291,7 +291,6 @@
 			"smallStuffDemo": "A tela de um jogo de Natal já encerrado, {away} {awayScore}, {home} {homeScore}, com uma meia pendurada para cada time sob uma guirlanda. A meia do vencedor está cheia de doces. A do perdedor tem carvão.",
 			"funTitle": "Esporte tem que ser divertido.",
 			"funCopy": "A gente não está salvando vidas. Estamos achando um jogo melhor pra você, então nos divertimos fazendo isso.",
-			"funDemo": "O que o popup mostra enquanto carrega. São {count}, então clique para ver outra.",
 			"funAnother": "Mostrar outra frase de carregamento",
 			"watchTitle": "A gente também usa.",
 			"watchCopy": "Usamos o ArenaSwap toda vez que vemos esporte. Se algo não está bom o bastante no nosso sofá, não está bom o bastante no seu.",

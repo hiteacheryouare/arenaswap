@@ -291,7 +291,6 @@
 			"smallStuffDemo": "圣诞节决赛的比赛画面，{away} {awayScore}，{home} {homeScore}，花环下为两队各挂了一只圣诞袜。赢家的袜子里塞满糖果，输家的袜子里是煤块。",
 			"funTitle": "体育本该好玩。",
 			"funCopy": "我们不是在拯救生命。我们只是帮您找到更好看的比赛，所以做的时候自己也玩得开心。",
-			"funDemo": "弹窗加载时显示的内容。一共有 {count} 条，点击换一条。",
 			"funAnother": "显示另一条加载提示",
 			"watchTitle": "我们自己也在用。",
 			"watchCopy": "每次看比赛，我们都在用 ArenaSwap。要是在我们家沙发上都不够好，就不会拿到您的沙发上。",

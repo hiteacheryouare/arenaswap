@@ -5,6 +5,9 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The About page's demos lose their captions — 2026-11-24
+
+The loading-line and Multiview demos no longer carry a sentence underneath explaining what they are. The Multiview line lives on as the figure's `aria-label`, since the animation itself is `aria-hidden`, and `DocDemo` drops its unused `caption` prop and the `.doc-demo-caption` style with it.
 ## The About page's Christmas card drops the squares behind its crests — 2026-11-24
 
 `ChristmasDemo` renders as static HTML with no `client:` directive, so its crests never left `data-crest-state='pending'` and kept the grey placeholder plate. Its row now carries `data-crest-settle` with `<CrestSettle />`, the same script that settles the hero mosaic and the landing bands. Any other React demo rendered without hydration needs the same pairing.

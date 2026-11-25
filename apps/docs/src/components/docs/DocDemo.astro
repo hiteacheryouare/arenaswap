@@ -1,13 +1,12 @@
 ---
 interface Props {
 	description: string;
-	caption?: string;
 	closeup?: boolean;
 	scroll?: boolean;
 	live?: boolean;
 }
 
-const { description, caption, closeup = false, scroll = false, live = false } = Astro.props;
+const { description, closeup = false, scroll = false, live = false } = Astro.props;
 ---
 <figure class='doc-demo' aria-label={description}>
 	<div class:list={['doc-demo-body', { 'is-scrolling': scroll }]} tabindex={scroll ? 0 : undefined}>
@@ -15,5 +14,4 @@ const { description, caption, closeup = false, scroll = false, live = false } = 
 			<slot />
 		</div>
 	</div>
-	{caption && <figcaption class='doc-demo-caption'>{caption}</figcaption>}
 </figure>

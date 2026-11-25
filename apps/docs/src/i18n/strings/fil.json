@@ -291,7 +291,6 @@
 			"smallStuffDemo": "Ang game screen ng final sa Araw ng Pasko, {away} {awayScore}, {home} {homeScore}, na may medyas na nakasabit para sa bawat team sa ilalim ng garland. Puno ng regalo ang medyas ng nanalo. Uling ang laman ng sa natalo.",
 			"funTitle": "Dapat masaya ang sports.",
 			"funCopy": "Hindi kami nagliligtas ng buhay dito. Naghahanap kami ng mas magandang laro para sa'yo, kaya nag-e-enjoy kami habang ginagawa 'yon.",
-			"funDemo": "Ito ang ipinapakita ng popup habang naglo-load. May {count} nito, i-click para sa isa pa.",
 			"funAnother": "Magpakita ng isa pang linya sa pag-load",
 			"watchTitle": "Ginagamit din namin 'to.",
 			"watchCopy": "Ginagamit namin ang ArenaSwap tuwing nanonood kami ng sports. Kapag hindi sapat ang isang bagay sa sofa namin, hindi rin sapat 'yon sa sofa mo.",

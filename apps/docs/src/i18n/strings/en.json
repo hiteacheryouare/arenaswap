@@ -291,7 +291,6 @@
 			"smallStuffDemo": "The game screen for a Christmas Day final, {away} {awayScore}, {home} {homeScore}, with a stocking hung for each team under a garland. The winner's stocking is full of treats. The loser's has coal.",
 			"funTitle": "Sports are supposed to be fun.",
 			"funCopy": "We aren't saving lives here. We're finding you a better game, so we have fun doing it.",
-			"funDemo": "What the popup shows while it loads. There are {count} of these, so click for another.",
 			"funAnother": "Show another loading line",
 			"watchTitle": "We use it too.",
 			"watchCopy": "We use ArenaSwap every time we watch sports. If something isn't good enough on our couch, it isn't good enough for yours.",

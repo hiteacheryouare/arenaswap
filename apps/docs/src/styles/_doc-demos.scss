@@ -75,14 +75,6 @@
 		width: 100%;
 	}
 
-	.doc-demo-caption {
-		margin-top: 0.6rem;
-		font-size: 0.875rem;
-		line-height: 1.5;
-		color: var(--color-muted);
-		text-align: center;
-	}
-
 	// ─── Article styles that must not reach inside ───────────────────────────────
 	// `.prose img` rounds and auto-heights every image, which would squash each crest out of its box.
 	.doc-demo img {

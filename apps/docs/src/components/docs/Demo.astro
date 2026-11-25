@@ -46,7 +46,6 @@ export type DemoName =
 
 interface Props {
 	name: DemoName;
-	caption?: string;
 	description?: string;
 	tabs?: boolean;
 	tab?: boolean;
@@ -59,7 +58,7 @@ interface Props {
 	value?: number;
 }
 
-const { name, caption, tabs = false, tab = false, favorite = false, kind = 'sensitivity', setting = '', checked = true, icon, info, value } = Astro.props;
+const { name, tabs = false, tab = false, favorite = false, kind = 'sensitivity', setting = '', checked = true, icon, info, value } = Astro.props;
 
 const locale = currentLocale(Astro.currentLocale);
 const t = useTranslations(locale);
@@ -136,7 +135,7 @@ const descriptions: Record<DemoName, () => string> = {
 const description = Astro.props.description ?? descriptions[name]();
 const closeups: DemoName[] = ['breakdown', 'game-boost', 'suggest-banner', 'slider', 'toggle', 'modes'];
 ---
-<DocDemo description={description} caption={caption} closeup={closeups.includes(name)} scroll={name === 'guide'} live={name === 'charts'}>
+<DocDemo description={description} closeup={closeups.includes(name)} scroll={name === 'guide'} live={name === 'charts'}>
 	{name === 'popup' && <PopupDemo tabs={tabs} strings={strings} />}
 	{name === 'live-card' && <GameCardDemo status='live' tab={tab} favorite={favorite} strings={strings} />}
 	{name === 'upcoming-card' && <GameCardDemo status='upcoming' strings={strings} />}

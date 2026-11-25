@@ -110,7 +110,6 @@ const goals = [
 								/>
 							</div>
 						</div>
-						<figcaption class='doc-demo-caption'>{t('about.values.funDemo', { count: loadingLines.length })}</figcaption>
 					</figure>
 				</div>
 
@@ -143,9 +142,8 @@ const goals = [
 						<h3>{t('about.goals.bestTitle')}</h3>
 						<p class='band-copy'>{t('about.goals.bestCopy')}</p>
 					</div>
-					<figure class='about-figure'>
+					<figure class='about-figure' aria-label={t('about.goals.bestDemo')}>
 						<MultiviewSolo client:visible />
-						<figcaption class='doc-demo-caption'>{t('about.goals.bestDemo')}</figcaption>
 					</figure>
 				</div>
 
