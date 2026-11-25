@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The live re-sort e2e test skips the opening animation first — 2026-11-22
+
+Since the popup started holding the live order steady while its opening animation plays, `tabRegistration.cy.ts` pushed its new leader mid-animation and timed out before the order was allowed to change. The test now taps the popup to skip the animation before pushing, so it checks the live re-sort and not the animation's length.
+
 ## Multiview boxes tuck their player controls away — 2026-11-22
 
 A second after a box's stream starts playing (and again after every stall or pause), the frame script fakes a mouse move over the player, so players that wait for a first move (Xfinity) start their own idle timer and hide their title bar and progress bar. Hovering a box still brings the controls back.
