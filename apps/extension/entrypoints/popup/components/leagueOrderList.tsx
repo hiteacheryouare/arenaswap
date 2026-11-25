@@ -3,7 +3,7 @@ import { i18n } from '#i18n';
 import { leagueConfigMap } from '@arenaswap/core/constants';
 import type { LeagueId, LeagueLogoMap } from '@arenaswap/core/types';
 import LeagueLogo from './leagueLogo';
-import { leagueOrder } from '../popupHelpers';
+import { leagueOrder } from '../../../utils/leagueOrder';
 
 interface leagueOrderListProps {
 	order: LeagueId[];

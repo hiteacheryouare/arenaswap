@@ -1,7 +1,7 @@
 import type { Game, LeagueId } from '@arenaswap/core/types';
 import { leagueConfigs } from '@arenaswap/core/constants';
 import { buildBar, type guideBar } from '../entrypoints/guide/guideHeat';
-import { groupByDate } from '../entrypoints/popup/popupHelpers';
+import { groupByDate } from '../utils/gameGroups';
 import { axisBounds, defaultDayKey, fillAxis, groupByLeague, gutterPx, hourMarks, minutesToPx, msToPx, nowLinePlotShare, plotWidthOf, pxPerMinute } from '../entrypoints/guide/guideLayout';
 
 const at = (iso: string) => new Date(iso).getTime();

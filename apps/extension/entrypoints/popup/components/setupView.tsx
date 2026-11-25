@@ -1,48 +1,33 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { i18n } from '#i18n';
-import { isCollegeLeagueId, leagueConfigMap, multiviewMaxBoxesMax, multiviewMaxBoxesMin, resolveCollegeFilter } from '@arenaswap/core/constants';
+import { leagueConfigMap, resolveCollegeFilter } from '@arenaswap/core/constants';
 import { modesInUse } from '@arenaswap/core';
 import type { FantasyRosterEntry } from '@arenaswap/core';
 import type { BuiltInModeId, CollegeFilter, CollegeLeagueId, FinishedTabAction, LeagueId, LeagueLogoMap, LeagueScheduleMap, ScoringModeChoice, SignalName, SportType, TabRegistration, ThemePreference, UserPreferences } from '@arenaswap/core/types';
 import { fantasySportOf, type FantasySport } from 'powerscore';
 import type { Browser } from 'wxt/browser';
-import ToggleSwitch from '@arenaswap/ui/src/components/toggleSwitch';
 import CollegeFilterPage from './collegeFilterPage';
-import CollegeLeagueButton from './collegeLeagueButton';
 import BackupSyncPage, { type profileActions as profileActionHandlers } from './backupSyncPage';
-import BossDecoyInput from './bossDecoyInput';
-import CooldownSlider from './cooldownSlider';
-import FavoriteTeamBonusInput from './favoriteTeamBonusInput';
-import FavoriteTeamsPage from './favoriteTeamsPage';
-import FormRange from './formRange';
-import FantasySettingsSection from './fantasySettingsSection';
-import LeagueLogo from './leagueLogo';
-import leagueOffseasonLabel from './leagueOffseasonLabel';
-import LeagueOrderList from './leagueOrderList';
-import ModeSignalSwitches from './modeSignalSwitches';
-import PostseasonBoostInput from './postseasonBoostInput';
-import SensitivitySlider from './sensitivitySlider';
-import ScoringModeSection from './scoringModeSection';
-import SettingTooltipIcon from './settingTooltipIcon';
-import SwitchDelaySlider from './switchDelaySlider';
-import TemperatureUnitToggle from './temperatureUnitToggle';
-import SelectDropdown from './selectDropdown';
 import StandbyStreamGuide from './standbyStreamGuide';
 import MultiviewGuide from './multiviewGuide';
-import TabFavicon from '@arenaswap/ui/src/components/tabFavicon';
+import SettingsSwitchingPage from './settings/settingsSwitchingPage';
+import SettingsScoringIndexPage from './settings/settingsScoringIndexPage';
+import SettingsFavoritesPage from './settings/settingsFavoritesPage';
+import SettingsDisplayPage from './settings/settingsDisplayPage';
+import SettingsStandbyPage from './settings/settingsStandbyPage';
+import SettingsMultiviewPage from './settings/settingsMultiviewPage';
+import SettingsLeaguesPage from './settings/settingsLeaguesPage';
 import { searchSettings, settingsGroups, translate, type settingsGroupId } from './settingsCatalog';
 import type { demoSeason } from '../../../utils/holidayDecorations';
 import type { profileList } from '../../../utils/profiles';
-import { leaguesBySportType, sportTypeLabels, sportTypeOrder } from '../popupHelpers';
-import { changedFantasyRuleCount } from '../../../utils/scoringPrefs';
 import useSlideDirection, { slideClassName } from '../useSlideDirection';
 
-const FantasyRosterPage = lazy(() => import('./fantasyRosterPage'));
-const FantasyScoringPage = lazy(() => import('./fantasyScoringPage'));
+const FantasyRosterPage = lazy(() => import('./fantasy/fantasyRosterPage'));
+const FantasyScoringPage = lazy(() => import('./fantasy/fantasyScoringPage'));
 
-type scoringSubPage = 'roster' | 'rules';
+export type scoringSubPage = 'roster' | 'rules';
 
-interface setupViewProps {
+export interface setupViewProps {
 	prefs: UserPreferences;
 	prefsLoaded: boolean;
 	demoMode: boolean;
@@ -266,494 +251,118 @@ const setupView = ({
 		prefs.finishedTabAction === 'close' && i18n.t('setup.finishedTabCloseExplainer'),
 	].filter(Boolean).join(' ');
 
-	const switchingPage = () => (
-		<>
-			<div className='fw-bold popup-section-label'><i className='bi bi-speedometer2' />{i18n.t('setup.whenToSwitchSection')}</div>
-			<div className='settings-stack'>
-				<SensitivitySlider value={prefs.sensitivity} onChange={onSensitivityChange} />
-				<CooldownSlider value={prefs.cooldownSeconds} onChange={onCooldownChange} />
-				<SwitchDelaySlider value={prefs.switchDelaySeconds} onChange={onSwitchDelayChange} />
-				<div className='d-flex justify-content-between align-items-center'>
-					<div className='d-flex align-items-center gap-1'>
-						<label className='fg-secondary setting-toggle-label' htmlFor='contentAwareSwitchingToggle'><i className='bi bi-pause-circle me-1 fg-primary' />{i18n.t('contentAwareSwitching.label')}</label>
-						<SettingTooltipIcon text={i18n.t('contentAwareSwitching.explainer')} label={i18n.t('contentAwareSwitching.label')} />
-					</div>
-					<ToggleSwitch id='contentAwareSwitchingToggle' checked={prefs.contentAwareSwitching} onChange={onToggleContentAwareSwitching} disabled={!prefsLoaded} />
-				</div>
-			</div>
-
-			<div className='fw-bold popup-section-label mt-5'><i className='bi bi-window-stack' />{i18n.t('setup.tabsSection')}</div>
-			<div className='d-flex justify-content-between align-items-center'>
-				<label className='fg-secondary setting-toggle-label' htmlFor='notificationsToggle'>{i18n.t('setup.switchNotifications')}</label>
-				<ToggleSwitch id='notificationsToggle' checked={prefs.notificationsEnabled} onChange={onToggleNotifications} disabled={!prefsLoaded} />
-			</div>
-
-			<div className='mt-5'>
-				<div className='d-flex align-items-center gap-1 mb-1'>
-					<label className='fg-secondary setting-toggle-label' id='finishedTabSelectLabel' htmlFor='finishedTabSelect'>
-						{i18n.t('setup.finishedTabAction')}
-					</label>
-					{finishedTabExplainer && <SettingTooltipIcon text={finishedTabExplainer} label={i18n.t('setup.finishedTabAction')} />}
-				</div>
-				<SelectDropdown<FinishedTabAction>
-					id='finishedTabSelect'
-					labelId='finishedTabSelectLabel'
-					value={prefs.finishedTabAction}
-					onChange={onFinishedTabActionChange}
-					disabled={!prefsLoaded}
-					options={[
-						{ value: 'keep', label: i18n.t('setup.finishedTabKeep') },
-						{ value: 'free', label: i18n.t('setup.finishedTabFree') },
-						{ value: 'close', label: i18n.t('setup.finishedTabClose') },
-					]}
-				/>
-			</div>
-
-			<div className='mt-5'>
-				<BossDecoyInput value={prefs.bossDecoyUrl} shortcut={bossShortcut} disabled={!prefsLoaded} onChange={onBossDecoyChange} />
-			</div>
-
-			<div className='fw-bold popup-section-label mt-5'><i className='bi bi-joystick' />{i18n.t('setup.demoSection')}</div>
-			<div className='d-flex justify-content-between align-items-center'>
-				<div className='d-flex align-items-center gap-1'>
-					<label className='fg-secondary setting-toggle-label' htmlFor='demoToggle'>{i18n.t('setup.demoMode')}</label>
-					<SettingTooltipIcon text={i18n.t('setup.demoModeExplainer')} label={i18n.t('setup.demoMode')} />
-				</div>
-				<ToggleSwitch id='demoToggle' checked={demoMode} onChange={onToggleDemo} />
-			</div>
-
-			{demoMode && (
-				<div className='mt-5'>
-					<div className='d-flex align-items-center gap-1 mb-1'>
-						<label className='fg-secondary setting-toggle-label' id='demoSeasonSelectLabel' htmlFor='demoSeasonSelect'>{i18n.t('setup.demoSeason')}</label>
-						<SettingTooltipIcon text={i18n.t('setup.demoSeasonExplainer')} label={i18n.t('setup.demoSeason')} />
-					</div>
-					<SelectDropdown<demoSeason>
-						id='demoSeasonSelect'
-						labelId='demoSeasonSelectLabel'
-						value={demoSeason}
-						onChange={onDemoSeasonChange}
-						options={[
-							{ value: 'real', label: i18n.t('setup.demoSeasonReal') },
-							{ value: 'thanksgiving', label: i18n.t('setup.demoSeasonThanksgiving') },
-							{ value: 'december', label: i18n.t('setup.demoSeasonDecember') },
-							{ value: 'christmas', label: i18n.t('setup.demoSeasonChristmas') },
-							{ value: 'boxingDay', label: i18n.t('setup.demoSeasonBoxingDay') },
-							{ value: 'julyFourth', label: i18n.t('setup.demoSeasonJulyFourth') },
-						]}
-					/>
-				</div>
-			)}
-		</>
-	);
-
-	const scoringIndexPage = () => (
-		<>
-			<ScoringModeSection
-				prefs={prefs}
-				leagueLogos={leagueLogos}
-				disabled={!prefsLoaded}
-				onScoringModeChange={onScoringModeChange}
-				onLeagueModeChange={onLeagueModeChange}
-			/>
-
-			{fantasyInUse && (
-				<FantasySettingsSection
-					blend={prefs.fantasyBlend}
-					rosterSize={fantasyRoster.length}
-					changedRules={changedFantasyRuleCount(prefs.fantasyScoring)}
-					disabled={!prefsLoaded}
-					onBlendChange={onFantasyBlendChange}
-					onOpenRoster={() => openScoringPage('roster')}
-					onOpenRules={() => openScoringPage('rules')}
-				/>
-			)}
-
-			<ModeSignalSwitches
-				prefs={prefs}
-				disabled={!prefsLoaded}
-				onToggleSignal={onToggleSignal}
-				onToggleModeSignal={onToggleModeSignal}
-			/>
-
-			<div className='fw-bold popup-section-label mt-5'><i className='bi bi-plus-slash-minus' />{i18n.t('setup.bonusesSection')}</div>
-			<div className='settings-stack'>
-				<PostseasonBoostInput value={prefs.postseasonBoostPoints} onChange={onPostseasonBoostChange} />
-				<FavoriteTeamBonusInput value={prefs.favoriteTeamBonusPoints} onChange={onFavoriteTeamBonusChange} />
-			</div>
-		</>
-	);
-
-	const favoritesPage = () => (
-		<FavoriteTeamsPage
-			enabledLeagues={prefs.enabledLeagues}
-			favoriteTeamIds={favoriteTeamIds}
-			rivalTeamIds={rivalTeamIds}
-			onToggleFavoriteTeam={onToggleFavoriteTeam}
-			onToggleRivalTeam={onToggleRivalTeam}
-		/>
-	);
-
-	const displayPage = () => (
-		<>
-			<div className='fw-bold popup-section-label'><i className='bi bi-list-ul' />{i18n.t('setup.gameListSection')}</div>
-			<div className='d-flex justify-content-between align-items-center'>
-				<label className='fg-secondary setting-toggle-label' htmlFor='upcomingToggle'>{i18n.t('setup.showUpcoming')}</label>
-				<ToggleSwitch id='upcomingToggle' checked={prefs.showUpcomingGames} onChange={onToggleShowUpcoming} disabled={!prefsLoaded} />
-			</div>
-
-			{prefs.showUpcomingGames && (
-				<div className='mt-3 ms-5'>
-					<div className='d-flex justify-content-between align-items-baseline mb-1'>
-						<label className='fg-secondary setting-toggle-label' htmlFor='upcomingDaysSlider'>
-							{i18n.t('setup.upcomingDaysLabel')}
-						</label>
-						<span className='fw-semibold setting-value-label'>{i18n.t('setup.upcomingDaysValue', prefs.upcomingGamesDays)}</span>
-					</div>
-					<FormRange
-						id='upcomingDaysSlider'
-						min={1}
-						max={14}
-						step={1}
-						value={prefs.upcomingGamesDays}
-						onChange={e => onUpcomingGamesDaysChange(Number(e.target.value))}
-						disabled={!prefsLoaded}
-					/>
-					<div className='d-flex justify-content-between'>
-						<span className='setting-explainer'>{i18n.t('setup.upcomingDaysValue', 1)}</span>
-						<span className='setting-explainer'>{i18n.t('setup.upcomingDaysValue', 14)}</span>
-					</div>
-				</div>
-			)}
-
-			<div className='d-flex justify-content-between align-items-center mt-3'>
-				<div className='d-flex align-items-center gap-1'>
-					<label className='fg-secondary setting-toggle-label' htmlFor='keepFinalToggle'>{i18n.t('setup.keepFinalGames')}</label>
-					<SettingTooltipIcon text={i18n.t('setup.keepFinalGamesExplainer')} label={i18n.t('setup.keepFinalGames')} />
-				</div>
-				<ToggleSwitch id='keepFinalToggle' checked={prefs.keepFinalGames} onChange={onToggleKeepFinalGames} disabled={!prefsLoaded} />
-			</div>
-
-			<div className='d-flex justify-content-between align-items-center mt-3'>
-				<label className='fg-secondary setting-toggle-label' htmlFor='bettingToggle'>{i18n.t('setup.showBetting')}</label>
-				<ToggleSwitch id='bettingToggle' checked={prefs.bettingEnabled} onChange={onToggleBetting} disabled={!prefsLoaded} />
-			</div>
-
-			<div className='d-flex justify-content-between align-items-center mt-3'>
-				<label className='fg-secondary setting-toggle-label' htmlFor='proTipsToggle'>{i18n.t('setup.proTips')}</label>
-				<ToggleSwitch id='proTipsToggle' checked={prefs.proTipsEnabled} onChange={onToggleProTips} disabled={!prefsLoaded} />
-			</div>
-
-			<div className='d-flex justify-content-between align-items-center mt-3'>
-				<div className='d-flex align-items-center gap-1'>
-					<label className='fg-secondary setting-toggle-label' htmlFor='groupByLeagueToggle'>{i18n.t('setup.groupByLeague')}</label>
-					<SettingTooltipIcon text={i18n.t('setup.groupByLeagueExplainer')} label={i18n.t('setup.groupByLeague')} />
-				</div>
-				<ToggleSwitch id='groupByLeagueToggle' checked={prefs.groupByLeague} onChange={onToggleGroupByLeague} disabled={!prefsLoaded} />
-			</div>
-			{prefs.groupByLeague && prefs.enabledLeagues.length > 1 && (
-				<>
-					<div id='leagueOrderSection' className='fw-bold popup-section-label mt-5'>
-						<i className='bi bi-arrow-down-up' />
-						{i18n.t('setup.leagueOrderSection')}
-						<SettingTooltipIcon text={i18n.t('setup.leagueOrderExplainer')} label={i18n.t('setup.leagueOrderSection')} />
-					</div>
-					<LeagueOrderList
-						order={prefs.enabledLeagues}
-						leagueLogos={leagueLogos}
-						disabled={!prefsLoaded}
-						onReorder={onReorderLeague}
-						onReset={onResetLeagueOrder}
-					/>
-				</>
-			)}
-
-			<div className='fw-bold popup-section-label mt-5'><i className='bi bi-palette' />{i18n.t('setup.lookAndFeelSection')}</div>
-			<div>
-				<label className='fg-secondary setting-toggle-label d-block mb-1' id='themeSelectLabel' htmlFor='themeSelect'>
-					{i18n.t('setup.theme')}
-				</label>
-				<SelectDropdown<ThemePreference>
-					id='themeSelect'
-					labelId='themeSelectLabel'
-					value={prefs.theme}
-					onChange={onThemeChange}
-					disabled={!prefsLoaded}
-					options={[
-						{ value: 'light', label: i18n.t('setup.themeLight'), icon: 'bi-sun' },
-						{ value: 'dark', label: i18n.t('setup.themeDark'), icon: 'bi-moon-stars' },
-						{ value: 'system', label: i18n.t('setup.themeSystem'), icon: 'bi-circle-half' },
-					]}
-				/>
-			</div>
-
-			<TemperatureUnitToggle
-				unit={prefs.temperatureUnit}
-				romerUnlocked={prefs.romerUnlocked}
-				disabled={!prefsLoaded}
-				onCycle={onToggleTemperatureUnit}
-				onUnlockRomer={onUnlockRomer}
-			/>
-
-			<div className='d-flex justify-content-between align-items-center mt-3'>
-				<div className='d-flex align-items-center gap-1'>
-					<label className='fg-secondary setting-toggle-label' htmlFor='openRevealToggle'>{i18n.t('setup.openReveal')}</label>
-					<SettingTooltipIcon text={i18n.t('setup.openRevealExplainer')} label={i18n.t('setup.openReveal')} />
-				</div>
-				<ToggleSwitch id='openRevealToggle' checked={prefs.openRevealEnabled} onChange={onToggleOpenReveal} disabled={!prefsLoaded} />
-			</div>
-
-			<div className='d-flex justify-content-between align-items-center mt-3'>
-				<div className='d-flex align-items-center gap-1'>
-					<label className='fg-secondary setting-toggle-label' htmlFor='holidayDecorationsToggle'>{i18n.t('setup.holidayDecorations')}</label>
-					<SettingTooltipIcon text={i18n.t('setup.holidayDecorationsExplainer')} label={i18n.t('setup.holidayDecorations')} />
-				</div>
-				<ToggleSwitch id='holidayDecorationsToggle' checked={prefs.holidayDecorationsEnabled} onChange={onToggleHolidayDecorations} disabled={!prefsLoaded} />
-			</div>
-
-			{prefs.holidayDecorationsEnabled && (
-				<div className='ms-5'>
-					<div className='d-flex justify-content-between align-items-center mt-3'>
-						<label className='fg-secondary setting-toggle-label' htmlFor='holidaySnowToggle'>{i18n.t('setup.holidaySnow')}</label>
-						<ToggleSwitch id='holidaySnowToggle' checked={prefs.holidaySnowEnabled} onChange={onToggleHolidaySnow} disabled={!prefsLoaded} />
-					</div>
-
-					<div className='d-flex justify-content-between align-items-center mt-3'>
-						<label className='fg-secondary setting-toggle-label' htmlFor='holidayLightsToggle'>{i18n.t('setup.holidayLights')}</label>
-						<ToggleSwitch id='holidayLightsToggle' checked={prefs.holidayLightsEnabled} onChange={onToggleHolidayLights} disabled={!prefsLoaded} />
-					</div>
-
-					<div className='d-flex justify-content-between align-items-center mt-3'>
-						<label className='fg-secondary setting-toggle-label' htmlFor='holidayLeavesToggle'>{i18n.t('setup.holidayLeaves')}</label>
-						<ToggleSwitch id='holidayLeavesToggle' checked={prefs.holidayLeavesEnabled} onChange={onToggleHolidayLeaves} disabled={!prefsLoaded} />
-					</div>
-
-					<div className='d-flex justify-content-between align-items-center mt-3'>
-						<label className='fg-secondary setting-toggle-label' htmlFor='holidayChristmasToggle'>{i18n.t('setup.holidayChristmas')}</label>
-						<ToggleSwitch id='holidayChristmasToggle' checked={prefs.holidayChristmasEnabled} onChange={onToggleHolidayChristmas} disabled={!prefsLoaded} />
-					</div>
-
-					<div className='d-flex justify-content-between align-items-center mt-3'>
-						<label className='fg-secondary setting-toggle-label' htmlFor='holidayBuntingToggle'>{i18n.t('setup.holidayBunting')}</label>
-						<ToggleSwitch id='holidayBuntingToggle' checked={prefs.holidayBuntingEnabled} onChange={onToggleHolidayBunting} disabled={!prefsLoaded} />
-					</div>
-
-					<div className='d-flex justify-content-between align-items-center mt-3'>
-						<label className='fg-secondary setting-toggle-label' htmlFor='holidayFireworksToggle'>{i18n.t('setup.holidayFireworks')}</label>
-						<ToggleSwitch id='holidayFireworksToggle' checked={prefs.holidayFireworksEnabled} onChange={onToggleHolidayFireworks} disabled={!prefsLoaded} />
-					</div>
-				</div>
-			)}
-		</>
-	);
-
-	const standbyPage = () => (
-		<>
-			<div className='d-flex justify-content-between align-items-center'>
-				<label className='fg-secondary setting-toggle-label' htmlFor='standbyStreamToggle'>{i18n.t('setup.enableStandby')}</label>
-				<ToggleSwitch id='standbyStreamToggle' checked={prefs.standbyStreamEnabled} onChange={handleToggleStandbyStream} disabled={!prefsLoaded} />
-			</div>
-
-			{prefs.standbyStreamEnabled && (
-				<div className='mt-5 d-flex flex-column gap-5'>
-					<div>
-						<div className='d-flex justify-content-between align-items-baseline mb-1'>
-							<label className='fg-secondary setting-toggle-label' htmlFor='standbyThresholdSlider'>
-								{i18n.t('setup.standbyBelow')}
-							</label>
-							<span className='fw-semibold setting-value-label'>{prefs.standbyStreamThreshold}</span>
-						</div>
-						<FormRange
-							id='standbyThresholdSlider'
-							min={0}
-							max={100}
-							step={5}
-							value={prefs.standbyStreamThreshold}
-							onChange={e => onStandbyThresholdChange(Number(e.target.value))}
-							disabled={!prefsLoaded}
-						/>
-						<div className='d-flex justify-content-between'>
-							<span className='setting-explainer'>{i18n.t('setup.morePatient')}</span>
-							<span className='setting-explainer'>{i18n.t('setup.switchesSooner')}</span>
-						</div>
-					</div>
-
-					<div>
-						<div className='fg-secondary setting-toggle-label mb-1'>
-							{i18n.t('setup.standbyTab')}
-						</div>
-						<SelectDropdown
-							id='standbyTabSelect'
-							value={standbyStreamTabId === null ? '' : String(standbyStreamTabId)}
-							onChange={value => onSetStandbyTab(value ? Number(value) : null)}
-							disabled={!prefsLoaded}
-							ariaLabel={i18n.t('setup.standbyTab')}
-							options={[
-								{ value: '', label: i18n.t('setup.selectTab') },
-								...[...openTabs, ...(standbyTabElsewhere?.id === standbyStreamTabId && !openTabs.some(openTab => openTab.id === standbyStreamTabId) ? [standbyTabElsewhere] : [])].filter(openTab => openTab.id !== undefined).map(openTab => {
-									const holdsGame = registry.some(reg => reg.tabId === openTab.id);
-									return {
-										value: String(openTab.id),
-										label: formatTabLabel(openTab),
-										hint: holdsGame ? i18n.t('tabAssign.hasGame').trim() : undefined,
-										image: <TabFavicon url={openTab.favIconUrl} />,
-										disabled: holdsGame,
-									};
-								}),
-							]}
-						/>
-					</div>
-				</div>
-			)}
-		</>
-	);
-
-	const multiviewPage = () => (
-		<>
-			<div className='d-flex justify-content-between align-items-center'>
-				<label className='fg-secondary setting-toggle-label' htmlFor='multiviewToggle'>{i18n.t('setup.enableMultiview')}</label>
-				<ToggleSwitch id='multiviewToggle' checked={multiviewOn} onChange={handleToggleMultiview} disabled={!prefsLoaded} />
-			</div>
-
-			{multiviewOn && (
-				<div className='mt-5 d-flex flex-column gap-5'>
-					<div>
-						<div className='d-flex justify-content-between align-items-baseline mb-1'>
-							<label className='fg-secondary setting-toggle-label' htmlFor='multiviewThresholdSlider'>
-								{i18n.t('setup.multiviewHotAt')}
-							</label>
-							<span className='fw-semibold setting-value-label'>{prefs.multiviewThreshold}</span>
-						</div>
-						<FormRange
-							id='multiviewThresholdSlider'
-							min={0}
-							max={100}
-							step={5}
-							value={prefs.multiviewThreshold}
-							onChange={e => onMultiviewThresholdChange(Number(e.target.value))}
-							disabled={!prefsLoaded}
-						/>
-						<div className='d-flex justify-content-between'>
-							<span className='setting-explainer'>{i18n.t('setup.multiviewMoreOften')}</span>
-							<span className='setting-explainer'>{i18n.t('setup.multiviewBigMomentsOnly')}</span>
-						</div>
-					</div>
-
-					<div>
-						<div className='fg-secondary setting-toggle-label mb-1'>{i18n.t('setup.multiviewGames')}</div>
-						<SelectDropdown
-							id='multiviewGamesSelect'
-							value={prefs.multiviewGames}
-							onChange={value => onMultiviewGamesChange(value === 'all' ? 'all' : 'hot')}
-							disabled={!prefsLoaded}
-							ariaLabel={i18n.t('setup.multiviewGames')}
-							options={[
-								{ value: 'hot', label: i18n.t('setup.multiviewGamesHot') },
-								{ value: 'all', label: i18n.t('setup.multiviewGamesAll') },
-							]}
-						/>
-					</div>
-
-					<div>
-						<div className='d-flex justify-content-between align-items-baseline mb-1'>
-							<label className='fg-secondary setting-toggle-label' htmlFor='multiviewMaxBoxesSlider'>
-								{i18n.t('setup.multiviewMaxBoxes')}
-							</label>
-							<span className='fw-semibold setting-value-label'>{prefs.multiviewMaxBoxes}</span>
-						</div>
-						<FormRange
-							id='multiviewMaxBoxesSlider'
-							min={multiviewMaxBoxesMin}
-							max={multiviewMaxBoxesMax}
-							step={1}
-							value={prefs.multiviewMaxBoxes}
-							onChange={e => onMultiviewMaxBoxesChange(Number(e.target.value))}
-							disabled={!prefsLoaded}
-						/>
-					</div>
-				</div>
-			)}
-		</>
-	);
-
 	const now = Date.now();
-	const leaguesPage = () => (
-		<>
-			{noLeaguesSelected && (
-				<div className='setup-no-leagues-warn mb-3'>
-					<i className='bi bi-exclamation-circle me-1' />
-					{i18n.t('setup.noLeaguesWarning')}
-				</div>
-			)}
-			{(Object.keys(sportTypeOrder) as SportType[])
-				.toSorted((a, b) => sportTypeOrder[a] - sportTypeOrder[b])
-				.map(sportType => {
-					const leagues = leaguesBySportType[sportType];
-					const allSelected = leagues.every(l => prefs.enabledLeagues.includes(l.id));
-					return (
-						<div key={sportType} className='league-toggle-group'>
-							<div className='d-flex align-items-center justify-content-between'>
-								<div className='fw-semibold fg-secondary setting-toggle-label'>{sportTypeLabels[sportType]}</div>
-								<button
-									type='button'
-									className='btn btn-outline theme-accent btn-sm px-3 py-0 small'
-									onClick={() => onToggleSport(sportType, !allSelected)}
-									disabled={!prefsLoaded}
-								>
-									{allSelected ? i18n.t('setup.selectNone') : i18n.t('setup.selectAll')}
-								</button>
-							</div>
-							<div className='league-toggle-grid'>
-								{leagues.map(league => {
-									const offseasonLabel = leagueOffseasonLabel(leagueSchedules[league.id], now);
-									const labelBody = (
-										<>
-											<span className='d-block fw-semibold fg-body'>{league.label}</span>
-											{offseasonLabel && <span className='d-block fg-secondary league-offseason'>{offseasonLabel}</span>}
-										</>
-									);
-									return (
-										<div key={league.id} className='league-toggle-row'>
-											<div className='league-toggle-row-top'>
-												<LeagueLogo league={league} logos={leagueLogos} />
-												<ToggleSwitch
-													id={`league-${league.id}`}
-													checked={prefs.enabledLeagues.includes(league.id)}
-													onChange={() => onToggleLeague(league.id)}
-													disabled={!prefsLoaded}
-													aria-label={isCollegeLeagueId(league.id) ? league.label : undefined}
-												/>
-											</div>
-											{isCollegeLeagueId(league.id) ? (
-												<CollegeLeagueButton
-													leagueId={league.id}
-													leagueLabel={league.label}
-													filter={resolveCollegeFilter(prefs.collegeFilters, league.id)}
-													onOpen={() => openCollegeLeague(league.id as CollegeLeagueId)}
-												>
-													{labelBody}
-												</CollegeLeagueButton>
-											) : (
-												<label className='mb-0 league-toggle-label' htmlFor={`league-${league.id}`}>{labelBody}</label>
-											)}
-										</div>
-									);
-								})}
-							</div>
-						</div>
-					);
-				})}
-		</>
-	);
 
 	const pages: Record<settingsGroupId, () => ReactNode> = {
-		switching: switchingPage,
-		scoring: scoringIndexPage,
-		favorites: favoritesPage,
-		leagues: leaguesPage,
-		display: displayPage,
-		standby: standbyPage,
-		multiview: multiviewPage,
+		switching: () => (
+			<SettingsSwitchingPage
+				prefs={prefs}
+				prefsLoaded={prefsLoaded}
+				demoMode={demoMode}
+				demoSeason={demoSeason}
+				bossShortcut={bossShortcut}
+				onSensitivityChange={onSensitivityChange}
+				onCooldownChange={onCooldownChange}
+				onSwitchDelayChange={onSwitchDelayChange}
+				onToggleContentAwareSwitching={onToggleContentAwareSwitching}
+				onToggleNotifications={onToggleNotifications}
+				onFinishedTabActionChange={onFinishedTabActionChange}
+				onBossDecoyChange={onBossDecoyChange}
+				onToggleDemo={onToggleDemo}
+				onDemoSeasonChange={onDemoSeasonChange}
+				finishedTabExplainer={finishedTabExplainer}
+			/>
+		),
+		scoring: () => (
+			<SettingsScoringIndexPage
+				prefs={prefs}
+				prefsLoaded={prefsLoaded}
+				leagueLogos={leagueLogos}
+				fantasyRoster={fantasyRoster}
+				onScoringModeChange={onScoringModeChange}
+				onLeagueModeChange={onLeagueModeChange}
+				onFantasyBlendChange={onFantasyBlendChange}
+				onToggleSignal={onToggleSignal}
+				onToggleModeSignal={onToggleModeSignal}
+				onPostseasonBoostChange={onPostseasonBoostChange}
+				onFavoriteTeamBonusChange={onFavoriteTeamBonusChange}
+				fantasyInUse={fantasyInUse}
+				openScoringPage={openScoringPage}
+			/>
+		),
+		favorites: () => (
+			<SettingsFavoritesPage
+				prefs={prefs}
+				favoriteTeamIds={favoriteTeamIds}
+				rivalTeamIds={rivalTeamIds}
+				onToggleFavoriteTeam={onToggleFavoriteTeam}
+				onToggleRivalTeam={onToggleRivalTeam}
+			/>
+		),
+		leagues: () => (
+			<SettingsLeaguesPage
+				prefs={prefs}
+				prefsLoaded={prefsLoaded}
+				leagueLogos={leagueLogos}
+				leagueSchedules={leagueSchedules}
+				onToggleSport={onToggleSport}
+				onToggleLeague={onToggleLeague}
+				noLeaguesSelected={noLeaguesSelected}
+				now={now}
+				openCollegeLeague={openCollegeLeague}
+			/>
+		),
+		display: () => (
+			<SettingsDisplayPage
+				prefs={prefs}
+				prefsLoaded={prefsLoaded}
+				leagueLogos={leagueLogos}
+				onToggleShowUpcoming={onToggleShowUpcoming}
+				onUpcomingGamesDaysChange={onUpcomingGamesDaysChange}
+				onToggleKeepFinalGames={onToggleKeepFinalGames}
+				onToggleBetting={onToggleBetting}
+				onToggleProTips={onToggleProTips}
+				onToggleGroupByLeague={onToggleGroupByLeague}
+				onReorderLeague={onReorderLeague}
+				onResetLeagueOrder={onResetLeagueOrder}
+				onThemeChange={onThemeChange}
+				onToggleTemperatureUnit={onToggleTemperatureUnit}
+				onUnlockRomer={onUnlockRomer}
+				onToggleOpenReveal={onToggleOpenReveal}
+				onToggleHolidayDecorations={onToggleHolidayDecorations}
+				onToggleHolidaySnow={onToggleHolidaySnow}
+				onToggleHolidayLights={onToggleHolidayLights}
+				onToggleHolidayLeaves={onToggleHolidayLeaves}
+				onToggleHolidayChristmas={onToggleHolidayChristmas}
+				onToggleHolidayBunting={onToggleHolidayBunting}
+				onToggleHolidayFireworks={onToggleHolidayFireworks}
+			/>
+		),
+		standby: () => (
+			<SettingsStandbyPage
+				prefs={prefs}
+				prefsLoaded={prefsLoaded}
+				standbyStreamTabId={standbyStreamTabId}
+				standbyTabElsewhere={standbyTabElsewhere}
+				openTabs={openTabs}
+				registry={registry}
+				formatTabLabel={formatTabLabel}
+				onStandbyThresholdChange={onStandbyThresholdChange}
+				onSetStandbyTab={onSetStandbyTab}
+				handleToggleStandbyStream={handleToggleStandbyStream}
+			/>
+		),
+		multiview: () => (
+			<SettingsMultiviewPage
+				prefs={prefs}
+				prefsLoaded={prefsLoaded}
+				multiviewOn={multiviewOn}
+				onMultiviewThresholdChange={onMultiviewThresholdChange}
+				onMultiviewGamesChange={onMultiviewGamesChange}
+				onMultiviewMaxBoxesChange={onMultiviewMaxBoxesChange}
+				handleToggleMultiview={handleToggleMultiview}
+			/>
+		),
 		backup: () => (
 			<BackupSyncPage prefs={prefs} fantasyRoster={fantasyRoster} profiles={profiles} profilesBusy={profilesBusy} profileActions={profileActions} />
 		),

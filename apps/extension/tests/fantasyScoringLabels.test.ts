@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { defaultFantasyScoring } from 'powerscore';
-import { fantasyRuleGroups, fantasySports, ruleStep } from '../entrypoints/popup/components/fantasyScoringLabels';
+import { fantasyRuleGroups, fantasySports, ruleStep } from '../entrypoints/popup/components/fantasy/fantasyScoringLabels';
 
 const en = JSON.parse(readFileSync(join(__dirname, '../locales/en.json'), 'utf8')) as Record<string, unknown>;
 const lookup = (key: string): unknown => key.split('.').reduce<unknown>((node, part) => (node as Record<string, unknown> | undefined)?.[part], en);

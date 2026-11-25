@@ -1,6 +1,7 @@
 import type { LeagueId } from '@arenaswap/core';
+import type { PostseasonRound } from 'powerscore';
 
-export type PostseasonRound = 0 | 1 | 2 | 3;
+export type { PostseasonRound };
 
 const earliestRound: PostseasonRound = 3;
 

@@ -1,4 +1,4 @@
-import { parseScoreboardEvents } from '../src/apiClient';
+import { parseScoreboardEvents } from '../src/scoreboardEvent';
 
 const mlbAt = (shortDetail: string, outs: number) => parseScoreboardEvents({
 	events: [{

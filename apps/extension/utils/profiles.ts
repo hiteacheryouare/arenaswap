@@ -1,10 +1,10 @@
 import { normalizeUserPreferences } from '@arenaswap/core/constants';
-import { fantasyRosterStorageKey, logWarn, normalizeFantasyRoster } from '@arenaswap/core';
+import { fantasyRosterStorageKey, isPlainRecord, logWarn, normalizeFantasyRoster } from '@arenaswap/core';
 import type { FantasyRosterEntry } from '@arenaswap/core';
 import type { ExtensionMessage, UserPreferences } from '@arenaswap/core/types';
-import { writeOpenRevealEnabled } from '../entrypoints/popup/cardReveal';
-import { loadFantasyRoster, rosterPayload } from './fantasyRosterStorage';
-import { loadStoredUserPreferences, prefsPayload, prefsStorageUpdatedAtKey } from './prefsStorage';
+import { writeOpenRevealEnabled } from './openReveal';
+import { fantasyRosterUpdatedAtKey, loadFantasyRoster, rosterPayload } from './fantasyRosterStorage';
+import { loadStoredUserPreferences, normalizeTimestamp, prefsPayload, prefsStorageUpdatedAtKey } from './prefsStorage';
 import { themeStorageKey } from './theme';
 
 export const defaultProfileId = 'main';
@@ -16,7 +16,6 @@ const profilesKey = 'profiles';
 const activeProfileIdKey = 'activeProfileId';
 const profileSetupsKey = 'profileSetups';
 const syncedSeenKey = 'activeProfileSeen';
-const rosterUpdatedAtKey = `${fantasyRosterStorageKey}UpdatedAt`;
 
 export interface profileEntry {
 	id: string;
@@ -43,16 +42,12 @@ interface profilesState extends profileList {
 	localLive: { prefs: unknown; fantasyRoster: unknown; updatedAt: number } | null;
 }
 
-const isRecord = (value: unknown): value is Record<string, unknown> => (
-	typeof value === 'object' && value !== null && !Array.isArray(value)
-);
-
 export const normalizeProfileName = (value: unknown): string => (
 	typeof value === 'string' ? value.trim().slice(0, profileNameLimit) : ''
 );
 
 const normalizeEntry = (value: unknown): profileEntry | null => {
-	if (!isRecord(value) || typeof value.id !== 'string' || !value.id) return null;
+	if (!isPlainRecord(value) || typeof value.id !== 'string' || !value.id) return null;
 	return { id: value.id, name: normalizeProfileName(value.name) || defaultProfileName };
 };
 
@@ -67,7 +62,7 @@ const normalizeEntries = (value: unknown): profileEntry[] => {
 };
 
 const normalizeSetup = (value: unknown): profileSetup => {
-	const setup = isRecord(value) ? value : {};
+	const setup = isPlainRecord(value) ? value : {};
 	return { prefs: normalizeUserPreferences(setup.prefs), fantasyRoster: normalizeFantasyRoster(setup.fantasyRoster) };
 };
 
@@ -87,9 +82,7 @@ export const uniqueProfileName = (name: string, profiles: readonly profileEntry[
 	}
 };
 
-const timestamp = (value: unknown): number => (typeof value === 'number' && Number.isFinite(value) ? value : 0);
-
-const setupTime = (value: unknown): number => (isRecord(value) ? timestamp(value.updatedAt) : 0);
+const setupTime = (value: unknown): number => (isPlainRecord(value) ? normalizeTimestamp(value.updatedAt) : 0);
 
 const readState = async (): Promise<profilesState> => {
 	const local = await browser.storage.local.get({
@@ -100,7 +93,7 @@ const readState = async (): Promise<profilesState> => {
 		prefs: null,
 		[prefsStorageUpdatedAtKey]: 0,
 		[fantasyRosterStorageKey]: null,
-		[rosterUpdatedAtKey]: 0,
+		[fantasyRosterUpdatedAtKey]: 0,
 	});
 	const stored = normalizeEntries(local[profilesKey]);
 	const fallback = { id: defaultProfileId, name: defaultProfileName };
@@ -108,12 +101,12 @@ const readState = async (): Promise<profilesState> => {
 	return {
 		profiles,
 		activeId: (profiles.find(entry => entry.id === local[activeProfileIdKey]) ?? profiles[0] ?? fallback).id,
-		setups: isRecord(local[profileSetupsKey]) ? local[profileSetupsKey] : {},
+		setups: isPlainRecord(local[profileSetupsKey]) ? local[profileSetupsKey] : {},
 		seen: typeof local[syncedSeenKey] === 'string' ? local[syncedSeenKey] : null,
 		localLive: local.prefs === null ? null : {
 			prefs: local.prefs,
 			fantasyRoster: local[fantasyRosterStorageKey] ?? [],
-			updatedAt: Math.max(timestamp(local[prefsStorageUpdatedAtKey]), timestamp(local[rosterUpdatedAtKey])),
+			updatedAt: Math.max(normalizeTimestamp(local[prefsStorageUpdatedAtKey]), normalizeTimestamp(local[fantasyRosterUpdatedAtKey])),
 		},
 	};
 };
@@ -157,8 +150,8 @@ export const followSyncedProfile = async (): Promise<profileList> => {
 	}
 	if (synced.id === state.seen) return unchanged;
 
-	const remote = await browser.storage.sync.get({ prefs: null, [prefsStorageUpdatedAtKey]: 0, [fantasyRosterStorageKey]: null, [rosterUpdatedAtKey]: 0 });
-	const remoteAt = Math.max(timestamp(remote[prefsStorageUpdatedAtKey]), timestamp(remote[rosterUpdatedAtKey]));
+	const remote = await browser.storage.sync.get({ prefs: null, [prefsStorageUpdatedAtKey]: 0, [fantasyRosterStorageKey]: null, [fantasyRosterUpdatedAtKey]: 0 });
+	const remoteAt = Math.max(normalizeTimestamp(remote[prefsStorageUpdatedAtKey]), normalizeTimestamp(remote[fantasyRosterUpdatedAtKey]));
 	const { [synced.id]: arriving, ...setups } = state.setups;
 	if (state.localLive) setups[state.activeId] = state.localLive;
 	const profiles = [
@@ -171,7 +164,7 @@ export const followSyncedProfile = async (): Promise<profileList> => {
 		? livePayload(normalizeSetup(arriving), setupTime(arriving))
 		: {
 			...(remote.prefs === null ? {} : { prefs: remote.prefs, [prefsStorageUpdatedAtKey]: remote[prefsStorageUpdatedAtKey] }),
-			...(remote[fantasyRosterStorageKey] === null ? {} : { [fantasyRosterStorageKey]: remote[fantasyRosterStorageKey], [rosterUpdatedAtKey]: remote[rosterUpdatedAtKey] }),
+			...(remote[fantasyRosterStorageKey] === null ? {} : { [fantasyRosterStorageKey]: remote[fantasyRosterStorageKey], [fantasyRosterUpdatedAtKey]: remote[fantasyRosterUpdatedAtKey] }),
 		};
 	await browser.storage.local.set({ ...live, [profilesKey]: profiles, [activeProfileIdKey]: synced.id, [profileSetupsKey]: setups, [syncedSeenKey]: synced.id });
 	if (keepOwn) await syncLive(live);
@@ -179,14 +172,14 @@ export const followSyncedProfile = async (): Promise<profileList> => {
 };
 
 const loadLiveSetup = async (): Promise<storedSetup> => {
-	const stamps = { [prefsStorageUpdatedAtKey]: 0, [rosterUpdatedAtKey]: 0 };
+	const stamps = { [prefsStorageUpdatedAtKey]: 0, [fantasyRosterUpdatedAtKey]: 0 };
 	const [prefs, fantasyRoster, localStamps, syncStamps] = await Promise.all([
 		loadStoredUserPreferences(),
 		loadFantasyRoster().catch(() => []),
 		browser.storage.local.get(stamps).catch(() => stamps),
 		browser.storage.sync.get(stamps).catch(() => stamps),
 	]);
-	const updatedAt = Math.max(...[localStamps, syncStamps].flatMap(area => Object.values(area).map(timestamp)));
+	const updatedAt = Math.max(...[localStamps, syncStamps].flatMap(area => Object.values(area).map(normalizeTimestamp)));
 	return { prefs, fantasyRoster, updatedAt };
 };
 

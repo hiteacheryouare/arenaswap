@@ -1,0 +1,165 @@
+import { useEffect, useState } from 'react';
+import { matchupSurfaceStyle, powerScoreColor } from '@arenaswap/ui/src/components/gameCardShared';
+import { i18n } from '#i18n';
+import FlowStepper from '../flowStepper';
+import WalkthroughTeamLogo from './walkthroughTeamLogo';
+import focusStepTitle from '../stepTitleFocus';
+
+interface walkthroughStepAutoSwitchProps {
+	onNext: () => void;
+	onBack: () => void;
+}
+
+const psMax = 100;
+
+const eaglesColor = '#004C54';
+const giantsColor = '#0B2265';
+const chiefsColor = '#E31837';
+const billsColor = '#00338D';
+
+const LOGO_EAGLES  = 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png';
+const LOGO_GIANTS  = 'https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png';
+const LOGO_CHIEFS = 'https://a.espncdn.com/i/teamlogos/nfl/500/kc.png';
+const LOGO_BILLS  = 'https://a.espncdn.com/i/teamlogos/nfl/500/buf.png';
+
+interface mockCardProps {
+	abbr1: string; color1: string; logo1: string;
+	abbr2: string; color2: string; logo2: string;
+	score1: number; score2: number;
+	clock: string; period: string;
+	ps: number; watching: boolean;
+}
+
+const MockCard = ({ abbr1, color1, logo1, abbr2, color2, logo2, score1, score2, clock, period, ps, watching }: mockCardProps) => {
+	const psColor = powerScoreColor(ps, psMax);
+	const psPercent = (ps / psMax) * 100;
+	return (
+		<div
+			className='game-card is-team-colored mb-1 motion-outline'
+			style={{
+				pointerEvents: 'none',
+				...matchupSurfaceStyle(color1, color2),
+				outline: watching ? '2px solid var(--as-primary-bg)' : '2px solid transparent',
+			}}
+		>
+			<div className='d-flex align-items-center justify-content-between mb-1'>
+				<div className='d-flex align-items-center gap-1 fw-bold text-uppercase live-status-label'>
+					<span className='live-dot' />
+					{i18n.t('gameCard.live')}
+				</div>
+				{watching && (
+					<span className='badge theme-primary' style={{ fontSize: '0.6rem' }}>{i18n.t('stepAutoSwitch.watchingBadge')}</span>
+				)}
+			</div>
+
+			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
+				<div className='d-flex flex-column align-items-center gap-1 team-column is-away'>
+					<WalkthroughTeamLogo className='team-crest-32' abbr={abbr1} color={color1} logoUrl={logo1} />
+					<span className='fw-bold text-center text-nowrap team-abbreviation'>{abbr1}</span>
+				</div>
+				<div className='d-flex flex-column align-items-center game-card-center'>
+					<div className='game-score-row'>
+						<span className='fw-bold lh-1 game-score-value'>{score1}</span>
+						<span className='game-score-sep' aria-hidden='true' />
+						<span className='fw-bold lh-1 game-score-value'>{score2}</span>
+					</div>
+					<span className='game-clock'>{clock}</span>
+					<span className='game-period'>{period}</span>
+				</div>
+				<div className='d-flex flex-column align-items-center gap-1 team-column is-home'>
+					<WalkthroughTeamLogo className='team-crest-32' abbr={abbr2} color={color2} logoUrl={logo2} />
+					<span className='fw-bold text-center text-nowrap team-abbreviation'>{abbr2}</span>
+				</div>
+			</div>
+
+			<div className='d-flex align-items-center gap-3 game-card-ps-bar-row'>
+				<span className='game-card-ps-label'>PowerScore</span>
+				<div className='progress flex-grow-1 game-card-ps-progress'>
+					<div
+						className='progress-bar'
+						role='progressbar'
+						style={{ width: `${psPercent}%`, backgroundColor: psColor }}
+						aria-valuenow={ps}
+						aria-valuemin={0}
+						aria-valuemax={psMax}
+					/>
+				</div>
+				<span className='game-card-ps-score'>
+					{ps} / {psMax}
+				</span>
+			</div>
+		</div>
+	);
+};
+
+const walkthroughStepAutoSwitch = ({ onNext, onBack }: walkthroughStepAutoSwitchProps) => {
+	const [phase, setPhase] = useState(0);
+	const [psChiefs, setPsChiefs] = useState(31);
+	const [watchingChiefs, setWatchingChiefs] = useState(false);
+	const [flash, setFlash] = useState(false);
+
+	useEffect(() => {
+		const t1 = setTimeout(() => setPsChiefs(89), 800);
+		let t4: ReturnType<typeof setTimeout> | undefined;
+		const t2 = setTimeout(() => { setFlash(true); t4 = setTimeout(() => setFlash(false), 300); setWatchingChiefs(true); }, 1800);
+		const t3 = setTimeout(() => setPhase(1), 2200);
+		return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
+	}, []);
+
+	return (
+		<div className='popup-container d-flex flex-column'>
+			<FlowStepper step={4} total={9} className='pt-5 pb-3' />
+
+			<div className='fw-bold fs-lg text-center mb-5 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepAutoSwitch.title')}</div>
+
+			<div className='position-relative'>
+				<MockCard
+					abbr1='PHI' color1={eaglesColor} logo1={LOGO_EAGLES}
+					abbr2='NYG' color2={giantsColor} logo2={LOGO_GIANTS}
+					score1={14} score2={10}
+					clock='7:43' period={i18n.t('gameCard.periodQuarter', { count: '2' })}
+					ps={52} watching={!watchingChiefs}
+				/>
+				<MockCard
+					abbr1='KC' color1={chiefsColor} logo1={LOGO_CHIEFS}
+					abbr2='BUF' color2={billsColor} logo2={LOGO_BILLS}
+					score1={24} score2={21}
+					clock='1:22' period={i18n.t('gameCard.periodQuarter', { count: '4' })}
+					ps={psChiefs} watching={watchingChiefs}
+				/>
+				{flash && (
+					<div
+						className='position-absolute top-0 start-0 w-100 h-100 rounded'
+						style={{ backgroundColor: 'rgba(255,255,255,0.25)', pointerEvents: 'none', zIndex: 10 }}
+					/>
+				)}
+			</div>
+
+			{phase === 0 && (
+				<p className='fg-secondary small lh-md mt-3 text-center fst-italic'>
+					{i18n.t('stepAutoSwitch.watchingCaption')}
+				</p>
+			)}
+
+			{phase === 1 && (
+				<>
+					<p className='fw-semibold fg-body mt-3 mb-1'>{i18n.t('stepAutoSwitch.reveal')}</p>
+					<p className='fg-secondary small lh-md'>
+						{i18n.t('stepAutoSwitch.revealBody')}
+					</p>
+				</>
+			)}
+
+			<div className='d-flex gap-3 mt-auto'>
+				<button type='button' className='btn btn-solid theme-accent flex-grow-1' onClick={onBack}>
+					<i className='bi bi-arrow-left' /> {i18n.t('stepAutoSwitch.back')}
+				</button>
+				<button type='button' className='btn btn-solid theme-primary flex-grow-1' onClick={onNext} disabled={phase === 0}>
+					{i18n.t('stepAutoSwitch.next')} <i className='bi bi-arrow-right' />
+				</button>
+			</div>
+		</div>
+	);
+};
+
+export default walkthroughStepAutoSwitch;

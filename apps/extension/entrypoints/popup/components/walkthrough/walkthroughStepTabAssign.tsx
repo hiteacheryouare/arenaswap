@@ -1,0 +1,111 @@
+import { matchupSurfaceStyle, powerScoreColor } from '@arenaswap/ui/src/components/gameCardShared';
+import { i18n } from '#i18n';
+import SelectDropdown from '../selectDropdown';
+import FlowStepper from '../flowStepper';
+import WalkthroughTeamLogo from './walkthroughTeamLogo';
+import focusStepTitle from '../stepTitleFocus';
+
+interface walkthroughStepTabAssignProps {
+	onNext: () => void;
+	onBack: () => void;
+}
+
+const mockPsScore = 52;
+const mockPsMax = 100;
+const mockPsPercent = (mockPsScore / mockPsMax) * 100;
+const mockPsColor = powerScoreColor(mockPsScore, mockPsMax);
+
+const eaglesColor = '#004C54';
+const giantsColor = '#0B2265';
+
+const LOGO_EAGLES = 'https://a.espncdn.com/i/teamlogos/nfl/500/phi.png';
+const LOGO_GIANTS = 'https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png';
+
+const walkthroughStepTabAssign = ({ onNext, onBack }: walkthroughStepTabAssignProps) => (
+	<div className='popup-container d-flex flex-column'>
+		<FlowStepper step={3} total={9} className='pt-5 pb-3' />
+
+		<div className='fw-bold fs-lg text-center mb-1 popup-step-title' role='heading' aria-level={1} tabIndex={-1} ref={focusStepTitle} data-step-title>{i18n.t('stepTabAssign.title')}</div>
+		<div className='fg-secondary small text-center mb-5 lh-md'>
+			{i18n.t('stepTabAssign.subtitle')}
+		</div>
+
+		<div
+			className='game-card is-team-colored mb-1'
+			style={{
+				...matchupSurfaceStyle(eaglesColor, giantsColor),
+			}}
+		>
+			<div className='d-flex align-items-center gap-1 fw-bold text-uppercase live-status-label mb-1'>
+				<span className='live-dot' />
+				LIVE
+			</div>
+
+			<div className='d-flex align-items-center justify-content-center game-card-matchup'>
+				<div className='d-flex flex-column align-items-center gap-1 team-column is-away'>
+					<WalkthroughTeamLogo className='team-crest-32' abbr='PHI' color={eaglesColor} logoUrl={LOGO_EAGLES} />
+					<span className='fw-bold text-center text-nowrap team-abbreviation'>PHI</span>
+				</div>
+
+				<div className='d-flex flex-column align-items-center game-card-center'>
+					<div className='game-score-row'>
+						<span className='fw-bold lh-1 game-score-value'>14</span>
+						<span className='game-score-sep' aria-hidden='true' />
+						<span className='fw-bold lh-1 game-score-value'>10</span>
+					</div>
+					<span className='game-clock'>7:43</span>
+					<span className='game-period'>{i18n.t('gameCard.periodQuarter', { count: '2' })}</span>
+				</div>
+
+				<div className='d-flex flex-column align-items-center gap-1 team-column is-home'>
+					<WalkthroughTeamLogo className='team-crest-32' abbr='NYG' color={giantsColor} logoUrl={LOGO_GIANTS} />
+					<span className='fw-bold text-center text-nowrap team-abbreviation'>NYG</span>
+				</div>
+			</div>
+
+			<div className='d-flex align-items-center gap-3 game-card-ps-bar-row'>
+				<span className='game-card-ps-label'>PowerScore</span>
+				<div className='progress flex-grow-1 game-card-ps-progress'>
+					<div
+						className='progress-bar'
+						role='progressbar'
+						style={{ width: `${mockPsPercent}%`, backgroundColor: mockPsColor }}
+						aria-valuenow={mockPsScore}
+						aria-valuemin={0}
+						aria-valuemax={mockPsMax}
+					/>
+				</div>
+				<span className='game-card-ps-score'>{mockPsScore} / {mockPsMax}</span>
+			</div>
+			<div className='game-card-footer'>
+				<div className='d-flex flex-column gap-0 game-card-tab-assign'>
+					<SelectDropdown
+						value=''
+						onChange={() => {}}
+						options={[
+							{ value: '', label: i18n.t('stepTabAssign.assignPlaceholder') },
+							{ value: '1', label: 'youtube.com/watch?v=Philly_stream' },
+							{ value: '2', label: 'nfl.com/watch/live' },
+						]}
+					/>
+					<span className='fg-primary fw-semibold ms-1 mt-1' style={{ fontSize: '0.65rem' }}>{i18n.t('stepTabAssign.linkHint')}</span>
+				</div>
+			</div>
+		</div>
+
+		<p className='fg-secondary small lh-md mt-1'>
+			{i18n.t('stepTabAssign.body')}
+		</p>
+
+		<div className='d-flex gap-3 mt-auto'>
+			<button type='button' className='btn btn-solid theme-accent flex-grow-1' onClick={onBack}>
+				<i className='bi bi-arrow-left' /> {i18n.t('stepTabAssign.back')}
+			</button>
+			<button type='button' className='btn btn-solid theme-primary flex-grow-1' onClick={onNext}>
+				{i18n.t('stepTabAssign.next')} <i className='bi bi-arrow-right' />
+			</button>
+		</div>
+	</div>
+);
+
+export default walkthroughStepTabAssign;

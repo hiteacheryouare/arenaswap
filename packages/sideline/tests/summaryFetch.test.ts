@@ -4,9 +4,8 @@ import {
 	fetchSummary,
 	prefetchGameDetail,
 	sharedRequestFreshMs,
-	standingsUrl,
-	summaryUrl,
 } from '../src/summaryFetch';
+import { standingsUrl, summaryUrl } from '../src/endpoints';
 
 const answering = (body: unknown = {}, ok = true) => (
 	jest.spyOn(globalThis, 'fetch').mockImplementation(() => Promise.resolve({

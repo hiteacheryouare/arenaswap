@@ -4,6 +4,7 @@ import en from '../../../locales/en.json';
 const onboarded = { local: { onboardingCompleted: true }, sync: { prefs: onboardedPrefs() } };
 const cardFor = (abbreviation: string) => cy.contains('.game-card', abbreviation);
 const tabPicker = (abbreviation: string) => cardFor(abbreviation).find('.game-card-tab-assign .form-control-caret');
+const skipOpeningReveal = () => cy.get('body').trigger('pointerdown');
 
 describe('registering a tab and watching the lead change', () => {
 	beforeEach(() => cy.openPopup({ ...onboarded, state: liveState(), tabs: openTabs }));
@@ -57,6 +58,7 @@ describe('registering a tab and watching the lead change', () => {
 
 	it('re-sorts live when the background pushes a new leader', () => {
 		cy.get('.game-card-ps-score').first().should('have.text', '82 / 100');
+		skipOpeningReveal();
 
 		cy.pushScores({
 			scores: [makeScore(sixersThunder.id, 11), makeScore(bullsHeat.id, 94)],

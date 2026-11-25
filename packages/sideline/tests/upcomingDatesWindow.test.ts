@@ -12,11 +12,16 @@ const loadApiClient = (): typeof import('../src/apiClient') => {
 	return require('../src/apiClient') as typeof import('../src/apiClient');
 };
 
+const loadDayWindow = (): typeof import('../src/dayWindow') => {
+	jest.resetModules();
+	return require('../src/dayWindow') as typeof import('../src/dayWindow');
+};
+
 const edges = (dayKeys: string[]): string => `${dayKeys[0]}-${dayKeys[dayKeys.length - 1]}`;
 
 const windowIn = (timeZone: string, iso: string, days: number, pastDays = 0): string[] => {
 	setTimeZone(timeZone);
-	return loadApiClient().buildDayWindowKeys(days, new Date(iso), pastDays);
+	return loadDayWindow().buildDayWindowKeys(days, new Date(iso), pastDays);
 };
 
 const rangeIn = (timeZone: string, iso: string, days: number): string => (
@@ -206,7 +211,7 @@ describe('today is always one of the days asked for', () => {
 	test.each(zones)('%s never builds a window that has lost today', timeZone => {
 		for (const iso of instants) {
 			setTimeZone(timeZone);
-			const api = loadApiClient();
+			const api = loadDayWindow();
 			const now = new Date(iso);
 			const todayKey = api.buildDayWindowKeys(0, now, 0)[0];
 
@@ -219,9 +224,9 @@ describe('today is always one of the days asked for', () => {
 
 	test('the live poll window is immune to a transition, because it adds no hours at all', () => {
 		setTimeZone('America/New_York');
-		expect(loadApiClient().buildCurrentDayKeys(new Date('2026-11-01T04:30:00.000Z')))
+		expect(loadDayWindow().buildCurrentDayKeys(new Date('2026-11-01T04:30:00.000Z')))
 			.toEqual(['20261031', '20261101']);
-		expect(loadApiClient().buildCurrentDayKeys(new Date('2026-03-08T06:30:00.000Z')))
+		expect(loadDayWindow().buildCurrentDayKeys(new Date('2026-03-08T06:30:00.000Z')))
 			.toEqual(['20260307', '20260308']);
 	});
 });

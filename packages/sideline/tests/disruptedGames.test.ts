@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { LeagueId } from '@arenaswap/core';
-import { parseScoreboardEvents } from '../src/apiClient';
+import { parseScoreboardEvents } from '../src/scoreboardEvent';
 import { readDelayKind, readDoubleheader, readForfeitWinner, readMakeupDate, readPostponedReason } from '../src/disruption';
 
 const parseFixture = (name: string) => {

@@ -3,8 +3,7 @@ import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
 import type { Game, PowerScoreResult } from '@arenaswap/core/types';
 import { TranslationContext, islandTranslator } from '../../i18n/islandStrings';
 import type { ReplayFrame } from './demoGames';
-
-const espnTeamLogo = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
+import { espnTeamLogo } from '../teamLogo';
 
 const knicks = { id: '18', name: 'New York Knicks', abbreviation: 'NYK', logo: espnTeamLogo('nba/500/nyk'), color: '#006BB6', alternateColor: '#F58426' };
 const celtics = { id: '2', name: 'Boston Celtics', abbreviation: 'BOS', logo: espnTeamLogo('nba/500/bos'), color: '#007A33', alternateColor: '#BA9653' };

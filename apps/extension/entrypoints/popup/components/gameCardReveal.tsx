@@ -5,11 +5,11 @@ import type { Game, Team } from '@arenaswap/core/types';
 import { teamDisplayInk } from '@arenaswap/chromatic';
 import { buildGameCardSurface } from '@arenaswap/ui/src/components/gameCardShared';
 import OnColorCrest from '@arenaswap/ui/src/components/onColorCrest';
-import RevealName from './revealName';
-import RevealNamingScene from './revealNamingScene';
-import RevealHeadToHead from './revealHeadToHead';
-import RevealTypeSlam from './revealTypeSlam';
-import RevealScoreRoll, { measureRolls, type revealRoll } from './revealScoreRoll';
+import RevealName from './reveal/revealName';
+import RevealNamingScene from './reveal/revealNamingScene';
+import RevealHeadToHead from './reveal/revealHeadToHead';
+import RevealTypeSlam from './reveal/revealTypeSlam';
+import RevealScoreRoll, { measureRolls, type revealRoll } from './reveal/revealScoreRoll';
 import {
 	revealAbbrScale,
 	revealCutTotalMs,

@@ -4,24 +4,24 @@ import type { Browser } from 'wxt/browser';
 import { createFavoriteTeamKey, isHomeFirst, leagueConfigMap, scoreMaxTotal } from '@arenaswap/core/constants';
 import type { Game, LeagueId, LiveScore, PowerScoreSnapshot, ScoreSnapshot, SignalName, TabRegistration } from '@arenaswap/core/types';
 import { hasCommercialBreaks, type FantasyRosterEntry } from '@arenaswap/core';
-import DetailHero from './detailHero';
+import DetailHero from '@arenaswap/ui/src/components/detailHero';
 import DetailPosterHero from './detailPosterHero';
 import DetailStickyBar from './detailStickyBar';
 import DetailTabs from './detailTabs';
 import DueUpPanel from './dueUpPanel';
-import FantasyPlayersPanel from './fantasyPlayersPanel';
+import FantasyPlayersPanel from './fantasy/fantasyPlayersPanel';
 import type { DetailTab, DetailTabId } from './detailTabs';
 import StandingsTable from './standingsTable';
 import { hasBoxScoreContent } from './boxScoreColumns';
 import GameDetailChart from './gameDetailChart';
 import GameBoostInput from './gameBoostInput';
 import GameInfoPanel from './gameInfoPanel';
-import HolidayBunting from './holidayBunting';
-import HolidayDrift from './holidayDrift';
-import HolidayFall from './holidayFall';
-import HolidayFireworks, { type fireworkVolley } from './holidayFireworks';
-import HolidayLights from './holidayLights';
-import HolidayStockings from './holidayStockings';
+import HolidayBunting from './holiday/holidayBunting';
+import HolidayDrift from './holiday/holidayDrift';
+import HolidayFall from './holiday/holidayFall';
+import HolidayFireworks, { type fireworkVolley } from './holiday/holidayFireworks';
+import HolidayLights from './holiday/holidayLights';
+import HolidayStockings from '@arenaswap/ui/src/components/holidayStockings';
 import LatestPlayPanel from './latestPlayPanel';
 import LineupsPanel from './lineupsPanel';
 import MatchupPanel from './matchupPanel';
@@ -31,7 +31,7 @@ import PregameSetup from './pregameSetup';
 import PregameStats from './pregameStats';
 import BoxScore from './boxScore';
 import ProTip from './proTip';
-import { resolveStatus } from './gameSituation';
+import { resolveStatus } from '@arenaswap/ui/src/components/gameSituation';
 import {
 	buildComponentContributionOption,
 	buildLeadTrackerOption,
@@ -41,13 +41,14 @@ import {
 	contributionSignalIds,
 	darkChartPalette,
 	lightChartPalette,
-} from './gameDetailChartOptions';
+} from '@arenaswap/ui/src/components/gameDetailChartOptions';
 import { resolveChartLineColors, resolveTeamColorPair } from '@arenaswap/chromatic';
 import { formatCalendarDay, matchupSurfaceStyle } from '@arenaswap/ui/src/components/gameCardShared';
-import { isModeSignalId, signalColorOf, signalPresentation } from '@arenaswap/ui/src/components/scoringModeMeta';
+import { signalColorOf } from '@arenaswap/ui/src/components/scoringModeMeta';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import useSwitchCrest from '@arenaswap/ui/src/components/useSwitchCrest';
 import useBasketballPossession from './useBasketballPossession';
+import { signalLabel } from './factorLabels';
 import useBasketballSituation from './useBasketballSituation';
 import useSummaryData from './useSummaryData';
 import { chartHistory, coversWholeGame } from './wrapCoverage';
@@ -89,7 +90,6 @@ const noRoster: readonly FantasyRosterEntry[] = [];
 
 const favoriteFlashMs = 5000;
 
-const signalLabel = (id: string): string => (isModeSignalId(id) ? i18n.t(signalPresentation[id].labelKey) : id);
 const describeLead = (team: string | undefined, margin: number): string => (
 	team === undefined || margin === 0 ? i18n.t('detail.leadTied') : i18n.t('detail.leadBy', { team, margin })
 );

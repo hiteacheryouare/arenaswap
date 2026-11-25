@@ -1,24 +1,25 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR from 'swr';
-import { fetchGamesWithLeagueLogos } from '@arenaswap/sideline';
-import { allLeagueIds, createDefaultUserPreferences, createFavoriteTeamKey, normalizeUserPreferences, withCollegeFilter } from '@arenaswap/core/constants';
+import { createDefaultUserPreferences, normalizeUserPreferences, withCollegeFilter } from '@arenaswap/core/constants';
 import type { FantasyRosterEntry } from '@arenaswap/core';
-import type { CollegeFilter, CollegeLeagueId, ExtensionMessage, LeagueId, LeagueLogoMap, LeagueScheduleMap, PowerScoreSnapshot, ScoreSnapshot, SignalName, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
+import type { CollegeFilter, CollegeLeagueId, ExtensionMessage, LeagueId, LeagueLogoMap, PowerScoreSnapshot, ScoreSnapshot, SignalName, SportType, TabRegistration, UserPreferences } from '@arenaswap/core/types';
 import type { Browser } from 'wxt/browser';
 import GameDetailView from './components/gameDetailView';
 import MainView from './components/mainView';
-import OnboardingView from './components/onboardingView';
+import OnboardingView from './components/onboarding/onboardingView';
 import SetupView from './components/setupView';
-import WalkthroughView from './components/walkthroughView';
+import WalkthroughView from './components/walkthrough/walkthroughView';
 import ToastContainer from './components/toastContainer';
-import { fetchState, formatTabLabel, insertLeagueAtDefaultPosition, leagueOrder, leaguesBySportType, moveLeague, normalizeBackgroundState, popupView } from './popupHelpers';
+import { formatTabLabel, popupView } from './popupHelpers';
+import { fetchState, normalizeBackgroundState } from '../../utils/backgroundState';
+import { withFavoriteTeamToggled, withLeagueMoved, withLeagueOrderReset, withLeagueToggled, withRivalTeamToggled, withSportToggled } from '../../utils/prefsUpdates';
 import { i18n } from '#i18n';
 import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 import { StaleLeaguesProvider } from '@arenaswap/ui/src/components/staleLeagueNote';
 import useFavoriteScoreConfetti from './useFavoriteScoreConfetti';
 import { popupConfettiStage } from './popupConfettiStage';
-import { resolveOpenRevealCut, resolveOpenRevealMode, revealSettleMs, revealSkipOutMs, writeOpenRevealEnabled } from './cardReveal';
-import { isLeagueLogoCacheFresh, leagueLogoCacheKey, seededLeagueLogos } from './leagueLogoCache';
+import useOpenReveal from './useOpenReveal';
+import useLeagueLogoCache from './useLeagueLogoCache';
 import useToast from './useToast';
 import useSlideDirection from './useSlideDirection';
 import useBossShortcut from './useBossShortcut';
@@ -34,7 +35,8 @@ import {
 	type TabSuggestion,
 } from '../../utils/tabSuggestions';
 import { finishedTabNoticeKey, normalizeFinishedTabNotice } from '../../utils/finishedTabs';
-import { loadStoredUserPreferencesWithPresence, persistStoredUserPreferences } from '../../utils/prefsStorage';
+import { deviceFlagDefaults } from '../../utils/deviceFlags';
+import { loadStoredUserPreferencesWithPresence, saveUserPrefs } from '../../utils/prefsStorage';
 import { loadFantasyRoster, saveFantasyRoster } from '../../utils/fantasyRosterStorage';
 import {
 	createProfile,
@@ -116,10 +118,6 @@ export default () => {
 	const [reviewPromptState, setReviewPromptState] = useState<ReviewPromptState>(normalizeReviewPromptState(null));
 	const [settled, setSettled] = useState(false);
 	const theme = useTheme(prefsLoaded ? prefs.theme : null);
-	const [revealMode, setRevealMode] = useState(resolveOpenRevealMode);
-	const [revealCut] = useState(() => resolveOpenRevealCut(revealMode));
-	const [allLeagueLogoCache, setAllLeagueLogoCache] = useState<LeagueLogoMap>(seededLeagueLogos);
-	const [leagueSchedules, setLeagueSchedules] = useState<LeagueScheduleMap>({});
 	const settledRef = useRef(false);
 	const saveQueueRef = useRef<Promise<unknown>>(Promise.resolve());
 	const { toasts, showToast, dismissToast, pauseToast, resumeToast } = useToast();
@@ -132,64 +130,8 @@ export default () => {
 	});
 
 	const listOnScreen = onboardingDone === true && view === 'main' && !isLoading && settled;
-	const revealStartedRef = useRef(false);
-	useEffect(() => {
-		if (revealMode === 'none') return;
-		if (!listOnScreen) {
-			if (!revealStartedRef.current) return;
-			setRevealMode('none');
-			return;
-		}
-		revealStartedRef.current = true;
-		const timer = setTimeout(() => setRevealMode('none'), revealSettleMs(revealMode, revealCut));
-		return () => clearTimeout(timer);
-	}, [revealMode, revealCut, listOnScreen]);
-
-	const [revealSkipping, setRevealSkipping] = useState(false);
-	useEffect(() => {
-		if (revealMode === 'none' || revealSkipping) return;
-		const skip = () => setRevealSkipping(true);
-		window.addEventListener('pointerdown', skip, true);
-		window.addEventListener('keydown', skip, true);
-		return () => {
-			window.removeEventListener('pointerdown', skip, true);
-			window.removeEventListener('keydown', skip, true);
-		};
-	}, [revealMode, revealSkipping]);
-
-	useEffect(() => {
-		if (!revealSkipping) return;
-		const timer = setTimeout(() => setRevealMode('none'), revealSkipOutMs);
-		return () => clearTimeout(timer);
-	}, [revealSkipping]);
-
-	useEffect(() => {
-		if (!prefsLoaded) return;
-		writeOpenRevealEnabled(prefs.openRevealEnabled);
-	}, [prefsLoaded, prefs.openRevealEnabled]);
-
-	useEffect(() => {
-		let cancelled = false;
-		void (async () => {
-			try {
-				const stored = (await browser.storage.local.get(leagueLogoCacheKey))[leagueLogoCacheKey];
-				if (isLeagueLogoCacheFresh(stored, Date.now())) {
-					if (cancelled) return;
-					setAllLeagueLogoCache(current => ({ ...current, ...stored.logos }));
-					setLeagueSchedules(stored.schedules);
-					return;
-				}
-				const { leagueLogos: logos, leagueSchedules: schedules } = await fetchGamesWithLeagueLogos(allLeagueIds, { includeUpcoming: false });
-				if (Object.keys(logos).length === 0) return;
-				await browser.storage.local.set({ [leagueLogoCacheKey]: { fetchedAt: Date.now(), logos, schedules } });
-				if (cancelled) return;
-				setAllLeagueLogoCache(current => ({ ...current, ...logos }));
-				setLeagueSchedules(schedules);
-			} catch {
-			}
-		})();
-		return () => { cancelled = true; };
-	}, []);
+	const { revealMode, revealCut, revealSkipping } = useOpenReveal({ listOnScreen, prefsLoaded, openRevealEnabled: prefs.openRevealEnabled });
+	const { allLeagueLogoCache, leagueSchedules } = useLeagueLogoCache();
 
 	const games = useMemo(() => data?.games ?? [], [data?.games]);
 
@@ -223,14 +165,7 @@ export default () => {
 			setProfiles(await followSyncedProfile().catch(() => defaultProfiles));
 			const [{ prefs: normalizedPrefs, hasStored: hasStoredPrefs }, localResult, storedRoster] = await Promise.all([
 				loadStoredUserPreferencesWithPresence(),
-				browser.storage.local.get({
-					demoMode: false,
-					demoSeason: 'real',
-					onboardingCompleted: null,
-					standbyOnboardingDone: false,
-					multiviewOnboardingDone: false,
-					[reviewPromptStorageKey]: null,
-				}),
+				browser.storage.local.get({ ...deviceFlagDefaults, [reviewPromptStorageKey]: null }),
 				loadFantasyRoster().catch(() => []),
 			]);
 			prefsRef.current = normalizedPrefs;
@@ -330,10 +265,7 @@ export default () => {
 		const normalized = normalizeUserPreferences(rawNextPrefs);
 		prefsRef.current = normalized;
 		setPrefs(normalized);
-		const syncPromise = queueSave(async () => {
-			await persistStoredUserPreferences(normalized);
-			await browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: normalized } satisfies ExtensionMessage);
-		});
+		const syncPromise = queueSave(() => saveUserPrefs(normalized));
 		void syncPromise.catch(() => {});
 	};
 
@@ -437,36 +369,19 @@ export default () => {
 	};
 
 	const onToggleLeague = (leagueId: LeagueId) => {
-		persistPrefs(currentPrefs => {
-			const enabledLeagues = currentPrefs.enabledLeagues.includes(leagueId)
-				? currentPrefs.enabledLeagues.filter(id => id !== leagueId)
-				: insertLeagueAtDefaultPosition(currentPrefs.enabledLeagues, leagueId);
-			return { ...currentPrefs, enabledLeagues };
-		});
+		persistPrefs(currentPrefs => withLeagueToggled(currentPrefs, leagueId));
 	};
 
 	const onToggleSport = (sport: SportType, selectAll: boolean) => {
-		persistPrefs(currentPrefs => {
-			const sportLeagueIds = leaguesBySportType[sport].map(l => l.id);
-			const enabledLeagues = selectAll
-				? sportLeagueIds.reduce(insertLeagueAtDefaultPosition, currentPrefs.enabledLeagues)
-				: currentPrefs.enabledLeagues.filter(id => !sportLeagueIds.includes(id));
-			return { ...currentPrefs, enabledLeagues };
-		});
+		persistPrefs(currentPrefs => withSportToggled(currentPrefs, sport, selectAll));
 	};
 
 	const onReorderLeague = (fromIndex: number, toIndex: number) => {
-		persistPrefs(currentPrefs => ({
-			...currentPrefs,
-			enabledLeagues: moveLeague(currentPrefs.enabledLeagues, fromIndex, toIndex),
-		}));
+		persistPrefs(currentPrefs => withLeagueMoved(currentPrefs, fromIndex, toIndex));
 	};
 
 	const onResetLeagueOrder = () => {
-		persistPrefs(currentPrefs => ({
-			...currentPrefs,
-			enabledLeagues: currentPrefs.enabledLeagues.toSorted((a, b) => leagueOrder[a] - leagueOrder[b]),
-		}));
+		persistPrefs(currentPrefs => withLeagueOrderReset(currentPrefs));
 	};
 
 	const onCollegeFilterChange = (leagueId: CollegeLeagueId, filter: CollegeFilter) => {
@@ -512,23 +427,11 @@ export default () => {
 	};
 
 	const toggleFavoriteTeam = (leagueId: LeagueId, teamId: string) => {
-		const favoriteTeamKey = createFavoriteTeamKey(leagueId, teamId);
-		persistPrefs(currentPrefs => {
-			const current = new Set(currentPrefs.favoriteTeamIds);
-			if (current.has(favoriteTeamKey)) current.delete(favoriteTeamKey);
-			else current.add(favoriteTeamKey);
-			return { ...currentPrefs, favoriteTeamIds: [...current], rivalTeamIds: currentPrefs.rivalTeamIds.filter(key => key !== favoriteTeamKey) };
-		});
+		persistPrefs(currentPrefs => withFavoriteTeamToggled(currentPrefs, leagueId, teamId));
 	};
 
 	const toggleRivalTeam = (leagueId: LeagueId, teamId: string) => {
-		const rivalTeamKey = createFavoriteTeamKey(leagueId, teamId);
-		persistPrefs(currentPrefs => {
-			const current = new Set(currentPrefs.rivalTeamIds);
-			if (current.has(rivalTeamKey)) current.delete(rivalTeamKey);
-			else current.add(rivalTeamKey);
-			return { ...currentPrefs, rivalTeamIds: [...current], favoriteTeamIds: currentPrefs.favoriteTeamIds.filter(key => key !== rivalTeamKey) };
-		});
+		persistPrefs(currentPrefs => withRivalTeamToggled(currentPrefs, leagueId, teamId));
 	};
 
 	const onSetStandbyTab = (tabId: number | null) => {

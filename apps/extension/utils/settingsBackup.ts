@@ -1,8 +1,9 @@
 import { normalizeUserPreferences } from '@arenaswap/core/constants';
-import { normalizeFantasyRoster } from '@arenaswap/core';
+import { isPlainRecord, normalizeFantasyRoster } from '@arenaswap/core';
 import type { FantasyRosterEntry } from '@arenaswap/core';
 import type { ExtensionMessage, UserPreferences } from '@arenaswap/core/types';
 import { breakdownFoldsKey, type breakdownSectionId } from './breakdownFolds';
+import { deviceFlagDefaults } from './deviceFlags';
 import { isDemoSeason, type demoSeason } from './holidayDecorations';
 import {
 	createProfile,
@@ -49,16 +50,12 @@ export type parsedSettingsFile =
 	| { ok: true; file: settingsFile }
 	| { ok: false; problem: settingsFileProblem };
 
-const isRecord = (value: unknown): value is Record<string, unknown> => (
-	typeof value === 'object' && value !== null && !Array.isArray(value)
-);
-
 const normalizeBreakdownCollapsed = (value: unknown): breakdownSectionId[] => (
 	Array.isArray(value) ? breakdownSections.filter(section => value.includes(section)) : []
 );
 
 const normalizeDeviceSettings = (value: unknown): deviceSettings => {
-	const device = isRecord(value) ? value : {};
+	const device = isPlainRecord(value) ? value : {};
 	return {
 		onboardingCompleted: device.onboardingCompleted === true,
 		standbyOnboardingDone: device.standbyOnboardingDone === true,
@@ -70,7 +67,7 @@ const normalizeDeviceSettings = (value: unknown): deviceSettings => {
 };
 
 export const normalizeSettingsProfile = (value: unknown): settingsProfile => {
-	const profile = isRecord(value) ? value : {};
+	const profile = isPlainRecord(value) ? value : {};
 	return {
 		name: normalizeProfileName(profile.name) || defaultProfileName,
 		prefs: normalizeUserPreferences(profile.prefs),
@@ -86,10 +83,10 @@ export const parseSettingsFile = (text: string): parsedSettingsFile => {
 	} catch {
 		return { ok: false, problem: 'unreadable' };
 	}
-	if (!isRecord(raw) || raw.format !== settingsFileFormat || !isRecord(raw.profile)) return { ok: false, problem: 'notOurs' };
+	if (!isPlainRecord(raw) || raw.format !== settingsFileFormat || !isPlainRecord(raw.profile)) return { ok: false, problem: 'notOurs' };
 	const version = typeof raw.version === 'number' && Number.isFinite(raw.version) ? raw.version : 0;
 	if (version > settingsFileVersion) return { ok: false, problem: 'tooNew' };
-	if (!isRecord(raw.profile.prefs) || !Array.isArray(raw.profile.fantasyRoster)) return { ok: false, problem: 'notOurs' };
+	if (!isPlainRecord(raw.profile.prefs) || !Array.isArray(raw.profile.fantasyRoster)) return { ok: false, problem: 'notOurs' };
 
 	return {
 		ok: true,
@@ -116,7 +113,7 @@ export const loadSettingsProfile = async (profileId?: string): Promise<settingsP
 	const entry = profiles.find(profile => profile.id === (profileId ?? activeId)) ?? profiles.find(profile => profile.id === activeId);
 	const [setup, local] = await Promise.all([
 		loadProfileSetup(entry?.id ?? activeId),
-		browser.storage.local.get({ onboardingCompleted: null, standbyOnboardingDone: false, multiviewOnboardingDone: false, demoMode: false, demoSeason: 'real' }),
+		browser.storage.local.get(deviceFlagDefaults),
 	]);
 	return {
 		name: entry?.name ?? defaultProfileName,

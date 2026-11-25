@@ -14,7 +14,8 @@ const modes = [
 </button>
 
 <script>
-import { applyThemePreference, nextThemePreference, prefersLightScheme, readThemePreference, themeStorageKey, watchSystemTheme, type ThemePreference } from '../lib/siteTheme';
+import { applyThemePreference, nextThemePreference, prefersLightScheme, readThemePreference, themeStorageKey, watchSystemTheme } from '../lib/siteTheme';
+import type { ThemePreference } from '@arenaswap/core/types';
 
 interface Mode {
 	value: ThemePreference;

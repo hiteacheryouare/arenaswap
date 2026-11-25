@@ -1,5 +1,5 @@
 import type { ScoreSnapshot } from '@arenaswap/core';
-import { buildCurrentDayKeys } from '../../src/apiClient';
+import { buildCurrentDayKeys } from '../../src/dayWindow';
 
 const isLivePoll = (url: string): boolean => (
 	buildCurrentDayKeys().includes(new URL(url).searchParams.get('dates') ?? '')

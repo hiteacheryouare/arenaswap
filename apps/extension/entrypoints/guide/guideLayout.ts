@@ -1,6 +1,6 @@
 import { leagueConfigs } from '@arenaswap/core/constants';
 import type { LeagueId } from '@arenaswap/core/types';
-import type { dateGroup } from '../popup/popupHelpers';
+import type { dateGroup } from '../../utils/gameGroups';
 import type { guideBar } from './guideHeat';
 
 export const pxPerMinute = 2.1;

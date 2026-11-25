@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { Game } from '@arenaswap/core/types';
 import EmptyGameState from '../../../entrypoints/popup/components/emptyGameState';
 import GameListHeader from '../../../entrypoints/popup/components/gameListHeader';
-import NoGamesMessage from '../../../entrypoints/popup/components/noGamesMessage';
+import NoGamesMessage from '@arenaswap/ui/src/components/noGamesMessage';
 import ProTip from '../../../entrypoints/popup/components/proTip';
 import ReviewPromptBanner from '../../../entrypoints/popup/components/reviewPromptBanner';
 import SuggestBanner from '../../../entrypoints/popup/components/suggestBanner';

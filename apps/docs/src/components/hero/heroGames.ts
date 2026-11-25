@@ -1,6 +1,6 @@
 import type { Game } from '@arenaswap/core/types';
+import { espnTeamLogo } from '../teamLogo';
 
-const espnTeamLogo = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
 const ncaaLogo = (id: string) => espnTeamLogo(`ncaa/500/${id}`);
 
 export interface HeroBeat {

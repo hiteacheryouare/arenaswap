@@ -6,11 +6,10 @@ import { formatGameClock, formatPeriod } from '@arenaswap/ui/src/components/game
 import { arizonaPurdue, celticsKnicks, flyersPenguins } from './demoGames';
 import { demoTranslator } from './demoStrings';
 import { currentLocale } from '../../i18n/ui';
+import { espnTeamLogo } from '../teamLogo';
 
 const locale = currentLocale(Astro.currentLocale);
 const demoText = demoTranslator(locale);
-
-const espnTeamLogo = (path: string) => `https://a.espncdn.com/i/teamlogos/${path}.png`;
 
 const at = (hour: number, minute = 0) => new Date(2026, 10, 4, hour, minute).getTime();
 const axisFrom = at(19);

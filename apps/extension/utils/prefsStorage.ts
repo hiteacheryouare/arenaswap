@@ -1,10 +1,10 @@
 import { normalizeUserPreferences } from '@arenaswap/core/constants';
 import { logWarn } from '@arenaswap/core';
-import type { UserPreferences } from '@arenaswap/core/types';
+import type { ExtensionMessage, UserPreferences } from '@arenaswap/core/types';
 
 export const prefsStorageUpdatedAtKey = 'prefsUpdatedAt';
 
-const normalizeTimestamp = (value: unknown): number => (
+export const normalizeTimestamp = (value: unknown): number => (
 	typeof value === 'number' && Number.isFinite(value) ? value : 0
 );
 
@@ -72,4 +72,9 @@ export const persistStoredUserPreferences = async (prefs: UserPreferences): Prom
 			logWarn('storage.sync unavailable; prefs saved to storage.local only.', err);
 		}),
 	]);
+};
+
+export const saveUserPrefs = async (prefs: UserPreferences): Promise<void> => {
+	await persistStoredUserPreferences(prefs);
+	await browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs } satisfies ExtensionMessage);
 };

@@ -5,6 +5,38 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The popup's component families get their own folders — 2026-11-24
+
+The walkthrough steps, holiday decorations, card reveal pieces, fantasy pages and onboarding screens moved into `components/walkthrough/`, `holiday/`, `reveal/`, `fantasy/` and `onboarding/`, with every importer and Cypress spec repointed and no Cypress stub key affected. The `ludicrous*` family stays flat for now because it has work in progress elsewhere.
+
+## The docs site shares its logo, string and theme helpers — 2026-11-24
+
+Seven copies of the team-logo URL builder become one `components/teamLogo.ts`, `ui.ts` and the demo strings share one lookup and flatten in `i18n/bundle.ts`, the theme module reuses core's theme types, and LivePowerScores' scoreboard client moves to `lib/liveScoreboard.ts`. A new extension test fails if `packages/ui`'s English fallback strings drift from `en.json`.
+
+## The popup's three biggest files hand pieces to their own modules — 2026-11-24
+
+`app.tsx` hands its open-reveal state and effects to `useOpenReveal`, its logo cache to `useLeagueLogoCache` and its six league and favorite updaters to `utils/prefsUpdates.ts`, with the hooks called where their effects used to sit so effect order is unchanged. Each settings page in `setupView.tsx` is its own component under `components/settings/` (SetupView's props are unchanged), and `useSummaryData.ts` keeps only the hook, with its parsers in `summaryParsers.ts` and demo tables in `demoSummary.ts`.
+
+## Logic the guide and the worker share moves out of the popup folder — 2026-11-24
+
+The open-reveal flag, the league logo cache, and `popupHelpers.ts`'s sorting, grouping, league-order and loading-line helpers now live in `utils/`, so the guide, the backup page and `profiles.ts` stop importing popup internals; `popupHelpers.ts` keeps only the popup's own view type, sport labels and tab label. Saving prefs and telling the worker is one `saveUserPrefs` helper, the three weekly caches share one freshness rule, and the device-only flags read from one `deviceFlagDefaults` object.
+
+## The domain packages split their god files along their seams — 2026-11-24
+
+Sideline's 1,228-line `apiClient.ts` is now a request pool, day windows, event parsing and team logos, with one home (`endpoints.ts`) for feed hosts and URL builders; core's `constants.ts` and `scoring.ts` and powerscore's `constants.ts` split the same way behind their old entry points. Every package exports exactly the names it did before (checked against the built `dist`), and the basketball situation types live in core so ui no longer reaches into sideline for them.
+
+## The popup imports shared components straight from the ui package — 2026-11-24
+
+Twenty one-line popup files that only re-exported `@arenaswap/ui` components are gone, and their importers point at the ui package; `flipScore` and `gameCardShared` stay because a Cypress stub and the uncommitted `popupFooter.jsx` still import through them. Core drops dead exports and the powerscore passthroughs nobody imported, and copy-pasted helpers (`isPlainRecord`, `normalizeTimestamp`, `isSameLocalDay`, `prefersReducedMotion`, the factor labels, the walkthrough crest) each live in one place now.
+
+## Dev's CI goes green on Linux — 2026-11-25
+
+The Multiview half-minute test waits for both boxes to start before fast-forwarding, the light-speed sign wraps where Linux has no German hyphenation, component tests ignore the browser's harmless ResizeObserver loop warning, and the containment net prints every violation in full and no longer flags a 1–2px sideways scroll when nothing overhangs the root. Together with the re-sort test fix, every CI check that was red on `dev` passes.
+
+## The live re-sort e2e test skips the opening animation first — 2026-11-22
+
+Since the popup started holding the live order steady while its opening animation plays, `tabRegistration.cy.ts` pushed its new leader mid-animation and timed out before the order was allowed to change. The test now taps the popup to skip the animation before pushing, so it checks the live re-sort and not the animation's length.
+
 ## Multiview boxes tuck their player controls away — 2026-11-22
 
 A second after a box's stream starts playing (and again after every stall or pause), the frame script fakes a mouse move over the player, so players that wait for a first move (Xfinity) start their own idle timer and hide their title bar and progress bar. Hovering a box still brings the controls back.

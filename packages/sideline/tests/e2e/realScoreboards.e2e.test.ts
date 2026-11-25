@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createDefaultUserPreferences } from '@arenaswap/core/constants';
-import { scoreLiveGame } from '@arenaswap/core/scoring';
+import { scoreLiveGame } from '@arenaswap/core';
 import type { Game, LeagueId } from '@arenaswap/core';
 
 interface Capture {

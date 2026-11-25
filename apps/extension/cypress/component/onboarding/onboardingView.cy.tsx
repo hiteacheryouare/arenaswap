@@ -1,4 +1,4 @@
-import OnboardingView from '../../../entrypoints/popup/components/onboardingView';
+import OnboardingView from '../../../entrypoints/popup/components/onboarding/onboardingView';
 
 const teamsByLeague: Record<string, [string, string][]> = {
 	nba: [['20', 'Philadelphia 76ers'], ['4', 'Chicago Bulls']],

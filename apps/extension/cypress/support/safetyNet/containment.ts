@@ -28,6 +28,7 @@ interface span {
 }
 
 const defaultTolerancePx = 0.5;
+const phantomOverflowPx = 2;
 
 const isElement = (node: Node): node is Element => node.nodeType === Node.ELEMENT_NODE;
 const styleOf = (element: Element) => element.ownerDocument.defaultView!.getComputedStyle(element);
@@ -81,6 +82,11 @@ const paddingSpan = (element: Element): span => {
 	return { left, right: left + element.clientWidth };
 };
 
+const overhangsSideways = (root: Element, bound: span, tolerancePx: number) => Array.from(root.querySelectorAll('*')).some(element => {
+	const box = element.getBoundingClientRect();
+	return box.width > 0 && (box.right - bound.right > tolerancePx || bound.left - box.left > tolerancePx);
+});
+
 const contentSpan = (element: Element): span => {
 	const outer = paddingSpan(element);
 	const style = styleOf(element);
@@ -120,7 +126,8 @@ export const findContainmentViolations = (root: Element, options: containmentOpt
 	const rootSpan = paddingSpan(root);
 	const rootName = `the surface root ${describeElement(root)}`;
 
-	if (root.scrollWidth > root.clientWidth) {
+	const sidewaysOverflow = root.scrollWidth - root.clientWidth;
+	if (sidewaysOverflow > phantomOverflowPx || (sidewaysOverflow > 0 && overhangsSideways(root, rootSpan, tolerancePx))) {
 		violations.push({
 			rule: 'rootScrollsSideways',
 			node: root,

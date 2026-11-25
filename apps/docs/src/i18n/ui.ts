@@ -1,4 +1,5 @@
 import { defaultLocale, isLocaleCode, type LocaleCode } from './locales';
+import { flattenStrings, lookupPath } from './bundle';
 import en from './strings/en.json';
 import de from './strings/de.json';
 import es from './strings/es.json';
@@ -28,13 +29,6 @@ const bundles: Record<LocaleCode, unknown> = {
 };
 
 export type SiteStrings = typeof en;
-
-const lookup = (bundle: unknown, key: string): unknown =>
-	key.split('.').reduce<unknown>(
-		(node, segment) =>
-			node !== null && typeof node === 'object' ? (node as Record<string, unknown>)[segment] : undefined,
-		bundle,
-	);
 
 const substitute = (value: string, subs?: Record<string, string | number>) => {
 	if (!subs) return value;
@@ -85,7 +79,7 @@ export const useTranslations = (locale: LocaleCode): Translator => {
 	const bundle = bundles[locale] ?? bundles[defaultLocale];
 
 	const translate = ((key: string, subs?: Record<string, string | number>) => {
-		const value = lookup(bundle, key) ?? lookup(bundles[defaultLocale], key);
+		const value = lookupPath(bundle, key) ?? lookupPath(bundles[defaultLocale], key);
 		if (typeof value !== 'string') {
 			throw new Error(`Missing site string: ${key}`);
 		}
@@ -93,7 +87,7 @@ export const useTranslations = (locale: LocaleCode): Translator => {
 	}) as Translator;
 
 	translate.list = <T,>(key: string): T[] => {
-		const value = lookup(bundle, key) ?? lookup(bundles[defaultLocale], key);
+		const value = lookupPath(bundle, key) ?? lookupPath(bundles[defaultLocale], key);
 		if (!Array.isArray(value)) {
 			throw new Error(`Missing site string list: ${key}`);
 		}
@@ -107,17 +101,7 @@ export const useTranslations = (locale: LocaleCode): Translator => {
 export const currentLocale = (candidate: string | undefined): LocaleCode =>
 	isLocaleCode(candidate) ? candidate : defaultLocale;
 
-const flatten = (node: unknown, prefix: string, into: Record<string, string>) => {
-	if (node === null || typeof node !== 'object') return into;
-	for (const [key, value] of Object.entries(node as Record<string, unknown>)) {
-		const path = prefix ? `${prefix}.${key}` : key;
-		if (typeof value === 'string') into[path] = value;
-		else flatten(value, path, into);
-	}
-	return into;
-};
-
 export const uiStrings = (locale: LocaleCode): Record<string, string> => ({
-	...flatten(lookup(bundles[defaultLocale], 'ui'), '', {}),
-	...flatten(lookup(bundles[locale] ?? bundles[defaultLocale], 'ui'), '', {}),
+	...flattenStrings(lookupPath(bundles[defaultLocale], 'ui'), '', {}),
+	...flattenStrings(lookupPath(bundles[locale] ?? bundles[defaultLocale], 'ui'), '', {}),
 });

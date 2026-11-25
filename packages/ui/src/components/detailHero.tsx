@@ -1,4 +1,4 @@
-import type { BasketballSituation } from '@arenaswap/sideline';
+import type { BasketballSituation } from '@arenaswap/core';
 import { isHomeFirst } from '@arenaswap/core/constants';
 import type { Game, Team } from '@arenaswap/core/types';
 import { timeoutAllotment } from './timeoutDots';

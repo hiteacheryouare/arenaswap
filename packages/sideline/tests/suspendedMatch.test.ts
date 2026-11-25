@@ -1,5 +1,5 @@
 import type { LeagueId } from '@arenaswap/core';
-import { parseScoreboardEvents } from '../src/apiClient';
+import { parseScoreboardEvents } from '../src/scoreboardEvent';
 
 const suspendedScoreboard = (displayClock: string) => ({
 	events: [{

@@ -1,5 +1,5 @@
-import OnboardingView from '../../../entrypoints/popup/components/onboardingView';
-import WalkthroughView from '../../../entrypoints/popup/components/walkthroughView';
+import OnboardingView from '../../../entrypoints/popup/components/onboarding/onboardingView';
+import WalkthroughView from '../../../entrypoints/popup/components/walkthrough/walkthroughView';
 import { inEveryLocale, withLocale, type shippedLocale } from '../../support/safetyNet/locales';
 import { popupSurface, popupViewport } from '../../support/safetyNet/mountInPopup';
 import { worstTeams } from '../../support/safetyNet/worstCase';

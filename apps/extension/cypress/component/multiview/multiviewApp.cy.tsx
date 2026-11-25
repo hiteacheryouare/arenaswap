@@ -174,6 +174,8 @@ describe('Multiview page', () => {
 		cy.clock(0, ['Date', 'setInterval', 'clearInterval', 'setTimeout', 'clearTimeout']);
 		mountMultiview(lineupOf(2));
 		cy.get<multiviewHandle>('@multiview').then(handle => handle.report('g2', 12, 0, false));
+		cy.get('.multiview-stream').should('have.length', 2);
+		cy.wait(50);
 		cy.tick(29_000);
 		offAir('g2');
 		cy.tick(2000);

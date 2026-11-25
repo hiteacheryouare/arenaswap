@@ -3,17 +3,21 @@ import { createDefaultUserPreferences, createFavoriteTeamKey, isFavoriteTeamGame
 import type { BackgroundState, ExtensionMessage, Game, GuideSlate, LeagueId, LeagueLogoMap, PowerScoreSnapshot, ScoreSnapshot, TeamMonoLogoMap, UserPreferences } from '@arenaswap/core/types';
 import { TranslationContext } from '@arenaswap/ui/src/components/i18nContext';
 import ToggleSwitch from '@arenaswap/ui/src/components/toggleSwitch';
+import { prefersReducedMotion } from '@arenaswap/ui/src/motion';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { browser } from 'wxt/browser';
 import { resolveDecorationDate } from '../../utils/holidayDecorations';
+import { isSameLocalDay } from '../../utils/localDay';
 import GameDetailView from '../popup/components/gameDetailView';
 import GameListHeader from '../popup/components/gameListHeader';
-import NoGamesMessage from '../popup/components/noGamesMessage';
+import NoGamesMessage from '@arenaswap/ui/src/components/noGamesMessage';
 import UpcomingDayPager from '../popup/components/upcomingDayPager';
-import { fetchState, getRandomLoadingMessage, groupByDate, normalizeBackgroundState, resolveSelectedDayIndex } from '../popup/popupHelpers';
+import { fetchState, normalizeBackgroundState } from '../../utils/backgroundState';
+import { groupByDate, resolveSelectedDayIndex } from '../../utils/gameGroups';
+import { getRandomLoadingMessage } from '../../utils/loadingMessages';
 import useFavoriteScoreConfetti from '../popup/useFavoriteScoreConfetti';
 import { guideConfettiStage } from './guideConfettiStage';
-import { loadStoredUserPreferences, persistStoredUserPreferences } from '../../utils/prefsStorage';
+import { loadStoredUserPreferences, saveUserPrefs } from '../../utils/prefsStorage';
 import { fullLogoSrc, useTheme } from '../../utils/theme';
 import { bandLabel } from './guideFormat';
 import GuideGrid from './guideGrid';
@@ -27,17 +31,9 @@ const setGameBoost = (gameId: string, boost: number) => {
 
 const startMs = (game: Game): number => (game.startTime ? new Date(game.startTime).getTime() : Number.NaN);
 
-const isSameLocalDay = (ms: number, other: number): boolean => {
-	const a = new Date(ms);
-	const b = new Date(other);
-	return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-};
-
 const noGames: Game[] = [];
 const noSnapshots: ScoreSnapshot[] = [];
 const noPowerScoreSnapshots: PowerScoreSnapshot[] = [];
-
-const prefersReducedMotion = () => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
 const App = () => {
 	const [prefs, setPrefs] = useState<UserPreferences>(() => createDefaultUserPreferences());
@@ -171,9 +167,7 @@ const App = () => {
 		const next = normalizeUserPreferences({ ...prefsRef.current, favoriteTeamIds: [...current] });
 		prefsRef.current = next;
 		setPrefs(next);
-		void persistStoredUserPreferences(next)
-			.then(() => browser.runtime.sendMessage({ type: 'UPDATE_PREFS', prefs: next } satisfies ExtensionMessage))
-			.catch(() => {});
+		void saveUserPrefs(next).catch(() => {});
 	};
 
 	const favoriteTeamIds = useMemo(() => new Set(prefs.favoriteTeamIds), [prefs.favoriteTeamIds]);

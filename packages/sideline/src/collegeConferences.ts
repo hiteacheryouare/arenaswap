@@ -1,8 +1,8 @@
 import * as z from 'zod/mini';
 import { collegeDivisions, conferenceCrestSlug, leagueConfigMap } from '@arenaswap/core';
 import type { CollegeLeagueId, ConferenceDirectory, ConferenceEntry } from '@arenaswap/core';
-import { settledInPool, takeRequestSlot } from './apiClient';
-import { coreApiBase, requestSignal } from './endpoints';
+import { settledInPool, takeRequestSlot } from './requestPool';
+import { coreApiBase, espnGet } from './endpoints';
 
 const conferenceParents: Partial<Record<CollegeLeagueId, string[]>> = {
 	ncaaf: ['80', '81'],
@@ -51,7 +51,7 @@ const withLimit = (url: string, limit: number): string => {
 
 const fetchCore = async <T>(url: string, schema: z.ZodMiniType<T>): Promise<T> => {
 	await takeRequestSlot();
-	const res = await fetch(toHttps(url), { headers: { Accept: 'application/json' }, signal: requestSignal() });
+	const res = await espnGet(toHttps(url));
 	if (!res.ok) throw new Error(`Conference lookup failed: HTTP ${res.status} for ${url}`);
 	const parsed = schema.safeParse(await res.json());
 	if (!parsed.success) throw new Error(`Conference lookup returned an unexpected shape for ${url}`);

@@ -1,4 +1,4 @@
-import WalkthroughStepSettings from '../../../entrypoints/popup/components/walkthroughStepSettings';
+import WalkthroughStepSettings from '../../../entrypoints/popup/components/walkthrough/walkthroughStepSettings';
 import en from '../../../locales/en.json';
 
 describe('walkthroughStepSettings practice sliders', () => {

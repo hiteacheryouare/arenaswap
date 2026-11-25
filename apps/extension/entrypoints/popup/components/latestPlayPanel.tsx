@@ -1,6 +1,6 @@
 import { i18n } from '#i18n';
 import type { Game } from '@arenaswap/core/types';
-import { describeRedCard } from './gameSituation';
+import { describeRedCard } from '@arenaswap/ui/src/components/gameSituation';
 
 interface latestPlayPanelProps {
 	game: Game;

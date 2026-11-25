@@ -1,5 +1,5 @@
 import { scorerTunables, scoreWinProbVarianceMax } from './constants';
-import { clamp } from './math';
+import { clamp, isFiniteNumber } from './math';
 import type { SportTypeConfig, WinProbabilityReading } from './types';
 
 const minReadings = 3;
@@ -9,8 +9,6 @@ const swingHalfLifeMultiple = 2;
 const maxStepPerPlay = 0.5;
 const spikeJump = 0.15;
 const spikeReturn = 0.05;
-
-const isFiniteNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
 
 const toReadings = (line: readonly WinProbabilityReading[] | readonly number[], nowProgress: number): WinProbabilityReading[] => {
 	const bare = line.filter(isFiniteNumber);

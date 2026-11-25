@@ -110,7 +110,8 @@ describe('a state ESPN has not used before', () => {
 	});
 
 	test('a game is final only when the feed says it is completed', () => {
-		const { parseScoreboardEvents } = mockScoreboard([]);
+		mockScoreboard([]);
+		const { parseScoreboardEvents } = require('../src/scoreboardEvent') as typeof import('../src/scoreboardEvent');
 		const read = (completed: boolean) => parseScoreboardEvents({ events: [liveEvent({ status: { period: 4, type: { state: 'certified', completed } } })] }, 'nba')[0]?.status;
 
 		expect([read(true), read(false)]).toEqual(['post', 'in']);

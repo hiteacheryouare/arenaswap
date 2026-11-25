@@ -1,5 +1,5 @@
-import { seriesSlots } from '../entrypoints/popup/components/seriesSlots';
-import type { SeriesEvent } from '../entrypoints/popup/components/useSummaryData';
+import { seriesSlots } from '@arenaswap/ui/src/components/seriesSlots';
+import type { SeriesEvent } from '@arenaswap/ui/src/components/detailSummary';
 
 const won = (teamId: string): SeriesEvent => ({
 	statusType: { completed: true },

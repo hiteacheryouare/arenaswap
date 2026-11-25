@@ -2,8 +2,8 @@ import * as z from 'zod/mini';
 import { leagueConfigMap } from '@arenaswap/core';
 import type { FantasyRosterEntry, LeagueId } from '@arenaswap/core';
 import type { FantasyPosition } from 'powerscore';
-import { takeRequestSlot } from './apiClient';
-import { coreApiBase, requestSignal } from './endpoints';
+import { takeRequestSlot } from './requestPool';
+import { coreApiBase, espnGet, espnSearchBase } from './endpoints';
 import { teamDefenseId } from './fantasyBoxScore';
 
 // Fantasy's leagues, by the numeric league id our sources put in a player's uid (`s:20~l:28~a:…`).
@@ -89,7 +89,7 @@ export const parsePlayerSearch = (payload: unknown, query: string): PlayerSearch
 export const searchPlayers = async (query: string, init?: { signal?: AbortSignal }): Promise<PlayerSearchResult[]> => {
 	if (foldName(query).length < 2) return [];
 	await takeRequestSlot();
-	const res = await fetch(`https://site.api.espn.com/apis/search/v2?query=${encodeURIComponent(query)}&limit=25`, { headers: { Accept: 'application/json' }, signal: init?.signal ?? requestSignal() });
+	const res = await espnGet(`${espnSearchBase}?query=${encodeURIComponent(query)}&limit=25`, { signal: init?.signal });
 	if (!res.ok) throw new Error(`Player search failed: HTTP ${res.status}`);
 	return parsePlayerSearch(await res.json(), query);
 };
@@ -111,7 +111,7 @@ export const toFantasyPosition = (league: LeagueId, abbreviation: string | undef
 export const resolveRosterEntry = async (result: PlayerSearchResult): Promise<FantasyRosterEntry> => {
 	const [sport, leaguePath] = leagueConfigMap[result.league].espnPath.split('/');
 	await takeRequestSlot();
-	const res = await fetch(`${coreApiBase}/${sport}/leagues/${leaguePath}/athletes/${result.athleteId}`, { headers: { Accept: 'application/json' }, signal: requestSignal() });
+	const res = await espnGet(`${coreApiBase}/${sport}/leagues/${leaguePath}/athletes/${result.athleteId}`);
 	if (!res.ok) throw new Error(`Could not look up ${result.name}: HTTP ${res.status}`);
 	const parsed = AthleteSchema.safeParse(await res.json());
 	const teamId = parsed.success ? /\/teams\/(\d+)/.exec(parsed.data.team?.$ref ?? '')?.[1] : undefined;

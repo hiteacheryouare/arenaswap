@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FantasySport } from 'powerscore';
 import type { UserPreferences } from '@arenaswap/core/types';
-import FantasyScoringPage from '../../../entrypoints/popup/components/fantasyScoringPage';
+import FantasyScoringPage from '../../../entrypoints/popup/components/fantasy/fantasyScoringPage';
 import { withFantasyRule, withoutFantasySport } from '../../../utils/scoringPrefs';
 
 interface harnessProps {

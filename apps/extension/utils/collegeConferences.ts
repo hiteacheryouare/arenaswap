@@ -1,8 +1,9 @@
 import { isObjectRecord, logWarn } from '@arenaswap/core';
 import { fetchConferenceDirectory } from '@arenaswap/sideline';
 import type { CollegeLeagueId, ConferenceDirectory } from '@arenaswap/core/types';
+import { isFreshWithin, weekMs } from './cacheFreshness';
 
-export const conferenceDirectoryTtlMs = 7 * 24 * 60 * 60 * 1000;
+export const conferenceDirectoryTtlMs = weekMs;
 
 export const conferenceDirectoryKey = (leagueId: CollegeLeagueId): string => `arenaswap.collegeConferences.${leagueId}`;
 
@@ -16,7 +17,7 @@ export const isConferenceDirectory = (value: unknown, leagueId: CollegeLeagueId)
 );
 
 export const isConferenceDirectoryFresh = (directory: ConferenceDirectory, now: number): boolean => (
-	now >= directory.fetchedAt && now - directory.fetchedAt < conferenceDirectoryTtlMs
+	isFreshWithin(directory.fetchedAt, conferenceDirectoryTtlMs, now)
 );
 
 export const readConferenceDirectory = async (leagueId: CollegeLeagueId): Promise<ConferenceDirectory | undefined> => {

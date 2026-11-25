@@ -1,3 +1,5 @@
+import { readOpenRevealEnabled } from '../../utils/openReveal';
+
 export type revealMode = 'full' | 'quick' | 'none';
 
 export interface cardRevealPlan {
@@ -150,16 +152,6 @@ export const revealDayStamp = (now: Date) => [
 	String(now.getMonth() + 1).padStart(2, '0'),
 	String(now.getDate()).padStart(2, '0'),
 ].join('-');
-
-export const openRevealEnabledKey = 'arenaswap.openRevealEnabled';
-
-export const readOpenRevealEnabled = (): boolean => (
-	globalThis.localStorage?.getItem(openRevealEnabledKey) !== 'off'
-);
-
-export const writeOpenRevealEnabled = (enabled: boolean) => {
-	globalThis.localStorage?.setItem(openRevealEnabledKey, enabled ? 'on' : 'off');
-};
 
 export const pickRevealMode = (
 	lastDay: string | null,

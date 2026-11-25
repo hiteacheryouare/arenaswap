@@ -1,4 +1,4 @@
-export type ThemePreference = 'system' | 'light' | 'dark';
+import type { ResolvedTheme, ThemePreference } from '@arenaswap/core/types';
 
 export const themeStorageKey = 'arenaswap.theme';
 
@@ -11,7 +11,7 @@ export const readThemePreference = (): ThemePreference => {
 	return stored === 'light' || stored === 'dark' ? stored : 'system';
 };
 
-export const resolveSiteTheme = (preference: ThemePreference, prefersLight: boolean): 'light' | 'dark' => (
+export const resolveSiteTheme = (preference: ThemePreference, prefersLight: boolean): ResolvedTheme => (
 	preference === 'system' ? (prefersLight ? 'light' : 'dark') : preference
 );
 

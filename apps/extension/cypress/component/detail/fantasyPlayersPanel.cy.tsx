@@ -1,5 +1,5 @@
 import type { FantasyRosterEntry } from '@arenaswap/core';
-import FantasyPlayersPanel from '../../../entrypoints/popup/components/fantasyPlayersPanel';
+import FantasyPlayersPanel from '../../../entrypoints/popup/components/fantasy/fantasyPlayersPanel';
 import { emptyBoxScore, type BoxScore, type BoxScoreAthlete, type BoxScoreCategory } from '@arenaswap/sideline';
 import { eaglesCowboys } from '../../support/fixtures';
 

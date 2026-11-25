@@ -1,6 +1,8 @@
 export { fetchCompetitionSituation, fetchGameDurationMins, fetchGames, fetchGamesWithLeagueLogos, fetchLeagueLogos, fetchLeagueStandings, fetchLiveGames, fetchNextScheduledStart,
-	fetchTeamMonoLogos, fetchTeamsForLeagues, fetchWinProbability, monoMarksFromLogos, parseGameDurationMins, parseScoreboardEvents, parseWinProbability, scoreboardRefreshMs } from './apiClient';
-export type { EspnTeamEntry } from './apiClient';
+	fetchWinProbability, parseGameDurationMins, scoreboardRefreshMs } from './apiClient';
+export { parseScoreboardEvents } from './scoreboardEvent';
+export { fetchTeamMonoLogos, fetchTeamsForLeagues, monoMarksFromLogos } from './teamLogos';
+export type { EspnTeamEntry } from './teamLogos';
 export { parseClockTenths, parseClockToSeconds, parseStoppageMinutes } from './gameClock';
 export { parseWinProbabilityReadings } from './winProbabilityReadings';
 export { createLiveExtras, hasStandingsRaces, readBasketballSituation, readBoxLeadChanges, readHockeySituation, readPregameLine, readStandingsStakes } from './liveExtras';
@@ -25,4 +27,5 @@ export type { VenueDetails } from './venueParse';
 export type { FormResult, InjuryEntry, Matchup, Paired, StatComparison, TicketLink } from './matchupParse';
 export { injuryStatusByType, injuryStatusOrder, seasonStatSpecsFor } from './matchupSpecs';
 export type { InjuryStatus, SeasonStatSpec } from './matchupSpecs';
-export { clearSharedRequests, fetchSharedLeagueStandings, fetchSummary, prefetchGameDetail, sharedRequestFreshMs, standingsUrl, summaryUrl } from './summaryFetch';
+export { clearSharedRequests, fetchSharedLeagueStandings, fetchSummary, prefetchGameDetail, sharedRequestFreshMs } from './summaryFetch';
+export { standingsUrl, summaryUrl } from './endpoints';

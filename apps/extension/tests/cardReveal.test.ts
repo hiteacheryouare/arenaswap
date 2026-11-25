@@ -1,12 +1,10 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import {
-	openRevealEnabledKey,
 	pickRevealCut,
 	pickRevealMode,
 	revealCutMs,
 	revealCuts,
-	readOpenRevealEnabled,
 	revealAbbrBaseLength,
 	revealAbbrScale,
 	revealBaseDurationMs,
@@ -45,8 +43,8 @@ import {
 	revealSweepBarPx,
 	revealSweepRun,
 	revealTotalMs,
-	writeOpenRevealEnabled,
 } from '../entrypoints/popup/cardReveal';
+import { openRevealEnabledKey, readOpenRevealEnabled, writeOpenRevealEnabled } from '../utils/openReveal';
 
 describe('which version of the open animation plays', () => {
 	it('gives the full version the first time on a given day', () => {
