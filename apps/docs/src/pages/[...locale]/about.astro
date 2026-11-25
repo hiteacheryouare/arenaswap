@@ -2,6 +2,7 @@
 import { leagueConfigs } from '@arenaswap/core/constants';
 import Shell from '../../layouts/Shell.astro';
 import ClosingBand from '../../components/landing/ClosingBand.astro';
+import CrestSettle from '../../components/CrestSettle.astro';
 import DocDemo from '../../components/docs/DocDemo.astro';
 import ChristmasDemo from '../../components/about/ChristmasDemo';
 import HeroMosaic from '../../components/about/HeroMosaic.astro';
@@ -82,7 +83,7 @@ const goals = [
 				<h2 class='display-md'>{t('about.values.title')}</h2>
 			</div>
 			<div class='about-rows'>
-				<div class='band-split-grid about-row'>
+				<div class='band-split-grid about-row' data-crest-settle>
 					<div>
 						<h3>{t('about.values.smallStuffTitle')}</h3>
 						<p class='band-copy'>{t('about.values.smallStuffCopy')}</p>
@@ -90,6 +91,7 @@ const goals = [
 					<DocDemo description={christmasDescription} closeup>
 						<ChristmasDemo strings={strings} />
 					</DocDemo>
+					<CrestSettle />
 				</div>
 
 				<div class='band-split-grid about-row'>
