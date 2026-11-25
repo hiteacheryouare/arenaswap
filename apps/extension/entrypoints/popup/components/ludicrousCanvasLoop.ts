@@ -48,13 +48,11 @@ export const useLudicrousCanvas = (
 
 		const step = () => {
 			const phase = phaseRef.current;
-			const lerp = phase === 'stopping' ? 0.028 : 0.04;
+			const lerp = phase === 'stopping' ? 0.35 : 0.04;
 			current += (speedRef.current - current) * lerp;
 
 			drawRef.current(ctx, { w, h, speed: current, phase, frame });
 			frame += 1;
-
-			if (phase === 'stopping' && current < 0.006) return;
 			raf = requestAnimationFrame(step);
 		};
 

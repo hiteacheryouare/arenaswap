@@ -1446,7 +1446,7 @@
 	},
 	"reviewPrompt": {
 		"title": "Nasisiyahan ka ba sa ArenaSwap?",
-		"copy": "Ang isang mabilisang review ay tumutulong sa mas maraming fans na mahanap ang pinakamagandang laro\u00a0❤️",
+		"copy": "Ang isang mabilisang review ay tumutulong sa mas maraming fans na mahanap ang pinakamagandang laro ❤️",
 		"leaveReview": "Mag-iwan ng review",
 		"dismiss": "I-dismiss ang Request ng Review"
 	},
@@ -1489,12 +1489,12 @@
 		"announce": "LUDICROUS SPEED…",
 		"go": "GO!",
 		"stop": "TIGIL!",
-		"emergencyBrake": "⚠ EMERGENCY BRAKE: HUWAG GAMITIN",
+		"emergencyBrake": "EMERGENCY BRAKE: HUWAG GAMITIN",
 		"intro": {
 			"l1": "Ihanda ang barko para sa light speed.",
 			"l2": "Hindi, hindi, masyadong mabagal ang light speed.",
 			"l3": "Masyadong mabagal ang light speed?",
-			"l4": "Oo. Kailangan na nating dumiretso sa",
+			"l4": "Oo. Kailangan na nating dumiretso sa…",
 			"l5": "Ludicrous Speed.",
 			"l6": "Ludicrous Speed?",
 			"l7": "Hindi pa tayo nakakabilis nang ganoon.",
@@ -1521,8 +1521,7 @@
 		"signs": {
 			"light": "LIGHT SPEED",
 			"ridiculous": "RIDICULOUS SPEED",
-			"ludicrous": "LUDICROUS SPEED",
-			"plaid": "PLAID"
+			"ludicrous": "LUDICROUS SPEED"
 		},
 		"panic": {
 			"l1": "Nalampasan na natin sila! Itigil ang barkong 'to!",

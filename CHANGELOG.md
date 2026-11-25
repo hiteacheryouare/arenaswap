@@ -5,21 +5,30 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Ludicrous Speed plays closer to the film and stops strobing — 2026-11-24
+
+The speed climb now lights the bridge's own three panels instead of floating neon signs, the made-up PLAID card is gone, and GO, STOP and the pulled brake slam in once and hold still instead of shaking or flashing several times a second. Each line holds for at least 20 characters a second of its translated length, and the stop halts the ship within a few frames instead of letting it glide back toward the camera. The canvas reads each beat's phase and camera from refs set in a layout effect, so it always cuts on the same commit as the text above it.
+
 ## Game cards show the league and conference as logos on a white tile — 2026-11-24
 
 A card's top-left corner drops the league and conference names for their full-color logos on an 18px white squircle, so `LeagueMark` and `ConferenceMark` always use the light-ground art and `leagueMarkOnColor` and the `onColor` prop are gone. The name stays as visually hidden text, and shows again beside a logo another league shares (the NCAA and Olympic leagues) or when the logo fails to load.
+
 ## Lattice orders the tasks and leaves turbo's workspaces to turbo's cache — 2026-11-24
 
 Lattice drives any workspace with its own `turbo.json` as `turbo run <task>`, sees only the tasks named in that file, and cached those runs without their outputs. So the extension, film, ui and sideline were never linted or typechecked, and a hit on an extension build restored nothing. Each of those tasks is now an override that runs `turbo run <task> --only` with Lattice's cache off, so turbo caches it and runs nothing upstream, and Lattice 2.0.0 is a pinned devDependency.
+
 ## The About page's demos lose their captions — 2026-11-24
 
 The loading-line and Multiview demos no longer carry a sentence underneath explaining what they are. The Multiview line lives on as the figure's `aria-label`, since the animation itself is `aria-hidden`, and `DocDemo` drops its unused `caption` prop and the `.doc-demo-caption` style with it.
+
 ## The About page's Christmas card drops the squares behind its crests — 2026-11-24
 
 `ChristmasDemo` renders as static HTML with no `client:` directive, so its crests never left `data-crest-state='pending'` and kept the grey placeholder plate. Its row now carries `data-crest-settle` with `<CrestSettle />`, the same script that settles the hero mosaic and the landing bands. Any other React demo rendered without hydration needs the same pairing.
+
 ## The About hero's opening card stays on screen through the pull-back — 2026-11-24
 
 When the hold ended, removing `is-opening` handed the opening card back to the mosaic's deal animation, which replayed it from opacity 0 as the other cards dealt in. The opener now carries a permanent `is-opener` class that keeps it out of the deal, and `is-opening` only pauses its transitions during the hold.
+
 ## The debug panel says when and where the build was made — 2026-11-23
 
 The panel behind the footer heart now shows the build's date, time and time zone, and whether CI or a local machine built it, pinned by `SOURCE_DATE_EPOCH` so a reviewer's rebuild can match ours (`utils/buildStamp.ts`). It also shows the platform, UI language, Multiview and notification permissions, how long the worker has been up, and each league's last good poll and failure count, and a Copy all button puts the whole panel on the clipboard as text.

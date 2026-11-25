@@ -4,15 +4,17 @@ import { useLudicrousCanvas } from './ludicrousCanvasLoop';
 import { makeStars } from './ludicrousPainters';
 import { isTunnelPhase, paintSpace, type World } from './ludicrousSpace';
 import { cockpitWindowRect, paintCockpitConsole, paintCockpitMullions, traceCockpitWindow } from './ludicrousCockpit';
-import { paintStern } from './ludicrousRear';
+import { paintStern, sternRecede } from './ludicrousRear';
 import type { Phase, View } from './ludicrousScript';
 
 const numStars = 210;
 
-const entryFrames = 106;
+const entryMs = 1750;
+
+const prewarmFrames = 10;
 
 interface StageProps {
-	view: View;
+	viewRef: MutableRefObject<View>;
 	phaseRef: MutableRefObject<Phase>;
 	speedRef: MutableRefObject<number>;
 	logosRef: MutableRefObject<boolean>;
@@ -23,7 +25,7 @@ interface StageProps {
 }
 
 const ludicrousStage = ({
-	view,
+	viewRef,
 	phaseRef,
 	speedRef,
 	logosRef,
@@ -43,23 +45,25 @@ const ludicrousStage = ({
 	const lastViewRef = useRef<View | null>(null);
 	const lastPhaseRef = useRef<Phase | null>(null);
 	const phaseStartRef = useRef(0);
+	const phaseStartMsRef = useRef(0);
+	const sternRecedeRef = useRef(0);
 
 	const canvasRef = useLudicrousCanvas((ctx, { w, h, speed, phase, frame }) => {
 		const world = worldRef.current;
+		const view = viewRef.current;
+		const now = performance.now();
 
 		if (lastPhaseRef.current !== phase) {
 			lastPhaseRef.current = phase;
 			phaseStartRef.current = frame;
+			phaseStartMsRef.current = now;
 		}
 
-		if (lastViewRef.current !== view) {
+		const cut = lastViewRef.current !== view;
+		if (cut) {
 			lastViewRef.current = view;
 			ctx.fillStyle = '#000';
 			ctx.fillRect(0, 0, w, h);
-			for (const star of world.stars) {
-				star.px = null;
-				star.py = null;
-			}
 			for (const logo of world.logos) {
 				logo.sx = null;
 				logo.sy = null;
@@ -67,7 +71,7 @@ const ludicrousStage = ({
 		}
 
 		if (phase === 'plaidentry') {
-			world.entry = Math.min(1, world.entry + 1 / entryFrames);
+			world.entry = Math.min(1, (now - phaseStartMsRef.current) / entryMs);
 		} else if (phase === 'plaid' || phase === 'panic') {
 			world.entry = 1;
 		} else {
@@ -93,18 +97,27 @@ const ludicrousStage = ({
 			ctx.restore();
 
 			paintCockpitMullions(ctx, win);
-			paintCockpitConsole(ctx, w, h, phase, frame - phaseStartRef.current, frame, brakeArmed, brakePulled);
+			paintCockpitConsole(ctx, w, h, phase, frame - phaseStartRef.current, brakeArmed, brakePulled);
 			return;
 		}
 
 		const full = { x: 0, y: 0, w, h };
-		if (view === 'rear') {
-			paintSpace(ctx, full, world, spaceFrame, { spread: 1.1 });
-			paintStern(ctx, w, h, speed, frame);
-			return;
+		const options = view === 'rear' ? { spread: 1.1 } : {};
+		const streaking = speed > 1 && phase !== 'plaid' && phase !== 'panic';
+		if (cut && streaking) {
+			const rewind = speed * 0.007 * prewarmFrames;
+			for (const star of world.stars) star.z += rewind;
+			for (let i = 0; i < prewarmFrames; i += 1) {
+				paintSpace(ctx, full, world, { ...spaceFrame, logosOn: false }, options);
+			}
 		}
+		paintSpace(ctx, full, world, spaceFrame, options);
 
-		paintSpace(ctx, full, world, spaceFrame);
+		if (view === 'rear') {
+			sternRecedeRef.current = Math.max(sternRecedeRef.current, sternRecede(speed));
+			const braking = phase === 'stopping' ? frame - phaseStartRef.current : null;
+			paintStern(ctx, w, h, { recede: sternRecedeRef.current, speed, braking });
+		}
 	}, { phaseRef, speedRef });
 
 	useEffect(() => {

@@ -4,8 +4,6 @@ export interface Star {
 	x: number;
 	y: number;
 	z: number;
-	px: number | null;
-	py: number | null;
 }
 
 export interface Rect {
@@ -19,16 +17,12 @@ export const makeStar = (): Star => ({
 	x: (Math.random() - 0.5) * 1.5,
 	y: (Math.random() - 0.5) * 1.5,
 	z: Math.random() * 0.8 + 0.15,
-	px: null,
-	py: null,
 });
 
 export const resetStar = (s: Star): void => {
 	s.x = (Math.random() - 0.5) * 1.5;
 	s.y = (Math.random() - 0.5) * 1.5;
 	s.z = 0.88 + Math.random() * 0.12;
-	s.px = null;
-	s.py = null;
 };
 
 export const makeStars = (n: number): Star[] => Array.from({ length: n }, makeStar);
@@ -38,7 +32,7 @@ const starTint: Record<Phase, [number, number, number]> = {
 	windup: [0.78, 0.86, 1],
 	cruising: [0.94, 0.96, 1],
 	lightspeed: [0.94, 0.94, 1],
-	ridiculous: [1, 1, 1],
+	ridiculous: [1, 0.9, 0.72],
 	ludicrous: [1, 0.72, 0.3],
 	plaidentry: [1, 0.86, 0.55],
 	plaid: [1, 1, 1],
@@ -55,23 +49,11 @@ const plaidSpectrum: [number, number, number][] = [
 	[0.83, 0.75, 0.37],
 ];
 
-const ridiculousSpectrum: [number, number, number][] = [
-	[0.36, 0.52, 1],
-	[0.36, 0.52, 1],
-	[1, 0.28, 0.3],
-	[0.32, 0.95, 0.95],
-	[0.4, 0.95, 0.45],
-	[1, 0.82, 0.24],
-	[1, 0.36, 0.9],
-];
-
 const starColor = (z: number, phase: Phase, index: number, mix: number): string => {
 	const bri = 220 + (1 - z) * 80;
 	const f = 0.38 + (1 - z) * 0.62;
 	let [r, g, b] = starTint[phase];
-	if (phase === 'ridiculous') {
-		[r, g, b] = ridiculousSpectrum[index % ridiculousSpectrum.length]!;
-	} else if (phase === 'plaidentry') {
+	if (phase === 'plaidentry') {
 		const [pr, pg, pb] = plaidSpectrum[index % plaidSpectrum.length]!;
 		const [lr, lg, lb] = starTint.ludicrous;
 		r = lr + (pr - lr) * mix;
@@ -113,8 +95,8 @@ export const paintStarfield = (
 	if (phase === 'lightspeed') ctx.setLineDash([5, 4]);
 
 	stars.forEach((star, index) => {
-		const ppx = star.px;
-		const ppy = star.py;
+		const ppx = cx + (star.x / star.z) * hx * spread;
+		const ppy = cy + (star.y / star.z) * hy * spread;
 
 		star.z -= speed * 0.007;
 		if (star.z <= 0.01) {
@@ -130,17 +112,12 @@ export const paintStarfield = (
 			return;
 		}
 
-		if (ppx !== null && ppy !== null) {
-			ctx.beginPath();
-			ctx.moveTo(sx + (ppx - sx) * stretch, sy + (ppy - sy) * stretch);
-			ctx.lineTo(sx, sy);
-			ctx.strokeStyle = starColor(star.z, phase, index, paletteMix);
-			ctx.lineWidth = Math.max(1.4, ((1 - star.z) * 9 + speed * 0.22) * widthScale);
-			ctx.stroke();
-		}
-
-		star.px = sx;
-		star.py = sy;
+		ctx.beginPath();
+		ctx.moveTo(sx + (ppx - sx) * stretch, sy + (ppy - sy) * stretch);
+		ctx.lineTo(sx, sy);
+		ctx.strokeStyle = starColor(star.z, phase, index, paletteMix);
+		ctx.lineWidth = Math.max(1.4, ((1 - star.z) * 9 + speed * 0.22) * widthScale);
+		ctx.stroke();
 	});
 	ctx.restore();
 };

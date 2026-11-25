@@ -1446,7 +1446,7 @@
 	},
 	"reviewPrompt": {
 		"title": "ArenaSwapを楽しんでいますか？",
-		"copy": "レビューを書いてくれると、より多くのファンが最高の試合を見つけられます\u00a0❤️",
+		"copy": "レビューを書いてくれると、より多くのファンが最高の試合を見つけられます ❤️",
 		"leaveReview": "レビューを書く",
 		"dismiss": "レビューリクエストを閉じる"
 	},
@@ -1489,7 +1489,7 @@
 		"announce": "LUDICROUS SPEED…",
 		"go": "ゴー！",
 		"stop": "ストップ！",
-		"emergencyBrake": "⚠ 緊急ブレーキ：絶対に使うな",
+		"emergencyBrake": "緊急ブレーキ：絶対に使うな",
 		"intro": {
 			"l1": "宇宙船を光速に備えよ。",
 			"l2": "いや、光速では遅すぎる。",
@@ -1521,8 +1521,7 @@
 		"signs": {
 			"light": "光速",
 			"ridiculous": "ありえない速さ",
-			"ludicrous": "LUDICROUS SPEED",
-			"plaid": "チェック柄"
+			"ludicrous": "LUDICROUS SPEED"
 		},
 		"panic": {
 			"l1": "追い越した！止めろ！",

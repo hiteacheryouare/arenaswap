@@ -136,53 +136,31 @@ $reveal-stage-bleed: 1px;
 		position: relative;
 		z-index: 10;
 		font-family: 'DM Sans', sans-serif;
-		font-weight: 900;
 		text-align: center;
 		max-width: calc(100% - 1.5rem);
+		color: #fff;
 		animation: lsTextIn 0.16s ease-out;
 	}
 
-	.ls-text.dialogue.prelaunch {
+	.ls-text.dialogue {
 		font-size: 1.05rem;
 		font-weight: 600;
 		letter-spacing: 0.01em;
-		text-transform: none;
-		color: #fff;
 		line-height: 1.4;
-		text-shadow:
-			0 0 8px #000, 0 0 16px #000,
-			2px 0 6px #000, -2px 0 6px #000,
-			0 2px 6px #000, 0 -2px 6px #000;
+		text-shadow: 0 0 8px #000, 0 0 16px #000, 0 2px 6px #000;
 	}
 
-	.ls-text.dialogue.postlaunch {
-		font-size: 1.1rem;
-		font-weight: 600;
-		letter-spacing: 0.01em;
-		text-transform: none;
-		color: #fff;
-		line-height: 1.4;
-		text-shadow: 0 0 12px #000, 0 2px 8px rgba(0, 0, 0, 0.9);
-	}
-
-	.ls-text.dialogue.panic {
-		font-size: 1.1rem;
-		font-weight: 600;
-		letter-spacing: 0.01em;
-		text-transform: none;
-		color: #fff;
-		line-height: 1.4;
-		text-shadow: 0 0 12px #000, 0 2px 8px rgba(0, 0, 0, 0.9);
-	}
-
-	.ls-text.announce {
-		font-size: 1.45rem;
+	.ls-text.shout {
 		font-weight: 900;
-		letter-spacing: 0.05em;
+		letter-spacing: 0.06em;
 		text-transform: uppercase;
 		white-space: nowrap;
-		color: #fff;
 		text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85);
+		animation: lsSlam 0.26s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+	}
+
+	.ls-text.shout.announce {
+		font-size: 1.45rem;
 		animation:
 			lsSlam 0.26s cubic-bezier(0.2, 0.9, 0.3, 1) both,
 			lsRattle 1.5s linear both;
@@ -198,140 +176,48 @@ $reveal-stage-bleed: 1px;
 		animation: lsDotsTick 0.9s steps(3, jump-start) 0.4s forwards;
 	}
 
-	.ls-text.go {
-		font-size: 3.2rem;
-		font-weight: 900;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		white-space: nowrap;
-		color: #ff4500;
-		text-shadow: 0 0 24px #ff4500, 0 0 50px #ff8c00, 0 0 90px #ff2200;
-		animation: lsShake 0.06s ease-in-out infinite;
-	}
-
-	.ls-text.speedsign {
-		font-size: 1.35rem;
-		font-weight: 700;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		hyphens: auto;
-		overflow-wrap: anywhere;
-		text-wrap: balance;
-		padding: 0.35em 0.8em;
-		border-width: 2px;
-		border-style: solid;
-		border-radius: 3px;
-		background: rgba(0, 0, 0, 0.6);
-		animation: lsSignIn 0.1s ease-out;
-
-		&.lightspeed {
-			color: #00ff99;
-			border-color: #00ff99;
-			text-shadow: 0 0 12px #00ff99, 0 0 24px #00cc66, 0 0 44px #008844;
-			box-shadow: 0 0 16px rgba(0, 255, 153, 0.3), inset 0 0 12px rgba(0, 255, 153, 0.12);
-		}
-
-		&.ridiculous {
-			color: #ff9500;
-			border-color: #ff9500;
-			text-shadow: 0 0 12px #ff9500, 0 0 24px #ff6000, 0 0 44px #cc4400;
-			box-shadow: 0 0 16px rgba(255, 149, 0, 0.3), inset 0 0 12px rgba(255, 149, 0, 0.12);
-		}
-
-		&.ludicrous {
-			color: #ff2020;
-			border-color: #ff2020;
-			text-shadow: 0 0 12px #ff2020, 0 0 24px #cc0000, 0 0 44px #880000;
-			box-shadow: 0 0 20px rgba(255, 0, 0, 0.4), inset 0 0 12px rgba(255, 0, 0, 0.15);
-			animation: lsSignBlink 0.18s step-end infinite;
-		}
-	}
-
-	.ls-text.plaid-rect {
-		font-size: 1.65rem;
-		font-weight: 900;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-		white-space: nowrap;
-		padding: 0.5em 1.1em;
-		border-width: 3px;
-		border-style: solid;
-		border-radius: 6px;
-		background: rgba(0, 0, 0, 0.72);
-		color: #fff;
-		border-color: rgba(255,255,255,0.16);
-		box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-		animation: lsSignIn 0.12s ease-out;
-	}
-
-	.ls-text.stop {
-		font-size: 3.5rem;
-		font-weight: 900;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		white-space: nowrap;
-		color: #fff;
-		text-shadow: 0 0 28px #fff, 0 0 60px rgba(255, 255, 255, 0.5);
-		animation: lsStopFlash 0.11s ease-in-out infinite;
-	}
-
 	.ls-emergency-brake {
 		position: absolute;
 		z-index: 11;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
 
-		font-size: 0.72rem;
+		font-size: 0.62rem;
 		font-weight: 700;
-		letter-spacing: 0.1em;
+		letter-spacing: 0.06em;
 		text-transform: uppercase;
 		white-space: nowrap;
 		color: #fff;
 
-		background: #6b0000;
-		border: 2px solid #cc1010;
-		border-radius: 3px;
-		padding: 0.45em 0.9em;
+		background: #7a0b0b;
+		border: 1px solid #a31414;
+		border-radius: 2px;
+		box-shadow: 0 3px 0 #3a0000;
 		cursor: pointer;
 		outline: none;
-
-		box-shadow:
-			0 0 10px rgba(200, 0, 0, 0.35),
-			0 3px 0 #3a0000,
-			inset 0 1px 0 rgba(255, 255, 255, 0.08);
-
 		animation: lsTextIn 0.2s ease-out;
 
 		&:focus-visible {
-			outline:        2px solid #fff;
+			outline: 2px solid #fff;
 			outline-offset: 2px;
 		}
 
 		&:hover:not(.pressed) {
-			background: #8a0000;
-			border-color: #ff2020;
-			box-shadow:
-				0 0 18px rgba(255, 0, 0, 0.5),
-				0 3px 0 #3a0000,
-				inset 0 1px 0 rgba(255, 255, 255, 0.08);
+			background: #8c0e0e;
 		}
 
 		&.pressed {
-			background: #ff1a1a;
-			border-color: #fff;
-			color: #fff;
+			background: #b01414;
 			translate: 0 3px;
-			box-shadow:
-				0 0 28px rgba(255, 0, 0, 0.9),
-				0 0 55px rgba(255, 0, 0, 0.5),
-				0 0 0 #3a0000,
-				inset 0 2px 4px rgba(0, 0, 0, 0.4);
-			animation: lsStopFlash 0.14s ease-in-out infinite;
+			box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
 		}
 	}
 
 	.ls-view-cockpit {
 		.ls-text {
 			position: absolute;
-			bottom: auto;
 			top: 72%;
 			left: 50%;
 			transform: translate(-50%, -50%);
@@ -339,53 +225,25 @@ $reveal-stage-bleed: 1px;
 		}
 
 		.ls-text.dialogue { font-size: 0.86rem; }
+
 		.ls-text.announce {
 			font-size: 1.15rem;
 			width: max-content;
 			transform-origin: 0 0;
 		}
-		.ls-text.speedsign { display: none; }
-
-		.ls-emergency-brake {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-size: 0.62rem;
-			letter-spacing: 0.06em;
-			padding: 0;
-		}
 	}
 
 	.ls-view-rear {
-		.ls-text.dialogue {
-			position: absolute;
-			bottom: 9%;
-			left: 50%;
-			transform: translateX(-50%);
-			width: calc(100% - 2rem);
-			font-size: 1rem;
-		}
-
-		.ls-text.go {
-			position: absolute;
-			top: 76%;
-			left: 50%;
-			transform: translateX(-50%);
-			font-size: 2.8rem;
-		}
-
+		.ls-text.go,
 		.ls-text.stop {
 			position: absolute;
-			top: 14%;
 			left: 50%;
 			transform: translateX(-50%);
 			font-size: 2.8rem;
 		}
-	}
 
-	.ls-view-full {
-		.ls-text.speedsign { font-size: 1.3rem; }
-		.ls-text.plaid-rect { font-size: 1.6rem; }
+		.ls-text.go { top: 76%; }
+		.ls-text.stop { top: 14%; }
 	}
 
 	.ls-skip {
@@ -395,7 +253,8 @@ $reveal-stage-bleed: 1px;
 		z-index: 10;
 		font-size: 0.65rem;
 		font-family: 'DM Sans', sans-serif;
-		color: rgba(255, 255, 255, 0.25);
+		color: rgba(255, 255, 255, 0.5);
+		text-shadow: 0 1px 2px #000;
 		pointer-events: none;
 		letter-spacing: 0.04em;
 	}
@@ -408,11 +267,6 @@ $reveal-stage-bleed: 1px;
 	@keyframes lsTextIn {
 		from { opacity: 0; translate: 0 5px; }
 		to   { opacity: 1; translate: 0 0; }
-	}
-
-	@keyframes lsSignIn {
-		from { opacity: 0; scale: 0.9; }
-		to   { opacity: 1; scale: 1; }
 	}
 
 	@keyframes lsSlam {
@@ -437,39 +291,14 @@ $reveal-stage-bleed: 1px;
 		}
 	}
 
-	@keyframes lsShake {
-		0%, 100% { translate: 0 0; rotate: 0deg; }
-		20%      { translate: -1.5px 1px; rotate: -0.5deg; }
-		50%      { translate: 1.5px -1px; rotate: 0.5deg; }
-		80%      { translate: -1px -1px; rotate: 0.3deg; }
-	}
-
-	@keyframes lsSignBlink {
-		0%, 49%   { opacity: 1; }
-		50%, 100% { opacity: 0.22; }
-	}
-
-	@keyframes lsPlaidScroll {
-		from { background-position: 0% center; }
-		to   { background-position: 400% center; }
-	}
-
-	@keyframes lsStopFlash {
-		0%, 100% { opacity: 1; }
-		50%      { opacity: 0.45; }
-	}
-
 	@include m.reduced-motion {
 		.ludicrous-speed,
 		.ludicrous-speed.landing,
 		.ludicrous-speed.landed,
 		.ludicrous-speed-letter,
-		.ls-text.announce,
-		.ls-overlay:has(> .ls-text.announce) > .ls-canvas,
-		.ls-text.go,
-		.ls-text.speedsign.ludicrous,
-		.ls-text.stop,
-		.ls-emergency-brake.pressed {
+		.ls-text.shout,
+		.ls-text.shout.announce,
+		.ls-overlay:has(> .ls-text.announce) > .ls-canvas {
 			animation: none;
 		}
 	}

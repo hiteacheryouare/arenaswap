@@ -108,7 +108,7 @@ const paintSpeedPanels = (ctx: CanvasRenderingContext2D, w: number, top: number,
 const buttonLegends = ['AB', 'CD', 'EF', 'GH', 'JK', '01', '02', '03', '04', '05'];
 const tapeLabels = ['FAULT WARNING', 'FIRE QUADRANT'];
 
-const paintButtonBlock = (ctx: CanvasRenderingContext2D, x: number, y: number, frame: number): void => {
+const paintButtonBlock = (ctx: CanvasRenderingContext2D, x: number, y: number): void => {
 	const bw = 17;
 	const bh = 13;
 	const gap = 4;
@@ -123,7 +123,7 @@ const paintButtonBlock = (ctx: CanvasRenderingContext2D, x: number, y: number, f
 
 		for (let c = 0; c < 5; c += 1) {
 			const bx = x + c * (bw + gap);
-			ctx.fillStyle = (frame + r * 17 + c * 31) % 240 < 26 ? '#fff8e6' : '#e6e6e0';
+			ctx.fillStyle = '#e6e6e0';
 			ctx.fillRect(bx, rowY, bw, bh);
 			ctx.fillStyle = 'rgba(0,0,0,0.55)';
 			ctx.font = "600 7px 'DM Sans', sans-serif";
@@ -143,13 +143,13 @@ const paintButtonBlock = (ctx: CanvasRenderingContext2D, x: number, y: number, f
 
 const windupFramesPerLamp = 5;
 
-const paintPilotLamps = (ctx: CanvasRenderingContext2D, x: number, y: number, count: number, phase: Phase, phaseFrame: number, frame: number): void => {
+const paintPilotLamps = (ctx: CanvasRenderingContext2D, x: number, y: number, count: number, phase: Phase, phaseFrame: number): void => {
 	const windingUp = phase === 'windup';
 	const litCount = windingUp
 		? Math.min(count, Math.floor(phaseFrame / windupFramesPerLamp) + 1)
 		: Math.round((count * phaseRank[phase]) / 3);
 	for (let i = 0; i < count; i += 1) {
-		const on = i < litCount && (windingUp || (frame + i * 9) % 90 > 12);
+		const on = i < litCount;
 		ctx.beginPath();
 		ctx.arc(x + i * 13, y, 3.6, 0, Math.PI * 2);
 		ctx.fillStyle = on ? '#ffa519' : '#3a3730';
@@ -197,7 +197,6 @@ export const paintCockpitConsole = (
 	h: number,
 	phase: Phase,
 	phaseFrame: number,
-	frame: number,
 	brakeArmed: boolean,
 	brakePulled: boolean,
 ): void => {
@@ -214,8 +213,8 @@ export const paintCockpitConsole = (
 	ctx.fillStyle = 'rgba(255,255,255,0.16)';
 	ctx.fillRect(0, top, w, 1.5);
 
-	paintPilotLamps(ctx, 16, top + 12, 12, phase, phaseFrame, frame);
-	paintSpeedPanels(ctx, w, top + 24, rank);
+	paintPilotLamps(ctx, 16, top + 12, 12, phase, phaseFrame);
+	paintSpeedPanels(ctx, w, top + 24, phase === 'cruising' ? 0 : rank);
 
 	const wellTop = top + 24 + 3 * (panelH + panelGap) + 6;
 	ctx.fillStyle = 'rgba(0,0,0,0.55)';
@@ -224,7 +223,7 @@ export const paintCockpitConsole = (
 	ctx.lineWidth = 1;
 	ctx.strokeRect(10.5, wellTop + 0.5, w - 21, 71);
 
-	paintButtonBlock(ctx, 14, wellTop + 84, frame);
+	paintButtonBlock(ctx, 14, wellTop + 84);
 
 	const brake = cockpitBrakeRect(w, h);
 	ctx.fillStyle = '#0d0f0d';

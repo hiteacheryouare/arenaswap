@@ -1446,7 +1446,7 @@
 	},
 	"reviewPrompt": {
 		"title": "ArenaSwap 잘 쓰고 계신가요?",
-		"copy": "짧은 리뷰 하나가 더 많은 팬이 최고의 경기를 찾도록 도와줘요\u00a0❤️",
+		"copy": "짧은 리뷰 하나가 더 많은 팬이 최고의 경기를 찾도록 도와줘요 ❤️",
 		"leaveReview": "리뷰 남기기",
 		"dismiss": "리뷰 요청 닫기"
 	},
@@ -1489,12 +1489,12 @@
 		"announce": "LUDICROUS SPEED…",
 		"go": "발사!",
 		"stop": "멈춰!!",
-		"emergencyBrake": "⚠ 비상 브레이크: 절대 사용 금지",
+		"emergencyBrake": "비상 브레이크: 절대 사용 금지",
 		"intro": {
 			"l1": "우주선을 광속으로 준비시켜.",
 			"l2": "아니, 아니, 광속은 너무 느려.",
 			"l3": "광속이 너무 느리다고?",
-			"l4": "그래. 우리는 곧바로 가야 해",
+			"l4": "그래. 우리는 곧바로 가야 해…",
 			"l5": "Ludicrous Speed로.",
 			"l6": "Ludicrous Speed라고?",
 			"l7": "그렇게 빨리 가본 적이 없는데.",
@@ -1521,8 +1521,7 @@
 		"signs": {
 			"light": "광속",
 			"ridiculous": "황당한 속도",
-			"ludicrous": "LUDICROUS SPEED",
-			"plaid": "체크무늬"
+			"ludicrous": "LUDICROUS SPEED"
 		},
 		"panic": {
 			"l1": "그들을 지나쳤어! 이거 멈춰!",

@@ -1446,7 +1446,7 @@
 	},
 	"reviewPrompt": {
 		"title": "¿Disfrutas ArenaSwap?",
-		"copy": "Una breve reseña ayuda a más aficionados a encontrar el mejor partido\u00a0❤️",
+		"copy": "Una breve reseña ayuda a más aficionados a encontrar el mejor partido ❤️",
 		"leaveReview": "Dejar reseña",
 		"dismiss": "Descartar solicitud de reseña"
 	},
@@ -1489,12 +1489,12 @@
 		"announce": "LUDICROUS SPEED…",
 		"go": "¡VAMOS!",
 		"stop": "¡ALTO!",
-		"emergencyBrake": "⚠ FRENO DE EMERGENCIA: NUNCA USAR",
+		"emergencyBrake": "FRENO DE EMERGENCIA: NUNCA USAR",
 		"intro": {
 			"l1": "Prepare la nave para la velocidad de la luz.",
 			"l2": "No, no, la velocidad de la luz es demasiado lenta.",
 			"l3": "¿Velocidad de la luz demasiado lenta?",
-			"l4": "Sí. Vamos a tener que ir directamente a",
+			"l4": "Sí. Vamos a tener que ir directamente a…",
 			"l5": "Ludicrous Speed.",
 			"l6": "¿Ludicrous Speed?",
 			"l7": "Nunca hemos ido tan rápido.",
@@ -1521,8 +1521,7 @@
 		"signs": {
 			"light": "VELOCIDAD DE LA LUZ",
 			"ridiculous": "VELOCIDAD RIDÍCULA",
-			"ludicrous": "LUDICROUS SPEED",
-			"plaid": "CUADROS"
+			"ludicrous": "LUDICROUS SPEED"
 		},
 		"panic": {
 			"l1": "¡Los pasamos! ¡Para esto!",

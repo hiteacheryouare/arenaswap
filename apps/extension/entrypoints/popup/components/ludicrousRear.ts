@@ -1,10 +1,25 @@
 const bumperText = 'WE BRAKE FOR NOBODY';
 
-export const paintStern = (ctx: CanvasRenderingContext2D, w: number, h: number, speed: number, frame: number): void => {
-	const recede = Math.min(1, Math.pow(Math.max(0, speed - 0.5) / 13, 0.85));
+export const sternRecede = (speed: number): number => Math.min(1, Math.pow(Math.max(0, speed - 0.5) / 13, 0.85));
+
+interface SternState {
+	recede: number;
+	speed: number;
+	braking: number | null;
+}
+
+const brakeLurch = (frames: number | null, w: number, h: number): { dx: number; dy: number } => {
+	if (frames === null) return { dx: 0, dy: 0 };
+	const lift = h * 0.03 * Math.exp(-frames / 10) * Math.sin(frames * 0.42);
+	const shudder = w * 0.008 * Math.exp(-frames / 5) * Math.sin(frames * 2.3);
+	return { dx: shudder, dy: -lift };
+};
+
+export const paintStern = (ctx: CanvasRenderingContext2D, w: number, h: number, { recede, speed, braking }: SternState): void => {
 	const scale = 1 - recede * 0.82;
-	const cx = w / 2;
-	const cy = h * 0.44 - recede * h * 0.05;
+	const lurch = brakeLurch(braking, w, h);
+	const cx = w / 2 + lurch.dx;
+	const cy = h * 0.44 - recede * h * 0.05 + lurch.dy;
 	const hullW = w * 0.78 * scale;
 	const hullH = w * 0.34 * scale;
 	const bloom = Math.min(1, Math.pow(Math.max(0, speed - 1) / 12, 1.3));
@@ -59,19 +74,13 @@ export const paintStern = (ctx: CanvasRenderingContext2D, w: number, h: number, 
 	ctx.fillText(bumperText, cx, plateY + plateH / 2 + 0.5);
 
 	if (bloom > 0.02) {
-		const wash = ctx.createRadialGradient(cx, cy, 0, cx, cy, w * (0.3 + bloom * 0.9));
-		wash.addColorStop(0, `rgba(226,240,255,${bloom * 0.85})`);
+		const reach = hullW * (0.7 + bloom * 0.6);
+		const wash = ctx.createRadialGradient(cx, cy, 0, cx, cy, reach);
+		wash.addColorStop(0, `rgba(226,240,255,${bloom * 0.4})`);
 		wash.addColorStop(1, 'rgba(160,200,255,0)');
 		ctx.fillStyle = wash;
-		ctx.fillRect(0, 0, w, h);
+		ctx.fillRect(cx - reach, cy - reach, reach * 2, reach * 2);
 	}
-
-	ctx.strokeStyle = `rgba(210,235,255,${bloom * 0.35})`;
-	ctx.lineWidth = 1;
-	ctx.beginPath();
-	ctx.moveTo(cx - hullW, cy + Math.sin(frame * 0.3) * 0.5);
-	ctx.lineTo(cx + hullW, cy);
-	ctx.stroke();
 
 	ctx.restore();
 };

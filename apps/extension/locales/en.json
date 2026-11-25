@@ -1446,7 +1446,7 @@
 	},
 	"reviewPrompt": {
 		"title": "Enjoying ArenaSwap?",
-		"copy": "A quick review helps more fans find the best game\u00a0❤️",
+		"copy": "A quick review helps more fans find the best game ❤️",
 		"leaveReview": "Leave a review",
 		"dismiss": "Dismiss review request"
 	},
@@ -1489,12 +1489,12 @@
 		"announce": "LUDICROUS SPEED…",
 		"go": "GO!",
 		"stop": "STOP!",
-		"emergencyBrake": "⚠ EMERGENCY BRAKE: NEVER USE",
+		"emergencyBrake": "EMERGENCY BRAKE: NEVER USE",
 		"intro": {
 			"l1": "Prepare ship for light speed.",
 			"l2": "No, no, light speed is too slow.",
 			"l3": "Light speed too slow?",
-			"l4": "Yes. We're gonna have to go right to",
+			"l4": "Yes. We're gonna have to go right to…",
 			"l5": "ludicrous speed.",
 			"l6": "Ludicrous speed?",
 			"l7": "We've never gone that fast.",
@@ -1521,8 +1521,7 @@
 		"signs": {
 			"light": "LIGHT SPEED",
 			"ridiculous": "RIDICULOUS SPEED",
-			"ludicrous": "LUDICROUS SPEED",
-			"plaid": "PLAID"
+			"ludicrous": "LUDICROUS SPEED"
 		},
 		"panic": {
 			"l1": "We passed them! Stop this thing!",

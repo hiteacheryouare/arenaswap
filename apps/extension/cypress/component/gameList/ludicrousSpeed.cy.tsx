@@ -80,7 +80,7 @@ describe('ludicrous speed overlay', () => {
 	});
 
 	it('cuts between the three cameras in the order the sequence calls for', () => {
-		const views = ['cockpit', 'rear', 'full', 'full', 'full', 'full', 'full', 'cockpit', 'rear'];
+		const views = ['cockpit', 'rear', 'cockpit', 'cockpit', 'cockpit', 'full', 'full', 'cockpit', 'rear'];
 		expect(phaseBeats, 'one expected camera per phase beat').to.have.length(views.length);
 
 		mountOverlay();
@@ -113,7 +113,7 @@ describe('ludicrous speed overlay', () => {
 		cy.get('.ls-emergency-brake').click();
 		cy.tick(500);
 		cy.get('.ls-overlay').should('have.class', 'ls-view-rear');
-		cy.tick(3800);
+		cy.tick(2600);
 		cy.get('.ls-overlay').should('have.class', 'closing');
 		cy.tick(450);
 		cy.get('@onClose').should('have.been.called');
@@ -128,12 +128,22 @@ describe('ludicrous speed overlay', () => {
 		}
 	});
 
-	it('holds the PLAID sign back until the plaid has arrived', () => {
+	it('lets the plaid arrive without a caption', () => {
 		mountOverlay();
 		stepTo(beatIndex(beat => beat.phase === 'plaidentry'));
-		cy.get('.ls-text').should('not.contain.text', 'PLAID');
+		cy.get('.ls-text').should('have.text', '');
 		stepTo(beatIndex(beat => beat.phase === 'plaid'));
-		cy.get('.ls-text.plaid-rect').should('contain.text', 'PLAID');
+		cy.get('.ls-text').should('have.text', '');
+		stepTo(beatIndex(beat => beat.phase === 'panic'));
+		cy.get('.ls-text').should('have.text', '');
+	});
+
+	it('holds every line long enough to read', () => {
+		script.forEach(beat => {
+			const text = beat.display?.text ?? '';
+			if (!text) return;
+			expect(beat.ms, `"${text}"`).to.be.at.least(Math.round((text.length / 20) * 1000));
+		});
 	});
 
 	it('leaves the brake live long enough to notice it and decide', () => {
@@ -144,16 +154,16 @@ describe('ludicrous speed overlay', () => {
 		cy.get('.ls-emergency-brake').should('be.visible').and('not.have.class', 'pressed');
 	});
 
-	it('plays the slowdown out instead of cutting away from it', () => {
+	it('holds on the stopped ship instead of cutting away from it', () => {
 		const onClose = cy.stub().as('onClose');
 		mountOverlay(onClose);
 		stepTo(beatIndex(beat => beat.brake === 'visible'));
 		cy.get('.ls-emergency-brake').should('be.visible').click();
 		cy.tick(500);
 		cy.get('.ls-overlay').should('have.class', 'ls-view-rear');
-		cy.tick(2500);
+		cy.tick(2400);
 		cy.get('@onClose').should('not.have.been.called');
-		cy.tick(1300);
+		cy.tick(200);
 		cy.get('.ls-overlay').should('have.class', 'closing');
 		cy.tick(450);
 		cy.get('@onClose').should('have.been.called');

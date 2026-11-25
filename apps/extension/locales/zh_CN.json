@@ -1446,7 +1446,7 @@
 	},
 	"reviewPrompt": {
 		"title": "喜欢 ArenaSwap 吗？",
-		"copy": "留下一条简短评价，让更多球迷找到最精彩的比赛\u00a0❤️",
+		"copy": "留下一条简短评价，让更多球迷找到最精彩的比赛 ❤️",
 		"leaveReview": "去评价",
 		"dismiss": "忽略评价请求"
 	},
@@ -1489,12 +1489,12 @@
 		"announce": "LUDICROUS SPEED……",
 		"go": "冲！",
 		"stop": "停！",
-		"emergencyBrake": "⚠ 紧急制动：永远别用",
+		"emergencyBrake": "紧急制动：永远别用",
 		"intro": {
 			"l1": "准备飞船，进入光速。",
 			"l2": "不不，光速太慢了。",
 			"l3": "光速太慢？",
-			"l4": "对。我们必须直接上",
+			"l4": "对。我们必须直接上……",
 			"l5": "Ludicrous Speed。",
 			"l6": "Ludicrous Speed？",
 			"l7": "我们从来没跑那么快过。",
@@ -1521,8 +1521,7 @@
 		"signs": {
 			"light": "光速",
 			"ridiculous": "荒谬速度",
-			"ludicrous": "LUDICROUS SPEED",
-			"plaid": "格子"
+			"ludicrous": "LUDICROUS SPEED"
 		},
 		"panic": {
 			"l1": "超过他们了！停下来！",

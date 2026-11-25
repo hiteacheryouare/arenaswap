@@ -40,6 +40,8 @@ export const isTunnelPhase = (phase: Phase): boolean => (
 	phase === 'plaidentry' || phase === 'plaid' || phase === 'panic'
 );
 
+const trailFade: Partial<Record<Phase, number>> = { prelaunch: 0.16, stopping: 0.45 };
+
 const tunnelShape = { repeatsAround: 11, depthScale: 0.085 };
 
 const logoSpawnFrames = 12;
@@ -56,7 +58,7 @@ export const paintSpace = (
 	if (phase === 'plaid' || phase === 'panic') {
 		paintTartanTunnel(ctx, rect, ludicrousTunnelSett, { travel: world.travel, ...tunnelShape });
 	} else if (phase === 'plaidentry') {
-		ctx.fillStyle = 'rgba(0,0,0,0.11)';
+		ctx.fillStyle = `rgba(2,1,2,${0.11 + 0.89 * smoothstep(0.72, 1, entry)})`;
 		ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
 		paintStarfield(ctx, world.stars, rect, {
 			speed,
@@ -79,7 +81,7 @@ export const paintSpace = (
 			flareAlpha: entry < 0.45 ? 0 : 1,
 		});
 	} else {
-		ctx.fillStyle = phase === 'prelaunch' ? 'rgba(0,0,0,0.16)' : 'rgba(0,0,0,0.11)';
+		ctx.fillStyle = `rgba(0,0,0,${trailFade[phase] ?? 0.11})`;
 		ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
 		paintStarfield(ctx, world.stars, rect, { speed, phase, spread, widthScale });
 	}

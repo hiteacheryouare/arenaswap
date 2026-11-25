@@ -1446,7 +1446,7 @@
 	},
 	"reviewPrompt": {
 		"title": "喜歡 ArenaSwap 嗎？",
-		"copy": "留下一則簡短評價，讓更多球迷找到最精彩的比賽\u00a0❤️",
+		"copy": "留下一則簡短評價，讓更多球迷找到最精彩的比賽 ❤️",
 		"leaveReview": "去評價",
 		"dismiss": "關閉評價邀請"
 	},
@@ -1489,12 +1489,12 @@
 		"announce": "LUDICROUS SPEED……",
 		"go": "衝！",
 		"stop": "停！",
-		"emergencyBrake": "⚠ 緊急煞車：絕對別用",
+		"emergencyBrake": "緊急煞車：絕對別用",
 		"intro": {
 			"l1": "準備飛船，進入光速。",
 			"l2": "不不，光速太慢了。",
 			"l3": "光速太慢？",
-			"l4": "對，我們得直接衝到",
+			"l4": "對，我們得直接衝到……",
 			"l5": "Ludicrous Speed。",
 			"l6": "Ludicrous Speed？",
 			"l7": "我們從來沒開那麼快過。",
@@ -1521,8 +1521,7 @@
 		"signs": {
 			"light": "光速",
 			"ridiculous": "荒謬速度",
-			"ludicrous": "LUDICROUS SPEED",
-			"plaid": "格紋"
+			"ludicrous": "LUDICROUS SPEED"
 		},
 		"panic": {
 			"l1": "超過他們了！停下這東西！",
