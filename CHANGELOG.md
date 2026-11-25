@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Dev's CI goes green on Linux — 2026-11-25
+
+The Multiview half-minute test waits for both boxes to start before fast-forwarding, the light-speed sign wraps where Linux has no German hyphenation, component tests ignore the browser's harmless ResizeObserver loop warning, and the containment net prints every violation in full and no longer flags a 1–2px sideways scroll when nothing overhangs the root. Together with the re-sort test fix, every CI check that was red on `dev` passes.
+
 ## The live re-sort e2e test skips the opening animation first — 2026-11-22
 
 Since the popup started holding the live order steady while its opening animation plays, `tabRegistration.cy.ts` pushed its new leader mid-animation and timed out before the order was allowed to change. The test now taps the popup to skip the animation before pushing, so it checks the live re-sort and not the animation's length.
