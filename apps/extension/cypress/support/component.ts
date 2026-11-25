@@ -2,6 +2,7 @@ import './commands';
 import './safetyNet/containmentCommand';
 import '@cypress/code-coverage/support';
 import { mount } from 'cypress/react';
+import { resetRequestSlots } from '@arenaswap/sideline';
 import { resetPrefetchIntent } from '../../entrypoints/popup/components/prefetchIntent';
 
 import '../../assets/bootstrap.scss';
@@ -13,7 +14,10 @@ Cypress.Commands.add('mount', mount);
 
 Cypress.on('uncaught:exception', error => !error.message.includes('ResizeObserver loop'));
 
-beforeEach(() => resetPrefetchIntent());
+beforeEach(() => {
+	resetPrefetchIntent();
+	resetRequestSlots();
+});
 
 declare global {
 	namespace Cypress {

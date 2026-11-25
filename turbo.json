@@ -1,6 +1,9 @@
 {
 	"$schema": "./node_modules/turbo/schema.json",
 	"globalDependencies": ["tsconfig.base.json", ".oxlintrc.json"],
+	// Each Cypress group holds a Cypress app, a Vite server and a Chrome, about 2 GB together. Ten at
+	// once (the default) pushed an 18 GB Mac into swap and timed tests out.
+	"concurrency": "5",
 	"tasks": {
 		// Builds never read tests or package READMEs, so editing one reruns only the tests, not every
 		// build and every dependent package's tests behind it. Test fixtures stay in: other packages'

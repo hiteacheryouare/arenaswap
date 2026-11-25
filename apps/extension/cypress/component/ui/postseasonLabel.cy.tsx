@@ -62,9 +62,11 @@ describe('the postseason label on a card', () => {
 	it('costs the card no height at all', () => {
 		let withoutLabel = 0;
 		mountLive(baseGame);
+		cy.document().its('fonts.ready');
 		cy.get('.game-card').then($card => { withoutLabel = $card[0]!.getBoundingClientRect().height; });
 		cy.then(() => {
 			mountLive({ ...baseGame, isPostseason: true, postseasonRound: 0, postseasonLabel: 'NBA Finals · Game 7' });
+			cy.document().its('fonts.ready');
 			cy.get('.game-card').then($card => {
 				expect($card[0]!.getBoundingClientRect().height).to.equal(withoutLabel);
 			});

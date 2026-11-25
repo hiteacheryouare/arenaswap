@@ -60,6 +60,7 @@ export default defineConfig({
 		specPattern: `${specFolder('component')}/**/*.cy.{ts,tsx}`,
 		screenshotsFolder: screenshotsFolder('component'),
 		supportFile: 'cypress/support/component.ts',
+		experimentalSingleTabRunMode: true,
 		setupNodeEvents(on, config) {
 			codeCoverageTask(on, config);
 			return config;

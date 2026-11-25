@@ -56,8 +56,18 @@ jobs:
             tasks: test:component:multiview
           - group: onboarding
             tasks: test:component:onboarding
+          - group: walkthroughFirstHalf
+            tasks: test:component:walkthroughFirstHalf
+          - group: walkthroughSecondHalf
+            tasks: test:component:walkthroughSecondHalf
           - group: settings
             tasks: test:component:settings
+          - group: settingsPages
+            tasks: test:component:settingsPages
+          - group: settingsControls
+            tasks: test:component:settingsControls
+          - group: settingsSubpages
+            tasks: test:component:settingsSubpages
           - group: ui
             tasks: test:component:ui
     steps:

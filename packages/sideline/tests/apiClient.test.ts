@@ -2656,6 +2656,11 @@ describe('the polling lookahead', () => {
 	});
 });
 
+const settled = async <T>(pending: Promise<T>): Promise<T> => {
+	await jest.runAllTimersAsync();
+	return pending;
+};
+
 describe('how wide a fan-out at ESPN is allowed to get', () => {
 	const trackConcurrency = () => {
 		const seen = { inFlight: 0, peak: 0 };
@@ -2676,12 +2681,14 @@ describe('how wide a fan-out at ESPN is allowed to get', () => {
 
 	const severalLeagues = allLeagueIds.slice(0, 12);
 
+	beforeEach(() => jest.useFakeTimers());
+
 	test('never has more than both pools multiplied in flight', async () => {
 		const { seen } = trackConcurrency();
 		const { fetchGamesWithLeagueLogos, espnDayPoolSize } = loadApiClient();
 		const { espnRequestPoolSize } = loadRequestPool();
 
-		await fetchGamesWithLeagueLogos(severalLeagues, { includeUpcoming: false });
+		await settled(fetchGamesWithLeagueLogos(severalLeagues, { includeUpcoming: false }));
 
 		expect(severalLeagues.length).toBeGreaterThan(espnRequestPoolSize);
 		expect(seen.peak).toBeGreaterThan(1);
@@ -2693,7 +2700,7 @@ describe('how wide a fan-out at ESPN is allowed to get', () => {
 		const { fetchGamesWithLeagueLogos, espnDayPoolSize } = loadApiClient();
 		const { espnRequestPoolSize } = loadRequestPool();
 
-		await fetchGamesWithLeagueLogos(severalLeagues, { includeUpcoming: true, upcomingDays: 2 });
+		await settled(fetchGamesWithLeagueLogos(severalLeagues, { includeUpcoming: true, upcomingDays: 2 }));
 
 		expect(seen.peak).toBeLessThanOrEqual(espnRequestPoolSize * espnDayPoolSize);
 	});
@@ -2702,7 +2709,7 @@ describe('how wide a fan-out at ESPN is allowed to get', () => {
 		const { fetchMock } = trackConcurrency();
 		const { fetchGamesWithLeagueLogos } = loadApiClient();
 
-		await fetchGamesWithLeagueLogos(allLeagueIds, { includeUpcoming: false });
+		await settled(fetchGamesWithLeagueLogos(allLeagueIds, { includeUpcoming: false }));
 
 		expect(fetchMock).toHaveBeenCalledTimes(allLeagueIds.length * buildCurrentDayKeys().length);
 	}, 30_000);
@@ -2713,7 +2720,7 @@ describe('how wide a fan-out at ESPN is allowed to get', () => {
 		const { fetchTeamsForLeagues } = loadTeamLogos();
 		const { espnRequestPoolSize } = loadRequestPool();
 
-		await fetchTeamsForLeagues(allLeagueIds);
+		await settled(fetchTeamsForLeagues(allLeagueIds));
 
 		expect(seen.peak).toBeLessThanOrEqual(espnRequestPoolSize);
 	}, 30_000);

@@ -230,6 +230,11 @@
 						"test:component:multiview",
 						"test:component:onboarding",
 						"test:component:settings",
+						"test:component:walkthroughFirstHalf",
+						"test:component:walkthroughSecondHalf",
+						"test:component:settingsPages",
+						"test:component:settingsControls",
+						"test:component:settingsSubpages",
 						"test:component:ui"
 					],
 					"cache": false
@@ -271,6 +276,41 @@
 				},
 				"test:component:settings": {
 					"run": "turbo run test:component:settings --only",
+					"cache": false,
+					"dependsOn": [
+						"^build"
+					]
+				},
+				"test:component:walkthroughFirstHalf": {
+					"run": "turbo run test:component:walkthroughFirstHalf --only",
+					"cache": false,
+					"dependsOn": [
+						"^build"
+					]
+				},
+				"test:component:walkthroughSecondHalf": {
+					"run": "turbo run test:component:walkthroughSecondHalf --only",
+					"cache": false,
+					"dependsOn": [
+						"^build"
+					]
+				},
+				"test:component:settingsPages": {
+					"run": "turbo run test:component:settingsPages --only",
+					"cache": false,
+					"dependsOn": [
+						"^build"
+					]
+				},
+				"test:component:settingsControls": {
+					"run": "turbo run test:component:settingsControls --only",
+					"cache": false,
+					"dependsOn": [
+						"^build"
+					]
+				},
+				"test:component:settingsSubpages": {
+					"run": "turbo run test:component:settingsSubpages --only",
 					"cache": false,
 					"dependsOn": [
 						"^build"

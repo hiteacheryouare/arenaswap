@@ -34,6 +34,11 @@ export const espnSustainedPerSecond = 10;
 let requestTokens = espnBurstCapacity;
 let tokensRefilledAt = Date.now();
 
+export const resetRequestSlots = (): void => {
+	requestTokens = espnBurstCapacity;
+	tokensRefilledAt = Date.now();
+};
+
 export const takeRequestSlot = async (): Promise<void> => {
 	for (;;) {
 		const now = Date.now();

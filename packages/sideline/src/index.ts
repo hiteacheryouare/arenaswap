@@ -3,6 +3,7 @@ export { fetchCompetitionSituation, fetchGameDurationMins, fetchGames, fetchGame
 export { parseScoreboardEvents } from './scoreboardEvent';
 export { fetchTeamMonoLogos, fetchTeamsForLeagues, monoMarksFromLogos } from './teamLogos';
 export type { EspnTeamEntry } from './teamLogos';
+export { resetRequestSlots } from './requestPool';
 export { parseClockTenths, parseClockToSeconds, parseStoppageMinutes } from './gameClock';
 export { parseWinProbabilityReadings } from './winProbabilityReadings';
 export { createLiveExtras, hasStandingsRaces, readBasketballSituation, readBoxLeadChanges, readHockeySituation, readPregameLine, readStandingsStakes } from './liveExtras';

@@ -161,6 +161,10 @@ The final suffix was split off `shortDetail` at a slash, and soccer's `AET` and 
 
 `hasMissedItsWindow` dropped any game still scheduled once start time plus the sport's wrap allowance had passed, so a 3h+ storm before first pitch hid the game from the popup and the Guide until it started. A game flagged `delayed` now gets a second allowance before it's treated as never played.
 
+## Tests run five at a time — 2026-11-17
+
+Turbo now caps every run at five tasks, because each Cypress group holds about 2 GB and ten at once pushed an 18 GB Mac into swap, timeouts and once a 25-minute hang. The settings and walkthrough specs are split into smaller groups (CI runs 12 component jobs), component specs share one browser tab and start each test with a full sideline request bucket, and the sideline fan-out tests run on Jest's clock, which took a cold `npm test` from 790 s to under 200 s. The postseason label spec now waits for fonts before measuring card height, since a late font load changed it by about a pixel under load.
+
 ## Box Score Roll lands without a snap — 2026-11-17
 
 The rolling digits used to rest on a fractional-pixel `translateY` held by `fill: both`, so the browser resampled them and the real score swapped in a hair sharper and up to a pixel off. Each strip now hangs from the column's bottom and animates from its offset to no transform at all, and the landing spec asserts every strip ends at `transform: none`.
