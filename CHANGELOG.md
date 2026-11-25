@@ -5,6 +5,9 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Game cards show the league and conference as logos on a white tile — 2026-11-24
+
+A card's top-left corner drops the league and conference names for their full-color logos on an 18px white squircle, so `LeagueMark` and `ConferenceMark` always use the light-ground art and `leagueMarkOnColor` and the `onColor` prop are gone. The name stays as visually hidden text, and shows again beside a logo another league shares (the NCAA and Olympic leagues) or when the logo fails to load.
 ## Lattice orders the tasks and leaves turbo's workspaces to turbo's cache — 2026-11-24
 
 Lattice drives any workspace with its own `turbo.json` as `turbo run <task>`, sees only the tasks named in that file, and cached those runs without their outputs. So the extension, film, ui and sideline were never linted or typechecked, and a hit on an extension build restored nothing. Each of those tasks is now an override that runs `turbo run <task> --only` with Lattice's cache off, so turbo caches it and runs nothing upstream, and Lattice 2.0.0 is a pinned devDependency.

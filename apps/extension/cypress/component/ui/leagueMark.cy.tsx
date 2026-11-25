@@ -1,6 +1,5 @@
 import type { ComponentType } from 'react';
 import FinalGameCard from '@arenaswap/ui/src/components/finalGameCard';
-import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
 import LiveGameCard from '@arenaswap/ui/src/components/liveGameCard';
 import PreGameCard from '@arenaswap/ui/src/components/preGameCard';
@@ -39,7 +38,7 @@ const mount = (Card: ComponentType<GameCardDisplayProps>, subject: Game, marked 
 				onToggleFavoriteTeam={() => {}}
 				onOpenGameDetail={() => {}}
 				bettingPrefs={{ bettingEnabled: false }}
-				leagueSlot={marked ? <LeagueMark league={subject.league} logos={logos} onColor={leagueMarkOnColor(subject)} /> : undefined}
+				leagueSlot={marked ? <LeagueMark league={subject.league} logos={logos} /> : undefined}
 			/>
 		</div>,
 	);
@@ -89,6 +88,27 @@ describe('league mark on a card', () => {
 		cy.get('.game-card-status-row').should('not.exist');
 	});
 
+	it('shows the logo alone and keeps the short label for screen readers', () => {
+		mount(LiveGameCard, game('in', 'nba'));
+		cy.get('.game-card-league img').should('be.visible');
+		cy.get('.game-card-league > span:not(.crest)').should('have.class', 'visually-hidden').and('have.text', 'NBA');
+		cy.get('.game-card-league .crest').should('have.attr', 'title', 'NBA');
+		cy.get('.live-status-label').should('be.visible').and('contain.text', 'LIVE');
+	});
+
+	it('keeps the short label beside a logo other leagues share', () => {
+		mount(LiveGameCard, game('in', 'ncaaw'));
+		cy.get('.game-card-league > span:not(.crest)').should('not.have.class', 'visually-hidden').and('have.text', 'NCAAW');
+		mount(LiveGameCard, game('in', 'olybkw'));
+		cy.get('.game-card-league > span:not(.crest)').should('not.have.class', 'visually-hidden').and('have.text', 'OLY WBB');
+	});
+
+	it('writes the short label out when the logo will not load', () => {
+		mount(LiveGameCard, game('in', 'nba'), true, { nba: 'data:image/png;base64,AAAA' });
+		cy.get('.game-card-league .crest').should('have.attr', 'data-crest-state', 'failed');
+		cy.get('.game-card-league > span:not(.crest)').should('not.have.class', 'visually-hidden').and('be.visible');
+	});
+
 	it('writes the label in the ink of the side it sits on', () => {
 		mount(LiveGameCard, { ...game('in', 'nba'), awayTeam: { ...game('in', 'nba').awayTeam, color: '#FDB71A' }, homeTeam: { ...game('in', 'nba').homeTeam, color: '#0C2340' } });
 		cy.get('.live-status-label').then(([live]: JQuery<HTMLElement>) => {
@@ -96,18 +116,19 @@ describe('league mark on a card', () => {
 		});
 	});
 
-	it('takes the dark-ground logo on colour and the light-ground one on a final card', () => {
+	it('draws the light-ground logo on a white tile, whatever colour the card is', () => {
 		const logos: LeagueLogoMap = { nba: 'https://a.espncdn.com/i/teamlogos/leagues/500-dark/nba.png' };
-		mount(LiveGameCard, game('in', 'nba'), true, logos);
-		cy.get('.game-card-league img').should('have.attr', 'src', logos.nba);
-		mount(FinalGameCard, game('post', 'nba'), true, logos);
-		cy.get('.game-card-league img').should('have.attr', 'src', 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png');
-	});
-
-	it('takes the light-ground logo when its side is written in dark ink', () => {
-		const logos: LeagueLogoMap = { nba: 'https://a.espncdn.com/i/teamlogos/leagues/500-dark/nba.png' };
+		const lightGround = 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png';
 		const live = game('in', 'nba');
-		mount(LiveGameCard, { ...live, awayTeam: { ...live.awayTeam, color: '#FDB71A' }, homeTeam: { ...live.homeTeam, color: '#0C2340' } }, true, logos);
-		cy.get('.game-card-league img').should('have.attr', 'src', 'https://a.espncdn.com/i/teamlogos/leagues/500/nba.png');
+		const subjects: [ComponentType<GameCardDisplayProps>, Game][] = [
+			[LiveGameCard, live],
+			[LiveGameCard, { ...live, awayTeam: { ...live.awayTeam, color: '#FDB71A' }, homeTeam: { ...live.homeTeam, color: '#0C2340' } }],
+			[FinalGameCard, game('post', 'nba')],
+		];
+		subjects.forEach(([Card, subject]) => {
+			mount(Card, subject, true, logos);
+			cy.get('.game-card-league img').should('have.attr', 'src', lightGround);
+			cy.get('.game-card-league .crest').should('have.attr', 'data-crest-state', 'loaded').and('have.css', 'background-color', 'rgb(255, 255, 255)');
+		});
 	});
 });

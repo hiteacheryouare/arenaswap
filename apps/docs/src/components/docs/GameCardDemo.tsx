@@ -2,7 +2,6 @@ import { createFavoriteTeamKey } from '@arenaswap/core/constants';
 import type { LeagueId } from '@arenaswap/core/types';
 import GameCard from '@arenaswap/ui/src/components/gameCard';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
-import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { celticsKnicks, chiefsBills, michiganOhioState } from './demoGames';
 import DemoTabSlot from './DemoTabSlot';
 import { islandTranslator, TranslationContext } from '../../i18n/islandStrings';
@@ -40,7 +39,7 @@ const GameCardDemo = ({ status, tab = false, favorite = false, strings }: GameCa
 					interactive={false}
 					bettingPrefs={{ bettingEnabled: false }}
 					tabSlot={tab && status === 'live' ? <DemoTabSlot entry={celticsKnicks} /> : undefined}
-					leagueSlot={<LeagueMark league={game.league} logos={noLeagueLogos} onColor={leagueMarkOnColor(game)} />}
+					leagueSlot={<LeagueMark league={game.league} logos={noLeagueLogos} />}
 				/>
 			</div>
 		</TranslationContext.Provider>

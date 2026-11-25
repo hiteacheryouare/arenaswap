@@ -176,8 +176,26 @@ $crest-plate-share: 75%;
 		color: #6b7280;
 	}
 
-	.game-card-league-logo {
-		--as-avatar-size: 14px;
+	.game-card-league-logo,
+	.game-card-conference-crest {
+		--as-avatar-size:    18px;
+		--crest-logo-radius: 5px;
+		margin-block:        -1px;
+	}
+
+	.crest.game-card-league-logo,
+	.crest.game-card-conference-crest {
+		&[data-crest-state='loaded'] {
+			background-color: #fff;
+			box-shadow:       0 0 0 0.5px rgba(3, 7, 12, 0.14);
+		}
+
+		> img {
+			inset:         1px;
+			width:         calc(100% - 2px);
+			height:        calc(100% - 2px);
+			border-radius: 0;
+		}
 	}
 
 	.game-card-conference {
@@ -185,10 +203,6 @@ $crest-plate-share: 75%;
 		font-size: 0.65rem;
 		font-weight: 600;
 		color: #6b7280;
-	}
-
-	.game-card-conference-crest {
-		--as-avatar-size: 15px;
 	}
 
 	.game-postseason-label {

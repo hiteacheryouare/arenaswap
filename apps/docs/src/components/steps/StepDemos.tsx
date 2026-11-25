@@ -3,7 +3,6 @@ import type { ReactNode, RefObject } from 'react';
 import type { LeagueId } from '@arenaswap/core/types';
 import GameCard from '@arenaswap/ui/src/components/gameCard';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
-import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 import SelectDropdown from '@arenaswap/ui/src/components/selectDropdown';
 import TabFavicon from '@arenaswap/ui/src/components/tabFavicon';
@@ -138,7 +137,7 @@ const AssignPopup = ({ open, assigned }: { open: boolean; assigned: boolean }) =
 							/>
 						</div>
 					)}
-					leagueSlot={<LeagueMark league={entry.game.league} logos={emptyLeagueLogos} onColor={leagueMarkOnColor(entry.game)} />}
+					leagueSlot={<LeagueMark league={entry.game.league} logos={emptyLeagueLogos} />}
 				/>
 			</div>
 		</div>

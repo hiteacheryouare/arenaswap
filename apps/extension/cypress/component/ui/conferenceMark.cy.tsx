@@ -29,10 +29,12 @@ const mount = (node: React.ReactNode) => {
 };
 
 describe('conference mark', () => {
-	it('names the conference beside the league, with the crest drawn for a team colour', () => {
+	it('draws the conference crest on a white tile beside the league', () => {
 		mount(<PreGameCard {...cardProps} game={big12} leagueSlot={<span className='game-card-league'>CFB</span>} />);
 		cy.get('.game-card-status-row').should('contain.text', 'CFB').and('contain.text', 'Big 12');
-		cy.get('.game-card-conference img').should('have.attr', 'src').and('match', /ncaa_conf\/500-dark\/4\.png$/);
+		cy.get('.game-card-conference img').should('have.attr', 'src').and('match', /ncaa_conf\/500\/4\.png$/);
+		cy.get('.game-card-conference > span:not(.crest)').should('have.class', 'visually-hidden');
+		cy.get('.game-card-conference .crest').should('have.attr', 'title', 'Big 12');
 	});
 
 	it('uses the light-ground crest on a finished game\'s card', () => {
@@ -40,9 +42,11 @@ describe('conference mark', () => {
 		cy.get('.game-card-conference img').should('have.attr', 'src').and('match', /ncaa_conf\/500\/4\.png$/);
 	});
 
-	it('shows the name alone where no crest is drawn for a team colour', () => {
+	it('writes the name out when the crest will not load', () => {
+		cy.intercept('GET', '**/ncaa_conf/500/uac.png', { statusCode: 404 });
 		mount(<PreGameCard {...cardProps} game={{ ...big12, conference: { id: '99', shortName: 'UAC', crestSlug: 'uac' } }} />);
-		cy.get('.game-card-conference').should('have.text', 'UAC').find('img').should('not.exist');
+		cy.get('.game-card-conference .crest').should('have.attr', 'data-crest-state', 'failed');
+		cy.get('.game-card-conference > span:not(.crest)').should('not.have.class', 'visually-hidden').and('be.visible').and('have.text', 'UAC');
 	});
 
 	it('steps aside when the round name already says it', () => {

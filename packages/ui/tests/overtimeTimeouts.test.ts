@@ -1,4 +1,3 @@
-import { leagueMarkOnColor } from '../src/components/gameCardShared';
 import { gridironTimeoutAllotment, timeoutAllotment } from '../src/components/timeoutDots';
 import type { Game, LeagueId } from '@arenaswap/core/types';
 
@@ -42,14 +41,4 @@ describe('timeout allotment by sport', () => {
 		expect(timeoutAllotment(makeGame('nfl', { period: 5 }))).toBe(2);
 		expect(timeoutAllotment(makeGame('nhl', { sportType: 'hockey' }))).toBeUndefined();
 	});
-});
-
-test('a delayed game that has not started takes the league-mark ink of the delayed card it shows', () => {
-	const colors = ['#13274F', '#FDB927', '#7BAFD4', '#FF6B00', '#E31837', '#00843D', '#FFFFFF', '#000000', '#C4CED4', '#4B92DB'];
-	for (const away of colors) {
-		for (const home of colors) {
-			const scheduled = makeGame('mlb', { status: 'pre', sportType: 'baseball', awayTeam: { id: 'a', name: 'A', abbreviation: 'A', score: 0, color: away }, homeTeam: { id: 'h', name: 'H', abbreviation: 'H', score: 0, color: home } });
-			expect(leagueMarkOnColor({ ...scheduled, delayed: true })).toBe(leagueMarkOnColor({ ...scheduled, status: 'in', delayed: true }));
-		}
-	}
 });

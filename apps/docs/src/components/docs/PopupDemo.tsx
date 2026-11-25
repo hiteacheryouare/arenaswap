@@ -1,7 +1,6 @@
 import type { LeagueId } from '@arenaswap/core/types';
 import GameCard from '@arenaswap/ui/src/components/gameCard';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
-import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { PopupHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 import { useT } from '@arenaswap/ui/src/components/i18nContext';
 import { liveEntries } from './demoGames';
@@ -38,7 +37,7 @@ const PopupList = ({ tabs }: { tabs: boolean }) => {
 					interactive={false}
 					bettingPrefs={{ bettingEnabled: false }}
 					tabSlot={tabs ? <DemoTabSlot entry={entry} /> : undefined}
-					leagueSlot={<LeagueMark league={entry.game.league} logos={noLeagueLogos} onColor={leagueMarkOnColor(entry.game)} />}
+					leagueSlot={<LeagueMark league={entry.game.league} logos={noLeagueLogos} />}
 				/>
 			))}
 		</div>

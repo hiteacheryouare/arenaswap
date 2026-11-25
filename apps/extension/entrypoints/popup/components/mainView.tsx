@@ -28,7 +28,6 @@ import UpcomingDayPager from './upcomingDayPager';
 import UpcomingSearchTitle from './upcomingSearchTitle';
 import { offseasonReturnLine } from './leagueOffseasonLabel';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
-import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { useDisplayLocale } from '@arenaswap/ui/src/components/i18nContext';
 import useReorderGlide from '@arenaswap/ui/src/components/useReorderGlide';
 import useSlideDirection, { slideClassName } from '../useSlideDirection';
@@ -168,7 +167,7 @@ const gameSection = ({
 					bettingPrefs={bettingPrefs}
 					weatherPrefs={weatherPrefs}
 					dayNamedAbove={dayNamedAbove}
-					leagueSlot={grouped ? undefined : <LeagueMark league={game.league} logos={leagueLogos} onColor={leagueMarkOnColor(game)} />}
+					leagueSlot={grouped ? undefined : <LeagueMark league={game.league} logos={leagueLogos} />}
 				/>
 			</GameCardReveal>
 		</div>

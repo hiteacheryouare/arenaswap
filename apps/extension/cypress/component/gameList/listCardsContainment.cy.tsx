@@ -1,7 +1,6 @@
 import type { Browser } from 'wxt/browser';
 import type { Game, LeagueId, TabRegistration } from '@arenaswap/core/types';
 import LeagueMark from '@arenaswap/ui/src/components/leagueMark';
-import { leagueMarkOnColor } from '@arenaswap/ui/src/components/gameCardShared';
 import { LeagueSectionHeader, PopupSectionTitle } from '@arenaswap/ui/src/components/popupChrome';
 import { StaleLeaguesProvider } from '@arenaswap/ui/src/components/staleLeagueNote';
 import GameCard from '../../../entrypoints/popup/components/gameCard';
@@ -66,7 +65,7 @@ const cardsList = ({ games, grouped, assignTabs }: { games: Game[]; grouped: boo
 				bettingPrefs={{ bettingEnabled: true }}
 				weatherPrefs={{ temperatureUnit: 'F' }}
 				dayNamedAbove={game.status === 'pre'}
-				leagueSlot={grouped ? undefined : <LeagueMark league={game.league} logos={{}} onColor={leagueMarkOnColor(game)} />}
+				leagueSlot={grouped ? undefined : <LeagueMark league={game.league} logos={{}} />}
 			/>
 		</div>
 	);

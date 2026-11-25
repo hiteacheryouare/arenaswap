@@ -99,12 +99,6 @@ export const buildGameCardSurface = (game: Game, delayed = false): gameCardSurfa
 	return { style: matchupSurfaceStyle(leftColor, rightColor, delayed), awayColor, homeColor, leftColor, rightColor };
 };
 
-export const leagueMarkOnColor = (game: Game): boolean => {
-	if (game.status === 'post') return false;
-	const { leftColor, rightColor } = buildGameCardSurface(game);
-	return matchupSurface(leftColor, rightColor, game.delayed === true).inks.left === '#ffffff';
-};
-
 export const buildCardShellProps = (game: Game, t: Translator, onOpenGameDetail: (gameId: string) => void, interactive: boolean) => ({
 	role: 'group' as const,
 	'aria-label': `${game.awayTeam.abbreviation} ${t('gameCard.vs')} ${game.homeTeam.abbreviation}`,
@@ -217,15 +211,15 @@ export const SeasonLabel = ({ game }: { game: Game }) => {
 };
 
 export const ConferenceMark = ({ game }: { game: Game }) => {
+	const [failedCrest, setFailedCrest] = useState<string>();
 	const conference = game.conference;
 	if (!conference || game.postseasonLabel) return null;
-	const onColor = leagueMarkOnColor(game);
-	const crest = resolveConferenceCrest(conference.crestSlug, onColor ? 'dark' : 'light');
-	const crestSrc = crest.src && (!onColor || crest.drawnForDark) ? crest.src : undefined;
+	const crestSrc = resolveConferenceCrest(conference.crestSlug, 'light').src;
+	const crestShown = Boolean(crestSrc) && failedCrest !== crestSrc;
 	return (
 		<span className='d-inline-flex align-items-center text-nowrap game-card-conference'>
-			{crestSrc && <Crest logo={crestSrc} abbreviation='' className='game-card-conference-crest' fallback='none' loading='lazy' />}
-			{conference.shortName}
+			{crestSrc && <Crest logo={crestSrc} abbreviation='' title={conference.shortName} className='game-card-conference-crest' fallback='none' loading='lazy' onFailed={() => setFailedCrest(crestSrc)} />}
+			<span className={crestShown ? 'visually-hidden' : undefined}>{conference.shortName}</span>
 		</span>
 	);
 };
