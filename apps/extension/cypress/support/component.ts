@@ -11,6 +11,8 @@ import '../../assets/settingsBackup.scss';
 
 Cypress.Commands.add('mount', mount);
 
+Cypress.on('uncaught:exception', error => !error.message.includes('ResizeObserver loop'));
+
 beforeEach(() => resetPrefetchIntent());
 
 declare global {
