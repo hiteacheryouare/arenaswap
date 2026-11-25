@@ -1,105 +1,393 @@
 {
-  "$schema": ".lattice/schema.json",
-  "latticeVersion": "2.0.0",
-  "engines": {
-    "node": "^22.9.0 || ^24.0.0 || >=26.0.0",
-    "npm": "12.1.0"
-  },
-  "globalDependencies": ["tsconfig.base.json", ".oxlintrc.json"],
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"],
-      "ignore": [
-        "tests/**/*.test.ts",
-        "tests/**/*.spec.ts",
-        "cypress/**",
-        "cypress.config.ts",
-        "jest.config.cjs",
-        "jestSetup.ts",
-        "*.md"
-      ]
-    },
-    "build:e2e": {
-      "dependsOn": ["^build"],
-      "ignore": [
-        "tests/**/*.test.ts",
-        "tests/**/*.spec.ts",
-        "cypress/**",
-        "cypress.config.ts",
-        "jest.config.cjs",
-        "jestSetup.ts",
-        "*.md"
-      ]
-    },
-    "build:edge": {
-      "dependsOn": ["^build"],
-      "ignore": [
-        "tests/**/*.test.ts",
-        "tests/**/*.spec.ts",
-        "cypress/**",
-        "cypress.config.ts",
-        "jest.config.cjs",
-        "jestSetup.ts",
-        "*.md"
-      ]
-    },
-    "build:film": {
-      "dependsOn": ["^build"],
-      "ignore": [
-        "tests/**/*.test.ts",
-        "tests/**/*.spec.ts",
-        "cypress/**",
-        "cypress.config.ts",
-        "jest.config.cjs",
-        "jestSetup.ts",
-        "*.md"
-      ]
-    },
-    "build:firefox": {
-      "dependsOn": ["^build"],
-      "ignore": [
-        "tests/**/*.test.ts",
-        "tests/**/*.spec.ts",
-        "cypress/**",
-        "cypress.config.ts",
-        "jest.config.cjs",
-        "jestSetup.ts",
-        "*.md"
-      ]
-    },
-    "dev": {
-      "dependsOn": ["^build"],
-      "persistent": true,
-      "cache": false
-    },
-    "test": {
-      "dependsOn": ["test:unit", "test:component"]
-    },
-    "test:component": {
-      "dependsOn": ["^build"]
-    },
-    "test:e2e": {
-      "dependsOn": ["^build"]
-    },
-    "test:unit": {
-      "dependsOn": ["^build"],
-      "ignore": ["cypress/**", "cypress.config.ts", "*.md"]
-    },
-    "typecheck": {
-      "dependsOn": ["^build"]
-    },
-    "zip": {
-      "dependsOn": ["^build", "build"],
-      "cache": false
-    },
-    "zip:edge": {
-      "dependsOn": ["^build", "build:edge"],
-      "cache": false
-    },
-    "zip:firefox": {
-      "dependsOn": ["^build", "build:firefox"],
-      "cache": false
-    }
-  }
+	"$schema": ".lattice/schema.json",
+	"latticeVersion": "2.0.0",
+	"engines": {
+		"node": "^22.9.0 || ^24.0.0 || >=26.0.0",
+		"npm": "12.1.0"
+	},
+	"globalDependencies": [
+		"tsconfig.base.json",
+		".oxlintrc.json"
+	],
+	"tasks": {
+		"build": {
+			"dependsOn": [
+				"^build"
+			],
+			"outputs": [
+				"dist/**"
+			],
+			"ignore": [
+				"tests/**/*.test.ts",
+				"tests/**/*.spec.ts",
+				"cypress/**",
+				"cypress.config.ts",
+				"jest.config.cjs",
+				"jestSetup.ts",
+				"*.md"
+			]
+		},
+		"build:e2e": {
+			"dependsOn": [
+				"^build"
+			],
+			"ignore": [
+				"tests/**/*.test.ts",
+				"tests/**/*.spec.ts",
+				"cypress/**",
+				"cypress.config.ts",
+				"jest.config.cjs",
+				"jestSetup.ts",
+				"*.md"
+			]
+		},
+		"build:edge": {
+			"dependsOn": [
+				"^build"
+			],
+			"ignore": [
+				"tests/**/*.test.ts",
+				"tests/**/*.spec.ts",
+				"cypress/**",
+				"cypress.config.ts",
+				"jest.config.cjs",
+				"jestSetup.ts",
+				"*.md"
+			]
+		},
+		"build:film": {
+			"dependsOn": [
+				"^build"
+			],
+			"ignore": [
+				"tests/**/*.test.ts",
+				"tests/**/*.spec.ts",
+				"cypress/**",
+				"cypress.config.ts",
+				"jest.config.cjs",
+				"jestSetup.ts",
+				"*.md"
+			]
+		},
+		"build:firefox": {
+			"dependsOn": [
+				"^build"
+			],
+			"ignore": [
+				"tests/**/*.test.ts",
+				"tests/**/*.spec.ts",
+				"cypress/**",
+				"cypress.config.ts",
+				"jest.config.cjs",
+				"jestSetup.ts",
+				"*.md"
+			]
+		},
+		"dev": {
+			"dependsOn": [
+				"^build"
+			],
+			"persistent": true,
+			"cache": false
+		},
+		"test": {
+			"dependsOn": [
+				"test:unit",
+				"test:component"
+			]
+		},
+		"test:component": {
+			"dependsOn": [
+				"^build"
+			]
+		},
+		"test:e2e": {
+			"dependsOn": [
+				"^build"
+			]
+		},
+		"test:unit": {
+			"dependsOn": [
+				"^build"
+			],
+			"ignore": [
+				"cypress/**",
+				"cypress.config.ts",
+				"*.md"
+			]
+		},
+		"typecheck": {
+			"dependsOn": [
+				"^build"
+			]
+		},
+		"zip": {
+			"dependsOn": [
+				"^build",
+				"build"
+			],
+			"cache": false
+		},
+		"zip:edge": {
+			"dependsOn": [
+				"^build",
+				"build:edge"
+			],
+			"cache": false
+		},
+		"zip:firefox": {
+			"dependsOn": [
+				"^build",
+				"build:firefox"
+			],
+			"cache": false
+		}
+	},
+	"overrides": {
+		"@arenaswap/docs": {
+			"tasks": {
+				"build": {
+					"run": "turbo run build --only",
+					"cache": false
+				},
+				"typecheck": {
+					"run": "turbo run typecheck --only",
+					"cache": false,
+					"dependsOn": [
+						"^build",
+						"build"
+					]
+				},
+				"test:unit": {
+					"run": "turbo run test:unit --only",
+					"cache": false
+				},
+				"test:e2e": {
+					"run": "turbo run test:e2e --only",
+					"cache": false,
+					"dependsOn": [
+						"build"
+					]
+				},
+				"lint": {
+					"run": "turbo run lint --only",
+					"cache": false
+				},
+				"dev": {
+					"run": "npm run dev"
+				}
+			}
+		},
+		"@arenaswap/extension": {
+			"tasks": {
+				"build": {
+					"run": "turbo run build --only",
+					"cache": false
+				},
+				"build:firefox": {
+					"run": "turbo run build:firefox --only",
+					"cache": false
+				},
+				"build:edge": {
+					"run": "turbo run build:edge --only",
+					"cache": false
+				},
+				"build:e2e": {
+					"run": "turbo run build:e2e --only",
+					"cache": false
+				},
+				"build:film": {
+					"run": "turbo run build:film --only",
+					"cache": false
+				},
+				"zip": {
+					"run": "npm run zip"
+				},
+				"zip:firefox": {
+					"run": "npm run zip:firefox"
+				},
+				"zip:edge": {
+					"run": "npm run zip:edge"
+				},
+				"test:unit": {
+					"run": "turbo run test:unit --only",
+					"cache": false
+				},
+				"test:specGroups": {
+					"run": "turbo run test:specGroups --only",
+					"cache": false,
+					"dependsOn": [
+						"^build"
+					]
+				},
+				"test:component": {
+					"run": "node -e 0",
+					"dependsOn": [
+						"test:specGroups",
+						"test:component:detail",
+						"test:component:gameList",
+						"test:component:guide",
+						"test:component:multiview",
+						"test:component:onboarding",
+						"test:component:settings",
+						"test:component:ui"
+					],
+					"cache": false
+				},
+				"test:component:detail": {
+					"run": "turbo run test:component:detail --only",
+					"cache": false,
+					"dependsOn": [
+						"^build"
+					]
+				},
+				"test:component:gameList": {
+					"run": "turbo run test:component:gameList --only",
+					"cache": false,
+					"dependsOn": [
+						"^build"
+					]
+				},
+				"test:component:guide": {
+					"run": "turbo run test:component:guide --only",
+					"cache": false,
+					"dependsOn": [
+						"^build"
+					]
+				},
+				"test:component:multiview": {
+					"run": "turbo run test:component:multiview --only",
+					"cache": false,
+					"dependsOn": [
+						"^build"
+					]
+				},
+				"test:component:onboarding": {
+					"run": "turbo run test:component:onboarding --only",
+					"cache": false,
+					"dependsOn": [
+						"^build"
+					]
+				},
+				"test:component:settings": {
+					"run": "turbo run test:component:settings --only",
+					"cache": false,
+					"dependsOn": [
+						"^build"
+					]
+				},
+				"test:component:ui": {
+					"run": "turbo run test:component:ui --only",
+					"cache": false,
+					"dependsOn": [
+						"^build"
+					]
+				},
+				"test:e2e": {
+					"run": "node -e 0",
+					"dependsOn": [
+						"test:e2e:popup",
+						"test:e2e:settings",
+						"test:e2e:tabs"
+					],
+					"cache": false
+				},
+				"test:e2e:popup": {
+					"run": "turbo run test:e2e:popup --only",
+					"cache": false,
+					"dependsOn": [
+						"build:e2e"
+					]
+				},
+				"test:e2e:settings": {
+					"run": "turbo run test:e2e:settings --only",
+					"cache": false,
+					"dependsOn": [
+						"build:e2e"
+					]
+				},
+				"test:e2e:tabs": {
+					"run": "turbo run test:e2e:tabs --only",
+					"cache": false,
+					"dependsOn": [
+						"build:e2e"
+					]
+				},
+				"typecheck": {
+					"run": "turbo run typecheck --only",
+					"cache": false
+				},
+				"lint": {
+					"run": "turbo run lint --only",
+					"cache": false
+				},
+				"dev": {
+					"run": "npm run dev"
+				}
+			}
+		},
+		"@arenaswap/film": {
+			"dependsOn": [
+				"@arenaswap/extension"
+			],
+			"tasks": {
+				"build:film": {
+					"run": "turbo run build:film --only",
+					"cache": false,
+					"dependsOn": [
+						"^build",
+						"^build:film"
+					]
+				},
+				"typecheck": {
+					"run": "turbo run typecheck --only",
+					"cache": false
+				},
+				"lint": {
+					"run": "turbo run lint --only",
+					"cache": false
+				}
+			}
+		},
+		"@arenaswap/sideline": {
+			"tasks": {
+				"test": {
+					"run": "turbo run test:e2e --only",
+					"cache": false
+				},
+				"test:unit": {
+					"run": "turbo run test:unit --only",
+					"cache": false
+				},
+				"test:e2e": {
+					"run": "turbo run test:e2e --only",
+					"cache": false
+				},
+				"typecheck": {
+					"run": "turbo run typecheck --only",
+					"cache": false
+				},
+				"lint": {
+					"run": "turbo run lint --only",
+					"cache": false
+				}
+			}
+		},
+		"@arenaswap/ui": {
+			"tasks": {
+				"test:unit": {
+					"run": "turbo run test:unit --only",
+					"cache": false
+				},
+				"typecheck": {
+					"run": "turbo run typecheck --only",
+					"cache": false
+				},
+				"lint": {
+					"run": "turbo run lint --only",
+					"cache": false
+				}
+			}
+		}
+	}
 }

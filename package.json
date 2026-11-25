@@ -33,6 +33,7 @@
 		"docs:validate-hero": "rolldown scripts/docs/validateHeroTimeline.ts --platform=node --file=scripts/docs/validateHeroTimeline.cjs --format=cjs --log-level=silent && node scripts/docs/validateHeroTimeline.cjs"
 	},
 	"devDependencies": {
+		"@latticeandcompany/lattice": "2.0.0",
 		"@swc/core": "^1.16.2",
 		"@swc/jest": "^0.2.39",
 		"oxlint": "^1.83.0",

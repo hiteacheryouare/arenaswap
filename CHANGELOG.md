@@ -5,6 +5,9 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Lattice orders the tasks and leaves turbo's workspaces to turbo's cache — 2026-11-24
+
+Lattice drives any workspace with its own `turbo.json` as `turbo run <task>`, sees only the tasks named in that file, and cached those runs without their outputs. So the extension, film, ui and sideline were never linted or typechecked, and a hit on an extension build restored nothing. Each of those tasks is now an override that runs `turbo run <task> --only` with Lattice's cache off, so turbo caches it and runs nothing upstream, and Lattice 2.0.0 is a pinned devDependency.
 ## The About page's demos lose their captions — 2026-11-24
 
 The loading-line and Multiview demos no longer carry a sentence underneath explaining what they are. The Multiview line lives on as the figure's `aria-label`, since the animation itself is `aria-hidden`, and `DocDemo` drops its unused `caption` prop and the `.doc-demo-caption` style with it.
