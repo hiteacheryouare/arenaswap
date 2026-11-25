@@ -2,6 +2,7 @@ import { defineConfig } from 'wxt';
 import pkg from './package.json';
 import bootstrapTokenPrefix from '@arenaswap/ui/src/bootstrapTokenPrefix';
 import { bossCommandName, bossSuggestedKey } from './utils/bossMode';
+import createBuildStamp from './utils/buildStamp';
 
 // Multiview strips the headers that stop a site being framed, inside its own tab. AMO's policy
 // forbids relaxing them at all, so the Firefox build has no Multiview.
@@ -9,7 +10,8 @@ const multiviewPermissions = (browser: string): string[] => (
 	browser === 'firefox' ? [] : ['declarativeNetRequestWithHostAccess', 'scripting']
 );
 
-const year = new Date().getFullYear();
+const buildStamp = createBuildStamp();
+const year = new Date(buildStamp.builtAt).getFullYear();
 const version = pkg.version;
 const banner = `/*! ArenaSwap v${version} Copyright (c) ${year} Ryan Mullin, Lattice & Company, and Contributors. All rights reserved. */`;
 
@@ -48,6 +50,9 @@ export default defineConfig({
 		],
 	},
 	vite: async () => ({
+		define: {
+			__ARENASWAP_BUILD__: JSON.stringify(buildStamp),
+		},
 		plugins: [
 			...(await istanbulPlugins()),
 			{

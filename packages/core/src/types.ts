@@ -500,6 +500,9 @@ export interface DebugState {
 	cooldownSeconds: number;
 	switchDelaySeconds: number;
 	contentAwareSwitching: boolean;
+	workerStartedAt: number;
+	leagueLastGoodAt: LeagueLastGoodAt;
+	leagueFailures: Partial<Record<LeagueId, number>>;
 }
 
 export type ExtensionMessage =

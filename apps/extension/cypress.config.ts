@@ -34,6 +34,9 @@ export default defineConfig({
 			bundler: 'vite',
 			viteConfig: async () => ({
 				...(specGroup ? { cacheDir: root(`node_modules/.vite/cypress-component-${specGroup}`) } : {}),
+				define: {
+					__ARENASWAP_BUILD__: JSON.stringify({ builtAt: Date.UTC(2026, 9, 3, 19, 30), timeZone: 'America/New_York', environment: 'Cypress' }),
+				},
 				css: {
 					postcss: {
 						plugins: [bootstrapTokenPrefix],

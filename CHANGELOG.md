@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## The debug panel says when and where the build was made — 2026-11-23
+
+The panel behind the footer heart now shows the build's date, time and time zone, and whether CI or a local machine built it, pinned by `SOURCE_DATE_EPOCH` so a reviewer's rebuild can match ours (`utils/buildStamp.ts`). It also shows the platform, UI language, Multiview and notification permissions, how long the worker has been up, and each league's last good poll and failure count, and a Copy all button puts the whole panel on the clipboard as text.
+
 ## The popup's component families get their own folders — 2026-11-24
 
 The walkthrough steps, holiday decorations, card reveal pieces, fantasy pages and onboarding screens moved into `components/walkthrough/`, `holiday/`, `reveal/`, `fantasy/` and `onboarding/`, with every importer and Cypress spec repointed and no Cypress stub key affected. The `ludicrous*` family stays flat for now because it has work in progress elsewhere.

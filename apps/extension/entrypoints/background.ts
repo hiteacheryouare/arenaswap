@@ -175,6 +175,7 @@ const slateBeside = (onScreen: Game[], slate: Game[]): Game[] => {
 };
 
 export default defineBackground(() => {
+	const workerStartedAt = Date.now();
 	let games: Game[] = [];
 	let upcomingGames: Game[] = [];
 	let retainedFinalGames: Game[] = [];
@@ -1643,6 +1644,9 @@ export default defineBackground(() => {
 					cooldownSeconds: prefs.cooldownSeconds,
 					switchDelaySeconds: prefs.switchDelaySeconds,
 					contentAwareSwitching: prefs.contentAwareSwitching,
+					workerStartedAt,
+					leagueLastGoodAt,
+					leagueFailures: Object.fromEntries(leagueFailureCounts),
 				};
 			});
 		}

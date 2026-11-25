@@ -7,6 +7,13 @@ export namespace Browser {
 			favIconUrl?: string;
 		}
 	}
+
+	export namespace permissions {
+		export interface Permissions {
+			origins?: string[];
+			permissions?: string[];
+		}
+	}
 }
 
 export const browser = new Proxy({} as Record<string, unknown>, {

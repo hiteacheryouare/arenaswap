@@ -2589,6 +2589,10 @@
 			flex-shrink: 0;
 			width: 0.65rem;
 		}
+
+		.debug-copy {
+			--as-btn-font-size: 1em;
+		}
 	}
 
 	$signature-colors: #fdb913, #f36f21, #c9234a, #645faa, #0089cf, #0db14b;

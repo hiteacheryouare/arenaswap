@@ -1,15 +1,47 @@
 import { useEffect, useRef, useState } from 'react';
 import { sensitivityThresholds } from '@arenaswap/core/constants';
 import { i18n } from '#i18n';
+import { isMultiviewBuild, multiviewPermissions } from '../../../utils/multiview';
 import { powerScoreColor } from './gameCardShared';
 
-const fmtAgo = (ms) => {
-	if (!ms) return 'never';
-	const secs = Math.floor((Date.now() - ms) / 1000);
-	if (secs < 60) return `${secs}s ago`;
+const fmtSpan = (secs) => {
+	if (secs < 60) return `${secs}s`;
 	const mins = Math.floor(secs / 60);
-	if (mins < 60) return `${mins}m ${secs % 60}s ago`;
-	return `${Math.floor(mins / 60)}h ${mins % 60}m ago`;
+	if (mins < 60) return `${mins}m ${secs % 60}s`;
+	const hours = Math.floor(mins / 60);
+	if (hours < 48) return `${hours}h ${mins % 60}m`;
+	return `${Math.floor(hours / 24)}d ${hours % 24}h`;
+};
+
+const fmtAgo = (ms) => (ms ? `${fmtSpan(Math.floor((Date.now() - ms) / 1000))} ago` : 'never');
+
+const fmtBuiltAt = ({ builtAt, timeZone }) => new Date(builtAt).toLocaleString(undefined, {
+	timeZone,
+	year: 'numeric',
+	month: 'short',
+	day: 'numeric',
+	hour: 'numeric',
+	minute: '2-digit',
+	timeZoneName: 'short',
+});
+
+const attempt = (read, fallback) => Promise.resolve().then(read).catch(() => fallback);
+
+const multiviewAccess = async (manifest) => {
+	if (!isMultiviewBuild(manifest)) return 'Not in this build';
+	return (await attempt(() => browser.permissions.contains(multiviewPermissions), false)) ? 'Granted' : 'Not granted';
+};
+
+const panelText = (panel) => {
+	const sections = [...panel.querySelectorAll('.debug-section')].map(section => {
+		const title = section.querySelector('.popup-section-label').textContent;
+		const rows = [...section.querySelectorAll('.debug-row, .debug-score-row')].map(row => {
+			const [label, ...values] = [...row.children].map(cell => cell.textContent.trim()).filter(Boolean);
+			return `${label}: ${values.join(' ')}`;
+		});
+		return [`## ${title}`, ...rows].join('\n');
+	});
+	return [`ArenaSwap debug · ${new Date().toISOString()}`, ...sections].join('\n\n');
 };
 
 const ScoreBar = ({ value }) => (
@@ -48,6 +80,9 @@ const popupFooter = ({ ready = true, holdMs = 0, entrance = 'fade' }) => {
 	const [signaturePhase, setSignaturePhase] = useState(ready && holdMs === 0 ? 'shown' : 'waiting');
 	const [showDebug, setShowDebug] = useState(false);
 	const [debug, setDebug] = useState(null);
+	const [copyLabel, setCopyLabel] = useState('Copy all');
+	const debugPanel = useRef(null);
+	const copyTimer = useRef(null);
 	const heartClicks = useRef(0);
 	const heartTimer = useRef(null);
 	const refreshTimer = useRef(null);
@@ -58,11 +93,14 @@ const popupFooter = ({ ready = true, holdMs = 0, entrance = 'fade' }) => {
 		const browserName = /Edg\//.test(ua) ? 'Edge' : /Firefox\//.test(ua) ? 'Firefox' : /Chrome\//.test(ua) ? 'Chrome' : 'Unknown';
 		const browserVer = ua.match(/(?:Chrome|Firefox|Edg)\/(\d+)/)?.[1] ?? '?';
 
-		const [bg, syncData, localData, sessionData] = await Promise.all([
-			browser.runtime.sendMessage({ type: 'GET_DEBUG_STATE' }).catch(() => null),
-			browser.storage.sync.get(null).catch(() => ({})),
-			browser.storage.local.get(null).catch(() => ({})),
-			browser.storage.session.get(null).catch(() => ({})),
+		const [bg, syncData, localData, sessionData, platform, multiview, notifications] = await Promise.all([
+			attempt(() => browser.runtime.sendMessage({ type: 'GET_DEBUG_STATE' }), null),
+			attempt(() => browser.storage.sync.get(null), {}),
+			attempt(() => browser.storage.local.get(null), {}),
+			attempt(() => browser.storage.session.get(null), {}),
+			attempt(() => browser.runtime.getPlatformInfo(), null),
+			multiviewAccess(manifest),
+			attempt(() => browser.notifications.getPermissionLevel(), null),
 		]);
 
 		setDebug({
@@ -70,8 +108,16 @@ const popupFooter = ({ ready = true, holdMs = 0, entrance = 'fade' }) => {
 				version: manifest.version,
 				mv: `MV${manifest.manifest_version}`,
 				build: import.meta.env.MODE,
+				builtAt: fmtBuiltAt(__ARENASWAP_BUILD__),
+				builtOn: `${__ARENASWAP_BUILD__.environment} · ${__ARENASWAP_BUILD__.timeZone}`,
 				browser: `${browserName} ${browserVer}`,
+				platform: platform && `${platform.os} ${platform.arch}`,
+				language: browser.i18n.getUILanguage(),
 				id: browser.runtime.id,
+			},
+			permissions: {
+				multiview,
+				notifications: notifications && `${notifications[0].toUpperCase()}${notifications.slice(1)}`,
 			},
 			bg,
 			storage: {
@@ -106,7 +152,17 @@ const popupFooter = ({ ready = true, holdMs = 0, entrance = 'fade' }) => {
 		return () => clearInterval(refreshTimer.current);
 	}, [showDebug]);
 
-	useEffect(() => () => clearTimeout(heartTimer.current), []);
+	const copyDebug = async () => {
+		const copied = await attempt(() => navigator.clipboard.writeText(panelText(debugPanel.current)).then(() => true), false);
+		setCopyLabel(copied ? 'Copied' : "Couldn't copy");
+		clearTimeout(copyTimer.current);
+		copyTimer.current = setTimeout(() => setCopyLabel('Copy all'), 2000);
+	};
+
+	useEffect(() => () => {
+		clearTimeout(heartTimer.current);
+		clearTimeout(copyTimer.current);
+	}, []);
 
 	useEffect(() => {
 		if (!ready || signaturePhase !== 'waiting') return;
@@ -127,13 +183,22 @@ const popupFooter = ({ ready = true, holdMs = 0, entrance = 'fade' }) => {
 	return (
 		<div className='mt-auto'>
 			{showDebug && debug && (
-				<div className='popup-debug-panel'>
+				<div className='popup-debug-panel' ref={debugPanel}>
 					<Section title='Runtime' icon='cpu'>
 						<DRow label='Version' value={debug.runtime.version} />
 						<DRow label='Build' value={debug.runtime.build} />
+						<DRow label='Built' value={debug.runtime.builtAt} />
+						<DRow label='Built on' value={debug.runtime.builtOn} />
 						<DRow label='Browser' value={debug.runtime.browser} />
+						<DRow label='Platform' value={debug.runtime.platform} />
+						<DRow label='Language' value={debug.runtime.language} />
 						<DRow label='Manifest' value={debug.runtime.mv} />
 						<DRow label='Extension ID' value={debug.runtime.id} />
+					</Section>
+
+					<Section title='Permissions' icon='shield-check'>
+						<DRow label='Multiview access' value={debug.permissions.multiview} />
+						<DRow label='Notifications' value={debug.permissions.notifications} />
 					</Section>
 
 					{bg ? (
@@ -143,14 +208,18 @@ const popupFooter = ({ ready = true, holdMs = 0, entrance = 'fade' }) => {
 									<span className='debug-label'>Mode</span>
 									<span className='debug-value'><ModeText mode={bg.demoMode ? 'demo' : 'live'} /></span>
 								</div>
+								<DRow label='Worker up' value={fmtSpan(Math.floor((Date.now() - bg.workerStartedAt) / 1000))} />
 								{Object.entries(bg.pollModes).map(([league, mode]) => {
 									const intervalMs = bg.leagueIntervals?.[league];
+									const failures = bg.leagueFailures?.[league];
 									return (
 										<div key={league} className='debug-row'>
 											<span className='debug-label'>{league.toUpperCase()}</span>
 											<span className='debug-value'>
 												<ModeText mode={mode} />
 												{intervalMs != null && ` · ${(intervalMs / 1000).toFixed(1)}s`}
+												{bg.leagueLastGoodAt?.[league] ? ` · ok ${fmtAgo(bg.leagueLastGoodAt[league])}` : ' · no good poll yet'}
+												{failures > 0 && <span className='debug-break'>{` · ${failures} failed`}</span>}
 											</span>
 										</div>
 									);
@@ -232,7 +301,10 @@ const popupFooter = ({ ready = true, holdMs = 0, entrance = 'fade' }) => {
 					</Section>
 
 					<div className='setting-explainer text-center mt-5'>
-						Refreshes every 5s · last at {new Date(debug.loadedAt).toLocaleTimeString()}
+						Refreshes every 5s · last at {new Date(debug.loadedAt).toLocaleTimeString()} ·{' '}
+						<button type='button' className='btn btn-link p-0 fg-secondary align-baseline debug-copy' onClick={copyDebug}>
+							{copyLabel}
+						</button>
 					</div>
 				</div>
 			)}
