@@ -1,55 +1,45 @@
 version: 2
 updates:
-  # A single npm block for the whole workspace. Dependabot requires each
-  # package-ecosystem + directory + target-branch combination to be unique, so a
-  # second npm block on '/' is silently dropped rather than merged.
   - package-ecosystem: 'npm'
     directory: '/'
+    target-branch: 'dev'
     schedule:
       interval: 'weekly'
       day: 'friday'
       time: '15:00'
       timezone: 'America/New_York'
-    open-pull-requests-limit: 10
-    target-branch: 'mega'
-    allow:
-      - dependency-type: 'all'
-    commit-message:
-      prefix: 'Upgrade'
-      include: 'scope'
+    cooldown:
+      default-days: 7
+      semver-major-days: 14
+    versioning-strategy: 'increase'
+    open-pull-requests-limit: 5
     labels:
       - 'dependencies'
-      - 'automated'
+    ignore:
+      # Published from packages/powerscore; the npm copy trails the workspace, so a bump is a downgrade.
+      - dependency-name: 'powerscore'
     groups:
-      frontend-stack:
+      minor-and-patch:
         patterns:
-          - 'react'
-          - 'react-dom'
-          - '@types/react*'
-          - '@wxt-dev/*'
-          - 'wxt'
-          - 'bootstrap'
-          - 'bootstrap-icons'
-          - 'tailwindcss'
-          - '@tailwindcss/*'
-          - 'sass'
-          - 'astro'
-          - '@astrojs/*'
-          - 'echarts'
+          - '*'
         update-types:
           - 'minor'
           - 'patch'
-      build-tooling:
+
+  - package-ecosystem: 'github-actions'
+    directories:
+      - '/'
+      - '/.github/actions/*'
+    target-branch: 'dev'
+    schedule:
+      interval: 'monthly'
+      time: '15:00'
+      timezone: 'America/New_York'
+    cooldown:
+      default-days: 7
+    labels:
+      - 'dependencies'
+    groups:
+      actions:
         patterns:
-          - 'turbo'
-          - 'typescript'
-          - 'oxlint'
-          - 'rolldown'
-          - 'jest'
-          - '@types/jest'
-          - '@swc/*'
-          - 'cypress'
-        update-types:
-          - 'minor'
-          - 'patch'
-    versioning-strategy: 'increase'
+          - '*'
