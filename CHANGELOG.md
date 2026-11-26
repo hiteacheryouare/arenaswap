@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Dependabot sends one weekly pull request into dev — 2026-11-25
+
+Every minor and patch npm upgrade now arrives in a single grouped PR against `dev`, each major gets its own, and GitHub Actions get a monthly grouped PR; new releases wait out a 7-day cooldown (14 for majors). The auto-merge workflow is gone, because repo auto-merge was never enabled and its title rewrite fought Dependabot's own titles, and Dependabot only reads this file from `mega`, so the same change went there too.
+
 ## Ludicrous Speed plays closer to the film and stops strobing — 2026-11-24
 
 The speed climb now lights the bridge's own three panels instead of floating neon signs, the made-up PLAID card is gone, and GO, STOP and the pulled brake slam in once and hold still instead of shaking or flashing several times a second. Each line holds for at least 20 characters a second of its translated length, and the stop halts the ship within a few frames instead of letting it glide back toward the camera. The canvas reads each beat's phase and camera from refs set in a layout effect, so it always cuts on the same commit as the text above it.
