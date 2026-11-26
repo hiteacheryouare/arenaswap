@@ -294,7 +294,7 @@ const App = () => {
 				<div className='guide-status'>
 					{slate && !hasError
 						? <NoGamesMessage onRefresh={() => loadSlate(true)} />
-						: <GameListHeader isLoading={!slate && !hasError} hasError={hasError} loadingMessage={loadingMessage} onRefresh={() => loadSlate(true)} />}
+						: <GameListHeader load='guide' isLoading={!slate && !hasError} hasError={hasError} loadingMessage={loadingMessage} onRefresh={() => loadSlate(true)} />}
 				</div>
 			)}
 

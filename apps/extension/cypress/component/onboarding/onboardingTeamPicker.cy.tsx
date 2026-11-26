@@ -11,6 +11,7 @@ const teams: EspnTeamEntry[] = [
 const defaultProps = {
 	teams,
 	isLoading: false,
+	loadProgress: 0,
 	hasError: false,
 	selectedFavorites: new Set<string>(),
 	onToggleFavorite: () => {},
@@ -89,10 +90,13 @@ describe('onboardingTeamPicker', () => {
 		cy.contains('No teams match "nothing here"').should('exist');
 	});
 
-	it('shows a spinner while the teams are loading', () => {
-		cy.mount(<OnboardingTeamPicker {...defaultProps} teams={[]} isLoading />);
+	it('spins and fills a progress bar while the teams are loading', () => {
+		cy.mount(<OnboardingTeamPicker {...defaultProps} teams={[]} isLoading loadProgress={40} />);
 
-		cy.get('.spinner-border').should('exist');
+		cy.get('.spinner-border').should('have.attr', 'aria-hidden', 'true');
+		cy.get('.popup-loading-progress').should('have.attr', 'aria-valuenow', '40');
+		cy.get('.popup-loading-progress .progress-bar').should('have.attr', 'style', 'width: 40%;');
+		cy.get('.popup-loading-percent').should('have.text', '40%');
 		cy.contains('Loading teams').should('exist');
 	});
 

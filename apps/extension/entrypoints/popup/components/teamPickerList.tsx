@@ -14,6 +14,7 @@ interface teamPickerListProps {
 	query: string;
 	onQueryChange: (query: string) => void;
 	isLoading: boolean;
+	loadProgress: number;
 	hasError: boolean;
 	list?: teamList;
 	selected: ReadonlySet<string>;
@@ -24,7 +25,7 @@ interface teamPickerListProps {
 }
 
 const teamPickerList = ({
-	teams, query, onQueryChange, isLoading, hasError, list = 'favorites', selected, otherListSelected, onToggle, onRetry, pinned,
+	teams, query, onQueryChange, isLoading, loadProgress, hasError, list = 'favorites', selected, otherListSelected, onToggle, onRetry, pinned,
 }: teamPickerListProps) => {
 	const locale = useDisplayLocale();
 	const groups = useMemo(() => {
@@ -58,7 +59,7 @@ const teamPickerList = ({
 			</label>
 
 			<div className='overflow-auto'>
-				{isLoading && <LoadingMessage message={i18n.t('teamPicker.loading')} label={i18n.t('teamPicker.loading')} />}
+				{isLoading && <LoadingMessage message={i18n.t('teamPicker.loading')} label={i18n.t('teamPicker.loading')} progress={loadProgress} />}
 
 				{hasError && !isLoading && (
 					<div className='text-center mt-5'>

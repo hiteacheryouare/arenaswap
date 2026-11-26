@@ -53,16 +53,17 @@ describe('notices and headers containment', () => {
 	});
 
 	inEveryLocale('keeps the load failure banner and its retry button inside the popup', locale => {
-		mountInPopup(<GameListHeader isLoading={false} hasError loadingMessage='' onRefresh={() => {}} />, locale);
+		mountInPopup(<GameListHeader load='scores' isLoading={false} hasError loadingMessage='' onRefresh={() => {}} />, locale);
 		cy.get(popupSurface).assertContained();
 	});
 
 	inEveryLocale('keeps every loading line inside the popup', locale => {
 		const messages = Object.values((locale.messages as unknown as { loading: Record<string, string> }).loading);
 		expect(messages.length, 'the loading lines in this locale').to.be.at.least(loadingMessageCount);
+		(window as unknown as Record<string, unknown>).browser = { runtime: { onMessage: { addListener: () => {}, removeListener: () => {} } } };
 		mountInPopup(
 			<>
-				{messages.map((message, index) => <GameListHeader key={index} isLoading hasError={false} loadingMessage={message} onRefresh={() => {}} />)}
+				{messages.map((message, index) => <GameListHeader key={index} load='scores' isLoading hasError={false} loadingMessage={message} onRefresh={() => {}} />)}
 			</>,
 			locale,
 		);

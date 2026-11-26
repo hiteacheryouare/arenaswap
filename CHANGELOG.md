@@ -9,6 +9,10 @@
 
 Classic gains Last shot (basketball within 3 once the game clock drops under the shot clock, up to 12) and Sudden death (4 an overtime up to 12 in playoff hockey and college or UFL overtime, 12/8/4 by goal gap in a penalty shootout, and a flat 10 in an NHL shootout because the hockey feed sends no shootout goals). The two-minute drill also pays three quarters for a team still down one score that's about to kick off after a late score, found from score history since the feed's down means nothing between plays. The untouched extra-inning automatic runner (MLB regular season, World Baseball Classic, college softball) now counts half, so a tied extra half-inning opens at 87 instead of 91.
 
+## Loads with a known end show a progress bar — 2026-11-25
+
+The game list, the Guide and the team picker add an orange bar with a percentage under their spinner, counting leagues as they land, with the loading line still underneath; everything with no countable total keeps just the spinner. The worker only broadcasts `LOAD_PROGRESS` while a popup's cold `GET_STATE` is waiting (single-league polls never do), and the list and Guide stop at 90% so the bar is never full while crest colors and situations are still finishing.
+
 ## Iris and Glint join the opening shuffle — 2026-11-25
 
 Later opens of the day can now draw Iris, where team color blooms out of two big crests and a hole opens over each card crest to let the card through, or Glint, a single shine across an already-visible card. Iris holds its crests at 1.2× Head to Head's size because it has no plate behind them, and Glint starts and ends a skewed bar's lean past each edge so its corners never sit on the card.

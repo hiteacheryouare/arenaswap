@@ -75,6 +75,10 @@ const View = ({ games, userPrefs = prefs(), ...rest }: { games: Game[]; userPref
 
 const listOptions = { bleeds: ['.popup-header'], exempt: ['.popup-glow'] };
 
+beforeEach(() => {
+	(window as unknown as Record<string, unknown>).browser = { runtime: { onMessage: { addListener: () => {}, removeListener: () => {} } } };
+});
+
 describe('main list containment', () => {
 	for (const [name, size] of Object.entries(slateSizes)) {
 		inEveryLocale(`keeps a list of ${name === 'none' ? 'no' : size} games inside the popup`, locale => {

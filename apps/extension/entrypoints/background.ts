@@ -67,6 +67,7 @@ import type {
 	LiveScore,
 	PowerScoreSnapshot,
 	LeagueLogoMap,
+	LoadProgressMessage,
 	TeamMonoLogoMap,
 	PowerScoreHistoryMap,
 	ScoreSnapshot,
@@ -174,6 +175,10 @@ const slateBeside = (onScreen: Game[], slate: Game[]): Game[] => {
 	return slate.filter(g => !shownIds.has(g.id) && !hasMissedItsWindow(g));
 };
 
+const broadcastLoadProgress = (load: LoadProgressMessage['load'], settled: number, total: number) => {
+	browser.runtime.sendMessage({ type: 'LOAD_PROGRESS', load, settled, total } satisfies ExtensionMessage).catch(() => {});
+};
+
 export default defineBackground(() => {
 	const workerStartedAt = Date.now();
 	let games: Game[] = [];
@@ -186,6 +191,7 @@ export default defineBackground(() => {
 	let guideSlateRefused = false;
 	let guideRetryAfter = 0;
 	let guideSlateRequest: Promise<GuideSlate> | null = null;
+	let scoreLoadWatchers = 0;
 	let slateShedLeagues: LeagueId[] = [];
 	const leagueLastGoodAt: LeagueLastGoodAt = {};
 	let gameProgress: GameProgressMap = {};
@@ -930,6 +936,7 @@ export default defineBackground(() => {
 				includeUpcoming: true,
 				upcomingDays: Math.max(prefs.upcomingGamesDays, guideMinUpcomingDays),
 				includeFinal: true,
+				onLeagueProgress: (settled, total) => broadcastLoadProgress('guide', settled, total),
 			});
 			const outcome = resolveGuideSlate(guideSlate, result.games, prefs.enabledLeagues, result.shedLeagues);
 			holdGuideSlate(outcome);
@@ -962,6 +969,13 @@ export default defineBackground(() => {
 	);
 
 	const pollFetchOptions = { includeUpcoming: false, includeFinal: true } as const;
+
+	const slateFetchOptions = {
+		...pollFetchOptions,
+		onLeagueProgress: (settled: number, total: number) => {
+			if (scoreLoadWatchers > 0) broadcastLoadProgress('scores', settled, total);
+		},
+	};
 
 	const displayableGames = (fetched: Game[]): Game[] => (
 		prefs.keepFinalGames ? fetched : fetched.filter(game => game.status !== 'post')
@@ -1164,7 +1178,7 @@ export default defineBackground(() => {
 			await refreshStaleSlate();
 			let fetched: Game[];
 			try {
-				const fetchResult = await fetchFilteredGames(enabledLeagues, pollFetchOptions);
+				const fetchResult = await fetchFilteredGames(enabledLeagues, slateFetchOptions);
 				if (enabledLeagues.length > 0 && fetchResult.shedLeagues.length === enabledLeagues.length) {
 					logError(`ESPN shed all ${enabledLeagues.length} leagues; keeping the previous games.`);
 					slateShedLeagues = fetchResult.shedLeagues;
@@ -1537,6 +1551,7 @@ export default defineBackground(() => {
 		}
 		if (msg.type === 'GET_STATE') {
 			if (msg.forceRefresh === true || games.length === 0) {
+				scoreLoadWatchers += 1;
 				return stateReady
 					.then(async () => {
 						let stored = prefs;
@@ -1546,7 +1561,8 @@ export default defineBackground(() => {
 						await applyPrefsChange(adoptPrefs(stored));
 						await refreshScores(false);
 						return buildBackgroundState();
-					});
+					})
+					.finally(() => { scoreLoadWatchers -= 1; });
 			}
 			return Promise.resolve(buildBackgroundState());
 		}

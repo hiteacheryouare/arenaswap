@@ -192,6 +192,10 @@ const contrastRatio = (a: string, b: string): number => {
 // The standby strip is the only thing in the extension that reaches for .bg-body-secondary. That
 // token was Bootstrap's light #e9ecef for as long as the strip has existed, while .text-body-
 // secondary is this theme's own dim #8b949e — dark-theme ink printed on a light slab, at 2.59:1.
+beforeEach(() => {
+	(window as unknown as Record<string, unknown>).browser = { runtime: { onMessage: { addListener: () => {}, removeListener: () => {} } } };
+});
+
 describe('mainView standby banner', () => {
 	it('sets its label on its own plate at the small-text bar', () => {
 		cy.viewport(320, 480);
@@ -257,7 +261,7 @@ describe('mainView review prompt', () => {
 	// state the component never reaches passes whether or not the gate exists.
 	it('stays off the loading screen', () => {
 		cy.mount(<MainView {...defaultProps} isLoading={true} showReviewPrompt={true} />);
-		cy.get('.popup-loading-spinner').should('exist');
+		cy.get('.popup-loading-progress').should('exist');
 		cy.get('[data-testid="review-prompt"]').should('not.exist');
 	});
 
@@ -287,9 +291,9 @@ describe('mainView pro tips', () => {
 });
 
 describe('mainView loading and error states', () => {
-	it('shows loading spinner when isLoading is true', () => {
+	it('shows the progress bar when isLoading is true', () => {
 		cy.mount(<MainView {...defaultProps} isLoading={true} />);
-		cy.get('[role="status"]').should('exist');
+		cy.get('[role="progressbar"]').should('exist');
 	});
 
 	it('shows error banner when hasError is true', () => {

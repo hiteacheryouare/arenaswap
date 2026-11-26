@@ -14,12 +14,69 @@ import zhTW from '../../../locales/zh_TW.json';
 
 const locales = { de, en, es, fil, fr, it: itLocale, ja, ko, pt_BR: ptBR, pt_PT: ptPT, zh_CN: zhCN, zh_TW: zhTW };
 
+const fakeWorker = () => {
+	const listeners: ((message: unknown) => void)[] = [];
+	(window as unknown as Record<string, unknown>).browser = {
+		runtime: {
+			onMessage: {
+				addListener: (listener: (message: unknown) => void) => { listeners.push(listener); },
+				removeListener: (listener: (message: unknown) => void) => {
+					const index = listeners.indexOf(listener);
+					if (index >= 0) listeners.splice(index, 1);
+				},
+			},
+		},
+	};
+	return (load: 'scores' | 'guide', settled: number, total: number) => {
+		cy.wrap(listeners).should('have.length', 1).then(() => {
+			listeners.forEach(listener => listener({ type: 'LOAD_PROGRESS', load, settled, total }));
+		});
+	};
+};
+
+const barWidth = () => cy.get('.popup-loading-progress').invoke('attr', 'aria-valuenow');
+
+describe('gameListHeader loading', () => {
+	it('fills a bar as leagues land and saves the last stretch for the list', () => {
+		const report = fakeWorker();
+		cy.mount(
+			<div style={{ width: '320px', padding: '0 12px' }}>
+				<GameListHeader load='scores' isLoading hasError={false} loadingMessage='Bribing the refs…' onRefresh={() => {}} />
+			</div>,
+		);
+
+		cy.get('.spinner-border').should('have.attr', 'aria-hidden', 'true');
+		cy.contains('Bribing the refs…').should('exist');
+		barWidth().should('equal', '0');
+
+		report('scores', 1, 4);
+		barWidth().should('equal', '23');
+		cy.get('.popup-loading-percent').should('have.text', '23%');
+
+		report('scores', 4, 4);
+		barWidth().should('equal', '90');
+		cy.get('.popup-loading-percent').should('have.text', '90%');
+	});
+
+	it('ignores the other load and never slides back', () => {
+		const report = fakeWorker();
+		cy.mount(<GameListHeader load='guide' isLoading hasError={false} loadingMessage='Bribing the refs…' onRefresh={() => {}} />);
+
+		report('guide', 2, 3);
+		barWidth().should('equal', '60');
+
+		report('scores', 3, 3);
+		report('guide', 1, 3);
+		barWidth().should('equal', '60');
+	});
+});
+
 describe('gameListHeader error banner', () => {
 	it('keeps every locale\'s message to two lines beside a one-line Retry', () => {
 		cy.viewport(320, 560);
 		cy.mount(
 			<div style={{ width: '320px', padding: '0 12px' }}>
-				<GameListHeader isLoading={false} hasError loadingMessage='' onRefresh={() => {}} />
+				<GameListHeader load='scores' isLoading={false} hasError loadingMessage='' onRefresh={() => {}} />
 			</div>,
 		);
 
