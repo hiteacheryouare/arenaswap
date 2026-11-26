@@ -9,6 +9,7 @@ import RevealName from './reveal/revealName';
 import RevealNamingScene from './reveal/revealNamingScene';
 import RevealHeadToHead from './reveal/revealHeadToHead';
 import RevealTypeSlam from './reveal/revealTypeSlam';
+import RevealIris from './reveal/revealIris';
 import RevealScoreRoll, { measureRolls, type revealRoll } from './reveal/revealScoreRoll';
 import {
 	revealAbbrScale,
@@ -224,11 +225,13 @@ const gameCardReveal = ({ game: listedGame, mode, index, skipping, cut: pickedCu
 			} as CSSProperties}
 		>
 			{playing && cut !== 'poster' && <>
-				{cut === 'headToHead' && <span className='game-card-reveal-base' aria-hidden='true' />}
+				{(cut === 'headToHead' || cut === 'iris') && <span className='game-card-reveal-base' aria-hidden='true' />}
 				<div className='game-card-reveal-stage' aria-hidden='true'>
 					{cut === 'headToHead' && <RevealHeadToHead game={game} awayColor={awayColor} homeColor={homeColor} />}
 					{cut === 'typeSlam' && landing && <RevealTypeSlam game={game} awayColor={awayColor} homeColor={homeColor} width={landing.cardWidth} height={landing.cardHeight} />}
 					{cut === 'boxScore' && <RevealScoreRoll rolls={landing?.rolls ?? []} />}
+					{cut === 'iris' && <RevealIris game={game} awayColor={awayColor} homeColor={homeColor} />}
+					{cut === 'glint' && <span className='game-card-reveal-glint' />}
 				</div>
 			</>}
 			{poster && <span className='game-card-reveal-base' aria-hidden='true' />}

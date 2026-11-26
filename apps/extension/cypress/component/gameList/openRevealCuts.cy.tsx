@@ -100,7 +100,7 @@ describe('the short opening cuts', () => {
 		cy.get('.game-card-reveal-slam').should('not.exist');
 	});
 
-	(['headToHead', 'typeSlam'] as const).forEach(cut => {
+	(['headToHead', 'typeSlam', 'iris'] as const).forEach(cut => {
 		it(`lands ${cut}'s crests exactly on the card's own`, () => {
 			cy.mount(<Harness cut={cut} />);
 			cy.get('.game-card-reveal-cut-crest').should('have.length', 2);
@@ -134,6 +134,54 @@ describe('the short opening cuts', () => {
 					expect(box.top + resolveLength(half, y!, 'height'), `drain ${index} y`).to.be.closeTo(crest.y, 1);
 				});
 			});
+		});
+	});
+
+	it('opens each Iris hole on the centre of its own crest', () => {
+		cy.mount(<Harness cut='iris' />);
+		cy.get('.game-card-reveal-iris-hole').should('have.length', 2);
+		scrubTo(1100);
+		cy.get('.game-card .team-crest').then($crests => {
+			cy.get('.game-card-reveal-iris-hole').should($holes => {
+				[...$holes].forEach((hole, index) => {
+					const opening = hole.getBoundingClientRect();
+					const crest = centreOf($crests[index].getBoundingClientRect());
+					expect(opening.width, `hole ${index} has opened`).to.be.greaterThan(0);
+					expect(centreOf(opening).x, `hole ${index} x`).to.be.closeTo(crest.x, 0.5);
+					expect(centreOf(opening).y, `hole ${index} y`).to.be.closeTo(crest.y, 0.5);
+				});
+			});
+		});
+	});
+
+	it('holds Iris crests well above the card crest size before they land', () => {
+		cy.clock(Date.now(), ['setTimeout', 'clearTimeout']);
+		cy.mount(<Harness cut='iris' />);
+		scrubTo(700);
+		cy.get('.game-card .team-crest').first().then($crest => {
+			cy.get('.game-card-reveal-cut-crest.is-away').should($held => {
+				expect($held[0].getBoundingClientRect().width).to.be.greaterThan($crest[0].getBoundingClientRect().width * 1.5);
+			});
+		});
+	});
+
+	it('sweeps the Glint shine all the way off the card', () => {
+		cy.clock(Date.now(), ['setTimeout', 'clearTimeout']);
+		cy.mount(<Harness cut='glint' />);
+		cy.get('.game-card-reveal-glint').should('have.length', 1);
+		scrubTo(0);
+		cy.get('.game-card').then($card => {
+			const card = $card[0].getBoundingClientRect();
+			cy.get('.game-card-reveal-glint').should($shine => {
+				expect($shine[0].getBoundingClientRect().right, 'starts off the left edge').to.be.at.most(card.left + 1);
+			});
+			scrubTo(revealCutMs.glint - 10);
+			cy.get('.game-card-reveal-glint').should($shine => {
+				expect($shine[0].getBoundingClientRect().left, 'ends off the right edge').to.be.at.least(card.right - 1);
+			});
+		});
+		cy.get('.game-card .team-crest').each($crest => {
+			expect(getComputedStyle($crest[0]).transform, 'crest back at rest').to.be.oneOf(['none', 'matrix(1, 0, 0, 1, 0, 0)']);
 		});
 	});
 

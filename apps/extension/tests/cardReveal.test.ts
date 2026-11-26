@@ -515,7 +515,7 @@ describe('which cut a later open draws', () => {
 	});
 
 	it('can draw every cut, the poster included', () => {
-		const drawn = new Set([0, 0.34, 0.67, 0.99].map(roll => pickRevealCut('quick', null, () => roll)));
+		const drawn = new Set(revealCuts.map((_, slot) => pickRevealCut('quick', null, () => (slot + 0.5) / revealCuts.length)));
 		expect([...drawn].toSorted()).toEqual(revealCuts.toSorted());
 	});
 

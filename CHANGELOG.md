@@ -9,6 +9,10 @@
 
 Classic gains Last shot (basketball within 3 once the game clock drops under the shot clock, up to 12) and Sudden death (4 an overtime up to 12 in playoff hockey and college or UFL overtime, 12/8/4 by goal gap in a penalty shootout, and a flat 10 in an NHL shootout because the hockey feed sends no shootout goals). The two-minute drill also pays three quarters for a team still down one score that's about to kick off after a late score, found from score history since the feed's down means nothing between plays. The untouched extra-inning automatic runner (MLB regular season, World Baseball Classic, college softball) now counts half, so a tied extra half-inning opens at 87 instead of 91.
 
+## Iris and Glint join the opening shuffle — 2026-11-25
+
+Later opens of the day can now draw Iris, where team color blooms out of two big crests and a hole opens over each card crest to let the card through, or Glint, a single shine across an already-visible card. Iris holds its crests at 1.2× Head to Head's size because it has no plate behind them, and Glint starts and ends a skewed bar's lean past each edge so its corners never sit on the card.
+
 ## Multiview and Standby Stream say what they're for — 2026-11-25
 
 Multiview copy now calls it a split screen for when more than one game is exciting, and Standby Stream is a backup stream (a highlight show, pregame, a whip-around channel) instead of somewhere ArenaSwap "parks" you when games "go quiet". Ties read "tied" instead of "all square" or "level", and the README's Game Boost line no longer claims it pins a game. Every change is in all 12 extension locales, the site strings and the translated help pages, with their source hashes re-stamped.

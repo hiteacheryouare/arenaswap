@@ -6,6 +6,13 @@ $slam-split: 1080;
 $slam-drain: 1560;
 $slam-land:  2250;
 $slam:       2400;
+$iris-bloom: 560;
+$iris-open:  900;
+$iris-land:  1300;
+$iris:       1650;
+$iris-grow:  1.2;
+$glint-from:  120;
+$glint-sweep: 720;
 
 @function at($ms, $total) {
 	@return math.percentage(math.div($ms, $total));
@@ -20,6 +27,7 @@ $ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
 @layer custom {
 	.game-card-reveal-duel,
 	.game-card-reveal-slam,
+	.game-card-reveal-iris,
 	.game-card-reveal-rolls {
 		position: absolute;
 		inset:    0;
@@ -36,7 +44,8 @@ $ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
 	.game-card-reveal-cut-crest.is-away,
 	.game-card-reveal-duel-slab.is-away,
 	.game-card-reveal-slam-half.is-away,
-	.game-card-reveal-slam-card.is-away {
+	.game-card-reveal-slam-card.is-away,
+	.game-card-reveal-iris-half.is-away {
 		--reveal-side:    -1;
 		--reveal-dx:      var(--reveal-away-dx);
 		--reveal-dy:      var(--reveal-away-dy);
@@ -47,7 +56,8 @@ $ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
 	.game-card-reveal-cut-crest.is-home,
 	.game-card-reveal-duel-slab.is-home,
 	.game-card-reveal-slam-half.is-home,
-	.game-card-reveal-slam-card.is-home {
+	.game-card-reveal-slam-card.is-home,
+	.game-card-reveal-iris-half.is-home {
 		--reveal-side:    1;
 		--reveal-dx:      var(--reveal-home-dx);
 		--reveal-dy:      var(--reveal-home-dy);
@@ -198,6 +208,80 @@ $ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
 		}
 	}
 
+	.game-card-reveal[data-reveal-cut='iris']:not(.is-skipping) {
+		.game-card-reveal-base {
+			animation: revealCutOut #{$iris-open}ms steps(1, end) var(--reveal-delay) both;
+		}
+
+		.game-card .team-crest {
+			animation: cardRevealHandoff #{$iris-land}ms steps(1, end) var(--reveal-delay) both;
+		}
+	}
+
+	.game-card-reveal-iris-half {
+		position: absolute;
+		top:      0;
+		bottom:   0;
+		overflow: clip;
+	}
+
+	.game-card-reveal-iris-half.is-away {
+		left:  0;
+		width: calc(50% + 0.5px);
+	}
+
+	.game-card-reveal-iris-half.is-home {
+		left:  50%;
+		right: 0;
+	}
+
+	.game-card-reveal-iris-bloom {
+		position:   absolute;
+		inset:      0;
+		background: var(--reveal-surface);
+		animation:
+			revealIrisBloom #{$iris-bloom}ms cubic-bezier(0.45, 0, 0.2, 1) var(--reveal-delay) both,
+			revealCutOut #{$iris-open}ms steps(1, end) var(--reveal-delay) both;
+	}
+
+	.game-card-reveal-iris-hole {
+		position:      absolute;
+		top:           calc(50% + var(--reveal-dy));
+		left:          calc(50% + var(--reveal-dx));
+		border-radius: 50%;
+		box-shadow:    0 0 0 var(--reveal-reach) var(--reveal-surface);
+		transform:     translate(-50%, -50%);
+		animation:
+			revealCutIn #{$iris-open}ms steps(1, end) var(--reveal-delay) both,
+			revealIrisHole #{$iris - $iris-open}ms $ease-drain calc(var(--reveal-delay) + #{$iris-open}ms) both;
+	}
+
+	.game-card-reveal-iris .game-card-reveal-cut-crest {
+		animation: revealIrisCrest #{$iris}ms linear var(--reveal-delay) both;
+	}
+
+	.game-card-reveal[data-reveal-cut='glint']:not(.is-skipping) {
+		animation: revealFadeIn 200ms $ease-out var(--reveal-delay) both;
+
+		.game-card .team-crest {
+			animation: revealGlintNod 380ms $ease-out calc(var(--reveal-delay) + 280ms) both;
+		}
+
+		.team-column:last-child .team-crest {
+			animation-delay: calc(var(--reveal-delay) + 380ms);
+		}
+	}
+
+	.game-card-reveal-glint {
+		position:   absolute;
+		top:        -10%;
+		bottom:     -10%;
+		left:       0;
+		width:      calc(var(--reveal-width) * 0.45);
+		background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.32) 50%, rgba(255, 255, 255, 0));
+		animation:  revealGlintSweep #{$glint-sweep}ms $ease-in-out calc(var(--reveal-delay) + #{$glint-from}ms) both;
+	}
+
 	.game-card-reveal-roll {
 		position:    absolute;
 		display:     flex;
@@ -239,7 +323,7 @@ $ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
 		visibility: hidden;
 	}
 
-	.game-card-reveal:is([data-reveal-cut='headToHead'], [data-reveal-cut='typeSlam']):not(.is-skipping) {
+	.game-card-reveal:is([data-reveal-cut='headToHead'], [data-reveal-cut='typeSlam'], [data-reveal-cut='iris'], [data-reveal-cut='glint']):not(.is-skipping) {
 		.game-card-status-row,
 		.game-card-center,
 		.team-abbreviation,
@@ -310,6 +394,35 @@ $ease-roll:   cubic-bezier(0.15, 0.85, 0.25, 1);
 	@keyframes revealSlamCrest {
 		0%, #{at($slam-land - 460, $slam)} { opacity: 0; transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(0.5); animation-timing-function: $ease-out; }
 		#{at($slam-land, $slam)}, 100% { opacity: 1; transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(1); }
+	}
+
+	@keyframes revealIrisBloom {
+		from { clip-path: circle(0 at 50% 50%); }
+		to   { clip-path: circle(var(--reveal-reach) at 50% 50%); }
+	}
+
+	@keyframes revealIrisHole {
+		from { width: 0; height: 0; }
+		to   { width: calc(var(--reveal-reach) * 2); height: calc(var(--reveal-reach) * 2); }
+	}
+
+	@keyframes revealIrisCrest {
+		0%, #{at(120, $iris)} { opacity: 0; transform: translate(0, 0) scale(calc(var(--reveal-hold) * #{$iris-grow} * 0.6)); animation-timing-function: $ease-out; }
+		#{at(460, $iris)}       { opacity: 1; transform: translate(0, 0) scale(calc(var(--reveal-hold) * #{$iris-grow} * 1.05)); animation-timing-function: $ease-in-out; }
+		#{at(600, $iris)}       { opacity: 1; transform: translate(0, 0) scale(calc(var(--reveal-hold) * #{$iris-grow})); }
+		#{at($iris-open, $iris)} { opacity: 1; transform: translate(0, 0) scale(calc(var(--reveal-hold) * #{$iris-grow} * 1.02)); animation-timing-function: $ease-in-out; }
+		#{at($iris-land, $iris)}, 100% { opacity: 1; transform: translate(var(--reveal-dx), var(--reveal-dy)) scale(1); }
+	}
+
+	@keyframes revealGlintSweep {
+		from { transform: translateX(calc(var(--reveal-width) * -0.45 - var(--reveal-lean) * 1.25)) skewX(calc(-1 * var(--reveal-skew))); }
+		to   { transform: translateX(calc(var(--reveal-width) + var(--reveal-lean) * 1.25)) skewX(calc(-1 * var(--reveal-skew))); }
+	}
+
+	@keyframes revealGlintNod {
+		0%   { transform: scale(1); }
+		40%  { transform: scale(1.06); animation-timing-function: $ease-in-out; }
+		100% { transform: scale(1); }
 	}
 
 	@keyframes revealCardRise {

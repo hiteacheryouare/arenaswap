@@ -176,14 +176,16 @@ export const resolveOpenRevealMode = (now = new Date()): revealMode => {
 	return resolved;
 };
 
-export type revealCut = 'poster' | 'headToHead' | 'typeSlam' | 'boxScore';
+export type revealCut = 'poster' | 'headToHead' | 'typeSlam' | 'boxScore' | 'iris' | 'glint';
 
-export const revealCuts: revealCut[] = ['poster', 'headToHead', 'typeSlam', 'boxScore'];
+export const revealCuts: revealCut[] = ['poster', 'headToHead', 'typeSlam', 'boxScore', 'iris', 'glint'];
 
 export const revealCutMs: Record<Exclude<revealCut, 'poster'>, number> = {
 	headToHead: 1850,
 	typeSlam: 2400,
 	boxScore: 1600,
+	iris: 1650,
+	glint: 900,
 };
 
 export const revealSlamTypePx = (abbreviation: string, width: number, height: number) => (
