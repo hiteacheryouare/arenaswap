@@ -1,5 +1,5 @@
 ---
-sourceHash: '10cc90e83f8c'
+sourceHash: 'b8d43b70dd47'
 title: PowerScore 加成與扣分
 navLabel: 加成與扣分
 description: PowerScore 3 在模式信號之上套用的每一項加成與扣分，包括觸發條件、最大值，以及它們共用的上限。

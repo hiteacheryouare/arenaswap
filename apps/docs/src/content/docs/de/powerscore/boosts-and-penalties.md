@@ -1,5 +1,5 @@
 ---
-sourceHash: '10cc90e83f8c'
+sourceHash: 'b8d43b70dd47'
 title: PowerScore-Boosts und -Strafen
 navLabel: Boosts und Strafen
 description: Jeder Boost und jede Strafe, die PowerScore 3 auf die Signale eines Modus legt, mit der Bedingung, die sie auslöst, ihrem Maximum und den Obergrenzen, die sie sich teilen.
@@ -191,11 +191,11 @@ Sind beide Teams ohne Hit, zahlt der größere Versuch voll und der andere zur H
 
 Jede Sportart. Braucht `context.pregameLine`, und es muss die Quote von vor dem Spiel sein. Eine Live-Quote bewegt sich mit dem Spielstand und würde genau die Sensation auslöschen, die du sehen willst.
 
-Er zahlt, wenn der Außenseiter vor dem Spiel führt, gleichauf liegt oder höchstens einen Score zurückliegt, sobald das Spiel über die Hälfte hinaus ist. Drei Dinge bestimmen die Zahl, bis zu einem Maximum von 12:
+Er zahlt, wenn der Außenseiter vor dem Spiel führt, unentschieden steht oder höchstens einen Score zurückliegt, sobald das Spiel über die Hälfte hinaus ist. Drei Dinge bestimmen die Zahl, bis zu einem Maximum von 12:
 
 - **Quote.** Ein Spiel wie ein Münzwurf zahlt nichts. Je länger die Quote, desto mehr zahlt es, und bei einem krassen Außenseiter ist es voll. Moneylines funktionieren in jeder Sportart, ein Spread funktioniert für Basketball und Football. Ein Unentschieden im Fußball zählt als halbe Sensation.
 - **Zeit.** Nichts vor der Hälfte, die Hälfte ab der Hälfte, und voll, sobald das Spiel spät ist (drei Viertel im Basketball und Football, zwei Drittel in den meisten anderen Sportarten).
-- **Stand.** Voll, wenn der Außenseiter führt, 80 %, wenn es gleichsteht (70 % im Fußball), und die Hälfte, wenn er höchstens einen Score zurückliegt.
+- **Stand.** Voll, wenn der Außenseiter führt, 80 %, wenn es unentschieden steht (70 % im Fußball), und die Hälfte, wenn er höchstens einen Score zurückliegt.
 
 ### Upset-Klatsche
 

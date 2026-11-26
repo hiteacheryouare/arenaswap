@@ -141,7 +141,7 @@
 		},
 		"multiview": {
 			"title": "Hindi makapili? Panoorin silang lahat.",
-			"copy": "Kapag dalawa o higit pa sa mga laro mo ang naging exciting, ilalagay silang lahat ng Multiview sa iisang screen.",
+			"copy": "Kapag dalawa o higit pa sa mga laro mo ang sabay na naging exciting, hinahati ng Multiview ang screen sa pagitan nila.",
 			"browsers": "Sa Chrome at Edge.",
 			"label": "Multiview na may apat na exciting na laro sa iisang screen, at may tunog sa pinakamalaki.",
 			"soundOn": "May tunog"
@@ -264,7 +264,7 @@
 			},
 			{
 				"q": "Ano ang mangyayari kapag boring ang lahat ng laro?",
-				"a": "I-on ang Standby Stream at pumili ng tab. Kapag walang tine-track mong laro ang nakaabot sa threshold, ipapark ka ng ArenaSwap doon sa halip na iwanan ka sa kung anong laro ang pinaka-hindi-masama."
+				"a": "I-on ang Standby Stream at pumili ng tab. Kapag walang tine-track mong laro ang nakaabot sa threshold, lilipat ang ArenaSwap doon sa halip na iwanan ka sa kung anong laro ang pinaka-hindi-masama."
 			},
 			{
 				"q": "Available ba ang source code?",
@@ -637,7 +637,7 @@
 		"toggleOff": "Ang switch na {label} sa Mga Setting, naka-off.",
 		"modes": "Ang picker na {section} na bukas sa {classic}, na naglilista ng {classic}, {blowouts}, {fantasy} at {custom}.",
 		"multiview": "Isang Multiview tab na may apat na laro sa 2×2 na grid. Ang Boston sa New York, sa itaas na kaliwa, ay may outline at may tunog.",
-		"standby": "Isang browser na nakaparada sa Standby Stream tab na tinatawag na {tab}, na may dalawang naka-mute na tab ng laro sa tabi nito, at ang linya ng popup: {line}",
+		"standby": "Isang browser na nasa Standby Stream tab na tinatawag na {tab}, na may dalawang naka-mute na tab ng laro sa tabi nito, at ang linya ng popup: {line}",
 		"profiles": "Ang listahan ng {section} sa Mga Setting na may dalawang profile, ang {current} ang ginagamit at bukas ang menu nito sa {rename} at {export}, sa itaas ng mga button na {new} at {backup}.",
 		"backup": "Ang backup tab na may nakaload na file: {addAsNew} o {replace}, at kung ano ang babaguhin ng file. Isa pang liga, parehong mga paboritong team, at ang scoring mode na mula {from} ay magiging {to}.",
 		"bossButton": "Ang shortcut ng boss button, Alt + Shift + X, at ang pekeng spreadsheet tab na binubuksan nito, na naka-mute ang mga tab ng laro.",

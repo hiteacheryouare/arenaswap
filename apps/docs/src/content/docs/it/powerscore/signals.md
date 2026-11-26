@@ -1,5 +1,5 @@
 ---
-sourceHash: '2125a74f6361'
+sourceHash: 'e4a604c3a8c2'
 title: I segnali di PowerScore in ogni modalità
 description: I segnali dietro il PowerScore Classica, Senso unico e Fantasy, con il massimo di ciascuno, cosa misura e cosa ignora. Più come disattivare i segnali.
 section: powerscore
@@ -57,7 +57,7 @@ I massimi per fascia:
 
 Lo 0-0 si calcola a parte rispetto a una parità normale, perché all'inizio di solito significa che non è ancora successo niente più che una partita combattuta. L'hockey dà il pieno credito di parità allo 0-0 dal terzo periodo in poi, il calcio dal secondo tempo. Prima di allora, e in ogni altro sport, lo 0-0 ottiene un massimo ridotto di 22.
 
-**In dieci.** Nel calcio, una squadra in inferiorità numerica che difende un solo gol di vantaggio subisce molto più spesso di una squadra a ranghi completi. Quindi la partita è più tirata di quanto dica il punteggio, e Equilibrio aggiunge 4 punti (sempre limitato a 42) finché la situazione dura. È l'unico punto in cui un cartellino rosso tocca un segnale. Il boost del cartellino rosso è separato, ed è in [Boost e penalità](/arenaswap/docs/powerscore/boosts-and-penalties/#red-card).
+**In dieci.** Nel calcio, una squadra in inferiorità numerica che difende un solo gol di vantaggio subisce molto più spesso di una squadra al completo. Quindi la partita è più tirata di quanto dica il punteggio, e Equilibrio aggiunge 4 punti (sempre limitato a 42) finché la situazione dura. È l'unico punto in cui un cartellino rosso tocca un segnale. Il boost del cartellino rosso è separato, ed è in [Boost e penalità](/arenaswap/docs/powerscore/boosts-and-penalties/#red-card).
 
 Cosa ignora Equilibrio: quale squadra è avanti e il livello assoluto del punteggio. Una partita da 2 punti sul 12-10 vale come una sul 112-110, perché Equilibrio guarda sempre e solo il numero sul tabellone adesso.
 
@@ -77,7 +77,7 @@ Le partite in parità salgono oltre 36 nell'ultimo minuto, verso un pre-boost de
 
 Baseball e softball non hanno cronometro, quindi la stessa salita condizionata dall'equilibrio corre sugli inning. Parte dal 6° inning nel baseball, o dal 5° nel softball, e raggiunge il massimo alla fine del tempo regolamentare.
 
-Il calcio non dice mai "overtime". I supplementari mostrano *Tied in extra time*, i rigori mostrano *Penalty shootout*, e una partita in equilibrio a fine gara mostra *Tied in the 85th minute*. Un pareggio è un normale risultato di campionato, non una tappa verso i supplementari. Il pre-boost vale comunque, perché uno stallo a fine gara è davvero teso.
+Il calcio non dice mai "overtime". I supplementari mostrano *Tied in extra time*, i rigori mostrano *Penalty shootout*, e una partita in parità a fine gara mostra *Tied in the 85th minute*. Un pareggio è un normale risultato di campionato, non una tappa verso i supplementari. Il pre-boost vale comunque, perché uno stallo a fine gara è davvero teso.
 
 Cosa ignora Fine gara: il ritmo recente dei punti, che è compito del momentum, e qualsiasi cosa dei primi tre quarti di una partita diventata a senso unico.
 

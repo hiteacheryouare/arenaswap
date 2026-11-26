@@ -415,9 +415,9 @@
 		"groupDisplay": "表示",
 		"groupDisplayDesc": "試合リストに表示する内容と、ArenaSwapの見た目。",
 		"groupStandby": "Standby Stream",
-		"groupStandbyDesc": "どの試合も盛り上がらないときの待機先。",
+		"groupStandbyDesc": "どの試合も盛り上がらないときのバックアップ配信。",
 		"groupMultiview": "Multiview",
-		"groupMultiviewDesc": "盛り上がっている試合を、ひとつの画面に。",
+		"groupMultiviewDesc": "盛り上がっている試合が2つ以上のときの画面分割。",
 		"groupBackup": "プロフィールとバックアップ",
 		"groupBackupDesc": "設定を切り替えたり、ほかのブラウザに持ち運んだりできます。",
 		"bonusesSection": "ブースト",
@@ -1100,7 +1100,7 @@
 		"footballOvertimeDeep": "第{overtime}延長で、まだ1スコア差以内です。",
 		"twoPointTries": "延長戦は2ポイントの攻防になりました。",
 		"underdogLeading": "試合前、私たちの情報筋は{team}の勝率を{chance}%と見ていました。いまは{margin}点リードしています。",
-		"underdogLevel": "試合前、私たちの情報筋は{team}の勝率を{chance}%と見ていました。いまは互角です。",
+		"underdogLevel": "試合前、私たちの情報筋は{team}の勝率を{chance}%と見ていました。いまは同点です。",
 		"underdogClose": "試合前、私たちの情報筋は{team}の勝率を{chance}%と見ていました。いまはわずか{margin}点差で追っています。",
 		"postseasonFinal": "タイトルを決める一戦なので、ブーストは満額です。",
 		"postseasonSemifinal": "準決勝は、ブースト満額の4分の3です。",
@@ -1314,13 +1314,13 @@
 	},
 	"standbyGuide": {
 		"title": "Standby Stream",
-		"subtitle": "静かな時間のためのフォールバック。",
-		"quietTitle": "試合が静かになったら",
+		"subtitle": "どの試合も盛り上がらないときの視聴先。",
+		"quietTitle": "盛り上がる試合がないとき",
 		"quietBody": "観ているすべての試合がしきい値を下回ると、ArenaSwapは自動的にStandby Streamに切り替えます。",
 		"returnTitle": "自動で戻ってきます",
 		"returnBody": "どれかの試合がしきい値を超えて盛り上がった瞬間に、ArenaSwapがすぐに切り替え直します。",
 		"chooseTitle": "スタンバイタブはあなたが選ぶ",
-		"chooseBody": "好きなストリームならなんでも。",
+		"chooseBody": "ハイライト番組、試合前番組、または試合を次々に中継するチャンネル。",
 		"next": "次へ",
 		"setupTitle": "設定方法",
 		"thresholdTitle": "しきい値を設定",
@@ -1333,7 +1333,7 @@
 	"multiviewGuide": {
 		"title": "Multiview",
 		"subtitle": "複数の試合を同時に観られます。",
-		"oneScreenTitle": "盛り上がっている試合をひとつの画面に",
+		"oneScreenTitle": "盛り上がる試合が増えたら画面分割",
 		"oneScreenBody": "2試合以上が同時に盛り上がると、ArenaSwapがひとつのタブにまとめて表示します。",
 		"soundTitle": "音は最大のボックスから",
 		"soundBody": "いちばん盛り上がっている試合が最大のボックスになります。音が出るのはそのボックスだけです。",
@@ -1378,8 +1378,8 @@
 		"close": "閉じる"
 	},
 	"notification": {
-		"standbyTitle": "Standby Streamで待機中",
-		"standbyMessage": "すべての試合が静かになりました。",
+		"standbyTitle": "切り替え → Standby Stream",
+		"standbyMessage": "盛り上がっている試合はありません。",
 		"multiviewTitle": "切り替え → Multiview",
 		"multiviewLeftTitle": "Multiviewを終了しました",
 		"multiviewLeftMessage": "Multiviewのタブが{host}に移動したため、Multiviewを停止しました。10分間、これらの試合は開き直しません。",
@@ -1471,7 +1471,7 @@
 			"t2": "PowerScoreが高い方がスワップに勝ちます。各カードのバーに注目。",
 			"t3": "設定で「近日開催の試合を表示」をオンにすると、試合開始前にタブを事前割り当てできます。",
 			"t4": "まだライブ試合がない？設定のデモモードが試合をいくつか用意するので、ArenaSwapの動きを見られます。",
-			"t5": "Standby Streamは、すべての試合が盛り上がりを欠いたときにバックアップタブを再生し続けます。設定から有効にできます。"
+			"t5": "Standby Streamは、どの試合も盛り上がらないときにバックアップ配信へ切り替えます。設定から有効にできます。"
 		},
 		"setup": {
 			"t0": "切り替えクールダウンを下げると、混戦の終盤でより素早く切り替えます。",

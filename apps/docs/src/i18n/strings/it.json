@@ -141,7 +141,7 @@
 		},
 		"multiview": {
 			"title": "Non riesci a scegliere? Guardale tutte.",
-			"copy": "Quando due o più delle tue partite si fanno emozionanti, Multiview le mette tutte su un solo schermo.",
+			"copy": "Quando due o più delle tue partite si fanno emozionanti insieme, Multiview divide lo schermo tra loro.",
 			"browsers": "Su Chrome ed Edge.",
 			"label": "Multiview con quattro partite emozionanti su un solo schermo e l'audio su quella più grande.",
 			"soundOn": "Audio attivo"
@@ -264,7 +264,7 @@
 			},
 			{
 				"q": "Cosa succede quando tutte le partite sono noiose?",
-				"a": "Attiva Standby Stream e scegli una scheda. Quando nulla di ciò che segui supera la soglia, ArenaSwap ti parcheggia lì invece di lasciarti sulla partita meno peggio."
+				"a": "Attiva Standby Stream e scegli una scheda. Quando nulla di ciò che segui supera la soglia, ArenaSwap passa a quella invece di lasciarti sulla partita meno peggio."
 			},
 			{
 				"q": "Il codice sorgente è disponibile?",
@@ -637,7 +637,7 @@
 		"toggleOff": "L'interruttore {label} nelle Impostazioni, disattivo.",
 		"modes": "Il selettore {section} aperto su {classic}, con {classic}, {blowouts}, {fantasy} e {custom}.",
 		"multiview": "Una scheda Multiview con quattro partite in una griglia 2×2. Boston at New York, in alto a sinistra, è evidenziata e ha l'audio.",
-		"standby": "Un browser fermo su una scheda Standby Stream chiamata {tab}, con due schede di partita silenziate accanto, e la riga del popup: {line}",
+		"standby": "Un browser su una scheda Standby Stream chiamata {tab}, con due schede di partita silenziate accanto, e la riga del popup: {line}",
 		"profiles": "L'elenco {section} nelle Impostazioni con due profili, {current} in uso e il suo menu aperto su {rename} e {export}, sopra i pulsanti {new} e {backup}.",
 		"backup": "La scheda del backup con un file caricato: {addAsNew} o {replace}, e cosa cambierebbe il file. Una lega in più, le stesse squadre preferite e la modalità di punteggio che passa da {from} a {to}.",
 		"bossButton": "La scorciatoia del pulsante del capo, Alt + Shift + X, e il finto foglio di calcolo che apre in una scheda, con le schede delle partite silenziate.",

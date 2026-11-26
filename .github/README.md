@@ -65,8 +65,9 @@ ArenaSwap watches every live game across 31 leagues and automatically switches y
 - **Game detail:** Box score, standings, win probability, and PowerScore charted over time, plus the live at-bat, drive, and latest play
 - **Tab suggestions:** Spots the game streams already open in your tabs and offers to assign them for you
 - **Up Next:** Shows games up to 14 days out so you can assign tabs before kickoff
-- **Game Boost:** Manually pin any game to keep it on top
-- **Standby Stream:** Falls back to a tab you choose when every game goes quiet
+- **Game Boost:** Add points to a game's PowerScore so it wins more switches
+- **Standby Stream:** A backup stream, like a highlight show or pregame, for when no game is exciting
+- **Multiview:** Split screen when two or more games are exciting at once (Chrome and Edge)
 - **Leagues & Favorites:** Enable any of 31 leagues across 6 sports; star your teams for a built-in PowerScore bonus
 - **Tuning:** Sensitivity, switch cooldown, switch delay, postseason weighting, and optional switch notifications
 - **12 languages:** English, Spanish, French, German, Italian, Portuguese (BR and PT), Japanese, Korean, Filipino, and Chinese (Simplified and Traditional)

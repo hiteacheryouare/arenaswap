@@ -1,5 +1,5 @@
 ---
-sourceHash: '10cc90e83f8c'
+sourceHash: 'b8d43b70dd47'
 title: Mga boost at penalty ng PowerScore
 navLabel: Mga boost at penalty
 description: Bawat boost at penalty na inilalapat ng PowerScore 3 sa ibabaw ng mga signal ng mode, kasama ang kondisyong nagpapagana sa bawat isa, ang maximum nito, at ang mga cap na pinagsasaluhan nila.
@@ -191,11 +191,11 @@ Kapag parehong walang hit ang dalawang team, buo ang bayad sa mas malaking bid a
 
 Kahit anong sport. Kailangan ng `context.pregameLine`, at dapat ang line bago ang laro. Gumagalaw ang live na line kasabay ng score at buburahin nito mismo ang upset na sinusubukan mong makita.
 
-Nagbabayad ito kapag lamang, patas, o isang score lang ang layo ng pregame underdog, kapag lampas na sa gitna ang laro. Tatlong bagay ang nagtatakda ng number, hanggang sa maximum na 12:
+Nagbabayad ito kapag lamang, tabla, o isang score lang ang layo ng pregame underdog, kapag lampas na sa gitna ang laro. Tatlong bagay ang nagtatakda ng number, hanggang sa maximum na 12:
 
 - **Odds.** Walang binabayaran ang laro na parang barya ang odds. Habang humahaba ang odds, mas malaki ang bayad, at buo ito para sa long shot. Gumagana ang moneyline sa anumang sport, at ang spread sa basketball at football. Ang draw sa soccer ay binibilang na kalahating upset.
 - **Oras.** Wala bago ang gitna, kalahati mula sa gitna, at buo kapag late na ang laro (tatlong kapat sa basketball at football, dalawang katlo sa karamihan ng ibang sport).
-- **Estado.** Buo kapag lamang ang underdog, 80% kapag patas (70% sa soccer), at kalahati kapag nahuhuli ng isang score o mas kaunti.
+- **Estado.** Buo kapag lamang ang underdog, 80% kapag tabla (70% sa soccer), at kalahati kapag nahuhuli ng isang score o mas kaunti.
 
 ### Upset Rout
 

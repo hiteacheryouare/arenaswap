@@ -1,5 +1,5 @@
 ---
-sourceHash: '2125a74f6361'
+sourceHash: 'e4a604c3a8c2'
 title: Señales de PowerScore en cada modo
 description: Las señales detrás del PowerScore Clásico, de Palizas y de Fantasy, con el tope de cada una, qué mide y qué ignora. Además, cómo apagar señales.
 section: powerscore
@@ -57,7 +57,7 @@ Los topes de cada nivel:
 
 El 0-0 se califica aparte de un empate normal, porque al inicio normalmente significa que todavía no ha pasado nada, no que el partido esté disputado. El hockey da crédito completo de empate al 0-0 desde el tercer periodo, y el futbol desde el segundo tiempo. Antes de eso, y en todos los demás deportes, el 0-0 recibe un tope reducido de 22.
 
-**Con diez hombres.** En el futbol, un equipo con un hombre menos que protege una ventaja de un gol recibe gol con mucha más frecuencia que uno completo. Así que el partido está más cerrado de lo que dice el marcador, y la Igualdad suma 4 puntos (todavía limitada a 42) mientras esa sea la situación. Es el único lugar donde una tarjeta roja toca una señal. El impulso de tarjeta roja es aparte, y está en [Impulsos y penalizaciones](/arenaswap/docs/powerscore/boosts-and-penalties/#red-card).
+**Con diez hombres.** En el futbol, un equipo con un hombre menos que protege una ventaja de un gol recibe gol con mucha más frecuencia que un equipo con todos sus jugadores. Así que el partido está más cerrado de lo que dice el marcador, y la Igualdad suma 4 puntos (todavía limitada a 42) mientras esa sea la situación. Es el único lugar donde una tarjeta roja toca una señal. El impulso de tarjeta roja es aparte, y está en [Impulsos y penalizaciones](/arenaswap/docs/powerscore/boosts-and-penalties/#red-card).
 
 Lo que la igualdad ignora: qué equipo va ganando y el nivel absoluto del marcador. Un partido de 2 puntos de diferencia en 12-10 se lee igual que uno en 112-110, porque la igualdad solo mira el número que hay en el marcador ahora mismo.
 
@@ -77,7 +77,7 @@ Los partidos empatados suben más allá de 36 en el último minuto, hacia un pre
 
 El béisbol y el softbol no tienen reloj, así que la misma subida condicionada por la igualdad corre a lo largo de las entradas. Empieza en la 6.ª entrada en el béisbol, o en la 5.ª en el softbol, y llega a su tope al final del tiempo reglamentario.
 
-El futbol nunca dice "tiempo extra" como tal. El tiempo extra dice *Empatados en tiempo extra*, una tanda dice *Tanda de penales* y un partido parejo hacia el final dice *Empatados en el minuto 85*. Un empate es un resultado normal de liga, no una parada rumbo al tiempo extra. El pre-impulso sigue aplicando, porque un empate tardío es genuinamente tenso.
+El futbol nunca dice "tiempo extra" como tal. El tiempo extra dice *Empatados en tiempo extra*, una tanda dice *Tanda de penales* y un partido empatado hacia el final dice *Empatados en el minuto 85*. Un empate es un resultado normal de liga, no una parada rumbo al tiempo extra. El pre-impulso sigue aplicando, porque un empate tardío es genuinamente tenso.
 
 Lo que la presión de la recta final ignora: el ritmo reciente de anotación, que es trabajo de la racha, y cualquier cosa de los primeros tres cuartos de un partido que desde entonces se volvió disparejo.
 

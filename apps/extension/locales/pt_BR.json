@@ -415,9 +415,9 @@
 		"groupDisplay": "Exibição",
 		"groupDisplayDesc": "O que a lista de jogos mostra e a aparência do ArenaSwap.",
 		"groupStandby": "Standby Stream",
-		"groupStandbyDesc": "Onde te deixar quando todos os jogos esfriam.",
+		"groupStandbyDesc": "Uma transmissão reserva para quando nenhum jogo está emocionante.",
 		"groupMultiview": "Multiview",
-		"groupMultiviewDesc": "Todo jogo emocionante numa tela só.",
+		"groupMultiviewDesc": "Tela dividida para quando mais de um jogo está emocionante.",
 		"groupBackup": "Perfis e backup",
 		"groupBackupDesc": "Alterne entre configurações ou leve uma para outro navegador.",
 		"bonusesSection": "Impulsos",
@@ -1100,7 +1100,7 @@
 		"footballOvertimeDeep": "Prorrogação número {overtime}, e ainda é um jogo de uma posse.",
 		"twoPointTries": "A prorrogação chegou às tentativas de dois pontos.",
 		"underdogLeading": "Nossas fontes davam a {team} {chance}% de chance antes do jogo. Agora o time vence por {margin}.",
-		"underdogLevel": "Nossas fontes davam a {team} {chance}% de chance antes do jogo. Agora está tudo igual.",
+		"underdogLevel": "Nossas fontes davam a {team} {chance}% de chance antes do jogo. Está empatado.",
 		"underdogClose": "Nossas fontes davam a {team} {chance}% de chance antes do jogo. Agora perde por apenas {margin}.",
 		"postseasonFinal": "Este jogo decide o título, então vale o impulso inteiro.",
 		"postseasonSemifinal": "Uma semifinal, que vale três quartos do impulso inteiro.",
@@ -1314,13 +1314,13 @@
 	},
 	"standbyGuide": {
 		"title": "Standby Stream",
-		"subtitle": "Um plano B para os momentos parados.",
-		"quietTitle": "Quando os jogos esfriarem",
-		"quietBody": "Quando todos os jogos que você está assistindo caem abaixo do seu limite, ArenaSwap vai automaticamente para o seu Standby Stream.",
+		"subtitle": "Algo para assistir quando nenhum jogo está emocionante.",
+		"quietTitle": "Quando nada está emocionante",
+		"quietBody": "Quando todos os jogos que você está assistindo caem abaixo do seu limite, ArenaSwap troca para o seu Standby Stream.",
 		"returnTitle": "Volta sozinho",
 		"returnBody": "No momento em que qualquer jogo esquentar acima do seu limite, ArenaSwap te traz de volta.",
 		"chooseTitle": "Você escolhe a aba de espera",
-		"chooseBody": "Qualquer stream que você quiser.",
+		"chooseBody": "Um programa de melhores momentos, um pré-jogo ou um canal que pula de jogo em jogo.",
 		"next": "Próximo",
 		"setupTitle": "Como configurar",
 		"thresholdTitle": "Defina seu limite",
@@ -1333,7 +1333,7 @@
 	"multiviewGuide": {
 		"title": "Multiview",
 		"subtitle": "Assista a mais de um jogo ao mesmo tempo.",
-		"oneScreenTitle": "Todo jogo emocionante numa tela só",
+		"oneScreenTitle": "Tela dividida quando a coisa esquenta",
 		"oneScreenBody": "Quando dois ou mais dos seus jogos estão emocionantes ao mesmo tempo, ArenaSwap mostra todos juntos em uma aba.",
 		"soundTitle": "Som do maior quadro",
 		"soundBody": "O jogo mais emocionante fica com o maior quadro. Só dele sai o som.",
@@ -1378,8 +1378,8 @@
 		"close": "Fechar"
 	},
 	"notification": {
-		"standbyTitle": "Estacionado no Standby Stream",
-		"standbyMessage": "Todos os jogos esfriaram.",
+		"standbyTitle": "Trocado → Standby Stream",
+		"standbyMessage": "Nada está emocionante agora.",
 		"multiviewTitle": "Trocado → Multiview",
 		"multiviewLeftTitle": "Multiview fechado",
 		"multiviewLeftMessage": "A aba do Multiview foi para {host}, então o Multiview parou. Ele não vai reabrir esses jogos por 10 minutos.",
@@ -1471,7 +1471,7 @@
 			"t2": "O PowerScore mais alto ganha a troca. Fique de olho na barra de cada card.",
 			"t3": "Ative \"Mostrar jogos futuros\" nas Configurações pra pré-atribuir abas antes do jogo começar.",
 			"t4": "Ainda sem jogos ao vivo? O Modo demonstração nas Configurações monta alguns pra você ver o ArenaSwap em ação.",
-			"t5": "O Standby Stream mantém uma aba reserva rodando quando todos os jogos esfriarem. Ative nas Configurações."
+			"t5": "O Standby Stream troca para a sua transmissão reserva quando nenhum jogo está emocionante. Ative nas Configurações."
 		},
 		"setup": {
 			"t0": "Reduza o cooldown entre trocas pra trocar mais rápido num final caótico.",

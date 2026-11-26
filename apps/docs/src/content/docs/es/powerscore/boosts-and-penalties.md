@@ -1,5 +1,5 @@
 ---
-sourceHash: '10cc90e83f8c'
+sourceHash: 'b8d43b70dd47'
 title: Impulsos y penalizaciones de PowerScore
 navLabel: Impulsos y penalizaciones
 description: Cada impulso y penalización que PowerScore 3 aplica sobre las señales de un modo, con la condición que activa cada uno, su máximo y los topes que comparten.
@@ -191,11 +191,11 @@ Cuando los dos equipos están sin hits, la racha mayor paga completa y la otra a
 
 Cualquier deporte. Necesita `context.pregameLine`, y tiene que ser la línea de antes del partido. Una línea en vivo se mueve con el marcador y borraría justo la sorpresa que quieres ver.
 
-Paga cuando el sotanero de antes del partido va ganando, está parejo o está a una anotación, una vez pasada la mitad del partido. Tres cosas fijan el número, hasta un máximo de 12:
+Paga cuando el sotanero de antes del partido va ganando, está empatado o está a una anotación, una vez pasada la mitad del partido. Tres cosas fijan el número, hasta un máximo de 12:
 
 - **Momios.** Un partido de volado no paga nada. Mientras más largos los momios, más paga, y es completo para un candidato improbable. Las líneas de dinero funcionan en cualquier deporte, y un spread funciona para basquetbol y fútbol americano. Un empate en futbol cuenta como media sorpresa.
 - **Tiempo.** Nada antes de la mitad, la mitad a partir de la mitad y completo cuando el partido está avanzado (tres cuartos en basquetbol y fútbol americano, dos tercios en la mayoría de los demás deportes).
-- **Estado.** Completo cuando el sotanero va ganando, 80% cuando está parejo (70% en futbol) y la mitad cuando va perdiendo por una anotación o menos.
+- **Estado.** Completo cuando el sotanero va ganando, 80% cuando está empatado (70% en futbol) y la mitad cuando va perdiendo por una anotación o menos.
 
 ### Sorpresa
 

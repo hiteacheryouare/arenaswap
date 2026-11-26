@@ -141,7 +141,7 @@
 		},
 		"multiview": {
 			"title": "¿No puedes elegir? Míralos todos.",
-			"copy": "Cuando dos o más de tus partidos se ponen emocionantes, Multiview los muestra todos en una sola pantalla.",
+			"copy": "Cuando dos o más de tus partidos se ponen emocionantes a la vez, Multiview divide la pantalla entre ellos.",
 			"browsers": "En Chrome y Edge.",
 			"label": "Multiview con cuatro partidos emocionantes en una sola pantalla y el sonido en el más grande.",
 			"soundOn": "Sonido activado"
@@ -264,7 +264,7 @@
 			},
 			{
 				"q": "¿Qué pasa cuando todos los partidos son aburridos?",
-				"a": "Activa Standby Stream y elige una pestaña. Cuando nada de lo que sigues supera el umbral, ArenaSwap te deja ahí en lugar de dejarte en el partido menos malo."
+				"a": "Activa Standby Stream y elige una pestaña. Cuando nada de lo que sigues supera el umbral, ArenaSwap cambia a ella en lugar de dejarte en el partido menos malo."
 			},
 			{
 				"q": "¿Está disponible el código fuente?",
@@ -637,7 +637,7 @@
 		"toggleOff": "El interruptor {label} en Ajustes, desactivado.",
 		"modes": "El selector {section} abierto en {classic}, con {classic}, {blowouts}, {fantasy} y {custom}.",
 		"multiview": "Una pestaña de Multiview con cuatro partidos en una cuadrícula de 2×2. Boston vs. New York, arriba a la izquierda, tiene el contorno resaltado y el sonido.",
-		"standby": "Un navegador estacionado en una pestaña de Standby Stream llamada {tab}, con dos pestañas de partidos silenciadas al lado, y la línea de la ventana emergente: {line}",
+		"standby": "Un navegador con una pestaña de Standby Stream llamada {tab}, con dos pestañas de partidos silenciadas al lado, y la línea de la ventana emergente: {line}",
 		"profiles": "La lista {section} en Ajustes con dos perfiles, {current} en uso y su menú abierto en {rename} y {export}, arriba de los botones {new} y {backup}.",
 		"backup": "La pestaña de copia de seguridad con un archivo cargado: {addAsNew} o {replace}, y lo que cambiaría el archivo. Una liga más, los mismos equipos favoritos y el modo de puntuación pasando de {from} a {to}.",
 		"bossButton": "El atajo del botón del jefe, Alt + Shift + X, y la pestaña señuelo de hoja de cálculo que abre, con las pestañas de partidos silenciadas.",

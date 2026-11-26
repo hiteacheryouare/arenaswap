@@ -415,9 +415,9 @@
 		"groupDisplay": "顯示",
 		"groupDisplayDesc": "比賽列表顯示什麼，以及 ArenaSwap 的外觀。",
 		"groupStandby": "Standby Stream",
-		"groupStandbyDesc": "所有比賽都冷場時，把你停在哪裡。",
+		"groupStandbyDesc": "沒有比賽精彩時看的備用直播。",
 		"groupMultiview": "Multiview",
-		"groupMultiviewDesc": "所有精彩比賽，同一個畫面。",
+		"groupMultiviewDesc": "不只一場比賽精彩時，分割畫面一起看。",
 		"groupBackup": "個人資料與備份",
 		"groupBackupDesc": "切換設定，或把設定帶到另一個瀏覽器。",
 		"bonusesSection": "加成",
@@ -1314,13 +1314,13 @@
 	},
 	"standbyGuide": {
 		"title": "Standby Stream",
-		"subtitle": "冷場時刻的備用方案。",
-		"quietTitle": "當比賽都冷了下來",
+		"subtitle": "沒有比賽精彩時的觀看選擇。",
+		"quietTitle": "沒有比賽精彩時",
 		"quietBody": "當你關注的所有比賽都低於門檻，ArenaSwap 會自動切到你的 Standby Stream。",
 		"returnTitle": "它會自己切回來",
 		"returnBody": "只要有比賽重新熱起來、超過門檻，ArenaSwap 就會立刻把你切回去。",
 		"chooseTitle": "由你選擇待機分頁",
-		"chooseBody": "任何你喜歡的直播都行。",
+		"chooseBody": "精華節目、賽前節目，或輪流播各場比賽的頻道。",
 		"next": "下一步",
 		"setupTitle": "怎麼設定",
 		"thresholdTitle": "設定你的門檻",
@@ -1333,7 +1333,7 @@
 	"multiviewGuide": {
 		"title": "Multiview",
 		"subtitle": "同時觀看多場比賽。",
-		"oneScreenTitle": "所有精彩比賽，同一個畫面",
+		"oneScreenTitle": "比賽一多，就分割畫面",
 		"oneScreenBody": "當你的兩場或更多比賽同時變得精彩時，ArenaSwap 會把它們一起顯示在同一個分頁。",
 		"soundTitle": "聲音來自最大的分格",
 		"soundBody": "最精彩的比賽佔最大的分格，也只有它有聲音。",
@@ -1378,8 +1378,8 @@
 		"close": "關閉"
 	},
 	"notification": {
-		"standbyTitle": "已停在 Standby Stream",
-		"standbyMessage": "所有比賽都冷了下來。",
+		"standbyTitle": "已切換 → Standby Stream",
+		"standbyMessage": "現在沒有精彩的比賽。",
 		"multiviewTitle": "已切換 → Multiview",
 		"multiviewLeftTitle": "Multiview 已關閉",
 		"multiviewLeftMessage": "Multiview 分頁跳轉到了 {host}，所以 Multiview 已停止。10 分鐘內不會重新開啟這些比賽。",
@@ -1471,7 +1471,7 @@
 			"t2": "PowerScore 較高的比賽會贏得切換。留意每張卡片上的長條。",
 			"t3": "在設定中開啟「顯示即將開賽的比賽」，就能提前指派好分頁。",
 			"t4": "還沒有直播比賽？設定中的示範模式會安排幾場，讓你看看 ArenaSwap 怎麼運作。",
-			"t5": "當所有比賽都冷場時，Standby Stream 會讓一個備用分頁繼續播放。可在設定中啟用。"
+			"t5": "沒有比賽精彩時，Standby Stream 會切換到你的備用直播。可在設定中啟用。"
 		},
 		"setup": {
 			"t0": "調低切換冷卻，在混亂的收尾階段切得更快。",

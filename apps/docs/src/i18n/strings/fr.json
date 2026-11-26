@@ -141,7 +141,7 @@
 		},
 		"multiview": {
 			"title": "Impossible de choisir ? Regarde-les tous.",
-			"copy": "Quand au moins deux de tes matchs deviennent excitants, Multiview les met tous sur un seul écran.",
+			"copy": "Quand au moins deux de tes matchs deviennent excitants en même temps, Multiview partage l'écran entre eux.",
 			"browsers": "Sur Chrome et Edge.",
 			"label": "Multiview avec quatre matchs excitants sur un seul écran, et le son sur le plus grand.",
 			"soundOn": "Son activé"
@@ -264,7 +264,7 @@
 			},
 			{
 				"q": "Que se passe-t-il quand tous les matchs sont ennuyeux ?",
-				"a": "Active Standby Stream et choisis un onglet. Quand rien de ce que tu suis ne dépasse le seuil, ArenaSwap t'y gare plutôt que de te laisser sur le match le moins mauvais."
+				"a": "Active Standby Stream et choisis un onglet. Quand rien de ce que tu suis ne dépasse le seuil, ArenaSwap bascule dessus plutôt que de te laisser sur le match le moins mauvais."
 			},
 			{
 				"q": "Le code source est-il disponible ?",
@@ -637,7 +637,7 @@
 		"toggleOff": "L'interrupteur {label} dans les Paramètres, désactivé.",
 		"modes": "Le sélecteur {section} ouvert sur {classic}, listant {classic}, {blowouts}, {fantasy} et {custom}.",
 		"multiview": "Un onglet Multiview avec quatre matchs en grille 2×2. Boston à New York, en haut à gauche, est entouré et a le son.",
-		"standby": "Un navigateur posé sur un onglet Standby Stream nommé {tab}, avec deux onglets de match en sourdine à côté, et la ligne de la fenêtre : {line}",
+		"standby": "Un navigateur sur un onglet Standby Stream nommé {tab}, avec deux onglets de match en sourdine à côté, et la ligne de la fenêtre : {line}",
 		"profiles": "La liste {section} dans les Paramètres avec deux profils, {current} en cours d'utilisation et son menu ouvert sur {rename} et {export}, au-dessus des boutons {new} et {backup}.",
 		"backup": "L'onglet de sauvegarde avec un fichier chargé : {addAsNew} ou {replace}, et ce que le fichier changerait. Une ligue de plus, les mêmes équipes favorites, et le mode de score qui passe de {from} à {to}.",
 		"bossButton": "Le raccourci du bouton « le chef arrive », Alt + Shift + X, et l'onglet de tableur leurre qu'il ouvre, avec les onglets de match en sourdine.",

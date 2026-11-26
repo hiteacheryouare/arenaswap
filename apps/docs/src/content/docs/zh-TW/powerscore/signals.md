@@ -1,5 +1,5 @@
 ---
-sourceHash: '2125a74f6361'
+sourceHash: 'e4a604c3a8c2'
 title: 每種模式下的 PowerScore 信號
 description: 經典、一面倒和夢幻 PowerScore 背後的信號，包括各自的上限、衡量什麼、忽略什麼，以及怎麼把信號關掉。
 section: powerscore
@@ -77,7 +77,7 @@ scoreGame(game, context, { disabledSignals: ['momentum', 'comeback'] });
 
 棒球和壘球沒有時鐘，所以同樣受接近度限制的攀升改以局數計算。棒球從第 6 局開始，壘球從第 5 局開始，到例行賽結束時達到上限。
 
-足球從不說「延長賽」。加時賽顯示 *Tied in extra time*，互踢點球顯示 *Penalty shootout*，後段僵持的比賽顯示 *Tied in the 85th minute*。和局是聯賽裡的正常結果，不是通往延長賽的一站。預先加成仍然適用，因為尾聲的僵局確實令人緊張。
+足球從不說「延長賽」。加時賽顯示 *Tied in extra time*，互踢點球顯示 *Penalty shootout*，後段打平的比賽顯示 *Tied in the 85th minute*。和局是聯賽裡的正常結果，不是通往延長賽的一站。預先加成仍然適用，因為尾聲的僵局確實令人緊張。
 
 關鍵時刻不看的東西：近期的得分節奏，那是氣勢的工作，以及前三節的任何事，如果比賽後來變成一面倒的話。
 

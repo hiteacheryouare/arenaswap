@@ -415,9 +415,9 @@
 		"groupDisplay": "화면 표시",
 		"groupDisplayDesc": "경기 목록에 표시할 내용과 ArenaSwap의 외관이에요.",
 		"groupStandby": "Standby Stream",
-		"groupStandbyDesc": "모든 경기가 조용해졌을 때 이동할 곳이에요.",
+		"groupStandbyDesc": "흥미진진한 경기가 하나도 없을 때 보는 백업 스트림이에요.",
 		"groupMultiview": "Multiview",
-		"groupMultiviewDesc": "흥미진진한 경기를 한 화면에 모아 줘요.",
+		"groupMultiviewDesc": "흥미진진한 경기가 둘 이상일 때 화면을 나눠 줘요.",
 		"groupBackup": "프로필 및 백업",
 		"groupBackupDesc": "설정을 전환하거나 다른 브라우저로 가져가요.",
 		"bonusesSection": "부스트",
@@ -1100,7 +1100,7 @@
 		"footballOvertimeDeep": "{overtime}차 연장인데 아직 한 스코어 차예요.",
 		"twoPointTries": "연장전이 2점 시도 대결까지 왔어요.",
 		"underdogLeading": "경기 전 우리 정보원은 {team} 팀의 승리 확률을 {chance}%로 봤어요. 지금은 {margin}점 앞서 있어요.",
-		"underdogLevel": "경기 전 우리 정보원은 {team} 팀의 승리 확률을 {chance}%로 봤어요. 지금은 팽팽해요.",
+		"underdogLevel": "경기 전 우리 정보원은 {team} 팀의 승리 확률을 {chance}%로 봤어요. 지금은 동점이에요.",
 		"underdogClose": "경기 전 우리 정보원은 {team} 팀의 승리 확률을 {chance}%로 봤어요. 지금은 겨우 {margin}점 차로 뒤져 있어요.",
 		"postseasonFinal": "우승을 가리는 경기라 부스트를 꽉 채워서 받아요.",
 		"postseasonSemifinal": "준결승은 부스트의 4분의 3만큼이에요.",
@@ -1314,13 +1314,13 @@
 	},
 	"standbyGuide": {
 		"title": "Standby Stream",
-		"subtitle": "지루한 순간을 위한 대안이에요.",
-		"quietTitle": "경기가 조용해지면",
+		"subtitle": "흥미진진한 경기가 없을 때 볼 거리예요.",
+		"quietTitle": "흥미진진한 경기가 없을 때",
 		"quietBody": "보고 있는 모든 경기가 기준점 아래로 떨어지면 ArenaSwap이 Standby Stream으로 옮겨 줘요.",
 		"returnTitle": "자동으로 다시 돌아와요",
 		"returnBody": "어떤 경기든 기준점을 넘어 다시 뜨거워지는 순간, ArenaSwap이 바로 되돌려줘요.",
 		"chooseTitle": "대기 탭은 당신이 선택해요",
-		"chooseBody": "원하는 스트림이면 무엇이든 좋아요.",
+		"chooseBody": "하이라이트 쇼, 경기 전 방송, 또는 여러 경기를 오가며 보여 주는 채널이에요.",
 		"next": "다음",
 		"setupTitle": "설정 방법",
 		"thresholdTitle": "기준점 설정",
@@ -1333,7 +1333,7 @@
 	"multiviewGuide": {
 		"title": "Multiview",
 		"subtitle": "한 번에 여러 경기를 볼 수 있어요.",
-		"oneScreenTitle": "흥미진진한 경기를 한 화면에",
+		"oneScreenTitle": "경기가 몰리면 화면 분할",
 		"oneScreenBody": "두 경기 이상이 동시에 흥미진진해지면 ArenaSwap이 한 탭에 함께 보여 줘요.",
 		"soundTitle": "소리는 가장 큰 박스에서",
 		"soundBody": "가장 흥미진진한 경기가 가장 큰 박스를 차지해요. 소리도 이 박스에서만 나와요.",
@@ -1378,8 +1378,8 @@
 		"close": "닫기"
 	},
 	"notification": {
-		"standbyTitle": "Standby Stream에서 대기 중",
-		"standbyMessage": "모든 경기가 조용해졌어요.",
+		"standbyTitle": "전환 → Standby Stream",
+		"standbyMessage": "지금은 흥미진진한 경기가 없어요.",
 		"multiviewTitle": "전환 → Multiview",
 		"multiviewLeftTitle": "Multiview 종료됨",
 		"multiviewLeftMessage": "Multiview 탭이 {host}(으)로 이동해서 Multiview가 중지되었습니다. 10분 동안 이 경기들을 다시 열지 않습니다.",
@@ -1471,7 +1471,7 @@
 			"t2": "PowerScore가 더 높은 경기가 전환에서 이겨요. 카드마다 있는 막대를 보세요.",
 			"t3": "설정에서 \"예정된 경기 표시\"를 켜면 경기 시작 전에 미리 탭을 할당할 수 있어요.",
 			"t4": "아직 진행 중인 경기가 없나요? 설정의 데모 모드가 경기 몇 개를 준비해서 ArenaSwap이 일하는 모습을 보여 줘요.",
-			"t5": "Standby Stream은 모든 경기가 조용해질 때 백업 탭을 재생해 줘요. 설정에서 활성화하세요."
+			"t5": "Standby Stream은 흥미진진한 경기가 없을 때 백업 스트림으로 전환해 줘요. 설정에서 활성화하세요."
 		},
 		"setup": {
 			"t0": "전환 쿨다운을 낮추면 혼전 막판에 더 빠르게 전환해요.",

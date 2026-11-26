@@ -1,40 +1,40 @@
 ---
-sourceHash: '7a9d6a58a2ff'
+sourceHash: 'cf438541a7e2'
 title: Cómo configurar Standby Stream
-description: Elige una pestaña donde quedarte cuando todos los partidos que ves se pongan tranquilos, y ArenaSwap te lleva ahí y te regresa cuando vuelva la acción.
+description: Elige una transmisión de respaldo, como un programa de resúmenes o previo al partido, y ArenaSwap cambia a ella cuando ninguno de tus partidos está emocionante, y te regresa cuando uno lo está.
 section: extension
 order: 5
 navLabel: Standby Stream
 faq:
   - q: ¿Qué es Standby Stream en ArenaSwap?
-    a: Una pestaña que eliges de antemano. Cuando todos los partidos a los que asignaste una pestaña se ponen tranquilos, ArenaSwap te lleva a ella. Cuando un partido vuelve a calentarse, ArenaSwap te regresa.
+    a: Una transmisión de respaldo que eliges de antemano, como un programa de resúmenes, un programa previo al partido o un canal que salta entre partidos. Cuando ninguno de los partidos a los que asignaste una pestaña está emocionante, ArenaSwap cambia a ella. Cuando uno vuelve a emocionar, ArenaSwap te regresa.
   - q: ¿Por qué Standby Stream no hace nada aunque está activado?
     a: Revisa que hayas elegido una Pestaña de espera en Ajustes, que hayas asignado una pestaña a al menos un partido en vivo y que tengas activado Activar cambio automático. Si Multiview está en pantalla, va primero.
 ---
 
 import Demo from '../../../../components/docs/Demo.astro';
 
-Hay noches en que todos los partidos que ves se ponen aburridos al mismo tiempo: palizas, una demora por lluvia, el medio tiempo. Standby Stream le da a ArenaSwap un lugar mejor donde dejarte, como un programa de resúmenes o una transmisión de estudio.
+Hay noches en que ninguno de tus partidos vale la pena a la vez: palizas, una demora por lluvia, el medio tiempo. Standby Stream es una transmisión de respaldo para esos ratos, como un programa de resúmenes, un programa previo al partido o un canal que salta entre partidos.
 
 ## Configúralo
 
-1. Abre la pestaña que quieres como respaldo y déjala abierta.
+1. Abre tu transmisión de respaldo en una pestaña y déjala abierta.
 2. En Ajustes, abre **Standby Stream** y activa **Activar Standby Stream**.
 3. Elige tu pestaña en el menú **Pestaña de espera**.
 
-Si el menú todavía dice **Selecciona una pestaña**, no pasa nada cuando tus partidos se ponen tranquilos.
+Si el menú todavía dice **Selecciona una pestaña**, no pasa nada cuando ninguno de tus partidos está emocionante.
 
 La primera vez que lo activas, una guía breve de dos pasos muestra los mismos pasos. Toca **Entendido** en la segunda pantalla cuando termines.
 
 <Demo name='standby' />
 
-## Elige qué tan tranquilo es tranquilo
+## Elige cuándo empieza la espera
 
-**En espera por debajo de** es un control deslizante de 0 a 100, en 20 de inicio. Súbelo y ArenaSwap te deja en espera antes, mientras los partidos todavía son medio interesantes. Bájalo y ArenaSwap mantiene tus partidos en pantalla más tiempo antes de rendirse con ellos.
+**En espera por debajo de** es un control deslizante de 0 a 100, en 20 de inicio. Súbelo y ArenaSwap cambia a la espera antes, mientras los partidos todavía son medio interesantes. Bájalo y ArenaSwap mantiene tus partidos en pantalla más tiempo antes de rendirse con ellos.
 
 ## Qué esperar
 
-Cuando todos los partidos a los que asignaste una pestaña se ponen tranquilos, ArenaSwap cambia a tu pestaña de espera. Cuando cualquiera de ellos se vuelve a calentar, te regresa.
+Cuando todos los partidos a los que asignaste una pestaña bajan de esa línea, ArenaSwap cambia a tu pestaña de espera. Cuando cualquiera de ellos vuelve a superarla, te regresa.
 
 Si cambias tú a otra pestaña, ArenaSwap te lleva a tu mejor partido. Si nada se ha calentado al terminar el tiempo de espera, te regresa a la pestaña de espera. Para navegar sin que te muevan, desactiva **Activar cambio automático**.
 
@@ -44,4 +44,4 @@ Standby Stream solo vigila los partidos a los que asignaste una pestaña. Sin pe
 
 - [Cómo ver varios partidos a la vez](/arenaswap/docs/extension/watching-multiple-games/) explica cómo asignar pestañas a los partidos.
 - [Referencia de ajustes de ArenaSwap](/arenaswap/docs/extension/settings/) enumera el valor predeterminado de cada ajuste de Standby Stream.
-- [Cómo usar Multiview](/arenaswap/docs/extension/multiview/) muestra varios partidos emocionantes en una pestaña, para cuando vale la pena ver más de uno.
+- [Cómo usar Multiview](/arenaswap/docs/extension/multiview/) divide la pantalla cuando más de un partido está emocionante.

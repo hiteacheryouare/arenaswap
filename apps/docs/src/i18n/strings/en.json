@@ -141,7 +141,7 @@
 		},
 		"multiview": {
 			"title": "Can't Pick? Watch Them All.",
-			"copy": "When two or more of your games get exciting, Multiview puts them all on one screen.",
+			"copy": "When two or more of your games get exciting at once, Multiview splits the screen between them.",
 			"browsers": "On Chrome and Edge.",
 			"label": "Multiview with four exciting games on one screen, and the sound on the biggest one.",
 			"soundOn": "Sound on"
@@ -264,7 +264,7 @@
 			},
 			{
 				"q": "What happens when every game is boring?",
-				"a": "Turn on Standby Stream and pick a tab. When nothing you are tracking clears the threshold, ArenaSwap parks you there instead of leaving you on whichever game is least bad."
+				"a": "Turn on Standby Stream and pick a tab. When nothing you are tracking clears the threshold, ArenaSwap switches to it instead of leaving you on whichever game is least bad."
 			},
 			{
 				"q": "Is the source available?",
@@ -523,7 +523,7 @@
 				"boosts": [
 					{
 						"name": "Upset watch",
-						"copy": "The underdog ahead, level or within one score past halfway."
+						"copy": "The underdog ahead, tied or within one score past halfway."
 					},
 					{
 						"name": "Stakes",
@@ -637,7 +637,7 @@
 		"toggleOff": "The {label} switch in Settings, turned off.",
 		"modes": "The {section} picker open on {classic}, listing {classic}, {blowouts}, {fantasy} and {custom}.",
 		"multiview": "A Multiview tab with four games in a 2×2 grid. Boston at New York, top left, is outlined and has the sound.",
-		"standby": "A browser parked on a Standby Stream tab called {tab}, with two muted game tabs beside it, and the popup line: {line}",
+		"standby": "A browser on a Standby Stream tab called {tab}, with two muted game tabs beside it, and the popup line: {line}",
 		"profiles": "The {section} list in Settings with two profiles, {current} in use and its menu open on {rename} and {export}, above the {new} and {backup} buttons.",
 		"backup": "The backup tab with a file loaded: {addAsNew} or {replace}, and what the file would change. One more league, the same favorite teams, and the scoring mode going from {from} to {to}.",
 		"bossButton": "The boss button shortcut, Alt + Shift + X, and the decoy spreadsheet tab it opens, with the game tabs muted.",

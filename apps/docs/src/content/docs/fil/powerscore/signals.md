@@ -1,5 +1,5 @@
 ---
-sourceHash: '2125a74f6361'
+sourceHash: 'e4a604c3a8c2'
 title: Mga PowerScore signal sa bawat mode
 description: Ang mga signal sa likod ng Classic, Blowouts at Fantasy na PowerScore, kasama ang ceiling ng bawat isa, kung ano ang sinusukat nito at kung ano ang hindi nito nakikita. Pati kung paano i-off ang mga signal.
 section: powerscore
@@ -77,7 +77,7 @@ Lumalampas sa 36 ang mga tabla sa huling minuto, papunta sa overtime pre-boost n
 
 Walang clock ang baseball at softball, kaya ang parehong ramp na nakakabit sa kalapitan ay tumatakbo sa mga inning. Nagsisimula ito sa 6th inning sa baseball, o 5th sa softball, at umaabot sa ceiling pagdating ng dulo ng regulation.
 
-Hindi kailanman sinasabi ng soccer ang "overtime." *Tied in extra time* ang nakasulat sa extra time, *Penalty shootout* sa shootout, at *Tied in the 85th minute* sa laro na patas pa rin sa huli. Karaniwang resulta sa liga ang draw, hindi hintuan papuntang overtime. Nalalapat pa rin ang pre-boost, dahil talagang nakakakaba ang bakbakang walang bumibitaw sa huli.
+Hindi kailanman sinasabi ng soccer ang "overtime." *Tied in extra time* ang nakasulat sa extra time, *Penalty shootout* sa shootout, at *Tied in the 85th minute* sa larong tabla pa rin sa huli. Karaniwang resulta sa liga ang draw, hindi hintuan papuntang overtime. Nalalapat pa rin ang pre-boost, dahil talagang nakakakaba ang bakbakang walang bumibitaw sa huli.
 
 Ang hindi nakikita ng late-game pressure: ang bilis ng kamakailang pag-score, na trabaho ng momentum, at anumang tungkol sa unang tatlong quarter ng larong naging lopsided na.
 

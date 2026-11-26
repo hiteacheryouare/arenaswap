@@ -1,5 +1,5 @@
 ---
-sourceHash: '9597d1316266'
+sourceHash: '52f64a17fb01'
 title: PowerScore 的 TypeScript 类型
 description: Game、ScoringContext、ScoreOptions、PowerScore 以及模式和配置类型上的每个字段，哪些是可选的，以及可选字段缺失时会发生什么。
 section: powerscore
@@ -286,7 +286,7 @@ interface ReasonFragment { key: string; params?: Record<string, string | number>
 | `noHitter` | `noHitter` | `team`, `innings` | {team} still doesn't have a hit through {innings} innings. |
 | `noHitter` | `doubleNoHitter` | `innings` | Neither team has a hit through {innings} innings. |
 | `upsetWatch` | `underdogLeading` | `team`, `chance`, `margin` | Our sources gave {team} a {chance}% chance before the game. They lead by {margin}. |
-| `upsetWatch` | `underdogLevel` | `team`, `chance` | Our sources gave {team} a {chance}% chance before the game. It's all square. |
+| `upsetWatch` | `underdogLevel` | `team`, `chance` | Our sources gave {team} a {chance}% chance before the game. It's tied. |
 | `upsetWatch` | `underdogClose` | `team`, `chance`, `margin` | Our sources gave {team} a {chance}% chance before the game. They trail by just {margin}. |
 | `stakes` | `seriesClinch` | `team` | A win and {team} takes the series. |
 | `stakes` | `seriesDecider` | `game` | Game {game}. Winner takes the series. |

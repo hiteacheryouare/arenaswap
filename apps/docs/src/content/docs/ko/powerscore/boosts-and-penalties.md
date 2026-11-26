@@ -1,5 +1,5 @@
 ---
-sourceHash: '10cc90e83f8c'
+sourceHash: 'b8d43b70dd47'
 title: PowerScore 부스트와 페널티
 navLabel: 부스트와 페널티
 description: PowerScore 3가 모드의 시그널 위에 적용하는 모든 부스트와 페널티, 각각을 일으키는 조건과 최대치, 그리고 함께 쓰는 상한까지 정리했어요.

@@ -141,7 +141,7 @@
 		},
 		"multiview": {
 			"title": "고르기 어렵다면? 전부 보세요.",
-			"copy": "흥미진진한 경기가 둘 이상이면 Multiview가 한 화면에 모두 보여줘요.",
+			"copy": "흥미진진한 경기가 둘 이상 동시에 달아오르면 Multiview가 화면을 나눠 보여줘요.",
 			"browsers": "Chrome과 Edge에서 쓸 수 있어요.",
 			"label": "흥미진진한 경기 네 개가 한 화면에 있고, 가장 큰 경기에서 소리가 나는 Multiview.",
 			"soundOn": "소리 켜짐"
@@ -264,7 +264,7 @@
 			},
 			{
 				"q": "모든 경기가 지루할 때는 어떻게 되나요?",
-				"a": "Standby Stream을 켜고 탭을 골라두세요. 추적 중인 어떤 경기도 임계값을 넘지 못하면, 가장 덜 나쁜 경기에 머무는 대신 그 탭에 머물게 해줘요."
+				"a": "Standby Stream을 켜고 탭을 골라두세요. 추적 중인 어떤 경기도 임계값을 넘지 못하면, 가장 덜 나쁜 경기에 머무는 대신 그 탭으로 전환해줘요."
 			},
 			{
 				"q": "소스 코드를 볼 수 있나요?",
@@ -637,7 +637,7 @@
 		"toggleOff": "설정에서 꺼진 {label} 스위치.",
 		"modes": "{classic}이(가) 선택된 {section} 선택기가 열려 있고, {classic}, {blowouts}, {fantasy}, {custom}이(가) 나열되어 있어요.",
 		"multiview": "경기 네 개가 2×2 격자로 배치된 Multiview 탭. 왼쪽 위의 Boston at New York에는 테두리가 있고 소리가 나와요.",
-		"standby": "{tab}이라는 Standby Stream 탭에 머물러 있는 브라우저. 옆에는 음소거된 경기 탭 두 개가 있고, 팝업에는 다음 문구가 떠 있어요: {line}",
+		"standby": "{tab}이라는 Standby Stream 탭을 열어 둔 브라우저. 옆에는 음소거된 경기 탭 두 개가 있고, 팝업에는 다음 문구가 떠 있어요: {line}",
 		"profiles": "설정의 {section} 목록에 프로필 두 개가 있어요. 사용 중인 {current}의 메뉴가 열려 {rename}과(와) {export}이(가) 보이고, 그 아래에 {new} 및 {backup} 버튼이 있어요.",
 		"backup": "파일이 불러와진 백업 탭: {addAsNew} 또는 {replace}, 그리고 파일이 바꿀 내용. 리그가 하나 늘고, 응원팀은 그대로이며, 점수 모드가 {from}에서 {to}(으)로 바뀌어요.",
 		"bossButton": "상사가 온다 버튼 단축키 Alt + Shift + X와, 눌렀을 때 열리는 가짜 스프레드시트 탭. 경기 탭은 음소거되어 있어요.",

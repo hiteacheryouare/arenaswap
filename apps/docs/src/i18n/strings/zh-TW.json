@@ -141,7 +141,7 @@
 		},
 		"multiview": {
 			"title": "選不出來？那就全部都看。",
-			"copy": "當你的兩場或更多比賽同時精彩起來，Multiview 會把它們放到同一個螢幕上。",
+			"copy": "當你的兩場或更多比賽同時精彩起來，Multiview 會把螢幕分給它們。",
 			"browsers": "支援 Chrome 和 Edge。",
 			"label": "Multiview 在同一個螢幕上顯示四場精彩比賽，最大的一場開著聲音。",
 			"soundOn": "聲音已開"
@@ -264,7 +264,7 @@
 			},
 			{
 				"q": "如果所有比賽都很無聊怎麼辦？",
-				"a": "打開 Standby Stream 並選一個分頁。當你追蹤的比賽都沒有達到門檻時，ArenaSwap 會讓你停在那裡，而不是把你留在最不糟的那場比賽上。"
+				"a": "打開 Standby Stream 並選一個分頁。當你追蹤的比賽都沒有達到門檻時，ArenaSwap 會切換過去，而不是把你留在最不糟的那場比賽上。"
 			},
 			{
 				"q": "原始碼有公開嗎？",
@@ -637,7 +637,7 @@
 		"toggleOff": "設定裡的 {label} 開關，已關閉。",
 		"modes": "{section}選單展開，目前選的是 {classic}，列出 {classic}、{blowouts}、{fantasy} 和 {custom}。",
 		"multiview": "一個 Multiview 分頁，四場比賽排成 2×2 的格子。左上角的 Boston at New York 有外框，並且有聲音。",
-		"standby": "瀏覽器停在一個名為 {tab} 的 Standby Stream 分頁，旁邊是兩個已靜音的比賽分頁，彈出視窗上寫著：{line}",
+		"standby": "瀏覽器開著一個名為 {tab} 的 Standby Stream 分頁，旁邊是兩個已靜音的比賽分頁，彈出視窗上寫著：{line}",
 		"profiles": "設定裡的{section}清單，有兩個個人資料，使用中的是 {current}，它的選單展開，顯示 {rename} 和 {export}，下方是 {new} 和 {backup} 按鈕。",
 		"backup": "已載入檔案的備份分頁：{addAsNew} 或 {replace}，以及這個檔案會改變什麼。多一個聯賽、相同的收藏球隊，評分模式從 {from} 變成 {to}。",
 		"bossButton": "老闆鍵快速鍵 Alt + Shift + X，以及它打開的偽裝試算表分頁，比賽分頁已靜音。",

@@ -415,9 +415,9 @@
 		"groupDisplay": "Display",
 		"groupDisplayDesc": "What the game list shows, and how ArenaSwap looks.",
 		"groupStandby": "Standby Stream",
-		"groupStandbyDesc": "Where to park you when every game goes quiet.",
+		"groupStandbyDesc": "A backup stream for when no game is exciting.",
 		"groupMultiview": "Multiview",
-		"groupMultiviewDesc": "Every exciting game on one screen.",
+		"groupMultiviewDesc": "Split screen for when more than one game is exciting.",
 		"groupBackup": "Profiles & Backup",
 		"groupBackupDesc": "Switch setups, or take one to another browser.",
 		"bonusesSection": "Boosts",
@@ -1037,7 +1037,7 @@
 		"tooltipSuddenDeath": "Applies in playoff hockey overtime, college and UFL overtime, and shootouts. Each extra overtime adds more.",
 		"tooltipRedCard": "Applies for ten minutes after a red card in a tied or one-goal game.",
 		"tooltipNoHitter": "Applies when a team still has no hits from the 6th inning on (the 4th in softball).",
-		"tooltipUpsetWatch": "Applies when the pregame underdog leads, is level, or trails by one score past halfway.",
+		"tooltipUpsetWatch": "Applies when the pregame underdog leads, is tied, or trails by one score past halfway.",
 		"tooltipUpsetRout": "Applies when the pregame underdog is running away with it.",
 		"tooltipStakes": "Applies when the result decides something: a series, a meeting of ranked teams, or a late-season race."
 	},
@@ -1100,7 +1100,7 @@
 		"footballOvertimeDeep": "Overtime number {overtime}, and it's still a one-score game.",
 		"twoPointTries": "Overtime is down to two-point tries.",
 		"underdogLeading": "Our sources gave {team} a {chance}% chance before the game. They lead by {margin}.",
-		"underdogLevel": "Our sources gave {team} a {chance}% chance before the game. It's all square.",
+		"underdogLevel": "Our sources gave {team} a {chance}% chance before the game. It's tied.",
 		"underdogClose": "Our sources gave {team} a {chance}% chance before the game. They trail by just {margin}.",
 		"postseasonFinal": "This one decides the title, so it gets the full boost.",
 		"postseasonSemifinal": "A semifinal, worth three quarters of the full boost.",
@@ -1314,13 +1314,13 @@
 	},
 	"standbyGuide": {
 		"title": "Standby Stream",
-		"subtitle": "A fallback for the slow moments.",
-		"quietTitle": "When Games Go Quiet",
-		"quietBody": "When every game you're watching drops below your threshold, ArenaSwap parks you on your Standby Stream.",
+		"subtitle": "Something to watch when no game is exciting.",
+		"quietTitle": "When Nothing's Exciting",
+		"quietBody": "When every game you're watching drops below your threshold, ArenaSwap switches to your Standby Stream.",
 		"returnTitle": "It Comes Back on Its Own",
 		"returnBody": "The moment any game heats back up above your threshold, ArenaSwap switches you right back.",
 		"chooseTitle": "You Choose the Standby Tab",
-		"chooseBody": "Any stream you like.",
+		"chooseBody": "A highlight show, a pregame show, or a whip-around channel.",
 		"next": "Next",
 		"setupTitle": "How to Set It Up",
 		"thresholdTitle": "Set Your Threshold",
@@ -1333,7 +1333,7 @@
 	"multiviewGuide": {
 		"title": "Multiview",
 		"subtitle": "Watch more than one game at a time.",
-		"oneScreenTitle": "Every Exciting Game on One Screen",
+		"oneScreenTitle": "Split Screen When It Gets Busy",
 		"oneScreenBody": "When two or more of your games are exciting at the same time, ArenaSwap shows them together in one tab.",
 		"soundTitle": "Sound From the Biggest Box",
 		"soundBody": "The most exciting game gets the biggest box. It's the only one you hear.",
@@ -1378,8 +1378,8 @@
 		"close": "Close"
 	},
 	"notification": {
-		"standbyTitle": "Parked on Standby Stream",
-		"standbyMessage": "Every game went quiet.",
+		"standbyTitle": "Switched → Standby Stream",
+		"standbyMessage": "Nothing's exciting right now.",
 		"multiviewTitle": "Switched → Multiview",
 		"multiviewLeftTitle": "Multiview closed",
 		"multiviewLeftMessage": "The Multiview tab went to {host}, so Multiview stopped. It won't reopen these games for 10 minutes.",
@@ -1471,7 +1471,7 @@
 			"t2": "The higher PowerScore wins the swap. Watch the bar on each card.",
 			"t3": "Turn on \"Show upcoming games\" in Settings to pre-assign tabs before the game starts.",
 			"t4": "No live games yet? Demo mode in Settings stages a few so you can watch ArenaSwap work.",
-			"t5": "Standby Stream keeps a backup tab playing whenever every game goes quiet. Turn it on in Settings."
+			"t5": "Standby Stream switches to your backup stream when no game is exciting. Turn it on in Settings."
 		},
 		"setup": {
 			"t0": "Lower the switch cooldown to swap faster through a chaotic finish.",

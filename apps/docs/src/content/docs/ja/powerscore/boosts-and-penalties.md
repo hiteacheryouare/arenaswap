@@ -1,5 +1,5 @@
 ---
-sourceHash: '10cc90e83f8c'
+sourceHash: 'b8d43b70dd47'
 title: PowerScore のブーストとペナルティ
 navLabel: ブーストとペナルティ
 description: PowerScore 3 がモードのシグナルの上に適用するすべてのブーストとペナルティについて、それぞれの発動条件、上限、共有するキャップをまとめています。

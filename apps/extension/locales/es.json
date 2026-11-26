@@ -415,9 +415,9 @@
 		"groupDisplay": "Visualización",
 		"groupDisplayDesc": "Lo que muestra la lista de partidos y cómo se ve ArenaSwap.",
 		"groupStandby": "Standby Stream",
-		"groupStandbyDesc": "Dónde dejarte cuando todos los partidos se apagan.",
+		"groupStandbyDesc": "Una transmisión de respaldo para cuando ningún partido está emocionante.",
 		"groupMultiview": "Multiview",
-		"groupMultiviewDesc": "Todos los partidos emocionantes en una pantalla.",
+		"groupMultiviewDesc": "Pantalla dividida para cuando hay más de un partido emocionante.",
 		"groupBackup": "Perfiles y copia",
 		"groupBackupDesc": "Cambia entre configuraciones o llévate una a otro navegador.",
 		"bonusesSection": "Impulsos",
@@ -1100,7 +1100,7 @@
 		"footballOvertimeDeep": "Tiempo extra número {overtime}, y sigue siendo un juego de una anotación.",
 		"twoPointTries": "El tiempo extra ya se decide con intentos de dos puntos.",
 		"underdogLeading": "Nuestras fuentes le daban a {team} un {chance}% de probabilidad antes del juego. Va ganando por {margin}.",
-		"underdogLevel": "Nuestras fuentes le daban a {team} un {chance}% de probabilidad antes del juego. Todo está igualado.",
+		"underdogLevel": "Nuestras fuentes le daban a {team} un {chance}% de probabilidad antes del juego. Está empatado.",
 		"underdogClose": "Nuestras fuentes le daban a {team} un {chance}% de probabilidad antes del juego. Va perdiendo por solo {margin}.",
 		"postseasonFinal": "Este define el título, así que lleva el impulso completo.",
 		"postseasonSemifinal": "Una semifinal, que vale tres cuartos del impulso completo.",
@@ -1314,13 +1314,13 @@
 	},
 	"standbyGuide": {
 		"title": "Standby Stream",
-		"subtitle": "Una alternativa para los momentos lentos.",
-		"quietTitle": "Cuando los partidos se calman",
-		"quietBody": "Cuando todos los partidos que ves caen por debajo de tu umbral, ArenaSwap te lleva automáticamente a tu Standby Stream.",
+		"subtitle": "Algo para ver cuando ningún partido está emocionante.",
+		"quietTitle": "Cuando nada está emocionante",
+		"quietBody": "Cuando todos los partidos que ves caen por debajo de tu umbral, ArenaSwap cambia a tu Standby Stream.",
 		"returnTitle": "Vuelve por sí solo",
 		"returnBody": "En cuanto cualquier partido vuelve a superar tu umbral, ArenaSwap te lleva de regreso.",
 		"chooseTitle": "Tú eliges la pestaña de espera",
-		"chooseBody": "Cualquier transmisión que quieras.",
+		"chooseBody": "Un programa de resúmenes, un programa previo al partido o un canal que salta entre partidos.",
 		"next": "Siguiente",
 		"setupTitle": "Cómo configurarlo",
 		"thresholdTitle": "Fija tu umbral",
@@ -1333,7 +1333,7 @@
 	"multiviewGuide": {
 		"title": "Multiview",
 		"subtitle": "Mira más de un partido a la vez.",
-		"oneScreenTitle": "Todos los partidos emocionantes en una pantalla",
+		"oneScreenTitle": "Pantalla dividida cuando todo se anima",
 		"oneScreenBody": "Cuando dos o más de tus partidos son emocionantes a la vez, ArenaSwap los muestra juntos en una pestaña.",
 		"soundTitle": "Sonido del cuadro más grande",
 		"soundBody": "El partido más emocionante tiene el cuadro más grande. Es el único que oyes.",
@@ -1378,8 +1378,8 @@
 		"close": "Cerrar"
 	},
 	"notification": {
-		"standbyTitle": "Estacionado en Standby Stream",
-		"standbyMessage": "Todos los partidos se calmaron.",
+		"standbyTitle": "Cambiado → Standby Stream",
+		"standbyMessage": "Nada está emocionante ahora mismo.",
 		"multiviewTitle": "Cambiado → Multiview",
 		"multiviewLeftTitle": "Multiview cerrado",
 		"multiviewLeftMessage": "La pestaña de Multiview fue a {host}, así que Multiview se detuvo. No volverá a abrir estos partidos durante 10 minutos.",
@@ -1471,7 +1471,7 @@
 			"t2": "Gana el cambio el PowerScore más alto. Fíjate en la barra de cada tarjeta.",
 			"t3": "Activa \"Mostrar próximos partidos\" en Ajustes para asignar pestañas antes de que empiece el partido.",
 			"t4": "¿Todavía no hay partidos en vivo? El Modo demostración en Ajustes monta unos cuantos para que veas a ArenaSwap en acción.",
-			"t5": "Standby Stream mantiene una pestaña de respaldo reproduciendo cuando todos los partidos se calman. Actívalo en Ajustes."
+			"t5": "Standby Stream cambia a tu transmisión de respaldo cuando ningún partido está emocionante. Actívalo en Ajustes."
 		},
 		"setup": {
 			"t0": "Baja el tiempo de espera entre cambios para cambiar más rápido en un final caótico.",

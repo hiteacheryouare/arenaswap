@@ -1,5 +1,5 @@
 ---
-sourceHash: '9597d1316266'
+sourceHash: '52f64a17fb01'
 title: Tipos TypeScript do PowerScore
 description: Todo campo de Game, ScoringContext, ScoreOptions, PowerScore e dos tipos de modo e de configuração, quais são opcionais e o que acontece quando um opcional falta.
 section: powerscore
@@ -286,7 +286,7 @@ O `details` de um impulso diz o que está acontecendo neste jogo pelo que o impu
 | `noHitter` | `noHitter` | `team`, `innings` | {team} still doesn't have a hit through {innings} innings. |
 | `noHitter` | `doubleNoHitter` | `innings` | Neither team has a hit through {innings} innings. |
 | `upsetWatch` | `underdogLeading` | `team`, `chance`, `margin` | Our sources gave {team} a {chance}% chance before the game. They lead by {margin}. |
-| `upsetWatch` | `underdogLevel` | `team`, `chance` | Our sources gave {team} a {chance}% chance before the game. It's all square. |
+| `upsetWatch` | `underdogLevel` | `team`, `chance` | Our sources gave {team} a {chance}% chance before the game. It's tied. |
 | `upsetWatch` | `underdogClose` | `team`, `chance`, `margin` | Our sources gave {team} a {chance}% chance before the game. They trail by just {margin}. |
 | `stakes` | `seriesClinch` | `team` | A win and {team} takes the series. |
 | `stakes` | `seriesDecider` | `game` | Game {game}. Winner takes the series. |

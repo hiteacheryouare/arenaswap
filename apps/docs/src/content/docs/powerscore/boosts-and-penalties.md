@@ -190,11 +190,11 @@ When both teams are hitless, the bigger bid pays in full and the other at half. 
 
 Any sport. Needs `context.pregameLine`, and it has to be the line from before the game. A live line moves with the score and would erase the very upset you're trying to see.
 
-It pays when the pregame underdog is leading, level, or within one score, once the game is past halfway. Three things set the number, up to a maximum of 12:
+It pays when the pregame underdog is leading, tied, or within one score, once the game is past halfway. Three things set the number, up to a maximum of 12:
 
 - **Odds.** A coin-flip game pays nothing. The longer the odds, the more it pays, and it's full for a long shot. Moneylines work in any sport, and a spread works for basketball and football. A draw in soccer counts as half an upset.
 - **Time.** Nothing before halfway, half from halfway, and full once the game is late (three quarters through in basketball and football, two thirds in most other sports).
-- **State.** Full when the underdog leads, 80% when it's level (70% in soccer), and half when it trails by a score or less.
+- **State.** Full when the underdog leads, 80% when it's tied (70% in soccer), and half when it trails by a score or less.
 
 ### Upset Rout
 

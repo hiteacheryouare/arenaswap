@@ -415,9 +415,9 @@
 		"groupDisplay": "Apresentação",
 		"groupDisplayDesc": "O que a lista de jogos mostra e o aspeto do ArenaSwap.",
 		"groupStandby": "Standby Stream",
-		"groupStandbyDesc": "Onde ficar quando todos os jogos arrefecem.",
+		"groupStandbyDesc": "Uma transmissão de reserva para quando nenhum jogo está emocionante.",
 		"groupMultiview": "Multiview",
-		"groupMultiviewDesc": "Todos os jogos emocionantes num só ecrã.",
+		"groupMultiviewDesc": "Ecrã dividido para quando há mais de um jogo emocionante.",
 		"groupBackup": "Perfis e backup",
 		"groupBackupDesc": "Alterna entre configurações ou leva uma para outro navegador.",
 		"bonusesSection": "Impulsos",
@@ -1314,13 +1314,13 @@
 	},
 	"standbyGuide": {
 		"title": "Standby Stream",
-		"subtitle": "Um plano B para os momentos calmos.",
-		"quietTitle": "Quando os jogos ficam sossegados",
-		"quietBody": "Quando todos os jogos que estás a ver descem abaixo do teu limiar, ArenaSwap passa automaticamente para o teu Standby Stream.",
+		"subtitle": "Algo para ver quando nenhum jogo está emocionante.",
+		"quietTitle": "Quando nada está emocionante",
+		"quietBody": "Quando todos os jogos que estás a ver descem abaixo do teu limiar, ArenaSwap muda para o teu Standby Stream.",
 		"returnTitle": "Volta por conta própria",
 		"returnBody": "No momento em que qualquer jogo voltar a aquecer acima do teu limiar, ArenaSwap leva-te de volta.",
 		"chooseTitle": "Tu é que escolhes o separador de espera",
-		"chooseBody": "Qualquer transmissão que quiseres.",
+		"chooseBody": "Um programa de resumos, um pré-jogo ou um canal que salta de jogo em jogo.",
 		"next": "Seguinte",
 		"setupTitle": "Como configurar",
 		"thresholdTitle": "Define o teu limiar",
@@ -1333,7 +1333,7 @@
 	"multiviewGuide": {
 		"title": "Multiview",
 		"subtitle": "Vê mais do que um jogo ao mesmo tempo.",
-		"oneScreenTitle": "Todos os jogos emocionantes num só ecrã",
+		"oneScreenTitle": "Ecrã dividido quando a coisa aquece",
 		"oneScreenBody": "Quando dois ou mais dos teus jogos estão emocionantes ao mesmo tempo, ArenaSwap mostra-os juntos num separador.",
 		"soundTitle": "Som do quadro maior",
 		"soundBody": "O jogo mais emocionante fica com o quadro maior. É o único que ouves.",
@@ -1378,8 +1378,8 @@
 		"close": "Fechar"
 	},
 	"notification": {
-		"standbyTitle": "Estacionado no Standby Stream",
-		"standbyMessage": "Os jogos ficaram todos sossegados.",
+		"standbyTitle": "Mudado → Standby Stream",
+		"standbyMessage": "Nada está emocionante agora.",
 		"multiviewTitle": "Mudado → Multiview",
 		"multiviewLeftTitle": "Multiview fechado",
 		"multiviewLeftMessage": "O separador do Multiview foi para {host}, por isso o Multiview parou. Não vai reabrir estes jogos durante 10 minutos.",
@@ -1471,7 +1471,7 @@
 			"t2": "O PowerScore mais alto ganha a mudança. Fica de olho na barra de cada cartão.",
 			"t3": "Ativa \"Mostrar jogos futuros\" nas Definições para pré-associar separadores antes de o jogo começar.",
 			"t4": "Ainda sem jogos em direto? O Modo de demonstração nas Definições prepara alguns para veres o ArenaSwap a funcionar.",
-			"t5": "O Standby Stream mantém um separador de reserva a reproduzir quando todos os jogos abrandam. Ativa-o nas Definições."
+			"t5": "O Standby Stream muda para a tua transmissão de reserva quando nenhum jogo está emocionante. Ativa-o nas Definições."
 		},
 		"setup": {
 			"t0": "Reduz o tempo de espera entre mudanças para mudar mais depressa num final caótico.",

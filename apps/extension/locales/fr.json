@@ -415,9 +415,9 @@
 		"groupDisplay": "Affichage",
 		"groupDisplayDesc": "Ce qu'affiche la liste des matchs et l'apparence d'ArenaSwap.",
 		"groupStandby": "Standby Stream",
-		"groupStandbyDesc": "Où te garer quand tous les matchs s'endorment.",
+		"groupStandbyDesc": "Un flux de secours pour quand aucun match n'est palpitant.",
 		"groupMultiview": "Multiview",
-		"groupMultiviewDesc": "Tous les matchs palpitants sur un seul écran.",
+		"groupMultiviewDesc": "Écran partagé pour quand plus d'un match est palpitant.",
 		"groupBackup": "Profils et sauvegarde",
 		"groupBackupDesc": "Change de config, ou emmène-en une dans un autre navigateur.",
 		"bonusesSection": "Bonus",
@@ -1100,7 +1100,7 @@
 		"footballOvertimeDeep": "Prolongation n° {overtime}, et l'écart tient toujours en une possession.",
 		"twoPointTries": "La prolongation se joue maintenant sur des tentatives de deux points.",
 		"underdogLeading": "Nos sources donnaient à {team} {chance} % de chances avant le match. Elle mène de {margin}.",
-		"underdogLevel": "Nos sources donnaient à {team} {chance} % de chances avant le match. Tout est à égalité.",
+		"underdogLevel": "Nos sources donnaient à {team} {chance} % de chances avant le match. Le score est à égalité.",
 		"underdogClose": "Nos sources donnaient à {team} {chance} % de chances avant le match. Elle ne perd que de {margin}.",
 		"postseasonFinal": "Celui-ci décide du titre, donc il rapporte le bonus complet.",
 		"postseasonSemifinal": "Une demi-finale, qui vaut les trois quarts du bonus complet.",
@@ -1314,13 +1314,13 @@
 	},
 	"standbyGuide": {
 		"title": "Standby Stream",
-		"subtitle": "Un repli pour les moments calmes.",
-		"quietTitle": "Quand les matchs s'endorment",
+		"subtitle": "Quelque chose à regarder quand aucun match n'est palpitant.",
+		"quietTitle": "Quand rien n'est palpitant",
 		"quietBody": "Quand tous les matchs que tu regardes passent sous ton seuil, ArenaSwap se positionne automatiquement sur ton Standby Stream.",
 		"returnTitle": "Il revient tout seul",
 		"returnBody": "Dès qu'un match se réchauffe au-dessus de ton seuil, ArenaSwap te ramène dessus immédiatement.",
 		"chooseTitle": "Tu choisis l'onglet de standby",
-		"chooseBody": "N'importe quel flux qui te plaît.",
+		"chooseBody": "Une émission de temps forts, une émission d'avant-match ou une chaîne qui passe d'un match à l'autre.",
 		"next": "Suivant",
 		"setupTitle": "Comment le configurer",
 		"thresholdTitle": "Fixe ton seuil",
@@ -1333,7 +1333,7 @@
 	"multiviewGuide": {
 		"title": "Multiview",
 		"subtitle": "Regarde plusieurs matchs à la fois.",
-		"oneScreenTitle": "Tous les matchs palpitants sur un seul écran",
+		"oneScreenTitle": "Écran partagé quand ça s'emballe",
 		"oneScreenBody": "Quand au moins deux de tes matchs sont palpitants en même temps, ArenaSwap les affiche ensemble dans un seul onglet.",
 		"soundTitle": "Le son de la plus grande case",
 		"soundBody": "Le match le plus palpitant a la plus grande case. C'est le seul que tu entends.",
@@ -1378,8 +1378,8 @@
 		"close": "Fermer"
 	},
 	"notification": {
-		"standbyTitle": "Garé sur le Standby Stream",
-		"standbyMessage": "Tous les matchs se sont endormis.",
+		"standbyTitle": "Basculé → Standby Stream",
+		"standbyMessage": "Rien de palpitant en ce moment.",
 		"multiviewTitle": "Basculé → Multiview",
 		"multiviewLeftTitle": "Multiview fermé",
 		"multiviewLeftMessage": "L'onglet Multiview est passé sur {host}, donc Multiview s'est arrêté. Il ne rouvrira pas ces matchs pendant 10 minutes.",
@@ -1471,7 +1471,7 @@
 			"t2": "Le PowerScore le plus élevé remporte le changement. Surveille la barre sur chaque fiche.",
 			"t3": "Active « Afficher les matchs à venir » dans Paramètres pour associer des onglets avant le début du match.",
 			"t4": "Pas encore de matchs en direct ? Le Mode démo dans Paramètres en met quelques-uns en scène pour voir ArenaSwap à l'œuvre.",
-			"t5": "Standby Stream maintient un onglet de secours en lecture quand tous les matchs se calment. Active-le dans Paramètres."
+			"t5": "Standby Stream bascule sur ton flux de secours quand aucun match n'est palpitant. Active-le dans Paramètres."
 		},
 		"setup": {
 			"t0": "Baisse le délai entre les changements pour basculer plus vite dans une fin de match folle.",

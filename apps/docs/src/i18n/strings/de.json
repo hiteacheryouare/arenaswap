@@ -141,7 +141,7 @@
 		},
 		"multiview": {
 			"title": "Qual der Wahl? Schau einfach alle.",
-			"copy": "Wenn zwei oder mehr deiner Spiele spannend werden, zeigt Multiview sie dir alle auf einem Bildschirm.",
+			"copy": "Wenn zwei oder mehr deiner Spiele gleichzeitig spannend werden, teilt Multiview den Bildschirm zwischen ihnen auf.",
 			"browsers": "In Chrome und Edge.",
 			"label": "Multiview mit vier spannenden Spielen auf einem Bildschirm, der Ton läuft beim größten.",
 			"soundOn": "Ton an"
@@ -264,7 +264,7 @@
 			},
 			{
 				"q": "Was passiert, wenn jedes Spiel langweilig ist?",
-				"a": "Aktiviere Standby Stream und wähle einen Tab. Wenn nichts, was du verfolgst, den Schwellenwert erreicht, parkt ArenaSwap dich dort, statt dich auf dem am wenigsten schlechten Spiel sitzen zu lassen."
+				"a": "Aktiviere Standby Stream und wähle einen Tab. Wenn nichts, was du verfolgst, den Schwellenwert erreicht, wechselt ArenaSwap dorthin, statt dich auf dem am wenigsten schlechten Spiel sitzen zu lassen."
 			},
 			{
 				"q": "Ist der Quellcode verfügbar?",
@@ -523,7 +523,7 @@
 				"boosts": [
 					{
 						"name": "Sensations-Alarm",
-						"copy": "Der Außenseiter führt, liegt gleichauf oder ist nach der Hälfte höchstens einen Score zurück."
+						"copy": "Der Außenseiter führt, steht unentschieden oder ist nach der Hälfte höchstens einen Score zurück."
 					},
 					{
 						"name": "Einsatz",

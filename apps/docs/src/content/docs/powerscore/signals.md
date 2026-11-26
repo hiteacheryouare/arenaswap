@@ -56,7 +56,7 @@ The tier ceilings:
 
 0-0 is scored apart from an ordinary tie, because early on it usually means nothing has happened yet rather than that the game is contested. Hockey grants full tie credit for 0-0 from the third period on, and soccer from the second half on. Earlier than that, and in every other sport, 0-0 earns a reduced ceiling of 22.
 
-**Ten men.** In soccer, a team a man down while protecting a one-goal lead concedes far more often than a full side does. So the game is closer than the score says, and Closeness adds 4 points (still capped at 42) while that's the situation. It's the one place a red card touches a signal. The red card boost is separate, and it's in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/#red-card).
+**Ten men.** In soccer, a team a man down while protecting a one-goal lead concedes far more often than a team at full strength does. So the game is closer than the score says, and Closeness adds 4 points (still capped at 42) while that's the situation. It's the one place a red card touches a signal. The red card boost is separate, and it's in [Boosts and penalties](/arenaswap/docs/powerscore/boosts-and-penalties/#red-card).
 
 What closeness ignores: which team is ahead, and the absolute score level. A 2-point game at 12-10 reads the same as one at 112-110, because closeness only ever looks at the number on the board right now.
 
@@ -76,7 +76,7 @@ Tied games ramp past 36 in the final minute, toward an overtime pre-boost that t
 
 Baseball and softball have no clock, so the same closeness-gated ramp runs across innings instead. It starts in the 6th inning for baseball, or the 5th for softball, and reaches its ceiling by the end of regulation.
 
-Soccer never says "overtime." Extra time reads *Tied in extra time*, a shootout reads *Penalty shootout*, and a level match late on reads *Tied in the 85th minute*. A draw is an ordinary league result, not a stop on the way to overtime. The pre-boost still applies, because a late deadlock is genuinely tense.
+Soccer never says "overtime." Extra time reads *Tied in extra time*, a shootout reads *Penalty shootout*, and a tied match late reads *Tied in the 85th minute*. A draw is an ordinary league result, not a stop on the way to overtime. The pre-boost still applies, because a late deadlock is genuinely tense.
 
 What late-game pressure ignores: recent scoring pace, which is momentum's job, and anything about the first three quarters of a game that's since turned lopsided.
 

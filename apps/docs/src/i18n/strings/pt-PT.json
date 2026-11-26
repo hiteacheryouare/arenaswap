@@ -141,7 +141,7 @@
 		},
 		"multiview": {
 			"title": "Não consegues escolher? Vê todos.",
-			"copy": "Quando dois ou mais dos teus jogos aquecem, o Multiview mostra-os todos num só ecrã.",
+			"copy": "Quando dois ou mais dos teus jogos ficam emocionantes ao mesmo tempo, o Multiview divide o ecrã entre eles.",
 			"browsers": "No Chrome e no Edge.",
 			"label": "Multiview com quatro jogos emocionantes num só ecrã, e o som no maior.",
 			"soundOn": "Som ligado"
@@ -264,7 +264,7 @@
 			},
 			{
 				"q": "O que acontece quando todos os jogos são aborrecidos?",
-				"a": "Ativa o Standby Stream e escolhe um separador. Quando nada do que segues ultrapassa o limiar, o ArenaSwap deixa-te lá em vez de te deixar no jogo menos mau."
+				"a": "Ativa o Standby Stream e escolhe um separador. Quando nada do que segues ultrapassa o limiar, o ArenaSwap muda para ele em vez de te deixar no jogo menos mau."
 			},
 			{
 				"q": "O código-fonte está disponível?",
@@ -637,7 +637,7 @@
 		"toggleOff": "O interruptor {label} nas Definições, desligado.",
 		"modes": "O seletor {section} aberto em {classic}, com {classic}, {blowouts}, {fantasy} e {custom}.",
 		"multiview": "Um separador Multiview com quatro jogos numa grelha 2×2. Boston em New York, em cima à esquerda, tem contorno e tem o som.",
-		"standby": "Um navegador estacionado num separador Standby Stream chamado {tab}, com dois separadores de jogos sem som ao lado, e a linha do popup: {line}",
+		"standby": "Um navegador com um separador Standby Stream chamado {tab}, com dois separadores de jogos sem som ao lado, e a linha do popup: {line}",
 		"profiles": "A lista {section} nas Definições com dois perfis, {current} em uso e o seu menu aberto em {rename} e {export}, por cima dos botões {new} e {backup}.",
 		"backup": "O separador de backup com um ficheiro carregado: {addAsNew} ou {replace}, e o que o ficheiro mudaria. Mais uma liga, as mesmas equipas favoritas e o modo de pontuação a passar de {from} para {to}.",
 		"bossButton": "O atalho do botão do chefe, Alt + Shift + X, e o separador de folha de cálculo de disfarce que ele abre, com os separadores de jogos sem som.",

@@ -1,5 +1,5 @@
 ---
-sourceHash: '9597d1316266'
+sourceHash: '52f64a17fb01'
 title: Mga TypeScript type ng PowerScore
 description: Bawat field ng Game, ScoringContext, ScoreOptions, PowerScore, at ng mga type ng mode at config, alin ang optional, at ano ang nangyayari kapag wala ang optional na field.
 section: powerscore
@@ -286,7 +286,7 @@ Sinasabi ng `details` sa boost kung ano ang nangyayari sa larong ito na binabaya
 | `noHitter` | `noHitter` | `team`, `innings` | {team} still doesn't have a hit through {innings} innings. |
 | `noHitter` | `doubleNoHitter` | `innings` | Neither team has a hit through {innings} innings. |
 | `upsetWatch` | `underdogLeading` | `team`, `chance`, `margin` | Our sources gave {team} a {chance}% chance before the game. They lead by {margin}. |
-| `upsetWatch` | `underdogLevel` | `team`, `chance` | Our sources gave {team} a {chance}% chance before the game. It's all square. |
+| `upsetWatch` | `underdogLevel` | `team`, `chance` | Our sources gave {team} a {chance}% chance before the game. It's tied. |
 | `upsetWatch` | `underdogClose` | `team`, `chance`, `margin` | Our sources gave {team} a {chance}% chance before the game. They trail by just {margin}. |
 | `stakes` | `seriesClinch` | `team` | A win and {team} takes the series. |
 | `stakes` | `seriesDecider` | `game` | Game {game}. Winner takes the series. |

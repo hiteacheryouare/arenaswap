@@ -1,5 +1,5 @@
 ---
-sourceHash: '10cc90e83f8c'
+sourceHash: 'b8d43b70dd47'
 title: Les bonus et pénalités de PowerScore
 navLabel: Bonus et pénalités
 description: Chaque bonus et chaque pénalité que PowerScore 3 applique par-dessus les signaux d'un mode, avec la condition qui déclenche chacun, son maximum, et les plafonds qu'ils partagent.

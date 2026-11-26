@@ -815,11 +815,11 @@ describe('setupView standby stream', () => {
 			prefs={{ ...defaultPrefs, standbyStreamEnabled: false }}
 		/>);
 		openGroup('standby');
-		cy.contains('A fallback for the slow moments.').should('not.exist');
+		cy.contains('Something to watch when no game is exciting.').should('not.exist');
 
 		cy.get('#standbyStreamToggle').check({ force: true });
 
-		cy.contains('A fallback for the slow moments.').should('be.visible');
+		cy.contains('Something to watch when no game is exciting.').should('be.visible');
 		cy.get('.flow-stepper .stepper-item.is-current').should('be.visible');
 		cy.contains('Step 1 of 2').should('exist');
 	});
@@ -833,7 +833,7 @@ describe('setupView standby stream', () => {
 		openGroup('standby');
 		cy.get('#standbyStreamToggle').check({ force: true });
 
-		cy.contains('A fallback for the slow moments.').should('not.exist');
+		cy.contains('Something to watch when no game is exciting.').should('not.exist');
 	});
 });
 

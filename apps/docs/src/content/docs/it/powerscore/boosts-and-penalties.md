@@ -1,5 +1,5 @@
 ---
-sourceHash: '10cc90e83f8c'
+sourceHash: 'b8d43b70dd47'
 title: Boost e penalità di PowerScore
 navLabel: Boost e penalità
 description: Ogni boost e penalità che PowerScore 3 applica sopra i segnali di una modalità, con la condizione che attiva ciascuno, il suo massimo e i limiti che condividono.

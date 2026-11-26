@@ -46,7 +46,7 @@ describe('Standby Stream', () => {
 
 		play(30_000);
 		watching(channelTab);
-		world().then(live => live.notifications.at(-1)).should('deep.include', { title: 'Parked on Standby Stream', message: 'Every game went quiet.' });
+		world().then(live => live.notifications.at(-1)).should('deep.include', { title: 'Switched → Standby Stream', message: 'Nothing\'s exciting right now.' });
 	});
 
 	it('says so in the popup while it is parked', () => {
@@ -79,7 +79,7 @@ describe('Standby Stream', () => {
 		play(60_000);
 		watching(nhlTab);
 		world().its('notifications').should(notifications => {
-			expect(notifications.map(notification => notification.title)).not.to.include('Parked on Standby Stream');
+			expect(notifications.map(notification => notification.title)).not.to.include('Switched → Standby Stream');
 		});
 	});
 });

@@ -141,7 +141,7 @@
 		},
 		"multiview": {
 			"title": "Não consegue escolher? Assista a todos.",
-			"copy": "Quando dois ou mais dos seus jogos esquentam, o Multiview coloca todos em uma só tela.",
+			"copy": "Quando dois ou mais dos seus jogos ficam emocionantes ao mesmo tempo, o Multiview divide a tela entre eles.",
 			"browsers": "No Chrome e no Edge.",
 			"label": "Multiview com quatro jogos emocionantes em uma só tela, e o som no maior deles.",
 			"soundOn": "Som ligado"
@@ -264,7 +264,7 @@
 			},
 			{
 				"q": "O que acontece quando todos os jogos estão chatos?",
-				"a": "Ative o Standby Stream e escolha uma aba. Quando nada do que você acompanha ultrapassa o limite, o ArenaSwap te deixa lá em vez de te deixar no jogo menos ruim."
+				"a": "Ative o Standby Stream e escolha uma aba. Quando nada do que você acompanha passa do limite, o ArenaSwap troca para ela em vez de te deixar no jogo menos ruim."
 			},
 			{
 				"q": "O código-fonte está disponível?",
@@ -637,7 +637,7 @@
 		"toggleOff": "O interruptor {label} nas Configurações, desligado.",
 		"modes": "O seletor {section} aberto em {classic}, listando {classic}, {blowouts}, {fantasy} e {custom}.",
 		"multiview": "Uma aba do Multiview com quatro jogos numa grade 2×2. Boston at New York, no alto à esquerda, está destacado e tem o som.",
-		"standby": "Um navegador parado numa aba de Standby Stream chamada {tab}, com duas abas de jogos silenciadas ao lado, e a linha do popup: {line}",
+		"standby": "Um navegador com uma aba de Standby Stream chamada {tab}, com duas abas de jogos silenciadas ao lado, e a linha do popup: {line}",
 		"profiles": "A lista {section} nas Configurações com dois perfis, {current} em uso e o menu dele aberto em {rename} e {export}, acima dos botões {new} e {backup}.",
 		"backup": "A aba de backup com um arquivo carregado: {addAsNew} ou {replace}, e o que o arquivo mudaria. Mais uma liga, os mesmos times favoritos e o modo de pontuação indo de {from} para {to}.",
 		"bossButton": "O atalho do botão do chefe, Alt + Shift + X, e a aba de planilha de disfarce que ele abre, com as abas de jogos silenciadas.",

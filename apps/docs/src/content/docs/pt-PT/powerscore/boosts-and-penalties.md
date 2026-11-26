@@ -1,5 +1,5 @@
 ---
-sourceHash: '10cc90e83f8c'
+sourceHash: 'b8d43b70dd47'
 title: Impulsos e penalizações do PowerScore
 navLabel: Impulsos e penalizações
 description: Todos os impulsos e penalizações que o PowerScore 3 aplica por cima dos sinais de um modo, com a condição que ativa cada um, o seu máximo e os limites que partilham.

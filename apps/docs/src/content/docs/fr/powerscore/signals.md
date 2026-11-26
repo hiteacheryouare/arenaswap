@@ -1,5 +1,5 @@
 ---
-sourceHash: '2125a74f6361'
+sourceHash: 'e4a604c3a8c2'
 title: Les signaux de PowerScore dans chaque mode
 description: Les signaux derrière PowerScore en mode Classique, Raclées et Fantasy, avec le plafond de chacun, ce qu'il mesure et ce qu'il ignore. Et comment désactiver des signaux.
 section: powerscore
@@ -57,7 +57,7 @@ Les plafonds par palier :
 
 Le 0-0 est noté à part d'une égalité ordinaire, parce qu'au début il veut généralement dire que rien ne s'est encore passé plutôt que le match est disputé. Le hockey accorde le plein crédit d'égalité au 0-0 à partir de la troisième période, et le soccer à partir de la seconde mi-temps. Avant ça, et dans tous les autres sports, le 0-0 gagne un plafond réduit de 22.
 
-**À dix.** Au soccer, une équipe réduite à dix qui protège une avance d'un but encaisse bien plus souvent qu'une équipe complète. Le match est donc plus serré que le score ne le dit, et Serré ajoute 4 points (toujours plafonnés à 42) tant que c'est la situation. C'est le seul endroit où un carton rouge touche un signal. Le bonus de carton rouge est séparé, et il est dans [Bonus et pénalités](/arenaswap/docs/powerscore/boosts-and-penalties/#red-card).
+**À dix.** Au soccer, une équipe réduite à dix qui protège une avance d'un but encaisse bien plus souvent qu'une équipe à effectif complet. Le match est donc plus serré que le score ne le dit, et Serré ajoute 4 points (toujours plafonnés à 42) tant que c'est la situation. C'est le seul endroit où un carton rouge touche un signal. Le bonus de carton rouge est séparé, et il est dans [Bonus et pénalités](/arenaswap/docs/powerscore/boosts-and-penalties/#red-card).
 
 Ce que Serré ignore : quelle équipe mène, et le niveau absolu du score. Un match à 2 points d'écart à 12-10 vaut la même chose qu'à 112-110, parce que Serré ne regarde que le nombre au tableau en ce moment.
 

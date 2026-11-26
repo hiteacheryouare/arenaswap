@@ -141,7 +141,7 @@
 		},
 		"multiview": {
 			"title": "难以取舍？那就全都看。",
-			"copy": "当您的两场或更多比赛同时精彩起来，Multiview 会把它们放到同一个屏幕上。",
+			"copy": "当您的两场或更多比赛同时精彩起来，Multiview 会把屏幕分给它们。",
 			"browsers": "支持 Chrome 和 Edge。",
 			"label": "Multiview 在同一屏幕上显示四场精彩比赛，最大的一场开着声音。",
 			"soundOn": "声音已开"
@@ -264,7 +264,7 @@
 			},
 			{
 				"q": "如果所有比赛都很无聊会怎样？",
-				"a": "打开 Standby Stream 并选择一个标签页。当您追踪的比赛中没有一场达到阈值时，ArenaSwap 会让您停留在那里，而不是把您留在最不糟糕的那场比赛上。"
+				"a": "打开 Standby Stream 并选择一个标签页。当您追踪的比赛中没有一场达到阈值时，ArenaSwap 会切换过去，而不是把您留在最不糟糕的那场比赛上。"
 			},
 			{
 				"q": "源代码是否公开？",
@@ -637,7 +637,7 @@
 		"toggleOff": "设置里的“{label}”开关，已关闭。",
 		"modes": "“{section}”选择器已展开，当前选中{classic}，选项有{classic}、{blowouts}、{fantasy}和{custom}。",
 		"multiview": "一个 Multiview 标签页，四场比赛排成 2×2 的网格。左上角的 Boston at New York 有轮廓框，并且有声音。",
-		"standby": "浏览器停在一个叫“{tab}”的 Standby Stream 标签页上，旁边是两个已静音的比赛标签页，弹窗里写着：{line}",
+		"standby": "浏览器里开着一个叫“{tab}”的 Standby Stream 标签页，旁边是两个已静音的比赛标签页，弹窗里写着：{line}",
 		"profiles": "设置里的“{section}”列表有两个个人资料，正在使用的是“{current}”，它的菜单展开着，显示“{rename}”和“{export}”，列表下方是“{new}”和“{backup}”按钮。",
 		"backup": "已载入文件的备份标签页：“{addAsNew}”或“{replace}”，以及文件会带来的改动。多一个联赛，收藏球队不变，评分模式从{from}变成{to}。",
 		"bossButton": "老板键快捷键 Alt + Shift + X，以及它打开的诱饵电子表格标签页，比赛标签页已静音。",

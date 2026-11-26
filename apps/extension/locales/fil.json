@@ -415,9 +415,9 @@
 		"groupDisplay": "Display",
 		"groupDisplayDesc": "Kung ano ang ipinapakita ng listahan ng laro, at kung ano ang itsura ng ArenaSwap.",
 		"groupStandby": "Standby Stream",
-		"groupStandbyDesc": "Kung saan ka ipa-park kapag tahimik na ang lahat ng laro.",
+		"groupStandbyDesc": "Backup stream para kapag walang exciting na laro.",
 		"groupMultiview": "Multiview",
-		"groupMultiviewDesc": "Lahat ng kapana-panabik na laro sa iisang screen.",
+		"groupMultiviewDesc": "Hatiin ang screen kapag higit sa isang laro ang exciting.",
 		"groupBackup": "Mga Profile at Backup",
 		"groupBackupDesc": "Magpalit ng setup, o dalhin ang isa sa ibang browser.",
 		"bonusesSection": "Mga Boost",
@@ -1314,13 +1314,13 @@
 	},
 	"standbyGuide": {
 		"title": "Standby Stream",
-		"subtitle": "Fallback para sa mga tahimik na sandali.",
-		"quietTitle": "Kapag Tumahimik ang mga Laro",
-		"quietBody": "Kapag bumaba sa threshold mo ang lahat ng laro na pinapanood mo, awtomatikong ipa-park ka ng ArenaSwap sa Standby Stream mo.",
+		"subtitle": "May mapapanood kapag walang exciting na laro.",
+		"quietTitle": "Kapag Walang Exciting",
+		"quietBody": "Kapag bumaba sa threshold mo ang lahat ng laro na pinapanood mo, awtomatikong lilipat ang ArenaSwap sa Standby Stream mo.",
 		"returnTitle": "Bumabalik ito Nang Mag-isa",
 		"returnBody": "Sa sandaling uminit ulit ang kahit anong laro pataas sa threshold mo, ililipat ka agad pabalik ng ArenaSwap.",
 		"chooseTitle": "Ikaw ang Pipili ng Standby Tab",
-		"chooseBody": "Kahit anong stream na gusto mo.",
+		"chooseBody": "Highlight show, pregame show, o channel na lumilipat-lipat sa mga laro.",
 		"next": "Susunod",
 		"setupTitle": "Paano I-set Up",
 		"thresholdTitle": "I-set ang Threshold Mo",
@@ -1333,7 +1333,7 @@
 	"multiviewGuide": {
 		"title": "Multiview",
 		"subtitle": "Manood ng higit sa isang laro nang sabay.",
-		"oneScreenTitle": "Bawat Kapana-panabik na Laro sa Iisang Screen",
+		"oneScreenTitle": "Hatiin ang Screen Kapag Dumami ang Exciting",
 		"oneScreenBody": "Kapag dalawa o higit pa sa mga laro mo ang sabay na kapana-panabik, ipinapakita sila ng ArenaSwap nang magkakasama sa iisang tab.",
 		"soundTitle": "Tunog Mula sa Pinakamalaking Box",
 		"soundBody": "Ang pinakakapana-panabik na laro ang may pinakamalaking box. Ito lang ang maririnig mo.",
@@ -1378,8 +1378,8 @@
 		"close": "Isara"
 	},
 	"notification": {
-		"standbyTitle": "Naka-park sa Standby Stream",
-		"standbyMessage": "Tumahimik ang lahat ng laro.",
+		"standbyTitle": "Lumipat → Standby Stream",
+		"standbyMessage": "Walang exciting na laro ngayon.",
 		"multiviewTitle": "Lumipat → Multiview",
 		"multiviewLeftTitle": "Nagsara ang Multiview",
 		"multiviewLeftMessage": "Pumunta ang Multiview tab sa {host}, kaya huminto ang Multiview. Hindi nito bubuksan muli ang mga larong ito sa loob ng 10 minuto.",
@@ -1471,7 +1471,7 @@
 			"t2": "Ang mas mataas na PowerScore ang nananalo sa swap. Bantayan ang bar sa bawat card.",
 			"t3": "I-on ang \"Ipakita ang mga paparating na laro\" sa Mga Setting para maunang mag-assign ng tab bago pa magsimula ang laro.",
 			"t4": "Wala pang live na laro? Magse-set up ang Demo Mode sa Mga Setting ng ilan para makita mong gumagana ang ArenaSwap.",
-			"t5": "Pinapanatiling naka-play ng Standby Stream ang backup tab tuwing tumahimik ang lahat ng laro. I-enable ito sa Mga Setting."
+			"t5": "Lumilipat ang Standby Stream sa backup stream mo kapag walang exciting na laro. I-enable ito sa Mga Setting."
 		},
 		"setup": {
 			"t0": "Babaan ang Cooldown ng Paglipat para mas mabilis lumipat sa magulong finish.",

@@ -1,5 +1,5 @@
 ---
-sourceHash: '2125a74f6361'
+sourceHash: 'e4a604c3a8c2'
 title: PowerScore-Signale in jedem Modus
 description: Die Signale hinter dem PowerScore in Klassisch, Kantersiege und Fantasy, mit Obergrenze, Messgröße und Blindstellen jedes Signals. Dazu, wie du Signale abschaltest.
 section: powerscore
@@ -57,7 +57,7 @@ Die Obergrenzen der Stufen:
 
 0:0 wird getrennt von einem gewöhnlichen Gleichstand bewertet, weil es früh meist bedeutet, dass noch nichts passiert ist, und nicht, dass das Spiel umkämpft ist. Hockey gibt für 0:0 ab dem dritten Drittel die volle Gleichstand-Gutschrift, Fußball ab der zweiten Halbzeit. Davor und in jeder anderen Sportart bekommt 0:0 eine reduzierte Obergrenze von 22.
 
-**Zehn Mann.** Im Fußball kassiert ein Team, das einen Mann weniger hat und eine Ein-Tor-Führung verteidigt, weit häufiger Gegentore als eine volle Mannschaft. Das Spiel ist also enger, als der Spielstand sagt, und Ausgeglichenheit addiert 4 Punkte (weiterhin auf 42 gekappt), solange das die Lage ist. Es ist die einzige Stelle, an der eine Rote Karte ein Signal berührt. Der Boost für die Rote Karte ist getrennt und steht in [Boosts und Strafen](/arenaswap/docs/powerscore/boosts-and-penalties/#red-card).
+**Zehn Mann.** Im Fußball kassiert ein Team, das einen Mann weniger hat und eine Ein-Tor-Führung verteidigt, weit häufiger Gegentore als ein Team in voller Stärke. Das Spiel ist also enger, als der Spielstand sagt, und Ausgeglichenheit addiert 4 Punkte (weiterhin auf 42 gekappt), solange das die Lage ist. Es ist die einzige Stelle, an der eine Rote Karte ein Signal berührt. Der Boost für die Rote Karte ist getrennt und steht in [Boosts und Strafen](/arenaswap/docs/powerscore/boosts-and-penalties/#red-card).
 
 Was Ausgeglichenheit ignoriert: welches Team vorn liegt und wie hoch der absolute Spielstand ist. Ein 2-Punkte-Spiel bei 12:10 wird genauso gelesen wie eines bei 112:110, denn Ausgeglichenheit schaut immer nur auf die Zahl auf der Tafel in diesem Moment.
 
@@ -77,7 +77,7 @@ Spiele mit Gleichstand steigen in der letzten Minute über 36 hinaus, auf einen 
 
 Baseball und Softball haben keine Uhr, derselbe an Ausgeglichenheit gekoppelte Anstieg läuft also über die Innings. Er beginnt im 6. Inning beim Baseball oder im 5. beim Softball und erreicht seine Obergrenze zum Ende der regulären Spielzeit.
 
-Fußball sagt nie „Overtime“. Die Verlängerung heißt *Gleichstand in der Verlängerung*, ein Elfmeterschießen *Elfmeterschießen*, und ein ausgeglichenes Spiel spät *Gleichstand in der 85. Minute*. Ein Unentschieden ist ein gewöhnliches Ligaergebnis, keine Zwischenstation auf dem Weg in die Overtime. Der Pre-Boost gilt weiterhin, denn ein spätes Patt ist wirklich spannend.
+Fußball sagt nie „Overtime“. Die Verlängerung heißt *Gleichstand in der Verlängerung*, ein Elfmeterschießen *Elfmeterschießen*, und ein spät unentschiedenes Spiel *Gleichstand in der 85. Minute*. Ein Unentschieden ist ein gewöhnliches Ligaergebnis, keine Zwischenstation auf dem Weg in die Overtime. Der Pre-Boost gilt weiterhin, denn ein spätes Patt ist wirklich spannend.
 
 Was der Spielschluss ignoriert: das jüngste Punktetempo, das ist die Aufgabe des Schwungs, und alles aus den ersten drei Vierteln eines Spiels, das inzwischen einseitig geworden ist.
 

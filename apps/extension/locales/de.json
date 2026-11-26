@@ -415,9 +415,9 @@
 		"groupDisplay": "Anzeige",
 		"groupDisplayDesc": "Was die Spielliste zeigt und wie ArenaSwap aussieht.",
 		"groupStandby": "Standby Stream",
-		"groupStandbyDesc": "Wohin du kommst, wenn alle Spiele einschlafen.",
+		"groupStandbyDesc": "Ein Reserve-Stream für den Fall, dass kein Spiel spannend ist.",
 		"groupMultiview": "Multiview",
-		"groupMultiviewDesc": "Jedes spannende Spiel auf einem Screen.",
+		"groupMultiviewDesc": "Splitscreen, wenn mehr als ein Spiel spannend ist.",
 		"groupBackup": "Profile & Backup",
 		"groupBackupDesc": "Wechsle zwischen Setups oder nimm eins in einen anderen Browser mit.",
 		"bonusesSection": "Boosts",
@@ -1037,7 +1037,7 @@
 		"tooltipSuddenDeath": "Gilt in der Playoff-Verlängerung im Eishockey, in der Verlängerung im College Football und in der UFL sowie in Shootouts. Jede weitere Verlängerung bringt mehr.",
 		"tooltipRedCard": "Gilt zehn Minuten lang nach einer Roten Karte in einem Spiel mit Gleichstand oder nur einem Tor Unterschied.",
 		"tooltipNoHitter": "Gilt, wenn ein Team ab dem 6. Inning (im Softball ab dem 4.) noch keinen Hit hat.",
-		"tooltipUpsetWatch": "Gilt, wenn der Außenseiter vor dem Spiel führt, gleichauf liegt oder nach der Hälfte höchstens einen Score zurückliegt.",
+		"tooltipUpsetWatch": "Gilt, wenn der Außenseiter vor dem Spiel führt, unentschieden steht oder nach der Hälfte höchstens einen Score zurückliegt.",
 		"tooltipUpsetRout": "Gilt, wenn der Außenseiter vor dem Spiel dem Favoriten davonzieht.",
 		"tooltipStakes": "Gilt, wenn das Ergebnis etwas entscheidet: eine Serie, ein Duell gerankter Teams oder ein Rennen am Saisonende."
 	},
@@ -1314,13 +1314,13 @@
 	},
 	"standbyGuide": {
 		"title": "Standby Stream",
-		"subtitle": "Ein Rückfallplan für ruhige Momente.",
-		"quietTitle": "Wenn die Spiele einschlafen",
+		"subtitle": "Etwas zum Schauen, wenn kein Spiel spannend ist.",
+		"quietTitle": "Wenn nichts spannend ist",
 		"quietBody": "Wenn jedes Spiel, das du verfolgst, unter deinen Schwellenwert fällt, wechselt ArenaSwap automatisch auf deinen Standby Stream.",
 		"returnTitle": "Zurück geht's von selbst",
 		"returnBody": "Sobald ein Spiel wieder über deinen Schwellenwert steigt, wechselt ArenaSwap dich sofort zurück.",
 		"chooseTitle": "Du wählst den Standby-Tab",
-		"chooseBody": "Jeder Stream, der dir gefällt.",
+		"chooseBody": "Eine Highlight-Show, eine Pregame-Show oder ein Kanal, der zwischen Spielen hin und her schaltet.",
 		"next": "Weiter",
 		"setupTitle": "So richtest du es ein",
 		"thresholdTitle": "Schwellenwert festlegen",
@@ -1333,7 +1333,7 @@
 	"multiviewGuide": {
 		"title": "Multiview",
 		"subtitle": "Mehr als ein Spiel gleichzeitig schauen.",
-		"oneScreenTitle": "Jedes spannende Spiel auf einem Screen",
+		"oneScreenTitle": "Splitscreen, wenn viel los ist",
 		"oneScreenBody": "Wenn zwei oder mehr deiner Spiele gleichzeitig spannend sind, zeigt ArenaSwap sie zusammen in einem Tab.",
 		"soundTitle": "Ton aus der größten Box",
 		"soundBody": "Das spannendste Spiel bekommt die größte Box. Nur dort hörst du Ton.",
@@ -1378,8 +1378,8 @@
 		"close": "Schließen"
 	},
 	"notification": {
-		"standbyTitle": "Auf dem Standby Stream geparkt",
-		"standbyMessage": "Alle Spiele sind eingeschlafen.",
+		"standbyTitle": "Gewechselt → Standby Stream",
+		"standbyMessage": "Gerade ist nichts spannend.",
 		"multiviewTitle": "Gewechselt → Multiview",
 		"multiviewLeftTitle": "Multiview geschlossen",
 		"multiviewLeftMessage": "Der Multiview-Tab ist zu {host} gewechselt, daher wurde Multiview beendet. Es öffnet diese Spiele 10 Minuten lang nicht erneut.",
@@ -1471,7 +1471,7 @@
 			"t2": "Der höhere PowerScore gewinnt den Wechsel. Achte auf den Balken auf jeder Karte.",
 			"t3": "\"Bevorstehende Spiele anzeigen\" in den Einstellungen aktivieren, um Tabs vor Spielbeginn zuzuweisen.",
 			"t4": "Noch keine Live-Spiele? Der Demo-Modus in den Einstellungen inszeniert ein paar, damit du ArenaSwap bei der Arbeit zusehen kannst.",
-			"t5": "Standby Stream hält einen Reserve-Tab am Laufen, sobald alle Spiele ruhig werden. Aktivieren kannst du ihn in den Einstellungen."
+			"t5": "Standby Stream wechselt auf deinen Reserve-Stream, wenn kein Spiel spannend ist. Aktivieren kannst du ihn in den Einstellungen."
 		},
 		"setup": {
 			"t0": "Den Wechsel-Cooldown senken, um bei einem chaotischen Finish schneller zu wechseln.",

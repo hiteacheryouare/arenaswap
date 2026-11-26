@@ -1,5 +1,5 @@
 ---
-sourceHash: '2125a74f6361'
+sourceHash: 'e4a604c3a8c2'
 title: Os sinais do PowerScore em cada modo
 description: Os sinais por trás do PowerScore Clássico, Goleadas e Fantasy, com o máximo de cada um, o que mede e o que ignora. E como desligar sinais.
 section: powerscore
@@ -57,7 +57,7 @@ Os máximos de cada escalão:
 
 O 0-0 é pontuado à parte de um empate normal, porque no início quer normalmente dizer que ainda não aconteceu nada e não que o jogo está disputado. O hóquei dá o crédito total de empate ao 0-0 a partir do terceiro período, e o futebol a partir da segunda parte. Antes disso, e em todos os outros desportos, o 0-0 ganha um máximo reduzido de 22.
 
-**Dez jogadores.** No futebol, uma equipa com menos um jogador a defender uma vantagem de um golo sofre muito mais golos do que uma equipa completa. Por isso o jogo está mais equilibrado do que o marcador diz, e o Equilíbrio soma 4 pontos (ainda limitado a 42) enquanto essa for a situação. É o único sítio onde um cartão vermelho toca num sinal. O impulso de cartão vermelho é à parte, e está em [Impulsos e penalizações](/arenaswap/docs/powerscore/boosts-and-penalties/#red-card).
+**Dez jogadores.** No futebol, uma equipa com menos um jogador a defender uma vantagem de um golo sofre muito mais golos do que uma equipa com todos os jogadores. Por isso o jogo está mais equilibrado do que o marcador diz, e o Equilíbrio soma 4 pontos (ainda limitado a 42) enquanto essa for a situação. É o único sítio onde um cartão vermelho toca num sinal. O impulso de cartão vermelho é à parte, e está em [Impulsos e penalizações](/arenaswap/docs/powerscore/boosts-and-penalties/#red-card).
 
 O que o equilíbrio ignora: que equipa está à frente e o nível absoluto do marcador. Um jogo de 2 pontos aos 12-10 lê-se como um aos 112-110, porque o equilíbrio só olha para o número no marcador neste momento.
 
@@ -77,7 +77,7 @@ Os jogos empatados passam dos 36 no último minuto, rumo a um pré-impulso de pr
 
 O basebol e o softbol não têm relógio, por isso a mesma rampa condicionada pelo equilíbrio corre ao longo das entradas. Começa na 6.ª entrada no basebol, ou na 5.ª no softbol, e chega ao máximo no fim do tempo regulamentar.
 
-O futebol nunca diz "prolongamento". O tempo extra lê-se *Empate no tempo extra*, o desempate lê-se *Desempate por penáltis* e um jogo nivelado já tarde lê-se *Empate aos 85 minutos*. Um empate é um resultado normal de campeonato, não uma paragem a caminho do prolongamento. O pré-impulso continua a aplicar-se, porque um impasse tardio é genuinamente tenso.
+O futebol nunca diz "prolongamento". O tempo extra lê-se *Empate no tempo extra*, o desempate lê-se *Desempate por penáltis* e um jogo empatado já tarde lê-se *Empate aos 85 minutos*. Um empate é um resultado normal de campeonato, não uma paragem a caminho do prolongamento. O pré-impulso continua a aplicar-se, porque um impasse tardio é genuinamente tenso.
 
 O que a pressão da fase final ignora: o ritmo recente de pontuação, que é trabalho da dinâmica, e tudo o que se passou nos três primeiros quartos de um jogo que entretanto ficou desnivelado.
 

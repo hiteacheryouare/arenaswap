@@ -1,5 +1,5 @@
 ---
-sourceHash: '2125a74f6361'
+sourceHash: 'e4a604c3a8c2'
 title: Sinais do PowerScore em cada modo
 description: Os sinais por trás do PowerScore Clássico, Atropelos e Fantasy, com o teto de cada um, o que mede e o que ignora. E como desligar sinais.
 section: powerscore
@@ -57,7 +57,7 @@ Os tetos das faixas:
 
 O 0 a 0 é pontuado à parte de um empate comum, porque no começo ele costuma significar que nada aconteceu ainda, e não que o jogo está disputado. O hóquei dá o crédito cheio de empate ao 0 a 0 a partir do terceiro período, e o futebol a partir do segundo tempo. Antes disso, e em todos os outros esportes, o 0 a 0 ganha um teto reduzido de 22.
 
-**Dez contra onze.** No futebol, um time com um jogador a menos protegendo uma vantagem de um gol sofre gol muito mais do que um time completo. Então o jogo está mais apertado do que o placar diz, e o Equilíbrio soma 4 pontos (ainda limitado a 42) enquanto essa for a situação. É o único lugar em que um cartão vermelho toca num sinal. O impulso de cartão vermelho é separado, e está em [Impulsos e penalidades](/arenaswap/docs/powerscore/boosts-and-penalties/#red-card).
+**Dez contra onze.** No futebol, um time com um jogador a menos protegendo uma vantagem de um gol sofre gol muito mais do que um time com todos os jogadores. Então o jogo está mais apertado do que o placar diz, e o Equilíbrio soma 4 pontos (ainda limitado a 42) enquanto essa for a situação. É o único lugar em que um cartão vermelho toca num sinal. O impulso de cartão vermelho é separado, e está em [Impulsos e penalidades](/arenaswap/docs/powerscore/boosts-and-penalties/#red-card).
 
 O que o equilíbrio ignora: qual time está na frente e o nível absoluto do placar. Um jogo de 2 pontos em 12 a 10 vale o mesmo que um em 112 a 110, porque o equilíbrio só olha o número que está no placar agora.
 
@@ -77,7 +77,7 @@ Jogos empatados passam de 36 no último minuto, rumo a um pré-impulso de prorro
 
 Beisebol e softbol não têm relógio, então a mesma rampa, travada pelo equilíbrio, corre pelas entradas. Ela começa na 6ª entrada no beisebol, ou na 5ª no softbol, e chega ao teto no fim do tempo normal.
 
-O futebol nunca diz "overtime". O tempo extra aparece como *Empate na prorrogação*, uma disputa de pênaltis como *Disputa de pênaltis*, e uma partida igual no fim como *Empate no minuto 85*. Um empate é um resultado comum de liga, não uma parada no caminho da prorrogação. O pré-impulso continua valendo, porque um impasse no fim é tenso de verdade.
+O futebol nunca diz "overtime". O tempo extra aparece como *Empate na prorrogação*, uma disputa de pênaltis como *Disputa de pênaltis*, e uma partida empatada no fim como *Empate no minuto 85*. Um empate é um resultado comum de liga, não uma parada no caminho da prorrogação. O pré-impulso continua valendo, porque um impasse no fim é tenso de verdade.
 
 O que a fase final ignora: o ritmo recente de pontuação, que é trabalho da dinâmica, e qualquer coisa dos três primeiros quartos de um jogo que depois virou um passeio.
 
