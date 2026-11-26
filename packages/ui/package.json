@@ -10,7 +10,7 @@
 		"lint": "oxlint ."
 	},
 	"peerDependencies": {
-		"bootstrap": "6.0.0-alpha.1",
+		"bootstrap": "6.0.0-alpha.2",
 		"react": "^19.3.0",
 		"react-dom": "^19.3.0"
 	},
@@ -18,7 +18,7 @@
 		"@arenaswap/chromatic": "*",
 		"@arenaswap/core": "*",
 		"@arenaswap/sideline": "*",
-		"@floating-ui/dom": "1.7.6"
+		"@floating-ui/dom": "1.8.0"
 	},
 	"devDependencies": {
 		"@types/jest": "^30.0.0",

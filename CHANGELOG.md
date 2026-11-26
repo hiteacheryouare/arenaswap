@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Bootstrap 6.0.0-alpha.2 — 2026-11-25
+
+Bootstrap and `@floating-ui/dom` (1.8.0, alpha.2's new peer floor) move up, which picks up the two alpha.1 XSS fixes and drops our workarounds for the Menu dispose leak, the unread switch knob and check radius tokens, the quarter-thumb tick inset and the global scrollbar gutter. Where alpha.2 only changed a default look, `_bootstrap.scss` pins today's: code stays at 95%, close buttons inherit their color, and a keyboard-focused menu item looks hovered instead of turning into a gray slab. The range fill now stops at the thumb's center and menus wrap long items to fit the window instead of growing past it.
+
 ## Dependabot sends one weekly pull request into dev — 2026-11-25
 
 Every minor and patch npm upgrade now arrives in a single grouped PR against `dev`, each major gets its own, and GitHub Actions get a monthly grouped PR; new releases wait out a 7-day cooldown (14 for majors). The auto-merge workflow is gone, because repo auto-merge was never enabled and its title rewrite fought Dependabot's own titles, and Dependabot only reads this file from `mega`, so the same change went there too.

@@ -15,11 +15,10 @@ interface profileRowProps {
 
 const profileRow = ({ profile, active, disabled, onSwitch, onRename, onExport, onDelete }: profileRowProps) => {
 	const toggleRef = useRef<HTMLButtonElement>(null);
-	const menuRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		if (!toggleRef.current || !menuRef.current) return;
-		return attachMenu(toggleRef.current, menuRef.current, { placement: 'bottom-end' });
+		if (!toggleRef.current) return;
+		return attachMenu(toggleRef.current, { placement: 'bottom-end' });
 	}, []);
 
 	return (
@@ -49,7 +48,7 @@ const profileRow = ({ profile, active, disabled, onSwitch, onRename, onExport, o
 				>
 					<i className='bi bi-three-dots' aria-hidden='true' />
 				</button>
-				<div ref={menuRef} className='menu'>
+				<div className='menu'>
 					<button type='button' className='menu-item' onClick={onRename}>
 						<i className='bi bi-pencil' aria-hidden='true' />
 						{i18n.t('profiles.rename')}

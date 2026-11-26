@@ -17,7 +17,7 @@ export interface selectDropdownProps<T extends string> {
 	disabled?: boolean;
 	labelId?: string;
 	ariaLabel?: string;
-	attach?: (toggle: HTMLElement, menu: HTMLElement) => () => void;
+	attach?: (toggle: HTMLElement) => () => void;
 	open?: boolean;
 }
 
@@ -36,7 +36,7 @@ const selectDropdown = <T extends string>({ value, options, onChange, id, disabl
 		if (!toggle || !menu || !attach) return;
 		const revealSelected = () => menu.querySelector('.selected')?.scrollIntoView({ block: 'nearest' });
 		toggle.addEventListener('shown.bs.menu', revealSelected);
-		const detach = attach(toggle, menu);
+		const detach = attach(toggle);
 		return () => {
 			toggle.removeEventListener('shown.bs.menu', revealSelected);
 			detach();
