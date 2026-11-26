@@ -1,4 +1,5 @@
-import { goAheadRunTunables } from '../constants';
+import { automaticRunnerFactor, goAheadRunTunables } from '../constants';
+import { isUntouchedAutomaticRunner } from './automaticRunner';
 import { baseMask, isBaseball, isLive, none, ramp, runnersOn } from './shared';
 import type { BoostDefinition, ReasonFragment } from '../types';
 
@@ -29,6 +30,8 @@ export const goAheadRunBoost: BoostDefinition = {
 		const details: ReasonFragment[] = goAhead && lastChance && battingHome
 			? [{ key: 'winningRun', params: { team } }]
 			: [{ key: goAhead ? 'goAheadRun' : 'tyingRun', params: { team } }, ...(lastChance ? [{ key: 'lastChance' }] : [])];
-		return { points: Math.round(base * inningFactor * (lastChance ? goAheadRunTunables.lastChanceFactor : 1)), details };
+		const automatic = isUntouchedAutomaticRunner(game);
+		const points = Math.round(base * inningFactor * (lastChance ? goAheadRunTunables.lastChanceFactor : 1) * (automatic ? automaticRunnerFactor : 1));
+		return { points, details: automatic ? [...details, { key: 'automaticRunner' }] : details };
 	},
 };

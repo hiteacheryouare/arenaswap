@@ -15,6 +15,8 @@ export const boostIds = [
 	'scoringOpportunity',
 	'goAheadRun',
 	'twoMinuteDrill',
+	'lastShot',
+	'suddenDeath',
 	'redCard',
 	'noHitter',
 	'upsetWatch',
@@ -51,6 +53,8 @@ export const factorTones = {
 	purple: { color: '#a855f7', ink: '#7e22ce' },
 	pink: { color: '#ec4899', ink: '#be185d' },
 	wine: { color: '#9f1239', ink: '#881337' },
+	brown: { color: '#a16207', ink: '#854d0e' },
+	aqua: { color: '#22d3ee', ink: '#0e7490' },
 } as const satisfies Record<string, FactorTone>;
 
 export interface BoostPresentation extends FactorTone {
@@ -86,6 +90,8 @@ export const boostPresentation = {
 	scoringOpportunity: { labelKey: 'powerScore.scoringOpportunity', tooltipKey: 'powerScore.tooltipScoringOpportunity', icon: 'bullseye', ...factorTones.orange },
 	goAheadRun: { labelKey: 'powerScore.goAheadRun', tooltipKey: 'powerScore.tooltipGoAheadRun', icon: 'pentagon-fill', ...factorTones.lime },
 	twoMinuteDrill: { labelKey: 'powerScore.twoMinuteDrill', tooltipKey: 'powerScore.tooltipTwoMinuteDrill', icon: 'stopwatch-fill', ...factorTones.rose },
+	lastShot: { labelKey: 'powerScore.lastShot', tooltipKey: 'powerScore.tooltipLastShot', icon: 'hourglass-bottom', ...factorTones.brown },
+	suddenDeath: { labelKey: 'powerScore.suddenDeath', tooltipKey: 'powerScore.tooltipSuddenDeath', icon: 'infinity', ...factorTones.aqua },
 	redCard: { labelKey: 'powerScore.redCard', tooltipKey: 'powerScore.tooltipRedCard', icon: 'file-fill', ...factorTones.red },
 	noHitter: { labelKey: 'powerScore.noHitter', tooltipKey: 'powerScore.tooltipNoHitter', icon: 'slash-circle-fill', ...factorTones.amber },
 	upsetWatch: { labelKey: 'powerScore.upsetWatch', tooltipKey: 'powerScore.tooltipUpsetWatch', icon: 'binoculars-fill', ...factorTones.indigo },
@@ -98,6 +104,8 @@ export const boostSports: Partial<Record<BoostId, readonly SportType[]>> = {
 	scoringOpportunity: ['football', 'baseball', 'softball', 'hockey'],
 	goAheadRun: ['baseball', 'softball'],
 	twoMinuteDrill: ['football'],
+	lastShot: ['basketball'],
+	suddenDeath: ['football', 'hockey', 'soccer'],
 	redCard: ['soccer'],
 	noHitter: ['baseball', 'softball'],
 };

@@ -1,5 +1,5 @@
 ---
-sourceHash: 'cdc911cc09f7'
+sourceHash: '10cc90e83f8c'
 title: Impulsos e penalizações do PowerScore
 navLabel: Impulsos e penalizações
 description: Todos os impulsos e penalizações que o PowerScore 3 aplica por cima dos sinais de um modo, com a condição que ativa cada um, o seu máximo e os limites que partilham.
@@ -30,6 +30,8 @@ Os impulsos de favorito, de pós-temporada e manual, no [fundo da página](#favo
 | [Oportunidade de marcar](#scoring-opportunity) | `scoringOpportunity` | Corredores nas bases, uma série ofensiva de futebol americano dentro da red zone, ou uma superioridade numérica ou baliza vazia no hóquei | 20 |
 | [Corrida da vantagem](#go-ahead-run) | `goAheadRun` | A corrida da vantagem ou do empate na base, no basebol e no softbol | 10 |
 | [Ataque de dois minutos](#two-minute-drill) | `twoMinuteDrill` | Uma equipa de futebol americano com a bola, empatada ou a perder por uma pontuação, nos minutos finais | 12 |
+| [Último lançamento](#last-shot) | `lastShot` | Um jogo de basquetebol com até 3 pontos de diferença e menos tempo do que o do relógio de posse | 12 |
+| [Morte súbita](#sudden-death) | `suddenDeath` | Prolongamento dos playoffs de hóquei, prolongamento universitário e da UFL, e shootouts | 12 |
 | [Cartão vermelho](#red-card) | `redCard` | Uma expulsão num jogo de futebol empatado ou com um golo de diferença | 15 |
 | [No-hitter](#no-hitter) | `noHitter` | Um jogo de basebol ou softbol em que uma equipa ainda não tem nenhuma batida | 70 |
 | [Atenção à surpresa](#upset-watch) | `upsetWatch` | O azarão pré-jogo a ganhar ou a uma pontuação de distância | 12 |
@@ -43,7 +45,7 @@ Os impulsos partilham limites, para que muitas coisas pequenas a acontecer ao me
 
 | Grupo | Limite | O que tem | Porquê |
 |---|---|---|---|
-| Momentos | 20 | Oportunidade de marcar, corrida da vantagem, ataque de dois minutos, cartão vermelho | Um jogo empatado no apito final pontua cerca de 80 antes dos impulsos, por isso um momento completo leva-o a 100. Um último minuto com uma pontuação de diferença fica nos 80 altos, e nem todos os jogos apertados chegam aos 100. |
+| Momentos | 20 | Oportunidade de marcar, corrida da vantagem, ataque de dois minutos, último lançamento, morte súbita, cartão vermelho | Um jogo empatado no apito final pontua cerca de 80 antes dos impulsos, por isso um momento completo leva-o a 100. Um último minuto com uma pontuação de diferença fica nos 80 altos, e nem todos os jogos apertados chegam aos 100. |
 | No-hitter | 70 | No-hitter | Uma tentativa dura entradas, não um momento, e tem de levantar um jogo de 6-0 acima dos empatados. |
 | Contexto | 16 | Atenção à surpresa, em jogo | Podem acontecer juntos (um azarão no ranking), mas juntos ficam abaixo de uma reviravolta tardia de uma pontuação, para que o contexto nunca passe à frente da ação em direto. |
 
@@ -63,6 +65,8 @@ Uma ameaça de pontuar que o marcador ainda não mostra.
 | Três (bases cheias) | 10 |
 
 Não paga nada com 3 outs. Os corredores podem ficar no marcador durante uma consulta depois do último out, e nada pode acontecer com eles.
+
+**O corredor das entradas extra.** Onde as regras começam cada entrada extra com um corredor na segunda (a MLB na época regular e o World Baseball Classic a partir da 10.ª, o softbol universitário a partir da 8.ª), esse corredor vale metade até acontecer alguma coisa na entrada: um out, ou outro corredor em base.
 
 **Futebol americano**, condicionado pela proximidade do jogo. Só se aplica quando `isRedZone` é verdadeiro.
 
@@ -123,6 +127,8 @@ Só se aplica a linha mais alta. O valor base é depois ponderado pela entrada:
 
 O máximo é 10: um 8 com peso total, vezes o aumento da última oportunidade. Com 3 outs não paga nada.
 
+O corredor das entradas extra ainda intacto da [Oportunidade de marcar](#scoring-opportunity) também vale metade aqui.
+
 ## Ataque de dois minutos
 
 Futebol americano. Precisa de `possession`, `yardsToEndZone` e de um `down` em jogo. Paga no 4.º quarto e no prolongamento, só à equipa com a bola, e só quando ainda pode empatar ou ganhar com uma pontuação:
@@ -133,6 +139,28 @@ Futebol americano. Precisa de `possession`, `yardsToEndZone` e de um `down` em j
 Uma equipa a gastar o relógio com vantagem não paga nada. Um prolongamento da NCAA ou da UFL, que não tem relógio de jogo, também não.
 
 Os 12 pontos são ajustados por quatro coisas: quão pouco tempo resta (completo aos 40 segundos), a posição no campo (completo a partir das 35 jardas do adversário, ou 30 no universitário, até 40% nas 20 da própria equipa), os tempos mortos que restam (85% sem nenhum, 100% com três, 92.5% quando o feed não diz) e a diferença (completo quando está empatado ou a perder por 1 ou 2, a diminuir até 70% a perder por 8). Entre jogadas, depois de uma pontuação, o feed envia um down que não quer dizer nada, e o impulso paga 0 até ao snap seguinte.
+
+**O pontapé de saída.** Uma exceção: quando a equipa que acabou de pontuar continua a perder por um lance de pontuação nos últimos 4 minutos do 4.º período, o impulso paga pelo pontapé de saída que aí vem, a três quartos do que pagaria um ataque com o mesmo relógio e a mesma diferença. Lê `context.history` para ver quem pontuou e para 5 minutos depois da pontuação.
+
+## Último lançamento
+
+Basquetebol. Paga no último período ou no prolongamento quando a diferença é de até 3 pontos e falta menos tempo do que o do relógio de posse: 24 segundos, ou 30 no universitário.
+
+Começa em 60% de 12 assim que o relógio de jogo desce abaixo do relógio de posse e sobe até aos 12 completos a 5 segundos do fim. Um jogo a 3 pontos, em que a equipa a perder precisa de um triplo só para empatar, paga três quartos. Aos 0:00 não paga nada.
+
+## Morte súbita
+
+Prolongamentos em que a próxima pontuação pode acabar com o jogo, e shootouts.
+
+| Situação | Paga |
+|---|---|
+| Prolongamento dos playoffs de hóquei | 4 no primeiro prolongamento, 8 no segundo, 12 a partir do terceiro |
+| Um shootout de hóquei na época regular | 10 |
+| Um desempate por penáltis | 12 empatado, 8 com um golo de diferença, 4 com dois, 0 a partir daí |
+| Prolongamento do futebol americano universitário, a um lance de pontuação ou menos | 4, depois 8, depois 12 a partir do terceiro prolongamento, quando só restam tentativas de dois pontos |
+| Prolongamento da UFL | 12, porque começa com tentativas de dois pontos |
+
+O prolongamento 3 contra 3 da época regular de hóquei e o prolongamento da NFL não pagam nada. Os golos do desempate por penáltis vêm de `shootoutScore` em cada equipa, e sem eles um desempate por penáltis paga 10 fixos. Os dados de hóquei não trazem os golos do shootout, por isso um shootout de hóquei paga sempre 10.
 
 ## Cartão vermelho
 

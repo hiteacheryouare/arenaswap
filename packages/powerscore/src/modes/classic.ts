@@ -7,6 +7,8 @@ import { redCardBoost } from '../boosts/redCard';
 import { noHitterBoost } from '../boosts/noHitter';
 import { upsetWatchBoost } from '../boosts/upsetWatch';
 import { stakesBoost } from '../boosts/stakes';
+import { lastShotBoost } from '../boosts/lastShot';
+import { suddenDeathBoost } from '../boosts/suddenDeath';
 import type { PowerScoreMode } from '../types';
 
 export const classicMode: PowerScoreMode = {
@@ -16,6 +18,8 @@ export const classicMode: PowerScoreMode = {
 		scoringOpportunityBoost,
 		goAheadRunBoost,
 		twoMinuteDrillBoost,
+		lastShotBoost,
+		suddenDeathBoost,
 		redCardBoost,
 		noHitterBoost,
 		upsetWatchBoost,

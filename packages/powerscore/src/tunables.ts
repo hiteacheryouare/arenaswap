@@ -63,7 +63,13 @@ export const boostBucketCaps = {
 
 export const goAheadRunTunables = { goAhead: 8, tyingRun: 5, earlyFactor: 0.5, lastChanceFactor: 1.25 } as const;
 
-export const twoMinuteDrillTunables = { max: 12, oneScore: 8, peakYards: 35, ownTwentyFactor: 0.4 } as const;
+export const twoMinuteDrillTunables = { max: 12, oneScore: 8, peakYards: 35, ownTwentyFactor: 0.4, onsideFactor: 0.75, onsideWindowMs: 5 * 60_000 } as const;
+
+export const automaticRunnerFactor = 0.5;
+
+export const lastShotTunables = { max: 12, shotClockSecs: 24, peakSecs: 5, earlyFactor: 0.6, needsThreeFactor: 0.75 } as const;
+
+export const suddenDeathTunables = { perOvertime: 4, max: 12, shootoutByGap: [12, 8, 4] as const, untrackedShootout: 10 } as const;
 
 export const noHitterTunables = {
 	ladder: [10, 22, 38, 52] as const,

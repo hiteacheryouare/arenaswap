@@ -1,5 +1,5 @@
 ---
-sourceHash: 'cdc911cc09f7'
+sourceHash: '10cc90e83f8c'
 title: Les bonus et pénalités de PowerScore
 navLabel: Bonus et pénalités
 description: Chaque bonus et chaque pénalité que PowerScore 3 applique par-dessus les signaux d'un mode, avec la condition qui déclenche chacun, son maximum, et les plafonds qu'ils partagent.
@@ -30,6 +30,8 @@ Les bonus de favori, de phases finales et manuel du [bas de la page](#favorite-p
 | [Occasion de marquer](#scoring-opportunity) | `scoringOpportunity` | Des coureurs sur les bases, une séquence de football américain en zone rouge, ou un avantage numérique ou un filet désert au hockey | 20 |
 | [Point de l'avance](#go-ahead-run) | `goAheadRun` | Le point de l'avance ou de l'égalisation sur les bases au baseball et au softball | 10 |
 | [Two-minute drill](#two-minute-drill) | `twoMinuteDrill` | Une équipe de football américain avec le ballon, à égalité ou menée d'un score, dans les dernières minutes | 12 |
+| [Dernier tir](#last-shot) | `lastShot` | Un match de basket à 3 points ou moins, avec moins de temps à jouer que sur l'horloge des tirs | 12 |
+| [Mort subite](#sudden-death) | `suddenDeath` | La prolongation des séries au hockey, la prolongation universitaire et de la UFL, et les tirs au but | 12 |
 | [Carton rouge](#red-card) | `redCard` | Une expulsion dans un match de soccer à égalité ou à un but d'écart | 15 |
 | [No-hitter](#no-hitter) | `noHitter` | Un match de baseball ou de softball où une équipe n'a toujours aucun coup sûr | 70 |
 | [Alerte surprise](#upset-watch) | `upsetWatch` | L'outsider d'avant-match qui mène ou qui est à un score | 12 |
@@ -43,7 +45,7 @@ Les bonus partagent des plafonds, pour que beaucoup de petites choses qui arrive
 
 | Groupe | Plafond | Ce qu'il contient | Pourquoi |
 |---|---|---|---|
-| Moments | 20 | Occasion de marquer, point de l'avance, two-minute drill, carton rouge | Un match à égalité à la sirène marque environ 80 avant les bonus, donc un moment complet le monte à 100. Une dernière minute à un score d'écart arrive dans les hauts 80, et tous les matchs serrés ne se collent pas à 100. |
+| Moments | 20 | Occasion de marquer, point de l'avance, two-minute drill, dernier tir, mort subite, carton rouge | Un match à égalité à la sirène marque environ 80 avant les bonus, donc un moment complet le monte à 100. Une dernière minute à un score d'écart arrive dans les hauts 80, et tous les matchs serrés ne se collent pas à 100. |
 | No-hitter | 70 | No-hitter | Une tentative dure des manches, pas un instant, et elle doit faire passer un match à 6-0 devant des matchs à égalité. |
 | Contexte | 16 | Alerte surprise, enjeu | Ils peuvent se produire ensemble (un outsider classé), mais ensemble ils restent sous un basculement tardif d'un score, donc le contexte ne passe jamais devant l'action en direct. |
 
@@ -63,6 +65,8 @@ Une menace de marquer que le score lui-même ne montre pas encore.
 | Trois (bases pleines) | 10 |
 
 Il ne verse rien à 3 retraits. Des coureurs peuvent traîner au tableau d'affichage pendant une interrogation après le dernier retrait, et rien ne peut se passer avec eux.
+
+**Le coureur des manches supplémentaires.** Là où les règles commencent chaque manche supplémentaire avec un coureur au deuxième but (la MLB en saison régulière et la Classique mondiale de baseball dès la 10e, le softball universitaire dès la 8e), ce coureur compte pour moitié jusqu'à ce que la manche bouge : un retrait, ou un autre coureur sur les bases.
 
 **Football américain**, conditionné par la proximité du match. Ça ne s'applique que quand `isRedZone` vaut true.
 
@@ -123,6 +127,8 @@ Seule la ligne la plus haute s'applique. La valeur de base est ensuite pondéré
 
 Le maximum est 10 : un 8 à pleine pondération, multiplié par la hausse de dernière chance. À 3 retraits, il ne verse rien.
 
+Le coureur des manches supplémentaires intact d'[Occasion de marquer](#scoring-opportunity) compte aussi pour moitié ici.
+
 ## Two-minute drill
 
 Football américain. Demande `possession`, `yardsToEndZone` et un `down` en direct. Verse au 4e quart-temps et en prolongation, et seulement à l'équipe qui a le ballon, et seulement quand elle peut encore égaliser ou gagner avec un score :
@@ -133,6 +139,28 @@ Football américain. Demande `possession`, `yardsToEndZone` et un `down` en dire
 Une équipe qui fait tourner le chrono avec une avance ne verse rien. Une prolongation NCAA ou UFL non plus, puisqu'elle n'a pas de chrono de match.
 
 Les 12 points sont mis à l'échelle par quatre choses : le peu de temps qui reste (plein à 40 secondes), la position sur le terrain (plein à partir de la ligne des 35 de l'adversaire, ou des 30 à l'université, jusqu'à 40 % à ta propre ligne des 20), les temps morts restants (85 % sans aucun, 100 % avec trois, 92,5 % quand le flux ne le dit pas), et l'écart (plein à égalité ou menée de 1 ou 2, jusqu'à 70 % à 8 de retard). Entre deux actions, après un score, un flux envoie un down qui ne veut rien dire, et le bonus verse 0 jusqu'à la prochaine mise en jeu.
+
+**Le botté d'envoi.** Une exception : quand l'équipe qui vient de marquer est encore menée d'une possession dans les 4 dernières minutes du 4e quart, le bonus paie pour le botté qui arrive, aux trois quarts de ce que paierait une séquence avec la même horloge et le même écart. Il lit `context.history` pour savoir qui a marqué, et s'arrête 5 minutes après le point.
+
+## Dernier tir
+
+Basket. Paie dans la dernière période ou en prolongation quand l'écart est de 3 points ou moins et qu'il reste moins de temps que sur l'horloge des tirs : 24 secondes, ou 30 en universitaire.
+
+Il démarre à 60 % de 12 dès que l'horloge du match passe sous celle des tirs et monte jusqu'aux 12 complets à 5 secondes de la fin. Un match à 3 points, où l'équipe menée a besoin d'un tir à trois points rien que pour égaliser, paie les trois quarts. À 0:00, il ne paie rien.
+
+## Mort subite
+
+Les prolongations où le prochain point peut tout terminer, et les tirs au but.
+
+| Situation | Paie |
+|---|---|
+| Prolongation des séries au hockey | 4 en première prolongation, 8 en deuxième, 12 dès la troisième |
+| Des tirs de barrage en saison régulière au hockey | 10 |
+| Des tirs au but | 12 à égalité, 8 avec un but d'écart, 4 avec deux, 0 au-delà |
+| Prolongation du football universitaire, à une possession ou moins | 4, puis 8, puis 12 dès la troisième prolongation, quand il ne reste que des tentatives de deux points |
+| Prolongation de la UFL | 12, puisqu'elle commence par des tentatives de deux points |
+
+La prolongation à 3 contre 3 de la saison régulière au hockey et la prolongation de la NFL ne paient rien. Les buts des tirs au but viennent de `shootoutScore` sur chaque équipe, et sans eux des tirs au but paient 10 forfaitaires. Les flux de hockey n'envoient pas les buts des tirs de barrage, donc des tirs de barrage au hockey paient toujours 10.
 
 ## Carton rouge
 

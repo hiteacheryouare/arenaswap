@@ -1,5 +1,5 @@
 ---
-sourceHash: 'cdc911cc09f7'
+sourceHash: '10cc90e83f8c'
 title: Mga boost at penalty ng PowerScore
 navLabel: Mga boost at penalty
 description: Bawat boost at penalty na inilalapat ng PowerScore 3 sa ibabaw ng mga signal ng mode, kasama ang kondisyong nagpapagana sa bawat isa, ang maximum nito, at ang mga cap na pinagsasaluhan nila.
@@ -30,6 +30,8 @@ Ang mga favorite, postseason at manual na boost sa [ibaba ng pahina](#favorite-p
 | [Scoring opportunity](#scoring-opportunity) | `scoringOpportunity` | Mga runner sa base, drive sa football na nasa loob ng red zone, o power play o empty net sa hockey | 20 |
 | [Go-ahead run](#go-ahead-run) | `goAheadRun` | Ang go-ahead o tying run sa base sa baseball at softball | 10 |
 | [Two-minute drill](#two-minute-drill) | `twoMinuteDrill` | Football team na hawak ang bola, tabla o nahuhuli ng isang score, sa huling mga minuto | 12 |
+| [Last shot](#last-shot) | `lastShot` | Laro sa basketball na 3 puntos o mas mababa ang agwat, at mas kaunti na ang oras kaysa sa shot clock | 12 |
+| [Sudden death](#sudden-death) | `suddenDeath` | Playoff overtime sa hockey, overtime sa college at UFL, at mga shootout | 12 |
 | [Red card](#red-card) | `redCard` | Pagpapalayas sa tabla o isang goal ang pagitan na soccer match | 15 |
 | [No-hitter](#no-hitter) | `noHitter` | Laro sa baseball o softball na may team pa ring walang hit | 70 |
 | [Upset watch](#upset-watch) | `upsetWatch` | Ang pregame underdog na lamang o isang score lang ang layo | 12 |
@@ -43,7 +45,7 @@ Nagsasalo ng mga cap ang mga boost, kaya hindi maitutulak ng sabay-sabay na mara
 
 | Bucket | Cap | Ano ang nasa loob | Bakit |
 |---|---|---|---|
-| Moments | 20 | Scoring opportunity, go-ahead run, two-minute drill, red card | Mga 80 ang score ng tabla sa buzzer bago ang mga boost, kaya ang buong moment ay aabot sa 100. Ang isang score sa huling minuto ay bumabagsak sa mataas na 80s, at hindi lahat ng dikitang laro ay sumasagad sa 100. |
+| Moments | 20 | Scoring opportunity, go-ahead run, two-minute drill, last shot, sudden death, red card | Mga 80 ang score ng tabla sa buzzer bago ang mga boost, kaya ang buong moment ay aabot sa 100. Ang isang score sa huling minuto ay bumabagsak sa mataas na 80s, at hindi lahat ng dikitang laro ay sumasagad sa 100. |
 | No-hitter | 70 | No-hitter | Inning ang tagal ng bid, hindi sandali, at kailangan nitong iangat ang 6-0 na laro lampas sa mga tabla. |
 | Context | 16 | Upset watch, stakes | Puwede silang sabay mangyari (ranked na underdog), pero magkasama pa rin silang nananatili sa ibaba ng late na isang-score na swing, kaya hindi nananaig ang context sa live na aksyon. |
 
@@ -63,6 +65,8 @@ Banta sa pag-score na hindi pa ipinapakita ng score mismo.
 | Tatlo (puno ang bases) | 10 |
 
 Walang binabayaran sa 3 out. Puwedeng manatili ang mga runner sa scoreboard nang isang poll pagkatapos ng huling out, at walang puwedeng mangyari sa kanila.
+
+**Ang runner sa extra inning.** Kung saan nagsisimula ang bawat extra inning na may runner sa second (MLB sa regular season at ang World Baseball Classic mula sa 10th, college softball mula sa 8th), kalahati lang ang bilang ng runner na iyon hanggang may mangyari sa inning: isang out, o isa pang runner sa base.
 
 **Football**, nakadepende sa kung gaano na ka-dikit ang laro. Nalalapat lang ito kapag true ang `isRedZone`.
 
@@ -123,6 +127,8 @@ Ang mas mataas na row lang ang nalalapat. Tinitimbang ang base value ayon sa inn
 
 10 ang maximum: 8 sa buong timbang, beses ang bump ng huling pagkakataon. Walang binabayaran sa 3 out.
 
+Kalahati rin dito ang bilang ng hindi pa nagagalaw na runner sa extra inning mula sa [Scoring opportunity](#scoring-opportunity).
+
 ## Two-minute drill
 
 Football. Kailangan ng `possession`, `yardsToEndZone` at live na `down`. Nagbabayad sa 4th quarter at overtime, at sa team lang na hawak ang bola, at kung kaya pa nitong tumabla o manalo gamit ang isang score:
@@ -133,6 +139,28 @@ Football. Kailangan ng `possession`, `yardsToEndZone` at live na `down`. Nagbaba
 Walang binabayaran sa team na umuubos ng clock habang lamang. Wala rin sa NCAA o UFL na overtime, na walang game clock.
 
 Ang 12 puntos ay isinasaayos ng apat na bagay: gaano kakaunti ang oras (buo sa 40 segundo), posisyon sa field (buo mula sa 35 ng kalaban, o 30 sa college, hanggang 40% sa sarili mong 20), natitirang timeout (85% kapag wala, 100% kapag tatlo, 92.5% kapag hindi sinasabi ng feed), at ang margin (buo kapag tabla o nahuhuli ng 1 o 2, lumiliit hanggang 70% sa nahuhuli ng 8). Sa pagitan ng mga play, pagkatapos ng score, nagpapadala ang feed ng down na walang kahulugan, at 0 ang bayad ng boost hanggang sa susunod na snap.
+
+**Ang kickoff.** May isang exception: kapag ang team na kakapuntos lang ay nahuhuli pa rin ng isang score sa huling 4 na minuto ng 4th quarter, nagbabayad ang boost para sa paparating na kickoff, sa tatlong-kapat ng ibabayad ng isang drive sa parehong oras at agwat. Binabasa nito ang `context.history` para makita kung sino ang nakapuntos, at humihinto ito 5 minuto matapos ang score.
+
+## Last shot
+
+Basketball. Nagbabayad sa huling period o sa overtime kapag 3 puntos o mas mababa ang agwat at mas kaunti na ang natitirang oras kaysa sa shot clock: 24 segundo, o 30 sa college.
+
+Nagsisimula ito sa 60% ng 12 sa sandaling bumaba ang game clock sa ilalim ng shot clock, at umaakyat sa buong 12 kapag 5 segundo na lang. Sa 3-point na laro, kung saan kailangan ng nahuhuling team ng three para lang tumabla, tatlong-kapat ang bayad. Sa 0:00, wala nang bayad.
+
+## Sudden death
+
+Mga overtime kung saan puwedeng tapusin ng susunod na score ang laro, at mga shootout.
+
+| Sitwasyon | Bayad |
+|---|---|
+| Playoff overtime sa hockey | 4 sa unang overtime, 8 sa ikalawa, 12 mula sa ikatlo |
+| Shootout sa regular season ng hockey | 10 |
+| Penalty shootout | 12 kapag tabla, 8 kapag isang goal ang agwat, 4 kapag dalawa, 0 kapag higit pa |
+| Overtime sa college football, isang score o mas mababa ang agwat | 4, saka 8, saka 12 mula sa ikatlong overtime, kapag two-point try na lang |
+| Overtime sa UFL | 12, dahil nagsisimula ito sa two-point try |
+
+Walang bayad ang 3-on-3 na overtime sa regular season ng hockey at ang overtime sa NFL. Galing sa `shootoutScore` ng bawat team ang mga goal sa penalty shootout, at kapag wala ang mga ito, flat na 10 ang bayad sa penalty shootout. Hindi nagpapadala ng mga goal sa shootout ang feed ng hockey, kaya laging 10 ang shootout sa hockey.
 
 ## Red card
 

@@ -1,5 +1,5 @@
 ---
-sourceHash: 'cdc911cc09f7'
+sourceHash: '10cc90e83f8c'
 title: PowerScore-Boosts und -Strafen
 navLabel: Boosts und Strafen
 description: Jeder Boost und jede Strafe, die PowerScore 3 auf die Signale eines Modus legt, mit der Bedingung, die sie auslöst, ihrem Maximum und den Obergrenzen, die sie sich teilen.
@@ -30,6 +30,8 @@ Die Boosts für Favoriten, Postseason und von Hand [unten auf der Seite](#favori
 | [Punktchance](#scoring-opportunity) | `scoringOpportunity` | Läufer auf Base, ein Football-Drive in der Red Zone oder ein Powerplay bzw. leeres Tor im Hockey | 20 |
 | [Go-ahead-Run](#go-ahead-run) | `goAheadRun` | Der Go-ahead- oder Tying-Run auf Base im Baseball und Softball | 10 |
 | [Two-Minute-Drill](#two-minute-drill) | `twoMinuteDrill` | Ein Football-Team mit dem Ball, bei Gleichstand oder mit einem Score Rückstand, in den Schlussminuten | 12 |
+| [Letzter Wurf](#last-shot) | `lastShot` | Ein Basketballspiel mit höchstens 3 Punkten Abstand, in dem weniger Zeit übrig ist als auf der Wurfuhr | 12 |
+| [Sudden Death](#sudden-death) | `suddenDeath` | Playoff-Verlängerung im Eishockey, Verlängerung im College Football und in der UFL sowie Shootouts | 12 |
 | [Rote Karte](#red-card) | `redCard` | Ein Platzverweis in einem Fußballspiel bei Gleichstand oder mit einem Tor Abstand | 15 |
 | [No-Hitter](#no-hitter) | `noHitter` | Ein Baseball- oder Softballspiel, in dem ein Team noch ohne Hit ist | 70 |
 | [Sensations-Alarm](#upset-watch) | `upsetWatch` | Der Außenseiter vor dem Spiel führt oder liegt höchstens einen Score zurück | 12 |
@@ -43,7 +45,7 @@ Boosts teilen sich Obergrenzen, damit viele kleine Dinge, die gleichzeitig passi
 
 | Topf | Obergrenze | Was drin ist | Warum |
 |---|---|---|---|
-| Momente | 20 | Punktchance, Go-ahead-Run, Two-Minute-Drill, Rote Karte | Ein Spiel mit Gleichstand beim Schlusssignal liegt vor den Boosts bei etwa 80, ein voller Moment hebt es also auf 100. Eine Schlussminute mit einem Score Abstand landet in den hohen 80ern, und nicht jedes enge Spiel steht bei 100. |
+| Momente | 20 | Punktchance, Go-ahead-Run, Two-Minute-Drill, Letzter Wurf, Sudden Death, Rote Karte | Ein Spiel mit Gleichstand beim Schlusssignal liegt vor den Boosts bei etwa 80, ein voller Moment hebt es also auf 100. Eine Schlussminute mit einem Score Abstand landet in den hohen 80ern, und nicht jedes enge Spiel steht bei 100. |
 | No-Hitter | 70 | No-Hitter | Eine Serie ohne Hit dauert Innings, nicht einen Moment, und sie muss ein 6:0-Spiel über Spiele mit Gleichstand heben. |
 | Kontext | 16 | Sensations-Alarm, Brisanz | Sie können zusammen auftreten (ein platzierter Außenseiter), bleiben zusammen aber unter einem späten Ein-Score-Umschwung, sodass Kontext nie das Live-Geschehen übertrumpft. |
 
@@ -63,6 +65,8 @@ Eine Torgefahr, die der Spielstand selbst noch nicht zeigt.
 | Drei (Bases voll) | 10 |
 
 Bei 3 Outs zahlt er nichts. Läufer können nach dem letzten Out noch eine Abfrage lang auf einer Anzeigetafel stehen, und mit ihnen kann nichts mehr passieren.
+
+**Der Läufer im Extra-Inning.** Wo jedes Extra-Inning mit einem Läufer auf der zweiten Base beginnt (MLB in der regulären Saison und der World Baseball Classic ab dem 10., College-Softball ab dem 8.), zählt dieser Läufer halb, bis im Inning etwas passiert: ein Out oder ein weiterer Läufer auf Base.
 
 **Football**, abhängig davon, wie eng das Spiel schon ist. Das gilt nur, wenn `isRedZone` true ist.
 
@@ -123,6 +127,8 @@ Es gilt nur die höhere Zeile. Der Basiswert wird dann nach Inning gewichtet:
 
 Das Maximum ist 10: eine 8 bei vollem Gewicht, mal der Aufschlag für die letzte Chance. Bei 3 Outs zahlt er nichts.
 
+Der unberührte Läufer im Extra-Inning aus der [Punktchance](#scoring-opportunity) zählt auch hier halb.
+
 ## Two-Minute-Drill
 
 Football. Braucht `possession`, `yardsToEndZone` und ein gültiges `down`. Zahlt im 4. Viertel und in der Overtime, und nur an das Team mit dem Ball, und nur, wenn es mit einem Score noch ausgleichen oder gewinnen kann:
@@ -133,6 +139,28 @@ Football. Braucht `possession`, `yardsToEndZone` und ein gültiges `down`. Zahlt
 Ein Team, das mit Führung die Uhr herunterspielt, bekommt nichts. Eine NCAA- oder UFL-Overtime auch nicht, denn sie hat keine Spieluhr.
 
 Die 12 Punkte werden von vier Dingen skaliert: wie wenig Zeit bleibt (voll bei 40 Sekunden), Feldposition (voll ab der 35 des Gegners, oder der 30 im College, bis hinunter zu 40 % an der eigenen 20), verbleibende Timeouts (85 % ohne, 100 % bei drei, 92,5 %, wenn der Feed es nicht sagt) und der Abstand (voll bei Gleichstand oder 1 oder 2 zurück, schrumpfend auf 70 % bei 8 zurück). Zwischen Spielzügen, nach einem Score, schickt ein Feed einen Down, der nichts bedeutet, und der Boost zahlt 0 bis zum nächsten Snap.
+
+**Der Kickoff.** Eine Ausnahme: Liegt das Team, das gerade gepunktet hat, in den letzten 4 Minuten des 4. Viertels immer noch mit einem Score zurück, zahlt der Boost für den anstehenden Kickoff, und zwar drei Viertel dessen, was ein Drive bei gleicher Uhr und gleichem Abstand zahlen würde. Er liest `context.history`, um zu sehen, wer gepunktet hat, und endet 5 Minuten nach dem Score.
+
+## Letzter Wurf
+
+Basketball. Zahlt im letzten Abschnitt oder in der Verlängerung, wenn höchstens 3 Punkte zwischen den Teams liegen und weniger Zeit übrig ist als auf der Wurfuhr: 24 Sekunden, im College 30.
+
+Er beginnt bei 60 % von 12, sobald die Spieluhr unter die Wurfuhr fällt, und steigt bis 5 Sekunden vor Schluss auf die vollen 12. Bei 3 Punkten Abstand, wo das zurückliegende Team schon für den Ausgleich einen Dreier braucht, zahlt er drei Viertel. Bei 0:00 zahlt er nichts.
+
+## Sudden Death
+
+Verlängerungen, in denen der nächste Score das Spiel beenden kann, und Shootouts.
+
+| Situation | Zahlt |
+|---|---|
+| Playoff-Verlängerung im Eishockey | 4 in der ersten Verlängerung, 8 in der zweiten, 12 ab der dritten |
+| Ein Penaltyschießen in der regulären Eishockey-Saison | 10 |
+| Ein Elfmeterschießen | 12 bei Gleichstand, 8 bei einem Tor Abstand, 4 bei zwei, darüber 0 |
+| Verlängerung im College Football, höchstens ein Score Abstand | 4, dann 8, dann 12 ab der dritten Verlängerung, wenn nur noch Two-Point-Versuche bleiben |
+| Verlängerung in der UFL | 12, weil sie mit Two-Point-Versuchen beginnt |
+
+Die 3-gegen-3-Verlängerung der regulären Eishockey-Saison und die NFL-Verlängerung zahlen nichts. Die Tore im Elfmeterschießen kommen aus `shootoutScore` bei jedem Team, und ohne sie zahlt ein Elfmeterschießen pauschal 10. Eishockey-Feeds liefern keine Tore aus dem Penaltyschießen, deshalb zahlt ein Penaltyschießen im Eishockey immer 10.
 
 ## Rote Karte
 

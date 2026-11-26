@@ -75,10 +75,10 @@ describe('the go-ahead run on base', () => {
 		expect(boostPoints(score, 'goAheadRun')).toBe(6);
 	});
 
-	test('an extra-inning automatic runner pays 13 in the bottom half and 11 in the top', () => {
+	test('an untouched extra-inning automatic runner pays 7 in the bottom half and 6 in the top', () => {
 		const ghostRunner = (half: 'top' | 'bottom') => momentTotal(classic(ballgame({ inning: 10, half, home: 3, away: 3, on: [false, true, false] })));
-		expect(ghostRunner('bottom')).toBe(13);
-		expect(ghostRunner('top')).toBe(11);
+		expect(ghostRunner('bottom')).toBe(7);
+		expect(ghostRunner('top')).toBe(6);
 	});
 
 	test('down three with the bases loaded is the tying run on base, not the go-ahead', () => {

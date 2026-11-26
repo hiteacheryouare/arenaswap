@@ -29,6 +29,7 @@ const toTeamState = (team: Team, sportType: Game['sportType'], seeded: boolean):
 	...(team.timeouts !== undefined ? { timeouts: team.timeouts } : {}),
 	...(team.hits !== undefined ? { hits: team.hits } : {}),
 	...(team.errors !== undefined ? { errors: team.errors } : {}),
+	...(team.shootoutScore !== undefined ? { shootoutScore: team.shootoutScore } : {}),
 });
 
 const toRedCards = (game: Game): ScoringGame['redCards'] => game.redCardEvents

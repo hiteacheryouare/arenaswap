@@ -6,6 +6,8 @@ export { computeFantasyPoints, defaultFantasyScoring, fantasySportOf, resolveFan
 export type { FantasyRule, FantasySport } from './fantasyScoring';
 export { goAheadRunBoost } from './boosts/goAheadRun';
 export { twoMinuteDrillBoost } from './boosts/twoMinuteDrill';
+export { lastShotBoost } from './boosts/lastShot';
+export { suddenDeathBoost } from './boosts/suddenDeath';
 export { noHitterBoost } from './boosts/noHitter';
 export { redCardBoost } from './boosts/redCard';
 export { upsetWatchBoost, upsetRoutBoost, underdogProbability } from './boosts/upsetWatch';

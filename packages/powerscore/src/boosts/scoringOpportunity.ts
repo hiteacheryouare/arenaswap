@@ -1,4 +1,5 @@
 import {
+	automaticRunnerFactor,
 	redZoneDownMultipliers,
 	scoringOpportunityBaseRunnerBoosts,
 	scoringOpportunityRedZoneBoost,
@@ -6,6 +7,7 @@ import {
 	thirdAndShortDistance,
 } from '../constants';
 import { isPlayFrozen } from '../progress';
+import { isUntouchedAutomaticRunner } from './automaticRunner';
 import { hockeyScoringOpportunity, hockeyScoringOpportunityDetails } from './hockey';
 import { baseMask, runnersOn } from './shared';
 import type { BoostDefinition, Game, ReasonFragment, SignalInput, SportTypeConfig } from '../types';
@@ -31,7 +33,8 @@ export const computeScoringOpportunity = (input: SignalInput): number => {
 		const r = game.baseRunners;
 		// Runners can linger on the scoreboard for a poll after the third out.
 		if (!r || (game.outs ?? 0) >= 3) return 0;
-		return scoringOpportunityBaseRunnerBoosts[runnersOn(baseMask(r))] ?? 0;
+		const points = scoringOpportunityBaseRunnerBoosts[runnersOn(baseMask(r))] ?? 0;
+		return isUntouchedAutomaticRunner(game) ? Math.round(points * automaticRunnerFactor) : points;
 	}
 	if (game.sportType === 'football' && game.isRedZone) return getRedZoneBoost(game, sport, margin);
 	if (game.sportType === 'hockey') return hockeyScoringOpportunity(input);
@@ -62,7 +65,7 @@ const scoringOpportunityDetails = (input: SignalInput, points: number): ReasonFr
 		const r = game.baseRunners;
 		if ((game.outs ?? 0) >= 3) return [{ key: 'inningOver' }];
 		if (!r) return [];
-		return [{ key: baseKeys[baseMask(r)]! }];
+		return [{ key: isUntouchedAutomaticRunner(game) ? 'automaticRunner' : baseKeys[baseMask(r)]! }];
 	}
 	if (game.sportType === 'football') {
 		if (game.isRedZone === undefined) return [];

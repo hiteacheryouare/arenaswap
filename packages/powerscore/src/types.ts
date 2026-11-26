@@ -18,6 +18,7 @@ export interface TeamState {
 	hits?: number;
 	errors?: number;
 	timeouts?: number;
+	shootoutScore?: number;
 }
 
 export interface SeriesState {

@@ -1,5 +1,5 @@
 ---
-sourceHash: 'cdc911cc09f7'
+sourceHash: '10cc90e83f8c'
 title: Boost e penalità di PowerScore
 navLabel: Boost e penalità
 description: Ogni boost e penalità che PowerScore 3 applica sopra i segnali di una modalità, con la condizione che attiva ciascuno, il suo massimo e i limiti che condividono.
@@ -30,6 +30,8 @@ I boost preferita, postseason e manuale [in fondo alla pagina](#favorite-postsea
 | [Opportunità di segnare](#scoring-opportunity) | `scoringOpportunity` | Corridori in base, un drive di football dentro la red zone, o un power play o porta vuota nell'hockey | 20 |
 | [Punto del vantaggio in base](#go-ahead-run) | `goAheadRun` | Il punto del sorpasso o del pareggio in base nel baseball e nel softball | 10 |
 | [Two-minute drill](#two-minute-drill) | `twoMinuteDrill` | Una squadra di football con la palla, in parità o sotto di un possesso, negli ultimi minuti | 12 |
+| [Ultimo tiro](#last-shot) | `lastShot` | Una partita di basket entro i 3 punti, con meno tempo di quello sul cronometro del tiro | 12 |
+| [Morte improvvisa](#sudden-death) | `suddenDeath` | Supplementari dei playoff di hockey, supplementari universitari e della UFL, e shootout | 12 |
 | [Cartellino rosso](#red-card) | `redCard` | Un'espulsione in una partita di calcio in parità o a un gol di distanza | 15 |
 | [No-hitter](#no-hitter) | `noHitter` | Una partita di baseball o softball con una squadra ancora senza valide | 70 |
 | [Allarme sorpresa](#upset-watch) | `upsetWatch` | L'underdog pre-partita in vantaggio o a un possesso di distanza | 12 |
@@ -43,7 +45,7 @@ I boost condividono dei limiti, così molte piccole cose insieme non possono spi
 
 | Gruppo | Limite | Cosa contiene | Perché |
 |---|---|---|---|
-| Momenti | 20 | Opportunità di segnare, punto del vantaggio in base, two-minute drill, cartellino rosso | Una partita in parità alla sirena vale circa 80 prima dei boost, quindi un momento pieno la porta a 100. Un ultimo minuto a un possesso arriva sugli 80 alti, e non ogni partita tirata si pianta a 100. |
+| Momenti | 20 | Opportunità di segnare, punto del vantaggio in base, two-minute drill, ultimo tiro, morte improvvisa, cartellino rosso | Una partita in parità alla sirena vale circa 80 prima dei boost, quindi un momento pieno la porta a 100. Un ultimo minuto a un possesso arriva sugli 80 alti, e non ogni partita tirata si pianta a 100. |
 | No-hitter | 70 | No-hitter | Una caccia dura inning, non un momento, e deve portare una partita da 6-0 sopra quelle in parità. |
 | Contesto | 16 | Allarme sorpresa, in palio | Possono capitare insieme (un'underdog in classifica), ma insieme restano sotto un'oscillazione di un possesso a fine gara, così il contesto non supera mai l'azione dal vivo. |
 
@@ -63,6 +65,8 @@ Una minaccia di segnare che il punteggio da solo non mostra ancora.
 | Tre (basi piene) | 10 |
 
 Non paga niente con 3 out. I corridori possono restare sul tabellone per un'interrogazione dopo l'ultimo out, e con loro non può succedere niente.
+
+**Il corridore degli inning supplementari.** Dove le regole fanno partire ogni inning supplementare con un corridore in seconda (la MLB in stagione regolare e il World Baseball Classic dal 10°, il softball universitario dall'8°), quel corridore vale la metà finché nell'inning non succede qualcosa: un out, o un altro corridore in base.
 
 **Football**, condizionato a quanto la partita è già tirata. Vale solo quando `isRedZone` è true.
 
@@ -123,6 +127,8 @@ Vale solo la riga più alta. Il valore base viene poi pesato per l'inning:
 
 Il massimo è 10: un 8 a peso pieno, per l'aumento dell'ultima occasione. Con 3 out non paga niente.
 
+Anche qui il corridore degli inning supplementari ancora intatto di [Opportunità di segnare](#scoring-opportunity) vale la metà.
+
 ## Two-minute drill
 
 Football. Servono `possession`, `yardsToEndZone` e un `down` in corso. Paga nel 4° quarto e nei supplementari, solo alla squadra con la palla, e solo quando può ancora pareggiare o vincere con un possesso:
@@ -133,6 +139,28 @@ Football. Servono `possession`, `yardsToEndZone` e un `down` in corso. Paga nel 
 Una squadra che fa scorrere il cronometro in vantaggio non paga niente. Neppure un supplementare NCAA o UFL, che non ha cronometro di gioco.
 
 I 12 punti sono scalati da quattro cose: quanto poco tempo resta (pieno a 40 secondi), la posizione in campo (pieno dalla yard 35 avversaria, o 30 nel college, fino al 40% alla propria yard 20), i timeout rimasti (85% senza, 100% con tre, 92,5% quando il feed non lo dice) e il margine (pieno in parità o sotto di 1 o 2, fino al 70% a 8 di svantaggio). Tra un'azione e l'altra, dopo un punteggio, un feed manda un down che non significa niente, e il boost paga 0 fino al prossimo snap.
+
+**Il calcio d'inizio.** Un'eccezione: quando la squadra che ha appena segnato è ancora sotto di un possesso negli ultimi 4 minuti del 4° quarto, il boost paga per il calcio che sta per arrivare, a tre quarti di quello che pagherebbe un drive con lo stesso cronometro e lo stesso scarto. Legge `context.history` per sapere chi ha segnato, e si ferma 5 minuti dopo la segnatura.
+
+## Ultimo tiro
+
+Basket. Paga nell'ultimo periodo o nei supplementari quando la partita è entro i 3 punti e resta meno tempo che sul cronometro del tiro: 24 secondi, o 30 al college.
+
+Parte dal 60% di 12 appena il cronometro di gara scende sotto quello del tiro e sale fino ai 12 pieni a 5 secondi dalla fine. Una partita a 3 punti, dove la squadra sotto ha bisogno di una tripla solo per pareggiare, paga tre quarti. A 0:00 non paga nulla.
+
+## Morte improvvisa
+
+I supplementari in cui la prossima segnatura può chiuderla, e gli shootout.
+
+| Situazione | Paga |
+|---|---|
+| Supplementare dei playoff di hockey | 4 nel primo supplementare, 8 nel secondo, 12 dal terzo in poi |
+| Uno shootout di hockey in stagione regolare | 10 |
+| I calci di rigore | 12 in parità, 8 con un gol di scarto, 4 con due, 0 oltre |
+| Supplementari del football universitario, entro un possesso | 4, poi 8, poi 12 dal terzo supplementare, quando restano i tentativi da due punti |
+| Supplementari della UFL | 12, perché partono dai tentativi da due punti |
+
+Il supplementare 3 contro 3 della stagione regolare di hockey e i supplementari della NFL non pagano nulla. I gol dei calci di rigore arrivano da `shootoutScore` su ogni squadra, e senza di essi i rigori pagano 10 fissi. I dati dell'hockey non riportano i gol dello shootout, quindi uno shootout di hockey paga sempre 10.
 
 ## Cartellino rosso
 

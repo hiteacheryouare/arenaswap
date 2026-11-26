@@ -29,6 +29,8 @@ The favorite, postseason, and manual boosts at the [bottom of the page](#favorit
 | [Scoring opportunity](#scoring-opportunity) | `scoringOpportunity` | Runners on base, a football drive inside the red zone, or a hockey power play or empty net | 20 |
 | [Go-ahead run](#go-ahead-run) | `goAheadRun` | The go-ahead or tying run on base in baseball and softball | 10 |
 | [Two-minute drill](#two-minute-drill) | `twoMinuteDrill` | A football team with the ball, tied or down one score, in the closing minutes | 12 |
+| [Last shot](#last-shot) | `lastShot` | A basketball game within 3 points with less time left than on the shot clock | 12 |
+| [Sudden death](#sudden-death) | `suddenDeath` | Playoff hockey overtime, college and UFL overtime, and shootouts | 12 |
 | [Red card](#red-card) | `redCard` | A sending-off in a tied or one-goal soccer match | 15 |
 | [No-hitter](#no-hitter) | `noHitter` | A baseball or softball game with a team still hitless | 70 |
 | [Upset watch](#upset-watch) | `upsetWatch` | The pregame underdog leading or within a score | 12 |
@@ -42,7 +44,7 @@ Boosts share caps, so a lot of small things happening at once can't push a game 
 
 | Bucket | Cap | What's in it | Why |
 |---|---|---|---|
-| Moments | 20 | Scoring opportunity, go-ahead run, two-minute drill, red card | A tied game at the buzzer scores about 80 before boosts, so a full moment lifts it to 100. A one-score final minute lands in the high 80s, and not every tight game pins at 100. |
+| Moments | 20 | Scoring opportunity, go-ahead run, two-minute drill, last shot, sudden death, red card | A tied game at the buzzer scores about 80 before boosts, so a full moment lifts it to 100. A one-score final minute lands in the high 80s, and not every tight game pins at 100. |
 | No-hitter | 70 | No-hitter | A bid lasts innings, not a moment, and it has to lift a 6-0 game past tied ones. |
 | Context | 16 | Upset watch, stakes | They can happen together (a ranked underdog), but together they stay below a late one-score swing, so context never outranks live action. |
 
@@ -62,6 +64,8 @@ A scoring threat the score itself doesn't show yet.
 | Three (bases loaded) | 10 |
 
 It pays nothing at 3 outs. Runners can linger on a scoreboard for a poll after the last out, and nothing can happen with them.
+
+**The extra-inning runner.** Where the rules start every extra inning with a runner on second (MLB in the regular season and the World Baseball Classic from the 10th, college softball from the 8th), that runner counts half until the inning does something: an out, or another runner on base.
 
 **Football**, gated on how close the game already is. This only applies when `isRedZone` is true.
 
@@ -122,6 +126,8 @@ Only the higher row applies. The base value is then weighted by inning:
 
 The maximum is 10: an 8 at full weight, times the last-chance bump. At 3 outs it pays nothing.
 
+The untouched extra-inning runner from [Scoring opportunity](#scoring-opportunity) counts half here too.
+
 ## Two-minute drill
 
 Football. Needs `possession`, `yardsToEndZone`, and a live `down`. Pays in the 4th quarter and overtime, and only to the team with the ball, and only when it can still tie or win with one score:
@@ -132,6 +138,28 @@ Football. Needs `possession`, `yardsToEndZone`, and a live `down`. Pays in the 4
 A team running out the clock with a lead pays nothing. Neither does an NCAA or UFL overtime, which has no game clock.
 
 The 12 points are scaled by four things: how little time is left (full at 40 seconds), field position (full from the opponent's 35, or 30 in college, down to 40% at your own 20), timeouts left (85% with none, 100% with three, 92.5% when the feed doesn't say), and the margin (full when tied or down 1 or 2, shrinking to 70% at 8 down). Between plays, after a score, a feed sends a down that means nothing, and the boost pays 0 until the next snap.
+
+**Kicking off.** One exception: when the team that just scored is still down one score in the last 4 minutes of the 4th quarter, the boost pays for the kickoff that's coming, at three quarters of what a drill would pay at the same clock and margin. It reads `context.history` to see who scored, and stops 5 minutes after the score.
+
+## Last shot
+
+Basketball. Pays in the final period or overtime when the game is within 3 points and less time is left than on the shot clock: 24 seconds, or 30 in college.
+
+It starts at 60% of 12 the moment the game clock drops under the shot clock and builds to the full 12 with 5 seconds left. A 3-point game, where the trailing team needs a three just to tie, pays three quarters. At 0:00 it pays nothing.
+
+## Sudden death
+
+Overtimes where the next score can end it, and shootouts.
+
+| Situation | Pays |
+|---|---|
+| Playoff hockey overtime | 4 in the first overtime, 8 in the second, 12 from the third on |
+| A regular-season hockey shootout | 10 |
+| A penalty shootout | 12 when it's tied, 8 one goal apart, 4 two apart, 0 beyond that |
+| College football overtime, within one score | 4, then 8, then 12 from the third overtime, when it's down to two-point tries |
+| UFL overtime | 12, since it starts with two-point tries |
+
+Regular-season 3-on-3 hockey overtime and NFL overtime pay nothing. Penalty shootout goals come from `shootoutScore` on each team, and without them a penalty shootout pays a flat 10. Hockey feeds don't send shootout goals, so a hockey shootout is always 10.
 
 ## Red card
 

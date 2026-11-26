@@ -80,7 +80,7 @@ describe('scoringModeMeta colours', () => {
 	});
 
 	test('keeps any two factors that can share a card at least 11 apart in ΔE00', () => {
-		const tooClose = modes.flatMap(mode => (['baseball', 'football', 'soccer', 'hockey'] as const).flatMap(sport => {
+		const tooClose = modes.flatMap(mode => (['baseball', 'basketball', 'football', 'soccer', 'hockey'] as const).flatMap(sport => {
 			const ids = ['favoriteBoost', 'gameBoost', 'postseasonBoost', ...builtInModes[mode].boosts.map(boost => boost.id), 'commercialBreak', 'volatility']
 				.filter(id => paysIn(id, sport));
 			return ids.flatMap((one, index) => ids.slice(index + 1)

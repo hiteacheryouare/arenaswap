@@ -144,6 +144,19 @@ const everySituation: [Game<string>, ScoringContext][] = [
 	[court({ seasonType: 'postseason', postseasonRound: 2 }), {}],
 	[court({ seasonType: 'postseason', postseasonRound: 3 }), {}],
 	[court({}), {}],
+	[diamond({ period: 10, topOfInning: false, outs: 0, baseRunners: { first: false, second: true, third: false } }), {}],
+	[gridiron({ period: 4, clockSeconds: 90, down: -1, homeTeam: { abbreviation: 'KC', score: 24 }, awayTeam: { abbreviation: 'BUF', score: 27 } }), { history: [
+		{ gameId: 'buf-kc', timestamp: 0, homeScore: 17, awayScore: 27 },
+		{ gameId: 'buf-kc', timestamp: 60_000, homeScore: 24, awayScore: 27 },
+		{ gameId: 'buf-kc', timestamp: 90_000, homeScore: 24, awayScore: 27 },
+	] }],
+	[court({ period: 4, clockSeconds: 10 }), {}],
+	[court({ period: 4, clockSeconds: 10, homeTeam: { abbreviation: 'OKC', score: 98 }, awayTeam: { abbreviation: 'DEN', score: 100 } }), {}],
+	[rink(1, { period: 4, seasonType: 'postseason' }), {}], [rink(1, { period: 6, seasonType: 'postseason' }), {}], [rink(1, { period: 5 }), {}],
+	[pitch({ period: 5 }), {}],
+	[pitch({ period: 5, homeTeam: { abbreviation: 'EVE', score: 1, shootoutScore: 3 }, awayTeam: { abbreviation: 'LIV', score: 1, shootoutScore: 3 } }), {}],
+	[pitch({ period: 5, homeTeam: { abbreviation: 'EVE', score: 1, shootoutScore: 4 }, awayTeam: { abbreviation: 'LIV', score: 1, shootoutScore: 3 } }), {}],
+	[live('football', 'ncaaf', 'OSU', 'MICH', { period: 5 }), {}], [live('football', 'ncaaf', 'OSU', 'MICH', { period: 6 }), {}], [live('football', 'ncaaf', 'OSU', 'MICH', { period: 7 }), {}],
 ];
 
 const scoredWithDetails = everySituation.flatMap(([game, context]) => [8, 0].flatMap(postseasonBoostPoints => {

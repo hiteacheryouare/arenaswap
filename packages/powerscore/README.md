@@ -219,9 +219,11 @@ Boosts are the smaller, moment-shaped inputs. They pay nothing while the game is
 
 | Boost | Id | Pays for | Max |
 |---|---|---|---|
-| Scoring opportunity | `scoringOpportunity` | Runners on base; a football drive inside the red zone, weighted by down; a hockey power play in a tied or one- or two-goal game, or a pulled goalie in the last 4 minutes of the 3rd. | 20 |
-| Go-ahead run | `goAheadRun` | Baseball and softball. The batting team has the go-ahead run on base, or failing that the tying run. Stronger late, and strongest when it's the last chance. Pays nothing at 3 outs. | 10 |
-| Two-minute drill | `twoMinuteDrill` | Football. The team with the ball is tied or down one score, inside the last 2 minutes (4 when trailing), weighted by field position and timeouts. | 12 |
+| Scoring opportunity | `scoringOpportunity` | Runners on base (half for the extra-inning runner on second until the inning has an out or another runner); a football drive inside the red zone, weighted by down; a hockey power play in a tied or one- or two-goal game, or a pulled goalie in the last 4 minutes of the 3rd. | 20 |
+| Go-ahead run | `goAheadRun` | Baseball and softball. The batting team has the go-ahead run on base, or failing that the tying run. Stronger late, and strongest when it's the last chance. Half for the untouched extra-inning runner. Pays nothing at 3 outs. | 10 |
+| Two-minute drill | `twoMinuteDrill` | Football. The team with the ball is tied or down one score, inside the last 2 minutes (4 when trailing), weighted by field position and timeouts. Also pays, at three quarters, while a team that just scored is still down one score and about to kick off in the last 4 minutes. | 12 |
+| Last shot | `lastShot` | Basketball. A game within 3 points in the final period or overtime, once less time is left than on the shot clock (24 seconds, 30 in college). Builds to full in the last 5 seconds, and a 3-point game pays three quarters. | 12 |
+| Sudden death | `suddenDeath` | Playoff hockey overtime (4 an overtime, up to 12), college football overtime within one score (4, then 8, then 12 once it's two-point tries; UFL overtime starts there), a hockey shootout (10), and a penalty shootout (12 tied, 8 one apart, 4 two apart). | 12 |
 | Red card | `redCard` | Soccer. A red card in a tied or one-goal game, or with the carded team up two, fading over the next 10 game minutes. | 15 |
 | No-hitter | `noHitter` | Baseball and softball. One team has no hits, from the 6th inning (the 4th in softball), growing with each hitless inning. | 70 |
 | Upset watch | `upsetWatch` | The pregame underdog leading, level or within one score, past halfway. Bigger the longer the odds. | 12 |
@@ -330,8 +332,21 @@ interface PowerScore {
 | `goAheadRun` | `tyingRun` | `team` | {team} has the tying run on base. |
 | `goAheadRun` | `winningRun` | `team` | {team} has the winning run on base. One swing could end it. |
 | `goAheadRun` | `lastChance` | — | It could be their last chance. |
+| `scoringOpportunity`, `goAheadRun` | `automaticRunner` | — | That's the free runner every extra inning starts with. |
 | `twoMinuteDrill` | `driveTied` | `team`, `yards`, `clock` | Tie game. {team} has the ball {yards} yards out with {clock} left. |
 | `twoMinuteDrill` | `driveTrailing` | `team`, `trailBy`, `yards`, `clock` | {team} is down {trailBy}, driving from {yards} yards out with {clock} left. |
+| `twoMinuteDrill` | `onsideKick` | `team`, `trailBy`, `clock` | {team} just scored and is kicking off, down {trailBy} with {clock} left. |
+| `lastShot` | `lastShotTied` | `clock` | Tied with {clock} left. The next basket could win it. |
+| `lastShot` | `lastShotClose` | `margin`, `clock` | A {margin}-point game with {clock} left. |
+| `suddenDeath` | `playoffOvertime` | — | Playoff overtime. The next goal wins. |
+| `suddenDeath` | `playoffOvertimeDeep` | `overtime` | Overtime number {overtime}. The next goal wins. |
+| `suddenDeath` | `hockeyShootout` | — | A shootout decides this one. |
+| `suddenDeath` | `penaltyShootout` | — | A penalty shootout decides this one. |
+| `suddenDeath` | `shootoutTied` | `goals` | Tied {goals}–{goals} in the shootout. |
+| `suddenDeath` | `shootoutLeading` | `team`, `scored`, `conceded` | {team} leads the shootout {scored}–{conceded}. |
+| `suddenDeath` | `footballOvertime` | — | Overtime, and it's still a one-score game. |
+| `suddenDeath` | `footballOvertimeDeep` | `overtime` | Overtime number {overtime}, and it's still a one-score game. |
+| `suddenDeath` | `twoPointTries` | — | Overtime is down to two-point tries. |
 | `redCard` | `redCard` | `team`, `players`, `minute` | {team} has been down to {players} since {minute}′. |
 | `noHitter` | `noHitter` | `team`, `innings` | {team} still doesn't have a hit through {innings} innings. |
 | `noHitter` | `doubleNoHitter` | `innings` | Neither team has a hit through {innings} innings. |

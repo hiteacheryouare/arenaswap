@@ -1,5 +1,5 @@
 ---
-sourceHash: 'cdc911cc09f7'
+sourceHash: '10cc90e83f8c'
 title: Impulsos e penalidades do PowerScore
 navLabel: Impulsos e penalidades
 description: Todo impulso e toda penalidade que o PowerScore 3 aplica por cima dos sinais de um modo, com a condição que dispara cada um, o máximo e os tetos que eles dividem.
@@ -30,6 +30,8 @@ Os impulsos de favorito, de pós-temporada e manual, no [fim da página](#favori
 | [Oportunidade de pontuar](#scoring-opportunity) | `scoringOpportunity` | Corredores nas bases, uma campanha de futebol americano dentro da red zone, ou um power play ou goleiro retirado no hóquei | 20 |
 | [Corrida da vantagem](#go-ahead-run) | `goAheadRun` | A corrida da vantagem ou do empate em base no beisebol e no softbol | 10 |
 | [Two-minute drill](#two-minute-drill) | `twoMinuteDrill` | Um time de futebol americano com a bola, empatado ou perdendo por um placar, nos minutos finais | 12 |
+| [Último arremesso](#last-shot) | `lastShot` | Um jogo de basquete com até 3 pontos de diferença e menos tempo do que no relógio de posse | 12 |
+| [Morte súbita](#sudden-death) | `suddenDeath` | Prorrogação dos playoffs de hóquei, prorrogação universitária e da UFL, e shootouts | 12 |
 | [Cartão vermelho](#red-card) | `redCard` | Uma expulsão num jogo de futebol empatado ou com um gol de diferença | 15 |
 | [No-hitter](#no-hitter) | `noHitter` | Um jogo de beisebol ou softbol com um time ainda sem hit | 70 |
 | [Alerta de zebra](#upset-watch) | `upsetWatch` | O azarão de pré-jogo na frente ou a um placar de distância | 12 |
@@ -43,7 +45,7 @@ Os impulsos dividem tetos, então muita coisa pequena acontecendo ao mesmo tempo
 
 | Balde | Teto | O que tem nele | Por quê |
 |---|---|---|---|
-| Momentos | 20 | Oportunidade de pontuar, corrida da vantagem, two-minute drill, cartão vermelho | Um jogo empatado na sirene pontua uns 80 antes dos impulsos, então um momento cheio o leva a 100. Um último minuto com um placar de diferença cai nos 80 e poucos, e nem todo jogo apertado trava em 100. |
+| Momentos | 20 | Oportunidade de pontuar, corrida da vantagem, two-minute drill, último arremesso, morte súbita, cartão vermelho | Um jogo empatado na sirene pontua uns 80 antes dos impulsos, então um momento cheio o leva a 100. Um último minuto com um placar de diferença cai nos 80 e poucos, e nem todo jogo apertado trava em 100. |
 | No-hitter | 70 | No-hitter | Uma tentativa dura entradas, não um momento, e precisa levar um jogo de 6 a 0 acima dos empatados. |
 | Contexto | 16 | Alerta de zebra, Em jogo | Os dois podem acontecer juntos (um azarão ranqueado), mas juntos ficam abaixo de uma virada de um placar no fim, então o contexto nunca passa na frente da ação ao vivo. |
 
@@ -63,6 +65,8 @@ Uma ameaça de pontuar que o placar ainda não mostra.
 | Três (bases lotadas) | 10 |
 
 Não paga nada com 3 outs. Os corredores podem ficar no placar por uma consulta depois do último out, e nada pode acontecer com eles.
+
+**O corredor das entradas extras.** Onde as regras começam cada entrada extra com um corredor na segunda (a MLB na temporada regular e o World Baseball Classic a partir da 10ª, o softbol universitário a partir da 8ª), esse corredor vale metade até a entrada ter alguma coisa: um out, ou outro corredor em base.
 
 **Futebol americano**, travado pelo quanto o jogo já está apertado. Só vale quando `isRedZone` é verdadeiro.
 
@@ -123,6 +127,8 @@ Só a linha mais alta vale. O valor-base é então ponderado pela entrada:
 
 O máximo é 10: um 8 com peso cheio, vezes o acréscimo de última chance. Com 3 outs não paga nada.
 
+O corredor das entradas extras ainda intocado de [Oportunidade de pontuar](#scoring-opportunity) vale metade aqui também.
+
 ## Two-minute drill
 
 Futebol americano. Precisa de `possession`, `yardsToEndZone` e um `down` ao vivo. Paga no 4º quarto e na prorrogação, só para o time com a bola, e só quando ele ainda pode empatar ou vencer com um placar:
@@ -133,6 +139,28 @@ Futebol americano. Precisa de `possession`, `yardsToEndZone` e um `down` ao vivo
 Um time que gasta o relógio com a vantagem não paga nada. Uma prorrogação da NCAA ou da UFL, que não tem relógio de jogo, também não.
 
 Os 12 pontos são escalados por quatro coisas: quão pouco tempo resta (cheio aos 40 segundos), a posição em campo (cheio a partir da jarda 35 do adversário, ou 30 na universidade, caindo a 40% na sua própria jarda 20), os pedidos de tempo que sobram (85% sem nenhum, 100% com três, 92,5% quando o feed não diz) e a diferença (cheia quando empatado ou perdendo por 1 ou 2, caindo a 70% com 8 de desvantagem). Entre jogadas, depois de um ponto, um feed manda um down que não significa nada, e o impulso paga 0 até a próxima bola em jogo.
+
+**O kickoff.** Uma exceção: quando o time que acabou de pontuar ainda perde por uma posse nos últimos 4 minutos do 4º quarto, o impulso paga pelo kickoff que vem aí, a três quartos do que uma campanha pagaria com o mesmo relógio e a mesma diferença. Ele lê `context.history` para saber quem pontuou e para 5 minutos depois da pontuação.
+
+## Último arremesso
+
+Basquete. Paga no último período ou na prorrogação quando a diferença é de até 3 pontos e resta menos tempo do que no relógio de posse: 24 segundos, ou 30 no universitário.
+
+Começa em 60% de 12 assim que o relógio do jogo fica abaixo do relógio de posse e sobe até os 12 cheios com 5 segundos restantes. Um jogo de 3 pontos, em que o time perdendo precisa de uma bola de três só para empatar, paga três quartos. Em 0:00 não paga nada.
+
+## Morte súbita
+
+Prorrogações em que a próxima pontuação pode encerrar o jogo, e shootouts.
+
+| Situação | Paga |
+|---|---|
+| Prorrogação dos playoffs de hóquei | 4 na primeira prorrogação, 8 na segunda, 12 da terceira em diante |
+| Um shootout de hóquei na temporada regular | 10 |
+| Uma disputa de pênaltis | 12 empatada, 8 com um gol de diferença, 4 com dois, 0 além disso |
+| Prorrogação do futebol americano universitário, com até uma posse de diferença | 4, depois 8, depois 12 a partir da terceira prorrogação, quando ficam só as tentativas de dois pontos |
+| Prorrogação da UFL | 12, porque começa nas tentativas de dois pontos |
+
+A prorrogação 3 contra 3 da temporada regular de hóquei e a prorrogação da NFL não pagam nada. Os gols da disputa de pênaltis vêm de `shootoutScore` em cada time, e sem eles uma disputa de pênaltis paga 10 fixos. Os dados de hóquei não trazem os gols do shootout, então um shootout de hóquei sempre paga 10.
 
 ## Cartão vermelho
 

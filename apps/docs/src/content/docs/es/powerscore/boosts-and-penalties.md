@@ -1,5 +1,5 @@
 ---
-sourceHash: 'cdc911cc09f7'
+sourceHash: '10cc90e83f8c'
 title: Impulsos y penalizaciones de PowerScore
 navLabel: Impulsos y penalizaciones
 description: Cada impulso y penalización que PowerScore 3 aplica sobre las señales de un modo, con la condición que activa cada uno, su máximo y los topes que comparten.
@@ -30,6 +30,8 @@ Los impulsos de favorito, de postemporada y manual que están al [final de la p�
 | [Oportunidad de anotar](#scoring-opportunity) | `scoringOpportunity` | Corredores en base, un avance de fútbol americano dentro de la zona roja, o un power play o portería vacía en hockey | 20 |
 | [Carrera de ventaja en base](#go-ahead-run) | `goAheadRun` | La carrera de la ventaja o del empate en base en béisbol y softbol | 10 |
 | [Ofensiva de dos minutos](#two-minute-drill) | `twoMinuteDrill` | Un equipo de fútbol americano con el balón, empatado o abajo por una anotación, en los minutos finales | 12 |
+| [Último tiro](#last-shot) | `lastShot` | Un juego de básquetbol a 3 puntos o menos, con menos tiempo que el del reloj de tiro | 12 |
+| [Muerte súbita](#sudden-death) | `suddenDeath` | Tiempo extra de playoffs de hockey, tiempo extra universitario y de la UFL, y shootouts | 12 |
 | [Tarjeta roja](#red-card) | `redCard` | Una expulsión en un partido de futbol empatado o a un gol de diferencia | 15 |
 | [No-hitter](#no-hitter) | `noHitter` | Un partido de béisbol o softbol con un equipo todavía sin hits | 70 |
 | [Alerta de sorpresa](#upset-watch) | `upsetWatch` | El sotanero de antes del partido adelante o a una anotación | 12 |
@@ -43,7 +45,7 @@ Los impulsos comparten topes, para que muchas cosas pequeñas a la vez no empuje
 
 | Grupo | Tope | Qué incluye | Por qué |
 |---|---|---|---|
-| Momentos | 20 | Oportunidad de anotar, carrera de ventaja, ofensiva de dos minutos, tarjeta roja | Un partido empatado en el silbatazo final puntúa cerca de 80 antes de los impulsos, así que un momento completo lo lleva a 100. Un último minuto a una anotación de diferencia queda en los 80 altos, y no todo partido cerrado se clava en 100. |
+| Momentos | 20 | Oportunidad de anotar, carrera de ventaja, ofensiva de dos minutos, último tiro, muerte súbita, tarjeta roja | Un partido empatado en el silbatazo final puntúa cerca de 80 antes de los impulsos, así que un momento completo lo lleva a 100. Un último minuto a una anotación de diferencia queda en los 80 altos, y no todo partido cerrado se clava en 100. |
 | No-hitter | 70 | No-hitter | Una racha dura entradas, no un momento, y tiene que subir un partido 6-0 por encima de los empatados. |
 | Contexto | 16 | Alerta de sorpresa, en juego | Pueden darse juntos (un sotanero rankeado), pero juntos se quedan por debajo de un vuelco de una anotación al final, así que el contexto nunca supera a la acción en vivo. |
 
@@ -63,6 +65,8 @@ Una amenaza de anotación que el marcador todavía no muestra.
 | Tres (bases llenas) | 10 |
 
 No paga nada con 3 outs. Los corredores pueden quedarse en un marcador una consulta después del último out, y no puede pasar nada con ellos.
+
+**El corredor de entradas extra.** Donde las reglas arrancan cada entrada extra con un corredor en segunda (la MLB en temporada regular y el Clásico Mundial de Béisbol desde la 10.ª, el softbol universitario desde la 8.ª), ese corredor cuenta la mitad hasta que pase algo en la entrada: un out u otro corredor en base.
 
 **Fútbol americano**, condicionado a qué tan cerrado ya esté el partido. Solo aplica cuando `isRedZone` es true.
 
@@ -123,6 +127,8 @@ Solo aplica la fila más alta. El valor base se pondera luego por la entrada:
 
 El máximo es 10: un 8 con peso completo, por el aumento de última oportunidad. Con 3 outs no paga nada.
 
+El corredor de entradas extra intacto de [Oportunidad de anotar](#scoring-opportunity) también cuenta la mitad aquí.
+
 ## Ofensiva de dos minutos
 
 Fútbol americano. Necesita `possession`, `yardsToEndZone` y un `down` en vivo. Paga en el 4.º cuarto y en el tiempo extra, solo al equipo con el balón, y solo cuando todavía puede empatar o ganar con una anotación:
@@ -133,6 +139,28 @@ Fútbol americano. Necesita `possession`, `yardsToEndZone` y un `down` en vivo. 
 Un equipo que deja correr el reloj con ventaja no paga nada. Tampoco un tiempo extra de la NCAA o la UFL, que no tiene reloj de partido.
 
 Los 12 puntos se escalan por cuatro cosas: qué tan poco tiempo queda (completo a 40 segundos), la posición en el campo (completo desde la yarda 35 del rival, o 30 en el colegial, bajando a 40% en tu propia yarda 20), los tiempos fuera que quedan (85% con ninguno, 100% con tres, 92.5% cuando el feed no lo dice) y el margen (completo cuando está empatado o abajo por 1 o 2, bajando a 70% con 8 abajo). Entre jugadas, después de una anotación, un feed manda un down que no significa nada, y el impulso paga 0 hasta el siguiente snap.
+
+**La patada de salida.** Una excepción: cuando el equipo que acaba de anotar sigue abajo por una anotación en los últimos 4 minutos del 4.º cuarto, el impulso paga por la patada que viene, a tres cuartos de lo que pagaría una ofensiva con el mismo reloj y la misma diferencia. Lee `context.history` para ver quién anotó y se detiene 5 minutos después de la anotación.
+
+## Último tiro
+
+Básquetbol. Paga en el último periodo o en tiempo extra cuando el juego está a 3 puntos o menos y queda menos tiempo que en el reloj de tiro: 24 segundos, o 30 en el universitario.
+
+Arranca en el 60 % de 12 en cuanto el reloj de juego baja del reloj de tiro y sube hasta los 12 completos con 5 segundos por jugar. Un juego a 3 puntos, donde el equipo que va abajo necesita un triple solo para empatar, paga tres cuartos. En 0:00 no paga nada.
+
+## Muerte súbita
+
+Tiempos extra en los que la próxima anotación puede terminarlo, y shootouts.
+
+| Situación | Paga |
+|---|---|
+| Tiempo extra de playoffs de hockey | 4 en el primer tiempo extra, 8 en el segundo, 12 desde el tercero |
+| Un shootout de hockey en temporada regular | 10 |
+| Una tanda de penales | 12 si va empatada, 8 con un gol de diferencia, 4 con dos, 0 con más |
+| Tiempo extra del fútbol americano universitario, a una anotación o menos | 4, luego 8, luego 12 desde el tercer tiempo extra, cuando ya se decide con intentos de dos puntos |
+| Tiempo extra de la UFL | 12, porque empieza con intentos de dos puntos |
+
+El tiempo extra 3 contra 3 de la temporada regular de hockey y el tiempo extra de la NFL no pagan nada. Los goles de la tanda de penales salen de `shootoutScore` en cada equipo, y sin ellos una tanda de penales paga 10 fijos. Los datos de hockey no mandan los goles del shootout, así que un shootout de hockey siempre paga 10.
 
 ## Tarjeta roja
 

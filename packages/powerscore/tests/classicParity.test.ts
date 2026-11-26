@@ -1,6 +1,7 @@
 import { scoreGame, signalPoints, boostPoints } from '../src/compose';
 import { classicMode } from '../src/modes';
 import { scoringOpportunityBoost } from '../src/boosts/scoringOpportunity';
+import { isUntouchedAutomaticRunner } from '../src/boosts/automaticRunner';
 import { leagueConfigs } from '../src/constants';
 import { resolveLeagueConfig, resolveSportConfig } from '../src/config';
 import { scoreMargin } from '../src/progress';
@@ -87,7 +88,7 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 	const random = createRandom(20261003);
 	const cases = 20_000;
 
-	test(`${cases} seeded games agree field by field, apart from the reworked volatility term`, () => {
+	test(`${cases} seeded games agree field by field, apart from the reworked volatility term and the discounted extra-inning runner`, () => {
 		const mismatches: string[] = [];
 		const seen = { highTotal: 0, overflow: 0, disabled: 0, scoringOpportunity: 0, postseason: 0, momentum: 0, leadChanges: 0, comeback: 0, frozen: 0 };
 		for (let i = 0; i < cases; i++) {
@@ -126,16 +127,17 @@ describe('v3 Classic matches the 2.2.0 pipeline', () => {
 				&& trailerLead > 0 && trailerLead <= resolveSportConfig(game.sportType).closenessMargins[1];
 			const comebackMoved = history.length >= 3 && trailerNowLeads;
 			const skipsSubtotal = overtimeLead || comebackMoved;
+			const automaticRunner = isUntouchedAutomaticRunner(game);
 			const fields: [string, unknown, unknown][] = [
 				...signalNames.filter(name => (!overtimeLead || name !== 'lateGame') && (!comebackMoved || name !== 'comeback')).map((name): [string, unknown, unknown] => [name, v2[name], signalPoints(v3, name)]),
 				...(skipsSubtotal ? [] : [['signalsSubtotal', v2.signalsSubtotal ?? 0, v3.scaledSubtotal] as [string, unknown, unknown]]),
 				['favoriteBonus', v2.favoriteBonus, boostPoints(v3, 'favoriteBoost')],
 				['gameBoost', v2.gameBoost, boostPoints(v3, 'gameBoost')],
-				['scoringOpportunityBoost', v2.scoringOpportunityBoost, boostPoints(v3, 'scoringOpportunity')],
+				...(automaticRunner ? [] : [['scoringOpportunityBoost', v2.scoringOpportunityBoost, boostPoints(v3, 'scoringOpportunity')] as [string, unknown, unknown]]),
 				['postseasonBoost', v2.postseasonBoost, boostPoints(v3, 'postseasonBoost')],
 			];
 
-			if (!skipsSubtotal) fields.push(['total', v2.total, v3.total]);
+			if (!skipsSubtotal && !automaticRunner) fields.push(['total', v2.total, v3.total]);
 
 			if (v3.total >= 70) seen.highTotal++;
 			if (v3.total > 100) seen.overflow++;
