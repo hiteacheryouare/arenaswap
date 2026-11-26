@@ -12,6 +12,14 @@ const open = (locale: shippedLocale, extra: Record<string, unknown> = {}) => {
 
 const typeInto = (selector: string, text: string) => cy.get(selector).type(text, { delay: 0 });
 
+// The slide starts 14px to the right. .popup-root clips it, but scrollWidth still counts it, so measuring mid-slide reports a sideways scroll nobody sees.
+const openGroup = (group: string) => {
+	cy.get(`#settingsGroup-${group}`).click();
+	cy.get('.popup-slide-in').then($view => $view[0].getAnimations()
+		.filter(animation => (animation as CSSAnimation).animationName === 'popupViewSlideIn')
+		.forEach(animation => animation.finish()));
+};
+
 describe('settings controls containment', () => {
 	inEveryLocale('keeps the settings search inside the popup for a long unbroken query and a broad one', locale => {
 		open(locale);
@@ -25,7 +33,7 @@ describe('settings controls containment', () => {
 
 	inEveryLocale('keeps the Boss Button page inside the popup with a long unbroken address typed', locale => {
 		open(locale);
-		cy.get('#settingsGroup-switching').click();
+		openGroup('switching');
 		typeInto('#bossDecoyInput', worstUserText.unbroken(300));
 		cy.get(popupSurface).assertContained();
 	});
@@ -34,7 +42,7 @@ describe('settings controls containment', () => {
 		open(locale);
 		for (const group of ['switching', 'display', 'standby']) {
 			cy.get('.setup-header').then($header => { if ($header.length) cy.get('.setup-header').click(); });
-			cy.get(`#settingsGroup-${group}`).click();
+			openGroup(group);
 			cy.get('.form-control-caret').each($select => {
 				cy.wrap($select).click();
 				cy.get(popupSurface).assertContained();
@@ -47,7 +55,7 @@ describe('settings controls containment', () => {
 		open(locale);
 		for (const group of ['switching', 'scoring', 'display', 'standby', 'multiview']) {
 			cy.get('.setup-header').then($header => { if ($header.length) cy.get('.setup-header').click(); });
-			cy.get(`#settingsGroup-${group}`).click();
+			openGroup(group);
 			cy.get('.setup-header').should('exist');
 			cy.get('body').then($body => $body.find('.setting-tooltip-btn').toArray()).each(button => {
 				const $button = Cypress.$(button);
