@@ -9,6 +9,10 @@
 
 Classic gains Last shot (basketball within 3 once the game clock drops under the shot clock, up to 12) and Sudden death (4 an overtime up to 12 in playoff hockey and college or UFL overtime, 12/8/4 by goal gap in a penalty shootout, and a flat 10 in an NHL shootout because the hockey feed sends no shootout goals). The two-minute drill also pays three quarters for a team still down one score that's about to kick off after a late score, found from score history since the feed's down means nothing between plays. The untouched extra-inning automatic runner (MLB regular season, World Baseball Classic, college softball) now counts half, so a tied extra half-inning opens at 87 instead of 91.
 
+## 27 more loading lines, and four that made no sense get rewritten — 2026-11-25
+
+The loading pool grows from 125 to 152 lines in all 12 locales, and m33, m43, m67 and m118 are replaced in place so the numbered keys stay contiguous. A literal dollar sign in a message has to be written `$$` (the browser shows `$`), so the locale parity test now skips an escaped `$$` the same way WXT's type generator does instead of reading it as the `$1` placeholder.
+
 ## The game detail screen says when it last updated — 2026-11-25
 
 The bottom of the detail screen, below every tab, now reads "Last updated 12 seconds ago" and counts up each second, from the league's last successful check (`leagueLastGoodAt`) rather than the last score change. Demo mode stamps that time on every simulator tick so the line shows there too, and it stays hidden until the first check after the worker starts.

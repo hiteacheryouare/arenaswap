@@ -2,7 +2,7 @@ import type { SportType } from '@arenaswap/core/types';
 import { i18n } from '#i18n';
 
 // Must match the number of `loading.mN` keys in the locale files.
-const LOADING_MESSAGE_COUNT = 125;
+const LOADING_MESSAGE_COUNT = 152;
 
 export const getRandomLoadingMessage = (): string => {
 	const index = Math.floor(Math.random() * LOADING_MESSAGE_COUNT) + 1;

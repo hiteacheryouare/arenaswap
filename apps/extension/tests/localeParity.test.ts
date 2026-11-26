@@ -14,7 +14,7 @@ const flatten = (strings: Strings, prefix = ''): Map<string, string> => new Map(
 	)),
 );
 
-const placeholders = (text: string): string[] => [...text.matchAll(/\{[a-zA-Z]+\}|\$\d/g)].map(match => match[0]).toSorted();
+const placeholders = (text: string): string[] => [...text.matchAll(/\{[a-zA-Z]+\}|(?<!\$)\$\d/g)].map(match => match[0]).toSorted();
 
 const english = flatten(readLocale('en.json'));
 
