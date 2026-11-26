@@ -530,6 +530,11 @@
 		"at": "vs"
 	},
 	"detail": {
+		"lastUpdatedJustNow": "最終更新: たった今",
+		"lastUpdatedSeconds": {
+			"1": "最終更新: 1秒前",
+			"n": "最終更新: $1秒前"
+		},
 		"tabOverview": "概要",
 		"tabStandings": "順位表",
 		"startsSoon": "まもなく開始",

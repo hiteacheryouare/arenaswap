@@ -530,6 +530,11 @@
 		"at": "@"
 	},
 	"detail": {
+		"lastUpdatedJustNow": "Aggiornato proprio ora",
+		"lastUpdatedSeconds": {
+			"1": "Ultimo aggiornamento 1 secondo fa",
+			"n": "Ultimo aggiornamento $1 secondi fa"
+		},
 		"tabOverview": "Panoramica",
 		"tabStandings": "Classifica",
 		"startsSoon": "Inizia a breve",

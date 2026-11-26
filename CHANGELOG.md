@@ -9,6 +9,10 @@
 
 Classic gains Last shot (basketball within 3 once the game clock drops under the shot clock, up to 12) and Sudden death (4 an overtime up to 12 in playoff hockey and college or UFL overtime, 12/8/4 by goal gap in a penalty shootout, and a flat 10 in an NHL shootout because the hockey feed sends no shootout goals). The two-minute drill also pays three quarters for a team still down one score that's about to kick off after a late score, found from score history since the feed's down means nothing between plays. The untouched extra-inning automatic runner (MLB regular season, World Baseball Classic, college softball) now counts half, so a tied extra half-inning opens at 87 instead of 91.
 
+## The game detail screen says when it last updated — 2026-11-25
+
+The bottom of the detail screen, below every tab, now reads "Last updated 12 seconds ago" and counts up each second, from the league's last successful check (`leagueLastGoodAt`) rather than the last score change. Demo mode stamps that time on every simulator tick so the line shows there too, and it stays hidden until the first check after the worker starts.
+
 ## Bootstrap 6.0.0-alpha.2 — 2026-11-25
 
 Bootstrap and `@floating-ui/dom` (1.8.0, alpha.2's new peer floor) move up, which picks up the two alpha.1 XSS fixes and drops our workarounds for the Menu dispose leak, the unread switch knob and check radius tokens, the quarter-thumb tick inset and the global scrollbar gutter. Where alpha.2 only changed a default look, `_bootstrap.scss` pins today's: code stays at 95%, close buttons inherit their color, and a keyboard-focused menu item looks hovered instead of turning into a gray slab. The range fill now stops at the thumb's center and menus wrap long items to fit the window instead of growing past it.

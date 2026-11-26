@@ -530,6 +530,11 @@
 		"at": "x"
 	},
 	"detail": {
+		"lastUpdatedJustNow": "Atualizado agora mesmo",
+		"lastUpdatedSeconds": {
+			"1": "Última atualização há 1 segundo",
+			"n": "Última atualização há $1 segundos"
+		},
 		"tabOverview": "Resumo",
 		"tabStandings": "Tabela",
 		"startsSoon": "Começa em breve",

@@ -22,6 +22,7 @@ import HolidayFall from './holiday/holidayFall';
 import HolidayFireworks, { type fireworkVolley } from './holiday/holidayFireworks';
 import HolidayLights from './holiday/holidayLights';
 import HolidayStockings from '@arenaswap/ui/src/components/holidayStockings';
+import LastUpdatedNote from './lastUpdatedNote';
 import LatestPlayPanel from './latestPlayPanel';
 import LineupsPanel from './lineupsPanel';
 import MatchupPanel from './matchupPanel';
@@ -69,6 +70,7 @@ interface gameDetailViewProps {
 	weatherPrefs: WeatherDisplayPrefs;
 	decorationPrefs: holidayDecorationPrefs;
 	decorationDate?: Date;
+	lastUpdatedAt?: number;
 	disabledSignals?: readonly SignalName[];
 	fantasyRoster?: readonly FantasyRosterEntry[];
 	favoriteTeamIds?: ReadonlySet<string>;
@@ -105,6 +107,7 @@ const gameDetailView = ({
 	weatherPrefs,
 	decorationPrefs,
 	decorationDate,
+	lastUpdatedAt,
 	disabledSignals = [],
 	fantasyRoster = noRoster,
 	favoriteTeamIds = noFavorites,
@@ -422,6 +425,8 @@ const gameDetailView = ({
 					</div>
 				))}
 			</div>
+
+			<LastUpdatedNote updatedAt={lastUpdatedAt} />
 
 			{decorations.falling && <HolidayDrift kind={decorations.falling} depth={decorations.depth} theme={theme} />}
 		</div>

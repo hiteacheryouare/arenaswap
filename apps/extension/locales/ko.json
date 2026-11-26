@@ -530,6 +530,11 @@
 		"at": "vs"
 	},
 	"detail": {
+		"lastUpdatedJustNow": "마지막 업데이트: 방금",
+		"lastUpdatedSeconds": {
+			"1": "마지막 업데이트: 1초 전",
+			"n": "마지막 업데이트: $1초 전"
+		},
 		"tabOverview": "개요",
 		"tabStandings": "순위",
 		"startsSoon": "곧 시작",

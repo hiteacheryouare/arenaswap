@@ -530,6 +530,11 @@
 		"at": "-"
 	},
 	"detail": {
+		"lastUpdatedJustNow": "Gerade eben aktualisiert",
+		"lastUpdatedSeconds": {
+			"1": "Zuletzt aktualisiert vor 1 Sekunde",
+			"n": "Zuletzt aktualisiert vor $1 Sekunden"
+		},
 		"tabOverview": "Übersicht",
 		"tabStandings": "Tabelle",
 		"startsSoon": "Beginnt bald",

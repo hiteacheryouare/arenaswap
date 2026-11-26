@@ -530,6 +530,11 @@
 		"at": "vs"
 	},
 	"detail": {
+		"lastUpdatedJustNow": "Kaka-update lang",
+		"lastUpdatedSeconds": {
+			"1": "Huling na-update 1 segundo na ang nakalipas",
+			"n": "Huling na-update $1 na segundo na ang nakalipas"
+		},
 		"tabOverview": "Overview",
 		"tabStandings": "Standings",
 		"startsSoon": "Magsisimula na",

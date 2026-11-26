@@ -1155,6 +1155,7 @@ export default defineBackground(() => {
 			games = simulator.tick();
 			finishedGames = games.filter(g => g.status === 'post');
 			const demoLeagues = [...new Set(games.map(game => game.league))];
+			for (const id of demoLeagues) leagueLastGoodAt[id] = Date.now();
 			leagueLogos = demoLeagues.reduce<LeagueLogoMap>((acc, leagueId) => {
 				acc[leagueId] = resolveLeagueLogoUrl(leagueId);
 				return acc;

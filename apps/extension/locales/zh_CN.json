@@ -530,6 +530,11 @@
 		"at": "vs"
 	},
 	"detail": {
+		"lastUpdatedJustNow": "刚刚更新",
+		"lastUpdatedSeconds": {
+			"1": "上次更新于 1 秒前",
+			"n": "上次更新于 $1 秒前"
+		},
 		"tabOverview": "概览",
 		"tabStandings": "排名",
 		"startsSoon": "即将开始",

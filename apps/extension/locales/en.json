@@ -530,6 +530,11 @@
 		"at": "@"
 	},
 	"detail": {
+		"lastUpdatedJustNow": "Last updated just now",
+		"lastUpdatedSeconds": {
+			"1": "Last updated 1 second ago",
+			"n": "Last updated $1 seconds ago"
+		},
 		"tabOverview": "Overview",
 		"tabStandings": "Standings",
 		"startsSoon": "Starts soon",

@@ -329,6 +329,7 @@ const App = () => {
 							holidayFireworksEnabled: prefs.holidayFireworksEnabled,
 						}}
 						decorationDate={resolveDecorationDate(new Date(), 'real')}
+						lastUpdatedAt={live?.leagueLastGoodAt[selectedGame.league]}
 						disabledSignals={prefs.disabledSignals}
 						favoriteTeamIds={favoriteTeamIds}
 						onToggleFavoriteTeam={toggleFavoriteTeam}

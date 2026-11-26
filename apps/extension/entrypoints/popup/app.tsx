@@ -702,6 +702,7 @@ export default () => {
 							holidayFireworksEnabled: prefs.holidayFireworksEnabled,
 						}}
 						decorationDate={resolveDecorationDate(new Date(), demoMode ? demoSeason : 'real')}
+						lastUpdatedAt={data?.leagueLastGoodAt[selectedGame.league]}
 						disabledSignals={prefs.disabledSignals}
 						fantasyRoster={fantasyRoster}
 						favoriteTeamIds={favoriteTeamIds}

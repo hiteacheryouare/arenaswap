@@ -77,6 +77,7 @@ interface MountOverrides {
 	powerScoreHistory?: PowerScoreSnapshot[];
 	proTipsEnabled?: boolean;
 	bettingEnabled?: boolean;
+	lastUpdatedAt?: number;
 }
 
 const detailView = (game: Game, overrides: MountOverrides = {}) => (
@@ -90,6 +91,7 @@ const detailView = (game: Game, overrides: MountOverrides = {}) => (
 		bettingPrefs={{ bettingEnabled: overrides.bettingEnabled ?? false }}
 		weatherPrefs={{ temperatureUnit: 'F' }}
 		decorationPrefs={{ holidayDecorationsEnabled: false, holidaySnowEnabled: false, holidayLightsEnabled: false, holidayLeavesEnabled: false, holidayChristmasEnabled: false, holidayBuntingEnabled: false, holidayFireworksEnabled: false }}
+		lastUpdatedAt={overrides.lastUpdatedAt}
 		onSetGameBoost={() => {}}
 		onBack={() => {}}
 	/>
@@ -1426,6 +1428,82 @@ describe('gameDetailView red cards', () => {
 			cy.get('.gd-play-heading').should(([el]: JQuery<HTMLElement>) => {
 				el.textContent = (locale.detail as Record<string, unknown>).redCardsHeading as string ?? en.detail.redCardsHeading;
 				expect(el.scrollWidth, `no overflow in ${name}`).to.be.at.most(el.clientWidth);
+			});
+		});
+	});
+});
+
+describe('gameDetailView last updated', () => {
+	beforeEach(() => {
+		cy.viewport(320, 560);
+		cy.clock(now.getTime(), ['Date', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval']);
+	});
+
+	it('reads just now straight after a check', () => {
+		mountDetail(makeLiveGame(), { lastUpdatedAt: now.getTime() });
+		cy.get('.game-detail-shell time').should('have.text', 'Last updated just now');
+	});
+
+	it('counts the seconds up while the screen stays open', () => {
+		mountDetail(makeLiveGame(), { lastUpdatedAt: now.getTime() });
+		cy.tick(12_000);
+		cy.get('.game-detail-shell time').should('have.text', 'Last updated 12 seconds ago');
+	});
+
+	it('rolls over into minutes and hours', () => {
+		mountDetail(makeLiveGame(), { lastUpdatedAt: now.getTime() - 59_000 });
+		cy.get('.game-detail-shell time').should('have.text', 'Last updated 59 seconds ago');
+		cy.tick(1000);
+		cy.get('.game-detail-shell time').should('have.text', 'Last updated 1 minute ago');
+		cy.tick(hourMs);
+		cy.get('.game-detail-shell time').should('have.text', 'Last updated 1 hour ago');
+	});
+
+	it('restarts the count when a fresh check lands', () => {
+		const updatedAt = now.getTime() - 40_000;
+		cy.mount(detailView(makeLiveGame(), { lastUpdatedAt: updatedAt })).then(({ rerender }) => {
+			cy.get('.game-detail-shell time').should('have.text', 'Last updated 40 seconds ago');
+			rerender(detailView(makeLiveGame(), { lastUpdatedAt: now.getTime() }));
+			cy.get('.game-detail-shell time').should('have.text', 'Last updated just now');
+		});
+	});
+
+	it('stays off the screen until the first check has landed', () => {
+		mountDetail(makeLiveGame());
+		cy.get('.game-detail-shell time').should('not.exist');
+	});
+
+	it('shows before the start and after the final too', () => {
+		mountDetail(makePreGame(2 * hourMs), { lastUpdatedAt: now.getTime() });
+		cy.get('.game-detail-shell time').should('exist');
+		mountDetail(makeLiveGame({ status: 'post' }), { lastUpdatedAt: now.getTime() });
+		cy.get('.game-detail-shell time').should('exist');
+	});
+
+	it('sits below every tab so it shows on all of them', () => {
+		mountDetail(makeLiveGame(), { lastUpdatedAt: now.getTime() });
+		cy.get('.game-detail-shell > .tab-content').then(([content]: JQuery<HTMLElement>) => {
+			cy.get('.game-detail-shell time').should(([time]: JQuery<HTMLElement>) => {
+				expect(content.contains(time), 'outside the tab panes').to.equal(false);
+				expect(time.getBoundingClientRect().top, 'below the panes').to.be.at.least(content.getBoundingClientRect().bottom);
+			});
+		});
+	});
+
+	it('fits the longest reading on one line in every locale', () => {
+		mountDetail(makeLiveGame(), { lastUpdatedAt: now.getTime() });
+		Object.entries(locales).forEach(([name, locale]) => {
+			const readings = [
+				locale.detail.lastUpdatedJustNow,
+				locale.detail.lastUpdatedSeconds.n.replace('$1', '59'),
+				locale.gameCard.staleMinutes.n.replace('$1', '59'),
+				locale.gameCard.staleHours.n.replace('$1', '23'),
+			];
+			readings.forEach(reading => {
+				cy.get('.game-detail-shell time').should(([el]: JQuery<HTMLElement>) => {
+					el.lastChild!.textContent = reading;
+					expectSingleLine(el, `${name}: ${reading}`);
+				});
 			});
 		});
 	});
