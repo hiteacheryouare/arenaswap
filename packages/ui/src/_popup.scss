@@ -300,17 +300,12 @@ $glow-height: 240px;
 	}
 
 	// The switch and check tokens in the theme carry v5's sizes and colours; these are the parts of
-	// v5's look v6 hardcodes instead. v6 never reads --as-switch-checked-indicator-bg, so the knob
-	// stayed the unchecked dot on orange.
+	// v5's look v6 hardcodes instead.
 	.switch {
 		box-shadow: none;
 
 		&::before {
 			box-shadow: none;
-		}
-
-		&:has(input:checked) {
-			--as-switch-indicator-bg: var(--as-switch-checked-indicator-bg);
 		}
 
 		&:has(input:disabled) {
@@ -323,7 +318,7 @@ $glow-height: 240px;
 	}
 
 	.check {
-		border-radius: 0.25em;
+		--as-check-border-radius: 0.25em;
 
 		&::before {
 			background-color: var(--as-white);

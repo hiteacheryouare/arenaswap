@@ -24,11 +24,6 @@
 @use 'multiviewGuide';
 @use 'scoringSettings';
 
-// A popup never scrolls the document, so the gutter v6 reserves would only narrow it on a mouse.
-:root {
-	scrollbar-gutter: auto;
-}
-
 @layer custom {
 	:root {
 		--as-heading-font-weight: 700;
@@ -76,11 +71,11 @@
 		--as-table-border-color:       #d1d5db;
 		--as-table-group-separator-color: #d1d5db;
 		--as-table-striped-color:      #111827;
-		--as-table-striped-bg:         rgba(17, 24, 39, 0.045);
+		--as-table-striped-bg-factor:  4.5%;
 		--as-table-active-color:       #111827;
-		--as-table-active-bg:          rgba(17, 24, 39, 0.075);
+		--as-table-active-bg-factor:   7.5%;
 		--as-table-hover-color:        #111827;
-		--as-table-hover-bg:           rgba(17, 24, 39, 0.06);
+		--as-table-hover-bg-factor:    6%;
 
 		th { font-weight: 700; }
 	}
@@ -509,10 +504,6 @@
 				box-shadow:   0 0 0 0.15rem rgba(#F75C03, 0.2);
 			}
 		}
-	}
-
-	.form-adorn {
-		--as-form-adorn-gap: 0.5rem;
 	}
 
 	.form-adorn-icon {
@@ -964,7 +955,6 @@
 	.form-range-ticks {
 		height: 0.85rem;
 		margin-top: 0.15rem;
-		padding-inline: calc(var(--as-range-thumb-width) * 0.5);
 	}
 
 	.form-range-tick:first-child,

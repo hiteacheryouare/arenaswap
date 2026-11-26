@@ -17,7 +17,7 @@
 		"@arenaswap/powerscore-tools": "*",
 		"@arenaswap/sideline": "*",
 		"@arenaswap/ui": "*",
-		"bootstrap": "6.0.0-alpha.1",
+		"bootstrap": "6.0.0-alpha.2",
 		"bootstrap-icons": "^1.13.1",
 		"powerscore": "*",
 		"react": "^19.3.0",

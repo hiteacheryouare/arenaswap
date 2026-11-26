@@ -5,6 +5,10 @@
 > git history hold everything else. An entry that wants more than that wants an issue or a source
 > comment instead. Do not match the length of whatever you see below; match this rule.
 
+## Bootstrap 6.0.0-alpha.2 — 2026-11-25
+
+Bootstrap and `@floating-ui/dom` (1.8.0, alpha.2's new peer floor) move up, which picks up the two alpha.1 XSS fixes and drops our workarounds for the Menu dispose leak, the unread switch knob and check radius tokens, the quarter-thumb tick inset and the global scrollbar gutter. Where alpha.2 only changed a default look, `_bootstrap.scss` pins today's: code stays at 95%, close buttons inherit their color, and a keyboard-focused menu item looks hovered instead of turning into a gray slab. The range fill now stops at the thumb's center and menus wrap long items to fit the window instead of growing past it.
+
 ## Ludicrous Speed plays closer to the film and stops strobing — 2026-11-24
 
 The speed climb now lights the bridge's own three panels instead of floating neon signs, the made-up PLAID card is gone, and GO, STOP and the pulled brake slam in once and hold still instead of shaking or flashing several times a second. Each line holds for at least 20 characters a second of its translated length, and the stop halts the ship within a few frames instead of letting it glide back toward the camera. The canvas reads each beat's phase and camera from refs set in a layout effect, so it always cuts on the same commit as the text above it.
