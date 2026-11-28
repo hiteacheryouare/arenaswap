@@ -9,11 +9,9 @@ export const settledInPool = async <T, R>(
 	items: T[],
 	run: (item: T) => Promise<R>,
 	size = espnRequestPoolSize,
-	onProgress?: (settled: number, total: number) => void,
 ): Promise<PromiseSettledResult<R>[]> => {
 	const results: PromiseSettledResult<R>[] = [];
 	let next = 0;
-	let settled = 0;
 	const worker = async (): Promise<void> => {
 		while (next < items.length) {
 			const index = next;
@@ -24,8 +22,6 @@ export const settledInPool = async <T, R>(
 			} catch (reason) {
 				results[index] = { status: 'rejected', reason };
 			}
-			settled += 1;
-			onProgress?.(settled, items.length);
 		}
 	};
 	await Promise.all(Array.from({ length: Math.min(size, items.length) }, () => worker()));

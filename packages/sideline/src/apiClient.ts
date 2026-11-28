@@ -8,7 +8,7 @@ import { warnOnDroppedCountChange } from './dropWarnings';
 import { parseScoreboard } from './espnSchemas';
 import type { EspnScoreboardResponse } from './espnSchemas';
 import { parseEvent } from './scoreboardEvent';
-import { espnRequestPoolSize, settledInPool, takeRequestSlot } from './requestPool';
+import { settledInPool, takeRequestSlot } from './requestPool';
 import { coreApiBase, espnBase, espnGet, standingsUrl, summaryUrl } from './endpoints';
 
 export { requestTimeoutMs } from './endpoints';
@@ -60,7 +60,6 @@ export interface LeagueFetchOptions {
 	upcomingDays?: number;
 	includeFinal?: boolean;
 	groupsByLeague?: Partial<Record<LeagueId, string[]>>;
-	onLeagueProgress?: (settled: number, total: number) => void;
 }
 
 interface LeagueGamesResult {
@@ -291,7 +290,7 @@ export const fetchGamesWithLeagueLogos = async (enabledLeagues: LeagueId[], opti
 	const leagueConfigs = getEnabledLeagueConfigs(enabledLeagues);
 	if (leagueConfigs.length === 0) return { games: [], leagueLogos: {}, leagueSchedules: {}, shedLeagues: [] };
 
-	const results = await settledInPool(leagueConfigs, config => fetchLeagueGames(config, options), espnRequestPoolSize, options.onLeagueProgress);
+	const results = await settledInPool(leagueConfigs, config => fetchLeagueGames(config, options));
 
 	const fulfilled = results
 		.filter((r): r is PromiseFulfilledResult<LeagueGamesResult> => r.status === 'fulfilled')

@@ -436,21 +436,6 @@ $glow-height: 240px;
 
 	.popup-loading-wrap {
 		min-height: 100px;
-
-		.popup-loading-progress {
-			--as-progress-height: 4px;
-			--as-progress-bg: var(--as-bg-2);
-			--as-progress-bar-bg: #F75C03;
-			--as-progress-bar-transition: width #{m.$motion-base} #{m.$motion-ease};
-		}
-
-		.popup-loading-percent {
-			min-width: 4ch;
-			font-family: 'Geist', 'DM Sans', system-ui, sans-serif;
-			font-size: 0.72rem;
-			font-variant-numeric: tabular-nums;
-			color: var(--as-fg-3);
-		}
 	}
 
 	.popup-loading-text {

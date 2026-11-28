@@ -126,7 +126,6 @@ export const installFakeBrowser = (win: Window, options: fakeBrowserOptions): fa
 			case 'BOSS_BUTTON':
 			case 'SCORES_UPDATED':
 			case 'GUIDE_SLATE_UPDATED':
-			case 'LOAD_PROGRESS':
 			case 'MULTIVIEW_UPDATED':
 			case 'MULTIVIEW_READY':
 			case 'MULTIVIEW_FRAME_STATUS':

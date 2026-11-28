@@ -26,7 +26,6 @@ const favoriteTeamsPage = ({
 	const [query, setQuery] = useState('');
 	const [teams, setTeams] = useState<EspnTeamEntry[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
-	const [loadProgress, setLoadProgress] = useState(0);
 	const [hasError, setHasError] = useState(false);
 	const [attempt, setAttempt] = useState(0);
 
@@ -35,10 +34,9 @@ const favoriteTeamsPage = ({
 	useEffect(() => {
 		let cancelled = false;
 		setIsLoading(true);
-		setLoadProgress(0);
 		setHasError(false);
 
-		fetchTeamsForLeagues(leagues, (settled, total) => { if (!cancelled) setLoadProgress((settled / total) * 100); })
+		fetchTeamsForLeagues(leagues)
 			.then(fetched => { if (!cancelled) setTeams(fetched); })
 			.catch(() => { if (!cancelled) setHasError(true); })
 			.finally(() => { if (!cancelled) setIsLoading(false); });
@@ -84,7 +82,6 @@ const favoriteTeamsPage = ({
 					query={query}
 					onQueryChange={setQuery}
 					isLoading={isLoading}
-					loadProgress={loadProgress}
 					hasError={hasError}
 					list={list}
 					selected={selected}

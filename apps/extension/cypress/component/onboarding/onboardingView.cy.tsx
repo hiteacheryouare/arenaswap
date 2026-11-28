@@ -93,7 +93,7 @@ describe('onboardingView', () => {
 		cy.contains('Philadelphia Phillies').should('not.exist');
 	});
 
-	it('opens the team picker on an empty bar while the rosters load', () => {
+	it('opens the team picker on its spinner while the rosters load', () => {
 		cy.mount(<OnboardingView {...defaultProps} />);
 		goToLeaguePicker();
 
@@ -107,8 +107,8 @@ describe('onboardingView', () => {
 		cy.contains('button', 'Next').click();
 
 		cy.contains('Pick Your Teams').should('exist');
-		cy.get('.popup-loading-progress').should('have.attr', 'aria-valuenow', '0').then(() => answer());
-		cy.get('.popup-loading-progress').should('not.exist');
+		cy.get('.popup-loading-spinner').should('exist').then(() => answer());
+		cy.get('.popup-loading-spinner').should('not.exist');
 		cy.contains('Philadelphia 76ers').should('exist');
 	});
 

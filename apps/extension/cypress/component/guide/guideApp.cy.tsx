@@ -134,24 +134,24 @@ describe('the guide page', () => {
 	it('says it is still loading rather than reporting a quiet day it has not heard about', () => {
 		mountGuide({ deferSlate: true });
 
-		cy.get('.popup-loading-progress').should('be.visible');
+		cy.get('.popup-loading-spinner').should('be.visible');
 		cy.get('.popup-no-games-wrap').should('not.exist');
 		cy.get('.guide-bar').should('not.exist');
 
 		cy.get<guideHandle>('@guide').then(guide => guide.deliver([eagles, niners]));
 
-		cy.get('.popup-loading-progress').should('not.exist');
+		cy.get('.popup-loading-spinner').should('not.exist');
 		cy.get('.guide-bar').should('have.length', 2);
 	});
 
 	it('says the day is empty only once the background has answered with nothing', () => {
 		mountGuide({ deferSlate: true });
-		cy.get('.popup-loading-progress').should('be.visible');
+		cy.get('.popup-loading-spinner').should('be.visible');
 
 		cy.get<guideHandle>('@guide').then(guide => guide.deliver([]));
 
 		cy.get('.popup-no-games-wrap').should('be.visible');
-		cy.get('.popup-loading-progress').should('not.exist');
+		cy.get('.popup-loading-spinner').should('not.exist');
 	});
 
 	it('shows the error banner, not a quiet day, when our sources refused to answer', () => {
@@ -159,7 +159,7 @@ describe('the guide page', () => {
 
 		cy.get('.popup-error-banner').should('be.visible').and('contain.text', 'Couldn\'t load games');
 		cy.get('.popup-no-games-wrap').should('not.exist');
-		cy.get('.popup-loading-progress').should('not.exist');
+		cy.get('.popup-loading-spinner').should('not.exist');
 		cy.get('#guideBandToggle').should('not.exist');
 	});
 
@@ -167,7 +167,7 @@ describe('the guide page', () => {
 		mountGuide({ slateFault: 'rejects' });
 
 		cy.get('.popup-error-banner').should('be.visible');
-		cy.get('.popup-loading-progress').should('not.exist');
+		cy.get('.popup-loading-spinner').should('not.exist');
 		cy.get('.popup-no-games-wrap').should('not.exist');
 	});
 

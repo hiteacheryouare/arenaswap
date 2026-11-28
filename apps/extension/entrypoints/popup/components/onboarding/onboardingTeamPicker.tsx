@@ -9,7 +9,6 @@ import focusStepTitle from '../stepTitleFocus';
 interface onboardingTeamPickerProps {
 	teams: EspnTeamEntry[];
 	isLoading: boolean;
-	loadProgress: number;
 	hasError: boolean;
 	selectedFavorites: Set<string>;
 	onToggleFavorite: (key: string) => void;
@@ -24,7 +23,6 @@ interface onboardingTeamPickerProps {
 const onboardingTeamPicker = ({
 	teams,
 	isLoading,
-	loadProgress,
 	hasError,
 	selectedFavorites,
 	onToggleFavorite,
@@ -56,7 +54,6 @@ const onboardingTeamPicker = ({
 				query={query}
 				onQueryChange={setQuery}
 				isLoading={isLoading}
-				loadProgress={loadProgress}
 				hasError={hasError}
 				selected={selectedFavorites}
 				onToggle={team => onToggleFavorite(createFavoriteTeamKey(team.leagueId, team.id))}

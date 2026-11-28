@@ -29,7 +29,6 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough, startStep
 	const [selectedFavorites, setSelectedFavorites] = useState<Set<string>>(new Set());
 	const [teams, setTeams] = useState<EspnTeamEntry[]>([]);
 	const [teamsLoading, setTeamsLoading] = useState(false);
-	const [teamsProgress, setTeamsProgress] = useState(0);
 	const [teamsError, setTeamsError] = useState(false);
 	const [pendingLeagues, setPendingLeagues] = useState<LeagueId[]>([]);
 	const [pendingFavorites, setPendingFavorites] = useState<string[]>([]);
@@ -61,12 +60,9 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough, startStep
 		const request = ++rosterRequestRef.current;
 		setStep(3);
 		setTeamsLoading(true);
-		setTeamsProgress(0);
 		setTeamsError(false);
 		try {
-			const fetched = await fetchTeamsForLeagues([...selectedLeagues], (settled, total) => {
-				if (request === rosterRequestRef.current) setTeamsProgress((settled / total) * 100);
-			});
+			const fetched = await fetchTeamsForLeagues([...selectedLeagues]);
 			if (request === rosterRequestRef.current) setTeams(fetched);
 		} catch {
 			if (request === rosterRequestRef.current) setTeamsError(true);
@@ -123,7 +119,6 @@ const onboardingView = ({ leagueLogos, onComplete, onStartWalkthrough, startStep
 					<OnboardingTeamPicker
 						teams={teams}
 						isLoading={teamsLoading}
-						loadProgress={teamsProgress}
 						hasError={teamsError}
 						selectedFavorites={selectedFavorites}
 						onToggleFavorite={onToggleFavorite}

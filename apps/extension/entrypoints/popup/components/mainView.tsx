@@ -396,7 +396,7 @@ const mainView = ({
 				bossShortcut={bossShortcut}
 			/>
 
-			<GameListHeader load='scores' isLoading={isLoading} hasError={hasError} loadingMessage={loadingMessage} onRefresh={onRefresh} />
+			<GameListHeader isLoading={isLoading} hasError={hasError} loadingMessage={loadingMessage} onRefresh={onRefresh} />
 
 			<NoticeReveal show={suggestionCount > 0} animate={listShown}>
 				<SuggestBanner

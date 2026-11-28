@@ -479,13 +479,6 @@ export interface GuideSlateUpdatedMessage {
 	type: 'GUIDE_SLATE_UPDATED';
 }
 
-export interface LoadProgressMessage {
-	type: 'LOAD_PROGRESS';
-	load: 'scores' | 'guide';
-	settled: number;
-	total: number;
-}
-
 export interface DebugState {
 	pollModes: Record<string, PollMode>;
 	leagueIntervals: Record<string, number>;
@@ -524,7 +517,6 @@ export type ExtensionMessage =
 	| GetDebugStateMessage
 	| GetGuideSlateMessage
 	| GuideSlateUpdatedMessage
-	| LoadProgressMessage
 	| GetMultiviewMessage
 	| MultiviewUpdatedMessage
 	| MultiviewReadyMessage

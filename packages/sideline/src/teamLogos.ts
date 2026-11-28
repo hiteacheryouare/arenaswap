@@ -3,7 +3,7 @@ import { getEnabledLeagueConfigs } from './apiClient';
 import { warnOnDroppedCountChange } from './dropWarnings';
 import { parseTeams } from './espnSchemas';
 import { espnBase, espnGet } from './endpoints';
-import { espnRequestPoolSize, settledInPool, takeRequestSlot } from './requestPool';
+import { settledInPool, takeRequestSlot } from './requestPool';
 
 export interface EspnTeamEntry {
 	leagueId: LeagueId;
@@ -65,10 +65,7 @@ export const fetchTeamMonoLogos = async (leagueIds: LeagueId[], size = 120): Pro
 	}, {});
 };
 
-export const fetchTeamsForLeagues = async (
-	leagueIds: LeagueId[],
-	onLeagueProgress?: (settled: number, total: number) => void,
-): Promise<EspnTeamEntry[]> => {
+export const fetchTeamsForLeagues = async (leagueIds: LeagueId[]): Promise<EspnTeamEntry[]> => {
 	if (leagueIds.length === 0) return [];
 
 	const leagueConfigs = getEnabledLeagueConfigs(leagueIds);
@@ -96,7 +93,7 @@ export const fetchTeamsForLeagues = async (
 				abbreviation: team.abbreviation || team.displayName.slice(0, 3).toUpperCase(),
 				logo: team.logos?.[0]?.href,
 			}));
-	}, espnRequestPoolSize, onLeagueProgress);
+	});
 
 	const fulfilled = results
 		.filter((result): result is PromiseFulfilledResult<EspnTeamEntry[]> => result.status === 'fulfilled')
