@@ -34,11 +34,11 @@
 	},
 	"devDependencies": {
 		"@latticeandcompany/lattice": "2.0.0",
-		"@swc/core": "^1.16.2",
+		"@swc/core": "^1.16.22",
 		"@swc/jest": "^0.2.39",
-		"oxlint": "^1.83.0",
-		"rolldown": "^1.2.9",
-		"turbo": "^2.11.2",
+		"oxlint": "^1.94.0",
+		"rolldown": "^1.3.3",
+		"turbo": "^2.11.13",
 		"typescript": "^7.0.2"
 	},
 	"overrides": {
@@ -51,7 +51,7 @@
 	},
 	"packageManager": "npm@12.1.0",
 	"dependencies": {
-		"skills": "^1.7.0"
+		"skills": "^1.9.0"
 	},
 	"allowScripts": {
 		"cypress": true,
